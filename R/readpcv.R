@@ -91,12 +91,15 @@ read.pcv<-function(filepath, mode="wide", singleValueOnly=T,
 
 #' @examples 
 #' 
-#' df1<-read.pcv("../dataScienceEducation/troubleShootingSeminar/longPCVdata_nonElbonian.csv", "wide", T, multiValPattern = "hist|frequencies")
-#' df1b<-read.pcv("../dataScienceEducation/troubleShootingSeminar/longPCVdata_nonElbonian.csv", "wide", T, multiValPattern = c("index_frequencies_index_ari", "index_frequencies_index_ci_rededge", "index_frequencies_index_ndvi", "npq_hist_NPQ", "yii_hist_Fq'/Fm'", "yii_hist_Fv/Fm"))
+#' file = "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest1.csv"
+#' df1<-read.pcv(file, "wide", T, multiValPattern = "hist|frequencies")
+#' df1b<-read.pcv(file, "wide", T, multiValPattern = c("index_frequencies_index_ari", "index_frequencies_index_ci_rededge", "index_frequencies_index_ndvi", "npq_hist_NPQ", "yii_hist_Fq'/Fm'", "yii_hist_Fv/Fm"))
 #' identical(df1, df1b)
-#' df2<-read.pcv("../dataScienceEducation/troubleShootingSeminar/longPCVdata_nonElbonian.csv", "long", T)
+#' df2<-read.pcv(file, "long", T)
 #' dim(df2)
-#' fileBig = "/home/jsumner/Desktop/shares/mgehan_share/kmurphy/maize_2022/bellwether/results_vis_SV/07252022_VIS_SV_MG001_results.csv"
+#' # Note only data stored on a Unix style system can be subset before reading in.
+#' # For DDPSC employees there are larger datasets on stargate that better show the benefit of subsetting before reading data in.
+#' fileBig = "/shares/mgehan_share/kmurphy/maize_2022/bellwether/results_vis_SV/07252022_VIS_SV_MG001_results.csv"
 #' start<-Sys.time()
 #' x3a<-pcv.sub.read(inputFile=fileBig, reader = "vroom",
 #'                   filters = list("trait in area, perimeter", "barcode is Ea008AA114352"))

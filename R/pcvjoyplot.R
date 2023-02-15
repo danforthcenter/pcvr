@@ -27,8 +27,11 @@
 #' }
 #' 
 #' @examples 
-#' 
-#' 
+#' df <- read.pcv("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest2.csv", "long", F)
+#' pcv.joyplot(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"))
+#' pcv.joyplot(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"), method="ks")
+#' pcv.joyplot(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"), method="beta")
+#' pcv.joyplot(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"), method="gaussian")
 
 
 

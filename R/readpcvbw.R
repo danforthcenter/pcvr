@@ -13,8 +13,6 @@
 #' @param ... Other arguments passed to the reader function. In the case of 'vroom' and 'fread' there are several defaults provided already which can be overwritten with these extra arguments.
 #' @keywords read.csv, pcv, bellwether
 #' @export
-#' @examples 
-#' 
 
 read.pcv.bw<-function(
     file=NULL,
@@ -95,3 +93,8 @@ read.pcv.bw<-function(
   }
   return(phenos)
 }
+
+#' @examples 
+#' bw<-read.pcv.bw( file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestPhenos.csv",metaCol=NULL)
+#' bw<-read.pcv.bw( file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestPhenos.csv",metaCol="meta", metaForm="vis_view_angle_zoom_horizontal_gain_exposure_v_new_n_rep", joinSnapshot = "id")
+#' bw<-read.pcv.bw( file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestPhenos.csv", snapshotFile="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestSnapshot.csv", designFile="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestDesign.csv",metaCol="meta",metaForm="vis_view_angle_zoom_horizontal_gain_exposure_v_new_n_rep",joinSnapshot="id",conversions = list(area=13.2*3.7/46856) )
