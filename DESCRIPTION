@@ -1,0 +1,11 @@
+Package: pcvr
+Type: Package
+Title: Set of functions to interface with plantCV output
+Version: 0.1.0
+Author: Josh Sumner
+Maintainer: Josh Sumner <jsumner@danforthcenter.org>
+Description: 
+License: GPL-2
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.2.3
