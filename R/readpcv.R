@@ -14,6 +14,33 @@
 #' @keywords read.csv, pcv, wide, long
 #' @import data.table
 #' @import vroom
+#' @export
+#' @examples 
+#' 
+#' file = "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest1.csv"
+#' df1<-read.pcv(file, "wide", T, multiValPattern = "hist|frequencies")
+#' df1b<-read.pcv(file, "wide", T, multiValPattern = c("index_frequencies_index_ari", "index_frequencies_index_ci_rededge", "index_frequencies_index_ndvi", "npq_hist_NPQ", "yii_hist_Fq'/Fm'", "yii_hist_Fv/Fm"))
+#' identical(df1, df1b)
+#' df2<-read.pcv(file, "long", T)
+#' dim(df2)
+#' # Note only data stored on a Unix style system can be subset before reading in.
+#' # For DDPSC employees there are larger datasets on stargate that better show the benefit of subsetting before reading data in.
+#' fileBig = "/shares/mgehan_share/kmurphy/maize_2022/bellwether/results_vis_SV/07252022_VIS_SV_MG001_results.csv"
+#' start<-Sys.time()
+#' x3a<-pcv.sub.read(inputFile=fileBig, reader = "vroom",
+#'                   filters = list("trait in area, perimeter", "barcode is Ea008AA114352"))
+#' Sys.time()-start
+#' start<-Sys.time()
+#' x3b<-pcv.sub.read(inputFile=fileBig, reader = "fread",
+#'                   filters = list("trait in area, perimeter", "barcode is Ea008AA114352"))
+#' Sys.time()-start
+#' start<-Sys.time()
+#' x3c<-pcv.sub.read(inputFile=fileBig, reader = "read.csv",
+#'                   filters = list("trait in area, perimeter", "barcode is Ea008AA114352"))
+#' Sys.time()-start
+#' dim(x3a)
+#' dim(x3b)
+#' dim(x3c)
 
 awkHelper<-function(inputFile, filters, awk=NULL){
   if(is.null(awk)){
@@ -35,7 +62,6 @@ awkHelper<-function(inputFile, filters, awk=NULL){
   return(awkCommand)
 }
 
-#' @export
 pcv.sub.read<-function(inputFile, filters, reader = "read.csv", awk=NULL, ...){
   awkCommand<-awkHelper(inputFile, filters, awk)
   COLS = colnames(read.csv(inputFile, nrows=1))
@@ -51,7 +77,6 @@ pcv.sub.read<-function(inputFile, filters, reader = "read.csv", awk=NULL, ...){
   return(x)
 }
 
-#' @export
 read.pcv<-function(filepath, mode="wide", singleValueOnly=T,
                    traitCol="trait", labelCol="label", valueCol="value",
                    multiValPattern = "hist|frequencies", reader="read.csv", filters=NULL, awk=NULL, ...){
@@ -89,29 +114,3 @@ read.pcv<-function(filepath, mode="wide", singleValueOnly=T,
   return(out)
 }
 
-#' @examples 
-#' 
-#' file = "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest1.csv"
-#' df1<-read.pcv(file, "wide", T, multiValPattern = "hist|frequencies")
-#' df1b<-read.pcv(file, "wide", T, multiValPattern = c("index_frequencies_index_ari", "index_frequencies_index_ci_rededge", "index_frequencies_index_ndvi", "npq_hist_NPQ", "yii_hist_Fq'/Fm'", "yii_hist_Fv/Fm"))
-#' identical(df1, df1b)
-#' df2<-read.pcv(file, "long", T)
-#' dim(df2)
-#' # Note only data stored on a Unix style system can be subset before reading in.
-#' # For DDPSC employees there are larger datasets on stargate that better show the benefit of subsetting before reading data in.
-#' fileBig = "/shares/mgehan_share/kmurphy/maize_2022/bellwether/results_vis_SV/07252022_VIS_SV_MG001_results.csv"
-#' start<-Sys.time()
-#' x3a<-pcv.sub.read(inputFile=fileBig, reader = "vroom",
-#'                   filters = list("trait in area, perimeter", "barcode is Ea008AA114352"))
-#' Sys.time()-start
-#' start<-Sys.time()
-#' x3b<-pcv.sub.read(inputFile=fileBig, reader = "fread",
-#'                   filters = list("trait in area, perimeter", "barcode is Ea008AA114352"))
-#' Sys.time()-start
-#' start<-Sys.time()
-#' x3c<-pcv.sub.read(inputFile=fileBig, reader = "read.csv",
-#'                   filters = list("trait in area, perimeter", "barcode is Ea008AA114352"))
-#' Sys.time()-start
-#' dim(x3a)
-#' dim(x3b)
-#' dim(x3c)
