@@ -14,7 +14,6 @@
 #' @keywords read.csv, pcv, wide, long
 #' @import data.table
 #' @import vroom
-#' @export
 #' @examples 
 #' 
 #' file = "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest1.csv"
@@ -61,7 +60,7 @@ awkHelper<-function(inputFile, filters, awk=NULL){
   } else {awkCommand = awk}
   return(awkCommand)
 }
-
+#' @export
 pcv.sub.read<-function(inputFile, filters, reader = "read.csv", awk=NULL, ...){
   awkCommand<-awkHelper(inputFile, filters, awk)
   COLS = colnames(read.csv(inputFile, nrows=1))
@@ -76,7 +75,7 @@ pcv.sub.read<-function(inputFile, filters, reader = "read.csv", awk=NULL, ...){
   }
   return(x)
 }
-
+#' @export
 read.pcv<-function(filepath, mode="wide", singleValueOnly=T,
                    traitCol="trait", labelCol="label", valueCol="value",
                    multiValPattern = "hist|frequencies", reader="read.csv", filters=NULL, awk=NULL, ...){
