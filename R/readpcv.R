@@ -40,41 +40,6 @@
 #' dim(x3a)
 #' dim(x3b)
 #' dim(x3c)
-
-awkHelper<-function(inputFile, filters, awk=NULL){
-  if(is.null(awk)){
-    if(!is.list(filters)){filters<-list(filters)}
-    awkStart<-"awk -F "
-    awkDelim <-"',' "
-    awkFiltStart<-"'{ if ("
-    awkFiltEnd<-") { print } }' "
-    COLS = colnames(read.csv(inputFile, nrows=1))
-    awkFilts<-lapply(filters, function(filt){
-      filtCol = strsplit(filt," ")[[1]][1]
-      filt<-gsub("( = )|( is )", " in ", filt)
-      values = trimws(strsplit(trimws(strsplit(filt,"in")[[1]][-1]),",")[[1]])
-      paste(paste0("($", which(COLS == filtCol), '=="', values,'")' ), collapse=" || ")
-    })
-    awkFilt = paste(paste("(",awkFilts,")"), collapse = " && ")
-    awkCommand<-capture.output(cat(awkStart, awkDelim, awkFiltStart, awkFilt, awkFiltEnd, inputFile))
-  } else {awkCommand = awk}
-  return(awkCommand)
-}
-#' @export
-pcv.sub.read<-function(inputFile, filters, reader = "read.csv", awk=NULL, ...){
-  awkCommand<-awkHelper(inputFile, filters, awk)
-  COLS = colnames(read.csv(inputFile, nrows=1))
-  if(reader=="vroom"){
-    x<-as.data.frame(vroom::vroom(pipe(awkCommand), show_col_types = FALSE, delim = ",", col_names = COLS, ...))
-  } else if (reader== "fread"){
-    x<-as.data.frame(data.table::fread(cmd=awkCommand, col.names = COLS, ...))
-  } else {
-    readingFunction <- match.fun(reader)
-    x<-suppressMessages(as.data.frame(readingFunction( pipe(awkCommand), ...)))
-    colnames(x)<-COLS
-  }
-  return(x)
-}
 #' @export
 read.pcv<-function(filepath, mode="wide", singleValueOnly=T,
                    traitCol="trait", labelCol="label", valueCol="value",
