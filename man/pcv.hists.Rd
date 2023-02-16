@@ -52,6 +52,13 @@ The method argument is used for statistical testing of groups. There are current
  \item{"emd}{The emd method returns earth mover's distance for compared histograms. This is done via the emdist package and can be very slow. This is included because it is canonical but in the case where EMD is desired it may be worth implementing it directly.}
 }
 }
+\examples{
+df <- read.pcv("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest2.csv", "long", F)
+pcv.hists(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"))
+pcv.hists(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"), method="ks")
+pcv.hists(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"), method="beta")
+pcv.hists(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"), method="gaussian")
+}
 \keyword{bayesian,}
 \keyword{ggplot,}
 \keyword{multi}

@@ -35,5 +35,10 @@ bw.time(
 \description{
 Time conversion and plotting for bellwether data
 }
+\examples{
+bw<-read.pcv.bw( file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestPhenos.csv", snapshotFile="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestSnapshot.csv", designFile="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestDesign.csv",metaCol="meta",metaForm="vis_view_angle_zoom_horizontal_gain_exposure_v_new_n_rep",joinSnapshot="id",conversions = list(area=13.2*3.7/46856) )
+bw<-bw.time(df = bw, mode=NULL, plantingDelay = 4, phenotype="area_adj", timeCol="DAS", group="Barcodes", plot=T)
+
+}
 \keyword{Bellwether,}
 \keyword{ggplot}

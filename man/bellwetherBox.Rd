@@ -35,5 +35,9 @@ bellwetherBox(
 \description{
 Boxplots for bellwether data
 }
+\examples{
+df <- read.pcv.bw("pcvTestData.csv")
+bellwetherBox(df, x="genotype", y = "area.pixels", time = 19)
+}
 \keyword{Bellwether,}
 \keyword{ggplot}
