@@ -1,0 +1,64 @@
+---
+title: "pcvr"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{pcvr}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(pcvr)
+```
+
+## Example workflow for a relatively small dataset
+
+This workflow will use example data from github to analyze single value traits such as area, perimeter, or height and multi-value traits such as Fv/Fm or Chlorophyll Index (ci_rededge). 
+
+- read data from pcvrTestData online repository using read.pcv
+- download pcvrTestData and read from local using read.pcv with filters
+- use pcv.boxplot for something, show comparisons
+- use pcv.joyplot for multi-value traits
+
+First we read in our data in wide format, keeping only the single value traits.
+
+```{r}
+df<-read.pcv("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest2.csv", mode = "wide", singleValueOnly = T)
+```
+
+This dataset is small enough that it is no problem to load the entire data and store it in memory. For larger data that may be prohibitive in which case the other features of `read.pcv` should be used.
+
+```{r}
+download.file(url="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest2.csv", destfile="example.csv")
+ex<-read.pcv("example.csv", mode = "wide", reader="read.csv", filters = "trait in area, perimeter")
+```
+
+Okay so that isn't working. It was working the week of 2/13/2023 but there is a problem connecting the files now I think. Loading pcvr it failed to work with Katie's data... weird stuff. Problem is at read in step, awk command is correct and works in terminal. Reading fails without a message and without ending. 
+
+
+What do I want this to show..?
+I'd like a vignette that takes you through 2 workflows:
+
+first one, wide data doing basic comparisons on some single value traits
+
+Second one, long data doing basic comparisons on multi value trait
+
+
+```{r}
+lng<-read.pcv("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest2.csv", mode = "long", singleValueOnly = F)
+```
+
+
+
+
+
+
+
+
