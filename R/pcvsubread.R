@@ -3,6 +3,8 @@
 #' @param inputFile Path to csv file of plantCV output, should be provided internally in read.pcv
 #' @param filters filtering conditions, see read.pcv for details. Format as list("trait in area, perimeter", "other in value")
 #' @param awk Optional awk command to use instead.
+#' @import data.table
+#' @import vroom
 #' @keywords read.csv, pcv, wide, long
 #' 
 #' 

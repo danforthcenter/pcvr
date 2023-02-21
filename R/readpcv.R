@@ -12,8 +12,6 @@
 #' @param awk As an alternative to `filters` a direct call to awk can be supplied here, in which case that call will be used through pipe().
 #' @param ... Other arguments passed to the reader function. In the case of 'vroom' and 'fread' there are several defaults provided already which can be overwritten with these extra arguments.
 #' @keywords read.csv, pcv, wide, long
-#' @import data.table
-#' @import vroom
 #' @examples 
 #' 
 #' file = "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest1.csv"
@@ -43,12 +41,13 @@
 #' @export
 read.pcv<-function(filepath, mode="wide", singleValueOnly=T,
                    traitCol="trait", labelCol="label", valueCol="value",
-                   multiValPattern = "hist|frequencies", reader="read.csv", filters=NULL, awk=NULL, ...){
-  
+                   multiValPattern = "hist|frequencies", reader=NULL, filters=NULL, awk=NULL, ...){
   if(is.null(filters) & is.null(awk)){
+    if(is.null(reader)){reader="read.csv"}
     readingFunction<-match.fun(reader)
-    df1<-readingFunction(filepath, ...)
-  } else{ 
+    df1<-as.data.frame(readingFunction(filepath, ...))
+  } else{
+    if(is.null(reader)){reader="fread"}
     df1<-pcv.sub.read(inputFile=filepath, filters=filters, reader = reader, awk=awk, ...)  
     }
 
