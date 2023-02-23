@@ -24,7 +24,7 @@ pcv.joyplot(
 
 \item{group}{A length 1 or 2 character vector. This is used for faceting the joyplot and identifying groups for testing.}
 
-\item{method}{A method to use in comparing distributions/means. Currently "beta", "gaussian", "ks", and "emd" are supported. See details for explanations of tests.}
+\item{method}{A method to use in comparing distributions/means. Currently "beta", "gaussian", and "ks" are supported. See details for explanations of tests.}
 
 \item{compare}{Groups to compare. By default this is set to FALSE, which corresponds to no testing. Other values of compare are passed to fixCompare to make t.test comparisons using ggpubr. In short, NULL will run all pairwise T tests, a single value of the X axis variable will compare that level to all other levels of the X variable, alternatively this can be a list as used by ggpubr: list(c("level1", "level2"), c("level1", "level3"))}
 
