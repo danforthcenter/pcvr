@@ -13,7 +13,6 @@
 #' @keywords bayesian, ggplot, multi value trait, pcv.hists
 #' @import ggplot2
 #' @import ggridges
-#' @import emdist
 #' @import extraDistr
 #' @export
 #' 

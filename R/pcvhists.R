@@ -12,7 +12,6 @@
 #' @param trait Column containing phenotype names. Defaults to "trait".
 #' @keywords bayesian, ggplot, multi value trait, pcv.joyplot
 #' @import ggplot2
-#' @import emdist
 #' @import extraDistr
 #' @export
 #' 
