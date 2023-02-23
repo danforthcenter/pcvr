@@ -40,16 +40,6 @@ download.file(url="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/ma
 ex<-read.pcv("example.csv", mode = "wide", reader="read.csv", filters = "trait in area, perimeter")
 ```
 
-Okay so that isn't working. It was working the week of 2/13/2023 but there is a problem connecting the files now I think. Loading pcvr it failed to work with Katie's data... weird stuff. Problem is at read in step, awk command is correct and works in terminal. Reading fails without a message and without ending. 
-
-
-What do I want this to show..?
-I'd like a vignette that takes you through 2 workflows:
-
-first one, wide data doing basic comparisons on some single value traits
-
-Second one, long data doing basic comparisons on multi value trait
-
 
 ```{r}
 lng<-read.pcv("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest2.csv", mode = "long", singleValueOnly = F)

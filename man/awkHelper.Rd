@@ -16,6 +16,9 @@ awkHelper(inputFile, filters, awk = NULL)
 \description{
 subset helper function for use reading in large data, called in pcv.sub.read
 }
+\details{
+awkHelper attempts to make awk commands from human readable input. Currently when filters are supplied the input file has quotes removed by `sed` then is piped into awk, so an equivalent command line statement may be: sed 's/\"//g' pcvrTest2.csv | awk -F ','  '{ if (NR==1 || $18=="area") { print } }'
+}
 \keyword{long}
 \keyword{pcv,}
 \keyword{read.csv,}

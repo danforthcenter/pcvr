@@ -3,7 +3,7 @@
 #' @param df Data frame to use. Long format with multi value traits is expected.
 #' @param index A multi value trait as a character string. Must be present in `trait`.
 #' @param group A length 1 or 2 character vector. This is used for faceting the joyplot and identifying groups for testing.
-#' @param method A method to use in comparing distributions/means. Currently "beta", "gaussian", "ks", and "emd" are supported. See details for explanations of tests.
+#' @param method A method to use in comparing distributions/means. Currently "beta", "gaussian", and "ks" are supported. See details for explanations of tests.
 #' @param compare Groups to compare. By default this is set to FALSE, which corresponds to no testing. Other values of compare are passed to fixCompare to make t.test comparisons using ggpubr. In short, NULL will run all pairwise T tests, a single value of the X axis variable will compare that level to all other levels of the X variable, alternatively this can be a list as used by ggpubr: list(c("level1", "level2"), c("level1", "level3"))
 #' @param priors Parameters for prior distributions if using method = "beta" or "gaussian". If left NULL then wide weak priors are used. This can be set as a single set of parameters or with unique values for each group in `compare`, but it is advised to use the default priors.
 #' @param hyp Hypothesis to test for beta and gaussian methods, one of "unequal", "greater", "lesser". Defaults to "unequal" if left NULL.

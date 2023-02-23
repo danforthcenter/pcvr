@@ -12,7 +12,7 @@ read.pcv(
   labelCol = "label",
   valueCol = "value",
   multiValPattern = "hist|frequencies",
-  reader = "read.csv",
+  reader = NULL,
   filters = NULL,
   awk = NULL,
   ...
@@ -33,7 +33,7 @@ read.pcv(
 
 \item{multiValPattern}{If `singleValueOnly`=TRUE then this is used to identify multi value traits. By default this is "hist|frequencies". If this argument has length of 1 then it is taken as either a single phenotype or a regex pattern to find values of `trait` that are multi-value phenotypes. Alternatively this can be a vector of phenotype names to remove (see examples).}
 
-\item{reader}{The function to use to read in data, defaults to "read.csv". Other useful options are "vroom" and "fread", from the vroom and data.table packages, respectively. With files that are still very large after subsetting "fread" or "vroom" should be used.}
+\item{reader}{The function to use to read in data, defaults to NULL in which case `data.table::fread` is used if filters are in place and `read.csv` is used otherwise. Other useful options are "vroom" and "fread", from the vroom and data.table packages, respectively. With files that are still very large after subsetting "fread" or "vroom" should be used. Note that if you use `read.csv` with filters in place then you will need to specify `header=F` so that the piped output from awk is read correctly.}
 
 \item{filters}{If a very large pcv output file is read then it may be desireable to subset it before reading it into R, either for ease of use or because of RAM limitations. The filter argument works with "COLUMN in VALUES" syntax. This can either be a character vector or a list of character vectors. In these vectors there needs to be a column name, one of " in ", " is ", or " = ", then a set of comma delimited values to filter that column for (see examples). Note that this and `awk` both use awk through pipe(). This functionality will not work on a windows system.}
 
