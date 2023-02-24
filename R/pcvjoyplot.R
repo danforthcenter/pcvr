@@ -39,8 +39,8 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL,
                       compare= NULL, priors=NULL,hyp=NULL, # c("unequal", "greater", "lesser")
                       bin="label", freq="value", trait="trait"){
   #* ***** `troubleshooting test values`
-  # df=test; index = "index_frequencies_index_ndvi"; group=c("timepoint", "genotype"); method="ks"
-  # compare= NULL; priors=NULL; bin="label"; freq="value"; trait="trait"
+  # df=lng; index = "index_frequencies_index_ndvi"; group=c("timepoint", "genotype"); method="ks"
+  # compare= NULL; priors=NULL; bin="label"; freq="value"; trait="trait";hyp=NULL
   #* ***** `general calculated values`
   if(is.null(index)){sub<-df
   }else{ sub<-df[df[[trait]]==index, ] }
@@ -268,6 +268,6 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL,
     pcv_theme()+
     ggplot2::theme(legend.position="none")
   
-  if(doStats & !is.null(method)){ return(list(p, outStats)) } else { return(p) }
+  if(doStats & !is.null(method)){ return(list("plot" = p, "stats"=outStats)) } else { return(p) }
 }
 
