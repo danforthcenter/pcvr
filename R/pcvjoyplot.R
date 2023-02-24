@@ -36,7 +36,7 @@
 
 pcv.joyplot<-function(df = NULL, index = NULL, group = NULL,
                       method=NULL,
-                      compare= F, priors=NULL,hyp=NULL, # c("unequal", "greater", "lesser")
+                      compare= NULL, priors=NULL,hyp=NULL, # c("unequal", "greater", "lesser")
                       bin="label", freq="value", trait="trait"){
   #* ***** `troubleshooting test values`
   # df=test; index = "index_frequencies_index_ndvi"; group=c("timepoint", "genotype"); method="ks"
