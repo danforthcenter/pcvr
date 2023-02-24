@@ -15,6 +15,7 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup}
+# devtools::install_github("joshqsumner/pcvr")
 library(pcvr)
 library(ggplot2)
 ```
@@ -41,29 +42,46 @@ download.file(url="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/ma
 ex<-read.pcv("example.csv", mode = "wide", reader="read.csv", filters = "trait in area, perimeter")
 ```
 
-Now we want to look into some of our single value phenotypes.
+Now we want to look into some of our single value phenotypes. `pcvBox` is a simple wrapper around ggplot2 functions. Use it or don't.
 
 ```{r}
 pcvBox(df, x="timepoint", y="area.pixels", fill="genotype")
 ```
 
+`pcvBox` also uses ggpubr to do difference of means testing (currently with Welch's T tests) with a slightly simplified interface for common tasks.
+
 ```{r}
-pcvBox(df, x="genotype", y="area.pixels", fill="genotype", compare="G1")+
-  facet_wrap(~timepoint, scales="free_y")
+pcvBox(df[df$timepoint=="tp4",], x="genotype", y="area.pixels", fill="genotype", compare="G1") # compare one level to all others
+pcvBox(df[df$timepoint=="tp4",], x="genotype", y="area.pixels", fill="genotype", compare="G2")
+pcvBox(df[df$timepoint=="tp4",], x="genotype", y="area.pixels", fill="genotype", compare=c("G3","G6")) # compare a pair of values
+pcvBox(df[df$timepoint=="tp4",], x="genotype", y="area.pixels", fill="genotype", compare=list(c("G3","G6"), c("G1","G2"))) # compare a list of pairs.
 ```
 
-
-
-
-
-
+We might also want to compare multi value traits. For that we can read the data in long format and keep those traits.
 
 ```{r}
 lng<-read.pcv("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest2.csv", mode = "long", singleValueOnly = F)
 ```
 
+Joyplots using ggridges are easily made with `pcv.joyplot`.
 
+```{r}
+x<-pcv.joyplot(lng, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"))
+```
 
+Optionally there are several methods for statistical comparison which makes `pcv.joyplot` return a list with a plot and a dataframe.
+
+```{r}
+x<-pcv.joyplot(lng, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"), method="ks")
+x[["plot"]]
+head(x[["stats"]])
+```
+
+```{r}
+x<-pcv.joyplot(lng, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"), method="beta")
+x[["plot"]]
+head(x[["stats"]])
+```
 
 
 
