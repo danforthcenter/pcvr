@@ -3,6 +3,7 @@
 export(bellwetherBox)
 export(bellwetherGrowth)
 export(bw.time)
+export(fixCompare)
 export(pcv.hists)
 export(pcv.joyplot)
 export(pcvBox)

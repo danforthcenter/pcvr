@@ -16,6 +16,7 @@ knitr::opts_chunk$set(
 
 ```{r setup}
 library(pcvr)
+library(ggplot2)
 ```
 
 ## Example workflow for a relatively small dataset
@@ -35,10 +36,26 @@ df<-read.pcv("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pc
 
 This dataset is small enough that it is no problem to load the entire data and store it in memory. For larger data that may be prohibitive in which case the other features of `read.pcv` should be used.
 
-```{r}
+```{r, eval=F}
 download.file(url="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest2.csv", destfile="example.csv")
 ex<-read.pcv("example.csv", mode = "wide", reader="read.csv", filters = "trait in area, perimeter")
 ```
+
+Now we want to look into some of our single value phenotypes.
+
+```{r}
+pcvBox(df, x="timepoint", y="area.pixels", fill="genotype")
+```
+
+```{r}
+pcvBox(df, x="genotype", y="area.pixels", fill="genotype", compare="G1")+
+  facet_wrap(~timepoint, scales="free_y")
+```
+
+
+
+
+
 
 
 ```{r}

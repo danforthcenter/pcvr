@@ -34,9 +34,10 @@ pcvBox<-function(df=df,x='treatment' , y='area.pixels', fill = NULL, compare=F, 
   p<-ggplot2::ggplot(df, ggplot2::aes( x=.data[[x]], y=.data[[y]]))+ # I miss aes_string
     boxLayer+
     ggplot2::labs(x=x, y=ylab)+
-    pcv_theme()
+    pcv_theme()+
+    ggplot2::theme(axis.text.x.bottom = ggplot2::element_text(angle = 0, hjust = 1))
   if(!(is.logical(compare))){
-    compare<-fixCompare(compare, df, x)
+    compare<-pcvr::fixCompare(compare, df, x)
     p<-p+ggpubr::stat_compare_means(method="t.test", comparisons = compare , label = "p.format")
   }
   return(p)
