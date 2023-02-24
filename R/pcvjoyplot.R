@@ -261,7 +261,7 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL,
   
   p<-ggplot2::ggplot(dens_df, ggplot2::aes(x = xdens, y = y, height =ydens, fill = y))+
     facet_layer+
-    ggplot2::geom_density_ridges(show.legend=F, stat="identity")+
+    ggridges::geom_density_ridges(show.legend=F, stat="identity")+
     ggplot2::scale_fill_viridis_d(option="viridis")+
     ggplot2::scale_x_continuous(n.breaks=5, labels = ~round(.,1))+
     ggplot2::labs(x=index, y=group[1])+
