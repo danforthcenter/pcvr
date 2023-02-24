@@ -37,7 +37,7 @@ pcvBox<-function(df=df,x='treatment' , y='area.pixels', fill = NULL, compare=F, 
     pcv_theme()+
     ggplot2::theme(axis.text.x.bottom = ggplot2::element_text(angle = 0, hjust = 1))
   if(!(is.logical(compare))){
-    compare<-pcvr::fixCompare(compare, df, x)
+    compare<-fixCompare(compare, df, x)
     p<-p+ggpubr::stat_compare_means(method="t.test", comparisons = compare , label = "p.format")
   }
   return(p)
