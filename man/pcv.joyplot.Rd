@@ -9,12 +9,13 @@ pcv.joyplot(
   index = NULL,
   group = NULL,
   method = NULL,
-  compare = F,
+  compare = NULL,
   priors = NULL,
   hyp = NULL,
   bin = "label",
   freq = "value",
-  trait = "trait"
+  trait = "trait",
+  fillx = T
 )
 }
 \arguments{
@@ -37,6 +38,8 @@ pcv.joyplot(
 \item{freq}{Column containing histogram counts. Defaults to "value"}
 
 \item{trait}{Column containing phenotype names. Defaults to "trait".}
+
+\item{fillx}{Logical, whether or not to use ggridges::geom_density_ridges_gradient . Default is T, if F then ggridges::geom_density_ridges is used instead, with arbitrary fill.}
 }
 \description{
 Make Joyplots for multi value trait plantCV data and optionally compare distributions
