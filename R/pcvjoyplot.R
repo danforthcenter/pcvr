@@ -10,6 +10,7 @@
 #' @param bin Column containing histogram (multi value trait) bins. Defaults to "label".
 #' @param freq Column containing histogram counts. Defaults to "value"
 #' @param trait Column containing phenotype names. Defaults to "trait".
+#' @param fillx Logical, whether or not to use ggridges::geom_density_ridges_gradient . Default is T, if F then ggridges::geom_density_ridges is used instead, with arbitrary fill.
 #' @keywords bayesian, ggplot, multi value trait, pcv.hists
 #' @import ggplot2
 #' @import ggridges
@@ -37,10 +38,10 @@
 pcv.joyplot<-function(df = NULL, index = NULL, group = NULL,
                       method=NULL,
                       compare= NULL, priors=NULL,hyp=NULL, # c("unequal", "greater", "lesser")
-                      bin="label", freq="value", trait="trait"){
+                      bin="label", freq="value", trait="trait", fillx=T){
   #* ***** `troubleshooting test values`
-  # df=lng; index = "index_frequencies_index_ndvi"; group=c("timepoint", "genotype"); method="ks"
-  # compare= NULL; priors=NULL; bin="label"; freq="value"; trait="trait";hyp=NULL
+  # df=df; index = "index_frequencies_index_ndvi"; group=c("timepoint", "genotype"); method="ks"
+  # compare= NULL; priors=NULL; bin="label"; freq="value"; trait="trait";hyp=NULL; fillx=T
   #* ***** `general calculated values`
   if(is.null(index)){sub<-df
   }else{ sub<-df[df[[trait]]==index, ] }
@@ -258,17 +259,30 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL,
       }))
     }
   }
-  
-  p<-ggplot2::ggplot(dens_df, ggplot2::aes(x = xdens, y = y, height =ydens, fill = y, color=y))+
+  if(fillx){dens_df$group = interaction(dens_df[,group])}
+  ggridgeLayer<-if(fillx){
+    list(ggridges::geom_density_ridges_gradient(ggplot2::aes(x = xdens, y = y,
+                                                        height =ydens,fill=stat(x)),
+                                           show.legend=F, stat="identity", rel_min_height = 0.001),
+         ggplot2::scale_fill_viridis_c(option="plasma",
+                                        limits = c(min(dens_df$xdens[dens_df$ydens>0.001],na.rm=T),
+                                                   max(dens_df$xdens[dens_df$ydens>0.001], na.rm=T)))
+         )
+  } else{
+    list(ggridges::geom_density_ridges2(ggplot2::aes(x = xdens, y = y, height =ydens, fill = y, color=y),
+                                   show.legend=F, stat="identity"),
+      ggplot2::scale_color_viridis_d(option="viridis"),
+      ggplot2::scale_fill_viridis_d(option="viridis")
+      )
+  }
+  p<-ggplot2::ggplot(dens_df)+
     facet_layer+
-    ggridges::geom_density_ridges2(show.legend=F, stat="identity")+
-    ggplot2::scale_fill_viridis_d(option="viridis")+
-    ggplot2::scale_color_viridis_d(option="viridis")+
+    ggridgeLayer+
     ggplot2::scale_x_continuous(n.breaks=5, labels = ~round(.,1))+
     ggplot2::labs(x=index, y=group[1])+
     pcv_theme()+
     ggplot2::theme(legend.position="none")
-  
+
   if(doStats & !is.null(method)){ return(list("plot" = p, "stats"=outStats)) } else { return(p) }
 }
 
