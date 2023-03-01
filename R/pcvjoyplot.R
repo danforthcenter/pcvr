@@ -40,7 +40,7 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL,
                       compare= NULL, priors=NULL,hyp=NULL, # c("unequal", "greater", "lesser")
                       bin="label", freq="value", trait="trait", fillx=T){
   #* ***** `troubleshooting test values`
-  # df=df; index = "index_frequencies_index_ndvi"; group=c("timepoint", "genotype"); method="ks"
+  # df=df; index = "yii_hist_Fv.over.Fm"; group=c("timepoint", "genotype"); method="ks"
   # compare= NULL; priors=NULL; bin="label"; freq="value"; trait="trait";hyp=NULL; fillx=T
   #* ***** `general calculated values`
   if(is.null(index)){sub<-df
@@ -68,7 +68,10 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL,
     datsp=split(sub, sub$grouping, drop=T)
     distParams<-lapply(datsp, function(D){
       X1 <- as.numeric(D[rep(rownames(D), D[[freq]]), bin])
-      dens<-density(X1, from = min(sub$bin,na.rm=T), to = max(sub$bin,na.rm=T), n = 2^10) # y is values, x is position, KS(y,y) should work
+      dens<-density(X1, from = min(sub$bin,na.rm=T), to = max(sub$bin,na.rm=T), n = 2^10, adjust=2)
+      #* doubling the bandwidth is inelegant but it works here for now. 
+      #* in the future I would like to make a more elegant way of picking a properly smoothed
+      #* bandwidth, but for now I will use this.
       return(dens)
     })
     names(distParams)<-names(datsp)
@@ -98,7 +101,7 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL,
     datsp=split(sub, sub$grouping, drop=T)
     distParams<-lapply(datsp, function(D){
       X1 <- as.numeric(D[rep(rownames(D), D[[freq]]), bin])
-      dens<-density(X1, from = min(sub$bin,na.rm=T), to = max(sub$bin,na.rm=T), n = 2^10) # y is values, x is position, KS(y,y) should work
+      dens<-density(X1, from = min(sub$bin,na.rm=T), to = max(sub$bin,na.rm=T), n = 2^10, adjust=2)
       return(dens)
     })
     names(distParams)<-names(datsp)
@@ -275,6 +278,8 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL,
       ggplot2::scale_fill_viridis_d(option="viridis")
       )
   }
+  # sub2<-dens_df[dens_df$timepoint=="tp4" & dens_df$genotype=="G6",]
+  # ggplot(sub2, aes(x=xdens, y=ydens))+geom_line()
   p<-ggplot2::ggplot(dens_df)+
     facet_layer+
     ggridgeLayer+
