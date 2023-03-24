@@ -83,6 +83,12 @@ x[["plot"]]
 head(x[["stats"]])
 ```
 
+Sometimes you may need more than 2 variables to describe groups. In that case we currently rely on subsets of the data.
+
+```{r}
+lngsplits<-split(lng, ~treatment)
+lapply(lngsplits, pcv.joyplot, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"), method="ks")
+```
 
 
 
