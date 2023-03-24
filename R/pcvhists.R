@@ -67,9 +67,10 @@ pcv.hists<-function(df = NULL, index = NULL, group = NULL,
   if(is.null(method) | match.arg(method, choices = c("beta", "gaussian", "ks", "mixture", "emd"))=="emd"){
     
     datsp=split(sub, sub$grouping, drop=T)
+    bw<-min(diff(sort(as.numeric(unique(sub[[bin]])))))*0.75
     distParams<-lapply(datsp, function(D){
       X1 <- as.numeric(D[rep(rownames(D), D[[freq]]), bin])
-      dens<-density(X1, from = min(sub$bin,na.rm=T), to = max(sub$bin,na.rm=T), n = 2^10) # y is values, x is position, KS(y,y) should work
+      dens<-density(X1, from = min(sub$bin,na.rm=T), to = max(sub$bin,na.rm=T), n = 2^10, bw=bw) 
       return(dens)
     })
     names(distParams)<-names(datsp)
@@ -110,9 +111,10 @@ pcv.hists<-function(df = NULL, index = NULL, group = NULL,
   } else if(match.arg(method, choices = c("beta", "gaussian", "ks", "mixture", "emd"))=="ks"){
     #* ***** `Non parametric joyplot`
     datsp=split(sub, sub$grouping, drop=T)
+    bw<-min(diff(sort(as.numeric(unique(sub[[bin]])))))*0.75 # calculating a set bandwidth for all groups
     distParams<-lapply(datsp, function(D){
       X1 <- as.numeric(D[rep(rownames(D), D[[freq]]), bin])
-      dens<-density(X1, from = min(sub$bin,na.rm=T), to = max(sub$bin,na.rm=T), n = 2^10) # y is values, x is position, KS(y,y) should work
+      dens<-density(X1, from = min(sub$bin,na.rm=T), to = max(sub$bin,na.rm=T), n = 2^10, bw=bw)
       return(dens)
     })
     names(distParams)<-names(datsp)

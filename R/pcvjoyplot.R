@@ -41,7 +41,7 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL,
                       bin="label", freq="value", trait="trait", fillx=T){
   #* ***** `troubleshooting test values`
   # df=df; index = "yii_hist_Fv.over.Fm"; group=c("timepoint", "genotype"); method="ks"
-  # compare= NULL; priors=NULL; bin="label"; freq="value"; trait="trait";hyp=NULL; fillx=T
+  # compare= NULL; priors=NULL; bin="label"; freq="value"; trait="trait";hyp=NULL; fillx=T    ;index='index_frequencies_index_ari' 
   #* ***** `general calculated values`
   if(is.null(index)){sub<-df
   }else{ sub<-df[df[[trait]]==index, ] }
@@ -66,12 +66,10 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL,
   if(is.null(method) | match.arg(method, choices = c("beta", "gaussian", "ks", "mixture", "emd"))=="emd"){
     
     datsp=split(sub, sub$grouping, drop=T)
+    bw<-min(diff(sort(as.numeric(unique(sub[[bin]])))))*0.75
     distParams<-lapply(datsp, function(D){
       X1 <- as.numeric(D[rep(rownames(D), D[[freq]]), bin])
-      dens<-density(X1, from = min(sub$bin,na.rm=T), to = max(sub$bin,na.rm=T), n = 2^10, adjust=2)
-      #* doubling the bandwidth is inelegant but it works here for now. 
-      #* in the future I would like to make a more elegant way of picking a properly smoothed
-      #* bandwidth, but for now I will use this.
+      dens<-density(X1, from = min(sub$bin,na.rm=T), to = max(sub$bin,na.rm=T), n = 2^10, bw=bw)
       return(dens)
     })
     names(distParams)<-names(datsp)
@@ -99,9 +97,10 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL,
   } else if(match.arg(method, choices = c("beta", "gaussian", "ks", "mixture", "emd"))=="ks"){
     #* ***** `Non parametric joyplot`
     datsp=split(sub, sub$grouping, drop=T)
+    bw<-min(diff(sort(as.numeric(unique(sub[[bin]])))))*0.75 # calculating a set bandwidth for all groups
     distParams<-lapply(datsp, function(D){
       X1 <- as.numeric(D[rep(rownames(D), D[[freq]]), bin])
-      dens<-density(X1, from = min(sub$bin,na.rm=T), to = max(sub$bin,na.rm=T), n = 2^10, adjust=2)
+      dens<-density(X1, from = min(sub$bin,na.rm=T), to = max(sub$bin,na.rm=T), n = 2^10, bw=bw) # previously bw="bw.nrd0", adjust=2
       return(dens)
     })
     names(distParams)<-names(datsp)
@@ -290,4 +289,5 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL,
 
   if(doStats & !is.null(method)){ return(list("plot" = p, "stats"=outStats)) } else { return(p) }
 }
+
 
