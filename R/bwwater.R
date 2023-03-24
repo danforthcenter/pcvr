@@ -1,0 +1,21 @@
+#' Read in lemnatech watering data from metadata.json files
+#' 
+#' @param file Path to a json file of lemnatech metadata.
+#' @param envKey Character string representing the json key for environment data. By default this is set to "environment". Currently there are no situations where this makes sense to change.
+#' @keywords read.csv, pcv, wide, long
+#' @import jsonlite
+#' @examples
+#' wateringData<-bw.water("example.json") 
+#' @export
+
+bw.water<-function(file = NULL, envKey="environment"){
+  meta <- jsonlite::fromJSON(txt = file)
+  env<-as.data.frame(do.call(rbind, meta[[envKey]]))
+  env$snapshot<-rownames(env)
+  rownames(env)<-NULL
+  env <- as.data.frame(apply(env, 2, as.character))
+  env<-type.convert(env, as.is=T)
+  return(env)
+}
+
+
