@@ -6,7 +6,7 @@
 #' @import data.table
 #' @import vroom
 #' @keywords read.csv, pcv, wide, long
-#' 
+#' @export
 #' 
 pcv.sub.read<-function(inputFile, filters, reader = "read.csv", awk=NULL, ...){
   awkCommand<-awkHelper(inputFile, filters, awk)
