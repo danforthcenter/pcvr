@@ -1,0 +1,12 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+.*~
+*.R#
+*.#*
+<<<<<<< HEAD
+inst/doc
+=======
+>>>>>>> d5cf5fc75edb46fe31f6990070e428c9153e868b
+*.csv
