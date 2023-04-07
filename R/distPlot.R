@@ -1,31 +1,26 @@
-#' brms helper function to plot prior or posterior distributions for a given parameter
+#' Function for plotting iterations of posterior distributions 
+#' 
+#' @param fit A brmsfit object to extract draws from
+#' @param update A dataframe of previous output from this function
+#' @keywords Bayesian, brms
+#' @import brms
+#' @return A named list of elements to make it easier to fit common brms models.
+#' @examples 
 #' 
 #' 
-#' 
-#' 
-#' 
-#' Goal:
-#' take brmsfit object
-#' arg: parameter
-#' arg: dist (prior or posterior)
-#' should extract draws and plot density/plot density as a function for the prior.
-#' 
-#' 
-#' Another function should do the ribbon plotting pretty well automatically.
+#' setwd("/home/jsumner/Desktop/stargate/bayesian_growth/earlyStoppingSim/bayesian_updating")
+#' dir()
+#' print(load("parameterUpdating_DataAndModels_3to25.rdata"))
+#' library(brms)
+#' fit=fit_11
+#' parameter = "phi1"
+#' dist = "posterior"
+#' func<-rlnorm
+#' n=4000
+#' brmsDist(fit, parameter, dist= "posterior", func,n)
+#' @export
 
-setwd("/home/jsumner/Desktop/stargate/bayesian_growth/earlyStoppingSim/bayesian_updating")
-dir()
-print(load("parameterUpdating_DataAndModels_3to25.rdata"))
 
-library(brms)
-
-fit=fit_11
-parameter = "phi1"
-dist = "posterior"
-func<-rlnorm
-n=4000
-
-brmsDist(fit, parameter, dist= "posterior", func,n)
 
 brmsDist<-function(fit, parameter=NULL, dist=NULL, func=NULL, n=4000){
   if(dist=="prior"){
