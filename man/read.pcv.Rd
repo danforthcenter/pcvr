@@ -56,16 +56,13 @@ dim(df2)
 # For DDPSC employees there are larger datasets on stargate that better show the benefit of subsetting before reading data in.
 fileBig = "/shares/mgehan_share/kmurphy/maize_2022/bellwether/results_vis_SV/07252022_VIS_SV_MG001_results.csv"
 start<-Sys.time()
-x3a<-pcv.sub.read(inputFile=fileBig, reader = "vroom",
-                  filters = list("trait in area, perimeter", "barcode is Ea008AA114352"))
+x3a<-pcv.sub.read(inputFile=fileBig, reader = "vroom",filters = list("trait in area, perimeter", "barcode is Ea008AA114352"))
 Sys.time()-start
 start<-Sys.time()
-x3b<-pcv.sub.read(inputFile=fileBig, reader = "fread",
-                  filters = list("trait in area, perimeter", "barcode is Ea008AA114352"))
+x3b<-pcv.sub.read(inputFile=fileBig, reader = "fread", filters = list("trait in area, perimeter", "barcode is Ea008AA114352"))
 Sys.time()-start
 start<-Sys.time()
-x3c<-pcv.sub.read(inputFile=fileBig, reader = "read.csv",
-                  filters = list("trait in area, perimeter", "barcode is Ea008AA114352"))
+x3c<-pcv.sub.read(inputFile=fileBig, reader = "read.csv", filters = list("trait in area, perimeter", "barcode is Ea008AA114352"))
 Sys.time()-start
 dim(x3a)
 dim(x3b)
