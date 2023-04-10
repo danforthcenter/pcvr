@@ -1,20 +1,12 @@
 #' Function for plotting iterations of posterior distributions
 #' 
-#' This should take a formula and a list of fits (which should be able to be length 1)
-#' Then it should plot the growth trend and the posterior distributions at different times.
-#' See examples from ~/Desktop/stargate/bayesian_growth/earlyStoppingSim/bayesian_updating/distributionUpdating.R
-#' and: /home/jsumner/Desktop/stargate/bayesian_growth/earlyStoppingSim/bayesian_updating/bayesianUpdatingFigures/logisticPosteriorUpdating_withData.png
-#' goal is to make a function that does that whole file worth of stuff a whole lot cleaner.
-#' what does this function need:
-#' list of models/model [arg: fits]
-#' if sample_prior was not true in the model then priors [arg: priors]
-#' a vector of parameters to make distribution plots of [arg: params]
-#' a dataframe used to draw the growth curves (possibly optional, could simulate data based on the model instead?)[arg: df]
-#' color palates should be infered using LETTERS and viridis to maximize row to row difference
-#' this will need patchwork and some flexible grobbing
-#' 
-#' @param fit A brmsfit object to extract draws from
-#' @param update A dataframe of previous output from this function
+#' @param fits A list of brmsfit objects following the same data over time. Currently checkpointing is not supported.
+#' @param form A formula describing the growth model similar to \code{\link{growthSS}} and \code{\link{brmPlot}} such as: outcome ~ predictor |individual/group
+#' @param priors a named list of samples from the prior distributions for each parameter in \code{params}. This is only used if sample_prior=F in the brmsfit object. If left NULL then no prior is included.
+#' @param params a vector of parameters to include distribution plots of
+#' @param d data used to fit models (this is used to plot each subject's trend line)
+#' @param maxTime Optional parameter to designate a max time not observed in the models so far
+#' @param patch Logical, should a patchwork plot be returned or should lists of ggplots be returned?
 #' @keywords Bayesian, brms
 #' @import brms
 #' @import ggplot2
@@ -24,20 +16,21 @@
 #' @examples 
 #' 
 #' 
-print(load("/home/jsumner/Desktop/stargate/bayesian_growth/earlyStoppingSim/bayesian_updating/parameterUpdating_DataAndModels_3to25.rdata"))
-library(brms)
-library(ggplot2)
-library(patchwork)
-fits<-list(fit_3, fit_15)
-form <- y~time|sample/treatment
-priors<-list("phi1"=rlnorm(2000, log(130), 0.25), "phi2"=rlnorm(2000, log(12), 0.25), "phi3"=rlnorm(2000, log(3), 0.25))
-params = c("phi1", "phi2", "phi3")
-d <- df
-maxTime = NULL
-patch=T
+#' print(load("/home/jsumner/Desktop/stargate/bayesian_growth/earlyStoppingSim/bayesian_updating/parameterUpdating_DataAndModels_3to25.rdata"))
+#' library(brms)
+#' library(ggplot2)
+#' library(patchwork)
+#' fits<-list(fit_3, fit_15)
+#' form <- y~time|sample/treatment
+#' priors<-list("phi1"=rlnorm(2000, log(130), 0.25), "phi2"=rlnorm(2000, log(12), 0.25), "phi3"=rlnorm(2000, log(3), 0.25))
+#' params = c("phi1", "phi2", "phi3")
+#' d <- df
+#' maxTime = NULL
+#' patch=T
+#' from3to25<-list(fit_3, fit_5, fit_7, fit_9, fit_11, fit_13, fit_15, fit_17, fit_19, fit_21, fit_23, fit_25)
+#' distributionPlot(fits = from3to25, form = y~time|sample/treatment, params=params, d=df, priors=priors)
 
-
-distributionPlot<-function(fits, form, priors, params, d, maxTime, patch){
+distributionPlot<-function(fits, form, priors=NULL, params, d, maxTime=NULL, patch=T){
   #* ***** `Check args`
   
   #* ***** `Reused helper variables`
@@ -60,7 +53,7 @@ distributionPlot<-function(fits, form, priors, params, d, maxTime, patch){
   timeRange<-seq(startTime, endTime, byTime)
   
   virOptions<-c('C', 'G', 'B', 'D', 'A', 'H', 'E', 'F')
-  palettes<-lapply(1:length(unique(fitData[[group]])), function(i) viridis::viridis(length(timeRange), begin=0.1, end=0.9, option = virOptions[i], direction = 1))
+  palettes<-lapply(1:length(unique(fitData[[group]])), function(i) viridis::viridis(length(timeRange), begin=0.1, end=1, option = virOptions[i], direction = 1))
   names(palettes)<-unique(fitData[[group]])
   
   #* ***** `growth trendline plots`
@@ -69,7 +62,8 @@ distributionPlot<-function(fits, form, priors, params, d, maxTime, patch){
     dt<-dSplit[[i]]
     ggplot(dt, aes(x=.data[[x]], y = .data[[y]], color = .data[[x]], group = .data[[individual]] ))+
       geom_line(show.legend=F)+
-      scale_color_viridis(begin=0.1, end=0.9, option = virOptions[i], direction=1 )+
+      scale_color_viridis(begin=0.1, end=1, option = virOptions[i], direction=1 )+
+      scale_x_continuous(limits = c(startTime, endTime))+
       pcv_theme()
   })
   
@@ -111,7 +105,7 @@ distributionPlot<-function(fits, form, priors, params, d, maxTime, patch){
       }))
       prior_df[[x]]<-0
     } else{USEPRIOR = F}
-  } else { #* `need to fit some mdoels with sample_prior and see how this works with them`
+  } else { #* `need to fit some models with sample_prior and see how this works with them`
     lapply(fits, function(fit){
       p<-prior_draws(fit)
       head(p)
@@ -138,7 +132,7 @@ distributionPlot<-function(fits, form, priors, params, d, maxTime, patch){
       p<-ggplot(posts)+
         geom_density(aes(x=.data[[paste(par, groupVal,sep="_")]],
                                        fill=.data[[x]],color=.data[[x]],
-                                       group=.data[[x]]), alpha=0.5)+
+                                       group=.data[[x]]), alpha=0.8)+
         labs(x=paste(par, group, groupVal))+
         pcv_theme()+
         theme(axis.text.x.bottom = element_text(angle=0),
