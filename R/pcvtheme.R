@@ -1,6 +1,7 @@
 #' Default theme for ggplots made by pcvr functions.
 #'
 #' @import ggplot2
+#' @importFrom ggplot2 %+replace%
 #' @export
 #' 
 pcv_theme<-function(...){
