@@ -1,5 +1,13 @@
 #' subset helper function for use reading in large data, called in pcv.sub.read
 #' 
+#' Idea with awkHelperRegex branch is to add a new option for the in/is/= syntax, probably "contains"
+#' which would be used like "trait contains frequency" ~ grepl(".*?frequency.*?")
+#' Since a part of awkHelper only involves reading in the first line of the file it would
+#' not work to say "find all the things with this string", then parse them into || statements for awk.
+#' Instead I should use the regex options in awk through `\string\`
+#' 
+#' 
+#' 
 #' @param inputFile Path to csv file of plantCV output, should be provided internally in read.pcv
 #' @param filters filtering conditions, see read.pcv for details. Format as list("trait in area, perimeter", "other in value")
 #' @param awk Optional awk command to use instead.
@@ -26,3 +34,5 @@ awkHelper<-function(inputFile, filters, awk=NULL){
   } else {awkCommand = awk}
   return(awkCommand)
 }
+# sed 's/"//g' /home/jsumner/Desktop/stargate/fahlgren_lab/pcvrTestData/pcvrTest1.csv |  awk -F  ','  '{ if ($18 ~ /area|perimeter/)  { print } }'
+# sed 's/"//g' /home/jsumner/Desktop/stargate/fahlgren_lab/pcvrTestData/pcvrTest1.csv |  awk -F  ','  '{ if ($18 ~ /^area$|^perimeter$/)  { print } }'|head
