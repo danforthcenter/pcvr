@@ -18,7 +18,7 @@ awkHelper<-function(inputFile, filters, awk=NULL){
     awkFilts<-lapply(filters, function(filt){
       filtCol = strsplit(filt," ")[[1]][1]
       filt<-gsub("( = )|( is )", " in ", filt)
-      values = trimws(strsplit(trimws(strsplit(filt,"in")[[1]][-1]),",")[[1]])
+      values = trimws(strsplit(trimws(strsplit(filt," in ")[[1]][-1]),",")[[1]])
       paste(paste0("($", which(COLS == filtCol), '=="', values,'")' ), collapse=" || ")
     })
     awkFilt = paste(paste("(",awkFilts,")"), collapse = " && ")

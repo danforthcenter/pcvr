@@ -3,7 +3,7 @@
 #' @param fits A list of brmsfit objects following the same data over time. Currently checkpointing is not supported.
 #' @param form A formula describing the growth model similar to \code{\link{growthSS}} and \code{\link{brmPlot}} such as: outcome ~ predictor |individual/group
 #' @param priors a named list of samples from the prior distributions for each parameter in \code{params}. This is only used if sample_prior=F in the brmsfit object. If left NULL then no prior is included.
-#' @param params a vector of parameters to include distribution plots of
+#' @param params a vector of parameters to include distribution plots of. Defaults to NULL which will use all parameters from the top level model.
 #' @param d data used to fit models (this is used to plot each subject's trend line)
 #' @param maxTime Optional parameter to designate a max time not observed in the models so far
 #' @param patch Logical, should a patchwork plot be returned or should lists of ggplots be returned?
@@ -30,9 +30,16 @@
 #' from3to25<-list(fit_3, fit_5, fit_7, fit_9, fit_11, fit_13, fit_15, fit_17, fit_19, fit_21, fit_23, fit_25)
 #' distributionPlot(fits = from3to25, form = y~time|sample/treatment, params=params, d=df, priors=priors)
 
-distributionPlot<-function(fits, form, priors=NULL, params, d, maxTime=NULL, patch=T){
+distributionPlot(fits = from3to25, form = y~time|sample/treatment, params=params, d=df, priors=priors)
+distributionPlot(fits = from3to25, form = y~time|sample/treatment, params=params, d=df, priors=priors)
+distributionPlot(fits = from3to25, form = y~time|sample/treatment, params=params, d=df, priors=priors)
+
+
+distributionPlot<-function(fits, form, priors=NULL, params=NULL, d, maxTime=NULL, patch=T){
   #* ***** `Check args`
-  
+  if(missing(fits)){stop("A list of fits must be supplied")}
+  if(missing(form)){stop("A formula must be supplied")}
+  if(missing(d)){stop("Data used to fit the final model must be supplied")}
   #* ***** `Reused helper variables`
   y=as.character(form)[2]
   x<-as.character(form)[3]
@@ -49,12 +56,29 @@ distributionPlot<-function(fits, form, priors=NULL, params, d, maxTime=NULL, pat
     endTime<-max(unlist(lapply(fits, function(ft){max(ft$data[[x]], na.rm=T)})))
   }
   byTime <- mean(diff(unlist(lapply(fits, function(ft){max(ft$data[[x]], na.rm=T)}))))
-  
   timeRange<-seq(startTime, endTime, byTime)
-  
   virOptions<-c('C', 'G', 'B', 'D', 'A', 'H', 'E', 'F')
-  palettes<-lapply(1:length(unique(fitData[[group]])), function(i) viridis::viridis(length(timeRange), begin=0.1, end=1, option = virOptions[i], direction = 1))
+  palettes<-lapply(1:length(unique(fitData[[group]])), function(i) viridis::viridis(length(timeRange),begin=0.1,end=1,option = virOptions[i],direction = 1))
   names(palettes)<-unique(fitData[[group]])
+  
+  #* ***** `if params is null then pull them from growth formula`
+  
+  if(is.null(params)){
+    fit<-fits[[1]]
+    growthForm<-as.character(fit$formula[[1]])[[3]]
+    
+    test<-gsub(x, "", growthForm) # ;test
+    test2<-gsub("exp\\(", "", test) # ; test2
+    test3<-gsub("\\(1", "", test2) # ;test3
+    test4<-gsub("[/]|[+]|[-]|[)]|[()]", "", test3)
+    params<-strsplit(test4, "\\s+")[[1]]
+    
+    
+    test3<-gsub("[)]|[()]","",test2)
+    test3
+    
+    
+  }
   
   #* ***** `growth trendline plots`
   
