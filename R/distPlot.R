@@ -8,7 +8,6 @@
 #' @param maxTime Optional parameter to designate a max time not observed in the models so far
 #' @param patch Logical, should a patchwork plot be returned or should lists of ggplots be returned?
 #' @keywords Bayesian, brms
-#' @import brms
 #' @import ggplot2
 #' @import patchwork
 #' @return A named list of elements to make it easier to fit common brms models.
@@ -29,10 +28,9 @@
 #' patch=T
 #' from3to25<-list(fit_3, fit_5, fit_7, fit_9, fit_11, fit_13, fit_15, fit_17, fit_19, fit_21, fit_23, fit_25)
 #' distributionPlot(fits = from3to25, form = y~time|sample/treatment, params=params, d=df, priors=priors)
-
-distributionPlot(fits = from3to25, form = y~time|sample/treatment, params=params, d=df, priors=priors)
-distributionPlot(fits = from3to25, form = y~time|sample/treatment, params=params, d=df, priors=priors)
-distributionPlot(fits = from3to25, form = y~time|sample/treatment, params=params, d=df, priors=priors)
+#' distributionPlot(fits = from3to25, form = y~time|sample/treatment, params=params, d=df, priors=priors)
+#' distributionPlot(fits = from3to25, form = y~time|sample/treatment, params=params, d=df, priors=priors)
+#' distributionPlot(fits = from3to25, form = y~time|sample/treatment, params=params, d=df, priors=priors)
 
 
 distributionPlot<-function(fits, form, priors=NULL, params=NULL, d, maxTime=NULL, patch=T){

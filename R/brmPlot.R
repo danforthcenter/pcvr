@@ -5,7 +5,6 @@
 #' @param df An optional dataframe to use in plotting observed growth curves on top of the model. 
 #' @keywords growth curve, logistic, gompertz, monomolecular, linear, exponential, power law
 #' @import ggplot2
-#' @import brms
 #' @import viridis
 #' @examples 
 #' simdf<-growthSim("logistic", n=20, t=25, params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))

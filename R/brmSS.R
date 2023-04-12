@@ -6,7 +6,6 @@
 #' @param df A dataframe to use. Must contain all the variables listed in the formula.
 #' @param priors A named list of means for prior distributions. Currently this function makes lognormal priors for all growth model parameters. This is done because the values are strictly positive and the lognormal distribution is easily interpreted. If this argument is not provided then priors are not returned and a different set of priors will need to be made for the model using \code{brms::set_prior}. This works similarly to the \code{params} argument in \code{growthSim}. Names should correspond to parameter names from the \code{model} argument. A numeric vector can also be used, but specifying names is best practice for clarify. See details.
 #' @keywords Bayesian, brms
-#' @import brms
 #' @return A named list of elements to make it easier to fit common brms models.
 #' @examples 
 #' 
@@ -127,12 +126,12 @@ growthSS<-function(model, form, sigma=NULL, df, priors=NULL){
       names(priorStanStrings)<-paste(parNames, groupNames, sep="_")
       # priorStanStrings
       #* assemble set_prior statements from these
-      prior<-set_prior('student_t(3,0,5)', dpar="sigma")+set_prior('gamma(2,0.1)', class="nu")
+      prior<-brms::set_prior('student_t(3,0,5)', dpar="sigma")+brms::set_prior('gamma(2,0.1)', class="nu")
       for(nm in names(priorStanStrings)){
         dist = priorStanStrings[[nm]]
         pr = strsplit(nm, "_")[[1]][1]
         gr = paste0(group, strsplit(nm, "_")[[1]][2])
-        prior<-prior+set_prior(dist, coef = gr, nlpar = pr)
+        prior<-prior+brms::set_prior(dist, coef = gr, nlpar = pr)
       }
       out[["prior"]]<-prior
     }
