@@ -35,6 +35,11 @@
 #' dim(x3a)
 #' dim(x3b)
 #' dim(x3c)
+#' 
+#' # There may be situations where you want to use some dimension reduction methods on a multi-value trait, in which case it makes sense to read in data like:
+#' x4<-read.pcv(fileBig, reader="fread", filters = list("trait in blue_frequencies"), mode="wide", singleValueOnly=F)
+#' 
+#' 
 #' @export
 read.pcv<-function(filepath, mode="wide", singleValueOnly=T,
                    traitCol="trait", labelCol="label", valueCol="value",
@@ -47,12 +52,17 @@ read.pcv<-function(filepath, mode="wide", singleValueOnly=T,
     if(is.null(reader)){reader="fread"}
     df1<-pcv.sub.read(inputFile=filepath, filters=filters, reader = reader, awk=awk, ...)  
     }
-
+  if(!is.null(filters)){
+    if(any(unlist(lapply(filters, function(filt) any(grepl(multiValPattern,strsplit(filt, " ")[[1]][-c(1:2)] )))))){
+      warning("Your filters specify a value that would be filtered by multiValPattern since singleValueOnly=T, proceeding with singleValueOnly=F. Consider changing multiValPattern or singleValueOnly argument.")
+      singleValueOnly=F
+    }
+  }
   if(singleValueOnly){
     if(length(multiValPattern)==1){ df1<-df1[!grepl(multiValPattern, df1[[traitCol]]), ]
     } else { df1<-df1[!df1[[traitCol]] %in% multiValPattern, ] }
     }
-  if(match.arg(mode, c("wide","long"))=="wide" ){
+  if(match.arg(mode, c("wide","long"))=="wide" ){ # consider changing to use data.table::dcast since data table is in the imports anyway.
     long<-df1
     long[[traitCol]]<-ifelse(long[[labelCol]]=="none", long[[traitCol]],
                              paste(long[[traitCol]], long[[labelCol]], sep='.'))
@@ -60,6 +70,7 @@ read.pcv<-function(filepath, mode="wide", singleValueOnly=T,
     nc<-ncol(wide)
     wide[,seq(nc+1, nc+length(unique(long[[traitCol]])),1) ]<-lapply(unique(long[[traitCol]]), function(i) long[long[[traitCol]]==i, valueCol])
     colnames(wide)<-c(colnames(wide)[1:nc], unique(long[[traitCol]]))
+    # wide<-as.data.frame(data.table::dcast(data.table::as.data.table(df1), as.formula(paste0(... ~ traitCol+labelCol)), value.var = valueCol)))
     out<-wide
   } else{out<-df1
   if(!is.null(traitCol)){
@@ -73,4 +84,3 @@ read.pcv<-function(filepath, mode="wide", singleValueOnly=T,
   colnames(out)<-gsub("\\'", "", colnames(out))
   return(out)
 }
-

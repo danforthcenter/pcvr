@@ -67,6 +67,11 @@ Sys.time()-start
 dim(x3a)
 dim(x3b)
 dim(x3c)
+
+# There may be situations where you want to use some dimension reduction methods on a multi-value trait, in which case it makes sense to read in data like:
+x4<-read.pcv(fileBig, reader="fread", filters = list("trait in blue_frequencies"), mode="wide", singleValueOnly=F)
+
+
 }
 \keyword{long}
 \keyword{pcv,}
