@@ -8,7 +8,7 @@
 #' @param valueCol Column with phenotype values, defaults to "value". This should generally not need to be changed from the default.
 #' @param multiValPattern If `singleValueOnly`=TRUE then this is used to identify multi value traits. By default this is "hist|frequencies". If this argument has length of 1 then it is taken as either a single phenotype or a regex pattern to find values of `trait` that are multi-value phenotypes. Alternatively this can be a vector of phenotype names to remove (see examples).
 #' @param reader The function to use to read in data, defaults to NULL in which case `data.table::fread` is used if filters are in place and `read.csv` is used otherwise. Other useful options are "vroom" and "fread", from the vroom and data.table packages, respectively. With files that are still very large after subsetting "fread" or "vroom" should be used. Note that if you use `read.csv` with filters in place then you will need to specify `header=F` so that the piped output from awk is read correctly.
-#' @param filters If a very large pcv output file is read then it may be desireable to subset it before reading it into R, either for ease of use or because of RAM limitations. The filter argument works with "COLUMN in VALUES" syntax. This can either be a character vector or a list of character vectors. In these vectors there needs to be a column name, one of " in ", " is ", or " = ", then a set of comma delimited values to filter that column for (see examples). Note that this and `awk` both use awk through pipe(). This functionality will not work on a windows system. 
+#' @param filters If a very large pcv output file is read then it may be desireable to subset it before reading it into R, either for ease of use or because of RAM limitations. The filter argument works with "COLUMN in VALUES" syntax. This can either be a character vector or a list of character vectors. In these vectors there needs to be a column name, one of " in ", " is ", or " = " to match the string exactly, or "contains" to match with awk style regex, then a set of comma delimited values to filter that column for (see examples). Note that this and `awk` both use awk through pipe(). This functionality will not work on a windows system. 
 #' @param awk As an alternative to `filters` a direct call to awk can be supplied here, in which case that call will be used through pipe().
 #' @param ... Other arguments passed to the reader function. In the case of 'vroom' and 'fread' there are several defaults provided already which can be overwritten with these extra arguments.
 #' @keywords read.csv, pcv, wide, long
@@ -24,16 +24,13 @@
 #' # For DDPSC employees there are larger datasets on stargate that better show the benefit of subsetting before reading data in.
 #' fileBig = "/shares/mgehan_share/kmurphy/maize_2022/bellwether/results_vis_SV/07252022_VIS_SV_MG001_results.csv"
 #' start<-Sys.time()
-#' x3a<-pcv.sub.read(inputFile=fileBig, reader = "vroom",
-#'                   filters = list("trait in area, perimeter", "barcode is Ea008AA114352"))
+#' x3a<-pcv.sub.read(inputFile=fileBig, reader = "vroom",filters = list("trait in area, perimeter", "barcode is Ea008AA114352"))
 #' Sys.time()-start
 #' start<-Sys.time()
-#' x3b<-pcv.sub.read(inputFile=fileBig, reader = "fread",
-#'                   filters = list("trait in area, perimeter", "barcode is Ea008AA114352"))
+#' x3b<-pcv.sub.read(inputFile=fileBig, reader = "fread", filters = list("trait in area, perimeter", "barcode is Ea008AA114352"))
 #' Sys.time()-start
 #' start<-Sys.time()
-#' x3c<-pcv.sub.read(inputFile=fileBig, reader = "read.csv",
-#'                   filters = list("trait in area, perimeter", "barcode is Ea008AA114352"))
+#' x3c<-pcv.sub.read(inputFile=fileBig, reader = "read.csv", filters = list("trait in area, perimeter", "barcode is Ea008AA114352"))
 #' Sys.time()-start
 #' dim(x3a)
 #' dim(x3b)
