@@ -10,9 +10,9 @@
 #' @examples 
 #' inputFile = "/home/jsumner/Desktop/stargate/fahlgren_lab/pcvrTestData/pcvrTest1.csv"
 #' filters = "trait contains area, perimeter"
-#' cat(awkHelper(inputFile, filters)) # sed 's/"//g' /home/jsumner/Desktop/stargate/fahlgren_lab/pcvrTestData/pcvrTest1.csv |  awk -F  ','  '{ if ( ( ($18 ~ /area|perimeter/) ) ) { print } }'
+#' cat(awkHelper(inputFile, filters)) # `sed 's/"//g' /home/jsumner/Desktop/stargate/fahlgren_lab/pcvrTestData/pcvrTest1.csv |  awk -F  ','  '{ if ( ( ($18 ~ /area|perimeter/) ) ) { print } }'`
 #' filters = list("trait in area, width, height")
-#' cat(awkHelper(inputFile, filters)) # sed 's/"//g' /home/jsumner/Desktop/stargate/fahlgren_lab/pcvrTestData/pcvrTest1.csv |  awk -F  ','  '{ if ( ( ($18=="area") || ($18=="width") || ($18=="height") ) ) { print } }'
+#' cat(awkHelper(inputFile, filters)) # `sed 's/"//g' /home/jsumner/Desktop/stargate/fahlgren_lab/pcvrTestData/pcvrTest1.csv |  awk -F  ','  '{ if ( ( ($18=="area") || ($18=="width") || ($18=="height") ) ) { print } }'`
 #' @export
 awkHelper<-function(inputFile, filters, awk=NULL){
   if(is.null(awk)){
