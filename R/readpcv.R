@@ -38,6 +38,11 @@
 #' dim(x3a)
 #' dim(x3b)
 #' dim(x3c)
+#' 
+#' # There may be situations where you want to use some dimension reduction methods on a multi-value trait, in which case it makes sense to read in data like:
+#' x4<-read.pcv(fileBig, reader="fread", filters = list("trait in blue_frequencies"), mode="wide", singleValueOnly=F)
+#' 
+#' 
 #' @export
 read.pcv<-function(filepath, mode="wide", singleValueOnly=T,
                    traitCol="trait", labelCol="label", valueCol="value",
@@ -50,7 +55,12 @@ read.pcv<-function(filepath, mode="wide", singleValueOnly=T,
     if(is.null(reader)){reader="fread"}
     df1<-pcv.sub.read(inputFile=filepath, filters=filters, reader = reader, awk=awk, ...)  
     }
-
+  if(!is.null(filters)){
+    if(any(unlist(lapply(filters, function(filt) any(grepl(multiValPattern,strsplit(filt, " ")[[1]][-c(1:2)] )))))){
+      warning("Your filters specify a value that would be filtered by multiValPattern since singleValueOnly=T, proceeding with singleValueOnly=F. Consider changing multiValPattern or singleValueOnly argument.")
+      singleValueOnly=F
+    }
+  }
   if(singleValueOnly){
     if(length(multiValPattern)==1){ df1<-df1[!grepl(multiValPattern, df1[[traitCol]]), ]
     } else { df1<-df1[!df1[[traitCol]] %in% multiValPattern, ] }
@@ -76,4 +86,3 @@ read.pcv<-function(filepath, mode="wide", singleValueOnly=T,
   colnames(out)<-gsub("\\'", "", colnames(out))
   return(out)
 }
-
