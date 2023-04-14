@@ -51,6 +51,7 @@ read.pcv<-function(filepath, mode="wide", singleValueOnly=T,
   } else{
     if(is.null(reader)){reader="fread"}
     df1<-pcv.sub.read(inputFile=filepath, filters=filters, reader = reader, awk=awk, ...)  
+    if(nrow(df1)<1){ stop(paste0("0 Rows returned using awk statement:\n", awkHelper(inputFile, filters), "\nMost common issues are misspellings." )) }
     }
   if(!is.null(filters)){
     if(any(unlist(lapply(filters, function(filt) any(grepl(multiValPattern,strsplit(filt, " ")[[1]][-c(1:2)] )))))){
