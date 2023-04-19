@@ -9,9 +9,6 @@
 #' @param mat Logical, should data be returned as an nrow x nrow matrix or as a long dataframe? By Default this is FALSE and a long dataframe is returned. Both options are comparable in terms of speed, although for large datasets the matrix version may be slightly faster.
 #' @param plot Logical, should a plot be returned? For a matrix this is made with image(), for a dataframe this uses ggplot.
 #' @param parallel Number of cores to use. If this is above 1 then \code{parallel::mclapply} is used with this number of cores.
-#' @param s1 Histogram as a numeric vector of counts per position.
-#' @param s2 Histogram as a numeric vector of counts per position. Must be the same length as s1.
-#' 
 #' @import ggplot2
 #' 
 #' @keywords emd, earth mover's distance, multi-value trait, histogram
@@ -33,26 +30,6 @@
 #' colnames(df1)<-sub("index_frequencies_index_ndvi.", "ndvi_", colnames(df1))
 #' x<-pcv.emd(df1, cols="ndvi_", reorder=c("treatment", "genotype"), mat =F, plot=T, parallel = 1)
 #' 
-#' 
-#' set.seed(123) 
-#' s1<-hist(rnorm(10000,50,10), breaks=seq(1,100,1))$counts
-#' s2<-hist(rlnorm(9000,log(30),0.25), breaks=seq(1,100,1))$counts
-#' plot(s2,type="l"); lines(s1)
-#' emd1d(s1,s2)
-#' 
-#' 
-#' @export
-#' 
-#' 
-emd1d<-function(s1, s2){
-  if(length(s1)!=length(s2)){stop("Samples must be from the same histogram and be of the same length")}
-  s1<-s1/sum(s1)
-  s2<-s2/sum(s2)
-  emd_iter<-numeric(length(s1)+1)
-  for(i in 1:length(s1)){ emd_iter[i+1]<-s1[i]-s2[i]+emd_iter[i] }
-  return(sum(abs(emd_iter)))
-}
-#'
 #' @export
 #' 
 pcv.emd<-function(df, cols=NULL, reorder=NULL, include=NULL, mat=F, plot = T, parallel = 1){
