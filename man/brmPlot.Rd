@@ -9,7 +9,7 @@ brmPlot(fit, form, df = NULL)
 \arguments{
 \item{fit}{A brmsfit object, similar to those fit with \code{\link{growthSS}} outputs.}
 
-\item{form}{A formula similar to that in \code{growthSS} inputs specifying the outcome, predictor, and grouping structure of the data as \italics{outcome ~ predictor|individual/group}.}
+\item{form}{A formula similar to that in \code{growthSS} inputs specifying the outcome, predictor, and grouping structure of the data as \code{outcome ~ predictor|individual/group}.}
 
 \item{df}{An optional dataframe to use in plotting observed growth curves on top of the model.}
 }

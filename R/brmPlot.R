@@ -1,7 +1,7 @@
 #' Function to visualize brms models similar to those made using growthSS outputs.
 #' 
 #' @param fit A brmsfit object, similar to those fit with \code{\link{growthSS}} outputs.
-#' @param form A formula similar to that in \code{growthSS} inputs specifying the outcome, predictor, and grouping structure of the data as \italics{outcome ~ predictor|individual/group}.
+#' @param form A formula similar to that in \code{growthSS} inputs specifying the outcome, predictor, and grouping structure of the data as \code{outcome ~ predictor|individual/group}.
 #' @param df An optional dataframe to use in plotting observed growth curves on top of the model. 
 #' @keywords growth curve, logistic, gompertz, monomolecular, linear, exponential, power law
 #' @import ggplot2
