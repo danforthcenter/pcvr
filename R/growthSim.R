@@ -1,17 +1,40 @@
 #' Growth data simulating function
 #' 
-#' @description growthSim can be used to help pick reasonable parameters for common growth models to use in prior distributions.
+#' @description growthSim can be used to help pick reasonable parameters for common growth models to use in prior distributions or to simulate data for example models/plots.
 #' 
-#' maybe I should make a data simulating function for each supported distribution as well? 
-#' something that takes the parameters, the number of samples per group, and returns a dataframe?
-#' 
-#' 
-#' @param df Data frame to use. Can be wide or long format from read.pcv
+#' @param model One of "logistic", "gompertz", "monomolecular", "exponential", "linear", or "power law" 
+#' @param n Number of individuals to simulate over time per each group in params
+#' @param t Max time (assumed to start at T1) to simulate growth to.
+#' @param params A list of numeric parameters. A, B, C notation is used in the order that parameters appear in the formula (see examples). Number of groups is inferred from the length of these vectors of parameters.
+#' @param noise Optionally this can be used to add specific amounts of noise to the input parameters. If NULL (the default) then data is simulated with 10% random noise like: param + N(0, 0.1*param)
 #' @keywords growth curve, logistic, gompertz, monomolecular, linear, exponential, power law
 #' @examples 
 #' simdf<-growthSim("logistic", n=20, t=25, params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))
-#' ggplot(simdf,aes(time, y, group=interaction(group,id)))+ geom_line(aes(color=group))
+#' ggplot(simdf,aes(time, y, group=interaction(group,id)))+ geom_line(aes(color=group))+labs(title="Logistic")
 #' 
+#' simdf<-growthSim("gompertz", n=20, t=25, params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(0.2, 0.25)))
+#' ggplot(simdf,aes(time, y, group=interaction(group,id)))+ geom_line(aes(color=group))+labs(title="Gompertz")
+#' 
+#' simdf<-growthSim("monomolecular", n=20, t=25, params = list("A"=c(200,160), "B"=c(0.08, 0.1)))
+#' ggplot(simdf,aes(time, y, group=interaction(group,id)))+ geom_line(aes(color=group))+labs(title="Monomolecular")
+#' 
+#' simdf<-growthSim("exponential", n=20, t=25, params = list("A"=c(15, 20), "B"=c(0.095, 0.095)))
+#' ggplot(simdf,aes(time, y, group=interaction(group,id)))+ geom_line(aes(color=group))+labs(title="Exponential")
+#' 
+#' simdf<-growthSim("linear", n=20, t=25, params = list("A"=c(1.1, 0.95)))
+#' ggplot(simdf,aes(time, y, group=interaction(group,id)))+ geom_line(aes(color=group))+labs(title="Linear")
+#' 
+#' simdf<-growthSim("power law", n=20, t=25, params = list("A"=c(16, 13), "B"=c(0.75, 0.7)))
+#' ggplot(simdf,aes(time, y, group=interaction(group,id)))+ geom_line(aes(color=group))+labs(title="Power Law")
+#' 
+#' @details The \code{params} argument requires some understanding of how each growth model is parameterized. Examples of each are below should help, as will the examples.
+#' \bold{Logistic}: A / (1 + exp( (B-x)/C) ) Where A is the asymptote, B is the inflection point, C is the growth rate
+#' \bold{Gompertz}: A*exp(-B*exp(-C*x)) Where A is the asymptote, B is the inflection point, C is the growth rate 
+#' \bold{Monomolecular}: A-A*exp(-B*x) Where A is the asymptote and B is the growth rate 
+#' \bold{Exponential}: A*exp(B * x) Where A is the scale parameter and B is the growth rate 
+#' \bold{Linear}: A*x Where A is the growth rate.
+#' \bold{Power Law}: A * x^(B) Where A is the scale parameter and B is the growth rate.
+#' Note that for these distributions parameters do not exist in a vaccuum. Changing one can make the others look different in the resulting data. The examples are a good place to start if you are unsure what parameters to use.
 #' 
 #' @export
 #' 
