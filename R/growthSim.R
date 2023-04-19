@@ -6,8 +6,10 @@
 #' @param n Number of individuals to simulate over time per each group in params
 #' @param t Max time (assumed to start at T1) to simulate growth to.
 #' @param params A list of numeric parameters. A, B, C notation is used in the order that parameters appear in the formula (see examples). Number of groups is inferred from the length of these vectors of parameters.
-#' @param noise Optionally this can be used to add specific amounts of noise to the input parameters. If NULL (the default) then data is simulated with 10% random noise like: param + N(0, 0.1*param)
+#' @param noise Optionally this can be used to add specific amounts of noise to the input parameters. If NULL (the default) then data is simulated with 10\% random noise like: param + N(0, 0.1*param)
+#' 
 #' @keywords growth curve, logistic, gompertz, monomolecular, linear, exponential, power-law
+#' 
 #' @examples 
 #' simdf<-growthSim("logistic", n=20, t=25, params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))
 #' ggplot(simdf,aes(time, y, group=interaction(group,id)))+ geom_line(aes(color=group))+labs(title="Logistic")
