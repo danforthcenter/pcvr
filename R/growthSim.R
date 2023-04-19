@@ -24,17 +24,17 @@
 #' simdf<-growthSim("linear", n=20, t=25, params = list("A"=c(1.1, 0.95)))
 #' ggplot(simdf,aes(time, y, group=interaction(group,id)))+ geom_line(aes(color=group))+labs(title="Linear")
 #' 
-#' simdf<-growthSim("power law", n=20, t=25, params = list("A"=c(16, 13), "B"=c(0.75, 0.7)))
+#' simdf<-growthSim("power law", n=20, t=25, params = list("A"=c(16, 11), "B"=c(0.75, 0.7)))
 #' ggplot(simdf,aes(time, y, group=interaction(group,id)))+ geom_line(aes(color=group))+labs(title="Power Law")
 #' 
 #' @details The \code{params} argument requires some understanding of how each growth model is parameterized. Examples of each are below should help, as will the examples.
-#' \bold{Logistic}: A / (1 + exp( (B-x)/C) ) Where A is the asymptote, B is the inflection point, C is the growth rate
-#' \bold{Gompertz}: A*exp(-B*exp(-C*x)) Where A is the asymptote, B is the inflection point, C is the growth rate 
-#' \bold{Monomolecular}: A-A*exp(-B*x) Where A is the asymptote and B is the growth rate 
-#' \bold{Exponential}: A*exp(B * x) Where A is the scale parameter and B is the growth rate 
-#' \bold{Linear}: A*x Where A is the growth rate.
-#' \bold{Power Law}: A * x^(B) Where A is the scale parameter and B is the growth rate.
-#' Note that for these distributions parameters do not exist in a vaccuum. Changing one can make the others look different in the resulting data. The examples are a good place to start if you are unsure what parameters to use.
+#'     \bold{Logistic}: A / (1 + exp( (B-x)/C) ) Where A is the asymptote, B is the inflection point, C is the growth rate
+#'     \bold{Gompertz}: A*exp(-B*exp(-C*x)) Where A is the asymptote, B is the inflection point, C is the growth rate 
+#'     \bold{Monomolecular}: A-A*exp(-B*x) Where A is the asymptote and B is the growth rate 
+#'     \bold{Exponential}: A*exp(B * x) Where A is the scale parameter and B is the growth rate 
+#'     \bold{Linear}: A*x Where A is the growth rate.
+#'     \bold{Power Law}: A * x^(B) Where A is the scale parameter and B is the growth rate.
+#'     Note that for these distributions parameters do not exist in a vaccuum. Changing one can make the others look different in the resulting data. The examples are a good place to start if you are unsure what parameters to use.
 #' 
 #' @export
 #' 
