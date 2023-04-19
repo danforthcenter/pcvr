@@ -29,12 +29,12 @@ growthSim can be used to help pick reasonable parameters for common growth model
 }
 \details{
 The \code{params} argument requires some understanding of how each growth model is parameterized. Examples of each are below should help, as will the examples.
-    \bold{Logistic}: A / (1 + exp( (B-x)/C) ) Where A is the asymptote, B is the inflection point, C is the growth rate
-    \bold{Gompertz}: A \cdot exp(-B \cdot exp(-C*x)) Where A is the asymptote, B is the inflection point, C is the growth rate 
-    \bold{Monomolecular}: A-A \cdot exp(-B \cdot x) Where A is the asymptote and B is the growth rate 
-    \bold{Exponential}: A \cdot exp(B \cdot x) Where A is the scale parameter and B is the growth rate 
-    \bold{Linear}: A \cdot x Where A is the growth rate.
-    \bold{Power Law}: A \cdot x^(B) Where A is the scale parameter and B is the growth rate.
+    \bold{Logistic}: `A / (1 + exp( (B-x)/C) )` Where A is the asymptote, B is the inflection point, C is the growth rate
+    \bold{Gompertz}: `A * exp(-B \cdot exp(-C*x))` Where A is the asymptote, B is the inflection point, C is the growth rate 
+    \bold{Monomolecular}: `A-A * exp(-B * x)`` Where A is the asymptote and B is the growth rate 
+    \bold{Exponential}: `A * exp(B * x)` Where A is the scale parameter and B is the growth rate 
+    \bold{Linear}: `A * x` Where A is the growth rate.
+    \bold{Power Law}: `A * x^(B)` Where A is the scale parameter and B is the growth rate.
     Note that for these distributions parameters do not exist in a vaccuum. Changing one can make the others look different in the resulting data. The examples are a good place to start if you are unsure what parameters to use.
 }
 \examples{
