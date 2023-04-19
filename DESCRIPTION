@@ -12,5 +12,6 @@ RoxygenNote: 7.2.3
 Suggests: 
     knitr,
     rmarkdown,
-    brms
+    brms,
+    parallel
 VignetteBuilder: knitr
