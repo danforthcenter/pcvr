@@ -1,0 +1,43 @@
+#' Plot Variable Influence on Projection
+#' 
+#' @description This function is used to visualize variable influence on projection (vip) from a plsr model.
+#' 
+#' @param plsrObject Output from pcv.plsr
+#' @param i An index from the plsrObject to use if the plsrObject contains models for several outcomes. Can be a name or a position. Defaults to 1.
+#' @param mean Logical, should the mean be plotted (T) or should the components be shown individually (F, the default).
+#' 
+#' @import ggplot2
+#' @imoprt caret
+#' 
+#' @keywords PLSR
+#' @examples 
+#' 
+#' file = "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest1.csv"
+#' df1<-read.pcv(file, "wide", T, multiValPattern = c("index_frequencies_index_ari", "index_frequencies_index_ci_rededge", "npq_hist_NPQ", "yii_hist_Fq'/Fm'", "yii_hist_Fv/Fm"))
+#' colnames(df1)<-sub("index_frequencies_index_ndvi.", "ndvi_", colnames(df1))
+#' 
+#' @export
+#' 
+
+plotVIP<-function(plsrObject, i=1, mean=F){
+  d<-plsrObject[[i]]$vip_df
+  d$spectra<-as.numeric(sub("X", "", d$wavelength))
+  if(mean){
+    d$meanVIP<-rowMeans(as.data.frame(d[, colnames(d)[grepl("VIP_[0-9]+?$", colnames(d))]]))
+    p<-ggplot2::ggplot(d,ggplot2::aes(x=spectra, y=meanVIP))+
+      ggplot2::geom_line()+
+      ggplot2::geom_hline(yintercept=1, linetype=5)+
+      ggplot2::labs(title=paste0(plsrObject[[i]]$model_performance$outcome), y="Mean VIP", x="Spectra")
+  }else{
+    cols<-c(which(grepl("VIP", colnames(d))), which(colnames(d)=="spectra"))
+    d2<-as.data.frame(data.table::melt(data.table::as.data.table(d[,cols]), id.vars = "spectra", value.name = "VIP"))
+    d2$component<-factor(as.numeric(sub("VIP_", "", d2$variable)))
+    p<-ggplot2::ggplot(d2, ggplot2::aes(x=spectra, y=VIP, group=component, color=component))+
+      ggplot2::geom_line()+
+      ggplot2::geom_hline(yintercept=1, linetype=5)+
+      ggplot2::scale_color_viridis(option="plasma", discrete=T, direction=1, begin=0.1, end=0.9)+
+      ggplot2::guides(alpha="none", color = ggplot2::guide_legend(override.aes = list(linewidth=3)))+
+      ggplot2::labs(title=paste0(plsrObject[[i]]$model_performance$outcome), y="VIP", x="Spectra")
+  }
+  return(p)
+}
