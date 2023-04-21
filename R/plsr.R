@@ -4,7 +4,7 @@
 #' 
 #' @param df Data frame containing metadata and spectral histogram data
 #' @param resps Vector of response variables.
-#' @param spectra Either one column name (in the case of long data) or a set of columns in the case of wide data. 
+#' @param spectra Either one column name (in the case of long data) or a set of columns in the case of wide data. If a single character string is provided and it is not one of the column names then it is taken to be a pattern that will match some set of column names in the data to use (see examples).
 #' @param train Proportion of data to use as training data. 
 #' @param cv Number of cross validation iterations.
 #' @param ... Further arguments passed to caret::train.
@@ -21,12 +21,16 @@
 #' df1<-read.pcv(file, "wide", T, multiValPattern = c("index_frequencies_index_ari", "index_frequencies_index_ci_rededge", "npq_hist_NPQ", "yii_hist_Fq'/Fm'", "yii_hist_Fv/Fm"))
 #' colnames(df1)<-sub("index_frequencies_index_ndvi.", "ndvi_", colnames(df1))
 #' x<-pcv.plsr(df=df1, resps = "area.pixels", spectra = grepl("^ndvi_", colnames(df1)))
+#' x<-pcv.plsr(df=df1, resps = "area.pixels", spectra = "^ndvi_")
 #' 
 #' @export
 #' 
 
 pcv.plsr<-function(df, resps = NULL, spectra=NULL, train=0.8, cv=10, ...){
   #' df=df1; resps = "area.pixels"; spectra = grepl("^ndvi_", colnames(df1)); train=0.8; cv=10
+  if(is.character(spectra) && length(spectra)==1 && (!spectra %in% colnames(df))){
+    spectra<-grepl(spectra, colnames(df))
+  }
   if(is.numeric(resps)){resps<-colnames(df)[resps]}
   if(is.numeric(spectra)){resps<-colnames(df)[spectra]}
   outList<-lapply(resps, function(resp){

@@ -5,6 +5,7 @@
 #' @param plsrObject Output from pcv.plsr
 #' @param i An index from the plsrObject to use if the plsrObject contains models for several outcomes. Can be a name or a position. Defaults to 1.
 #' @param mean Logical, should the mean be plotted (T) or should the components be shown individually (F, the default).
+#' @param removePattern A pattern to remove to make the wavelength column into a numeric.
 #' 
 #' @import ggplot2
 #' @imoprt caret
@@ -15,13 +16,15 @@
 #' file = "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest1.csv"
 #' df1<-read.pcv(file, "wide", T, multiValPattern = c("index_frequencies_index_ari", "index_frequencies_index_ci_rededge", "npq_hist_NPQ", "yii_hist_Fq'/Fm'", "yii_hist_Fv/Fm"))
 #' colnames(df1)<-sub("index_frequencies_index_ndvi.", "ndvi_", colnames(df1))
+#' x<-pcv.plsr(df=df1, resps = "area.pixels", spectra = grepl("^ndvi_", colnames(df1)))
+#' plotVIP(x)
 #' 
 #' @export
 #' 
 
-plotVIP<-function(plsrObject, i=1, mean=F){
+plotVIP<-function(plsrObject, i=1, mean=F, removePattern = ".*_"){
   d<-plsrObject[[i]]$vip_df
-  d$spectra<-as.numeric(sub("X", "", d$wavelength))
+  d$spectra<-as.numeric(sub(removePattern, "", d$wavelength))
   if(mean){
     d$meanVIP<-rowMeans(as.data.frame(d[, colnames(d)[grepl("VIP_[0-9]+?$", colnames(d))]]))
     p<-ggplot2::ggplot(d,ggplot2::aes(x=spectra, y=meanVIP))+
@@ -35,9 +38,11 @@ plotVIP<-function(plsrObject, i=1, mean=F){
     p<-ggplot2::ggplot(d2, ggplot2::aes(x=spectra, y=VIP, group=component, color=component))+
       ggplot2::geom_line()+
       ggplot2::geom_hline(yintercept=1, linetype=5)+
-      ggplot2::scale_color_viridis(option="plasma", discrete=T, direction=1, begin=0.1, end=0.9)+
+      #scale_color_viridis(option="plasma", discrete=T, direction=1, begin=0.1, end=0.9)+
       ggplot2::guides(alpha="none", color = ggplot2::guide_legend(override.aes = list(linewidth=3)))+
-      ggplot2::labs(title=paste0(plsrObject[[i]]$model_performance$outcome), y="VIP", x="Spectra")
+      ggplot2::labs(title=paste0(plsrObject[[i]]$model_performance$outcome), y="VIP", x="Spectra", color="Component")+
+      pcv_theme()+
+      ggplot2::theme(plot.title = ggplot2::element_text(size=16))
   }
   return(p)
 }
