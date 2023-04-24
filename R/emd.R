@@ -5,7 +5,7 @@
 #' @param df Data frame to use with multi value traits in wide format
 #' @param cols Columns to use. Defaults to NULL in which case all columns are used. Single strings will be used to regex a pattern in column names (see examples). A vector of names, positions, or booleans will also work.
 #' @param reorder Should data be reordered to put similar rows together in the resulting plot? This takes a vector of column names of length 1 or more (see examples).
-#' @param include if a long dataframe is returned then these columns will be added to the dataframe, labelled for i and j (the row positions for compared histograms). If a matrix is returned then this information is stored in the row names.
+#' @param include if a long dataframe is returned then these columns will be added to the dataframe, labelled for i and j (the row positions for compared histograms). If a matrix is returned then this information is stored in the row names. This defaults to \link{rescale}.
 #' @param mat Logical, should data be returned as an nrow x nrow matrix or as a long dataframe? By Default this is FALSE and a long dataframe is returned. Both options are comparable in terms of speed, although for large datasets the matrix version may be slightly faster.
 #' @param plot Logical, should a plot be returned? For a matrix this is made with image(), for a dataframe this uses ggplot.
 #' @param parallel Number of cores to use. If this is above 1 then \code{parallel::mclapply} is used with this number of cores.
@@ -32,7 +32,7 @@
 #' 
 #' @export
 #' 
-pcv.emd<-function(df, cols=NULL, reorder=NULL, include=NULL, mat=F, plot = T, parallel = 1){
+pcv.emd<-function(df, cols=NULL, reorder=NULL, include=reorder, mat=F, plot = T, parallel = 1){
   if(!is.null(reorder)){ df<-df[order(interaction(df[,reorder])),] }
   if(is.null(cols)){cols<-colnames(df)
     }else if(is.character(cols) && length(cols)==1){cols<-grepl(cols, colnames(df))}
