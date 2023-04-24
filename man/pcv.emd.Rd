@@ -21,7 +21,7 @@ pcv.emd(
 
 \item{reorder}{Should data be reordered to put similar rows together in the resulting plot? This takes a vector of column names of length 1 or more (see examples).}
 
-\item{include}{if a long dataframe is returned then these columns will be added to the dataframe, labelled for i and j (the row positions for compared histograms).}
+\item{include}{if a long dataframe is returned then these columns will be added to the dataframe, labelled for i and j (the row positions for compared histograms). If a matrix is returned then this information is stored in the row names.}
 
 \item{mat}{Logical, should data be returned as an nrow x nrow matrix or as a long dataframe? By Default this is FALSE and a long dataframe is returned. Both options are comparable in terms of speed, although for large datasets the matrix version may be slightly faster.}
 
@@ -39,8 +39,8 @@ test<-as.data.frame(do.call(rbind, lapply(seq(30,54,3), function(d) {
     x$Mu = round(d,-1)
     x})))
 test<-test[sample(rownames(test), nrow(test), replace=F),] #* reorder randomly for similarity to real data
-test$meta1<-rep(LETTERS[1:3], length.out = nrow(df))
-test$meta2<-rep(LETTERS[4:5], length.out = nrow(df))
+test$meta1<-rep(LETTERS[1:3], length.out = nrow(test))
+test$meta2<-rep(LETTERS[4:5], length.out = nrow(test))
 pcv.emd(test, cols="V", reorder="Mu", mat =F, plot=F, parallel = 1)
 x<-pcv.emd(df=test, cols="V", reorder="Mu", include = c("meta1", "meta2"), mat =F, plot=F, parallel = 1)
 head(x)
