@@ -48,6 +48,9 @@ pcv.emd<-function(df, cols=NULL, reorder=NULL, include=NULL, mat=F, plot = T, pa
     if(plot){
       p<-image(out_data)
     }
+    if(!is.null(include)){
+      rownames(out_data)<-interaction(df[,include])
+    }
   }else{
     out_data<-do.call(rbind, lapply(1:nrow(df), function(i){
       do.call(rbind, innerLapply(1:nrow(df), function(j){
