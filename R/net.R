@@ -27,11 +27,13 @@
 #' 
 
 
-pcv.net<-function(emd = NULL, meta = NULL, dissim=F, distCol="emd"){}
+pcv.net<-function(emd = NULL, meta = NULL, dissim=T, distCol="emd"){
+  
+}
 
+if(dissim){emd[[distCol]]<-1/emd[[distCol]]}
+emd[[distCol]]<-ifelse(is.infinite(emd[[distCol]]), NA, emd[[distCol]])
 
-emd$dissim <- 1/emd$emd
-emd$dissim<-ifelse(is.infinite(emd$dissim), NA, emd$dissim)
 g<-igraph::graph_from_data_frame(emd, directed=F)
 gg<-as.data.frame(layout.auto(g))
 
