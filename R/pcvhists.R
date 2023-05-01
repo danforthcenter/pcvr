@@ -40,7 +40,7 @@ pcv.hists<-function(df = NULL, index = NULL, group = NULL,
                     compare= NULL, priors=NULL,hyp=NULL, # c("unequal", "greater", "lesser")
                     bin="label", freq="value", trait="trait"){
   #* ***** `troubleshooting test values`
-  # dat=test; index = "index_frequencies_index_ndvi"; group=c("timepoint", "genotype"); method=NULL
+  # df=df; index = "index_frequencies_index_ndvi"; group=c("timepoint", "genotype"); method=NULL
   # compare= NULL; priors=NULL; bin="label"; freq="value"; trait="trait"; hyp=NULL
   
   #* ***** `general calculated values`
@@ -97,13 +97,19 @@ pcv.hists<-function(df = NULL, index = NULL, group = NULL,
       ggplot2::labs(x=index, y=freq)
     
     if(match.arg(method, choices = c("beta", "gaussian", "ks", "mixture", "emd"))=="emd" & doStats){
+      #* use emd1d/pcv.emd to make an EMD distance matrix/df
+      #* this should probably return a long dataframe per normal AND a distance matrix
+      
       outStats<-do.call(rbind, lapply(compareTests, function(comp){
         g1<-as.character(comp[1])
         g2<-as.character(comp[2])
         d1<-sub[sub$grouping == g1, ]
         d2<-sub[sub$grouping == g2, ]
-        emd_res<-suppressWarnings(emdist::emdw(d1[[bin]], d2[[bin]], d1[[freq]], d2[[freq]]))
+        d1s<-aggregate(as.formula(paste0(freq,"~",bin)), d1, sum)[[freq]]
+        d2s<-aggregate(as.formula(paste0(freq,"~",bin)), d2, sum)[[freq]]
+        emd_res <- emd1d(d1s, d2s)
         data.frame(group1 = g1, group2 = g2, emd = emd_res, method="emd")
+        
       }))
       
     }

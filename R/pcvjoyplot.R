@@ -40,7 +40,7 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL,
                       compare= NULL, priors=NULL,hyp=NULL, # c("unequal", "greater", "lesser")
                       bin="label", freq="value", trait="trait", fillx=T){
   #* ***** `troubleshooting test values`
-  # df=df; index = "yii_hist_Fv.over.Fm"; group=c("timepoint", "genotype"); method="ks"
+  # df=df; index = "yii_hist_Fv.over.Fm"; group=c("timepoint", "genotype"); method="emd"
   # compare= NULL; priors=NULL; bin="label"; freq="value"; trait="trait";hyp=NULL; fillx=T    ;index='index_frequencies_index_ari' 
   #* ***** `general calculated values`
   if(is.null(index)){sub<-df
@@ -83,12 +83,25 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL,
     }))
     
     if(match.arg(method, choices = c("beta", "gaussian", "ks", "mixture", "emd"))=="emd" & doStats){
+      
+      #* use emd1d/pcv.emd to make an EMD distance matrix/df
+      #* this should probably return a long dataframe per normal AND a distance matrix
+      
       outStats<-do.call(rbind, lapply(compareTests, function(comp){
         g1<-as.character(comp[1])
         g2<-as.character(comp[2])
         d1<-sub[sub$grouping == g1, ]
         d2<-sub[sub$grouping == g2, ]
-        emd_res<-suppressWarnings(emdist::emdw(d1[[bin]], d2[[bin]], d1[[freq]], d2[[freq]]))
+        #* emd1d wants two vectors, the best way to get two vectors here is different than in pcv.emd
+        #* since pcv.emd wants wide data (really it should work with either though, do that?)
+        #* so here I think pulling bins and frequencies, normalizing to a common total weight, averaging, then comparing?
+        #* Adding arguments to handle the grouping for normalization feels cumbersome but might be needed.
+        #* For now I'm just summing.
+        #* here emd1d does the rescaling so that each histogram sums to 1.
+        d1s<-aggregate(as.formula(paste0(freq,"~",bin)), d1, sum)[[freq]]
+        d2s<-aggregate(as.formula(paste0(freq,"~",bin)), d2, sum)[[freq]]
+        emd_res <- emd1d(d1s, d2s)
+        # emd_res<-suppressWarnings(emdist::emdw(d1[[bin]], d2[[bin]], d1[[freq]], d2[[freq]]))
         data.frame(group1 = g1, group2 = g2, emd = emd_res, method="emd")
       }))
       

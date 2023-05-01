@@ -8,26 +8,35 @@ pcv.emd(
   df,
   cols = NULL,
   reorder = NULL,
-  include = NULL,
+  include = reorder,
   mat = F,
   plot = T,
-  parallel = 1
+  parallel = 1,
+  longTrait = NULL,
+  id = "image",
+  value = "value"
 )
 }
 \arguments{
 \item{df}{Data frame to use with multi value traits in wide format}
 
-\item{cols}{Columns to use. Defaults to NULL in which case all columns are used. Single strings will be used to regex a pattern in column names (see examples). A vector of names, positions, or booleans will also work.}
+\item{cols}{Columns to use. Defaults to NULL in which case all columns are used. Single strings will be used to regex a pattern in column names (see examples). A vector of names, positions, or booleans will also work. For long data this is taken as a regex pattern (or full name) to use in filtering the longTrait column.}
 
 \item{reorder}{Should data be reordered to put similar rows together in the resulting plot? This takes a vector of column names of length 1 or more (see examples).}
 
-\item{include}{if a long dataframe is returned then these columns will be added to the dataframe, labelled for i and j (the row positions for compared histograms). If a matrix is returned then this information is stored in the row names.}
+\item{include}{if a long dataframe is returned then these columns will be added to the dataframe, labelled for i and j (the row positions for compared histograms). If a matrix is returned then this information is stored in the row names. This defaults to \link{rescale}.}
 
 \item{mat}{Logical, should data be returned as an nrow x nrow matrix or as a long dataframe? By Default this is FALSE and a long dataframe is returned. Both options are comparable in terms of speed, although for large datasets the matrix version may be slightly faster.}
 
 \item{plot}{Logical, should a plot be returned? For a matrix this is made with image(), for a dataframe this uses ggplot.}
 
 \item{parallel}{Number of cores to use. If this is above 1 then \code{parallel::mclapply} is used with this number of cores.}
+
+\item{longTrait}{Defaults to NULL, in which case the data is assumed to be in long format. If this is a character string then it is taken as a column name of long data and the other arguments will assume data is long.}
+
+\item{id}{A vector of column names that uniquely identifies observations if the data is in long format. Defaults to "image".}
+
+\item{value}{A column name for the values to be drawn from in long data. Defaults to "value".}
 }
 \description{
 pcv.emd can be used to calculate Earth Mover's Distance between pairwise histograms in a wide dataframe of multi value traits.
@@ -48,8 +57,10 @@ head(x)
 file = "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest1.csv"
 df1<-read.pcv(file, "wide", T, multiValPattern = c("index_frequencies_index_ari", "index_frequencies_index_ci_rededge", "npq_hist_NPQ", "yii_hist_Fq'/Fm'", "yii_hist_Fv/Fm"))
 colnames(df1)<-sub("index_frequencies_index_ndvi.", "ndvi_", colnames(df1))
-pcv.emd(df1, cols="ndvi_", reorder=c("treatment", "genotype"), mat =F, plot=T, parallel = 1)
-
+w<-pcv.emd(df1, cols="ndvi_", reorder=c("treatment", "genotype"), mat =F, plot=T, parallel = 1)
+df_long<-read.pcv(file, "long", F)
+l<-pcv.emd(df = df_long, cols="index_frequencies_index_ndvi", reorder=c("treatment", "genotype"), mat =F, plot=T, longTrait="trait", id="image", value="value")
+l$plot + theme(axis.text = element_blank())
 }
 \keyword{distance,}
 \keyword{earth}
