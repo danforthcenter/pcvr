@@ -6,3 +6,4 @@
 *.R#
 *.#*
 *.csv
+inst/doc
