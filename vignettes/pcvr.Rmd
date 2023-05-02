@@ -20,14 +20,20 @@ library(pcvr)
 library(ggplot2)
 ```
 
-## Example workflow for a relatively small dataset
+## Example workflow for a small dataset
 
 This workflow will use example data from github to analyze single value traits such as area, perimeter, or height and multi-value traits such as Fv/Fm or Chlorophyll Index (ci_rededge). 
 
 - read data from pcvrTestData online repository using read.pcv
-- download pcvrTestData and read from local using read.pcv with filters
+- - Explain long vs wide
 - use pcv.boxplot for something, show comparisons
+- Mention growth modeling for single value traits?
 - use pcv.joyplot for multi-value traits
+- use EMD to compare color histograms
+- - 
+- Link to multi-value-traits vignette for a more complete version.
+
+### Read In Data
 
 First we read in our data in wide format, keeping only the single value traits.
 
@@ -35,27 +41,134 @@ First we read in our data in wide format, keeping only the single value traits.
 df<-read.pcv("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest2.csv", mode = "wide", singleValueOnly = T)
 ```
 
-This dataset is small enough that it is no problem to load the entire data and store it in memory. For larger data that may be prohibitive in which case the other features of `read.pcv` should be used.
+This dataset is small enough that it is no problem to load the entire data and store it in memory. For larger data that may be prohibitive in which case the other features of `read.pcv` should be used to filter the data before reading it into memory.
 
-```{r, eval=F}
-download.file(url="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest2.csv", destfile="example.csv")
+```
 ex<-read.pcv("example.csv", mode = "wide", reader="read.csv", filters = "trait in area, perimeter")
 ```
 
-Now we want to look into some of our single value phenotypes. `pcvBox` is a simple wrapper around ggplot2 functions. Use it or don't.
+
+### Single Value Traits
+
+#### Single Timepoint Comparisons
+
+Now we want to look into some of our single value phenotypes. `pcvBox` is a simple wrapper around ggplot2 functions. You are meant to outgrow this wrapper function quickly, but it is a starting point.
 
 ```{r}
 pcvBox(df, x="timepoint", y="area.pixels", fill="genotype")
 ```
 
-`pcvBox` also uses ggpubr to do difference of means testing (currently with Welch's T tests) with a slightly simplified interface for common tasks.
+`pcvBox` also uses ggpubr to do difference of means testing (currently with Welch's T tests) with a slightly simplified interface for common tasks through the `compare` argument.
+
+Setting compare to one level of the x variable will perform all pairwise comparisons to that group.
 
 ```{r}
 pcvBox(df[df$timepoint=="tp4",], x="genotype", y="area.pixels", fill="genotype", compare="G1") # compare one level to all others
-pcvBox(df[df$timepoint=="tp4",], x="genotype", y="area.pixels", fill="genotype", compare="G2")
+```
+
+Setting `compare` to a pair of levels of the x variable will compare that pair.
+
+```{r}
 pcvBox(df[df$timepoint=="tp4",], x="genotype", y="area.pixels", fill="genotype", compare=c("G3","G6")) # compare a pair of values
+```
+
+Setting `compare` to a list of pairs of levels will compare those levels. 
+
+```{r}
 pcvBox(df[df$timepoint=="tp4",], x="genotype", y="area.pixels", fill="genotype", compare=list(c("G3","G6"), c("G1","G2"))) # compare a list of pairs.
 ```
+
+#### Longitudinal Modeling
+
+Many plantCV use cases involve longitudinal data to leverage the non-destructive nature of image based high throughput phenotyping. The author's preferred way of using longitudinal data is through Bayesian hierarchical models. Towards that end there are several helper functions in `pcvr` to lower barriers to entry for using these kinds of models.
+
+Longitudinal data analysis in this context is focused on growth modeling for some given phenotype. Since the observations follow subjects over time the data is autocorrelated, typically is non-linear, and is heteroskedastic (the variance changes over time). To make good models of this data you first need to be able to describe the growth curve with parameters. The `growthSim` function helps familiarize with 6 common parameterizations of plant growth. Three of these are asymptotic (logistic, gompertz, and monomolecular), and three are non-asymptotic (exponential, linear, power law). See `?growthSim` for more details on these growth models.
+
+```{r}
+simdf<-growthSim("logistic", n=20, t=25, params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))
+l<-ggplot(simdf,aes(time, y, group=interaction(group,id)))+
+  geom_line(aes(color=group))+labs(title="Logistic")+theme_minimal()
+l
+```
+
+```{r}
+x<-growthSim("gompertz", n=20, t=25, params = list("A"=c(200,160), "B"=c(13,11), "C"=c(0.2, 0.25)))
+g<-ggplot(x,aes(time, y, group=interaction(group,id)))+
+  geom_line(aes(color=group))+labs(title="Gompertz")+theme_minimal()
+
+x<-growthSim("monomolecular", n=20, t=25, params = list("A"=c(200,160), "B"=c(0.08, 0.1)))
+m<-ggplot(x,aes(time, y, group=interaction(group,id)))+
+  geom_line(aes(color=group))+labs(title="Monomolecular")+theme_minimal()
+
+x<-growthSim("exponential", n=20, t=25, params = list("A"=c(15, 20), "B"=c(0.095, 0.095)))
+e<-ggplot(x,aes(time, y, group=interaction(group,id)))+
+  geom_line(aes(color=group))+labs(title="Exponential")+theme_minimal()
+
+x<-growthSim("linear", n=20, t=25, params = list("A"=c(1.1, 0.95)))
+li<-ggplot(x,aes(time, y, group=interaction(group,id)))+
+  geom_line(aes(color=group))+labs(title="Linear")+theme_minimal()
+
+x<-growthSim("power law", n=20, t=25, params = list("A"=c(16, 11), "B"=c(0.75, 0.7)))
+p<-ggplot(x,aes(time, y, group=interaction(group,id)))+ 
+  geom_line(aes(color=group))+labs(title="Power Law")+theme_minimal()
+```
+
+```{r}
+library(patchwork)
+(l+g+m)/(e+li+p)
+```
+
+Once a growth model has been picked and the parameters tuned some to fit your prior beliefs about the size/growth rate of your subjects, the `growthSS` function can be used to make arguments to pass to `brms::brm`. 
+
+```{r}
+library(brms)
+ss<-growthSS(model = "logistic", form=y~time|id/group, sigma="spline", df=simdf, priors = list("A"=130, "B"=12, "C"=3))
+lapply(ss,class)
+```
+
+The `growthSS` output contains "self starter" inputs including a brms formula, a list of priors, a function to initialize chains at random small positive values, the data used to create the formula, and the model family (currently only "student" is used due to robustness and suitability). The priors returned are weak lognormals since these model's parameters are confined to be positive and biologically make sense to have longer right tails. These components are then passed to `brms::brm` as shown here:
+
+```{r, eval=F}
+fit_test <- brm(ss$formula, prior = ss$prior, data = ss$df, family = ss$family, # main components of the model
+              iter = 1000, cores = 2, chains = 2, init = ss$initfun, # parameters controlling chain number, chain length, parallelization and starting values
+              control = list(adapt_delta = 0.999, max_treedepth = 20), backend = "cmdstanr") # other options to increase performance
+```
+
+There are many of these models fit to subsets of a simulated dataset in the pcvrTestData repository. Here we show an example of how to use `brmPlot` and `distPlot` with those test models.
+
+```{r}
+print(load(url("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/brmsFits.rdata")))
+```
+
+The `brmPlot` function makes a ribbon plot showing credible intervals for a given model.
+
+```{r}
+brmPlot(fit_25, form = y~time|id/group)
+```
+
+Providing the data used to fit the model will include individual observations' growth curves on top of the model.
+
+```{r}
+brmPlot(fit_25, form = y~time|id/group, simdf)
+```
+
+```{r}
+form <- y~time|id/group
+from3to25<-list(fit_3, fit_5, fit_7, fit_9, fit_11, fit_13, fit_15, fit_17, fit_19, fit_21, fit_23, fit_25)
+distributionPlot(fits = from3to25, form = y~time|id/group, params=c("A", "B", "C"), d=simdf)
+```
+
+Plots can be returned individually by setting `patch=F`, in which case they are returned as a list. The growth curve plots are in the first element of the list, then the second element is a list with an element for group, inside which there is an element for each parameter which is a ggplot.
+
+```{r}
+x<-distributionPlot(fits = from3to25, form = y~time|id/group, params=c("A", "B", "C"), d=simdf, patch=F)
+length(x)
+length(x[[2]])
+x[[2]][[1]][[1]]
+```
+
+
+### Multi Value Traits
 
 We might also want to compare multi value traits. For that we can read the data in long format and keep those traits.
 
@@ -66,10 +179,10 @@ lng<-read.pcv("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/p
 Joyplots using ggridges are easily made with `pcv.joyplot`.
 
 ```{r}
-x<-pcv.joyplot(lng, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"))
+pcv.joyplot(lng, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"))
 ```
 
-Optionally there are several methods for statistical comparison which makes `pcv.joyplot` return a list with a plot and a dataframe.
+Optionally there are several methods for statistical comparisons which make `pcv.joyplot` return a list with a plot and a dataframe of pairwise comparisons (or distances in the case of `method ="emd"`).
 
 ```{r}
 x<-pcv.joyplot(lng, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"), method="ks")
@@ -77,19 +190,37 @@ x[["plot"]]
 head(x[["stats"]])
 ```
 
-```{r}
-x<-pcv.joyplot(lng, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"), method="beta")
-x[["plot"]]
-head(x[["stats"]])
-```
-
-Sometimes you may need more than 2 variables to describe groups. In that case we currently rely on subsets of the data.
+Sometimes you may need more than 2 variables to describe groups. In that case we currently rely on subsets of the data, making plots for each which can be arranged with `patchwork`, `gridExtra::grid.arrange`, `cowplot`, or just used individually.
 
 ```{r}
 lngsplits<-split(lng, ~treatment)
-lapply(lngsplits, pcv.joyplot, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"), method="ks")
+outList<-lapply(lngsplits, pcv.joyplot, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"), method="ks")
+lapply(outList, function(x) x[["plot"]])
+```
+
+We can also use earth mover's distance to compare color histograms through `pcv.emd`. Here data can be long or wide. Normally read.pcv will try to avoid reading in multi value traits as wide dataframes since it is otherwise easy to accidentally make a 500x2000 dataframe where only 20 columns are interesting, but it is easy to work around this in a variety of ways.
+
+```{r}
+df_w<-read.pcv("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest2.csv", mode = "wide", singleValueOnly = T, multiValPattern = c("index_frequencies_index_ari", "index_frequencies_index_ci_rededge", "npq_hist_NPQ", "yii_hist_Fq'/Fm'", "yii_hist_Fv/Fm"))
+colnames(df_w)<-sub("index_frequencies_index_ndvi.", "ndvi_", colnames(df_w))
+dim(df_w)
+```
+
+With wide data it can be easier for people to conceptualize the color histograms if it is not a familiar topic to them. The `pcv.emd` function calculates 1 dimension EMD for color histograms and returns either a matrix in the style of a distance matrix or a long dataframe of the same values and optionally a plot of the data.
+
+```{r, eval=F}
+w<-pcv.emd(df_w, cols="ndvi_", reorder=c("treatment", "genotype"), mat =F, plot=T, parallel = 10)
+w$plot
 ```
 
 
+```{r, eval=F}
+df_long<-read.pcv("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest2.csv", "long", F)
+l<-pcv.emd(df = df_long, cols="index_frequencies_index_ndvi", reorder=c("treatment", "genotype"), mat =F, plot=T,
+           longTrait="trait", id="image", value="value", parallel=10)
+l$plot + theme(axis.text = element_blank())
+```
+
+These distances can also be used in network analysis to find biologically interesting clusters. See the networks branch of pcvr for details.
 
 
