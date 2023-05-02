@@ -30,9 +30,15 @@ pcvBox<-function(df=df,x='treatment' , y='area.pixels', fill = NULL, compare=F, 
   df[[x]]<-as.factor(df[[x]])
   df<-df[complete.cases(df[,c(x,y)]),]
   if(is.logical(fill) && fill){fill=x}
-  boxLayer<-if(is.null(fill)){ggplot2::geom_boxplot(show.legend=F, ...)}else{ggplot2::geom_boxplot(ggplot2::aes(fill = .data[[fill]]), ...)}
+  boxLayer<-if(is.null(fill)){ggplot2::geom_boxplot(outlier.shape=NA, show.legend=F, ...)
+    }else{ggplot2::geom_boxplot(ggplot2::aes(fill = .data[[fill]]), outlier.shape=NA, ...)}
+  
+  pointLayer<-if(is.null(fill)){ggplot2::geom_jitter(size=0.5,width=0.1)
+    }else{ggplot2::geom_jitter(ggplot2::aes(group = .data[[fill]]),
+                               size=0.5, position=position_dodge(width=0.75) )}
   p<-ggplot2::ggplot(df, ggplot2::aes( x=.data[[x]], y=.data[[y]]))+ # I miss aes_string
     boxLayer+
+    pointLayer+
     ggplot2::labs(x=x, y=ylab)+
     pcv_theme()+
     ggplot2::theme(axis.text.x.bottom = ggplot2::element_text(angle = 0, hjust = 1))
@@ -43,4 +49,4 @@ pcvBox<-function(df=df,x='treatment' , y='area.pixels', fill = NULL, compare=F, 
   return(p)
 }
 
-
+pcvBox(df, x="timepoint", y="area.pixels", fill="genotype")
