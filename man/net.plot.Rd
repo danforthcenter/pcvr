@@ -4,7 +4,14 @@
 \alias{net.plot}
 \title{Visualizing igraph networks}
 \usage{
-net.plot(net, fill = "strength", shape = NULL, size = 3, edgeWeight = "emd")
+net.plot(
+  net,
+  fill = "strength",
+  shape = NULL,
+  size = 3,
+  edgeWeight = "emd",
+  edgeFilter = NULL
+)
 }
 \arguments{
 \item{net}{Network object similar to that returned from pcv.net, having dataframes named "edges" and "nodes"}
@@ -17,7 +24,7 @@ net.plot(net, fill = "strength", shape = NULL, size = 3, edgeWeight = "emd")
 
 \item{edgeWeight}{Edge dataframe column to weight connections between nodes. Defaults to "emd" for compatability with \code{pcv.emd}.}
 
-\item{...}{Further arguments passed to igraph::graph_from_dataframe or graph_from_adjacency_matrix}
+\item{edgeFilter}{How should edges be filtered? This can be either a numeric (0.5) in which case it is taken as a filter where only edges with values greater than or equal to that number are kept or a character string ("0.5") in which case the strongest X percentage of edges are kept. This defaults to NULL which does no filtering, although that should not be considered the best standard behaviour. See details.}
 }
 \description{
 Easy igraph visualization with pcv.net output
@@ -29,7 +36,9 @@ df1<-read.pcv(file, "wide", T, multiValPattern = c("index_frequencies_index_ari"
 colnames(df1)<-sub("index_frequencies_index_ndvi.", "ndvi_", colnames(df1))
 emd_df<-pcv.emd(df1, cols="ndvi_", reorder=c("treatment", "genotype", "X"), mat =F, plot=F, parallel = 1)
 network<-pcv.net(emd_df, meta = c("treatment", "genotype"))
-net.plot(network, fill = "strength", shape = "genotype", size=5)
+net=network; fill = "strength"; shape = "genotype"; size=5; edgeWeight="emd"
+net.plot(network, fill = "strength", shape = "genotype", size=5, edgeFilter=0.5)
+net.plot(network, fill = "strength", shape = "genotype", size=5, edgeFilter="0.5")
 
 }
 \keyword{distance,}
