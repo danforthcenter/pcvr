@@ -13,7 +13,7 @@
 #' ss<-growthSS(model = "logistic", form=y~time|id/group, sigma="spline", df=simdf, priors = list("A"=130, "B"=12, "C"=3))
 #' lapply(ss,class)
 #' ss$initfun()
-#' fit_test <- brm(ss$formula, prior = ss$prior, data = ss$df, family = ss$family, # main componenets of the model
+#' fit_test <- brm(ss$formula, prior = ss$prior, data = ss$df, family = ss$family, # main components of the model
 #'               iter = 1000, cores = 2, chains = 2, init = ss$initfun, # parameters controling chain number, chain length, parallelization and starting values
 #'               control = list(adapt_delta = 0.999, max_treedepth = 20), backend = "cmdstanr") # options to increase performance
 #' @export
@@ -65,7 +65,9 @@ growthSS<-function(model, form, sigma=NULL, df, priors=NULL){
       } else if (match.arg(sigma, choices=sigmas)=="linear"){
         as.formula(paste0("sigma ~ ", x, "+", x, ":",group))
       } else if(match.arg(sigma, choices=sigmas)=="spline"){
-        as.formula(paste0("sigma ~ s(",x,", by=", group, ")"))
+        if(length(unique(df[[x]]))<11){
+          as.formula(paste0("sigma ~ s(",x,", by=", group, ", k=",length(unique(df[[x]])),")"))
+        }else{ as.formula(paste0("sigma ~ s(",x,", by=", group, ")")) }
       } 
       #* `Combining for brms formula`
       bayesForm<-bf(formula = growthForm, sigmaForm, parForm, autocor = corForm, nl=T)

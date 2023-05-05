@@ -10,27 +10,25 @@
 #' @keywords Bayesian, brms
 #' @import ggplot2
 #' @import patchwork
+#' @import viridis
 #' @return A named list of elements to make it easier to fit common brms models.
 #' @export
 #' @examples 
 #' 
 #' 
-#' print(load("/home/jsumner/Desktop/stargate/bayesian_growth/earlyStoppingSim/bayesian_updating/parameterUpdating_DataAndModels_3to25.rdata"))
+#' print(load(url("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/brmsFits.rdata")))
 #' library(brms)
 #' library(ggplot2)
 #' library(patchwork)
 #' fits<-list(fit_3, fit_15)
-#' form <- y~time|sample/treatment
+#' form <- y~time|id/group
 #' priors<-list("phi1"=rlnorm(2000, log(130), 0.25), "phi2"=rlnorm(2000, log(12), 0.25), "phi3"=rlnorm(2000, log(3), 0.25))
 #' params = c("phi1", "phi2", "phi3")
 #' d <- df
 #' maxTime = NULL
 #' patch=T
 #' from3to25<-list(fit_3, fit_5, fit_7, fit_9, fit_11, fit_13, fit_15, fit_17, fit_19, fit_21, fit_23, fit_25)
-#' distributionPlot(fits = from3to25, form = y~time|sample/treatment, params=params, d=df, priors=priors)
-#' distributionPlot(fits = from3to25, form = y~time|sample/treatment, params=params, d=df, priors=priors)
-#' distributionPlot(fits = from3to25, form = y~time|sample/treatment, params=params, d=df, priors=priors)
-#' distributionPlot(fits = from3to25, form = y~time|sample/treatment, params=params, d=df, priors=priors)
+#' distributionPlot(fits = from3to25, form = y~time|id/group, params=params, d=df, priors=priors)
 
 
 distributionPlot<-function(fits, form, priors=NULL, params=NULL, d, maxTime=NULL, patch=T){
@@ -82,10 +80,10 @@ distributionPlot<-function(fits, form, priors=NULL, params=NULL, d, maxTime=NULL
   
   growthTrendPlots<-lapply(1:length(dSplit), function(i){
     dt<-dSplit[[i]]
-    ggplot(dt, aes(x=.data[[x]], y = .data[[y]], color = .data[[x]], group = .data[[individual]] ))+
-      geom_line(show.legend=F)+
-      scale_color_viridis(begin=0.1, end=1, option = virOptions[i], direction=1 )+
-      scale_x_continuous(limits = c(startTime, endTime))+
+    ggplot2::ggplot(dt, ggplot2::aes(x=.data[[x]], y = .data[[y]], color = .data[[x]], group = .data[[individual]] ))+
+      ggplot2::geom_line(show.legend=F)+
+      viridis::scale_color_viridis(begin=0.1, end=1, option = virOptions[i], direction=1 )+
+      ggplot2::scale_x_continuous(limits = c(startTime, endTime))+
       pcv_theme()
   })
   
@@ -95,6 +93,7 @@ distributionPlot<-function(fits, form, priors=NULL, params=NULL, d, maxTime=NULL
     time<-max(fit$data[[x]], na.rm=T)
     fitDraws<-do.call(cbind, lapply(params, function(par){
       draws<-as.data.frame(fit)[grepl(par, colnames(as.data.frame(fit)))]
+      if(nrow(prior_draws(fit))>1){draws<-draws[!grepl("^prior_", colnames(draws))]}
       splits<-strsplit(colnames(draws), split = "")
       mx<-max(unlist(lapply(splits,length)))
       ind<-which(unlist(lapply(1:mx, function(i) {length(unique(rapply(splits, function(j) {j[i]})))!=1 })))
@@ -128,14 +127,11 @@ distributionPlot<-function(fits, form, priors=NULL, params=NULL, d, maxTime=NULL
       prior_df[[x]]<-0
     } else{USEPRIOR = F}
   } else { #* `need to fit some models with sample_prior and see how this works with them`
-    lapply(fits, function(fit){
-      p<-prior_draws(fit)
-      head(p)
-    })
-    
-    
+    prior_df<-prior_draws(fits[[1]])
+    prior_df<-prior_df[ ,grepl(paste0("b_", paste0(params,collapse="|")), colnames(prior_df))]
+    colnames(prior_df)<-gsub(group, "",colnames(prior_df))
+    colnames(prior_df)<-gsub("^b_","",colnames(prior_df))
     prior_df[[x]]<-0
-    
     USEPRIOR=T
   }
   
@@ -148,24 +144,32 @@ distributionPlot<-function(fits, form, priors=NULL, params=NULL, d, maxTime=NULL
   }
   posts[[x]]<-factor(posts[[x]], levels = sort(as.numeric(unique(posts[[x]]))), ordered=T)
   
+  lapply(posts,summary)
+  
+  xlims<-lapply(params, function(par){
+    diff<-as.numeric(as.matrix(posts[,grepl(paste0("^",par,"_"),colnames(posts))]))
+    c(min(diff,na.rm=T), max(diff,na.rm=T))
+  })
+  names(xlims)<-params
   postPlots<-lapply(unique(fitData[[group]]), function(groupVal){
     groupPlots<-lapply(params, function(par){
       
-      p<-ggplot(posts)+
-        geom_density(aes(x=.data[[paste(par, groupVal,sep="_")]],
+      p<-ggplot2::ggplot(posts)+
+        ggplot2::geom_density(ggplot2::aes(x=.data[[paste(par, groupVal,sep="_")]],
                                        fill=.data[[x]],color=.data[[x]],
                                        group=.data[[x]]), alpha=0.8)+
-        labs(x=paste(par, group, groupVal))+
+        ggplot2::labs(x=paste(par, group, groupVal))+
+        ggplot2::coord_cartesian(xlim=xlims[[par]])+
         pcv_theme()+
-        theme(axis.text.x.bottom = element_text(angle=0),
-              legend.position = "none", axis.title.y = element_blank())
+        ggplot2::theme(axis.text.x.bottom = ggplot2::element_text(angle=0),
+              legend.position = "none", axis.title.y = ggplot2::element_blank())
       
       if(USEPRIOR){
-        p<-p+scale_fill_manual(values = c("black",palettes[[groupVal]]) )+
-          scale_color_manual(values = c("black",palettes[[groupVal]]) )
+        p<-p+ggplot2::scale_fill_manual(values = c("black",palettes[[groupVal]]) )+
+          ggplot2::scale_color_manual(values = c("black",palettes[[groupVal]]) )
       } else{
-        p<-p+scale_fill_manual(values = palettes[[groupVal]]) +
-          scale_color_manual(values = palettes[[groupVal]])
+        p<-p+ggplot2::scale_fill_manual(values = palettes[[groupVal]]) +
+          ggplot2::scale_color_manual(values = palettes[[groupVal]])
       }
       p
     })
@@ -181,7 +185,7 @@ distributionPlot<-function(fits, form, priors=NULL, params=NULL, d, maxTime=NULL
         patchPlot <- patchPlot + growthTrendPlots[[i]]+postPlots[[i]]
       }
     }
-    out<-patchPlot + plot_layout(ncol=ncol_patch, nrow=nrow_patch)
+    out<-patchPlot + patchwork::plot_layout(ncol=ncol_patch, nrow=nrow_patch)
   } else{
     out<-list(growthTrendPlots, postPlots)
   }
