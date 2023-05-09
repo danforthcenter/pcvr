@@ -22,7 +22,7 @@
 #' dim(df2)
 #' # Note only data stored on a Unix style system can be subset before reading in.
 #' # For DDPSC employees there are larger datasets on stargate that better show the benefit of subsetting before reading data in.
-#' fileBig = "/shares/mgehan_share/kmurphy/maize_2022/bellwether/results_vis_SV/07252022_VIS_SV_MG001_results.csv"
+#' fileBig="/shares/mgehan_share/llima/Maize_Project_2022/nir_maize_first_exp_results.csv"
 #' start<-Sys.time()
 #' x3a<-pcv.sub.read(inputFile=fileBig, reader = "vroom",filters = list("trait in area, perimeter", "barcode is Ea008AA114352"))
 #' Sys.time()-start
@@ -51,7 +51,7 @@ read.pcv<-function(filepath, mode="wide", singleValueOnly=T,
   } else{
     if(is.null(reader)){reader="fread"}
     df1<-pcv.sub.read(inputFile=filepath, filters=filters, reader = reader, awk=awk, ...)  
-    if(nrow(df1)<1){ stop(paste0("0 Rows returned using awk statement:\n", awkHelper(inputFile, filters), "\nMost common issues are misspellings." )) }
+    if(nrow(df1)<1){ stop(paste0("0 Rows returned using awk statement:\n", awkHelper(filepath, filters), "\nMost common issues are misspellings or not including a column name and affector." )) }
     }
   if(!is.null(filters)){
     if(any(unlist(lapply(filters, function(filt) any(grepl(multiValPattern,strsplit(filt, " ")[[1]][-c(1:2)] )))))){
@@ -59,19 +59,21 @@ read.pcv<-function(filepath, mode="wide", singleValueOnly=T,
       singleValueOnly=F
     }
   }
-  if(singleValueOnly){
+  if(singleValueOnly & traitCol %in% colnames(df1)){
     if(length(multiValPattern)==1){ df1<-df1[!grepl(multiValPattern, df1[[traitCol]]), ]
     } else { df1<-df1[!df1[[traitCol]] %in% multiValPattern, ] }
     }
   if(match.arg(mode, c("wide","long"))=="wide" ){ # consider changing to use data.table::dcast since data table is in the imports anyway.
     long<-df1
-    long[[traitCol]]<-ifelse(long[[labelCol]]=="none", long[[traitCol]],
+    long<-long[!is.na(long[[valueCol]]),]
+    long[[labelCol]]<-ifelse(is.na(long[[labelCol]]), "none", long[[labelCol]])
+    long[[traitCol]]<-ifelse(long[[labelCol]]=="none" | is.na(long[[labelCol]]), long[[traitCol]],
                              paste(long[[traitCol]], long[[labelCol]], sep='.'))
-    wide<-long[long[[traitCol]]==unique(long[[traitCol]])[1],]
-    nc<-ncol(wide)
-    wide[,seq(nc+1, nc+length(unique(long[[traitCol]])),1) ]<-lapply(unique(long[[traitCol]]), function(i) long[long[[traitCol]]==i, valueCol])
-    colnames(wide)<-c(colnames(wide)[1:nc], unique(long[[traitCol]]))
-    # wide<-as.data.frame(data.table::dcast(data.table::as.data.table(df1), as.formula(paste0(... ~ traitCol+labelCol)), value.var = valueCol)))
+    # wide<-long[long[[traitCol]]==unique(long[[traitCol]])[1],]
+    # nc<-ncol(wide)
+    # wide[,seq(nc+1, nc+length(unique(long[[traitCol]])),1) ]<-lapply(unique(long[[traitCol]]), function(i) long[long[[traitCol]]==i, valueCol])
+    # colnames(wide)<-c(colnames(wide)[1:nc], unique(long[[traitCol]]))
+    wide<-as.data.frame(data.table::dcast(data.table::as.data.table(long), as.formula(paste0("... ~ ", traitCol, "+", labelCol)), value.var = valueCol))
     out<-wide
   } else{out<-df1
   if(!is.null(traitCol)){
