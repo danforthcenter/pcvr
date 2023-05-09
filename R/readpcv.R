@@ -63,17 +63,12 @@ read.pcv<-function(filepath, mode="wide", singleValueOnly=T,
     if(length(multiValPattern)==1){ df1<-df1[!grepl(multiValPattern, df1[[traitCol]]), ]
     } else { df1<-df1[!df1[[traitCol]] %in% multiValPattern, ] }
     }
-  if(match.arg(mode, c("wide","long"))=="wide" ){ # consider changing to use data.table::dcast since data table is in the imports anyway.
+  if(match.arg(mode, c("wide","long"))=="wide" ){
     long<-df1
     long<-long[!is.na(long[[valueCol]]),]
     long[[labelCol]]<-ifelse(is.na(long[[labelCol]]), "none", long[[labelCol]])
-    long[[traitCol]]<-ifelse(long[[labelCol]]=="none" | is.na(long[[labelCol]]), long[[traitCol]],
-                             paste(long[[traitCol]], long[[labelCol]], sep='.'))
-    # wide<-long[long[[traitCol]]==unique(long[[traitCol]])[1],]
-    # nc<-ncol(wide)
-    # wide[,seq(nc+1, nc+length(unique(long[[traitCol]])),1) ]<-lapply(unique(long[[traitCol]]), function(i) long[long[[traitCol]]==i, valueCol])
-    # colnames(wide)<-c(colnames(wide)[1:nc], unique(long[[traitCol]]))
-    wide<-as.data.frame(data.table::dcast(data.table::as.data.table(long), as.formula(paste0("... ~ ", traitCol, "+", labelCol)), value.var = valueCol))
+    wide<-as.data.frame(data.table::dcast(data.table::as.data.table(long), as.formula(paste0("... ~ ", traitCol, "+", labelCol)), value.var = valueCol, sep="."))
+    colnames(wide)<-sub(".none$","",colnames(wide))
     out<-wide
   } else{out<-df1
   if(!is.null(traitCol)){
