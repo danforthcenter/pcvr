@@ -221,6 +221,15 @@ l<-pcv.emd(df = df_long, cols="index_frequencies_index_ndvi", reorder=c("treatme
 l$plot + theme(axis.text = element_blank())
 ```
 
-These distances can also be used in network analysis to find biologically interesting clusters. See the networks branch of pcvr for details.
+Distance matrices can also be used in network analysis by turning it into a dissimilarity matrix.
+
+```{r}
+network<-pcv.net(l$data, meta = c("treatment", "genotype"), dissim=T)
+net.plot(network, fill = "strength", shape = "genotype", size=5, edgeFilter=0.5)
+```
+
+
+
+
 
 
