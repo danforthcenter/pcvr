@@ -54,7 +54,7 @@ df2<-read.pcv(file, "long", T)
 dim(df2)
 # Note only data stored on a Unix style system can be subset before reading in.
 # For DDPSC employees there are larger datasets on stargate that better show the benefit of subsetting before reading data in.
-fileBig = "/shares/mgehan_share/kmurphy/maize_2022/bellwether/results_vis_SV/07252022_VIS_SV_MG001_results.csv"
+fileBig="/shares/mgehan_share/llima/Maize_Project_2022/nir_maize_first_exp_results.csv"
 start<-Sys.time()
 x3a<-pcv.sub.read(inputFile=fileBig, reader = "vroom",filters = list("trait in area, perimeter", "barcode is Ea008AA114352"))
 Sys.time()-start
