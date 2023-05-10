@@ -49,4 +49,3 @@ pcvBox<-function(df=df,x='treatment' , y='area.pixels', fill = NULL, compare=F, 
   return(p)
 }
 
-pcvBox(df, x="timepoint", y="area.pixels", fill="genotype")
