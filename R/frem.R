@@ -13,7 +13,7 @@
 #' @param time If the data contains multiple timepoints then which should be used? This can be left NULL which will use the maximum time if \code{timeCol} is specified. If a single number is provided then that time value will be used. Multiple numbers will include those timepoints. The string "all" will include all timepoints.
 #' 
 #' 
-#' @import lmer
+#' @import lme4
 #' @import ggplot2
 #' @import scales
 #' @import patchwork
@@ -43,10 +43,13 @@
 #' begin <- min(bw$date)
 #' bw$day <- as.numeric(bw$date - begin)+1
 #' 
-#' frem(df, des, phenotypes, timeCol, T, F, F, T, "all")
-#' frem(df, des, phenotypes, timeCol, T, F, F, T, "all")
-#' frem(df, des, phenotypes, timeCol, T, F, F, F, NULL)
-#' frem(df, des, phenotypes, timeCol, T, F, F, T, 1)
+#' des=c("genotype", "meta")
+#' phenotypes = c("")
+#' 
+#' frem(bw, des, phenotypes, timeCol, T, F, F, T, "all")
+#' frem(bw, des, phenotypes, timeCol, T, F, F, T, "all")
+#' frem(bw, des, phenotypes, timeCol, T, F, F, F, NULL)
+#' frem(bw, des, phenotypes, timeCol, T, F, F, T, 1)
 #' 
 #' @export
 

@@ -61,10 +61,13 @@ bw$date<-lubridate::ymd(substr(bw$timestamp,1,10))
 begin <- min(bw$date)
 bw$day <- as.numeric(bw$date - begin)+1
 
-frem(df, des, phenotypes, timeCol, T, F, F, T, "all")
-frem(df, des, phenotypes, timeCol, T, F, F, T, "all")
-frem(df, des, phenotypes, timeCol, T, F, F, F, NULL)
-frem(df, des, phenotypes, timeCol, T, F, F, T, 1)
+des=c("genotype", "meta")
+phenotypes = c("")
+
+frem(bw, des, phenotypes, timeCol, T, F, F, T, "all")
+frem(bw, des, phenotypes, timeCol, T, F, F, T, "all")
+frem(bw, des, phenotypes, timeCol, T, F, F, F, NULL)
+frem(bw, des, phenotypes, timeCol, T, F, F, T, 1)
 
 }
 \keyword{long}
