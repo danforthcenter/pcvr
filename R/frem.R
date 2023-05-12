@@ -44,7 +44,8 @@
 #' bw$day <- as.numeric(bw$date - begin)+1
 #' 
 #' des=c("genotype", "meta")
-#' phenotypes = c("")
+#' phenotypes = colnames(bw)[19:33]
+#' timeCol = "day"
 #' 
 #' frem(bw, des, phenotypes, timeCol, T, F, F, T, "all")
 #' frem(bw, des, phenotypes, timeCol, T, F, F, T, "all")

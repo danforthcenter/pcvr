@@ -4,6 +4,7 @@
 #' @param phenotype Column to use to classify outliers.
 #' @param naTo0 Logical, should NA values to changed to 0.
 #' @param group  Grouping variables to find outliers as a character vector. This is typically time  and design variables (DAS, genotype, treatment, etc). These are used as predictors for `phenotype` in a generalized linear model.
+#' @param plotGroup Grouping variables for drawing plots if plot=T. Typically this is an identifier for images of a plant over time.
 #' @param plot Logical, if TRUE then a list is returned with a ggplot and a dataframe.
 #' @param x Optional specification for x axis variable if plot is true. If left NULL (the default) then the first element of `group` is used.
 #' @keywords Bellwether, ggplot
@@ -33,17 +34,19 @@ bw.outliers<-function(df = NULL,
     pctRm<-paste0(100*(1-round(nrow(df[df$outlier < outlierCutoff, ]) / nrow(df), 5)), "% removed as outliers using Cook's Distance")
   }
   if("Genotype" %in% group){ df<-df[df$Genotype != "Empty", ] }
+  out<-df[df$outlier < outlierCutoff, -which(colnames(df)=="outlier")]
+  rmdf<-df[df$outlier >= outlierCutoff, -which(colnames(df)=="outlier")]
   df$grouping<-interaction(df[,plotgroup])
-  out<-df[df$outlier < outlierCutoff, ]
-  rmdf<-df[df$outlier >= outlierCutoff, ]
+  out_plotData<-df[df$outlier < outlierCutoff, ]
+  rmdf_plotData<-df[df$outlier >= outlierCutoff, ]
   if(plot){
     if(is.null(x)){x = group[1]}
     p<-ggplot2::ggplot()+
-      ggplot2::geom_line(data=rmdf, aes(x=.data[[x]], y=.data[[phenotype]], group=.data$grouping), linewidth=0.15, color="red")+
-      ggplot2::geom_line(data=out, aes(x=x, y=phenotype, group=.data$grouping),linewidth=0.25 )+
+      ggplot2::geom_line(data=rmdf_plotData, aes(x=.data[[x]], y=.data[[phenotype]], group=.data[["grouping"]]), linewidth=0.15, color="red")+
+      ggplot2::geom_line(data=out_plotData, aes(x=.data[[x]], y=.data[[phenotype]], group=.data[["grouping"]]),linewidth=0.25 )+
       ggplot2::labs(title=pctRm)+
       pcv_theme()
+    print(p)
   }
-  if(plot){out<-list(plot, out)}
   return(out)
 }
