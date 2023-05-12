@@ -25,10 +25,10 @@ fit_test <- brm(ss$formula, prior = ss$prior, data = ss$df, family = ss$family, 
               iter = 1000, cores = 2, chains = 2, init = ss$initfun, # parameters controling chain number, chain length, parallelization and starting values
               control = list(adapt_delta = 0.999, max_treedepth = 20), backend = "cmdstanr") # options to increase performance
 brmPlot(fit_test, y~time|id/group, df=NULL)
-print(load("/home/jsumner/Desktop/stargate/bayesian_growth/earlyStoppingSim/bayesian_updating/parameterUpdating_DataAndModels_3to25.rdata"))
-brmPlot(fit_25, form = y~time|sample/treatment)
-brmPlot(fit_9, form = y~time|sample/treatment)
-brmPlot(fit_15, form = y~time|sample/treatment)
+print(load(url("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/brmsFits.rdata")))
+brmPlot(fit_25, form = y~time|id/group)
+brmPlot(fit_9, form = y~time|id/group)
+brmPlot(fit_15, form = y~time|id/group)
 
 }
 \keyword{curve,}

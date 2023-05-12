@@ -29,7 +29,7 @@ simdf<-growthSim("logistic", n=20, t=25, params = list("A"=c(200,160), "B"=c(13,
 ss<-growthSS(model = "logistic", form=y~time|id/group, sigma="spline", df=simdf, priors = list("A"=130, "B"=12, "C"=3))
 lapply(ss,class)
 ss$initfun()
-fit_test <- brm(ss$formula, prior = ss$prior, data = ss$df, family = ss$family, # main componenets of the model
+fit_test <- brm(ss$formula, prior = ss$prior, data = ss$df, family = ss$family, # main components of the model
               iter = 1000, cores = 2, chains = 2, init = ss$initfun, # parameters controling chain number, chain length, parallelization and starting values
               control = list(adapt_delta = 0.999, max_treedepth = 20), backend = "cmdstanr") # options to increase performance
 }

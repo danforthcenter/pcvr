@@ -26,7 +26,7 @@ awkHelper<-function(inputFile, filters, awk=NULL){
     awkFilts<-lapply(filters, function(filt){
       filtCol = strsplit(filt," ")[[1]][1]
       affector<-strsplit(filt," ")[[1]][2]
-      values<-trimws(gsub(",", "", strsplit(filt," ")[[1]][-c(1:2)]))
+      values<-trimws(gsub(",", " ", strsplit(filt," ")[[1]][-c(1:2)]))
       if(affector %in% c("in", "is", "=")){
         paste(paste0("($", which(COLS == filtCol), '=="', values,'")' ), collapse=" || ")
       } else if(affector=="contains"){

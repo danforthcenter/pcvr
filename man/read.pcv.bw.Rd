@@ -12,8 +12,6 @@ read.pcv.bw(
   metaForm = "vis_view_angle_zoom_horizontal_gain_exposure_v_new_n_rep",
   joinSnapshot = "id",
   conversions = NULL,
-  reader = "read.csv",
-  awk = NULL,
   ...
 )
 }
@@ -32,21 +30,19 @@ read.pcv.bw(
 
 \item{conversions}{A named list of phenotypes that should be rescaled by the value in the list. For instance, at zoom 1  `list(area = 13.2 * 3.7/46856)` will convert from pixels to square cm.}
 
-\item{reader}{The function to use to read in data, defaults to "read.csv". Other useful options are "vroom" and "fread", from the vroom and data.table packages, respectively. With files that are still very large after subsetting "fread" or "vroom" should be used.}
-
-\item{awk}{As an alternative to `filters` a direct call to awk can be supplied here, in which case that call will be used through pipe().}
-
-\item{...}{Other arguments passed to the reader function. In the case of 'vroom' and 'fread' there are several defaults provided already which can be overwritten with these extra arguments.}
-
-\item{filters}{If a very large pcv output file is read then it may be desireable to subset it before reading it into R, either for ease of use or because of RAM limitations. The filter argument works with "COLUMN in VALUES" syntax. This can either be a character vector or a list of character vectors. In these vectors there needs to be a column name, one of " in ", " is ", or " = ", then a set of comma delimited values to filter that column for (see examples). Note that this and `awk` both use awk through pipe(). This functionality will not work on a windows system.}
+\item{...}{Other arguments passed to \code{\link{read.pcv}} .}
 }
 \description{
 Read in plantCV csv from bellwether phenotyper style experiments.
 }
 \examples{
-bw<-read.pcv.bw( file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestPhenos.csv",metaCol=NULL)
-bw<-read.pcv.bw( file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestPhenos.csv",metaCol="meta", metaForm="vis_view_angle_zoom_horizontal_gain_exposure_v_new_n_rep", joinSnapshot = "id")
-bw<-read.pcv.bw( file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestPhenos.csv", snapshotFile="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestSnapshot.csv", designFile="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestDesign.csv",metaCol="meta",metaForm="vis_view_angle_zoom_horizontal_gain_exposure_v_new_n_rep",joinSnapshot="id",conversions = list(area=13.2*3.7/46856) )
+bw<-read.pcv.bw( file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestPhenos.csv",metaCol=NULL, mode="long")
+bw<-read.pcv.bw( file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestPhenos.csv",metaCol="meta", metaForm="vis_view_angle_zoom_horizontal_gain_exposure_v_new_n_rep", joinSnapshot = "id", mode="long")
+bw<-read.pcv.bw( file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestPhenos.csv",
+   snapshotFile="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestSnapshot.csv",
+   designFile="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestDesign.csv",
+   metaCol="meta",metaForm="vis_view_angle_zoom_horizontal_gain_exposure_v_new_n_rep",
+   joinSnapshot="id",conversions = list(area=13.2*3.7/46856), mode="long" )
 }
 \keyword{bellwether}
 \keyword{pcv,}
