@@ -1,0 +1,125 @@
+---
+title: "Bellwether Tutorial"
+output: html_document
+date: '2023-05-10'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+# devtools::install_github("joshqsumner/pcvr")
+library(pcvr)
+```
+
+
+# Example Bellwether (Lemnatech) Workflow
+
+Pending further development
+
+```{r, echo=F, eval=F, include=F}
+#* ***** `NOTES` ***** 
+#* The files at public/Phenotyping/Center Equipment/Bellwether_tutorial/3_data_analysis_files/*.Rmd outline analysis for an individual phenotype each, in a veeery long format.
+#* I would like to hit those main points for an example phenotype but with a few other additions. Below I am making an outline.
+#* 
+#* Read in Data (read.pcv vs read.pcv.bw, show differences and how to get to the same place with both?)
+#*    Remove Outliers
+#*    Adjust Time
+#*    Check Watering
+#* 
+#* "Canonical Analysis": what always happens? Show FREM, maybe use pcv.box.
+#* 
+#* Single Value Trait phenotype analysis: Here I want to hit all of Katie's stuff, but more elegantly ideally.
+#*    loess plots
+#*    boxplot comparison of last day (both these might just be canonical? Might change canon to only be SV traits FREM)
+#*    possibly an ordination? I don't like this but I think people do it a lot.
+#*    At least a mention of the more robust modeling, probably just brms helpers then loading example data. 
+#*      Possibly will want to show other options, nlme, nlqr?
+#* 
+#* Multi Value Trait phenotype analysis: Joyplots, EMD, networks, etc.
+#*    Ideally this will be from SINC2 extra plants or some other group that has actual color differences
+#* 
+#* 
+#* 
+```
+
+## Read In Data
+
+### `read.pcv`
+
+Bellwether data can be read in like any other plantCV output using `read.pcv`. The main difference is that bellwether datasets tend to be very large, so it can be useful to set some filters in the `filter` argument to limit what is read into memory. Here we read in bellwether data only keeping some single value traits in memory.
+
+```{r}
+x<-read.pcv("/home/jsumner/Desktop/shares/mgehan_share/llima/Maize_Project_2022/nir_maize_first_exp_results.csv",
+   filters = list("trait in area, convex_hull_area, solidity, perimeter, width, height, longest_path, convex_hull_vertices, ellipse_major_axis, ellipse_minor_axis, ellipse_angle, ellipse_eccentricity, hue_circular_mean, hue_circular_std, hue_median", "sample in default"))
+
+x$image<-sub("/shares/mgehan_share/raw_data/raw_image/maize_project_2022/MG001_E_060722_corrected/", "",x$image)
+write.csv(x, "/home/jsumner/Desktop/stargate/fahlgren_lab/pcvrTestData/bw_example.csv", row.names=F)
+
+
+bw<-read.pcv("/home/jsumner/Desktop/stargate/fahlgren_lab/pcvrTestData/bw_example.csv", "long")
+bw<-bw[nchar(bw$barcode)==13,]
+bars<-bw$barcode
+bars<-substr(bars,3,13)
+genotype<-substr(bars, 1,3)
+bars<-substr(bars,4,11)
+meta2<-substr(bars,1,2)
+id<-substr(bars,3,8)
+bw$genotype = genotype
+bw$meta = meta2
+bw$id = id
+bw$date<-lubridate::ymd(substr(bw$timestamp,1,10))
+begin <- min(bw$date)
+bw$day <- as.numeric(bw$date - begin)+1
+
+```
+
+### `read.pcv.bw`
+
+Bellwether data can also be read in with `read.pcv.bw` which is a wrapper around `read.pcv` which attempts to do several common tasks related bellwether data joining internally. 
+
+```{r}
+#* `THIS WILL HAVE TO CHANGE WITH SOME EXAMPLE DATA`
+bw<-read.pcv.bw( file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestPhenos.csv",metaCol=NULL, mode="long")
+```
+
+```{r}
+bw<-read.pcv.bw( file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestPhenos.csv",metaCol="meta", metaForm="vis_view_angle_zoom_horizontal_gain_exposure_v_new_n_rep", joinSnapshot = "id", mode="long")
+bw<-read.pcv.bw( file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestPhenos.csv",
+   snapshotFile="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestSnapshot.csv",
+   designFile="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestDesign.csv",
+   metaCol="meta",metaForm="vis_view_angle_zoom_horizontal_gain_exposure_v_new_n_rep",
+   joinSnapshot="id",conversions = list(area=13.2*3.7/46856), mode="long" )
+```
+
+
+### Other metadata
+
+Explain bw.water, bw.time, bw.outliers, etc.
+
+
+
+## FREM
+
+```{r}
+frem(df, des, phenotypes, timeCol, T, F, F, T, "all")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
