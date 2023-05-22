@@ -26,6 +26,8 @@ bw.outliers(
 \item{plot}{Logical, if TRUE then a list is returned with a ggplot and a dataframe.}
 
 \item{x}{Optional specification for x axis variable if plot is true. If left NULL (the default) then the first element of `group` is used.}
+
+\item{plotGroup}{Grouping variables for drawing plots if plot=T. Typically this is an identifier for images of a plant over time.}
 }
 \description{
 Remove outliers from bellwether data using cook's distance

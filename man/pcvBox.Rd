@@ -22,7 +22,7 @@ pcvBox(
 
 \item{y}{Y axis variable name (phenotype)}
 
-\item{fill}{Optional variable to use for boxplot color. If set to T then the x variable is used. If this is set to a different variable than x then care should be taken with compare.}
+\item{fill}{Optional variable to use for boxplot color. If left NULL then the x variable is used. If this is set to a different variable than x then care should be taken with compare.}
 
 \item{compare}{Groups to compare. By default this is set to FALSE, which corresponds to no testing. Other values of compare are passed to fixCompare to make t.test comparisons using ggpubr. In short, NULL will run all pairwise T tests, a single value of the X axis variable will compare that level to all other levels of the X variable, alternatively this can be a list as used by ggpubr: list(c("level1", "level2"), c("level1", "level3"))}
 

@@ -29,7 +29,7 @@ bw.time(
 
 \item{timeCol}{Column of input time values, defaults to "timestamp". If this is not an integer then it is assumed to be a timestamp in the format of the format argument.}
 
-\item{group}{Grouping variables to specify unique plants as a character vector. This defaults to "Barcodes". These taken together should identify a unique plant across time.}
+\item{group}{Grouping variables to specify unique plants as a character vector. This defaults to "Barcodes". These taken together should identify a unique plant across time, although often "angle" or "rotation" should be added.}
 
 \item{plot}{Logical, should plots of the new time variables be printed?}
 
