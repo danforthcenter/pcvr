@@ -1,13 +1,14 @@
 #' Time conversion and plotting for bellwether data
 #' 
 #' @param df Data frame to use. Should be in the format of output from read.pcv.bw
-#' @param mode One of "DAP" or "DAE" (Days After Planting and Days After Emergence). Defaults to NULL in which case both columns are added. 
+#' @param mode One of "DAS", "DAP" or "DAE" (Days After Planting and Days After Emergence). Defaults to NULL in which case all columns are added. Note that if timeCol is not an integer then DAS is always returned.
 #' @param plantingDelay If `mode` includes "DAP" then `plantingDelay` is used to adjust "DAS"
 #' @param phenotype If `mode` includes "DAE" then this is the phenotype used to classify emergence. 
 #' @param cutoff If `mode` inlcludes "DAE" then this value is used to classify emergence. Defaults to 1, meaning an image with a value of 1 or more for `phenotype` has "emerged".
-#' @param timeCol Column of input time values, defaults to "DAS"
+#' @param timeCol Column of input time values, defaults to "timestamp". If this is not an integer then it is assumed to be a timestamp in the format of the format argument.
 #' @param group  Grouping variables to specify unique plants as a character vector. This defaults to "Barcodes". These taken together should identify a unique plant across time.
 #' @param plot Logical, should plots of the new time variables be printed?
+#' @param format An R POSIXct format, defaults to "%Y-%m-%d %H:%M:%S" for compatibility with lemnatech. This is only used if timeCol is not an integer.
 #' @keywords Bellwether, ggplot
 #' @import ggplot2
 #' @export
@@ -17,8 +18,14 @@
 #'
 bw.time<-function(df = NULL, mode=NULL, plantingDelay = 4,
                   phenotype=NULL, cutoff=1, timeCol="DAS",
-                  group="Barcodes", plot=T ){
-  if(is.null(mode) || !mode %in% c("DAP", "DAE")){ mode=c("DAP", "DAE") }
+                  group="Barcodes", plot=T, format="%Y-%m-%d %H:%M:%S" ){
+  if(is.null(mode) || !mode %in% c("DAS", "DAP", "DAE")){ mode=c("DAP", "DAE") }
+  if(!is.integer(df[[timeCol]])){
+    df[[timeCol]]<-as.POSIXct(strptime(df[[timeCol]],format = format))
+    beg <- min(df[[timeCol]], na.rm=T)
+    df$DAS <- floor(as.numeric((df[[timeCol]] - beg)/60/60/24))
+    timeCol="DAS"
+  }
   if("DAP" %in% mode){
     df$DAP = df[[timeCol]] + plantingDelay 
   }

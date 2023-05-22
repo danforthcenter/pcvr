@@ -12,13 +12,14 @@ bw.time(
   cutoff = 1,
   timeCol = "DAS",
   group = "Barcodes",
-  plot = T
+  plot = T,
+  format = "\%Y-\%m-\%d \%H:\%M:\%S"
 )
 }
 \arguments{
 \item{df}{Data frame to use. Should be in the format of output from read.pcv.bw}
 
-\item{mode}{One of "DAP" or "DAE" (Days After Planting and Days After Emergence). Defaults to NULL in which case both columns are added.}
+\item{mode}{One of "DAS", "DAP" or "DAE" (Days After Planting and Days After Emergence). Defaults to NULL in which case all columns are added. Note that if timeCol is not an integer then DAS is always returned.}
 
 \item{plantingDelay}{If `mode` includes "DAP" then `plantingDelay` is used to adjust "DAS"}
 
@@ -26,11 +27,13 @@ bw.time(
 
 \item{cutoff}{If `mode` inlcludes "DAE" then this value is used to classify emergence. Defaults to 1, meaning an image with a value of 1 or more for `phenotype` has "emerged".}
 
-\item{timeCol}{Column of input time values, defaults to "DAS"}
+\item{timeCol}{Column of input time values, defaults to "timestamp". If this is not an integer then it is assumed to be a timestamp in the format of the format argument.}
 
 \item{group}{Grouping variables to specify unique plants as a character vector. This defaults to "Barcodes". These taken together should identify a unique plant across time.}
 
 \item{plot}{Logical, should plots of the new time variables be printed?}
+
+\item{format}{An R POSIXct format, defaults to "%Y-%m-%d %H:%M:%S" for compatibility with lemnatech. This is only used if timeCol is not an integer.}
 }
 \description{
 Time conversion and plotting for bellwether data
