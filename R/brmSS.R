@@ -70,9 +70,9 @@ growthSS<-function(model, form, sigma=NULL, df, priors=NULL){
         }else{ as.formula(paste0("sigma ~ s(",x,", by=", group, ")")) }
       } 
       #* `Combining for brms formula`
-      bayesForm<-bf(formula = growthForm, sigmaForm, parForm, autocor = corForm, nl=T)
+      bayesForm<-brms::bf(formula = growthForm, sigmaForm, parForm, autocor = corForm, nl=T)
     }else{
-      bayesForm<-bf(formula = growthForm,parForm,autocor = corForm,nl=T)
+      bayesForm<-brms::bf(formula = growthForm,parForm,autocor = corForm,nl=T)
     }
     out[["formula"]]<-bayesForm
   #* ***** `Make make priors` *****
