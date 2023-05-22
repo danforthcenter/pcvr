@@ -11,6 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 # devtools::install_github("joshqsumner/pcvr")
 library(pcvr)
+library(ggplot2)
 ```
 
 
@@ -50,7 +51,11 @@ Pending further development
 
 Bellwether data can be read in like any other plantCV output using `read.pcv`. The main difference is that bellwether datasets tend to be very large, so it can be useful to set some filters in the `filter` argument to limit what is read into memory. Here we read in bellwether data only keeping some single value traits in memory.
 
+
+
 ```{r}
+# redo this but with sinc1 anonymized data?
+
 x<-read.pcv("/home/jsumner/Desktop/shares/mgehan_share/llima/Maize_Project_2022/nir_maize_first_exp_results.csv",
    filters = list("trait in area, convex_hull_area, solidity, perimeter, width, height, longest_path, convex_hull_vertices, ellipse_major_axis, ellipse_minor_axis, ellipse_angle, ellipse_eccentricity, hue_circular_mean, hue_circular_std, hue_median", "sample in default"))
 
@@ -80,41 +85,148 @@ bw$day <- as.numeric(bw$date - begin)+1
 Bellwether data can also be read in with `read.pcv.bw` which is a wrapper around `read.pcv` which attempts to do several common tasks related bellwether data joining internally. 
 
 ```{r}
-#* `THIS WILL HAVE TO CHANGE WITH SOME EXAMPLE DATA`
-bw<-read.pcv.bw( file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestPhenos.csv",metaCol=NULL, mode="long")
-```
-
-```{r}
-bw<-read.pcv.bw( file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestPhenos.csv",metaCol="meta", metaForm="vis_view_angle_zoom_horizontal_gain_exposure_v_new_n_rep", joinSnapshot = "id", mode="long")
-bw<-read.pcv.bw( file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestPhenos.csv",
-   snapshotFile="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestSnapshot.csv",
-   designFile="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestDesign.csv",
-   metaCol="meta",metaForm="vis_view_angle_zoom_horizontal_gain_exposure_v_new_n_rep",
-   joinSnapshot="id",conversions = list(area=13.2*3.7/46856), mode="long" )
+#* `THESE EXAMPLES WILL HAVE TO CHANGE WITH SOME EXAMPLE DATA`
+# bw<-read.pcv.bw( file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestPhenos.csv",metaCol=NULL, mode="long")
+# 
+# bw<-read.pcv.bw( file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestPhenos.csv",metaCol="meta", metaForm="vis_view_angle_zoom_horizontal_gain_exposure_v_new_n_rep", joinSnapshot = "id", mode="long")
+# bw<-read.pcv.bw( file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestPhenos.csv",
+#    snapshotFile="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestSnapshot.csv",
+#    designFile="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestDesign.csv",
+#    metaCol="meta",metaForm="vis_view_angle_zoom_horizontal_gain_exposure_v_new_n_rep",
+#    joinSnapshot="id",conversions = list(area=13.2*3.7/46856), mode="long" )
 ```
 
 
 ### Other metadata
 
-Explain bw.water, bw.time, bw.outliers, etc.
+Often we want to convert our time data from the lemnatech into either days after planting (DAP) or days after emergence (DAE). 
+
+```{r}
+bw<-bw.time(bw, plantingDelay = 5, phenotype="area.pixels", timeCol="day", group=c("barcode", "rotation"), plot=F)
+```
+
+If we plot our time data then we might see that there are a few outliers, either from experiment conditions or from the image analysis workflow. The `bw.outliers` function can be used to remove outliers relative to some phenotype using cook's distance.
+
+```{r}
+bw<-bw.outliers(bw, phenotype="area.pixels", group = c("DAE", "genotype"), plotgroup = c("barcode", "rotation"))
+```
+
+Finally we might also want to check the watering data, which can be read easily from the json file with `bw.water`.
+
+```{r}
+wateringData<-bw.water("example.json") #* find example of this for something
+```
 
 
 
 ## FREM
 
+Now that our data is read in and has undergone some basic quality control we want to know which phenotypes are best explained by our design variables. The `frem` function partitions variance using a fully random effects model (frem). Here we provide our dataframe, the design variables, the phenotypes, and the column representing time. By default `frem` will use the last timepoint, but this is controlled with the `time` argument.
+
 ```{r}
-frem(df, des, phenotypes, timeCol, T, F, F, T, "all")
+frem(bw, des=c("genotype", "meta"),
+     phenotypes=c('area.pixels', 'convex_hull_area.pixels', 'convex_hull_vertices', 'ellipse_angle.degrees', 'ellipse_eccentricity', 'ellipse_major_axis.pixels', 'ellipse_minor_axis.pixels', 'height.pixels', 'hue_circular_mean.degrees', 'hue_circular_std.degrees', 'hue_median.degrees', 'longest_path.pixels', 'perimeter.pixels', 'solidity', 'width.pixels'),
+     timeCol="day", cor=T, returnData=F, combine=F, markSingular=T)
+```
+
+Here we look at how much variance in each phenotype was explained over the course of the experiment.
+
+```{r}
+frem(bw, des=c("genotype", "meta"),
+     phenotypes=c('area.pixels', 'convex_hull_area.pixels', 'convex_hull_vertices', 'ellipse_angle.degrees', 'ellipse_eccentricity', 'ellipse_major_axis.pixels', 'ellipse_minor_axis.pixels', 'height.pixels', 'hue_circular_mean.degrees', 'hue_circular_std.degrees', 'hue_median.degrees', 'longest_path.pixels', 'perimeter.pixels', 'solidity', 'width.pixels'),
+     timeCol="day", T, F, F, T, "all")
+```
+
+This informs our next steps. Hue based phenotypes, height, and area are best explained by our design variables so we might decide to focus more complex analyses on those.
+
+## Single Value Traits
+
+Most analysis focus on single value traits, that is phenotypes where one image returns on numeric value such as area or height. These can be compared longitudinally or with respect to individual days.
+
+### Loess Plots
+
+why not just throw splines on it?
+
+```{r}
+ggplot(bw, aes(x=day, y = height.pixels, color = interaction(genotype)))+
+  geom_smooth(se=F, show.legend=F)+
+  facet_wrap(~meta)+
+  pcv_theme()
+```
+
+
+### Single day comparisons
+
+```{r}
+pcvBox(bw[bw$genotype=='001' & bw$DAE==10, ], x="meta", y="area.pixels", compare="AA")
+```
+
+
+
+### Ordination
+
+Meh? I guess? 
+
+### Longitudinal Modeling
+
+Longitudinal modeling is the most comprehensive way to use the single value traits from a bellwether experiment. Longitudinal modeling can also be complicated compared to single timepoint analyses. Statistical complications including changes in variance, non-linearity, and autocorrelation present potential problems in analyses. To address these we recommend using heirarchical models. `pcvr` attempts to lower the barrier to entry for these models with helper functions for use with `brms` (AND nlrq/nlme?).
+
+#### Growth models
+
+Based on literature and observed trends there are 6 common growth models that `pcvr` supports. Those are shown here using the `growthSim` function.
+
+```{r}
+simdf<-growthSim("logistic", n=20, t=25, params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))
+l<-ggplot(simdf,aes(time, y, group=interaction(group,id)))+
+  geom_line(aes(color=group))+labs(title="Logistic")+theme_minimal()+theme(legend.position="none")
+
+simdf<-growthSim("gompertz", n=20, t=25, params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(0.2, 0.25)))
+g<-ggplot(simdf,aes(time, y, group=interaction(group,id)))+
+  geom_line(aes(color=group))+labs(title="Gompertz")+theme_minimal()+theme(legend.position="none")
+
+simdf<-growthSim("monomolecular", n=20, t=25, params = list("A"=c(200,160), "B"=c(0.08, 0.1)))
+m<-ggplot(simdf,aes(time, y, group=interaction(group,id)))+
+  geom_line(aes(color=group))+labs(title="Monomolecular")+theme_minimal()+theme(legend.position="none")
+
+simdf<-growthSim("exponential", n=20, t=25, params = list("A"=c(15, 20), "B"=c(0.095, 0.095)))
+e<-ggplot(simdf,aes(time, y, group=interaction(group,id)))+
+  geom_line(aes(color=group))+labs(title="Exponential")+theme_minimal()+theme(legend.position="none")
+
+simdf<-growthSim("linear", n=20, t=25, params = list("A"=c(1.1, 0.95)))
+ln<-ggplot(simdf,aes(time, y, group=interaction(group,id)))+
+  geom_line(aes(color=group))+labs(title="Linear")+theme_minimal()+theme(legend.position="none")
+
+simdf<-growthSim("power law", n=20, t=25, params = list("A"=c(16, 11), "B"=c(0.75, 0.7)))
+pl<-ggplot(simdf,aes(time, y, group=interaction(group,id)))+ geom_line(aes(color=group))+
+  labs(title="Power Law")+theme_minimal()+theme(legend.position="none")
+
+(l+g+m)/(e+ln+pl)
+
+```
+
+Typically at least one of these models will be a good fit to your bellwether data, with gompertz models being the most broadly useful so far.
+
+
+#### submodel options
+
+
+
+#### 
+
+```{r}
+
 ```
 
 
 
 
+## Multi Value Traits
 
+### Joyplots
 
+### Earth Mover's Distance
 
-
-
-
+#### Network Analysis
 
 
 

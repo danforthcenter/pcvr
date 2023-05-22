@@ -6,7 +6,7 @@
 #' @param phenotype If `mode` includes "DAE" then this is the phenotype used to classify emergence. 
 #' @param cutoff If `mode` inlcludes "DAE" then this value is used to classify emergence. Defaults to 1, meaning an image with a value of 1 or more for `phenotype` has "emerged".
 #' @param timeCol Column of input time values, defaults to "timestamp". If this is not an integer then it is assumed to be a timestamp in the format of the format argument.
-#' @param group  Grouping variables to specify unique plants as a character vector. This defaults to "Barcodes". These taken together should identify a unique plant across time.
+#' @param group  Grouping variables to specify unique plants as a character vector. This defaults to "Barcodes". These taken together should identify a unique plant across time, although often "angle" or "rotation" should be added.
 #' @param plot Logical, should plots of the new time variables be printed?
 #' @param format An R POSIXct format, defaults to lemnatech standard format. This is only used if timeCol is not an integer.
 #' @keywords Bellwether, ggplot
@@ -39,9 +39,8 @@ bw.time<-function(df = NULL, mode=NULL, plantingDelay = 4,
   }
   rownames(df)<-NULL
   if(plot & !is.null(phenotype)){
-    plotGroup<-c(group, "angle")
     plotDat<-df
-    plotDat$plotGroup<-interaction(plotDat[,c(group,"angle")])
+    plotDat$plotGroup<-interaction(plotDat[,c(group)])
     p<-ggplot2::ggplot(plotDat, ggplot2::aes(x=.data[[timeCol]], y=.data[[phenotype]], group=.data$plotGroup))+
       ggplot2::geom_line()+
       pcv_theme()
