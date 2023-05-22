@@ -13,5 +13,6 @@ Suggests:
     knitr,
     rmarkdown,
     brms,
-    parallel
+    parallel,
+    vroom
 VignetteBuilder: knitr
