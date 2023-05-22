@@ -38,10 +38,10 @@ bw.outliers<-function(df = NULL,
   if("Genotype" %in% group){ df<-df[df$Genotype != "Empty", ] }
   out<-df[df$outlier < outlierCutoff, -which(colnames(df)=="outlier")]
   rmdf<-df[df$outlier >= outlierCutoff, -which(colnames(df)=="outlier")]
-  df$grouping<-interaction(df[,plotgroup])
-  out_plotData<-df[df$outlier < outlierCutoff, ]
-  rmdf_plotData<-df[df$outlier >= outlierCutoff, ]
   if(plot){
+    df$grouping<-interaction(df[,plotgroup])
+    out_plotData<-df[df$outlier < outlierCutoff, ]
+    rmdf_plotData<-df[df$outlier >= outlierCutoff, ]
     if(is.null(x)){x = group[1]}
     p<-ggplot2::ggplot()+
       ggplot2::geom_line(data=rmdf_plotData, aes(x=.data[[x]], y=.data[[phenotype]], group=.data[["grouping"]]), linewidth=0.15, color="red")+
