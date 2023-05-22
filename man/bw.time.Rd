@@ -10,7 +10,7 @@ bw.time(
   plantingDelay = 4,
   phenotype = NULL,
   cutoff = 1,
-  timeCol = "DAS",
+  timeCol = "timestamp",
   group = "Barcodes",
   plot = T,
   format = "\%Y-\%m-\%d \%H:\%M:\%S"
