@@ -80,7 +80,7 @@ growthSS<-function(model, form, sigma=NULL, df, priors=NULL){
     # priors = list("A"=130, "B"=12, "C"=3)
     # priors = list("A"=c(130, 150), "B"=c(12,11), "C"=c(3,3))
     #* `if priors is a brmsprior`
-    if(any(class(prior)=="brmsprior")){out[["prior"]]<-prior } else{
+    if(any(class(priors)=="brmsprior")){out[["prior"]]<-priors } else{
     #* `if priors is a numeric vector`
     if(is.numeric(priors)){ # priors = c(130, 12, 3) 
       if(length(priors)==length(pars)){
