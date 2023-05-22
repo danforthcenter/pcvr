@@ -158,7 +158,7 @@ form_logistic<-function(x, y){
   return(as.formula(paste0(y," ~ A/(1+exp((B-",x,")/C))")))
 }
 form_gompertz<-function(x, y){
-  return(as.formula(paste0(y,"A*exp(-B*exp(-C*",x,"))")))
+  return(as.formula(paste0(y," ~ A*exp(-B*exp(-C*",x,"))")))
 }
 form_monomolecular<-function(x, y){
   return(as.formula(paste0(y,"~A-A*exp(-B*",x,")")))
