@@ -17,7 +17,7 @@
 #' bw<-bw.time(df = bw, mode=NULL, plantingDelay = 4, phenotype="area_adj", timeCol="DAS", group="Barcodes", plot=T)
 #'
 bw.time<-function(df = NULL, mode=NULL, plantingDelay = 4,
-                  phenotype=NULL, cutoff=1, timeCol="DAS",
+                  phenotype=NULL, cutoff=1, timeCol="timestamp",
                   group="Barcodes", plot=T, format="%Y-%m-%d %H:%M:%S" ){
   if(is.null(mode) || !mode %in% c("DAS", "DAP", "DAE")){ mode=c("DAP", "DAE") }
   if(!is.integer(df[[timeCol]])){
