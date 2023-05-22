@@ -33,7 +33,7 @@ bw.time(
 
 \item{plot}{Logical, should plots of the new time variables be printed?}
 
-\item{format}{An R POSIXct format, defaults to "%Y-%m-%d %H:%M:%S" for compatibility with lemnatech. This is only used if timeCol is not an integer.}
+\item{format}{An R POSIXct format, defaults to lemnatech standard format. This is only used if timeCol is not an integer.}
 }
 \description{
 Time conversion and plotting for bellwether data
