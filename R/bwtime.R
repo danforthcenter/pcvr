@@ -8,7 +8,7 @@
 #' @param timeCol Column of input time values, defaults to "timestamp". If this is not an integer then it is assumed to be a timestamp in the format of the format argument.
 #' @param group  Grouping variables to specify unique plants as a character vector. This defaults to "Barcodes". These taken together should identify a unique plant across time.
 #' @param plot Logical, should plots of the new time variables be printed?
-#' @param format An R POSIXct format, defaults to "%Y-%m-%d %H:%M:%S" for compatibility with lemnatech. This is only used if timeCol is not an integer.
+#' @param format An R POSIXct format, defaults to lemnatech standard format. This is only used if timeCol is not an integer.
 #' @keywords Bellwether, ggplot
 #' @import ggplot2
 #' @export
