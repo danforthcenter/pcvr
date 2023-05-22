@@ -12,13 +12,14 @@ pcvBox(
   compare = F,
   trait = "trait",
   value = "value",
+  showPoints = F,
   ...
 )
 }
 \arguments{
 \item{df}{Data frame to use. Can be wide or long format from read.pcv}
 
-\item{x}{X axis variable name (grouping)}
+\item{x}{X axis variable(s) name (grouping). If multiple names are provided then the variables are combined with \code{interaction}.}
 
 \item{y}{Y axis variable name (phenotype)}
 
@@ -29,6 +30,8 @@ pcvBox(
 \item{trait}{If the data is in long format then `trait` is used to subset data for the phenotype Y. Defaults to "trait".}
 
 \item{value}{If the data is in long format then `value` is used for numeric values for the phenotype Y. Defaults to "value".}
+
+\item{showPoints}{Logical, should all points be shown? Defaults to FALSE.}
 
 \item{...}{Additional parameters passed to geom_boxplot}
 }
