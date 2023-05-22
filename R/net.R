@@ -43,7 +43,7 @@ pcv.net<-function(emd = NULL, meta = NULL, dissim=T, distCol="emd"){
   gg[,newCols] <- lapply(metaIndex, function(i) eg[[i]][match(gg$index, eg$from)])
   colnames(gg)[newCols]<-meta
   #* Calculate network metrics
-  gg$logBetweenness<-igraph::betweenness(g)
+  gg$betweenness<-igraph::betweenness(g)
   gg$degree<-igraph::degree(g)
   igraph::E(g)$weight<-eg[[distCol]]+0.1
   gg$strength<-igraph::strength(g)
