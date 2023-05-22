@@ -54,10 +54,9 @@ read.pcv<-function(filepath, mode="wide", singleValueOnly=T,
     if(nrow(df1)<1){ stop(paste0("0 Rows returned using awk statement:\n", awkHelper(filepath, filters), "\nMost common issues are misspellings or not including a column name and affector." )) }
     }
   if(!is.null(filters)){
-    if(any(unlist(lapply(filters, function(filt) any(grepl(multiValPattern,strsplit(filt, " ")[[1]][-c(1:2)] )))))){
+    if(singleValueOnly & any(unlist(lapply(filters, function(filt) any(grepl(multiValPattern,strsplit(filt, " ")[[1]][-c(1:2)] )))))){
       warning("Your filters specify a value that would be filtered by multiValPattern since singleValueOnly=T, proceeding with singleValueOnly=F. Consider changing multiValPattern or singleValueOnly argument.")
-      singleValueOnly=F
-    }
+      }
   }
   if(singleValueOnly & traitCol %in% colnames(df1)){
     if(length(multiValPattern)==1){ df1<-df1[!grepl(multiValPattern, df1[[traitCol]]), ]

@@ -210,8 +210,8 @@ frem<-function(df, des, phenotypes, timeCol=NULL, cor=T, returnData=F, combine=T
         ggplot2::labs(x="Correlations", y="")+
         ggplot2::theme(legend.position="bottom",
                        axis.text.x.bottom = ggplot2::element_text(angle=90,hjust=1))
-      if(!combine){
-        p2<-p2+ggplot2::theme(axis.text.y = ggplot2::element_blank())
+      if(combine){
+        p2<-p2+ggplot2::theme(axis.text.y.left = ggplot2::element_blank())
       }
     # } else{ # Longitudinal option
     #   x_cor<-do.call(rbind, lapply(sort(unique(na.omit(df[[timeCol]]))), function(tm){

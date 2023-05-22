@@ -6,7 +6,7 @@
 #' @param metaCol a column name from the phenotype data read in with the `file` argument. Generally for bellwether experiments this will correspond to an image path. The name is split on "/" characters with the last segment being taken and parsed into some number of sections based on `metaForm`.
 #' @param metaForm A character string or character vector of column names to parse `metaCol` into. The number of names needs to match with length of `metaCol` when parsed. If a character string is provided then it is assumed to be underscore delimited, so do if you need underscores in a column name then use `c("column_one", "column_two",...)` instead of `column_one_column_two_...`.
 #' @param joinSnapshot Column name create in phenotype data to use in joining snapshot data. By default this will attempt to make an "id" column, which is parsed from a snapshot folder in `metaCol` ("/shares/sinc/data/Phenotyper/SINC1/ImagesNew/**snapshot1403**/"). An error will be raised if this column is not present in the snapshot data.
-#' @param conversions A named list of phenotypes that should be rescaled by the value in the list. For instance, at zoom 1  `list(area = 13.2 * 3.7/46856)` will convert from pixels to square cm.
+#' @param conversions A named list of phenotypes that should be rescaled by the value in the list. For instance, at zoom 1  `list(area = 13.2 * 3.7/46856)` will convert from pixels to square cm in the 5MP bellwether camera.
 #' @param ... Other arguments passed to \code{\link{read.pcv}} .
 #' @keywords read.csv, pcv, bellwether
 #' @export
