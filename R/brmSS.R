@@ -1,12 +1,7 @@
 #' Ease of use brms starter function for 6 growth model parameterizations
 #' 
 #' @param model The name of a model as a character string. Supported options are c("logistic", "gompertz", "monomolecular", "exponential", "linear", "power law"). See \code{\link{growthSim}} for examples of each type of growth curve.
-#' @param form A formula describing the model. The left hand side should only be the outcome variable (phenotype). 
-#' The right hand side needs at least the x variable (typically time). Grouping is also described in this formula using roughly lme4 style syntax,
-#'  with formulas like \code{y~time|individual/group} to show that predictors should vary by \code{group} and autocorrelation between \code{individual:group} 
-#'  interactions should be modeled. 
-#'  If group has only one level then it will be ignored (this may be the case if you 
-#'  split data before fitting models to be able to run more smaller models each more quickly).
+#' @param form A formula describing the model. The left hand side should only be the outcome variable (phenotype). The right hand side needs at least the x variable (typically time). Grouping is also described in this formula using roughly lme4 style syntax,with formulas like \code{y~time|individual/group} to show that predictors should vary by \code{group} and autocorrelation between \code{individual:group} interactions should be modeled. If group has only one level or is not included then it will be ignored in formulas for growth and variance (this may be the case if you split data before fitting models to be able to run more smaller models each more quickly).
 #' @param sigma A model for heteroskedasticity from c("homo", "linear", "spline"). 
 #' @param df A dataframe to use. Must contain all the variables listed in the formula.
 #' @param priors A named list of means for prior distributions. Currently this function makes lognormal priors for all growth model parameters. This is done because the values are strictly positive and the lognormal distribution is easily interpreted. If this argument is not provided then priors are not returned and a different set of priors will need to be made for the model using \code{brms::set_prior}. This works similarly to the \code{params} argument in \code{growthSim}. Names should correspond to parameter names from the \code{model} argument. A numeric vector can also be used, but specifying names is best practice for clarify. See details.
@@ -31,13 +26,21 @@ growthSS<-function(model, form, sigma=NULL, df, priors=NULL){
     #* `parse form argument`
     y=as.character(form)[2]
     x<-as.character(form)[3]
-    if(grepl("\\|", x) | grepl("\\/",x)){
+    
+    if(grepl("\\|", x) & grepl("\\/",x)){
       x3<-trimws(strsplit(x, "[|]|[/]")[[1]])
       x<-x3[1]
       individual = x3[2]
       group = x3[3] 
       if(length(unique(df[[group]]))==1){USEGROUP=F}else{USEGROUP=T} # if there is only one group then ignore grouping for parameter and variance formulas
-      } else {stop("form must specify grouping for observations. See documentation and examples.")}
+    } else if (grepl("\\|", x)){
+      x2<-trimws(strsplit(x, "[|]")[[1]])
+      x<-x2[1]
+      individual = x2[2]
+      group="dummy"
+      df[[group]]<-"dummy"
+      USEGROUP=F
+    } else {stop("form must specify grouping at least for individual level for observations ( y ~ x|individual ). See documentation and examples.")}
     #* `Make autocorrelation formula`
     corForm<-as.formula(paste0("~arma(~",x,"|", individual,":",group,",1,1)"))
     #* `Make parameter formula`
