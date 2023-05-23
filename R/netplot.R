@@ -23,6 +23,8 @@
 #' net.plot(network, fill = "strength", shape = "genotype", size=5, edgeFilter=0.5)
 #' net.plot(network, fill = "strength", shape = "genotype", size=5, edgeFilter="0.5")
 #' 
+#' @return Returns a ggplot of a network.
+#' 
 #' @export
 #' 
 

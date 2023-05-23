@@ -26,6 +26,9 @@ net.plot(
 
 \item{edgeFilter}{How should edges be filtered? This can be either a numeric (0.5) in which case it is taken as a filter where only edges with values greater than or equal to that number are kept or a character string ("0.5") in which case the strongest X percentage of edges are kept. This defaults to NULL which does no filtering, although that should not be considered the best standard behaviour. See details.}
 }
+\value{
+Returns a ggplot of a network.
+}
 \description{
 Easy igraph visualization with pcv.net output
 }

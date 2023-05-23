@@ -38,6 +38,9 @@ pcv.hists(
 
 \item{trait}{Column containing phenotype names. Defaults to "trait".}
 }
+\value{
+Returns either a ggplot object or a list containing a ggplot and a dataframe of statistical comparisons (if compare is not FALSE).
+}
 \description{
 Plot Histograms for multi value trait plantCV data and optionally compare distributions
 }

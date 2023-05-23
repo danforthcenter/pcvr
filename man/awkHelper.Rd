@@ -13,6 +13,9 @@ awkHelper(inputFile, filters, awk = NULL)
 
 \item{awk}{Optional awk command to use instead.}
 }
+\value{
+Returns a character string representing a unix style awk statement which is typically passed to \code{pipe} or used as a connection in \code{data.table::fread}.
+}
 \description{
 subset helper function for use reading in large data, called in pcv.sub.read
 }

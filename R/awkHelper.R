@@ -7,6 +7,7 @@
 #' @param awk Optional awk command to use instead.
 #' @keywords read.csv, pcv, wide, long
 #' @details awkHelper attempts to make awk commands from human readable input. Currently when filters are supplied the input file has quotes removed by `sed` then is piped into awk, so an equivalent command line statement may be: sed 's/\"//g' pcvrTest2.csv | awk -F ','  '{ if (NR==1 || $18=="area") { print } }'
+#' @return Returns a character string representing a unix style awk statement which is typically passed to \code{pipe} or used as a connection in \code{data.table::fread}.
 #' @examples 
 #' inputFile = "/home/jsumner/Desktop/stargate/fahlgren_lab/pcvrTestData/pcvrTest1.csv"
 #' filters = "trait contains area, perimeter"

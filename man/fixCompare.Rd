@@ -15,6 +15,9 @@ fixCompare(compare, dat, col, likeToLike = F)
 
 \item{likeToLike}{Logical, should only similar groups be compared (currently defined as part 1 and 2 of group, split on [.])}
 }
+\value{
+A list of comparisons as used in the "comparisons" argument of \code{ggpubr::stat_compare_means}.
+}
 \description{
 Helper function for making comparisons between groups in various functions.
 }

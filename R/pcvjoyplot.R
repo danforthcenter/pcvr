@@ -15,7 +15,6 @@
 #' @import ggplot2
 #' @import ggridges
 #' @import extraDistr
-#' @export
 #' 
 #' @details 
 #' The method argument is used for statistical testing of groups. There are currently four options, "beta", "gaussian", "ks", and "emd".
@@ -26,13 +25,15 @@
 #'  \item{"emd}{The emd method returns earth mover's distance for compared histograms. This is done via the emdist package and can be very slow. This is included because it is canonical but in the case where EMD is desired it may be worth implementing it directly.}
 #' }
 #' 
+#' @return Returns either a ggplot object or a list containing a ggplot and a dataframe of statistical comparisons (if compare is not FALSE).
+#' 
 #' @examples 
 #' df <- read.pcv("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest2.csv", "long", F)
 #' pcv.joyplot(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"))
 #' pcv.joyplot(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"), method="ks")
 #' pcv.joyplot(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"), method="beta")
 #' pcv.joyplot(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"), method="gaussian")
-
+#' @export
 
 
 pcv.joyplot<-function(df = NULL, index = NULL, group = NULL,

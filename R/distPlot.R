@@ -11,7 +11,7 @@
 #' @import ggplot2
 #' @import patchwork
 #' @import viridis
-#' @return A named list of elements to make it easier to fit common brms models.
+#' @return A ggplot or a list of ggplots (depending on patch).
 #' @export
 #' @examples 
 #' 

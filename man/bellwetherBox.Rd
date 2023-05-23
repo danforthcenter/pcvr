@@ -32,6 +32,9 @@ bellwetherBox(
 
 \item{...}{Additional parameters passed to geom_boxplot}
 }
+\value{
+Returns a ggplot object
+}
 \description{
 Boxplots for bellwether data
 }

@@ -12,6 +12,7 @@
 #' @keywords Bellwether, ggplot
 #' @import ggplot2
 #' @import ggpubr
+#' @return Returns a ggplot object.
 #' @export
 #' @examples 
 #' 

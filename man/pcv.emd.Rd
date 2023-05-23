@@ -38,6 +38,9 @@ pcv.emd(
 
 \item{value}{A column name for the values to be drawn from in long data. Defaults to "value".}
 }
+\value{
+A dataframe/matrix (if plot=F) or a list with a dataframe/matrix and a ggplot (if plot=T). The returned data contains pairwise EMD values.
+}
 \description{
 pcv.emd can be used to calculate Earth Mover's Distance between pairwise histograms in a wide dataframe of multi value traits.
 }

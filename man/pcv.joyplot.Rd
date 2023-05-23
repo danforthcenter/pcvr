@@ -41,6 +41,9 @@ pcv.joyplot(
 
 \item{fillx}{Logical, whether or not to use ggridges::geom_density_ridges_gradient . Default is T, if F then ggridges::geom_density_ridges is used instead, with arbitrary fill.}
 }
+\value{
+Returns either a ggplot object or a list containing a ggplot and a dataframe of statistical comparisons (if compare is not FALSE).
+}
 \description{
 Make Joyplots for multi value trait plantCV data and optionally compare distributions
 }

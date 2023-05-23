@@ -9,6 +9,7 @@
 #' @param noise Optionally this can be used to add specific amounts of noise to the input parameters. If NULL (the default) then data is simulated with 10\% random noise like: param + N(0, 0.1*param)
 #' 
 #' @keywords growth curve, logistic, gompertz, monomolecular, linear, exponential, power-law
+#' @return Returns a dataframe of example growth data following the input parameters.
 #' 
 #' @examples 
 #' simdf<-growthSim("logistic", n=20, t=25, params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))

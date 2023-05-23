@@ -2,7 +2,7 @@
 % Please edit documentation in R/readpcvjson.R
 \name{read.pcv.jsn}
 \alias{read.pcv.jsn}
-\title{Read in plantCV json keeping either single value, multi value, or all traits}
+\title{Read in plantCV json keeping either single value, multi value, or all traits.}
 \usage{
 read.pcv.jsn(
   file,
@@ -23,8 +23,11 @@ read.pcv.jsn(
 
 \item{output}{What phenotypes should be returned? This can be a vector of names present in "label" or one of the built in options. Built in options are "sv" for single value traits only, "mv" for multi value traits only, and "all" for all traits. Note that by default tuple value data is output with single value data in a wide format.}
 }
+\value{
+Returns a dataframe.
+}
 \description{
-Read in plantCV json keeping either single value, multi value, or all traits
+Read in plantCV json keeping either single value, multi value, or all traits.
 }
 \examples{
 file="/home/jsumner/Desktop/stargate/SINC/SINC1/plantCV_sinc1/sinc1_vis_sv_out_full.json"

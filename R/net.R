@@ -20,6 +20,11 @@
 #' emd_df<-pcv.emd(df1, cols="ndvi_", reorder=c("treatment", "genotype", "X"), mat =F, plot=F, parallel = 1)
 #' net<-pcv.net(emd_df, meta = c("treatment", "genotype"))
 #' 
+#' @return Returns a list containing three elements:
+#' \code{nodes}: A dataframe of node data.
+#' \code{edges}: A dataframe of edges between nodes.
+#' \code{graph}: The network as an igraph object
+#' 
 #' @export
 #' 
 

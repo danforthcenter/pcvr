@@ -41,6 +41,9 @@ read.pcv(
 
 \item{...}{Other arguments passed to the reader function. In the case of 'vroom' and 'fread' there are several defaults provided already which can be overwritten with these extra arguments.}
 }
+\value{
+Returns a data.frame in wide or long format.
+}
 \description{
 Read in plantCV csv output in wide or long format
 }

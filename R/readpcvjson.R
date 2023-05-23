@@ -1,4 +1,4 @@
-#' Read in plantCV json keeping either single value, multi value, or all traits
+#' Read in plantCV json keeping either single value, multi value, or all traits. 
 #' 
 #' 
 #' @param file Path to the plantCV output json.
@@ -8,6 +8,7 @@
 #' @param output What phenotypes should be returned? This can be a vector of names present in "label" or one of the built in options. Built in options are "sv" for single value traits only, "mv" for multi value traits only, and "all" for all traits. Note that by default tuple value data is output with single value data in a wide format.
 #' @import jsonlite
 #' @keywords read.csv, pcv, bellwether
+#' @return Returns a dataframe.
 #' @export
 #' @examples 
 #' file="/home/jsumner/Desktop/stargate/SINC/SINC1/plantCV_sinc1/sinc1_vis_sv_out_full.json"
