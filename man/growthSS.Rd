@@ -9,7 +9,7 @@ growthSS(model, form, sigma = NULL, df, priors = NULL)
 \arguments{
 \item{model}{The name of a model as a character string. Supported options are c("logistic", "gompertz", "monomolecular", "exponential", "linear", "power law"). See \code{\link{growthSim}} for examples of each type of growth curve.}
 
-\item{form}{A formula describing the model. The left hand side should only be the outcome variable (phenotype). The right hand side needs at least the x variable (typically time). Grouping is also described in this formula using roughly lme4 style syntax, with formulas like \code{y~time|individual/group} to show that predictors should vary by \code{group} and autocorrelation between \code{individual:group} interactions should be modeled.}
+\item{form}{A formula describing the model. The left hand side should only be the outcome variable (phenotype). The right hand side needs at least the x variable (typically time). Grouping is also described in this formula using roughly lme4 style syntax,with formulas like \code{y~time|individual/group} to show that predictors should vary by \code{group} and autocorrelation between \code{individual:group} interactions should be modeled. If group has only one level or is not included then it will be ignored in formulas for growth and variance (this may be the case if you split data before fitting models to be able to run more smaller models each more quickly).}
 
 \item{sigma}{A model for heteroskedasticity from c("homo", "linear", "spline").}
 
