@@ -9,6 +9,7 @@
 #' @param conversions A named list of phenotypes that should be rescaled by the value in the list. For instance, at zoom 1  `list(area = 13.2 * 3.7/46856)` will convert from pixels to square cm in the 5MP bellwether camera.
 #' @param ... Other arguments passed to \code{\link{read.pcv}} .
 #' @keywords read.csv, pcv, bellwether
+#' @return Returns a dataframe potentially with several files merged into it.
 #' @export
 #' @examples 
 #' bw<-read.pcv.bw( file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestPhenos.csv",metaCol=NULL, mode="long")

@@ -13,6 +13,7 @@
 #' @param id A vector of column names that uniquely identifies observations if the data is in long format. Defaults to "image".
 #' @param value A column name for the values to be drawn from in long data. Defaults to "value".
 #' @import ggplot2
+#' @return A dataframe/matrix (if plot=F) or a list with a dataframe/matrix and a ggplot (if plot=T). The returned data contains pairwise EMD values.
 #' 
 #' @keywords emd, earth mover's distance, multi-value trait, histogram
 #' @examples 

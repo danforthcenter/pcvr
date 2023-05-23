@@ -12,6 +12,7 @@
 #' @param awk As an alternative to `filters` a direct call to awk can be supplied here, in which case that call will be used through pipe().
 #' @param ... Other arguments passed to the reader function. In the case of 'vroom' and 'fread' there are several defaults provided already which can be overwritten with these extra arguments.
 #' @keywords read.csv, pcv, wide, long
+#' @return Returns a data.frame in wide or long format.
 #' @examples 
 #' 
 #' file = "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest1.csv"

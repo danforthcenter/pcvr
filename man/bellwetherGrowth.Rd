@@ -29,6 +29,9 @@ bellwetherGrowth(
 
 \item{...}{Additional parameters passed to geom_line}
 }
+\value{
+Returns a ggplot showing individual observations growth over time.
+}
 \description{
 Growth curve plot for bellwether data
 }

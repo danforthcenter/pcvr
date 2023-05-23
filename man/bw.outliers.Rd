@@ -29,6 +29,9 @@ bw.outliers(
 
 \item{plotGroup}{Grouping variables for drawing plots if plot=T. Typically this is an identifier for images of a plant over time.}
 }
+\value{
+The input dataframe with outliers removed.
+}
 \description{
 Remove outliers from bellwether data using cook's distance
 }

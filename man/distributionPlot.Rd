@@ -30,7 +30,7 @@ distributionPlot(
 \item{patch}{Logical, should a patchwork plot be returned or should lists of ggplots be returned?}
 }
 \value{
-A named list of elements to make it easier to fit common brms models.
+A ggplot or a list of ggplots (depending on patch).
 }
 \description{
 Function for plotting iterations of posterior distributions

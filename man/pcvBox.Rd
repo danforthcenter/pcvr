@@ -35,6 +35,9 @@ pcvBox(
 
 \item{...}{Additional parameters passed to geom_boxplot}
 }
+\value{
+Returns a ggplot object.
+}
 \description{
 Boxplot for plantCV data in wide format (each phenotype as a column)
 }

@@ -35,6 +35,9 @@ bw.time(
 
 \item{format}{An R POSIXct format, defaults to lemnatech standard format. This is only used if timeCol is not an integer.}
 }
+\value{
+The input dataframe with new integer columns for different ways of describing time in the experiment.
+}
 \description{
 Time conversion and plotting for bellwether data
 }

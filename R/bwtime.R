@@ -11,6 +11,7 @@
 #' @param format An R POSIXct format, defaults to lemnatech standard format. This is only used if timeCol is not an integer.
 #' @keywords Bellwether, ggplot
 #' @import ggplot2
+#' @return The input dataframe with new integer columns for different ways of describing time in the experiment.
 #' @export
 #' @examples 
 #' bw<-read.pcv.bw( file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestPhenos.csv", snapshotFile="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestSnapshot.csv", designFile="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestDesign.csv",metaCol="meta",metaForm="vis_view_angle_zoom_horizontal_gain_exposure_v_new_n_rep",joinSnapshot="id",conversions = list(area=13.2*3.7/46856) )

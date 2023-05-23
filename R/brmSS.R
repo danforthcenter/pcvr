@@ -7,6 +7,11 @@
 #' @param priors A named list of means for prior distributions. Currently this function makes lognormal priors for all growth model parameters. This is done because the values are strictly positive and the lognormal distribution is easily interpreted. If this argument is not provided then priors are not returned and a different set of priors will need to be made for the model using \code{brms::set_prior}. This works similarly to the \code{params} argument in \code{growthSim}. Names should correspond to parameter names from the \code{model} argument. A numeric vector can also be used, but specifying names is best practice for clarify. See details.
 #' @keywords Bayesian, brms
 #' @return A named list of elements to make it easier to fit common brms models.
+#' \code{formula}: A \code{brms::bf} formula specifying the growth model, autocorrelation, variance submodel, and models for each variable in the growth model.
+#' \code{prior}: A brmsprior/data.frame object.
+#' \code{initfun}: A function to randomly initialize chains using a random draw from a gamma distribution (confines initial values to positive and makes correct number of initial values for chains and groups).
+#' \code{df} The data input, possibly with dummy variables added if needed.
+#' \code{family} The model family, currently this will always be "student".
 #' @examples 
 #' 
 #' simdf<-growthSim("logistic", n=20, t=25, params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))

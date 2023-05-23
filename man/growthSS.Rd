@@ -19,6 +19,11 @@ growthSS(model, form, sigma = NULL, df, priors = NULL)
 }
 \value{
 A named list of elements to make it easier to fit common brms models.
+\code{formula}: A \code{brms::bf} formula specifying the growth model, autocorrelation, variance submodel, and models for each variable in the growth model.
+\code{prior}: A brmsprior/data.frame object.
+\code{initfun}: A function to randomly initialize chains using a random draw from a gamma distribution (confines initial values to positive and makes correct number of initial values for chains and groups).
+\code{df} The data input, possibly with dummy variables added if needed.
+\code{family} The model family, currently this will always be "student".
 }
 \description{
 Ease of use brms starter function for 6 growth model parameterizations

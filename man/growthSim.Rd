@@ -24,6 +24,9 @@ growthSim(
 
 \item{noise}{Optionally this can be used to add specific amounts of noise to the input parameters. If NULL (the default) then data is simulated with 10\% random noise like: param + N(0, 0.1*param)}
 }
+\value{
+Returns a dataframe of example growth data following the input parameters.
+}
 \description{
 growthSim can be used to help pick reasonable parameters for common growth models to use in prior distributions or to simulate data for example models/plots.
 }

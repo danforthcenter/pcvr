@@ -8,6 +8,7 @@
 #' @import ggplot2
 #' 
 #' @keywords emd, earth mover's distance, multi-value trait, histogram
+#' @return Returns EMD between two samples as a numeric.
 #' @examples 
 #' 
 #' set.seed(123) 

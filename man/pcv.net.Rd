@@ -17,6 +17,12 @@ pcv.net(emd = NULL, meta = NULL, dissim = T, distCol = "emd")
 
 \item{...}{Further arguments passed to igraph::graph_from_dataframe or graph_from_adjacency_matrix}
 }
+\value{
+Returns a list containing three elements:
+\code{nodes}: A dataframe of node data.
+\code{edges}: A dataframe of edges between nodes.
+\code{graph}: The network as an igraph object
+}
 \description{
 Easy igraph use with pcv.emd output
 }

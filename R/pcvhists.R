@@ -13,7 +13,6 @@
 #' @keywords bayesian, ggplot, multi value trait, pcv.joyplot
 #' @import ggplot2
 #' @import extraDistr
-#' @export
 #' 
 #' @details 
 #' This function is similar to pcv.joyplot but uses different plotting aesthetics.
@@ -26,13 +25,15 @@
 #'  \item{"emd}{The emd method returns earth mover's distance for compared histograms. This is done via the emdist package and can be very slow. This is included because it is canonical but in the case where EMD is desired it may be worth implementing it directly.}
 #' }
 #' 
+#' @return Returns either a ggplot object or a list containing a ggplot and a dataframe of statistical comparisons (if compare is not FALSE).
+#' 
 #' @examples 
 #' df <- read.pcv("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest2.csv", "long", F)
 #' pcv.hists(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"))
 #' pcv.hists(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"), method="ks")
 #' pcv.hists(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"), method="beta")
 #' pcv.hists(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"), method="gaussian")
-
+#' @export
 
 
 pcv.hists<-function(df = NULL, index = NULL, group = NULL,

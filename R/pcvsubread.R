@@ -4,6 +4,7 @@
 #' @param filters filtering conditions, see read.pcv for details. Format as list("trait in area, perimeter", "other in value")
 #' @param awk Optional awk command to use instead.
 #' @import data.table
+#' @return Returns a dataframe after subsetting happens outside of R using the awk statement from \code{awkHelper}.
 #' @keywords read.csv, pcv, wide, long
 #' @export
 #' 

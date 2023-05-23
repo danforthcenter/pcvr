@@ -13,6 +13,9 @@ brmPlot(fit, form, df = NULL)
 
 \item{df}{An optional dataframe to use in plotting observed growth curves on top of the model.}
 }
+\value{
+Returns a ggplot showing a brms model's credible intervals and optionally the individual growth lines.
+}
 \description{
 Function to visualize brms models similar to those made using growthSS outputs.
 }

@@ -32,6 +32,9 @@ read.pcv.bw(
 
 \item{...}{Other arguments passed to \code{\link{read.pcv}} .}
 }
+\value{
+Returns a dataframe potentially with several files merged into it.
+}
 \description{
 Read in plantCV csv from bellwether phenotyper style experiments.
 }

@@ -20,6 +20,8 @@
 #' brmPlot(fit_9, form = y~time|id/group)
 #' brmPlot(fit_15, form = y~time|id/group)
 #' 
+#' @return Returns a ggplot showing a brms model's credible intervals and optionally the individual growth lines.
+#' 
 #' @export
 
 brmPlot<-function(fit, form, df=NULL){

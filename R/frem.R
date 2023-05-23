@@ -20,6 +20,8 @@
 #' 
 #' @keywords read.csv, pcv, wide, long
 #' 
+#' @return Returns either a plot (if returnData=F) or a list with a plot and data/a list of dataframes (depending on returnData and cor).
+#' 
 #' @examples 
 #' 
 #' x<-read.pcv("/home/jsumner/Desktop/shares/mgehan_share/llima/Maize_Project_2022/nir_maize_first_exp_results.csv",
