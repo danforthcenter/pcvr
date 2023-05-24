@@ -4,12 +4,14 @@
 \alias{brmPlot}
 \title{Function to visualize brms models similar to those made using growthSS outputs.}
 \usage{
-brmPlot(fit, form, df = NULL)
+brmPlot(fit, form, groups = NULL, df = NULL)
 }
 \arguments{
 \item{fit}{A brmsfit object, similar to those fit with \code{\link{growthSS}} outputs.}
 
 \item{form}{A formula similar to that in \code{growthSS} inputs specifying the outcome, predictor, and grouping structure of the data as \code{outcome ~ predictor|individual/group}.}
+
+\item{groups}{An optional set of groups to keep in the plot. Defaults to NULL in which case all groups in the model are plotted.}
 
 \item{df}{An optional dataframe to use in plotting observed growth curves on top of the model.}
 }
