@@ -57,7 +57,7 @@ brmPlot<-function(fit, form, groups = NULL, df=NULL){
     pcv_theme()
   
   if(!is.null(df)){
-    p<-p+ggplot2::geom_line(data=df, ggplot2::aes(.data[[x]], .data[[y]], group=.data[[individual]]),color="gray20")
+    p<-p+ggplot2::geom_line(data=df, ggplot2::aes(.data[[x]], .data[[y]], group=.data[[individual]]),color="gray20", linewidth=0.2)
   }
   return(p)
 }
