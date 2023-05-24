@@ -18,7 +18,7 @@ pcv.emd(
 )
 }
 \arguments{
-\item{df}{Data frame to use with multi value traits in wide format}
+\item{df}{Data frame to use with multi value traits in wide format or long format}
 
 \item{cols}{Columns to use. Defaults to NULL in which case all columns are used. Single strings will be used to regex a pattern in column names (see examples). A vector of names, positions, or booleans will also work. For long data this is taken as a regex pattern (or full name) to use in filtering the longTrait column.}
 

@@ -2,7 +2,7 @@
 #' 
 #' @description pcv.emd can be used to calculate Earth Mover's Distance between pairwise histograms in a wide dataframe of multi value traits.
 #' 
-#' @param df Data frame to use with multi value traits in wide format
+#' @param df Data frame to use with multi value traits in wide format or long format
 #' @param cols Columns to use. Defaults to NULL in which case all columns are used. Single strings will be used to regex a pattern in column names (see examples). A vector of names, positions, or booleans will also work. For long data this is taken as a regex pattern (or full name) to use in filtering the longTrait column.
 #' @param reorder Should data be reordered to put similar rows together in the resulting plot? This takes a vector of column names of length 1 or more (see examples).
 #' @param include if a long dataframe is returned then these columns will be added to the dataframe, labelled for i and j (the row positions for compared histograms). If a matrix is returned then this information is stored in the row names. This defaults to \link{rescale}.

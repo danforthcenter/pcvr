@@ -34,12 +34,10 @@ brmPlot(fit_9, form = y~time|id/group)
 brmPlot(fit_15, form = y~time|id/group)
 
 }
-\keyword{curve,}
 \keyword{exponential,}
 \keyword{gompertz,}
-\keyword{growth}
-\keyword{law}
+\keyword{growth-curve,}
 \keyword{linear,}
 \keyword{logistic,}
 \keyword{monomolecular,}
-\keyword{power}
+\keyword{power-law}
