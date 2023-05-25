@@ -21,9 +21,9 @@
 #' 
 #' @examples 
 #' 
-#' ex<-brmViolin(model = list(model1, model2, model3), params = NULL, cores = 10,
-#'      hyp="num/denom>1.05", compareX = c("0.drip", "0.mock", "0.slurry"), againstY = "0.mock", group_sep = "[.]",
-#'      groups_into = c("soil", "inoc"), x="inoc", facet="soil")
+#' ex<-brmViolin(model = list(heat_mod, drought_mod, control_mod), params = NULL, cores = 10,
+#'      hyp="num/denom>1.05", compareX = c("123.heat", "123.drought", "123.control"), againstY = "123.control", group_sep = "[.]",
+#'      groups_into = c("genotype", "trt"), x="trt", facet="genotype")
 #' 
 #' @return Returns a ggplot showing a brms model's posterior distributions as violins and filled by posterior probability of some hypothesis.
 #' 
