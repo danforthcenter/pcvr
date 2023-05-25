@@ -32,8 +32,8 @@ bw.time<-function(df = NULL, mode=NULL, plantingDelay = 4,
   }
   if("DAE" %in% mode){
     df<-do.call(rbind, lapply( split(df, as.formula(paste0("~",paste( group,collapse="+" )))), function(d){
-      subd<-d[d[[phenotype]] >= 1 & !is.na(d[[phenotype]]) , ]
-      if(nrow(subd)==0){subd<-data.frame(DAS=max(d[[timeCol]])+1) ; colnames(subd)<-timeCol} # if all NA area then remove all rows
+      subd<-d[d[[phenotype]] >= cutoff & !is.na(d[[phenotype]]) , ]
+      if(nrow(subd)==0){subd<-data.frame(DAS=max(df[[timeCol]])+1) ; colnames(subd)<-timeCol} # if all NA area then remove all rows
       d$DAE<-d[[timeCol]] - min(subd[[timeCol]], na.rm=T)
       d#[d$DAE>=0, ]
     }))
