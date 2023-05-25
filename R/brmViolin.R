@@ -18,7 +18,6 @@
 #' 
 #' @import ggplot2
 #' @import viridis
-#' @import brms
 #' 
 #' @examples 
 #' 
