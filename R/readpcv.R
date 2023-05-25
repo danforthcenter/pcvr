@@ -65,6 +65,8 @@ read.pcv<-function(filepath, mode="wide", singleValueOnly=T,
     }
   if(match.arg(mode, c("wide","long"))=="wide" ){
     long<-df1
+    #* if there is an X column or something similar from write.csv then should this do anything?
+    if(substr(colnames(long)[1],1,1)=="X" & length(unique(long[[1]]))==nrow(long)){long<-long[,-1]}
     long<-long[!is.na(long[[valueCol]]),]
     long[[labelCol]]<-ifelse(is.na(long[[labelCol]]), "none", long[[labelCol]])
     wide<-as.data.frame(data.table::dcast(data.table::as.data.table(long), as.formula(paste0("... ~ ", traitCol, "+", labelCol)), value.var = valueCol, sep="."))
