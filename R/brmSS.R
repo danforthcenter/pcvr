@@ -46,6 +46,8 @@ growthSS<-function(model, form, sigma=NULL, df, priors=NULL){
       df[[group]]<-"dummy"
       USEGROUP=F
     } else {stop("form must specify grouping at least for individual level for observations ( y ~ x|individual ). See documentation and examples.")}
+    #* `convert group to character to avoid unexpected factor stuff`
+    df[[group]]<-as.character(df[[group]])
     #* `Make autocorrelation formula`
     corForm<-as.formula(paste0("~arma(~",x,"|", individual,":",group,",1,1)"))
     #* `Make parameter formula`
