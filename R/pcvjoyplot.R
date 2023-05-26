@@ -1,9 +1,9 @@
 #' Make Joyplots for multi value trait plantCV data and optionally compare distributions
 #' 
-#' @param df Data frame to use. Long format with multi value traits is expected.
-#' @param index A multi value trait as a character string. Must be present in `trait`.
+#' @param df Data frame to use. Long or wide format is accepted.
+#' @param index If the data is long then this is a multi value trait as a character string that must be present in `trait`. If the data is wide then this is a string used to find column names to use from the wide data. In the wide case this should include the entire trait name (ie, "hue_frequencies" instead of "hue_freq").
 #' @param group A length 1 or 2 character vector. This is used for faceting the joyplot and identifying groups for testing.
-#' @param method A method to use in comparing distributions/means. Currently "beta", "gaussian", and "ks" are supported. See details for explanations of tests.
+#' @param method A method to use in comparing distributions/means. Currently "beta", "gaussian", "emd", and "ks" are supported. See details for explanations of tests.
 #' @param compare Groups to compare. By default this is set to FALSE, which corresponds to no testing. Other values of compare are passed to fixCompare to make t.test comparisons using ggpubr. In short, NULL will run all pairwise T tests, a single value of the X axis variable will compare that level to all other levels of the X variable, alternatively this can be a list as used by ggpubr: list(c("level1", "level2"), c("level1", "level3"))
 #' @param priors Parameters for prior distributions if using method = "beta" or "gaussian". If left NULL then wide weak priors are used. This can be set as a single set of parameters or with unique values for each group in `compare`, but it is advised to use the default priors.
 #' @param hyp Hypothesis to test for beta and gaussian methods, one of "unequal", "greater", "lesser". Defaults to "unequal" if left NULL.
@@ -29,26 +29,76 @@
 #' 
 #' @examples 
 #' df <- read.pcv("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest2.csv", "long", F)
+#' wide_beta <- read.pcv("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest2.csv", "wide", F)
 #' pcv.joyplot(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"))
 #' pcv.joyplot(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"), method="ks")
 #' pcv.joyplot(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"), method="beta")
 #' pcv.joyplot(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"), method="gaussian")
+#' 
+#' wide<-read.pcv("https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv", mode="wide", singleValueOnly = T, multiValPattern = "hist", reader="fread")
+#' wide$genotype = substr(wide$barcode, 3,5)
+#' wide$genotype = ifelse(wide$genotype == "002", "B73",
+#'                        ifelse(wide$genotype == "003", "W605S",
+#'                               ifelse(wide$genotype == "004", "MM", "Mo17")))
+#' wide$fertilizer = substr(wide$barcode, 8, 8)
+#' wide$fertilizer = ifelse(wide$fertilizer == "A", "100",
+#'                          ifelse(wide$fertilizer == "B", "50", "0"))
+#' p<-pcv.joyplot(hue_wide, index = "hue_frequencies", group=c("inoc", "soil"))
+#' # For some color traits it makes sense to show the actual represented color, which can be done easily by adding new fill scales.
+#' p+scale_fill_gradientn(colors = scales::hue_pal(l=65)(360))
 #' @export
 
 
 pcv.joyplot<-function(df = NULL, index = NULL, group = NULL,
                       method=NULL,
-                      compare= NULL, priors=NULL,hyp=NULL, # c("unequal", "greater", "lesser")
+                      compare= NULL, priors=NULL,hyp=NULL,
                       bin="label", freq="value", trait="trait", fillx=T){
   #* ***** `troubleshooting test values`
   # df=df; index = "yii_hist_Fv.over.Fm"; group=c("timepoint", "genotype"); method="emd"
   # compare= NULL; priors=NULL; bin="label"; freq="value"; trait="trait";hyp=NULL; fillx=T    ;index='index_frequencies_index_ari' 
+  #* `wide vs long test values`
+  #* 
+  #* df=hue_wide; index = "hue_frequencies"; group=c("inoc", "soil"); method=NULL
+  #* compare= NULL; priors=NULL; bin="label"; freq="value"; trait="trait";hyp=NULL; fillx=T 
+  #* 
+  #* df=long; index = "hue_frequencies"; group=c("fertilizer", "genotype"); method="ks"
+  #* compare= NULL; priors=NULL; bin="label"; freq="value"; trait="trait";hyp=NULL; fillx=T 
+  #* 
   #* ***** `general calculated values`
-  if(is.null(index)){sub<-df
-  }else{ sub<-df[df[[trait]]==index, ] }
-  if(length(unique(sub[[trait]]))>1){warning("More than one trait found, consider an `index` argument")}
-  sub$bin = as.numeric(sub[[bin]])
-  sub$freq = as.numeric(sub[[freq]])
+  #* 
+  #* Test if data is long or wide. Maybe look at pcv.emd for an idea of how to implement this well.
+  #* Unfortunately this will change a lot of individual places in this function
+  #* every time that I calculate a bw (binwidth) and a dens I'll have to change it.
+  #* might be better practice to get the doStats thing then just calculate those values right off the bat
+  #* so that it's easier to read and edit in the future. Or at least define a function then lapply that in each place.
+  #* I think I could make that outside of the main function, not export it, then just rename some dummy function
+  #* in here to use either the long or the wide version.
+  #* problem here is that for each comparison method the way I make distparams and dens_df has to change.
+  #* 
+  #* Option 1 would be to remove the comparison methods and standardize to one option (non-parametric)
+  #* Option 2 is to coerce the wide data to long data and just go with it from there as is
+  #* Option 3 is to automatically set method to NULL and compare to FALSE if the data is wide, kind of a halfway point 
+  #*    so that in the future I can write method functions like: beta.long , beta.wide, ks.long, etc...
+  #*    I think that makes sense and will reduce bloat.
+  #* 
+  #* It isn't really all that complex to write ways for each of these to work with wide data, but the function is already bloated
+  #* and I don't want to make it a complete mess.
+  #* I am going with option 3 for now, starting with a non parametric density and no stats
+
+  if(!is.null(trait) && trait %in% colnames(df)){traitCol = trait ; mode="long" # if there is a trait column then use long options,
+    }else{mode="wide"} # else use wide options
+  
+  #* if long data then subset rows where trait is correct
+  if(mode=="long"){
+    if(is.null(index)){sub<-df
+    }else{ sub<-df[df[[trait]]==index, ] }
+    if(length(unique(sub[[trait]]))>1){warning("More than one trait found, consider an `index` argument")}
+    sub$bin = as.numeric(sub[[bin]])
+    sub$freq = as.numeric(sub[[freq]])
+    
+  } else if(mode=="wide"){ # if wide then get column names that contain index string
+    sub<-df
+  }
   
   if(is.null(group)){group = "dummy"; df$dummy = "dummy"; sub$dummy="dummy"}
   if(length(group)==1){sub$fill = sub[[group]]; sub$y = sub[[group]]; facet_layer = ggplot2::facet_wrap(paste0("~",group)) }
@@ -66,66 +116,45 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL,
   #* ***** `default joyplot`
   if(is.null(method) | match.arg(method, choices = c("beta", "gaussian", "ks", "mixture", "emd"))=="emd"){
     
-    datsp=split(sub, sub$grouping, drop=T)
-    bw<-min(diff(sort(as.numeric(unique(sub[[bin]])))))*0.75
-    distParams<-lapply(datsp, function(D){
-      X1 <- as.numeric(D[rep(rownames(D), D[[freq]]), bin])
-      dens<-density(X1, from = min(sub$bin,na.rm=T), to = max(sub$bin,na.rm=T), n = 2^10, bw=bw)
-      return(dens)
-    })
-    names(distParams)<-names(datsp)
-    dens_df<-do.call(rbind, lapply(names(distParams), function(nm){
-      dens<-distParams[[nm]]
-      out<-data.frame(xdens= dens$x, ydens=dens$y)
-      out[,(ncol(out)+1):(ncol(out)+length(group))]<-lapply(strsplit(nm, "[.]")[[1]], identity)
-      colnames(out)<-c("xdens", "ydens", group)
-      out$y<-out[[group[1] ]]
-      out
-    }))
+    if(mode=="wide"){
+      o<-wide.dens.default(d=sub, colPattern = index)
+    } else if(mode=="long"){
+      o<-long.dens.default(d=sub)
+    }
+    distParams = o[[1]]
+    dens_df = o[[2]]
     
     if(match.arg(method, choices = c("beta", "gaussian", "ks", "mixture", "emd"))=="emd" & doStats){
-      
-      #* use emd1d/pcv.emd to make an EMD distance matrix/df
-      #* this should probably return a long dataframe per normal AND a distance matrix
-      
       outStats<-do.call(rbind, lapply(compareTests, function(comp){
         g1<-as.character(comp[1])
         g2<-as.character(comp[2])
         d1<-sub[sub$grouping == g1, ]
         d2<-sub[sub$grouping == g2, ]
-        #* emd1d wants two vectors, the best way to get two vectors here is different than in pcv.emd
-        #* since pcv.emd wants wide data (really it should work with either though, do that?)
-        #* so here I think pulling bins and frequencies, normalizing to a common total weight, averaging, then comparing?
-        #* Adding arguments to handle the grouping for normalization feels cumbersome but might be needed.
-        #* For now I'm just summing.
-        #* here emd1d does the rescaling so that each histogram sums to 1.
-        d1s<-aggregate(as.formula(paste0(freq,"~",bin)), d1, sum)[[freq]]
-        d2s<-aggregate(as.formula(paste0(freq,"~",bin)), d2, sum)[[freq]]
+        if(mode=="long"){
+          d1s<-aggregate(as.formula(paste0(freq,"~",bin)), d1, sum)[[freq]]
+          d2s<-aggregate(as.formula(paste0(freq,"~",bin)), d2, sum)[[freq]]
+        } else if(mode=="wide"){
+          histCols <- colnames(sub)[grepl(index, colnames(sub))]
+          histCols_bin <- as.numeric(sub(paste0(index, "[.]?"), "", colnames(sub)[grepl(index, colnames(sub))]))
+          bins_order<-sort(histCols_bin, index.return=T)$ix
+          histCols <- histCols[bins_order]
+          d1s<-colSums(d1[,histCols],na.rm=T)
+          d2s<-colSums(d2[,histCols],na.rm=T)
+        }
         emd_res <- emd1d(d1s, d2s)
-        # emd_res<-suppressWarnings(emdist::emdw(d1[[bin]], d2[[bin]], d1[[freq]], d2[[freq]]))
         data.frame(group1 = g1, group2 = g2, emd = emd_res, method="emd")
       }))
-      
     }
-    
   } else if(match.arg(method, choices = c("beta", "gaussian", "ks", "mixture", "emd"))=="ks"){
     #* ***** `Non parametric joyplot`
-    datsp=split(sub, sub$grouping, drop=T)
-    bw<-min(diff(sort(as.numeric(unique(sub[[bin]])))))*0.75 # calculating a set bandwidth for all groups
-    distParams<-lapply(datsp, function(D){
-      X1 <- as.numeric(D[rep(rownames(D), D[[freq]]), bin])
-      dens<-density(X1, from = min(sub$bin,na.rm=T), to = max(sub$bin,na.rm=T), n = 2^10, bw=bw) # previously bw="bw.nrd0", adjust=2
-      return(dens)
-    })
-    names(distParams)<-names(datsp)
-    dens_df<-do.call(rbind, lapply(names(distParams), function(nm){
-      dens<-distParams[[nm]]
-      out<-data.frame(xdens= dens$x, ydens=dens$y)
-      out[,(ncol(out)+1):(ncol(out)+length(group))]<-lapply(strsplit(nm, "[.]")[[1]], identity)
-      colnames(out)<-c("xdens", "ydens", group)
-      out$y<-out[[group[1] ]]
-      out
-    }))
+    
+    if(mode=="wide"){
+      o<-wide.dens.default(d=sub, colPattern = index)
+    } else if(mode=="long"){
+      o<-long.dens.default(d=sub)
+    }
+    distParams = o[[1]]
+    dens_df = o[[2]]
     
     #* ***** `Non Parametric Stats`
     if(doStats){
@@ -139,33 +168,14 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL,
     }
   } else if(match.arg(method, choices = c("beta", "gaussian", "ks", "emd"))=="beta"){
     #* ***** `Beta distribution joyplot`
-    datsp=split(sub, sub$grouping, drop=T) # split data into panel groups
     
-    if(is.null(priors)){ priors = list(a = rep(0.5, times=length(datsp)), b = rep(0.5, times=length(datsp))) } # assume weak prior on everything
-    
-    distParams<-lapply(1:length(datsp), function(i){ # get beta parameters from histogram data per panel
-      D=datsp[[i]]
-      X1 <- as.numeric(D[rep(rownames(D), D[[freq]]), bin])
-      n1<- length(X1)
-      xbar1 = (1/n1) * sum(X1)
-      variance1 = (1/(n1))*sum( (X1 - xbar1)^2 )
-      alpha1 = (xbar1 * ( (xbar1 * (1-xbar1) )/(variance1)-1 )) + priors$a[i]
-      beta1 = ((1-xbar1) * ( (xbar1 * (1-xbar1) )/(variance1)-1 )) + priors$b[i]
-      return(c(alpha1, beta1))
-    })
-    names(distParams)<-names(datsp)
-    support<-seq(0.001, 0.999, 0.001)
-    
-    dens_df<-do.call(rbind, lapply(names(distParams), function(nm){
-      pars<-distParams[[nm]]
-      dens<-dbeta(support, pars[1], pars[1])
-      #* define support, get density across support given these parameters, make dens_df
-      out<-data.frame(xdens= support, ydens=dens)
-      out[,(ncol(out)+1):(ncol(out)+length(group))]<-lapply(strsplit(nm, "[.]")[[1]], identity)
-      colnames(out)<-c("xdens", "ydens", group)
-      out$y<-out[[group[1] ]]
-      out
-    }))
+    if(mode=="wide"){
+      o<-wide.dens.beta(d=sub, colPattern = index)
+    } else if(mode=="long"){
+      o<-long.dens.beta(d=sub)
+    }
+    distParams = o[[1]]
+    dens_df = o[[2]]
     
     #* ***** `Compare generating beta distributions`
     if(doStats){
@@ -198,33 +208,13 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL,
     }
   } else if(match.arg(method, choices = c("beta", "gaussian", "ks"))=="gaussian"){
     #* ***** `Gaussian distribution joyplot`
-    datsp=split(sub, sub$grouping, drop=T)
-    if(is.null(priors)){ priors <- list( m=rep(0,length(datsp)), n=rep(1,length(datsp)), s2=rep(20,length(datsp)) ) } # mean, number, and variance
-    distParams<-lapply(1:length(datsp), function(i){ 
-      D=datsp[[i]]
-      X1 <- as.numeric(D[rep(rownames(D), D[[freq]]), bin])
-      obs_n = length(X1)
-      obs_m = mean(X1)
-      obs_s2 = var(X1)
-      priorDF = priors$n[i]-1
-      n1_n = priors$n[i] + obs_n
-      m1_n = (obs_n*obs_m + priors$n[i]*priors$m[1])/n1_n
-      newDF = priorDF + obs_n
-      s2_n = ((obs_n-1)*obs_s2 + priorDF*priors$s2[1] + priors$n[1]*obs_n*(priors$m[1] - obs_m)^2/n1_n)/newDF # calculate new variance
-      list(m = m1_n, s2 = s2_n, n = n1_n, DF = newDF)
-    })
-    names(distParams)<-names(datsp)
-    support<-seq(floor(min(sub$bin, na.rm=T)), ceiling(max(sub$bin, na.rm=T)), length.out=1000*round(diff(range(sub$bin, na.rm=T)))  )
-    
-    dens_df<-do.call(rbind, lapply(names(distParams), function(nm){
-      pars<-distParams[[nm]]
-      dens<-extraDistr::dlst(support, pars$DF, pars$m, sqrt(pars$s2))
-      out<-data.frame(xdens= support, ydens=dens)
-      out[,(ncol(out)+1):(ncol(out)+length(group))]<-lapply(strsplit(nm, "[.]")[[1]], identity)
-      colnames(out)<-c("xdens", "ydens", group)
-      out$y<-out[[group[1] ]]
-      out
-    }))
+    if(mode=="wide"){
+      o<-wide.dens.gaussian(d=sub, colPattern = index)
+    } else if(mode=="long"){
+      o<-long.dens.gaussian(d=sub)
+    }
+    distParams = o[[1]]
+    dens_df = o[[2]]
     
     #* ***** `Compare generating gaussian distributions`
     if(doStats){
@@ -275,6 +265,7 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL,
       }))
     }
   }
+  
   if(fillx){dens_df$group = interaction(dens_df[,group])}
   ggridgeLayer<-if(fillx){
     list(ggridges::geom_density_ridges_gradient(ggplot2::aes(x = xdens, y = y,
@@ -303,5 +294,188 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL,
 
   if(doStats & !is.null(method)){ return(list("plot" = p, "stats"=outStats)) } else { return(p) }
 }
+
+
+
+long.dens.default <- function(d = sub){
+  datsp=split(sub, sub$grouping, drop=T)
+  bw<-min(diff(sort(as.numeric(unique(sub$bin )))))*0.75
+  distParams<-lapply(datsp, function(D){
+    X1 <- as.numeric(D[rep(rownames(D), round(D$freq)), bin])
+    dens<-density(X1, from = min(d$bin,na.rm=T), to = max(d$bin,na.rm=T), n = 2^10, bw=bw)
+    return(dens)
+  })
+  names(distParams)<-names(datsp)
+  dens_df<-do.call(rbind, lapply(names(distParams), function(nm){
+    dens<-distParams[[nm]]
+    out<-data.frame(xdens= dens$x, ydens=dens$y)
+    out[,(ncol(out)+1):(ncol(out)+length(group))]<-lapply(strsplit(nm, "[.]")[[1]], identity)
+    colnames(out)<-c("xdens", "ydens", group)
+    out$y<-out[[group[1] ]]
+    out
+  }))
+  return(list(distParams, dens_df))
+}
+
+wide.dens.default<-function(d=sub, colPattern = index){
+  histCols <- colnames(d)[grepl(colPattern, colnames(d))]
+  histCols_bin <- as.numeric(sub(paste0(colPattern, "[.]?"), "", colnames(d)[grepl(colPattern, colnames(d))]))
+  bins_order<-sort(histCols_bin, index.return=T)$ix
+  histCols <- histCols[bins_order]
+  datsp=split(sub, sub$grouping, drop=T)
+  bw<-min(diff(sort(as.numeric(histCols_bin))))*0.75
+  
+  distParams<-lapply(datsp, function(D){
+    D<-D[,histCols]
+    X1<-rep(histCols_bin[bins_order], as.numeric(round(colSums(D))) )
+    dens<-density(X1, from = min(histCols_bin,na.rm=T), to = max(histCols_bin,na.rm=T), n = 2^10, bw=bw)
+    return(dens)
+  })
+  
+  names(distParams)<-names(datsp)
+  dens_df<-do.call(rbind, lapply(names(distParams), function(nm){
+    dens<-distParams[[nm]]
+    out<-data.frame(xdens= dens$x, ydens=dens$y)
+    out[,(ncol(out)+1):(ncol(out)+length(group))]<-lapply(strsplit(nm, "[.]")[[1]], identity)
+    colnames(out)<-c("xdens", "ydens", group)
+    out$y<-out[[group[1] ]]
+    out
+  }))
+  return(list(distParams, dens_df))
+}
+
+long.dens.beta<-function(d = sub){
+  datsp=split(d, d$grouping, drop=T) # split data into panel groups
+  
+  if(is.null(priors)){ priors = list(a = rep(0.5, times=length(datsp)), b = rep(0.5, times=length(datsp))) } # assume weak prior on everything
+  
+  distParams<-lapply(1:length(datsp), function(i){ # get beta parameters from histogram data per panel
+    D=datsp[[i]]
+    X1 <- as.numeric(D[rep(rownames(D), D[[freq]]), bin])
+    n1<- length(X1)
+    xbar1 = (1/n1) * sum(X1)
+    variance1 = (1/(n1))*sum( (X1 - xbar1)^2 )
+    alpha1 = (xbar1 * ( (xbar1 * (1-xbar1) )/(variance1)-1 )) + priors$a[i]
+    beta1 = ((1-xbar1) * ( (xbar1 * (1-xbar1) )/(variance1)-1 )) + priors$b[i]
+    return(c(alpha1, beta1))
+  })
+  names(distParams)<-names(datsp)
+  support<-seq(0.001, 0.999, 0.001)
+  
+  dens_df<-do.call(rbind, lapply(names(distParams), function(nm){
+    pars<-distParams[[nm]]
+    dens<-dbeta(support, pars[1], pars[1])
+    out<-data.frame(xdens= support, ydens=dens)
+    out[,(ncol(out)+1):(ncol(out)+length(group))]<-lapply(strsplit(nm, "[.]")[[1]], identity)
+    colnames(out)<-c("xdens", "ydens", group)
+    out$y<-out[[group[1] ]]
+    out
+  }))
+  return(list(distParams, dens_df))
+}
+
+wide.dens.beta<-function(d = sub, colPattern = index){
+  histCols <- colnames(d)[grepl(colPattern, colnames(d))]
+  histCols_bin <- as.numeric(sub(paste0(colPattern, "[.]?"), "", colnames(d)[grepl(colPattern, colnames(d))]))
+  bins_order<-sort(histCols_bin, index.return=T)$ix
+  histCols <- histCols[bins_order]
+  datsp=split(sub, sub$grouping, drop=T)
+  if(is.null(priors)){ priors = list(a = rep(0.5, times=length(datsp)), b = rep(0.5, times=length(datsp))) } # assume weak prior on everything
+  bw<-min(diff(sort(as.numeric(histCols_bin))))*0.75
+  distParams<-lapply(1:length(datsp), function(i){
+    D<-datsp[[i]]
+    D<-D[,histCols]
+    X1<-rep(histCols_bin[bins_order], as.numeric(round(colSums(D))) )
+    n1<- length(X1)
+    xbar1 = (1/n1) * sum(X1)
+    variance1 = (1/(n1))*sum( (X1 - xbar1)^2 )
+    alpha1 = (xbar1 * ( (xbar1 * (1-xbar1) )/(variance1)-1 )) + priors$a[i]
+    beta1 = ((1-xbar1) * ( (xbar1 * (1-xbar1) )/(variance1)-1 )) + priors$b[i]
+    return(c(alpha1, beta1))
+  })
+  
+  dens_df<-do.call(rbind, lapply(names(distParams), function(nm){
+    pars<-distParams[[nm]]
+    dens<-dbeta(support, pars[1], pars[1])
+    out<-data.frame(xdens= support, ydens=dens)
+    out[,(ncol(out)+1):(ncol(out)+length(group))]<-lapply(strsplit(nm, "[.]")[[1]], identity)
+    colnames(out)<-c("xdens", "ydens", group)
+    out$y<-out[[group[1] ]]
+    out
+  }))
+  return(list(distParams, dens_df))
+}
+
+
+long.dens.gaussian<-function(d=sub){
+  datsp=split(d, d$grouping, drop=T)
+  if(is.null(priors)){ priors <- list( m=rep(0,length(datsp)), n=rep(1,length(datsp)), s2=rep(20,length(datsp)) ) } # mean, number, and variance
+  distParams<-lapply(1:length(datsp), function(i){ 
+    D=datsp[[i]]
+    X1 <- as.numeric(D[rep(rownames(D), D[[freq]]), bin])
+    obs_n = length(X1)
+    obs_m = mean(X1)
+    obs_s2 = var(X1)
+    priorDF = priors$n[i]-1
+    n1_n = priors$n[i] + obs_n
+    m1_n = (obs_n*obs_m + priors$n[i]*priors$m[1])/n1_n
+    newDF = priorDF + obs_n
+    s2_n = ((obs_n-1)*obs_s2 + priorDF*priors$s2[1] + priors$n[1]*obs_n*(priors$m[1] - obs_m)^2/n1_n)/newDF # calculate new variance
+    list(m = m1_n, s2 = s2_n, n = n1_n, DF = newDF)
+  })
+  names(distParams)<-names(datsp)
+  support<-seq(floor(min(d$bin, na.rm=T)), ceiling(max(d$bin, na.rm=T)), length.out=1000*round(diff(range(d$bin, na.rm=T)))  )
+  
+  dens_df<-do.call(rbind, lapply(names(distParams), function(nm){
+    pars<-distParams[[nm]]
+    dens<-extraDistr::dlst(support, pars$DF, pars$m, sqrt(pars$s2))
+    out<-data.frame(xdens= support, ydens=dens)
+    out[,(ncol(out)+1):(ncol(out)+length(group))]<-lapply(strsplit(nm, "[.]")[[1]], identity)
+    colnames(out)<-c("xdens", "ydens", group)
+    out$y<-out[[group[1] ]]
+    out
+  }))
+}
+
+
+wide.dens.gaussian<-function(d=sub, colPattern=index ){
+  histCols <- colnames(d)[grepl(colPattern, colnames(d))]
+  histCols_bin <- as.numeric(sub(paste0(colPattern, "[.]?"), "", colnames(d)[grepl(colPattern, colnames(d))]))
+  bins_order<-sort(histCols_bin, index.return=T)$ix
+  histCols <- histCols[bins_order]
+  datsp=split(sub, sub$grouping, drop=T)
+  
+  if(is.null(priors)){ priors <- list( m=rep(0,length(datsp)), n=rep(1,length(datsp)), s2=rep(20,length(datsp)) ) } # mean, number, and variance
+  distParams<-lapply(1:length(datsp), function(i){ 
+    D<-datsp[[i]]
+    D<-D[,histCols]
+    X1<-rep(histCols_bin[bins_order], as.numeric(round(colSums(D))) )
+    obs_n = length(X1)
+    obs_m = mean(X1)
+    obs_s2 = var(X1)
+    priorDF = priors$n[i]-1
+    n1_n = priors$n[i] + obs_n
+    m1_n = (obs_n*obs_m + priors$n[i]*priors$m[1])/n1_n
+    newDF = priorDF + obs_n
+    s2_n = ((obs_n-1)*obs_s2 + priorDF*priors$s2[1] + priors$n[1]*obs_n*(priors$m[1] - obs_m)^2/n1_n)/newDF # calculate new variance
+    list(m = m1_n, s2 = s2_n, n = n1_n, DF = newDF)
+  })
+  names(distParams)<-names(datsp)
+  support<-seq(floor(min(d$bin, na.rm=T)), ceiling(max(d$bin, na.rm=T)), length.out=1000*round(diff(range(d$bin, na.rm=T)))  )
+  
+  dens_df<-do.call(rbind, lapply(names(distParams), function(nm){
+    pars<-distParams[[nm]]
+    dens<-extraDistr::dlst(support, pars$DF, pars$m, sqrt(pars$s2))
+    out<-data.frame(xdens= support, ydens=dens)
+    out[,(ncol(out)+1):(ncol(out)+length(group))]<-lapply(strsplit(nm, "[.]")[[1]], identity)
+    colnames(out)<-c("xdens", "ydens", group)
+    out$y<-out[[group[1] ]]
+    out
+  }))
+}
+
+
+
+
 
 
