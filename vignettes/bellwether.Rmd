@@ -11,6 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 # devtools::install_github("joshqsumner/pcvr")
 library(pcvr)
+library(data.table) # for fread
 library(ggplot2)
 library(patchwork)
 ```
@@ -55,8 +56,6 @@ Bellwether data can be very large so this vignette will use a small bellwether d
 The single value traits can be read in and converted to wide format with `read.pcv`, here using `data.table::fread` for speed.
 
 ```{r}
-library(data.table)
-
 sv<-read.pcv("https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv", mode="wide", singleValueOnly = T, reader="fread")
 
 sv$genotype = substr(sv$barcode, 3,5)
@@ -72,7 +71,7 @@ sv$fertilizer = ifelse(sv$fertilizer == "A", "100",
 Sometimes large plantCV output may be too large to be read into memory for R. In that case `read.pcv` has a `filter` argument which will filter rows using awk through linux/unix outside of R. That feature would work as shown below to read only single value traits into memory. This can take a few minutes but allows the entirely workflow to be documented in one R file. 
 
 
-```{r, eval=F, echo=T}
+```
 example<-read.pcv("prohibitivelyLargeFile.csv",
    filters = list("trait in area, convex_hull_area, solidity, perimeter, width, height, longest_path, convex_hull_vertices, ellipse_major_axis, ellipse_minor_axis, ellipse_angle, ellipse_eccentricity, hue_circular_mean, hue_circular_std, hue_median", "sample in default"))
 ```
@@ -81,7 +80,7 @@ example<-read.pcv("prohibitivelyLargeFile.csv",
 
 Bellwether data can also be read in with `read.pcv.bw` which is a wrapper around `read.pcv` which attempts to do several common tasks related bellwether data joining internally. This should be considered experimental as bellwether experiments can take many formats and this has only been considered with a few datasets.
 
-```{r, eval=F}
+```
 bw<-read.pcv.bw( file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestPhenos.csv",metaCol=NULL, mode="long")
 
 bw<-read.pcv.bw( file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestPhenos.csv",metaCol="meta", metaForm="vis_view_angle_zoom_horizontal_gain_exposure_v_new_n_rep", joinSnapshot = "id", mode="long")
@@ -127,12 +126,12 @@ ggplot(water[water$weight_after!=-1,], aes(x=DAS, y=water_amount, group=barcode,
   theme(legend.position="bottom")
 ```
 
-Finally, we can combine images taken at different angles of the same plant on a given day with `aggregate`, where we will also remove some columns we aren't using.
+Finally, we can combine images taken at different angles of the same plant on a given day with `aggregate`, where we will also remove some columns we aren't using. Here we also remove the DAE column since it can be different for different angles and we are not concerned about adjusting for emergence here.
 
 ```{r}
 phenotypes <- c('area.pixels', 'convex_hull_area.pixels', 'convex_hull_vertices', 'ellipse_angle.degrees', 'ellipse_eccentricity', 'ellipse_major_axis.pixels', 'ellipse_minor_axis.pixels', 'height.pixels', 'hue_circular_mean.degrees', 'hue_circular_std.degrees', 'hue_median.degrees', 'longest_path.pixels', 'perimeter.pixels', 'solidity', 'width.pixels')
 phenoForm<-paste0("cbind(", paste0(phenotypes, collapse=", "), ")")
-groupForm<-"DAS+DAP+DAE+barcode+genotype+fertilizer"
+groupForm<-"DAS+DAP+barcode+genotype+fertilizer"
 form<-as.formula(paste0(phenoForm, "~", groupForm))
 sv<-aggregate(form, data=sv, mean, na.rm=T)
 ```
@@ -174,11 +173,11 @@ sv$height_cm <- sv$height.pixels/42.5
 Trendlines help us decide what next steps make the most sense and give a general impression of which conditions yielded healthier plants.
 
 ```{r}
-ggplot(sv, aes(x=DAS, y=area.pixels, group=interaction(genotype, fertilizer, lex.order=T),
+ggplot(sv, aes(x=DAS, y=area_cm2, group=interaction(genotype, fertilizer, lex.order=T),
                                 color = interaction(genotype, fertilizer, lex.order=T)))+
   geom_smooth(method="loess", se=F)+
   labs(y=expression("Area"~"(cm"^2~")"),
-       color="Soil and\nInoculation")+
+       color="Genotype\nand Soil")+
   pcv_theme()+theme(axis.text.x.bottom=element_text(angle=0))
 ```
 
@@ -265,6 +264,13 @@ ss<-growthSS(model="gompertz", form =  area_cm2~DAS|barcode/group, sigma="spline
              priors = list("A" = 130, "B" = 10, "C" = 1.2))
 ```
 
+Before trying to fit the model it is generally a good idea to check a plot of the data and make sure you have everything defined correctly.
+
+```{r}
+ggplot(ss$df, aes(x=DAS, y=area_cm2, group=barcode, color=group))+
+  geom_line()+theme_minimal()
+```
+
 #### Running Models
 
 The `brms` package is not automatically imported by `pcvr`, so before fitting models we need to load that package.
@@ -273,21 +279,33 @@ The `brms` package is not automatically imported by `pcvr`, so before fitting mo
 library(brms)
 ```
 
-Now we can fit our model using our `growthSS` outputs.
 
 ```{r, eval=F}
 fit <- brm(ss$formula, prior = ss$prior, data = ss$df, family = ss$family, 
                            iter = 2000, cores = 4, chains = 4, init = ss$initfun, 
                            control = list(adapt_delta = 0.999, max_treedepth = 20), backend = "cmdstanr")
-save(fit, file="bellwether_fit.rdata")
 ```
+
+```{r, echo=F}
+data(bw_vignette_fit, package = "pcvr")
+# print(load("/home/jsumner/Desktop/stargate/fahlgren_lab/pcvr/data/bw_vignette_fit.rda"))
+```
+
 
 #### Check Model Fit
 
 We can visualize credible intervals from a `brms` model and compare that to our growth trendlines to get an intuitive understanding of how well the model fit.
 
 ```{r}
-brmPlot(fit, form = area_cm2~DAS|barcode/group, df = ss$df)
+brmPlot(fit, form = area_cm2~DAS|barcode/group, df = ss$df)+
+  labs(y=expression("Area"~"(cm"^2~")"))
+```
+
+In this case our model has 12 groups (3 soil conditions in each of 4 genotypes), so we might want to pull out only a few groups to look at. 
+
+```{r}
+brmPlot(fit, form = area_cm2~DAS|barcode/group, df = ss$df, groups = c("0.B73", "50.B73", "100.B73"))+
+  labs(y=expression("Area"~"(cm"^2~")"))
 ```
 
 #### Test Hypotheses
@@ -295,33 +313,78 @@ brmPlot(fit, form = area_cm2~DAS|barcode/group, df = ss$df)
 Now we probably have some ideas about what we want to test in our data. The `brms::hypothesis` function offers incredible flexibility to test all kinds of hypotheses. For some comparisons `pcvr` has a helper function called `brmViolin` to visualize posterior distributions and the posterior probability of some hypotheses associated with them.
 
 ```{r}
-brmViolin(model = list(s0_gompertz_area), params = NULL, cores = 10,
-              hyp="num/denom>1.05", compareX = c("0.drip", "0.mock", "0.slurry"), againstY = "0.mock", group_sep = "[.]",
-              groups_into = c("soil", "inoc"), x="inoc", facet="soil", returnData=F)
+brmViolin(model = fit, params = NULL,
+          hyp="num/denom>1.05", compareX = c("0.B73", "50.B73", "100.B73"), againstY = "0.B73",
+          group_sep = "[.]", groups_into = c("soil", "genotype"), x="soil", facet="genotype",
+          returnData=F)
 
 ```
 
-This result tells us that... XYZ
+This shows that we have a posterior probability greater than 99 percent of an asymptotic size at least 5 percent higher with the 100 type soil when compared against the 0 type soil. Note that this data does not have any plants that reached asymptotic size, so the model uses the incomplete data to estimate where an asymptote would be. In a normal experiment the plants would be more mature but here the asymptote parameter is artificially inflated for the 100 soil treatment group due to their slower growth rate. 
 
+There are a lot of options for how to use this function and even more ways to use `brms::hypothesis`, so this example should not be seen as the only way to compare your models.
 
 ## Multi Value Traits
 
+Working with multi value traits leads to different statistical challenges than the single value traits. Generally reading the data in as wide format makes for a significantly smaller object in memory terms since there are not lots of duplicated metadata (identifiers for each row when every image has hundreds of rows potentially). 
+
 ```{r}
 hue_wide<-read.pcv("https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv", mode="wide", singleValueOnly = T, multiValPattern = "hist", reader="fread")
-
-hue_long<-read.pcv("https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv", mode="long", singleValueOnly = F, reader="fread")
+hue_wide$genotype = substr(hue_wide$barcode, 3,5)
+hue_wide$genotype = ifelse(hue_wide$genotype == "002", "B73",
+                     ifelse(hue_wide$genotype == "003", "W605S",
+                            ifelse(hue_wide$genotype == "004", "MM", "Mo17")))
+hue_wide$fertilizer = substr(hue_wide$barcode, 8, 8)
+hue_wide$fertilizer = ifelse(hue_wide$fertilizer == "A", "100",
+                     ifelse(hue_wide$fertilizer == "B", "50", "0"))
+hue_wide<-bw.time(hue_wide,timeCol="timestamp", group="barcode")
 ```
 
 
 ### Joyplots
 
+Joyplots are a common way to look at lots of distributions. Here we check the hue histograms as joyplots using the 18th day and add a new fill for the hue colorspace.
+
+```{r}
+p<-pcv.joyplot(hue_wide[hue_wide$DAS==18,], index = "hue_frequencies", group=c("fertilizer", "genotype"), method=NULL,
+               trait=NULL,compare=NULL)
+p+scale_fill_gradientn(colors = scales::hue_pal(l=65)(360))
+```
+
+We can also subset the data and change the group argument to look at very specific comparisons.
+
+```{r}
+p<-pcv.joyplot(hue_wide[hue_wide$fertilizer==0 & hue_wide$DAS %in% c(7,12,18),], index = "hue_frequencies", group=c("DAS", "genotype"),
+               trait=NULL,compare=NULL)
+p+scale_fill_gradientn(colors = scales::hue_pal(l=65)(360))
+```
+
 ### Ordination?
+
+```{r}
+pcadf(hue_wide, cols = "hue_frequencies", color = c("genotype", "fertilizer"), returnData=F)
+```
+This is potentially useful but it does not show us the time component well. We can facet by day or add traces easily. Using the trace argument we can view the movement of groups over time, but that can be cluttered.
+
+```{r}
+pcadf(hue_wide, cols = "hue_frequencies", color = c("genotype", "fertilizer"),  trace="DAS", returnData=F)
+```
+
+When the trace is cluttered it generally helps to either use a facet or to return a list of plots showing a few days at a time in the trace. Both those options are done using the `facet` argument.
+
+```{r}
+pcadf(hue_wide, cols = "hue_frequencies", color = c("genotype", "fertilizer"),  trace="DAS", returnData=F, facet = c(1,2,3,4))
+```
+
+```{r}
+pcadf(hue_wide, cols = "hue_frequencies", color = c("genotype", "fertilizer"),  facet="DAS", returnData=F)
+```
 
 ### Earth Mover's Distance
 
+
+
 #### Network Analysis
-
-
 
 
 
