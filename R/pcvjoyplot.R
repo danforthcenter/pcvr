@@ -53,13 +53,14 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL,
                       method=NULL,
                       compare= NULL, priors=NULL,hyp=NULL,
                       bin="label", freq="value", trait="trait", fillx=T){
+  
   #* ***** `troubleshooting test values`
   # df=df; index = "yii_hist_Fv.over.Fm"; group=c("timepoint", "genotype"); method="emd"
   # compare= NULL; priors=NULL; bin="label"; freq="value"; trait="trait";hyp=NULL; fillx=T    ;index='index_frequencies_index_ari' 
   #* `wide vs long test values`
   #* 
-  #* df=hue_wide; index = "hue_frequencies"; group=c("inoc", "soil"); method=NULL
-  #* compare= NULL; priors=NULL; bin="label"; freq="value"; trait="trait";hyp=NULL; fillx=T 
+  #* df=hue_wide; index = "hue_frequencies"; group=c("fertilizer", "genotype"); method=NULL
+  #* compare= F; priors=NULL; bin="label"; freq="value"; trait="trait";hyp=NULL; fillx=T 
   #* 
   #* df=long; index = "hue_frequencies"; group=c("fertilizer", "genotype"); method="ks"
   #* compare= NULL; priors=NULL; bin="label"; freq="value"; trait="trait";hyp=NULL; fillx=T 
@@ -117,9 +118,9 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL,
   if(is.null(method) | match.arg(method, choices = c("beta", "gaussian", "ks", "mixture", "emd"))=="emd"){
     
     if(mode=="wide"){
-      o<-wide.dens.default(d=sub, colPattern = index)
+      o<-wide.dens.default(d=sub, colPattern = index, group_internal=group)
     } else if(mode=="long"){
-      o<-long.dens.default(d=sub)
+      o<-long.dens.default(d=sub, group_internal=group)
     }
     distParams = o[[1]]
     dens_df = o[[2]]
@@ -149,9 +150,9 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL,
     #* ***** `Non parametric joyplot`
     
     if(mode=="wide"){
-      o<-wide.dens.default(d=sub, colPattern = index)
+      o<-wide.dens.default(d=sub, colPattern = index, group_internal=group)
     } else if(mode=="long"){
-      o<-long.dens.default(d=sub)
+      o<-long.dens.default(d=sub, group_internal=group)
     }
     distParams = o[[1]]
     dens_df = o[[2]]
@@ -170,9 +171,9 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL,
     #* ***** `Beta distribution joyplot`
     
     if(mode=="wide"){
-      o<-wide.dens.beta(d=sub, colPattern = index)
+      o<-wide.dens.beta(d=sub, colPattern = index, group_internal=group)
     } else if(mode=="long"){
-      o<-long.dens.beta(d=sub)
+      o<-long.dens.beta(d=sub, group_internal=group)
     }
     distParams = o[[1]]
     dens_df = o[[2]]
@@ -209,9 +210,9 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL,
   } else if(match.arg(method, choices = c("beta", "gaussian", "ks"))=="gaussian"){
     #* ***** `Gaussian distribution joyplot`
     if(mode=="wide"){
-      o<-wide.dens.gaussian(d=sub, colPattern = index)
+      o<-wide.dens.gaussian(d=sub, colPattern = index, group_internal=group)
     } else if(mode=="long"){
-      o<-long.dens.gaussian(d=sub)
+      o<-long.dens.gaussian(d=sub, group_internal=group)
     }
     distParams = o[[1]]
     dens_df = o[[2]]
@@ -265,7 +266,6 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL,
       }))
     }
   }
-  
   if(fillx){dens_df$group = interaction(dens_df[,group])}
   ggridgeLayer<-if(fillx){
     list(ggridges::geom_density_ridges_gradient(ggplot2::aes(x = xdens, y = y,
@@ -297,7 +297,7 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL,
 
 
 
-long.dens.default <- function(d = sub){
+long.dens.default <- function(d = sub, group_internal=group){
   datsp=split(sub, sub$grouping, drop=T)
   bw<-min(diff(sort(as.numeric(unique(sub$bin )))))*0.75
   distParams<-lapply(datsp, function(D){
@@ -309,15 +309,15 @@ long.dens.default <- function(d = sub){
   dens_df<-do.call(rbind, lapply(names(distParams), function(nm){
     dens<-distParams[[nm]]
     out<-data.frame(xdens= dens$x, ydens=dens$y)
-    out[,(ncol(out)+1):(ncol(out)+length(group))]<-lapply(strsplit(nm, "[.]")[[1]], identity)
-    colnames(out)<-c("xdens", "ydens", group)
-    out$y<-out[[group[1] ]]
+    out[,(ncol(out)+1):(ncol(out)+length(group_internal))]<-lapply(strsplit(nm, "[.]")[[1]], identity)
+    colnames(out)<-c("xdens", "ydens", group_internal)
+    out$y<-out[[group_internal[1] ]]
     out
   }))
   return(list(distParams, dens_df))
 }
 
-wide.dens.default<-function(d=sub, colPattern = index){
+wide.dens.default<-function(d=sub, colPattern = index, group_internal=group){
   histCols <- colnames(d)[grepl(colPattern, colnames(d))]
   histCols_bin <- as.numeric(sub(paste0(colPattern, "[.]?"), "", colnames(d)[grepl(colPattern, colnames(d))]))
   bins_order<-sort(histCols_bin, index.return=T)$ix
@@ -336,15 +336,15 @@ wide.dens.default<-function(d=sub, colPattern = index){
   dens_df<-do.call(rbind, lapply(names(distParams), function(nm){
     dens<-distParams[[nm]]
     out<-data.frame(xdens= dens$x, ydens=dens$y)
-    out[,(ncol(out)+1):(ncol(out)+length(group))]<-lapply(strsplit(nm, "[.]")[[1]], identity)
-    colnames(out)<-c("xdens", "ydens", group)
-    out$y<-out[[group[1] ]]
+    out[,(ncol(out)+1):(ncol(out)+length(group_internal))]<-lapply(strsplit(nm, "[.]")[[1]], identity)
+    colnames(out)<-c("xdens", "ydens", group_internal)
+    out$y<-out[[group_internal[1] ]]
     out
   }))
   return(list(distParams, dens_df))
 }
 
-long.dens.beta<-function(d = sub){
+long.dens.beta<-function(d = sub, group_internal=group){
   datsp=split(d, d$grouping, drop=T) # split data into panel groups
   
   if(is.null(priors)){ priors = list(a = rep(0.5, times=length(datsp)), b = rep(0.5, times=length(datsp))) } # assume weak prior on everything
@@ -366,15 +366,15 @@ long.dens.beta<-function(d = sub){
     pars<-distParams[[nm]]
     dens<-dbeta(support, pars[1], pars[1])
     out<-data.frame(xdens= support, ydens=dens)
-    out[,(ncol(out)+1):(ncol(out)+length(group))]<-lapply(strsplit(nm, "[.]")[[1]], identity)
-    colnames(out)<-c("xdens", "ydens", group)
-    out$y<-out[[group[1] ]]
+    out[,(ncol(out)+1):(ncol(out)+length(group_internal))]<-lapply(strsplit(nm, "[.]")[[1]], identity)
+    colnames(out)<-c("xdens", "ydens", group_internal)
+    out$y<-out[[group_internal[1] ]]
     out
   }))
   return(list(distParams, dens_df))
 }
 
-wide.dens.beta<-function(d = sub, colPattern = index){
+wide.dens.beta<-function(d = sub, colPattern = index, group_internal=group){
   histCols <- colnames(d)[grepl(colPattern, colnames(d))]
   histCols_bin <- as.numeric(sub(paste0(colPattern, "[.]?"), "", colnames(d)[grepl(colPattern, colnames(d))]))
   bins_order<-sort(histCols_bin, index.return=T)$ix
@@ -398,16 +398,16 @@ wide.dens.beta<-function(d = sub, colPattern = index){
     pars<-distParams[[nm]]
     dens<-dbeta(support, pars[1], pars[1])
     out<-data.frame(xdens= support, ydens=dens)
-    out[,(ncol(out)+1):(ncol(out)+length(group))]<-lapply(strsplit(nm, "[.]")[[1]], identity)
-    colnames(out)<-c("xdens", "ydens", group)
-    out$y<-out[[group[1] ]]
+    out[,(ncol(out)+1):(ncol(out)+length(group_internal))]<-lapply(strsplit(nm, "[.]")[[1]], identity)
+    colnames(out)<-c("xdens", "ydens", group_internal)
+    out$y<-out[[group_internal[1] ]]
     out
   }))
   return(list(distParams, dens_df))
 }
 
 
-long.dens.gaussian<-function(d=sub){
+long.dens.gaussian<-function(d=sub, group_internal=group){
   datsp=split(d, d$grouping, drop=T)
   if(is.null(priors)){ priors <- list( m=rep(0,length(datsp)), n=rep(1,length(datsp)), s2=rep(20,length(datsp)) ) } # mean, number, and variance
   distParams<-lapply(1:length(datsp), function(i){ 
@@ -430,15 +430,15 @@ long.dens.gaussian<-function(d=sub){
     pars<-distParams[[nm]]
     dens<-extraDistr::dlst(support, pars$DF, pars$m, sqrt(pars$s2))
     out<-data.frame(xdens= support, ydens=dens)
-    out[,(ncol(out)+1):(ncol(out)+length(group))]<-lapply(strsplit(nm, "[.]")[[1]], identity)
-    colnames(out)<-c("xdens", "ydens", group)
-    out$y<-out[[group[1] ]]
+    out[,(ncol(out)+1):(ncol(out)+length(group_internal))]<-lapply(strsplit(nm, "[.]")[[1]], identity)
+    colnames(out)<-c("xdens", "ydens", group_internal)
+    out$y<-out[[group_internal[1] ]]
     out
   }))
 }
 
 
-wide.dens.gaussian<-function(d=sub, colPattern=index ){
+wide.dens.gaussian<-function(d=sub, colPattern=index, group_internal=group ){
   histCols <- colnames(d)[grepl(colPattern, colnames(d))]
   histCols_bin <- as.numeric(sub(paste0(colPattern, "[.]?"), "", colnames(d)[grepl(colPattern, colnames(d))]))
   bins_order<-sort(histCols_bin, index.return=T)$ix
@@ -467,9 +467,9 @@ wide.dens.gaussian<-function(d=sub, colPattern=index ){
     pars<-distParams[[nm]]
     dens<-extraDistr::dlst(support, pars$DF, pars$m, sqrt(pars$s2))
     out<-data.frame(xdens= support, ydens=dens)
-    out[,(ncol(out)+1):(ncol(out)+length(group))]<-lapply(strsplit(nm, "[.]")[[1]], identity)
-    colnames(out)<-c("xdens", "ydens", group)
-    out$y<-out[[group[1] ]]
+    out[,(ncol(out)+1):(ncol(out)+length(group_internal))]<-lapply(strsplit(nm, "[.]")[[1]], identity)
+    colnames(out)<-c("xdens", "ydens", group_internal)
+    out$y<-out[[group_internal[1] ]]
     out
   }))
 }
