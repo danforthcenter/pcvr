@@ -4,6 +4,7 @@
 #' @param cols columns to reduce dimensions of. Can be specified with names or positions. If this is length of 1 then it is treated as regex pattern to match the column names that should be used.
 #' @param color column name(s) used to color points in the pca plot.
 #' @param trace Optional column to use to show changes over by way of geom_path, generally this would be a time variable.
+#' @param facet Optional column or vector to facet/split plots on. If this is a character then it is taken as a column name. Numeric vectors are taken as values of trace to split on. If this is a vector then a list of plots is returned.
 #' @param returnData Logical, should data be returned?
 #' @param ncp Optional, number of principal components to return attached to dataframe if data is returned. Defaults to all.
 #' @keywords pca
