@@ -21,8 +21,8 @@ bw.time<-function(df = NULL, mode=NULL, plantingDelay = NULL,
                   phenotype=NULL, cutoff=1, timeCol="timestamp",
                   group="Barcodes", plot=T, format="%Y-%m-%d %H:%M:%S" ){
   if(is.null(mode) || !mode %in% c("DAS", "DAP", "DAE")){ mode=c("DAP", "DAE") }
-  if(is.null(plantingDelay) & "DAP" %in% mode){mode<-mode[-which(r=="DAP")]}
-  if(is.null(phenotype) & "DAE" %in% mode){mode<-mode[-which(r=="DAE")]}
+  if(is.null(plantingDelay) & "DAP" %in% mode){mode<-mode[-which(mode=="DAP")]}
+  if(is.null(phenotype) & "DAE" %in% mode){mode<-mode[-which(mode=="DAE")]}
   
   if(!is.integer(df[[timeCol]])){
     df[[timeCol]]<-as.POSIXct(strptime(df[[timeCol]],format = format))
