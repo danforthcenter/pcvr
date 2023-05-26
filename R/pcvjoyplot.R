@@ -97,7 +97,6 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL,
   
   #* ***** `default joyplot`
   if(is.null(method) | match.arg(method, choices = c("beta", "gaussian", "ks", "mixture", "emd"))=="emd"){
-    return(list(sub, index, group))
     if(mode=="wide"){
       o<-wide.dens.default(d=sub, colPattern = index, group_internal=group)
     } else if(mode=="long"){
