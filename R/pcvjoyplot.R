@@ -299,7 +299,7 @@ long.dens.default <- function(d = NULL, group_internal=NULL){
 
 wide.dens.default<-function(d=NULL, colPattern = NULL, group_internal=NULL){
   histCols <- colnames(d)[grepl(colPattern, colnames(d))]
-  histCols_bin <- as.numeric(d(paste0(colPattern, "[.]?"), "", colnames(d)[grepl(colPattern, colnames(d))]))
+  histCols_bin <- as.numeric(sub(paste0(colPattern, "[.]?"), "", colnames(d)[grepl(colPattern, colnames(d))]))
   bins_order<-sort(histCols_bin, index.return=T)$ix
   histCols <- histCols[bins_order]
   datsp=split(d, d$grouping, drop=T)
@@ -356,7 +356,7 @@ long.dens.beta<-function(d = NULL, group_internal=NULL){
 
 wide.dens.beta<-function(d = NULL, colPattern = NULL, group_internal=NULL){
   histCols <- colnames(d)[grepl(colPattern, colnames(d))]
-  histCols_bin <- as.numeric(d(paste0(colPattern, "[.]?"), "", colnames(d)[grepl(colPattern, colnames(d))]))
+  histCols_bin <- as.numeric(sub(paste0(colPattern, "[.]?"), "", colnames(d)[grepl(colPattern, colnames(d))]))
   bins_order<-sort(histCols_bin, index.return=T)$ix
   histCols <- histCols[bins_order]
   datsp=split(d, d$grouping, drop=T)
@@ -421,7 +421,7 @@ long.dens.gaussian<-function(d=NULL, group_internal=NULL){
 
 wide.dens.gaussian<-function(d=NULL, colPattern=NULL, group_internal=NULL ){
   histCols <- colnames(d)[grepl(colPattern, colnames(d))]
-  histCols_bin <- as.numeric(d(paste0(colPattern, "[.]?"), "", colnames(d)[grepl(colPattern, colnames(d))]))
+  histCols_bin <- as.numeric(sub(paste0(colPattern, "[.]?"), "", colnames(d)[grepl(colPattern, colnames(d))]))
   bins_order<-sort(histCols_bin, index.return=T)$ix
   histCols <- histCols[bins_order]
   datsp=split(d, d$grouping, drop=T)
