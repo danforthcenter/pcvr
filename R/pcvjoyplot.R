@@ -66,25 +66,6 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL,
   #* compare= NULL; priors=NULL; bin="label"; freq="value"; trait="trait";hyp=NULL; fillx=T 
   #* 
   #* ***** `general calculated values`
-  #* 
-  #* Test if data is long or wide. Maybe look at pcv.emd for an idea of how to implement this well.
-  #* Unfortunately this will change a lot of individual places in this function
-  #* every time that I calculate a bw (binwidth) and a dens I'll have to change it.
-  #* might be better practice to get the doStats thing then just calculate those values right off the bat
-  #* so that it's easier to read and edit in the future. Or at least define a function then lapply that in each place.
-  #* I think I could make that outside of the main function, not export it, then just rename some dummy function
-  #* in here to use either the long or the wide version.
-  #* problem here is that for each comparison method the way I make distparams and dens_df has to change.
-  #* 
-  #* Option 1 would be to remove the comparison methods and standardize to one option (non-parametric)
-  #* Option 2 is to coerce the wide data to long data and just go with it from there as is
-  #* Option 3 is to automatically set method to NULL and compare to FALSE if the data is wide, kind of a halfway point 
-  #*    so that in the future I can write method functions like: beta.long , beta.wide, ks.long, etc...
-  #*    I think that makes sense and will reduce bloat.
-  #* 
-  #* It isn't really all that complex to write ways for each of these to work with wide data, but the function is already bloated
-  #* and I don't want to make it a complete mess.
-  #* I am going with option 3 for now, starting with a non parametric density and no stats
 
   if(!is.null(trait) && trait %in% colnames(df)){traitCol = trait ; mode="long" # if there is a trait column then use long options,
     }else{mode="wide"} # else use wide options
@@ -116,7 +97,7 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL,
   
   #* ***** `default joyplot`
   if(is.null(method) | match.arg(method, choices = c("beta", "gaussian", "ks", "mixture", "emd"))=="emd"){
-    
+    return(list(sub, index, group))
     if(mode=="wide"){
       o<-wide.dens.default(d=sub, colPattern = index, group_internal=group)
     } else if(mode=="long"){
@@ -297,9 +278,9 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL,
 
 
 
-long.dens.default <- function(d = sub, group_internal=group){
-  datsp=split(sub, sub$grouping, drop=T)
-  bw<-min(diff(sort(as.numeric(unique(sub$bin )))))*0.75
+long.dens.default <- function(d = NULL, group_internal=NULL){
+  datsp=split(d, d$grouping, drop=T)
+  bw<-min(diff(sort(as.numeric(unique(d$bin )))))*0.75
   distParams<-lapply(datsp, function(D){
     X1 <- as.numeric(D[rep(rownames(D), round(D$freq)), bin])
     dens<-density(X1, from = min(d$bin,na.rm=T), to = max(d$bin,na.rm=T), n = 2^10, bw=bw)
@@ -317,12 +298,12 @@ long.dens.default <- function(d = sub, group_internal=group){
   return(list(distParams, dens_df))
 }
 
-wide.dens.default<-function(d=sub, colPattern = index, group_internal=group){
+wide.dens.default<-function(d=NULL, colPattern = NULL, group_internal=NULL){
   histCols <- colnames(d)[grepl(colPattern, colnames(d))]
-  histCols_bin <- as.numeric(sub(paste0(colPattern, "[.]?"), "", colnames(d)[grepl(colPattern, colnames(d))]))
+  histCols_bin <- as.numeric(d(paste0(colPattern, "[.]?"), "", colnames(d)[grepl(colPattern, colnames(d))]))
   bins_order<-sort(histCols_bin, index.return=T)$ix
   histCols <- histCols[bins_order]
-  datsp=split(sub, sub$grouping, drop=T)
+  datsp=split(d, d$grouping, drop=T)
   bw<-min(diff(sort(as.numeric(histCols_bin))))*0.75
   
   distParams<-lapply(datsp, function(D){
@@ -344,7 +325,7 @@ wide.dens.default<-function(d=sub, colPattern = index, group_internal=group){
   return(list(distParams, dens_df))
 }
 
-long.dens.beta<-function(d = sub, group_internal=group){
+long.dens.beta<-function(d = NULL, group_internal=NULL){
   datsp=split(d, d$grouping, drop=T) # split data into panel groups
   
   if(is.null(priors)){ priors = list(a = rep(0.5, times=length(datsp)), b = rep(0.5, times=length(datsp))) } # assume weak prior on everything
@@ -374,12 +355,12 @@ long.dens.beta<-function(d = sub, group_internal=group){
   return(list(distParams, dens_df))
 }
 
-wide.dens.beta<-function(d = sub, colPattern = index, group_internal=group){
+wide.dens.beta<-function(d = NULL, colPattern = NULL, group_internal=NULL){
   histCols <- colnames(d)[grepl(colPattern, colnames(d))]
-  histCols_bin <- as.numeric(sub(paste0(colPattern, "[.]?"), "", colnames(d)[grepl(colPattern, colnames(d))]))
+  histCols_bin <- as.numeric(d(paste0(colPattern, "[.]?"), "", colnames(d)[grepl(colPattern, colnames(d))]))
   bins_order<-sort(histCols_bin, index.return=T)$ix
   histCols <- histCols[bins_order]
-  datsp=split(sub, sub$grouping, drop=T)
+  datsp=split(d, d$grouping, drop=T)
   if(is.null(priors)){ priors = list(a = rep(0.5, times=length(datsp)), b = rep(0.5, times=length(datsp))) } # assume weak prior on everything
   bw<-min(diff(sort(as.numeric(histCols_bin))))*0.75
   distParams<-lapply(1:length(datsp), function(i){
@@ -407,7 +388,7 @@ wide.dens.beta<-function(d = sub, colPattern = index, group_internal=group){
 }
 
 
-long.dens.gaussian<-function(d=sub, group_internal=group){
+long.dens.gaussian<-function(d=NULL, group_internal=NULL){
   datsp=split(d, d$grouping, drop=T)
   if(is.null(priors)){ priors <- list( m=rep(0,length(datsp)), n=rep(1,length(datsp)), s2=rep(20,length(datsp)) ) } # mean, number, and variance
   distParams<-lapply(1:length(datsp), function(i){ 
@@ -435,15 +416,16 @@ long.dens.gaussian<-function(d=sub, group_internal=group){
     out$y<-out[[group_internal[1] ]]
     out
   }))
+  return(list(distParams, dens_df))
 }
 
 
-wide.dens.gaussian<-function(d=sub, colPattern=index, group_internal=group ){
+wide.dens.gaussian<-function(d=NULL, colPattern=NULL, group_internal=NULL ){
   histCols <- colnames(d)[grepl(colPattern, colnames(d))]
-  histCols_bin <- as.numeric(sub(paste0(colPattern, "[.]?"), "", colnames(d)[grepl(colPattern, colnames(d))]))
+  histCols_bin <- as.numeric(d(paste0(colPattern, "[.]?"), "", colnames(d)[grepl(colPattern, colnames(d))]))
   bins_order<-sort(histCols_bin, index.return=T)$ix
   histCols <- histCols[bins_order]
-  datsp=split(sub, sub$grouping, drop=T)
+  datsp=split(d, d$grouping, drop=T)
   
   if(is.null(priors)){ priors <- list( m=rep(0,length(datsp)), n=rep(1,length(datsp)), s2=rep(20,length(datsp)) ) } # mean, number, and variance
   distParams<-lapply(1:length(datsp), function(i){ 
@@ -472,8 +454,8 @@ wide.dens.gaussian<-function(d=sub, colPattern=index, group_internal=group ){
     out$y<-out[[group_internal[1] ]]
     out
   }))
+  return(list(distParams, dens_df))
 }
-
 
 
 
