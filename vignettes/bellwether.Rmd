@@ -1,7 +1,13 @@
 ---
 title: "Bellwether Tutorial"
-output: html_document
-date: '2023-05-10'
+author: "Josh Sumner, DDPSC Data Science Core Facility"
+subtitle: "pcvr v0.1.0"
+output: 
+  html_document:
+    toc: true
+    number_sections: false
+    code_folding: show
+date: '2023-05-30'
 ---
 
 ```{r setup, include=FALSE}
@@ -119,6 +125,7 @@ water$genotype = ifelse(water$genotype == "002", "B73",
 water$fertilizer = substr(water$barcode, 8, 8)
 water$fertilizer = ifelse(water$fertilizer == "A", "100",
                      ifelse(water$fertilizer == "B", "50", "0"))
+
 ggplot(water[water$weight_after!=-1,], aes(x=DAS, y=water_amount, group=barcode,color=interaction(genotype,fertilizer)))+
   geom_line()+
   pcv_theme()+
@@ -159,7 +166,7 @@ This informs our next steps. Hue and size based phenotypes are well explained by
 
 ## Single Value Traits
 
-Most analysis focus on single value traits, that is phenotypes where one image returns on numeric value such as area or height. These can be compared longitudinally or with respect to individual days. To make this analysis more intuitive we often want to convert our pixel phenotypes into more comprehensible units.
+Most analysis focus on single value traits, that is phenotypes where one image returns on numeric value such as area or height. These can be compared longitudinally or with respect to individual days. To make this analysis more intuitive we often want to convert our pixel phenotypes into more comprehensible units. Note that we do not recommend using a PCA of the single value traits to look for differences in your treatment groups, these traits are interpretable on their own and are interdependent enough that a PCA is not appropriate.
 
 ```{r}
 pixels_per_cmsq <- 42.5^2   # pixel per cm^2
@@ -185,12 +192,18 @@ ggplot(sv, aes(x=DAS, y=area_cm2, group=interaction(genotype, fertilizer, lex.or
 ### Single day comparisons
 
 ```{r}
-pcvBox(sv[sv$genotype=='MM' & sv$DAE==15, ], x="fertilizer", y="area_cm2", compare="0", showPoints = T)
+pcvBox(sv[sv$genotype=='MM' & sv$DAS==15, ], x="fertilizer", y="area_cm2", compare="0", showPoints = T)+
+  labs(y=expression("Area"~"(cm"^2~")"),
+       color="Soil Fertilizer")
 ```
+
+### Relative Tolerance *PENDING*
+
+
 
 ### Longitudinal Modeling
 
-Longitudinal modeling is the most comprehensive way to use the single value traits from a bellwether experiment. Longitudinal modeling can also be complicated compared to single timepoint analyses. Statistical complications including changes in variance, non-linearity, and autocorrelation present potential problems in analyses. To address these we recommend using heirarchical models. `pcvr` attempts to lower the barrier to entry for these models with helper functions for use with `brms`.
+Longitudinal modeling is the most comprehensive way to use the single value traits from a bellwether experiment. Longitudinal modeling can also be complicated compared to single timepoint analyses. Statistical complications including changes in variance, non-linearity, and autocorrelation present potential problems in analyses. To address these we recommend using hierarchical models. `pcvr` attempts to lower the barrier to entry for these models with helper functions for use with `brms`.
 
 #### Growth Model Forms
 
@@ -236,7 +249,7 @@ Coding a multilevel bayesian model can be involved. Even with the greatly simpli
 
 There are several ways to consider variance over time. By default almost all modeling assumes homoscedasticity, that is constant variance across predictor variables (time here). That assumption is very unrealistic in biological settings since all seeds/seedlings will start from a very low area but will grow differently through the experiment. The `growthSS` function has three options for modeling variance: homo, linear, spline. There are many ways that we could model variance, but these three are implemented for general use. Splines will almost always yield the best fit to your data.
 
-![subModelComparisons.png](Different sub model options shown and compared with LOO Information Criterion)
+![Different sub model options shown and compared with LOO Information Criterion](subModelComparisons.png)
 
 ##### Prior Distributions
 
@@ -264,18 +277,30 @@ ss<-growthSS(model="gompertz", form =  area_cm2~DAS|barcode/group, sigma="spline
              priors = list("A" = 130, "B" = 10, "C" = 1.2))
 ```
 
+Now we have most of our model components in the `ss` object:
+
+```{r}
+lapply(ss,class)
+```
+
+
 Before trying to fit the model it is generally a good idea to check a plot of the data and make sure you have everything defined correctly.
 
 ```{r}
 ggplot(ss$df, aes(x=DAS, y=area_cm2, group=barcode, color=group))+
-  geom_line()+theme_minimal()
+  geom_line()+theme_minimal()+
+  labs(y=expression("Area"~"(cm"^2~")"),
+       color="Genotype\nand Soil")
 ```
+
+This looks okay, there are no strange jumps in the data or glaring problems.
+
 
 #### Running Models
 
 The `brms` package is not automatically imported by `pcvr`, so before fitting models we need to load that package.
 
-```{r}
+```{r, message=F}
 library(brms)
 ```
 
@@ -288,7 +313,6 @@ fit <- brm(ss$formula, prior = ss$prior, data = ss$df, family = ss$family,
 
 ```{r, echo=F}
 data(bw_vignette_fit, package = "pcvr")
-# print(load("/home/jsumner/Desktop/stargate/fahlgren_lab/pcvr/data/bw_vignette_fit.rda"))
 ```
 
 
@@ -343,9 +367,9 @@ hue_wide<-bw.time(hue_wide,timeCol="timestamp", group="barcode")
 
 ### Joyplots
 
-Joyplots are a common way to look at lots of distributions. Here we check the hue histograms as joyplots using the 18th day and add a new fill for the hue colorspace.
+Joyplots are a common way to look at lots of distributions. Here we check the hue histograms as joyplots using the 18th day and add a new fill for the hue colorspace. Note that this uses the `ggridges` package which relies on some deprecated `ggplot2` features, hopefully this will be addressed soon but in the meantime you may get a warning message using `pcv.joyplot`.
 
-```{r}
+```{r, message=F}
 p<-pcv.joyplot(hue_wide[hue_wide$DAS==18,], index = "hue_frequencies", group=c("fertilizer", "genotype"), method=NULL,
                trait=NULL,compare=NULL)
 p+scale_fill_gradientn(colors = scales::hue_pal(l=65)(360))
@@ -353,17 +377,21 @@ p+scale_fill_gradientn(colors = scales::hue_pal(l=65)(360))
 
 We can also subset the data and change the group argument to look at very specific comparisons.
 
-```{r}
+```{r, message=F}
 p<-pcv.joyplot(hue_wide[hue_wide$fertilizer==0 & hue_wide$DAS %in% c(7,12,18),], index = "hue_frequencies", group=c("DAS", "genotype"),
                trait=NULL,compare=NULL)
 p+scale_fill_gradientn(colors = scales::hue_pal(l=65)(360))
 ```
 
-### Ordination?
+### Ordination
+
+Ordinations are another common way to look at multi value traits. The `pcadf` function in `pcvr` has several options for how this can work.
 
 ```{r}
 pcadf(hue_wide, cols = "hue_frequencies", color = c("genotype", "fertilizer"), returnData=F)
 ```
+
+
 This is potentially useful but it does not show us the time component well. We can facet by day or add traces easily. Using the trace argument we can view the movement of groups over time, but that can be cluttered.
 
 ```{r}
@@ -373,18 +401,60 @@ pcadf(hue_wide, cols = "hue_frequencies", color = c("genotype", "fertilizer"),  
 When the trace is cluttered it generally helps to either use a facet or to return a list of plots showing a few days at a time in the trace. Both those options are done using the `facet` argument.
 
 ```{r}
-pcadf(hue_wide, cols = "hue_frequencies", color = c("genotype", "fertilizer"),  trace="DAS", returnData=F, facet = c(1,2,3,4))
+plots<-pcadf(hue_wide, cols = "hue_frequencies", color = c("genotype", "fertilizer"),  trace="DAS", returnData=F, facet = c(1,2,3,4))
+
+(plots[[1]]+plots[[2]]) / (plots[[3]]+plots[[2]]) + plot_layout(guides = "collect")
 ```
 
 ```{r}
 pcadf(hue_wide, cols = "hue_frequencies", color = c("genotype", "fertilizer"),  facet="DAS", returnData=F)
 ```
 
-### Earth Mover's Distance
+### Earth Mover's Distance *PENDING*
+
+Since color data is exported from plantCV as histogram data we can use Earth Mover's Distance (EMD) to compare images. Conceptually EMD is a distance that quantifies how much work it would take to turn one histogram into another. Here we do pairwise comparisons of all our rows and return a long dataframe of those distances. Note that even running several cores in parallel this can take some time for larger datasets and here we are just loading the rdata that was generated by the code below.
+
+```
+EMD<-pcv.emd(df = hue_wide, cols="hue_frequencies", reorder=c("fertilizer", "genotype", "DAS"),
+             mat =F, plot=T, parallel = 12)
+```
+
+```{r, eval=F, include=F}
+save(EMD, file="/home/jsumner/Desktop/stargate/fahlgren_lab/pcvr/data/bw_vignette_emd.rda")
+```
+
+```{r, eval=F, include=F}
+data(bw_vignette_emd, package = "pcvr")
+# print(load("/home/jsumner/Desktop/stargate/fahlgren_lab/pcvr/data/bw_vignette_fit.rda"))
+```
+
+```{r, eval=F, include=F}
+EMD$plot
+```
+
+
+### Network Analysis *PENDING*
+
+As it stands our EMD data is potentially difficult to use for those unfamiliar with distance matrix based analysis. Here we represent our distances as a network to help use the results.
+
+```{r, eval=F}
+net<-pcv.net(EMD$data, meta = c("fertilizer", "genotype"))
+```
+
+```{r, eval=F}
+net.plot(net, fill = "strength", shape = c("fertilizer", "genotype"), size=5, edgeFilter=0.5)
+```
 
 
 
-#### Network Analysis
+
+
+
+
+
+
+
+
 
 
 
