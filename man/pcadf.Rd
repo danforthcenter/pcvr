@@ -11,7 +11,8 @@ pcadf(
   trace = NULL,
   facet = NULL,
   returnData = T,
-  ncp = NULL
+  ncp = NULL,
+  split = "DAS"
 )
 }
 \arguments{
@@ -23,7 +24,7 @@ pcadf(
 
 \item{trace}{Optional column to use to show changes over by way of geom_path, generally this would be a time variable.}
 
-\item{facet}{Optional column or vector to facet/split plots on. If this is a character then it is taken as a column name. Numeric vectors are taken as values of trace to split on. If this is a vector then a list of plots is returned.}
+\item{facet}{Optional column or vector to facet/split plots on. If this is a character then it is taken as a column name. Numeric vectors are taken as values of trace to split on, if trace=NULL and this is numeric then plots will be split by the split argument. If this is a vector then a list of plots is returned.}
 
 \item{returnData}{Logical, should data be returned?}
 

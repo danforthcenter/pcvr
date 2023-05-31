@@ -31,13 +31,13 @@ Returns a dataframe of example growth data following the input parameters.
 growthSim can be used to help pick reasonable parameters for common growth models to use in prior distributions or to simulate data for example models/plots.
 }
 \details{
-The \code{params} argument requires some understanding of how each growth model is parameterized. Examples of each are below should help, as will the examples.
-    \bold{Logistic}: `A / (1 + exp( (B-x)/C) )` Where A is the asymptote, B is the inflection point, C is the growth rate
-    \bold{Gompertz}: `A * exp(-B * exp(-C*x))` Where A is the asymptote, B is the inflection point, C is the growth rate 
-    \bold{Monomolecular}: `A-A * exp(-B * x)`` Where A is the asymptote and B is the growth rate 
-    \bold{Exponential}: `A * exp(B * x)` Where A is the scale parameter and B is the growth rate 
-    \bold{Linear}: `A * x` Where A is the growth rate.
-    \bold{Power Law}: `A * x^(B)` Where A is the scale parameter and B is the growth rate.
+The \code{params} argument requires some understanding of how each growth model is parameterized. Examples of each are below should help, as will the examples. \newline
+    \bold{Logistic}: `A / (1 + exp( (B-x)/C) )` Where A is the asymptote, B is the inflection point, C is the growth rate. \newline
+    \bold{Gompertz}: `A * exp(-B * exp(-C*x))` Where A is the asymptote, B is the inflection point, C is the growth rate. \newline
+    \bold{Monomolecular}: `A-A * exp(-B * x)`` Where A is the asymptote and B is the growth rate. \newline
+    \bold{Exponential}: `A * exp(B * x)` Where A is the scale parameter and B is the growth rate. \newline
+    \bold{Linear}: `A * x` Where A is the growth rate. \newline
+    \bold{Power Law}: `A * x^(B)` Where A is the scale parameter and B is the growth rate. \newline
     Note that for these distributions parameters do not exist in a vacuum. Changing one can make the others look different in the resulting data. The examples are a good place to start if you are unsure what parameters to use.
 }
 \examples{
