@@ -8,6 +8,10 @@ output:
     number_sections: false
     code_folding: show
 date: '2023-05-30'
+vignette: >
+  %\VignetteIndexEntry{pcvr}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include=FALSE}
