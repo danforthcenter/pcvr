@@ -31,13 +31,15 @@
 #' ggplot(simdf,aes(time, y, group=interaction(group,id)))+ geom_line(aes(color=group))+labs(title="Power Law")
 #' 
 #' @details 
-#'     The \code{params} argument requires some understanding of how each growth model is parameterized. Examples of each are below should help, as will the examples. \newline
-#'     \bold{Logistic}: `A / (1 + exp( (B-x)/C) )` Where A is the asymptote, B is the inflection point, C is the growth rate. \newline
-#'     \bold{Gompertz}: `A * exp(-B * exp(-C*x))` Where A is the asymptote, B is the inflection point, C is the growth rate. \newline
-#'     \bold{Monomolecular}: `A-A * exp(-B * x)`` Where A is the asymptote and B is the growth rate. \newline
-#'     \bold{Exponential}: `A * exp(B * x)` Where A is the scale parameter and B is the growth rate. \newline
-#'     \bold{Linear}: `A * x` Where A is the growth rate. \newline
-#'     \bold{Power Law}: `A * x^(B)` Where A is the scale parameter and B is the growth rate. \newline
+#'     The \code{params} argument requires some understanding of how each growth model is parameterized. Examples of each are below should help, as will the examples.
+#'     \itemize{
+#'     \item \bold{Logistic}: `A / (1 + exp( (B-x)/C) )` Where A is the asymptote, B is the inflection point, C is the growth rate. 
+#'     \item \bold{Gompertz}: `A * exp(-B * exp(-C*x))` Where A is the asymptote, B is the inflection point, C is the growth rate. 
+#'     \item \bold{Monomolecular}: `A-A * exp(-B * x)`` Where A is the asymptote and B is the growth rate. 
+#'     \item \bold{Exponential}: `A * exp(B * x)` Where A is the scale parameter and B is the growth rate. 
+#'     \item \bold{Linear}: `A * x` Where A is the growth rate.
+#'     \item \bold{Power Law}: `A * x^(B)` Where A is the scale parameter and B is the growth rate.
+#'     }
 #'     Note that for these distributions parameters do not exist in a vacuum. Changing one can make the others look different in the resulting data. The examples are a good place to start if you are unsure what parameters to use.
 #' 
 #' @export
