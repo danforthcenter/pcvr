@@ -25,7 +25,22 @@ library(patchwork)
 
 # Example Bellwether (Lemnatech) Workflow
 
-Blurb about bellwether facility, data types, installation, color blindness, etc.
+The Bellwether phenotyping facility at the Donald Danforth Plant Science Center allows for high throughput image based phenotyping of up to 1140 plants over the course of several weeks. This generates a massive amount of image data which is typically analysed using plantCV, a python based image analysis tool developed and maintained by the Data Science Core Facility at DDPSC. The plantCV output from a Bellwether experiment consists of numeric phenotypes commonly broken into two categories, single value traits and multi value traits. Single value traits are phenotypes where one image yields one value, things like plant height or plant area. Multi value traits require multiple numbers to describe a single image and currently are limited to color histograms in various color spaces. Here we will focus only on the hue channel of HSV color, but there are lots of options with your data. This package is being developed to help with common analysis tasks that arise in using plantCV output. If your goal or experiment seems to be unsupported then please consider raising an [issue on github](https://github.com/joshqsumner/pcvr/issues/new/choose) so we can know what directions to take development in for the future.
+
+
+Installation of `pcvr` from github is possible with the `remotes` or `devtools` packages. 
+
+```
+devtools::install_github("joshqsumner/pcvr", build_vignettes = TRUE)
+library(pcvr)
+```
+
+If you clone that repository and are making edits then you can easily use your local version with:  `devtools::load_all("file/path/to/local/pcvr")`
+
+
+Functions in `pcvr` use colorblind friendly palettes from the `viridis` package if they specify color/fill scales. Some functions do not specify a color/fill scale and use `ggplot2` defaults. If you use these functions or base work off of them please be mindful of your choices regarding color. 
+
+As a final note before starting into `pcvr`, this vignette is laid out to help guide analyses from Bellwether experiments these functions tend to be generalizable and can be used for other plantCV data as well.
 
 
 ## Read In Data
@@ -59,7 +74,7 @@ example<-read.pcv("prohibitivelyLargeFile.csv",
 
 ### `read.pcv.bw`
 
-Bellwether data can also be read in with `read.pcv.bw` which is a wrapper around `read.pcv` which attempts to do several common tasks related bellwether data joining internally. This should be considered experimental as bellwether experiments can take many formats and this has only been considered with a few datasets.
+Bellwether data can also be read in with `read.pcv.bw` which is a wrapper around `read.pcv` which attempts to do several common tasks related bellwether data joining internally. This should be considered experimental as it is based on plantCV version 3 and earlier outputs and bellwether experiments can take many formats and this has only been considered with a few datasets.
 
 ```{r, eval=F}
 bw<-read.pcv.bw( file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestPhenos.csv",metaCol=NULL, mode="long")
