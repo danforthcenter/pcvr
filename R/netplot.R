@@ -39,7 +39,7 @@ net.plot<-function(net, fill="strength", shape=NULL, size = 3, edgeWeight="emd",
   if(is.null(shape)){shape = "NOSHAPE"; nodes$NOSHAPE="a"}
   if(length(shape)>1){
     nodes$SHAPE = interaction(nodes[,shape])
-    fill="SHAPE"
+    shape="SHAPE"
   }
   if(!is.null(edgeFilter)){
     if(is.character(edgeFilter)){
@@ -48,7 +48,10 @@ net.plot<-function(net, fill="strength", shape=NULL, size = 3, edgeWeight="emd",
     } else if(is.numeric(edgeFilter)){
       edges<-edges[edges[[edgeWeight]] >= edgeFilter, ]
     } else{stop("edgeFilter must be character or numeric, see ?net.plot for details.")}
-  }
+    nodes<-nodes[nodes$index %in% c(edges$from, edges$to),]
+    }
+  
+  
   p<-ggplot2::ggplot(nodes)+
     ggplot2::geom_segment(data=edges,ggplot2::aes(x=from.x, xend = to.x, y=from.y, yend = to.y, linewidth=.data[[edgeWeight]]),colour="black",alpha=0.1) +
     ggplot2::geom_point(data=nodes, size=size, ggplot2::aes(x=V1,y=V2, fill = .data[[fill]], color=.data[[fill]], shape=.data[[shape]]), alpha=1, show.legend=T)+
@@ -59,8 +62,8 @@ net.plot<-function(net, fill="strength", shape=NULL, size = 3, edgeWeight="emd",
     ggplot2::guides(linewidth="none", shape=ggplot2::guide_legend(nrow=1), fill="none")+
     ggplot2::theme_void()+
     ggplot2::theme(legend.position="bottom")
-  if(fill=="NOFILL"){ p<-p+ggplot2::guides(color="none") }
-  if(shape=="NOSHAPE"){ p<-p+ggplot2::guides(shape="none") }
+  if(length(fill==1) && fill=="NOFILL"){ p<-p+ggplot2::guides(color="none") }
+  if(length(shape)==1 && shape=="NOSHAPE"){ p<-p+ggplot2::guides(shape="none") }
   return(p)
 }
 
