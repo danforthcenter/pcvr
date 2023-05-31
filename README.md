@@ -16,7 +16,9 @@ library(pcvr)
 Please see the `bellwether` vignette for a general introduction to `pcvr`. In the future we expect to have more vignettes and to specialize each to some degree.
 
 ```
-vignettes("bellwether", package="pcvr")
+vignette("bellwether", package="pcvr")
+# or 
+browseVignettes("pcvr")
 ```
 
 
