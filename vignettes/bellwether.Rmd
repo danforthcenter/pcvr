@@ -16,7 +16,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r}
 # devtools::install_github("joshqsumner/pcvr")
-library(pcvr)
+library(pcvr) # devtools::load_all("/home/jsumner/Desktop/stargate/fahlgren_lab/pcvr")
 library(data.table) # for fread
 library(ggplot2)
 library(patchwork)
@@ -25,33 +25,8 @@ library(patchwork)
 
 # Example Bellwether (Lemnatech) Workflow
 
-Pending further development
+Blurb about bellwether facility, data types, installation, color blindness, etc.
 
-```{r, echo=F, eval=F, include=F}
-#* ***** `NOTES` ***** 
-#* The files at public/Phenotyping/Center Equipment/Bellwether_tutorial/3_data_analysis_files/*.Rmd outline analysis for an individual phenotype each, in a veeery long format.
-#* I would like to hit those main points for an example phenotype but with a few other additions. Below I am making an outline.
-#* 
-#* Read in Data (read.pcv vs read.pcv.bw, show differences and how to get to the same place with both?)
-#*    Remove Outliers
-#*    Adjust Time
-#*    Check Watering
-#* 
-#* "Canonical Analysis": what always happens? Show FREM, maybe use pcv.box.
-#* 
-#* Single Value Trait phenotype analysis: Here I want to hit all of Katie's stuff, but more elegantly ideally.
-#*    loess plots
-#*    boxplot comparison of last day (both these might just be canonical? Might change canon to only be SV traits FREM)
-#*    possibly an ordination? I don't like this but I think people do it a lot.
-#*    At least a mention of the more robust modeling, probably just brms helpers then loading example data. 
-#*      Possibly will want to show other options, nlme, nlqr?
-#* 
-#* Multi Value Trait phenotype analysis: Joyplots, EMD, networks, etc.
-#*    Ideally this will be from SINC2 extra plants or some other group that has actual color differences
-#* 
-#* 
-#* 
-```
 
 ## Read In Data
 
@@ -77,7 +52,7 @@ sv$fertilizer = ifelse(sv$fertilizer == "A", "100",
 Sometimes large plantCV output may be too large to be read into memory for R. In that case `read.pcv` has a `filter` argument which will filter rows using awk through linux/unix outside of R. That feature would work as shown below to read only single value traits into memory. This can take a few minutes but allows the entirely workflow to be documented in one R file. 
 
 
-```
+```{r, eval=F}
 example<-read.pcv("prohibitivelyLargeFile.csv",
    filters = list("trait in area, convex_hull_area, solidity, perimeter, width, height, longest_path, convex_hull_vertices, ellipse_major_axis, ellipse_minor_axis, ellipse_angle, ellipse_eccentricity, hue_circular_mean, hue_circular_std, hue_median", "sample in default"))
 ```
@@ -86,7 +61,7 @@ example<-read.pcv("prohibitivelyLargeFile.csv",
 
 Bellwether data can also be read in with `read.pcv.bw` which is a wrapper around `read.pcv` which attempts to do several common tasks related bellwether data joining internally. This should be considered experimental as bellwether experiments can take many formats and this has only been considered with a few datasets.
 
-```
+```{r, eval=F}
 bw<-read.pcv.bw( file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestPhenos.csv",metaCol=NULL, mode="long")
 
 bw<-read.pcv.bw( file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestPhenos.csv",metaCol="meta", metaForm="vis_view_angle_zoom_horizontal_gain_exposure_v_new_n_rep", joinSnapshot = "id", mode="long")
@@ -133,7 +108,7 @@ ggplot(water[water$weight_after!=-1,], aes(x=DAS, y=water_amount, group=barcode,
   theme(legend.position="bottom")
 ```
 
-Finally, we can combine images taken at different angles of the same plant on a given day with `aggregate`, where we will also remove some columns we aren't using. Here we also remove the DAE column since it can be different for different angles and we are not concerned about adjusting for emergence here.
+Finally, we can combine images taken at different angles of the same plant on a given day with `aggregate`, where we will also remove some columns we aren't using. In this case we use the mean of observations, but some people prefer a sum. Either way is fine. Here we also remove the DAE column since it can be different for different angles and we are not concerned about adjusting for emergence here. 
 
 ```{r}
 phenotypes <- c('area.pixels', 'convex_hull_area.pixels', 'convex_hull_vertices', 'ellipse_angle.degrees', 'ellipse_eccentricity', 'ellipse_major_axis.pixels', 'ellipse_minor_axis.pixels', 'height.pixels', 'hue_circular_mean.degrees', 'hue_circular_std.degrees', 'hue_median.degrees', 'longest_path.pixels', 'perimeter.pixels', 'solidity', 'width.pixels')
@@ -182,7 +157,7 @@ Trendlines help us decide what next steps make the most sense and give a general
 ```{r}
 ggplot(sv, aes(x=DAS, y=area_cm2, group=interaction(genotype, fertilizer, lex.order=T),
                                 color = interaction(genotype, fertilizer, lex.order=T)))+
-  geom_smooth(method="loess", se=F)+
+  geom_smooth(method="loess", se=T)+
   labs(y=expression("Area"~"(cm"^2~")"),
        color="Genotype\nand Soil")+
   pcv_theme()+theme(axis.text.x.bottom=element_text(angle=0))
@@ -194,10 +169,47 @@ ggplot(sv, aes(x=DAS, y=area_cm2, group=interaction(genotype, fertilizer, lex.or
 ```{r}
 pcvBox(sv[sv$genotype=='MM' & sv$DAS==15, ], x="fertilizer", y="area_cm2", compare="0", showPoints = T)+
   labs(y=expression("Area"~"(cm"^2~")"),
-       color="Soil Fertilizer")
+       fill="Soil Fertilizer")
 ```
 
-### Relative Tolerance *PENDING*
+### Relative Tolerance
+
+Often bellwether experiments involve comparing stress tolerance between groups. For example in this dataset we might want to know which genotype shows the most resilience to reduced fertilizer. To easily check this we can change out data with `relativeTolerance`. Details on this function can be read with `?pcvr::relativeTolerance`.
+
+```{r}
+rt<-relativeTolerance(sv, phenotypes = c("area_cm2", "height_cm"), grouping = c("fertilizer", "genotype", "DAS"), control = "fertilizer", controlGroup="100", method =  c("proportion", "difference", "zscore"), naTo0=T)
+
+pcvBox(rt[rt$DAS==19, ], x="fertilizer", y="area_cm2_proportion", showPoints = T)+
+  labs(y=expression("Proportion of Control Area"))+
+  facet_wrap(~genotype)+theme(legend.position="none")
+```
+
+### Cumulative Phenotypes
+
+Sometimes we might want to use the cumulative difference over time
+
+```{r, echo=F, eval=F}
+cp<-cumulativePheno(rt, phenotypes = c("area_cm2", "height_cm"), group="barcode", timeCol="DAS")
+```
+
+
+We can check that this worked correctly with trendlines:
+
+```{r}
+ggplot(cp, aes(x=DAS, y=area_cm2_csum, color = interaction(genotype, fertilizer), group= barcode))+
+  geom_line()+
+  theme_minimal()+
+  labs(y=expression("Cumulative Sum of Area"~"(cm"^2~")"),
+       color="Genotype\nand Soil")
+```
+
+And we can use this new phenotype data to analyse data from the entire experiment using just the last day.
+
+```{r}
+pcvBox(cp[cp$DAS==19, ], x="fertilizer", y="area_cm2_csum", showPoints = T)+
+  labs(y=expression("Cumulative Area"))+
+  facet_wrap(~genotype)+theme(legend.position="none")
+```
 
 
 
@@ -412,23 +424,23 @@ pcadf(hue_wide, cols = "hue_frequencies", color = c("genotype", "fertilizer"),  
 
 ### Earth Mover's Distance *PENDING*
 
-Since color data is exported from plantCV as histogram data we can use Earth Mover's Distance (EMD) to compare images. Conceptually EMD is a distance that quantifies how much work it would take to turn one histogram into another. Here we do pairwise comparisons of all our rows and return a long dataframe of those distances. Note that even running several cores in parallel this can take some time for larger datasets and here we are just loading the rdata that was generated by the code below.
+Since color data is exported from plantCV as histogram data we can use Earth Mover's Distance (EMD) to compare images. Conceptually EMD is a distance that quantifies how much work it would take to turn one histogram into another. Here we do pairwise comparisons of all our rows and return a long dataframe of those distances. Note that even running several cores in parallel this can take a lot of time for larger datasets since the number of comparisons quickly can become unwieldy. Here we are just loading the rdata that was generated by the code below, which took around 3 minutes to run.
 
-```
-EMD<-pcv.emd(df = hue_wide, cols="hue_frequencies", reorder=c("fertilizer", "genotype", "DAS"),
-             mat =F, plot=T, parallel = 12)
-```
 
-```{r, eval=F, include=F}
-save(EMD, file="/home/jsumner/Desktop/stargate/fahlgren_lab/pcvr/data/bw_vignette_emd.rda")
-```
+```{r, eval=F}
+EMD<-pcv.emd(df = hue_wide[hue_wide$DAS %in% c(5,12,19),], cols="hue_frequencies", reorder=c("fertilizer", "genotype", "DAS"),
+             mat =F, plot=T, parallel = 12) # time estimate (minutes): 600^2* 0.009 /60 /12
+save(EMD, file="/home/jsumner/Desktop/stargate/fahlgren_lab/pcvr/data/bw_vignette_small_emd.rda")
 
-```{r, eval=F, include=F}
-data(bw_vignette_emd, package = "pcvr")
-# print(load("/home/jsumner/Desktop/stargate/fahlgren_lab/pcvr/data/bw_vignette_fit.rda"))
 ```
 
 ```{r, eval=F, include=F}
+data(bw_vignette_small_emd, package = "pcvr")
+# print(load("/home/jsumner/Desktop/stargate/fahlgren_lab/pcvr/data/bw_vignette_small_emd.rda"))
+```
+
+```{r, eval=F, include=F}
+head(EMD$data)
 EMD$plot
 ```
 
@@ -438,11 +450,12 @@ EMD$plot
 As it stands our EMD data is potentially difficult to use for those unfamiliar with distance matrix based analysis. Here we represent our distances as a network to help use the results.
 
 ```{r, eval=F}
-net<-pcv.net(EMD$data, meta = c("fertilizer", "genotype"))
+net<-pcv.net(EMD$data, meta = c("fertilizer", "genotype", "DAS"))
 ```
 
 ```{r, eval=F}
-net.plot(net, fill = "strength", shape = c("fertilizer", "genotype"), size=5, edgeFilter=0.5)
+quantile(net$edges$emd, 0.9)
+net.plot(net, fill = "DAS", shape = c("genotype"), size=5, edgeFilter=1.5)
 ```
 
 
