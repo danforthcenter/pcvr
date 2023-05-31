@@ -14,5 +14,6 @@ Suggests:
     rmarkdown,
     brms,
     parallel,
+    FactoMineR,
     vroom
 VignetteBuilder: knitr

@@ -4,8 +4,8 @@
 #' 
 #' 
 #' @param net Network object similar to that returned from pcv.net, having dataframes named "edges" and "nodes" 
-#' @param fill A variable name from the nodes data to be used to color points. By default "strength" is used.
-#' @param shape An optional discrete variable name from the nodes data to be used to change the shape of points.
+#' @param fill Variable name(s) from the nodes data to be used to color points. By default "strength" is used.
+#' @param shape Optional discrete variable name(s) from the nodes data to be used to change the shape of points.
 #' @param size Size of points, defaults to 3.
 #' @param edgeWeight Edge dataframe column to weight connections between nodes. Defaults to "emd" for compatability with \code{pcv.emd}.
 #' @param edgeFilter How should edges be filtered? This can be either a numeric (0.5) in which case it is taken as a filter where only edges with values greater than or equal to that number are kept or a character string ("0.5") in which case the strongest X percentage of edges are kept. This defaults to NULL which does no filtering, although that should not be considered the best standard behaviour. See details.
@@ -32,7 +32,15 @@ net.plot<-function(net, fill="strength", shape=NULL, size = 3, edgeWeight="emd",
   nodes<-net[["nodes"]]
   edges<-net[["edges"]]
   if(is.null(fill)){fill="NOFILL"; edges$NOFILL="a"}
+  if(length(fill)>1){
+    edges$FILL = interaction(edges[,fill])
+    fill="FILL"
+  }
   if(is.null(shape)){shape = "NOSHAPE"; nodes$NOSHAPE="a"}
+  if(length(shape)>1){
+    nodes$SHAPE = interaction(nodes[,shape])
+    shape="SHAPE"
+  }
   if(!is.null(edgeFilter)){
     if(is.character(edgeFilter)){
       cutoff<-quantile(edges[[edgeWeight]], probs = as.numeric(edgeFilter))
@@ -40,7 +48,10 @@ net.plot<-function(net, fill="strength", shape=NULL, size = 3, edgeWeight="emd",
     } else if(is.numeric(edgeFilter)){
       edges<-edges[edges[[edgeWeight]] >= edgeFilter, ]
     } else{stop("edgeFilter must be character or numeric, see ?net.plot for details.")}
-  }
+    nodes<-nodes[nodes$index %in% c(edges$from, edges$to),]
+    }
+  
+  
   p<-ggplot2::ggplot(nodes)+
     ggplot2::geom_segment(data=edges,ggplot2::aes(x=from.x, xend = to.x, y=from.y, yend = to.y, linewidth=.data[[edgeWeight]]),colour="black",alpha=0.1) +
     ggplot2::geom_point(data=nodes, size=size, ggplot2::aes(x=V1,y=V2, fill = .data[[fill]], color=.data[[fill]], shape=.data[[shape]]), alpha=1, show.legend=T)+
@@ -51,8 +62,8 @@ net.plot<-function(net, fill="strength", shape=NULL, size = 3, edgeWeight="emd",
     ggplot2::guides(linewidth="none", shape=ggplot2::guide_legend(nrow=1), fill="none")+
     ggplot2::theme_void()+
     ggplot2::theme(legend.position="bottom")
-  if(fill=="NOFILL"){ p<-p+ggplot2::guides(color="none") }
-  if(shape=="NOSHAPE"){ p<-p+ggplot2::guides(shape="none") }
+  if(length(fill==1) && fill=="NOFILL"){ p<-p+ggplot2::guides(color="none") }
+  if(length(shape)==1 && shape=="NOSHAPE"){ p<-p+ggplot2::guides(shape="none") }
   return(p)
 }
 

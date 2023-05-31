@@ -16,9 +16,9 @@ net.plot(
 \arguments{
 \item{net}{Network object similar to that returned from pcv.net, having dataframes named "edges" and "nodes"}
 
-\item{fill}{A variable name from the nodes data to be used to color points. By default "strength" is used.}
+\item{fill}{Variable name(s) from the nodes data to be used to color points. By default "strength" is used.}
 
-\item{shape}{An optional discrete variable name from the nodes data to be used to change the shape of points.}
+\item{shape}{Optional discrete variable name(s) from the nodes data to be used to change the shape of points.}
 
 \item{size}{Size of points, defaults to 3.}
 

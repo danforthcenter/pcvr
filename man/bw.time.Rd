@@ -7,7 +7,7 @@
 bw.time(
   df = NULL,
   mode = NULL,
-  plantingDelay = 4,
+  plantingDelay = NULL,
   phenotype = NULL,
   cutoff = 1,
   timeCol = "timestamp",

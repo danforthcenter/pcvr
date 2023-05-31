@@ -17,10 +17,13 @@
 #' bw<-read.pcv.bw( file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestPhenos.csv", snapshotFile="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestSnapshot.csv", designFile="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestDesign.csv",metaCol="meta",metaForm="vis_view_angle_zoom_horizontal_gain_exposure_v_new_n_rep",joinSnapshot="id",conversions = list(area=13.2*3.7/46856) )
 #' bw<-bw.time(df = bw, mode=NULL, plantingDelay = 4, phenotype="area_adj", timeCol="DAS", group="Barcodes", plot=T)
 #'
-bw.time<-function(df = NULL, mode=NULL, plantingDelay = 4,
+bw.time<-function(df = NULL, mode=NULL, plantingDelay = NULL,
                   phenotype=NULL, cutoff=1, timeCol="timestamp",
                   group="Barcodes", plot=T, format="%Y-%m-%d %H:%M:%S" ){
   if(is.null(mode) || !mode %in% c("DAS", "DAP", "DAE")){ mode=c("DAP", "DAE") }
+  if(is.null(plantingDelay) & "DAP" %in% mode){mode<-mode[-which(mode=="DAP")]}
+  if(is.null(phenotype) & "DAE" %in% mode){mode<-mode[-which(mode=="DAE")]}
+  
   if(!is.integer(df[[timeCol]])){
     df[[timeCol]]<-as.POSIXct(strptime(df[[timeCol]],format = format))
     beg <- min(df[[timeCol]], na.rm=T)
@@ -32,8 +35,8 @@ bw.time<-function(df = NULL, mode=NULL, plantingDelay = 4,
   }
   if("DAE" %in% mode){
     df<-do.call(rbind, lapply( split(df, as.formula(paste0("~",paste( group,collapse="+" )))), function(d){
-      subd<-d[d[[phenotype]] >= 1 & !is.na(d[[phenotype]]) , ]
-      if(nrow(subd)==0){subd<-data.frame(DAS=max(d[[timeCol]])+1) ; colnames(subd)<-timeCol} # if all NA area then remove all rows
+      subd<-d[d[[phenotype]] >= cutoff & !is.na(d[[phenotype]]) , ]
+      if(nrow(subd)==0){subd<-data.frame(DAS=max(df[[timeCol]])+1) ; colnames(subd)<-timeCol} # if all NA area then remove all rows
       d$DAE<-d[[timeCol]] - min(subd[[timeCol]], na.rm=T)
       d#[d$DAE>=0, ]
     }))

@@ -45,7 +45,6 @@ pcv.emd<-function(df, cols=NULL, reorder=NULL, include=reorder, mat=F, plot = T,
   # longTrait="trait"; id="image"; value="value"
   if(!is.null(longTrait)){traitCol = longTrait ; long=T}else{long=F}
   if(!is.null(reorder)){ df<-df[order(interaction(df[,reorder])),] }
-  if(parallel > 1){innerLapply <- function(...){parallel::mclapply(..., mc.cores=parallel)}}else{innerLapply<-lapply}
   if(long){
     df<-df[grepl(cols, df[[traitCol]]), ]
     df$INNER_ID_EMD<-interaction(df[,id], drop=T)
@@ -56,13 +55,13 @@ pcv.emd<-function(df, cols=NULL, reorder=NULL, include=reorder, mat=F, plot = T,
         })})), nrow=length(unique(df$INNER_ID_EMD)), ncol = length(unique(df$INNER_ID_EMD)) )
     }else{ # make long data
       out_data<-do.call(rbind, lapply(unique(df$INNER_ID_EMD), function(i){
-        do.call(rbind, innerLapply(unique(df$INNER_ID_EMD), function(j){
+        do.call(rbind, parallel::mclapply(unique(df$INNER_ID_EMD), function(j){
           if(i==j){emdOut=0}else{emdOut=emd1d(as.numeric(df[df$INNER_ID_EMD==as.character(i), value]), as.numeric(df[df$INNER_ID_EMD==as.character(j), value]) )}
           if(!is.null(include)){x<-data.frame(i=i, j=j, emd = emdOut, df[df$INNER_ID_EMD==as.character(i), include], df[df$INNER_ID_EMD==as.character(j), include])
           colnames(x)<-c("i", "j", "emd", paste0(include,"_i"), paste0(include, "_j"))
           } else {x<-data.frame(i=i, j=j, emd = emdOut)}
           x
-        }))
+        }, mc.cores=parallel))
       }))
     }
   } else{
@@ -78,13 +77,13 @@ pcv.emd<-function(df, cols=NULL, reorder=NULL, include=reorder, mat=F, plot = T,
         }
       }else{# make long dataframe
         out_data<-do.call(rbind, lapply(1:nrow(df), function(i){
-          do.call(rbind, innerLapply(1:nrow(df), function(j){
+          do.call(rbind, parallel::mclapply(1:nrow(df), function(j){
             if(i==j){emdOut=0}else{emdOut=emd1d(as.numeric(df[i, cols]), as.numeric(df[j, cols]))}
             if(!is.null(include)){x<-data.frame(i=i, j=j, emd = emdOut, df[i, include], df[j,include])
               colnames(x)<-c("i", "j", "emd", paste0(include,"_i"), paste0(include, "_j"))
               } else {x<-data.frame(i=i, j=j, emd = emdOut)}
             x
-          }))
+          }, mc.cores=parallel))
         }))
       }
   }
