@@ -15,11 +15,10 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r}
-# devtools::install_github("joshqsumner/pcvr")
-library(pcvr) # devtools::load_all("/home/jsumner/Desktop/stargate/fahlgren_lab/pcvr")
+library(pcvr) # devtools::load_all()
 library(data.table) # for fread
 library(ggplot2)
-library(patchwork)
+library(patchwork) # for easy ggplot manipulation/combination
 ```
 
 
