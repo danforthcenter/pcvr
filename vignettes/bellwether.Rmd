@@ -206,7 +206,7 @@ pcvBox(rt[rt$DAS==19, ], x="fertilizer", y="area_cm2_proportion", showPoints = T
 
 Sometimes we might want to use the cumulative difference over time
 
-```{r, echo=F, eval=F}
+```{r}
 cp<-cumulativePheno(rt, phenotypes = c("area_cm2", "height_cm"), group="barcode", timeCol="DAS")
 ```
 
