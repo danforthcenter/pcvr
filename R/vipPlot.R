@@ -8,7 +8,6 @@
 #' @param removePattern A pattern to remove to make the wavelength column into a numeric.
 #' 
 #' @import ggplot2
-#' @imoprt caret
 #' 
 #' @keywords PLSR
 #' @examples 

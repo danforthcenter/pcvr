@@ -12,7 +12,6 @@
 #' @details Note that columns that sum to 0 in the training or test data will be removed.
 #' 
 #' @import ggplot2
-#' @import caret
 #' 
 #' @keywords PLSR
 #' @examples 
