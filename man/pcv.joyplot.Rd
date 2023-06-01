@@ -19,13 +19,13 @@ pcv.joyplot(
 )
 }
 \arguments{
-\item{df}{Data frame to use. Long format with multi value traits is expected.}
+\item{df}{Data frame to use. Long or wide format is accepted.}
 
-\item{index}{A multi value trait as a character string. Must be present in `trait`.}
+\item{index}{If the data is long then this is a multi value trait as a character string that must be present in `trait`. If the data is wide then this is a string used to find column names to use from the wide data. In the wide case this should include the entire trait name (ie, "hue_frequencies" instead of "hue_freq").}
 
 \item{group}{A length 1 or 2 character vector. This is used for faceting the joyplot and identifying groups for testing.}
 
-\item{method}{A method to use in comparing distributions/means. Currently "beta", "gaussian", and "ks" are supported. See details for explanations of tests.}
+\item{method}{A method to use in comparing distributions/means. Currently "beta", "gaussian", "emd", and "ks" are supported. See details for explanations of tests.}
 
 \item{compare}{Groups to compare. By default this is set to FALSE, which corresponds to no testing. Other values of compare are passed to fixCompare to make t.test comparisons using ggpubr. In short, NULL will run all pairwise T tests, a single value of the X axis variable will compare that level to all other levels of the X variable, alternatively this can be a list as used by ggpubr: list(c("level1", "level2"), c("level1", "level3"))}
 
@@ -41,6 +41,9 @@ pcv.joyplot(
 
 \item{fillx}{Logical, whether or not to use ggridges::geom_density_ridges_gradient . Default is T, if F then ggridges::geom_density_ridges is used instead, with arbitrary fill.}
 }
+\value{
+Returns either a ggplot object or a list containing a ggplot and a dataframe of statistical comparisons (if compare is not FALSE).
+}
 \description{
 Make Joyplots for multi value trait plantCV data and optionally compare distributions
 }
@@ -55,10 +58,23 @@ The method argument is used for statistical testing of groups. There are current
 }
 \examples{
 df <- read.pcv("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest2.csv", "long", F)
+wide_beta <- read.pcv("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest2.csv", "wide", F)
 pcv.joyplot(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"))
 pcv.joyplot(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"), method="ks")
 pcv.joyplot(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"), method="beta")
 pcv.joyplot(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"), method="gaussian")
+
+wide<-read.pcv("https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv", mode="wide", singleValueOnly = T, multiValPattern = "hist", reader="fread")
+wide$genotype = substr(wide$barcode, 3,5)
+wide$genotype = ifelse(wide$genotype == "002", "B73",
+                       ifelse(wide$genotype == "003", "W605S",
+                              ifelse(wide$genotype == "004", "MM", "Mo17")))
+wide$fertilizer = substr(wide$barcode, 8, 8)
+wide$fertilizer = ifelse(wide$fertilizer == "A", "100",
+                         ifelse(wide$fertilizer == "B", "50", "0"))
+p<-pcv.joyplot(hue_wide, index = "hue_frequencies", group=c("inoc", "soil"))
+# For some color traits it makes sense to show the actual represented color, which can be done easily by adding new fill scales.
+p+scale_fill_gradientn(colors = scales::hue_pal(l=65)(360))
 }
 \keyword{bayesian,}
 \keyword{ggplot,}

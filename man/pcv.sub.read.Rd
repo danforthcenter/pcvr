@@ -13,6 +13,9 @@ pcv.sub.read(inputFile, filters, reader = "read.csv", awk = NULL, ...)
 
 \item{awk}{Optional awk command to use instead.}
 }
+\value{
+Returns a dataframe after subsetting happens outside of R using the awk statement from \code{awkHelper}.
+}
 \description{
 reader function called within read.pcv when large data is used
 }

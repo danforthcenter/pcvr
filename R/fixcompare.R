@@ -5,6 +5,7 @@
 #' @param col Column as a character string to find values of `compare` in.
 #' @param likeToLike Logical, should only similar groups be compared (currently defined as part 1 and 2 of group, split on [.])
 #' @keywords internal
+#' @return A list of comparisons as used in the "comparisons" argument of \code{ggpubr::stat_compare_means}.
 #' @export
 #'
 fixCompare<-function(compare, dat, col, likeToLike=F){
