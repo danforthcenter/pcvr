@@ -11,7 +11,10 @@ relativeTolerance(
   control = NULL,
   controlGroup = NULL,
   method = c("proportion", "difference", "zscore"),
-  naTo0 = F
+  naTo0 = F,
+  wide = T,
+  traitCol = "trait",
+  valueCol = "value"
 )
 }
 \arguments{
@@ -27,7 +30,13 @@ relativeTolerance(
 
 \item{method}{The method or methods to use, any of "proportion", "difference", or "zscore". These methods will be appended to the added column names ('phenotype_method').}
 
-\item{naTo0}{Logical, should NA and Inf values be replaced with 0? This is useful if output are going to be used in a cumulative step, but otherwise should be left False.}
+\item{naTo0}{Logical, should NA and Inf values be replaced with 0? This is useful if output are going to be used in a cumulative step, but otherwise should be left False}
+
+\item{wide}{Logical, is the input data in wide format? Defaults to TRUE.}
+
+\item{traitCol}{Column with phenotype names, defaults to "trait". This should generally not need to be changed from the default.}
+
+\item{valueCol}{Column with phenotype values, defaults to "value". This should generally not need to be changed from the default.}
 }
 \value{
 A dataframe with relative tolerance columns added.

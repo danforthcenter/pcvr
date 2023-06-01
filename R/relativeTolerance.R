@@ -8,7 +8,10 @@
 #' @param control A column name for the variable to be used to select the control observations. If left NULL (the default) then this will be taken as the first string in the group argument.
 #' @param controlGroup The level of the control variable to compare groups against.
 #' @param method The method or methods to use, any of "proportion", "difference", or "zscore". These methods will be appended to the added column names ('phenotype_method').
-#' @param naTo0 Logical, should NA and Inf values be replaced with 0? This is useful if output are going to be used in a cumulative step, but otherwise should be left False.
+#' @param naTo0 Logical, should NA and Inf values be replaced with 0? This is useful if output are going to be used in a cumulative step, but otherwise should be left False
+#' @param wide Logical, is the input data in wide format? Defaults to TRUE.
+#' @param traitCol Column with phenotype names, defaults to "trait". This should generally not need to be changed from the default.
+#' @param valueCol Column with phenotype values, defaults to "value". This should generally not need to be changed from the default.
 #' @return A dataframe with relative tolerance columns added.
 #' @keywords single-value-trait
 #' @examples 
@@ -46,7 +49,8 @@
 #' 
 
 relativeTolerance<-function(df, phenotypes=NULL, grouping=NULL, control=NULL,
-                            controlGroup = NULL, method = c("proportion", "difference", "zscore"), naTo0=F){
+                            controlGroup = NULL, method = c("proportion", "difference", "zscore"), naTo0=F,
+                            wide=T, traitCol="trait", valueCol="value"){
 
 if(is.null(grouping)){grouping=control}
 if(is.null(control)){control=grouping[1]}
@@ -58,8 +62,11 @@ if(control %in% grouping){
 } else{
   group_no_control=grouping
 }
+
+
 datsp<-split(x=df, f=as.formula(paste0("~", paste0(group_no_control, collapse="+"))))
 
+if(wide){
 df2<-do.call(rbind, lapply(1:length(datsp), function(i){
   d = datsp[[i]]
   d2<-do.call(cbind, lapply(phenotypes, function(pheno){
@@ -88,6 +95,39 @@ df2<-do.call(rbind, lapply(1:length(datsp), function(i){
   d2<-cbind(d,d2)
   return(d2)
 }))
+} else { # long version
+  
+  df2<-do.call(rbind, lapply(1:length(datsp), function(i){
+    d = datsp[[i]]
+    d2<-do.call(cbind, lapply(phenotypes, function(pheno){
+      control_mean_value = mean( d[ d[[control]]==controlGroup & d[[traitCol]]==pheno, valueCol ], na.rm=T)
+      inputData <- d[d[[traitCol]]==pheno, ]
+      if(is.na(control_mean_value)){ return(inputData)
+      }else{
+        newRows<-do.call(rbind, lapply(method, function(mthd){
+          if(mthd=="proportion"){
+            inputData[[valueCol]] = d[d[[traitCol]]==pheno, valueCol] / control_mean_value
+            inputData[[traitCol]] = paste0(pheno,"_proportion")
+          }
+          if(mthd == "difference"){
+            inputData[[valueCol]] =  d[d[[traitCol]]==pheno, valueCol] - control_mean_value
+            inputData[[traitCol]] = paste0(pheno,"_difference")
+          }
+          if(mthd =="zscore"){
+            inputData[[valueCol]] =   (d[d[[traitCol]]==pheno, valueCol] - control_mean_value) / sd(d[ d[[control]]==controlGroup & d[[traitCol]]==pheno, valueCol ], na.rm=T)
+            inputData[[traitCol]] = paste0(pheno,"_zscore")
+          }
+          return(values)
+        }))
+        if(naTo0){
+          newRows[[valueCol]][is.na(newRows[[valueCol]])]<-0
+        }
+        return(rbind(inputData, newRows))
+      }
+    }))
+    return(d2)
+  }))
+}
 return(df2)
 }
 

@@ -13,11 +13,14 @@ bw.time(
   timeCol = "timestamp",
   group = "Barcodes",
   plot = T,
-  format = "\%Y-\%m-\%d \%H:\%M:\%S"
+  wide = T,
+  format = "\%Y-\%m-\%d \%H:\%M:\%S",
+  traitCol = "trait",
+  valueCol = "value"
 )
 }
 \arguments{
-\item{df}{Data frame to use. Should be in the format of output from read.pcv.bw}
+\item{df}{Data frame to use, this can be in wide or long format as specified by the wide argument.}
 
 \item{mode}{One of "DAS", "DAP" or "DAE" (Days After Planting and Days After Emergence). Defaults to NULL in which case all columns are added. Note that if timeCol is not an integer then DAS is always returned.}
 
@@ -33,7 +36,13 @@ bw.time(
 
 \item{plot}{Logical, should plots of the new time variables be printed?}
 
+\item{wide}{Logical, is data in wide format? Defaults to TRUE.}
+
 \item{format}{An R POSIXct format, defaults to lemnatech standard format. This is only used if timeCol is not an integer.}
+
+\item{traitCol}{Column with phenotype names, defaults to "trait". This should generally not need to be changed from the default.}
+
+\item{valueCol}{Column with phenotype values, defaults to "value". This should generally not need to be changed from the default.}
 }
 \value{
 The input dataframe with new integer columns for different ways of describing time in the experiment.
