@@ -19,7 +19,6 @@
 #' plotVIP(x)
 #' 
 #' @export
-#' 
 
 plotVIP<-function(plsrObject, i=1, mean=F, removePattern = ".*_"){
   d<-plsrObject[[i]]$vip_df

@@ -23,10 +23,8 @@
 #' x<-pcv.plsr(df=df1, resps = "area.pixels", spectra = "^ndvi_")
 #' 
 #' @export
-#' 
 
 pcv.plsr<-function(df, resps = NULL, spectra=NULL, train=0.8, cv=10, ...){
-  #' df=df1; resps = "area.pixels"; spectra = grepl("^ndvi_", colnames(df1)); train=0.8; cv=10
   if(is.character(spectra) && length(spectra)==1 && (!spectra %in% colnames(df))){
     spectra<-grepl(spectra, colnames(df))
   }
