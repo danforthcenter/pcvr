@@ -10,6 +10,8 @@
 #' @param control A column name for the variable to be used to select the control observations. If left NULL (the default) then this will be taken as the first string in the group argument.
 #' @param controlGroup The level of the control variable to compare groups against.
 #' @param method The method or methods to use, any of "proportion", "difference", or "zscore". These methods will be appended to the added column names ('phenotype_method').
+#' @param traitCol Column with phenotype names, defaults to "trait". This should generally not need to be changed from the default.
+#' @param valueCol Column with phenotype values, defaults to "value". This should generally not need to be changed from the default.
 #' @return A dataframe with cumulative sum columns added for specified phenotypes
 #' @keywords single-value-traits
 #' @examples 
@@ -39,17 +41,46 @@
 #' timeCol = "DAS"
 #' df<-cumulativePheno(df, phenotypes, group, timeCol)
 #' 
+#' 
+#' sv_l<-read.pcv("https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv", mode="long", singleValueOnly = T, reader="fread")
+#' sv_l$genotype = substr(sv$barcode, 3,5)
+#' sv_l$genotype = ifelse(sv_l$genotype == "002", "B73",
+#'               ifelse(sv_l$genotype == "003", "W605S",
+#'               ifelse(sv_l$genotype == "004", "MM", "Mo17")))
+#' sv_l$fertilizer = substr(sv_l$barcode, 8, 8)
+#' sv_l$fertilizer = ifelse(sv_l$fertilizer == "A", "100",
+#'               ifelse(sv_l$fertilizer == "B", "50", "0"))
+#' sv_l<-bw.time(sv_l, plantingDelay = 0, phenotype="area", cutoff=10, timeCol="timestamp", group=c("barcode", "rotation"), wide=F)
+#' sv_l<-cumulativePheno(sv_l, phenotypes=c("area", "height"), group=c("barcode", "rotation"), timeCol="DAS", wide=F)
+#' 
+#' 
 #' @export
 #' 
-cumulativePheno<-function(df, phenotypes=NULL, group="barcode", timeCol="DAS"){
+cumulativePheno<-function(df, phenotypes=NULL, group="barcode", timeCol="DAS", wide=T, traitCol="trait", valueCol="value"){
+  
   if(length(group)>1){
-    df$GROUP = interaction(df[, group])
+    df$GROUP = as.character(interaction(df[, group]))
     group="GROUP"}
-  out<-do.call(rbind, lapply(split(df, df[[group]] ), function(d){
-    d<-d[sort(d[[timeCol]], index.return=T)$ix,]
-    d2<-setNames(as.data.frame(do.call(cbind, lapply(phenotypes, function(pheno){cumsum( d[[pheno]] )}))), paste0(phenotypes, "_csum"))
-    cbind(d,d2)
-  }))
-  out
+  
+  if(!wide){ # note this is untested so far
+    dat_sp<-split(df, df[[group]])
+    out<-do.call(rbind, lapply(split(df, df[[group]]), function(d){
+      newRows<-do.call(rbind, lapply(phenotypes, function(pheno){
+        di<-d[d[[traitCol]] == pheno, ]
+        di[[valueCol]]<-cumsum(di[[valueCol]])
+        di[[traitCol]]<-paste0(pheno, "_csum")
+        di
+      }))
+      rbind(d, newRows)
+    }))
+  } else{
+    dat_sp<-split(df, df[[group]])
+    out<-do.call(rbind, lapply(dat_sp, function(d){
+      d<-d[sort(d[[timeCol]], index.return=T)$ix,]
+      d2<-setNames(as.data.frame(do.call(cbind, lapply(phenotypes, function(pheno){cumsum( d[[pheno]] )}))), paste0(phenotypes, "_csum"))
+      cbind(d,d2)
+    }))
+  }
+  return(out)
 }
 

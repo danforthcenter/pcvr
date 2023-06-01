@@ -4,12 +4,24 @@
 \alias{cumulativePheno}
 \title{Reduce phenotypes in longitudinal data to cumulative sums of phenotypes.}
 \usage{
-cumulativePheno(df, phenotypes = NULL, group = "barcode", timeCol = "DAS")
+cumulativePheno(
+  df,
+  phenotypes = NULL,
+  group = "barcode",
+  timeCol = "DAS",
+  wide = T,
+  traitCol = "trait",
+  valueCol = "value"
+)
 }
 \arguments{
 \item{df}{Dataframe to use, this is expected to be in wide format although in the future long may also be supported.}
 
 \item{phenotypes}{A character vector of column names for the phenotypes that should be compared against control.}
+
+\item{traitCol}{Column with phenotype names, defaults to "trait". This should generally not need to be changed from the default.}
+
+\item{valueCol}{Column with phenotype values, defaults to "value". This should generally not need to be changed from the default.}
 
 \item{grouping}{A character vector of column names that identify groups in the data. Defaults to "barcode". These groups will be calibrated separately, with the exception of the group that identifies a control within the greater hierarchy.}
 
@@ -51,6 +63,19 @@ phenotypes = c("area_cm2", "height_cm")
 group = c("barcode")
 timeCol = "DAS"
 df<-cumulativePheno(df, phenotypes, group, timeCol)
+
+
+sv_l<-read.pcv("https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv", mode="long", singleValueOnly = T, reader="fread")
+sv_l$genotype = substr(sv$barcode, 3,5)
+sv_l$genotype = ifelse(sv_l$genotype == "002", "B73",
+              ifelse(sv_l$genotype == "003", "W605S",
+              ifelse(sv_l$genotype == "004", "MM", "Mo17")))
+sv_l$fertilizer = substr(sv_l$barcode, 8, 8)
+sv_l$fertilizer = ifelse(sv_l$fertilizer == "A", "100",
+              ifelse(sv_l$fertilizer == "B", "50", "0"))
+sv_l<-bw.time(sv_l, plantingDelay = 0, phenotype="area", cutoff=10, timeCol="timestamp", group=c("barcode", "rotation"), wide=F)
+sv_l<-cumulativePheno(sv_l, phenotypes=c("area", "height"), group=c("barcode", "rotation"), timeCol="DAS", wide=F)
+
 
 }
 \keyword{single-value-traits}
