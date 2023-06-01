@@ -9,6 +9,7 @@
 #' @param noise Optionally this can be used to add specific amounts of noise to the input parameters. If NULL (the default) then data is simulated with 10\% random noise like: param + N(0, 0.1*param)
 #' 
 #' @keywords growth curve, logistic, gompertz, monomolecular, linear, exponential, power-law
+#' @return Returns a dataframe of example growth data following the input parameters.
 #' 
 #' @examples 
 #' simdf<-growthSim("logistic", n=20, t=25, params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))
@@ -31,12 +32,14 @@
 #' 
 #' @details 
 #'     The \code{params} argument requires some understanding of how each growth model is parameterized. Examples of each are below should help, as will the examples.
-#'     \bold{Logistic}: `A / (1 + exp( (B-x)/C) )` Where A is the asymptote, B is the inflection point, C is the growth rate
-#'     \bold{Gompertz}: `A * exp(-B * exp(-C*x))` Where A is the asymptote, B is the inflection point, C is the growth rate 
-#'     \bold{Monomolecular}: `A-A * exp(-B * x)`` Where A is the asymptote and B is the growth rate 
-#'     \bold{Exponential}: `A * exp(B * x)` Where A is the scale parameter and B is the growth rate 
-#'     \bold{Linear}: `A * x` Where A is the growth rate.
-#'     \bold{Power Law}: `A * x^(B)` Where A is the scale parameter and B is the growth rate.
+#'     \itemize{
+#'     \item \bold{Logistic}: `A / (1 + exp( (B-x)/C) )` Where A is the asymptote, B is the inflection point, C is the growth rate. 
+#'     \item \bold{Gompertz}: `A * exp(-B * exp(-C*x))` Where A is the asymptote, B is the inflection point, C is the growth rate. 
+#'     \item \bold{Monomolecular}: `A-A * exp(-B * x)`` Where A is the asymptote and B is the growth rate. 
+#'     \item \bold{Exponential}: `A * exp(B * x)` Where A is the scale parameter and B is the growth rate. 
+#'     \item \bold{Linear}: `A * x` Where A is the growth rate.
+#'     \item \bold{Power Law}: `A * x^(B)` Where A is the scale parameter and B is the growth rate.
+#'     }
 #'     Note that for these distributions parameters do not exist in a vacuum. Changing one can make the others look different in the resulting data. The examples are a good place to start if you are unsure what parameters to use.
 #' 
 #' @export

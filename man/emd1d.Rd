@@ -11,6 +11,9 @@ emd1d(s1, s2)
 
 \item{s2}{Histogram as a numeric vector of counts per position. Must be the same length as s1.}
 }
+\value{
+Returns EMD between two samples as a numeric.
+}
 \description{
 emd1d computes 1 dimension EMD for two samples.
 }

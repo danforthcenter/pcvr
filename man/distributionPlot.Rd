@@ -30,7 +30,7 @@ distributionPlot(
 \item{patch}{Logical, should a patchwork plot be returned or should lists of ggplots be returned?}
 }
 \value{
-A named list of elements to make it easier to fit common brms models.
+A ggplot or a list of ggplots (depending on patch).
 }
 \description{
 Function for plotting iterations of posterior distributions
@@ -38,22 +38,19 @@ Function for plotting iterations of posterior distributions
 \examples{
 
 
-print(load("/home/jsumner/Desktop/stargate/bayesian_growth/earlyStoppingSim/bayesian_updating/parameterUpdating_DataAndModels_3to25.rdata"))
+print(load(url("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/brmsFits.rdata")))
 library(brms)
 library(ggplot2)
 library(patchwork)
 fits<-list(fit_3, fit_15)
-form <- y~time|sample/treatment
+form <- y~time|id/group
 priors<-list("phi1"=rlnorm(2000, log(130), 0.25), "phi2"=rlnorm(2000, log(12), 0.25), "phi3"=rlnorm(2000, log(3), 0.25))
 params = c("phi1", "phi2", "phi3")
 d <- df
 maxTime = NULL
 patch=T
 from3to25<-list(fit_3, fit_5, fit_7, fit_9, fit_11, fit_13, fit_15, fit_17, fit_19, fit_21, fit_23, fit_25)
-distributionPlot(fits = from3to25, form = y~time|sample/treatment, params=params, d=df, priors=priors)
-distributionPlot(fits = from3to25, form = y~time|sample/treatment, params=params, d=df, priors=priors)
-distributionPlot(fits = from3to25, form = y~time|sample/treatment, params=params, d=df, priors=priors)
-distributionPlot(fits = from3to25, form = y~time|sample/treatment, params=params, d=df, priors=priors)
+distributionPlot(fits = from3to25, form = y~time|id/group, params=params, d=df, priors=priors)
 }
 \keyword{Bayesian,}
 \keyword{brms}

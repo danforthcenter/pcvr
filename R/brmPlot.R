@@ -2,8 +2,9 @@
 #' 
 #' @param fit A brmsfit object, similar to those fit with \code{\link{growthSS}} outputs.
 #' @param form A formula similar to that in \code{growthSS} inputs specifying the outcome, predictor, and grouping structure of the data as \code{outcome ~ predictor|individual/group}.
+#' @param groups An optional set of groups to keep in the plot. Defaults to NULL in which case all groups in the model are plotted.
 #' @param df An optional dataframe to use in plotting observed growth curves on top of the model. 
-#' @keywords growth curve, logistic, gompertz, monomolecular, linear, exponential, power law
+#' @keywords growth-curve, logistic, gompertz, monomolecular, linear, exponential, power-law
 #' @import ggplot2
 #' @import viridis
 #' @examples 
@@ -15,14 +16,16 @@
 #'               iter = 1000, cores = 2, chains = 2, init = ss$initfun, # parameters controling chain number, chain length, parallelization and starting values
 #'               control = list(adapt_delta = 0.999, max_treedepth = 20), backend = "cmdstanr") # options to increase performance
 #' brmPlot(fit_test, y~time|id/group, df=NULL)
-#' print(load("/home/jsumner/Desktop/stargate/bayesian_growth/earlyStoppingSim/bayesian_updating/parameterUpdating_DataAndModels_3to25.rdata"))
-#' brmPlot(fit_25, form = y~time|sample/treatment)
-#' brmPlot(fit_9, form = y~time|sample/treatment)
-#' brmPlot(fit_15, form = y~time|sample/treatment)
+#' print(load(url("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/brmsFits.rdata")))
+#' brmPlot(fit_25, form = y~time|id/group)
+#' brmPlot(fit_9, form = y~time|id/group)
+#' brmPlot(fit_15, form = y~time|id/group)
+#' 
+#' @return Returns a ggplot showing a brms model's credible intervals and optionally the individual growth lines.
 #' 
 #' @export
 
-brmPlot<-function(fit, form, df=NULL){
+brmPlot<-function(fit, form, groups = NULL, df=NULL){
   fitData<-fit$data
   y=as.character(form)[2]
   x<-as.character(form)[3]
@@ -41,6 +44,12 @@ brmPlot<-function(fit, form, df=NULL){
   colnames(newData)<-c(x, group, individual)
   predictions <- cbind(newData, predict(fit, newData, probs=probs))
   
+  if(!is.null(groups)){
+    predictions<-predictions[predictions$group %in% groups, ]
+    if(!is.null(df)){
+      df<-df[df[[group]] %in% groups, ]
+    }
+  }
   p<-ggplot2::ggplot(predictions, ggplot2::aes(x=.data[[x]], y=Estimate))+
     ggplot2::facet_wrap(as.formula(paste0("~",group)))+
     lapply(seq(1,49,2),function(i) ggplot2::geom_ribbon(ggplot2::aes(ymin=.data[[paste0("Q",i)]],ymax=.data[[paste0("Q",100-i)]]),fill=avg_pal[i],alpha=0.5))+
@@ -48,7 +57,7 @@ brmPlot<-function(fit, form, df=NULL){
     pcv_theme()
   
   if(!is.null(df)){
-    p<-p+ggplot2::geom_line(data=fitData, ggplot2::aes(.data[[x]], .data[[y]], group=.data[[individual]]),color="gray20")
+    p<-p+ggplot2::geom_line(data=df, ggplot2::aes(.data[[x]], .data[[y]], group=.data[[individual]]),color="gray20", linewidth=0.2)
   }
   return(p)
 }

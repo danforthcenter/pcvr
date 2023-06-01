@@ -1,19 +1,24 @@
 #' Ease of use brms starter function for 6 growth model parameterizations
 #' 
 #' @param model The name of a model as a character string. Supported options are c("logistic", "gompertz", "monomolecular", "exponential", "linear", "power law"). See \code{\link{growthSim}} for examples of each type of growth curve.
-#' @param form A formula describing the model. The left hand side should only be the outcome variable (phenotype). The right hand side needs at least the x variable (typically time). Grouping is also described in this formula using roughly lme4 style syntax, with formulas like \code{y~time|individual/group} to show that predictors should vary by \code{group} and autocorrelation between \code{individual:group} interactions should be modeled.
+#' @param form A formula describing the model. The left hand side should only be the outcome variable (phenotype). The right hand side needs at least the x variable (typically time). Grouping is also described in this formula using roughly lme4 style syntax,with formulas like \code{y~time|individual/group} to show that predictors should vary by \code{group} and autocorrelation between \code{individual:group} interactions should be modeled. If group has only one level or is not included then it will be ignored in formulas for growth and variance (this may be the case if you split data before fitting models to be able to run more smaller models each more quickly).
 #' @param sigma A model for heteroskedasticity from c("homo", "linear", "spline"). 
 #' @param df A dataframe to use. Must contain all the variables listed in the formula.
-#' @param priors A named list of means for prior distributions. Currently this function makes lognormal priors for all growth model parameters. This is done because the values are strictly positive and the lognormal distribution is easily interpreted. If this argument is not provided then priors are not returned and a different set of priors will need to be made for the model using \code{brms::set_prior}. This works similarly to the \code{params} argument in \code{growthSim}. Names should correspond to parameter names from the \code{model} argument. A numeric vector can also be used, but specifying names is best practice for clarify. See details.
+#' @param priors A named list of means for prior distributions. Currently this function makes lognormal priors for all growth model parameters. This is done because the values are strictly positive and the lognormal distribution is easily interpreted. If this argument is not provided then priors are not returned and a different set of priors will need to be made for the model using \code{brms::set_prior}. This works similarly to the \code{params} argument in \code{growthSim}. Names should correspond to parameter names from the \code{model} argument. A numeric vector can also be used, but specifying names is best practice for clarity. See details.
 #' @keywords Bayesian, brms
 #' @return A named list of elements to make it easier to fit common brms models.
+#' \code{formula}: A \code{brms::bf} formula specifying the growth model, autocorrelation, variance submodel, and models for each variable in the growth model.
+#' \code{prior}: A brmsprior/data.frame object.
+#' \code{initfun}: A function to randomly initialize chains using a random draw from a gamma distribution (confines initial values to positive and makes correct number of initial values for chains and groups).
+#' \code{df} The data input, possibly with dummy variables added if needed.
+#' \code{family} The model family, currently this will always be "student".
 #' @examples 
 #' 
 #' simdf<-growthSim("logistic", n=20, t=25, params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))
 #' ss<-growthSS(model = "logistic", form=y~time|id/group, sigma="spline", df=simdf, priors = list("A"=130, "B"=12, "C"=3))
 #' lapply(ss,class)
 #' ss$initfun()
-#' fit_test <- brm(ss$formula, prior = ss$prior, data = ss$df, family = ss$family, # main componenets of the model
+#' fit_test <- brm(ss$formula, prior = ss$prior, data = ss$df, family = ss$family, # main components of the model
 #'               iter = 1000, cores = 2, chains = 2, init = ss$initfun, # parameters controling chain number, chain length, parallelization and starting values
 #'               control = list(adapt_delta = 0.999, max_treedepth = 20), backend = "cmdstanr") # options to increase performance
 #' @export
@@ -26,12 +31,23 @@ growthSS<-function(model, form, sigma=NULL, df, priors=NULL){
     #* `parse form argument`
     y=as.character(form)[2]
     x<-as.character(form)[3]
-    if(grepl("\\|", x) | grepl("\\/",x)){
+    
+    if(grepl("\\|", x) & grepl("\\/",x)){
       x3<-trimws(strsplit(x, "[|]|[/]")[[1]])
       x<-x3[1]
       individual = x3[2]
-      group = x3[3]
-    } else {stop("form must specify grouping for observations. See documentation and examples.")}
+      group = x3[3] 
+      if(length(unique(df[[group]]))==1){USEGROUP=F}else{USEGROUP=T} # if there is only one group then ignore grouping for parameter and variance formulas
+    } else if (grepl("\\|", x)){
+      x2<-trimws(strsplit(x, "[|]")[[1]])
+      x<-x2[1]
+      individual = x2[2]
+      group="dummy"
+      df[[group]]<-"dummy"
+      USEGROUP=F
+    } else {stop("form must specify grouping at least for individual level for observations ( y ~ x|individual ). See documentation and examples.")}
+    #* `convert group to character to avoid unexpected factor stuff`
+    df[[group]]<-as.character(df[[group]])
     #* `Make autocorrelation formula`
     corForm<-as.formula(paste0("~arma(~",x,"|", individual,":",group,",1,1)"))
     #* `Make parameter formula`
@@ -42,7 +58,9 @@ growthSS<-function(model, form, sigma=NULL, df, priors=NULL){
     } else if(match.arg(model, models) == "linear"){
       pars="A"
     }
-    parForm<-as.formula(paste0( paste(pars,collapse="+"),"~0+",group ))
+    if(USEGROUP){ parForm<-as.formula(paste0( paste(pars,collapse="+"),"~0+",group ))
+      } else { parForm<-as.formula(paste0( paste(pars,collapse="+"),"~1" )) }
+    
     #* `Make growth formula`
     if(match.arg(model, models)=="logistic"){
       form_fun<-form_logistic
@@ -61,16 +79,26 @@ growthSS<-function(model, form, sigma=NULL, df, priors=NULL){
     #* `Make heteroskedasticity formula`
     if(!is.null(sigma)){
       sigmaForm<-if(match.arg(sigma, choices=sigmas)=="homo"){
-        as.formula(paste0("sigma ~ 0+", group))
-      } else if (match.arg(sigma, choices=sigmas)=="linear"){
-        as.formula(paste0("sigma ~ ", x, "+", x, ":",group))
-      } else if(match.arg(sigma, choices=sigmas)=="spline"){
-        as.formula(paste0("sigma ~ s(",x,", by=", group, ")"))
+        if(USEGROUP){ as.formula(paste0("sigma ~ 0+", group))
+          } else{ as.formula(paste0("sigma ~ 1")) }
+        } else if (match.arg(sigma, choices=sigmas)=="linear"){
+          if(USEGROUP){
+            as.formula(paste0("sigma ~ ", x, "+", x, ":",group))
+          } else{ as.formula(paste0("sigma ~ ", x)) }
+          } else if(match.arg(sigma, choices=sigmas)=="spline"){
+            
+        if(length(unique(df[[x]]))<11){
+          if(USEGROUP){ as.formula(paste0("sigma ~ s(",x,", by=", group, ", k=",length(unique(df[[x]])),")"))
+            }else{ as.formula(paste0("sigma ~ s(",x,", k=",length(unique(df[[x]])),")")) }
+        }else{ 
+          if(USEGROUP){ as.formula(paste0("sigma ~ s(",x,", by=", group, ")"))
+          } else{ as.formula(paste0("sigma ~ s(",x, ")")) }
+        }
       } 
       #* `Combining for brms formula`
-      bayesForm<-bf(formula = growthForm, sigmaForm, parForm, autocor = corForm, nl=T)
+      bayesForm<-brms::bf(formula = growthForm, sigmaForm, parForm, autocor = corForm, nl=T)
     }else{
-      bayesForm<-bf(formula = growthForm,parForm,autocor = corForm,nl=T)
+      bayesForm<-brms::bf(formula = growthForm,parForm,autocor = corForm,nl=T)
     }
     out[["formula"]]<-bayesForm
   #* ***** `Make make priors` *****
@@ -78,7 +106,7 @@ growthSS<-function(model, form, sigma=NULL, df, priors=NULL){
     # priors = list("A"=130, "B"=12, "C"=3)
     # priors = list("A"=c(130, 150), "B"=c(12,11), "C"=c(3,3))
     #* `if priors is a brmsprior`
-    if(any(class(prior)=="brmsprior")){out[["prior"]]<-prior } else{
+    if(any(class(priors)=="brmsprior")){out[["prior"]]<-priors } else{
     #* `if priors is a numeric vector`
     if(is.numeric(priors)){ # priors = c(130, 12, 3) 
       if(length(priors)==length(pars)){
@@ -156,7 +184,7 @@ form_logistic<-function(x, y){
   return(as.formula(paste0(y," ~ A/(1+exp((B-",x,")/C))")))
 }
 form_gompertz<-function(x, y){
-  return(as.formula(paste0(y,"A*exp(-B*exp(-C*",x,"))")))
+  return(as.formula(paste0(y," ~ A*exp(-B*exp(-C*",x,"))")))
 }
 form_monomolecular<-function(x, y){
   return(as.formula(paste0(y,"~A-A*exp(-B*",x,")")))

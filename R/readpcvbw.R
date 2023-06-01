@@ -6,17 +6,19 @@
 #' @param metaCol a column name from the phenotype data read in with the `file` argument. Generally for bellwether experiments this will correspond to an image path. The name is split on "/" characters with the last segment being taken and parsed into some number of sections based on `metaForm`.
 #' @param metaForm A character string or character vector of column names to parse `metaCol` into. The number of names needs to match with length of `metaCol` when parsed. If a character string is provided then it is assumed to be underscore delimited, so do if you need underscores in a column name then use `c("column_one", "column_two",...)` instead of `column_one_column_two_...`.
 #' @param joinSnapshot Column name create in phenotype data to use in joining snapshot data. By default this will attempt to make an "id" column, which is parsed from a snapshot folder in `metaCol` ("/shares/sinc/data/Phenotyper/SINC1/ImagesNew/**snapshot1403**/"). An error will be raised if this column is not present in the snapshot data.
-#' @param conversions A named list of phenotypes that should be rescaled by the value in the list. For instance, at zoom 1  `list(area = 13.2 * 3.7/46856)` will convert from pixels to square cm.
-#' @param reader The function to use to read in data, defaults to "read.csv". Other useful options are "vroom" and "fread", from the vroom and data.table packages, respectively. With files that are still very large after subsetting "fread" or "vroom" should be used.
-#' @param filters If a very large pcv output file is read then it may be desireable to subset it before reading it into R, either for ease of use or because of RAM limitations. The filter argument works with "COLUMN in VALUES" syntax. This can either be a character vector or a list of character vectors. In these vectors there needs to be a column name, one of " in ", " is ", or " = ", then a set of comma delimited values to filter that column for (see examples). Note that this and `awk` both use awk through pipe(). This functionality will not work on a windows system. 
-#' @param awk As an alternative to `filters` a direct call to awk can be supplied here, in which case that call will be used through pipe().
-#' @param ... Other arguments passed to the reader function. In the case of 'vroom' and 'fread' there are several defaults provided already which can be overwritten with these extra arguments.
+#' @param conversions A named list of phenotypes that should be rescaled by the value in the list. For instance, at zoom 1  `list(area = 13.2 * 3.7/46856)` will convert from pixels to square cm in the 5MP bellwether camera.
+#' @param ... Other arguments passed to \code{\link{read.pcv}} .
 #' @keywords read.csv, pcv, bellwether
+#' @return Returns a dataframe potentially with several files merged into it.
 #' @export
 #' @examples 
-#' bw<-read.pcv.bw( file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestPhenos.csv",metaCol=NULL)
-#' bw<-read.pcv.bw( file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestPhenos.csv",metaCol="meta", metaForm="vis_view_angle_zoom_horizontal_gain_exposure_v_new_n_rep", joinSnapshot = "id")
-#' bw<-read.pcv.bw( file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestPhenos.csv", snapshotFile="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestSnapshot.csv", designFile="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestDesign.csv",metaCol="meta",metaForm="vis_view_angle_zoom_horizontal_gain_exposure_v_new_n_rep",joinSnapshot="id",conversions = list(area=13.2*3.7/46856) )
+#' bw<-read.pcv.bw( file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestPhenos.csv",metaCol=NULL, mode="long")
+#' bw<-read.pcv.bw( file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestPhenos.csv",metaCol="meta", metaForm="vis_view_angle_zoom_horizontal_gain_exposure_v_new_n_rep", joinSnapshot = "id", mode="long")
+#' bw<-read.pcv.bw( file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestPhenos.csv",
+#'    snapshotFile="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestSnapshot.csv",
+#'    designFile="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestDesign.csv",
+#'    metaCol="meta",metaForm="vis_view_angle_zoom_horizontal_gain_exposure_v_new_n_rep",
+#'    joinSnapshot="id",conversions = list(area=13.2*3.7/46856), mode="long" )
 
 read.pcv.bw<-function(
     file=NULL,
@@ -26,21 +28,10 @@ read.pcv.bw<-function(
     metaForm="vis_view_angle_zoom_horizontal_gain_exposure_v_new_n_rep",
     joinSnapshot="id",
     conversions = NULL,
-    reader="read.csv",
-    awk=NULL,
     ...){
-  if(is.null(filters) & is.null(awk)){
-    if(reader=="vroom"){
-      phenos<-vroom::vroom(filepath,show_col_types = FALSE, delim = ",", ...)
-    }else if (reader=="fread"){
-      phenos<-data.table::fread(input=filepath, ...)
-    }else{
-      readingFunction<-match.fun(reader)
-      phenos<-readingFunction(filepath, ...)
-    }
-  } else{
-    phenos<-pcv.sub.read(inputFile=file, filters=filters, reader = reader, awk=awk, ...)  
-  }
+  
+  phenos<-read.pcv(filepath=file, ...)
+  
   #* `parse metadata`
   if(!is.null(metaCol)){
     metaToParse<-unlist(lapply( phenos[[metaCol]], function(meta){
