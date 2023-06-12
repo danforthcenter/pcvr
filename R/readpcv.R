@@ -70,7 +70,23 @@ read.pcv<-function(filepath, mode="wide", singleValueOnly=T,
     long[[labelCol]]<-ifelse(is.na(long[[labelCol]]), "none", long[[labelCol]])
     wide<-as.data.frame(data.table::dcast(data.table::as.data.table(long), as.formula(paste0("... ~ ", traitCol, "+", labelCol)), value.var = valueCol, sep="."))
     colnames(wide)<-sub(".none$","",colnames(wide))
+    if(any(grepl("hist|frequencies", colnames(wide)))){ # reorder the MV traits by their bins
+      #* get a list of the unique non-numeric parts
+      histCols <- colnames(wide)[grepl("hist|frequencies", colnames(wide))]
+      unique_mvTraits<-unique(gsub("[.]+$", "",gsub("[0-9]+","",histCols)))
+      #* for each unique non-numeric part, sort the names
+      mvCols_reordered<-unlist(lapply(unique_mvTraits, function(umt){
+        iterCols = histCols[grepl(umt, histCols)]
+        iterCols_numeric = as.numeric( gsub(paste0(umt, "."), "", iterCols) )
+        bins_order<-sort(iterCols_numeric, index.return=T)$ix
+        iterCols[bins_order]
+      }))
+      #* combine the histCols and the other columns, in the new order.
+      sv_and_meta_cols<-colnames(wide)[!grepl("hist|frequencies", colnames(wide))]
+      wide<-wide[,c(sv_and_meta_cols, mvCols_reordered)]
+    }
     out<-wide
+    
   } else{out<-df1
   if(!is.null(traitCol)){
     if(traitCol %in% colnames(out)){
