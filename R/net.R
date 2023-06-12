@@ -7,7 +7,9 @@
 #' @param meta Metadata to be carried from pcv.emd output into the network, defaults to NULL which will use all metadata.
 #' @param dissim Logical, should the distCol be inverted to make a dissimilarity value?
 #' @param distCol The name of the column containing distances/dissimilarities. Defaults to "emd" for compatability with pcv.emd
-#' @param ... Further arguments passed to igraph::graph_from_dataframe or graph_from_adjacency_matrix
+#' @param filter This can be either a numeric (0.5) in which case it is taken as a filter where only edges with values greater than or equal to that number are kept or a character string ("0.5") in which case the strongest X percentage of edges are kept.
+#' This defaults to NULL which does no filtering, although that should not be considered the best standard behavior. Note that this will happen after converting to dissimilarity if dissim=T.
+#' @param direction Direction of filtering, can be either "greater" or "lesser".
 #' @import ggplot2
 #' @import igraph
 #' 
@@ -28,17 +30,31 @@
 #' @export
 #' 
 
-pcv.net<-function(emd = NULL, meta = NULL, dissim=T, distCol="emd"){
+pcv.net<-function(emd = NULL, meta = NULL, dissim=T, distCol="emd", filter = NULL, direction="greater"){
   #* emd = emd_df; meta = c("treatment", "genotype"); dissim=T; distCol="emd"
   #* format distCol into a similarity col
   if(is.data.frame(emd)){
+    #* convert to dissimilarity if metric is similarity
     if(dissim){
       emd[[distCol]]<-1/emd[[distCol]]
       emd[[distCol]]<-ifelse(is.infinite(emd[[distCol]])|is.na(emd[[distCol]]), 0, emd[[distCol]])
     }
+    #* filter for edge strength
+    if(!is.null(filter)){
+      if(is.character(filter)){
+        filter<-quantile(emd[[distCol]], probs = as.numeric(filter))
+      }
+      if(match.arg(direction, c("greater", "lesser"))=="greater"){
+        emd<-emd[ emd[[distCol]] > filter ,  ]
+      } else{
+        emd<-emd[ emd[[distCol]] < filter ,  ]
+      }
+    }
     #* turn long data into a graph and extract nodes/edges
     g<-igraph::graph_from_data_frame(emd, directed=F)
-  } 
+  } else{stop("emd must be a dataframe.")}
+  
+  
   gg<-as.data.frame(igraph::layout.auto(g))
   eg<-igraph::get.data.frame(g)
   #* link metadata to nodes

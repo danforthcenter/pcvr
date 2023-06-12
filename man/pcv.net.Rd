@@ -4,7 +4,14 @@
 \alias{pcv.net}
 \title{Network analysis of a distance matrix}
 \usage{
-pcv.net(emd = NULL, meta = NULL, dissim = T, distCol = "emd")
+pcv.net(
+  emd = NULL,
+  meta = NULL,
+  dissim = T,
+  distCol = "emd",
+  filter = NULL,
+  direction = "greater"
+)
 }
 \arguments{
 \item{emd}{A long dataframe as returned by pcv.emd. Currently this function is only made to work with dataframe output, not distance matrix output.}
@@ -15,7 +22,10 @@ pcv.net(emd = NULL, meta = NULL, dissim = T, distCol = "emd")
 
 \item{distCol}{The name of the column containing distances/dissimilarities. Defaults to "emd" for compatability with pcv.emd}
 
-\item{...}{Further arguments passed to igraph::graph_from_dataframe or graph_from_adjacency_matrix}
+\item{filter}{This can be either a numeric (0.5) in which case it is taken as a filter where only edges with values greater than or equal to that number are kept or a character string ("0.5") in which case the strongest X percentage of edges are kept.
+This defaults to NULL which does no filtering, although that should not be considered the best standard behavior. Note that this will happen after converting to dissimilarity if dissim=T.}
+
+\item{direction}{Direction of filtering, can be either "greater" or "lesser".}
 }
 \value{
 Returns a list containing three elements:
