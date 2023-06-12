@@ -37,18 +37,20 @@ bw.time<-function(df = NULL, mode=NULL, plantingDelay = NULL,
     df$DAP = df[[timeCol]] + plantingDelay 
   }
   if("DAE" %in% mode & wide){
-    df<-do.call(rbind, lapply( split(df, as.formula(paste0("~",paste( group,collapse="+" )))), function(d){
+    DAE_SPLIT <- interaction(df[, group])
+    df<-do.call(rbind, lapply( split(df, DAE_SPLIT), function(d){
       subd<-d[d[[phenotype]] >= cutoff & !is.na(d[[phenotype]]) , ]
       if(nrow(subd)==0){subd<-data.frame(DAS=max(df[[timeCol]])+1) ; colnames(subd)<-timeCol} # if all NA area then remove all rows
       d$DAE<-d[[timeCol]] - min(subd[[timeCol]], na.rm=T)
-      d#[d$DAE>=0, ]
+      d
     }))
   } else if ("DAE" %in% mode & !wide){
-    df<-do.call(rbind, lapply( split(df, as.formula(paste0("~",paste( group,collapse="+" )))), function(d){
+    DAE_SPLIT <- interaction(df[, group])
+    df<-do.call(rbind, lapply( split(df, DAE_SPLIT), function(d){
       subd<-d[ d[[traitCol]]==phenotype & d[[valueCol]]>=cutoff & !is.na(d[[valueCol]])  , ]
       if(nrow(subd)==0){subd<-data.frame(DAS=max(df[[timeCol]])+1) ; colnames(subd)<-timeCol}
       d$DAE<-d[[timeCol]] - min(subd[[timeCol]], na.rm=T)
-      d#[d$DAE>=0, ]
+      d
     }))
   }
   rownames(df)<-NULL

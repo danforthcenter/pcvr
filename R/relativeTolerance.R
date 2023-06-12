@@ -63,8 +63,8 @@ if(control %in% grouping){
   group_no_control=grouping
 }
 
-
-datsp<-split(x=df, f=as.formula(paste0("~", paste0(group_no_control, collapse="+"))))
+group_no_control_factor<-interaction(df[,group_no_control])
+datsp<-split(x=df, f=group_no_control_factor)
 
 if(wide){
 df2<-do.call(rbind, lapply(1:length(datsp), function(i){
