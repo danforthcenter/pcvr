@@ -392,6 +392,12 @@ hue_wide$fertilizer = substr(hue_wide$barcode, 8, 8)
 hue_wide$fertilizer = ifelse(hue_wide$fertilizer == "A", "100",
                      ifelse(hue_wide$fertilizer == "B", "50", "0"))
 hue_wide<-bw.time(hue_wide,timeCol="timestamp", group="barcode")
+
+phenotypes <- colnames(hue_wide)[19:225]
+phenoForm<-paste0("cbind(", paste0(phenotypes, collapse=", "), ")")
+groupForm<-"DAS+barcode+genotype+fertilizer"
+form<-as.formula(paste0(phenoForm, "~", groupForm))
+hue_wide<-aggregate(form, data=hue_wide, mean, na.rm=T)
 ```
 
 
