@@ -51,8 +51,28 @@ The input dataframe with new integer columns for different ways of describing ti
 Time conversion and plotting for bellwether data
 }
 \examples{
-bw<-read.pcv.bw( file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestPhenos.csv", snapshotFile="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestSnapshot.csv", designFile="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestDesign.csv",metaCol="meta",metaForm="vis_view_angle_zoom_horizontal_gain_exposure_v_new_n_rep",joinSnapshot="id",conversions = list(area=13.2*3.7/46856) )
-bw<-bw.time(df = bw, mode=NULL, plantingDelay = 4, phenotype="area_adj", timeCol="DAS", group="Barcodes", plot=T)
+
+sv<-read.pcv("https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv", mode="wide", singleValueOnly = T, reader="fread")
+sv$genotype = substr(sv$barcode, 3,5)
+sv$genotype = ifelse(sv$genotype == "002", "B73",
+                     ifelse(sv$genotype == "003", "W605S",
+                           ifelse(sv$genotype == "004", "MM", "Mo17")))
+sv$fertilizer = substr(sv$barcode, 8, 8)
+sv$fertilizer = ifelse(sv$fertilizer == "A", "100",
+                   ifelse(sv$fertilizer == "B", "50", "0"))
+sv<-bw.time(sv, plantingDelay = 0, phenotype="area.pixels", cutoff=10, timeCol="timestamp", group=c("barcode", "rotation"), plot=F)
+
+
+svl<-read.pcv("https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv", mode="long", singleValueOnly = T, reader="fread")
+svl$genotype = substr(svl$barcode, 3,5)
+svl$genotype = ifelse(svl$genotype == "002", "B73",
+                     ifelse(svl$genotype == "003", "W605S",
+                           ifelse(svl$genotype == "004", "MM", "Mo17")))
+svl$fertilizer = substr(svl$barcode, 8, 8)
+svl$fertilizer = ifelse(svl$fertilizer == "A", "100",
+                   ifelse(svl$fertilizer == "B", "50", "0"))
+svl<-bw.time(svl, plantingDelay = 0, phenotype="area", cutoff=10, timeCol="timestamp", group=c("barcode", "rotation"), plot=F,wide=F)
+
 
 }
 \keyword{Bellwether,}
