@@ -328,9 +328,9 @@ This looks okay, there are no strange jumps in the data or glaring problems.
 
 #### Running Models
 
-The `brms` package is not automatically imported by `pcvr`, so before fitting models we need to load that package.
+The `brms` package is not automatically imported by `pcvr`, so before fitting models we would need to load that package.
 
-```{r, message=F}
+```{r, eval=F}
 library(brms)
 ```
 
@@ -466,6 +466,18 @@ data(bw_vignette_small_emd, package = "pcvr")
 ```{r, eval=F, include=F}
 head(EMD$data)
 EMD$plot
+```
+
+EMD can get very heavy with large datasets. For a recent lemnatech dataset using only the images from every 5th day there were $6332^2$ = 40,094,224 pairwise EMD values. In long format that's a 40 million row dataframe, which is unwieldy. To get around this problem we might decide to use the hue circular mean as a single value trait or to aggregate some of our data with the `mv_ag` function.
+
+Starting with our complete hue data we have `r nrow(hue_wide)` image histograms. The `mv_ag` function will take a group argument and randomly pick members of that group to have their histograms combined. Note that histograms are scaled to sum to 1 before they are sampled. Here we return one example with 2 histograms kept per group and one example where groups are summarized into 1 histogram. If there are equal or fewer images as the `n_per_group` argument then no aggregation is done for that group but data are rescaled.
+
+```{r}
+hue_ag1<-mv_ag(df=hue_wide, group = c("DAS", "genotype", "fertilizer"),  n_per_group=2, keep=c("area.pixels", "height.pixels"))
+dim(hue_ag1)
+
+hue_ag2<-mv_ag(hue_wide, group = c("DAS", "genotype", "fertilizer"),  n_per_group=1, keep=c("area.pixels", "height.pixels"))
+dim(hue_ag2)
 ```
 
 
