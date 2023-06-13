@@ -2,7 +2,7 @@
 % Please edit documentation in R/readpcvbw.R
 \name{read.pcv.bw}
 \alias{read.pcv.bw}
-\title{Read in plantCV csv from bellwether phenotyper style experiments.}
+\title{Read in plantCV csv from bellwether phenotyper style experiments analyzed with plantCV versions <4.}
 \usage{
 read.pcv.bw(
   file = NULL,
@@ -12,11 +12,12 @@ read.pcv.bw(
   metaForm = "vis_view_angle_zoom_horizontal_gain_exposure_v_new_n_rep",
   joinSnapshot = "id",
   conversions = NULL,
+  mode = "long",
   ...
 )
 }
 \arguments{
-\item{file}{Path to the plantCV output containing phenotypes.}
+\item{file}{Path to the version 3 plantCV output containing phenotypes.}
 
 \item{snapshotFile}{path to the snapshot info metadata file, typically called SnapshotInfo.csv. This needs to have a column name corresponding to `joinSnapshot` (defaults to "id") which can be used to join the snapshot data to the phenotype data. Generally this joining will happen through a parsed section of the file path to each image present in the phenotype data. This means that including a duplicate name in `metaForm` will be overwritten by parsing image paths, so `metaForm` and `joinSnapshot` should not have duplicated names. If there is a timestamp column in the snapshot data then it will be converted to datetime (assuming a "Y-m-d H:M:S" format) and used to calculate days after starting (DAS) and hours.}
 
@@ -30,23 +31,27 @@ read.pcv.bw(
 
 \item{conversions}{A named list of phenotypes that should be rescaled by the value in the list. For instance, at zoom 1  `list(area = 13.2 * 3.7/46856)` will convert from pixels to square cm in the 5MP bellwether camera.}
 
-\item{...}{Other arguments passed to \code{\link{read.pcv}} .}
+\item{mode}{The mode to read data in with through read.pcv. The default is "long" because this function is built for pcv3 output, which was generally a wider format to start with than pcv4 output.}
+
+\item{...}{Other arguments passed to \link{\code{read.pcv}} .}
 }
 \value{
 Returns a dataframe potentially with several files merged into it.
 }
 \description{
-Read in plantCV csv from bellwether phenotyper style experiments.
+Read in plantCV csv from bellwether phenotyper style experiments analyzed with plantCV versions <4.
 }
 \examples{
-bw<-read.pcv.bw( file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestPhenos.csv",metaCol=NULL, mode="long")
-bw<-read.pcv.bw( file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestPhenos.csv",metaCol="meta", metaForm="vis_view_angle_zoom_horizontal_gain_exposure_v_new_n_rep", joinSnapshot = "id", mode="long")
-bw<-read.pcv.bw( file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestPhenos.csv",
-   snapshotFile="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestSnapshot.csv",
-   designFile="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestDesign.csv",
+bw<-read.pcv.bw( file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv3Phenos.csv",metaCol=NULL)
+bw<-read.pcv.bw( file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv3Phenos.csv",metaCol="meta", metaForm="vis_view_angle_zoom_horizontal_gain_exposure_v_new_n_rep", joinSnapshot = "id")
+bw<-read.pcv.bw( file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv3Phenos.csv",
+   snapshotFile="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv3Snapshot.csv",
+   designFile="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv3Design.csv",
    metaCol="meta",metaForm="vis_view_angle_zoom_horizontal_gain_exposure_v_new_n_rep",
-   joinSnapshot="id",conversions = list(area=13.2*3.7/46856), mode="long" )
+   joinSnapshot="id",conversions = list(area=13.2*3.7/46856))
+   
 }
-\keyword{bellwether}
+\keyword{bellwether,}
 \keyword{pcv,}
+\keyword{pcv3}
 \keyword{read.csv,}

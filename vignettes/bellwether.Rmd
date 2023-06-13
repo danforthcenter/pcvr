@@ -77,18 +77,18 @@ example<-read.pcv("prohibitivelyLargeFile.csv",
 
 ### `read.pcv.bw`
 
-Bellwether data can also be read in with `read.pcv.bw` which is a wrapper around `read.pcv` which attempts to do several common tasks related bellwether data joining internally. This should be considered experimental as it is based on plantCV version 3 and earlier outputs and bellwether experiments can take many formats and this has only been considered with a few datasets.
+Legacy Bellwether data (plantCV version 3 output) can also be read in with `read.pcv.bw` which is a wrapper around `read.pcv` which attempts to do several common tasks related bellwether data joining internally. This should be considered experimental as it is based on plantCV version 3 and earlier outputs/bellwether experiments can take many formats and this has only been considered with a few datasets. With the older plantCV output the data is already in a wider format so here the default mode is "long". Note that while `read.pcv` works fine with this older data and still has some added benefits the reasons to use it in place of `data.table::fread` or `base::read.csv` are less compelling.
 
 ```{r, eval=F}
-bw<-read.pcv.bw( file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestPhenos.csv",metaCol=NULL, mode="long")
+bw<-read.pcv.bw( file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv3Phenos.csv",metaCol=NULL)
 
-bw<-read.pcv.bw( file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestPhenos.csv",metaCol="meta", metaForm="vis_view_angle_zoom_horizontal_gain_exposure_v_new_n_rep", joinSnapshot = "id", mode="long")
+bw<-read.pcv.bw( file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv3Phenos.csv",metaCol="meta", metaForm="vis_view_angle_zoom_horizontal_gain_exposure_v_new_n_rep", joinSnapshot = "id")
 
-bw<-read.pcv.bw( file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestPhenos.csv",
-   snapshotFile="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestSnapshot.csv",
-   designFile="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestDesign.csv",
+bw<-read.pcv.bw( file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv3Phenos.csv",
+   snapshotFile="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv3Snapshot.csv",
+   designFile="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv3Design.csv",
    metaCol="meta",metaForm="vis_view_angle_zoom_horizontal_gain_exposure_v_new_n_rep",
-   joinSnapshot="id",conversions = list(area=13.2*3.7/46856), mode="long" )
+   joinSnapshot="id",conversions = list(area=13.2*3.7/46856))
 ```
 
 
