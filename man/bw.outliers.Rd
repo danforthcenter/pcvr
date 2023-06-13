@@ -6,16 +6,20 @@
 \usage{
 bw.outliers(
   df = NULL,
-  phenotype = "area_adj",
+  phenotype,
   naTo0 = F,
-  group = c("DAS", "Genotype"),
-  plotgroup = c("Barcodes", "angle"),
+  group = c(),
+  plotgroup = c("barcode", "rotation"),
   plot = T,
-  x = NULL
+  wide = T,
+  x = NULL,
+  traitCol = "trait",
+  valueCol = "value",
+  idCol = NULL
 )
 }
 \arguments{
-\item{df}{Data frame to use. Should be in the format of output from read.pcv.bw}
+\item{df}{Data frame to use. Can be in long or wide format.}
 
 \item{phenotype}{Column to use to classify outliers.}
 
@@ -25,9 +29,17 @@ bw.outliers(
 
 \item{plot}{Logical, if TRUE then a list is returned with a ggplot and a dataframe.}
 
+\item{wide}{Logical, is the data in wide format? Defaults to TRUE.}
+
 \item{x}{Optional specification for x axis variable if plot is true. If left NULL (the default) then the first element of `group` is used.}
 
-\item{plotGroup}{Grouping variables for drawing plots if plot=T. Typically this is an identifier for images of a plant over time.}
+\item{traitCol}{Column with phenotype names, defaults to "trait". This should generally not need to be changed from the default.}
+
+\item{valueCol}{Column with phenotype values, defaults to "value". This should generally not need to be changed from the default.}
+
+\item{idCol}{Column(s) that identify individuals over time. Defaults to plotGroup.}
+
+\item{plotGroup}{Grouping variables for drawing plots if plot=T. Typically this is an identifier for images of a plant over time and defaults to c('barcode',"rotation").}
 }
 \value{
 The input dataframe with outliers removed.
@@ -36,8 +48,31 @@ The input dataframe with outliers removed.
 Remove outliers from bellwether data using cook's distance
 }
 \examples{
-bw<-read.pcv.bw( file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestPhenos.csv", snapshotFile="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestSnapshot.csv", designFile="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/bwTestDesign.csv",metaCol="meta",metaForm="vis_view_angle_zoom_horizontal_gain_exposure_v_new_n_rep",joinSnapshot="id",conversions = list(area=13.2*3.7/46856) )
-bw<-bw.outliers(df = bw, phenotype="area_adj", naTo0 = F, group = c("DAS", "Genotype"), plotgroup=c('Barcodes',"angle"), plot=T)
+sv<-read.pcv("https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv", mode="wide", singleValueOnly = T, reader="fread")
+sv$genotype = substr(sv$barcode, 3,5)
+sv$genotype = ifelse(sv$genotype == "002", "B73",
+                     ifelse(sv$genotype == "003", "W605S",
+                           ifelse(sv$genotype == "004", "MM", "Mo17")))
+sv$fertilizer = substr(sv$barcode, 8, 8)
+sv$fertilizer = ifelse(sv$fertilizer == "A", "100",
+                   ifelse(sv$fertilizer == "B", "50", "0"))
+sv<-bw.time(sv, plantingDelay = 0, phenotype="area.pixels", cutoff=10, timeCol="timestamp", group=c("barcode", "rotation"), plot=F)
+sv<-bw.outliers(df = sv, phenotype="area.pixels", naTo0 = F, group = c("DAS", "genotype", "fertilizer"), plotgroup=c('barcode',"rotation"), plot=T)
+
+
+svl<-read.pcv("https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv", mode="long", singleValueOnly = T, reader="fread")
+svl$genotype = substr(svl$barcode, 3,5)
+svl$genotype = ifelse(svl$genotype == "002", "B73",
+                     ifelse(svl$genotype == "003", "W605S",
+                           ifelse(svl$genotype == "004", "MM", "Mo17")))
+svl$fertilizer = substr(svl$barcode, 8, 8)
+svl$fertilizer = ifelse(svl$fertilizer == "A", "100",
+                   ifelse(svl$fertilizer == "B", "50", "0"))
+svl<-bw.time(svl, plantingDelay = 0, phenotype="area", cutoff=10, timeCol="timestamp", group=c("barcode", "rotation"), plot=F,wide=F)
+
+svl<-bw.outliers(df = svl, phenotype="area", naTo0 = F, group = c("DAS", "genotype", "fertilizer"), plotgroup=c('barcode',"rotation"), plot=T, wide=F)
+
+
 }
 \keyword{Bellwether,}
 \keyword{ggplot}
