@@ -8,7 +8,7 @@
 #' @param joinSnapshot Column name create in phenotype data to use in joining snapshot data. By default this will attempt to make an "id" column, which is parsed from a snapshot folder in `metaCol` ("/shares/sinc/data/Phenotyper/SINC1/ImagesNew/**snapshot1403**/"). An error will be raised if this column is not present in the snapshot data.
 #' @param conversions A named list of phenotypes that should be rescaled by the value in the list. For instance, at zoom 1  `list(area = 13.2 * 3.7/46856)` will convert from pixels to square cm in the 5MP bellwether camera.
 #' @param mode The mode to read data in with through read.pcv. The default is "long" because this function is built for pcv3 output, which was generally a wider format to start with than pcv4 output.
-#' @param ... Other arguments passed to \link{\code{read.pcv}} .
+#' @param ... Other arguments passed to \code{read.pcv}.
 #' @keywords read.csv, pcv, bellwether, pcv3
 #' 
 #' @return Returns a dataframe potentially with several files merged into it.

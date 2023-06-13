@@ -33,9 +33,7 @@ mv_ag(
 Returns a dataframe summarized by the specified groups over the multi-value traits.
 }
 \description{
-EMD can get very heavy with large datasets. For an example lemnatech dataset filtering for images from every 5th day there are 6332^2 = 40,094,224 pairwise EMD values.
-In long format that's a 40 million row dataframe, which is unwieldy.
-This function is to help reduce the size of datasets before comparing histograms and moving on with matrix methods or network analysis.
+EMD can get very heavy with large datasets. For an example lemnatech dataset filtering for images from every 5th day there are 6332^2 = 40,094,224 pairwise EMD values. In long format that's a 40 million row dataframe, which is unwieldy. This function is to help reduce the size of datasets before comparing histograms and moving on with matrix methods or network analysis.
 }
 \examples{
 library(pcvr)

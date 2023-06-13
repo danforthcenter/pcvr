@@ -33,7 +33,7 @@ read.pcv.bw(
 
 \item{mode}{The mode to read data in with through read.pcv. The default is "long" because this function is built for pcv3 output, which was generally a wider format to start with than pcv4 output.}
 
-\item{...}{Other arguments passed to \link{\code{read.pcv}} .}
+\item{...}{Other arguments passed to \code{read.pcv}.}
 }
 \value{
 Returns a dataframe potentially with several files merged into it.

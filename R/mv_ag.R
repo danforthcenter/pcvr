@@ -1,9 +1,7 @@
 #' Summarizing function for multi-value traits
 #' 
-#' @description 
-#' EMD can get very heavy with large datasets. For an example lemnatech dataset filtering for images from every 5th day there are 6332^2 = 40,094,224 pairwise EMD values.
-#' In long format that's a 40 million row dataframe, which is unwieldy.
-#' This function is to help reduce the size of datasets before comparing histograms and moving on with matrix methods or network analysis.
+#' @description EMD can get very heavy with large datasets. For an example lemnatech dataset filtering for images from every 5th day there are 6332^2 = 40,094,224 pairwise EMD values. In long format that's a 40 million row dataframe, which is unwieldy. This function is to help reduce the size of datasets before comparing histograms and moving on with matrix methods or network analysis.
+#' 
 #' @param df A dataframe with multi value traits in wide format.
 #' @param group Vector of column names for variables which uniquely identify groups in the data to summarize data over. Typically this would be the design variables and a time variable.
 #' @param mvCols Either a vector of column names/positions representing multi value traits or a character string that identifies the multi value trait columns as a regex pattern. Defaults to "frequencies".
