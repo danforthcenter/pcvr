@@ -2,7 +2,7 @@
 % Please edit documentation in R/mv_ag.R
 \name{mv_ag}
 \alias{mv_ag}
-\title{Summarizing function for multi-value traits}
+\title{Multi Value Trait Aggregation function}
 \usage{
 mv_ag(
   df,
