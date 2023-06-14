@@ -8,7 +8,7 @@
 #' @param include if a long dataframe is returned then these columns will be added to the dataframe, labelled for i and j (the row positions for compared histograms). If a matrix is returned then this information is stored in the row names. This defaults to \link{rescale}.
 #' @param mat Logical, should data be returned as an nrow x nrow matrix or as a long dataframe? By Default this is FALSE and a long dataframe is returned. Both options are comparable in terms of speed, although for large datasets the matrix version may be slightly faster.
 #' @param plot Logical, should a plot be returned? For a matrix this is made with image(), for a dataframe this uses ggplot.
-#' @param parallel Number of cores to use. If this is above 1 then \code{parallel::mclapply} is used with this number of cores.
+#' @param parallel Number of cores to use. Defaults to 1 unless the "mc.cores" option is set.
 #' @param longTrait Defaults to NULL, in which case the data is assumed to be in long format. If this is a character string then it is taken as a column name of long data and the other arguments will assume data is long.
 #' @param id A vector of column names that uniquely identifies observations if the data is in long format. Defaults to "image".
 #' @param value A column name for the values to be drawn from in long data. Defaults to "value".
@@ -38,7 +38,7 @@
 #' l$plot + theme(axis.text = element_blank())
 #' @export
 #' 
-pcv.emd<-function(df, cols=NULL, reorder=NULL, include=reorder, mat=F, plot = T, parallel = 1, longTrait=NULL, id="image", value="value"){
+pcv.emd<-function(df, cols=NULL, reorder=NULL, include=reorder, mat=F, plot = T, parallel = getOption("mc.cores",1), longTrait=NULL, id="image", value="value"){
   # df = df1; cols="ndvi_"; reorder=c("treatment", "genotype"); mat =F; plot=T; parallel = 1; include=reorder; longTrait=F; id="image";value="value"
   # df_long<-read.pcv(file, "long", F)
   # df = df_long; cols="index_frequencies_index_ndvi"; reorder=c("treatment", "genotype"); mat =F; plot=T; parallel = 1; include=reorder;
