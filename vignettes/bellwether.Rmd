@@ -302,22 +302,19 @@ Now we're ready to define the necessary variables in our data and use the `growt
 
 ```{r}
 sv$group<-interaction(sv$fertilizer, sv$genotype)
+```
 
+```{r, eval=F}
 ss<-growthSS(model="gompertz", form =  area_cm2~DAS|barcode/group, sigma="spline", df=sv,
              priors = list("A" = 130, "B" = 10, "C" = 1.2))
 ```
 
-Now we have most of our model components in the `ss` object:
-
-```{r}
-lapply(ss,class)
-```
-
+Now we have most of our model components in the `ss` object.
 
 Before trying to fit the model it is generally a good idea to check a plot of the data and make sure you have everything defined correctly.
 
 ```{r}
-ggplot(ss$df, aes(x=DAS, y=area_cm2, group=barcode, color=group))+
+ggplot(sv, aes(x=DAS, y=area_cm2, group=barcode, color=group))+
   geom_line()+theme_minimal()+
   labs(y=expression("Area"~"(cm"^2~")"),
        color="Genotype\nand Soil")
@@ -341,38 +338,43 @@ fit <- brm(ss$formula, prior = ss$prior, data = ss$df, family = ss$family,
                            control = list(adapt_delta = 0.999, max_treedepth = 20), backend = "cmdstanr")
 ```
 
-```{r, echo=F}
+```{r, eval=F}
 data(bw_vignette_fit, package = "pcvr")
 ```
 
 
 #### Check Model Fit
 
-We can visualize credible intervals from a `brms` model and compare that to our growth trendlines to get an intuitive understanding of how well the model fit.
+We can visualize credible intervals from a `brms` model and compare that to our growth trendlines to get an intuitive understanding of how well the model fit. Note that since this vignette does not load brms these are only a picture of the output from `brmPlot` and `brmViolin`. The code is present to run this locally if you have brms installed and choose to.
 
-```{r}
-brmPlot(fit, form = area_cm2~DAS|barcode/group, df = ss$df)+
+```{r, eval=F}
+brmPlot(fit, form = area_cm2~DAS|barcode/group, df = ss$df)+ 
   labs(y=expression("Area"~"(cm"^2~")"))
 ```
+
+![](brmPlot1.png)
 
 In this case our model has 12 groups (3 soil conditions in each of 4 genotypes), so we might want to pull out only a few groups to look at. 
 
-```{r}
+```{r, eval=F}
 brmPlot(fit, form = area_cm2~DAS|barcode/group, df = ss$df, groups = c("0.B73", "50.B73", "100.B73"))+
   labs(y=expression("Area"~"(cm"^2~")"))
 ```
+
+![](brmPlot2.png)
 
 #### Test Hypotheses
 
 Now we probably have some ideas about what we want to test in our data. The `brms::hypothesis` function offers incredible flexibility to test all kinds of hypotheses. For some comparisons `pcvr` has a helper function called `brmViolin` to visualize posterior distributions and the posterior probability of some hypotheses associated with them.
 
-```{r}
+```{r, eval=F}
 brmViolin(model = fit, params = NULL,
           hyp="num/denom>1.05", compareX = c("0.B73", "50.B73", "100.B73"), againstY = "0.B73",
           group_sep = "[.]", groups_into = c("soil", "genotype"), x="soil", facet="genotype",
           returnData=F)
-
 ```
+
+![](brmViolin_vigPlot.png)
 
 This shows that we have a posterior probability greater than 99 percent of an asymptotic size at least 5 percent higher with the 100 type soil when compared against the 0 type soil. Note that this data does not have any plants that reached asymptotic size, so the model uses the incomplete data to estimate where an asymptote would be. In a normal experiment the plants would be more mature but here the asymptote parameter is artificially inflated for the 100 soil treatment group due to their slower growth rate. 
 
