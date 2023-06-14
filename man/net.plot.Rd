@@ -18,7 +18,7 @@ net.plot(
 
 \item{fill}{Variable name(s) from the nodes data to be used to color points. By default "strength" is used.}
 
-\item{shape}{Optional discrete variable name(s) from the nodes data to be used to change the shape of points.}
+\item{shape}{Optional discrete variable name(s) from the nodes data to be used to change the shape of points. If this variable is numeric it will be coerced to character.}
 
 \item{size}{Size of points, defaults to 3.}
 
