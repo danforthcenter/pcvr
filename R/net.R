@@ -4,7 +4,7 @@
 #' 
 #' 
 #' @param emd A long dataframe as returned by pcv.emd. Currently this function is only made to work with dataframe output, not distance matrix output.
-#' @param meta Metadata to be carried from pcv.emd output into the network, defaults to NULL which will use all metadata.
+#' @param meta Metadata to be carried from pcv.emd output into the network, defaults to NULL which will use all metadata. Type conversion will be attempted for these columns.
 #' @param dissim Logical, should the distCol be inverted to make a dissimilarity value?
 #' @param distCol The name of the column containing distances/dissimilarities. Defaults to "emd" for compatability with pcv.emd
 #' @param filter This can be either a numeric (0.5) in which case it is taken as a filter where only edges with values greater than or equal to that number are kept or a character string ("0.5") in which case the strongest X percentage of edges are kept.
@@ -58,11 +58,13 @@ pcv.net<-function(emd = NULL, meta = NULL, dissim=T, distCol="emd", filter = NUL
   gg<-as.data.frame(igraph::layout.auto(g))
   eg<-igraph::get.data.frame(g)
   #* link metadata to nodes
-  gg$index <- 1:nrow(gg)
+  gg$index <- min(as.numeric(eg$from)):max(as.numeric(eg$from)) #1:nrow(gg)
   metaIndex<-lapply(meta, function(m) which(grepl(m, colnames(eg)))[1])
   newCols<-(ncol(gg)+1):(ncol(gg)+length(meta))
   gg[,newCols] <- lapply(metaIndex, function(i) eg[[i]][match(gg$index, eg$from)])
   colnames(gg)[newCols]<-meta
+  gg[,newCols]<-type.convert(gg[,newCols], as.is=T)
+  
   #* Calculate network metrics
   gg$betweenness<-igraph::betweenness(g)
   gg$degree<-igraph::degree(g)

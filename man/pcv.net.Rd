@@ -16,7 +16,7 @@ pcv.net(
 \arguments{
 \item{emd}{A long dataframe as returned by pcv.emd. Currently this function is only made to work with dataframe output, not distance matrix output.}
 
-\item{meta}{Metadata to be carried from pcv.emd output into the network, defaults to NULL which will use all metadata.}
+\item{meta}{Metadata to be carried from pcv.emd output into the network, defaults to NULL which will use all metadata. Type conversion will be attempted for these columns.}
 
 \item{dissim}{Logical, should the distCol be inverted to make a dissimilarity value?}
 
