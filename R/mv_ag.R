@@ -53,7 +53,7 @@ mv_ag<-function(df, group, mvCols="frequencies", n_per_group=1, outRows=NULL, ke
     mv<-as.matrix(d[,mvCols])
     mv<-mv/rowSums(mv) # rescale everything to sum to 1
     if(nrow(mv) < n_per_group){ iter_n = nrow(mv) } else{ iter_n = n_per_group }
-    
+    if(is.null(rownames(mv))){rownames(mv)<-1:nrow(mv)}
     nms<-sample(rownames(mv), nrow(mv), replace=F)
     if(nrow(mv)>1 & iter_n>1){ 
       index<-cut(1:nrow(mv), iter_n)
