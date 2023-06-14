@@ -50,10 +50,10 @@ mv_ag<-function(df, group, mvCols="frequencies", n_per_group=1, outRows=NULL, ke
   if(is.numeric(mvCols)){mvCols<-colnames(df)[mvCols]}
   #* ***** [do stuff]
   out<-do.call(rbind, parallel::mclapply(dat_sp, function(d){
-    mv<-as.matrix(d[,mvCols])
+    mv<-as.matrix(d[,mvCols], rownames.force=T)
     mv<-mv/rowSums(mv) # rescale everything to sum to 1
     if(nrow(mv) < n_per_group){ iter_n = nrow(mv) } else{ iter_n = n_per_group }
-    if(is.null(rownames(mv))){rownames(mv)<-1:nrow(mv)}
+    #if(is.null(rownames(mv))){rownames(mv)<-1:nrow(mv)} # should be redundant
     nms<-sample(rownames(mv), nrow(mv), replace=F)
     if(nrow(mv)>1 & iter_n>1){ 
       index<-cut(1:nrow(mv), iter_n)
@@ -93,7 +93,7 @@ mv_ag<-function(df, group, mvCols="frequencies", n_per_group=1, outRows=NULL, ke
   if(multi_group){
     group_df = setNames(data.frame(out[[group]]), "group")
     group_df<-setNames(as.data.frame(do.call(rbind,lapply(group_df$group, function(s) matrix(strsplit(s,split="[.]")[[1]],nrow=1)))),original_group)
-    out<-cbind(group_df, out)
+    out<-cbind(group_df, out[,-which(colnames(out)=="INTERNAL_MULTI_GROUP")])
   }
   return(out)
 }
