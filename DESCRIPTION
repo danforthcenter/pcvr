@@ -16,6 +16,5 @@ Suggests:
     extraDistr,
     parallel,
     caret,
-    FactoMineR,
     vroom
 VignetteBuilder: knitr

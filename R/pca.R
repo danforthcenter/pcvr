@@ -11,6 +11,7 @@
 #' @details If data is returned then it will contain the coordinates from the PCA and will not contain the columns that were reduced.
 #' 
 #' @import ggplot2
+#' @import FactoMineR
 #' @examples
 #' 
 #' hue_wide<-read.pcv("https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv", mode="wide", singleValueOnly = T, multiValPattern = "hist", reader="fread")
