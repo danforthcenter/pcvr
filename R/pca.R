@@ -49,6 +49,7 @@ pcadf<-function(df=NULL, cols=NULL, color=NULL, trace=NULL,facet=NULL, returnDat
   }
   traceSplit=F
   FACET=F
+  additive=T
   if(!is.null(facet)){
     if(is.character(facet)){
       FACET=T
@@ -60,6 +61,7 @@ pcadf<-function(df=NULL, cols=NULL, color=NULL, trace=NULL,facet=NULL, returnDat
       if(is.null(trace)){
         trace=split
         traceDraw=F
+        additive=F
       }
     }
   }
@@ -74,14 +76,20 @@ pcadf<-function(df=NULL, cols=NULL, color=NULL, trace=NULL,facet=NULL, returnDat
   plots<-lapply(1:length(traceSplits), function(i){
     maxTrace=traceSplits[i]
     if(i==1){prevTrace = min(pca.df[[trace]])}else{prevTrace = traceSplits[i-1]}
-    if(i==length(traceSplits)){through="+"
-    }else{through = paste0(" through ",traceSplits[i+1])}
+    if(additive){
+      if(i==length(traceSplits)){through="+"
+      }else{through = paste0(" through ",traceSplits[i+1])}
+      TITLE = paste0(trace, ": ", maxTrace, through)
+    } else{TITLE = paste(trace, maxTrace)}
     
-    p<-ggplot2::ggplot(pca.df[pca.df[[trace]]<=maxTrace, ],
+    if(additive){ pca.df.sub<-pca.df[pca.df[[trace]]<=maxTrace, ] 
+      } else{ pca.df.sub<-pca.df[pca.df[[trace]]==maxTrace, ] }
+    
+    p<-ggplot2::ggplot(pca.df.sub,
                            ggplot2::aes(x=pc1, y=pc2, color = .data[[color]]))+
       ggplot2::geom_point()+
       ggplot2::labs(x=paste0("PC 1 (",pc1Var,"%)"),y=paste0("PC 2 (",pc2Var,"%)"),
-                    title = paste0(trace, ": ", maxTrace, through))+
+                    title = TITLE)+
       pcv_theme()+
       coord_cartesian(xlim = traceLimit_x, ylim=traceLimit_y)
     if(color=="dummyVariableForColor"){
@@ -111,9 +119,6 @@ pcadf<-function(df=NULL, cols=NULL, color=NULL, trace=NULL,facet=NULL, returnDat
       plots<-plots+facetLayer
     }
   }
-  
-  
-  
   
   if(returnData){return(list("data"=pca.df, "pca"=pca, "plot"=plots))}else{return(plots)}
 }
