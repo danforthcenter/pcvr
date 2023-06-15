@@ -11,7 +11,7 @@ pcv.emd(
   include = reorder,
   mat = F,
   plot = T,
-  parallel = 1,
+  parallel = getOption("mc.cores", 1),
   longTrait = NULL,
   id = "image",
   value = "value"
@@ -30,7 +30,7 @@ pcv.emd(
 
 \item{plot}{Logical, should a plot be returned? For a matrix this is made with image(), for a dataframe this uses ggplot.}
 
-\item{parallel}{Number of cores to use. If this is above 1 then \code{parallel::mclapply} is used with this number of cores.}
+\item{parallel}{Number of cores to use. Defaults to 1 unless the "mc.cores" option is set.}
 
 \item{longTrait}{Defaults to NULL, in which case the data is assumed to be in long format. If this is a character string then it is taken as a column name of long data and the other arguments will assume data is long.}
 
