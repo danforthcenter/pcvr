@@ -67,6 +67,17 @@ w<-pcv.emd(df1, cols="ndvi_", reorder=c("treatment", "genotype"), mat =F, plot=T
 df_long<-read.pcv(file, "long", F)
 l<-pcv.emd(df = df_long, cols="index_frequencies_index_ndvi", reorder=c("treatment", "genotype"), mat =F, plot=T, longTrait="trait", id="image", value="value")
 l$plot + theme(axis.text = element_blank())
+
+#* Note on computational complexity
+#* This scales as O^2, see the plot below for some idea of the time for different input data sizes.
+emdTime<-function(x, n=1){
+x^2 / n * 0.0023
+}
+plot(x=c(18,36,54,72, 108, 135), y = c(0.74, 2.89, 6.86, 10.99, 26.25, 42.44), xlab="N Input Images", ylab="time (seconds)") # benchmarked test data
+lines(x=1:150, y = emdTime(1:150)) # exponential function
+
+plot(x=1:1000, y=emdTime(1:1000), type="l", xlab="N Input Images", ylab="time (seconds)")
+
 }
 \keyword{distance,}
 \keyword{earth}
