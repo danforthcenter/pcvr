@@ -14,7 +14,6 @@
 #' @keywords bayesian, ggplot, multi value trait, pcv.hists
 #' @import ggplot2
 #' @import ggridges
-#' @import extraDistr
 #' 
 #' @details 
 #' The method argument is used for statistical testing of groups. There are currently four options, "beta", "gaussian", "ks", and "emd".

@@ -11,10 +11,11 @@ pcv.emd(
   include = reorder,
   mat = F,
   plot = T,
-  parallel = 1,
+  parallel = getOption("mc.cores", 1),
   longTrait = NULL,
   id = "image",
-  value = "value"
+  value = "value",
+  raiseError = T
 )
 }
 \arguments{
@@ -30,13 +31,15 @@ pcv.emd(
 
 \item{plot}{Logical, should a plot be returned? For a matrix this is made with image(), for a dataframe this uses ggplot.}
 
-\item{parallel}{Number of cores to use. If this is above 1 then \code{parallel::mclapply} is used with this number of cores.}
+\item{parallel}{Number of cores to use. Defaults to 1 unless the "mc.cores" option is set.}
 
 \item{longTrait}{Defaults to NULL, in which case the data is assumed to be in long format. If this is a character string then it is taken as a column name of long data and the other arguments will assume data is long.}
 
 \item{id}{A vector of column names that uniquely identifies observations if the data is in long format. Defaults to "image".}
 
 \item{value}{A column name for the values to be drawn from in long data. Defaults to "value".}
+
+\item{raiseError}{Logical, should warnings/errors be raised for potentially large output? It is easy to ask for very many comparisons with this function so the goal of this argument is to catch a few of those and give estimates of how much time something may take. If the function is expected to take very long then a warning or an error is raised. If this is set to FALSE then no time estimates are made.}
 }
 \value{
 A dataframe/matrix (if plot=F) or a list with a dataframe/matrix and a ggplot (if plot=T). The returned data contains pairwise EMD values.
@@ -64,6 +67,17 @@ w<-pcv.emd(df1, cols="ndvi_", reorder=c("treatment", "genotype"), mat =F, plot=T
 df_long<-read.pcv(file, "long", F)
 l<-pcv.emd(df = df_long, cols="index_frequencies_index_ndvi", reorder=c("treatment", "genotype"), mat =F, plot=T, longTrait="trait", id="image", value="value")
 l$plot + theme(axis.text = element_blank())
+
+#* Note on computational complexity
+#* This scales as O^2, see the plot below for some idea of the time for different input data sizes.
+emdTime<-function(x, n=1){
+x^2 / n * 0.0023
+}
+plot(x=c(18,36,54,72, 108, 135), y = c(0.74, 2.89, 6.86, 10.99, 26.25, 42.44), xlab="N Input Images", ylab="time (seconds)") # benchmarked test data
+lines(x=1:150, y = emdTime(1:150)) # exponential function
+
+plot(x=1:1000, y=emdTime(1:1000), type="l", xlab="N Input Images", ylab="time (seconds)")
+
 }
 \keyword{distance,}
 \keyword{earth}
