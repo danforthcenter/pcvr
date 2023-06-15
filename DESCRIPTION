@@ -13,6 +13,7 @@ Suggests:
     knitr,
     rmarkdown,
     brms,
+    extraDistr,
     parallel,
     caret,
     FactoMineR,

@@ -419,7 +419,7 @@ hue_wide<-aggregate(form, data=hue_wide, mean, na.rm=T)
 
 ### Joyplots
 
-Joyplots are a common way to look at lots of distributions. Here we check the hue histograms as joyplots using the 18th day and add a new fill for the hue colorspace. Note that this uses the `ggridges` package which relies on some deprecated `ggplot2` features, hopefully this will be addressed soon but in the meantime you may get a warning message using `pcv.joyplot`.
+Joyplots are a common way to look at lots of distributions. Here we check the hue histograms as joyplots using the 18th day and add a new fill for the hue colorspace. Note that this uses the `ggridges` package which relies on some deprecated `ggplot2` features, hopefully this will be addressed soon but in the meantime you may get a warning message using `pcv.joyplot`. Note that the gaussian comparisons use `dlst` from the `extraDistr` package.
 
 ```{r, message=F}
 p<-pcv.joyplot(hue_wide[hue_wide$DAS==18,], index = "hue_frequencies", group=c("fertilizer", "genotype"), method=NULL,
