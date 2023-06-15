@@ -14,7 +14,8 @@ pcv.emd(
   parallel = getOption("mc.cores", 1),
   longTrait = NULL,
   id = "image",
-  value = "value"
+  value = "value",
+  raiseError = T
 )
 }
 \arguments{
@@ -37,6 +38,8 @@ pcv.emd(
 \item{id}{A vector of column names that uniquely identifies observations if the data is in long format. Defaults to "image".}
 
 \item{value}{A column name for the values to be drawn from in long data. Defaults to "value".}
+
+\item{raiseError}{Logical, should warnings/errors be raised for potentially large output? It is easy to ask for very many comparisons with this function so the goal of this argument is to catch a few of those and give estimates of how much time something may take. If the function is expected to take very long then a warning or an error is raised. If this is set to FALSE then no time estimates are made.}
 }
 \value{
 A dataframe/matrix (if plot=F) or a list with a dataframe/matrix and a ggplot (if plot=T). The returned data contains pairwise EMD values.

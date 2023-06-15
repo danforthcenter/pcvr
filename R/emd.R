@@ -12,6 +12,7 @@
 #' @param longTrait Defaults to NULL, in which case the data is assumed to be in long format. If this is a character string then it is taken as a column name of long data and the other arguments will assume data is long.
 #' @param id A vector of column names that uniquely identifies observations if the data is in long format. Defaults to "image".
 #' @param value A column name for the values to be drawn from in long data. Defaults to "value".
+#' @param raiseError Logical, should warnings/errors be raised for potentially large output? It is easy to ask for very many comparisons with this function so the goal of this argument is to catch a few of those and give estimates of how much time something may take. If the function is expected to take very long then a warning or an error is raised. If this is set to FALSE then no time estimates are made.
 #' @import ggplot2
 #' @return A dataframe/matrix (if plot=F) or a list with a dataframe/matrix and a ggplot (if plot=T). The returned data contains pairwise EMD values.
 #' 
@@ -38,7 +39,7 @@
 #' l$plot + theme(axis.text = element_blank())
 #' @export
 #' 
-pcv.emd<-function(df, cols=NULL, reorder=NULL, include=reorder, mat=F, plot = T, parallel = getOption("mc.cores",1), longTrait=NULL, id="image", value="value"){
+pcv.emd<-function(df, cols=NULL, reorder=NULL, include=reorder, mat=F, plot = T, parallel = getOption("mc.cores",1), longTrait=NULL, id="image", value="value", raiseError=T){
   # df = df1; cols="ndvi_"; reorder=c("treatment", "genotype"); mat =F; plot=T; parallel = 1; include=reorder; longTrait=F; id="image";value="value"
   # df_long<-read.pcv(file, "long", F)
   # df = df_long; cols="index_frequencies_index_ndvi"; reorder=c("treatment", "genotype"); mat =F; plot=T; parallel = 1; include=reorder;
@@ -47,6 +48,16 @@ pcv.emd<-function(df, cols=NULL, reorder=NULL, include=reorder, mat=F, plot = T,
   if(!is.null(reorder)){ df<-df[order(interaction(df[,reorder])),] }
   if(long){
     df<-df[grepl(cols, df[[traitCol]]), ]
+    #* if nrow df is too high then do calculation for time per core based on estimates and report time with error.
+    if(raiseError){
+      eT_sec = 0.0025*((nrow(df)/parallel)^2)
+      eT_min = eT_sec/60
+      eT_hour = eT_min/60
+      if(eT_sec <= 300){message(past0("Estimated time of calculation is roughly ", round(eT_sec,0), " seconds using ", parallel, " cores in parallel."))
+      } else if(eT_min < 60){warning(paste0("Estimated time of calculation is roughly ", round(eT_min,2), " minutes using ", parallel, " cores in parallel."))
+          } else if(eT_min > 60){stop(paste0("Stopping, estimated time of calculation is roughly ", round(eT_hour,2), " hours using ", parallel, " cores in parallel.",
+                                    "\nIf you wish to proceed then rerun this command with raiseError=F"))}
+    }
     df$INNER_ID_EMD<-interaction(df[,id], drop=T)
     if(mat){ # make dist matrix
       out_data<-matrix(
@@ -66,7 +77,16 @@ pcv.emd<-function(df, cols=NULL, reorder=NULL, include=reorder, mat=F, plot = T,
     }
   } else{
       if(is.null(cols)){cols<-colnames(df)
-        }else if(is.character(cols) && length(cols)==1){cols<-grepl(cols, colnames(df))}
+      }else if(is.character(cols) && length(cols)==1){cols<-grepl(cols, colnames(df))}
+    if(raiseError){
+      eT_sec = 0.0025*((nrow(df)/parallel)^2)
+      eT_min = eT_sec/60
+      eT_hour = eT_min/60
+      if(eT_sec <= 300){message(past0("Estimated time of calculation is roughly ", round(eT_sec,0), " seconds using ", parallel, " cores in parallel."))
+      } else if(eT_min < 60){warning(paste0("Estimated time of calculation is roughly ", round(eT_min,2), " minutes using ", parallel, " cores in parallel."))
+      } else if(eT_min > 60){stop(paste0("Stopping, estimated time of calculation is roughly ", round(eT_hour,2), " hours using ", parallel, " cores in parallel.",
+                                         "\nIf you wish to proceed then rerun this command with raiseError=F"))}
+    }
       if(mat){# make dist matrix
         out_data<-matrix(
           unlist(lapply(1:nrow(df), function(i){innerLapply(1:nrow(df), function(j){
