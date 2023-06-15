@@ -9,7 +9,7 @@ pcv.net(
   meta = NULL,
   dissim = T,
   distCol = "emd",
-  filter = NULL,
+  filter = 0.5,
   direction = "greater"
 )
 }
@@ -23,7 +23,7 @@ pcv.net(
 \item{distCol}{The name of the column containing distances/dissimilarities. Defaults to "emd" for compatability with pcv.emd}
 
 \item{filter}{This can be either a numeric (0.5) in which case it is taken as a filter where only edges with values greater than or equal to that number are kept or a character string ("0.5") in which case the strongest X percentage of edges are kept.
-This defaults to NULL which does no filtering, although that should not be considered the best standard behavior. Note that this will happen after converting to dissimilarity if dissim=T.}
+This defaults to 0.5 which does some filtering, although that should not be considered the best behavior for every setting. If this is NULL then your network will be almost always be a single blob, if set too high there will be very few nodes. Note that this filtering happens after converting to dissimilarity if dissim=T.}
 
 \item{direction}{Direction of filtering, can be either "greater" or "lesser".}
 }

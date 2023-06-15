@@ -8,7 +8,7 @@
 #' @param dissim Logical, should the distCol be inverted to make a dissimilarity value?
 #' @param distCol The name of the column containing distances/dissimilarities. Defaults to "emd" for compatability with pcv.emd
 #' @param filter This can be either a numeric (0.5) in which case it is taken as a filter where only edges with values greater than or equal to that number are kept or a character string ("0.5") in which case the strongest X percentage of edges are kept.
-#' This defaults to NULL which does no filtering, although that should not be considered the best standard behavior. Note that this will happen after converting to dissimilarity if dissim=T.
+#' This defaults to 0.5 which does some filtering, although that should not be considered the best behavior for every setting. If this is NULL then your network will be almost always be a single blob, if set too high there will be very few nodes. Note that this filtering happens after converting to dissimilarity if dissim=T.
 #' @param direction Direction of filtering, can be either "greater" or "lesser".
 #' @import ggplot2
 #' @import igraph
@@ -30,7 +30,7 @@
 #' @export
 #' 
 
-pcv.net<-function(emd = NULL, meta = NULL, dissim=T, distCol="emd", filter = NULL, direction="greater"){
+pcv.net<-function(emd = NULL, meta = NULL, dissim=T, distCol="emd", filter = 0.5, direction="greater"){
   #* emd = emd_df; meta = c("genotype", "treatment"); dissim=T; distCol="emd"; direction="greater";filter=NULL
   #* format distCol into a similarity col
   if(is.data.frame(emd)){
@@ -53,15 +53,23 @@ pcv.net<-function(emd = NULL, meta = NULL, dissim=T, distCol="emd", filter = NUL
     #* turn long data into a graph and extract nodes/edges
     g<-igraph::graph_from_data_frame(emd, directed=F)
   } else{stop("emd must be a dataframe.")}
-  
+  if(is.null(meta)){meta<-unique(sub("_i$|_j$","",colnames(emd)[grepl("_i$|_j$", colnames(emd))])) }
   
   gg<-as.data.frame(igraph::layout.auto(g))
-  eg<-igraph::get.data.frame(g)
+  both<-igraph::get.data.frame(g, "both")
+  gg$index<-both$vertices$name # previously min(as.numeric(eg$from)):max(as.numeric(eg$from)) after 1:nrow(gg)
+  eg<-both$edges
   #* link metadata to nodes
-  gg$index <- min(as.numeric(eg$from)):max(as.numeric(eg$from)) #1:nrow(gg)
-  metaIndex<-lapply(meta, function(m) which(grepl(m, colnames(eg)))[1])
+  metaIndex<-lapply(meta, function(m) which(grepl(m, colnames(eg))))
   newCols<-(ncol(gg)+1):(ncol(gg)+length(meta))
-  gg[,newCols] <- lapply(metaIndex, function(i) eg[[i]][match(gg$index, eg$from)])
+  gg[,newCols] <- lapply(metaIndex, function(m) {
+    i=m[[1]]
+    j=m[[2]]
+    f<-eg[[i]][match(gg$index, eg$from)]
+    to<-eg[[j]][match(gg$index, eg$to)]
+    f[which(is.na(f))]<-to[which(is.na(f))]
+    f
+    } ) # this can be NA if there is no 'from' edge connected to a node, so check 'to' edges as well.
   colnames(gg)[newCols]<-meta
   gg[,newCols]<-type.convert(gg[,newCols], as.is=T)
   
