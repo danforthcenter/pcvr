@@ -22,7 +22,7 @@ pcv.hists(
 
 \item{index}{A multi value trait as a character string. Must be present in `trait`.}
 
-\item{group}{A length 1 or 2 character vector. This is used for faceting the joyplot and identifying groups for testing.}
+\item{group}{A length 1 or 2 character vector. This is used for faceting the joyplot and identifying groups for testing. If this is length 1 then no faceting is done.}
 
 \item{method}{A method to use in comparing distributions/means. Currently "beta", "gaussian", and "ks" are supported. See details for explanations of tests.}
 

@@ -2,7 +2,7 @@
 #' 
 #' @param df Data frame to use. Long or wide format is accepted.
 #' @param index If the data is long then this is a multi value trait as a character string that must be present in `trait`. If the data is wide then this is a string used to find column names to use from the wide data. In the wide case this should include the entire trait name (ie, "hue_frequencies" instead of "hue_freq").
-#' @param group A length 1 or 2 character vector. This is used for faceting the joyplot and identifying groups for testing.
+#' @param group A length 1 or 2 character vector. This is used for faceting the joyplot and identifying groups for testing. If this is length 1 then no faceting is done.
 #' @param method A method to use in comparing distributions/means. Currently "beta", "gaussian", "emd", and "ks" are supported. See details for explanations of tests.
 #' @param compare Groups to compare. By default this is set to FALSE, which corresponds to no testing. Other values of compare are passed to fixCompare to make t.test comparisons using ggpubr. In short, NULL will run all pairwise T tests, a single value of the X axis variable will compare that level to all other levels of the X variable, alternatively this can be a list as used by ggpubr: list(c("level1", "level2"), c("level1", "level3"))
 #' @param priors Parameters for prior distributions if using method = "beta" or "gaussian". If left NULL then wide weak priors are used. This can be set as a single set of parameters or with unique values for each group in `compare`, but it is advised to use the default priors.
@@ -82,7 +82,7 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL,
   }
   
   if(is.null(group)){group = "dummy"; df$dummy = "dummy"; sub$dummy="dummy"}
-  if(length(group)==1){sub$fill = sub[[group]]; sub$y = sub[[group]]; facet_layer = ggplot2::facet_wrap(paste0("~",group)) }
+  if(length(group)==1){sub$fill = sub[[group]]; sub$y = sub[[group]]; facet_layer = list()}#ggplot2::facet_wrap(paste0("~",group)) }
   if(length(group)==2){sub$fill = sub[[group[1] ]]; sub$y = sub[[group[1] ]]; facet_layer=ggplot2::facet_grid(as.formula(paste0("~",group[2])))} # check this change, added group[1] to facet_grid
   
   sub$grouping<-interaction(sub[,c(group)], drop=T)

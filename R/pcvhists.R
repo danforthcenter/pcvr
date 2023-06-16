@@ -2,7 +2,7 @@
 #' 
 #' @param df Data frame to use. Long format with multi value traits is expected.
 #' @param index A multi value trait as a character string. Must be present in `trait`.
-#' @param group A length 1 or 2 character vector. This is used for faceting the joyplot and identifying groups for testing.
+#' @param group A length 1 or 2 character vector. This is used for faceting the joyplot and identifying groups for testing. If this is length 1 then no faceting is done.
 #' @param method A method to use in comparing distributions/means. Currently "beta", "gaussian", and "ks" are supported. See details for explanations of tests.
 #' @param compare Groups to compare. By default this is set to FALSE, which corresponds to no testing. Other values of compare are passed to fixCompare to make t.test comparisons using ggpubr. In short, NULL will run all pairwise T tests, a single value of the X axis variable will compare that level to all other levels of the X variable, alternatively this can be a list as used by ggpubr: list(c("level1", "level2"), c("level1", "level3"))
 #' @param priors Parameters for prior distributions if using method = "beta" or "gaussian". If left NULL then wide weak priors are used. This can be set as a single set of parameters or with unique values for each group in `compare`, but it is advised to use the default priors.
@@ -51,7 +51,7 @@ pcv.hists<-function(df = NULL, index = NULL, group = NULL,
   sub$freq = as.numeric(sub[[freq]])
   
   if(is.null(group)){group = "dummy"; df$dummy = "dummy"; sub$dummy="dummy"}
-  if(length(group)==1){sub$fill = sub[[group]]; sub$y = sub[[group]]; facet_layer = ggplot2::facet_wrap(paste0("~",group)) }
+  if(length(group)==1){sub$fill = sub[[group]]; sub$y = sub[[group]]; facet_layer = list() }
   if(length(group)==2){sub$fill = sub[[group[1] ]]; sub$y = sub[[group[1] ]]; facet_layer=ggplot2::facet_grid(as.formula(paste0("~",group[2])))}
   
   sub$grouping<-interaction(sub[,c(group)], drop=T)
