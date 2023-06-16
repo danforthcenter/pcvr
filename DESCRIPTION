@@ -11,6 +11,18 @@ License: GPL-2
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.2.3
+Imports: 
+    FactoMineR,
+    data.table,
+    ggplot2,
+    ggpubr,
+    ggridges,
+    igraph,
+    jsonlite,
+    lme4,
+    patchwork,
+    scales,
+    viridis
 Suggests: 
     knitr,
     rmarkdown,
