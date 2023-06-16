@@ -64,7 +64,7 @@ pcv.emd<-function(df, cols=NULL, reorder=NULL, include=reorder, mat=F, plot = T,
       eT_sec = 0.0025*((nrow(df)/parallel)^2)
       eT_min = eT_sec/60
       eT_hour = eT_min/60
-      if(eT_sec <= 300){message(paste0("Estimated time of calculation is roughly ", round(eT_sec,0), " seconds using ", parallel, " cores in parallel."))
+      if(eT_sec <= 300){message(paste0("Estimated time of calculation is roughly ", round(eT_sec,1), " seconds using ", parallel, " cores in parallel."))
       } else if(eT_min < 60){warning(paste0("Estimated time of calculation is roughly ", round(eT_min,2), " minutes using ", parallel, " cores in parallel."))
           } else if(eT_min > 60){stop(paste0("Stopping, estimated time of calculation is roughly ", round(eT_hour,2), " hours using ", parallel, " cores in parallel.",
                                     "\nIf you wish to proceed then rerun this command with raiseError=F"))}
@@ -93,7 +93,7 @@ pcv.emd<-function(df, cols=NULL, reorder=NULL, include=reorder, mat=F, plot = T,
       eT_sec = 0.0025*((nrow(df)/parallel)^2)
       eT_min = eT_sec/60
       eT_hour = eT_min/60
-      if(eT_sec <= 300){message(paste0("Estimated time of calculation is roughly ", round(eT_sec,0), " seconds using ", parallel, " cores in parallel."))
+      if(eT_sec <= 300){message(paste0("Estimated time of calculation is roughly ", round(eT_sec,1), " seconds using ", parallel, " cores in parallel."))
       } else if(eT_min < 60){warning(paste0("Estimated time of calculation is roughly ", round(eT_min,2), " minutes using ", parallel, " cores in parallel."))
       } else if(eT_min > 60){stop(paste0("Stopping, estimated time of calculation is roughly ", round(eT_hour,2), " hours using ", parallel, " cores in parallel.",
                                          "\nIf you wish to proceed then rerun this command with raiseError=F"))}
