@@ -7,7 +7,7 @@ output:
     toc: true
     number_sections: false
     code_folding: show
-date: '2023-05-30'
+date: `r Sys.time()`
 vignette: >
   %\VignetteIndexEntry{pcvr}
   %\VignetteEngine{knitr::rmarkdown}
@@ -433,12 +433,13 @@ hue_wide<-aggregate(form, data=hue_wide, mean, na.rm=T)
 
 ### Joyplots
 
-Joyplots are a common way to look at lots of distributions. Here we check the hue histograms as joyplots using the 18th day and add a new fill for the hue colorspace. Note that this uses the `ggridges` package which relies on some deprecated `ggplot2` features, hopefully this will be addressed soon but in the meantime you may get a warning message using `pcv.joyplot`. Note that the gaussian comparisons use `dlst` from the `extraDistr` package.
+Joyplots are a common way to look at lots of distributions. Here we check the hue histograms as joyplots using the 18th day and add a new fill for the hue colorspace. Note that this uses the `ggridges` package which relies on some deprecated `ggplot2` features, hopefully this will be addressed soon but in the meantime you may get a warning message using `pcv.joyplot`. 
+
 
 ```{r, message=F}
 p<-pcv.joyplot(hue_wide[hue_wide$DAS==18,], index = "hue_frequencies", group=c("fertilizer", "genotype"), method=NULL,
                trait=NULL,compare=NULL)
-p+scale_fill_gradientn(colors = scales::hue_pal(l=65)(360))
+p+scale_fill_gradientn(colors = scales::hue_pal(l=65)(360))+scale_y_discrete(limits=c("0", "50", "100"))
 ```
 
 We can also subset the data and change the group argument to look at very specific comparisons.
@@ -446,7 +447,7 @@ We can also subset the data and change the group argument to look at very specif
 ```{r, message=F}
 p<-pcv.joyplot(hue_wide[hue_wide$fertilizer==0 & hue_wide$DAS %in% c(7,12,18),], index = "hue_frequencies", group=c("DAS", "genotype"),
                trait=NULL,compare=NULL)
-p+scale_fill_gradientn(colors = scales::hue_pal(l=65)(360))
+p+scale_fill_gradientn(colors = scales::hue_pal(l=65)(360))+scale_y_discrete(limits=c("7", "12", "18"))
 ```
 
 ### Ordination
