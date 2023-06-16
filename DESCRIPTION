@@ -1,10 +1,12 @@
 Package: pcvr
 Type: Package
-Title: Set of functions to interface with plantCV output
+Title: Functions for use with plantCV output
 Version: 0.1.0
 Author: Josh Sumner
 Maintainer: Josh Sumner <jsumner@danforthcenter.org>
-Description: 
+Description: Streamlines use of plantCV output in common data analysis tasks.
+Depends:
+    R (>= 3.5.0)
 License: GPL-2
 Encoding: UTF-8
 LazyData: true
