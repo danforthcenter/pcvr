@@ -100,6 +100,8 @@ Often we want to convert our timestamp data from the lemnatech into either days 
 sv<-bw.time(sv, plantingDelay = 0, phenotype="area.pixels", cutoff=10, timeCol="timestamp", group=c("barcode", "rotation"), plot=T)
 ```
 
+Note that in these plots, and particularly clearly in the DAE plot, there are lots of plants which show a vertical line on their last day, indicating that our grouping might be incorrect. For this data that is due to the imaging schedule changing and getting 2 separate images at each rotation on the last day.
+
 If we plot our time data then we might see that there are a few outliers or we might check a summary of our phenotype and see some outliers, either from experiment conditions or from the image analysis workflow. The `bw.outliers` function can be used to remove outliers relative to a phenotype using cook's distance. Here just over 6 percent of data are removed as outliers.
 
 ```{r}
