@@ -1,0 +1,1590 @@
+#' @description
+#' Internal function for Bayesian comparison of log-normal data represented by single value traits.
+#' @param s1 A data.frame or matrix of multi value traits. The column names should include a number representing the "bin".
+#' @param s2 An optional second sample of the same form as s2.
+#' @param method The distribution/method to use. Currently "t", "gaussian", "beta", and "lognormal" are supported. Note that "t" and "gaussian" both use a T distribution with "t" testing for a difference of means and "gaussian" testing for a difference in the distributions (similar to a Z test).
+#' @param priors Prior distributions described as a list. This varies by method, see details. By default this is NULL and weak priors (jeffrey's prior where appropriate) are used. The \code{posterior} part of output can also be recycled as a new prior if Bayesian updating is appropriate for your use.
+#' @param plot Logical, should a ggplot be made and returned.
+#' @param rope_range Optional vector specifying a region of practical equivalence.
+#' This interval is considered practically equivalent to no effect.
+#' Kruschke (2018) suggests c(-0.1, 0.1) as a broadly reasonable ROPE for standardized parameters.
+#' That range could also be rescaled by a standard deviation/magnitude for non-standardized parameters, but ultimately this should be informed by your setting and scientific question.
+#' Note that a ROPE interval much smaller than the difference distributions HDI can be somewhat unstable (see examples).
+#' See Kruschke (2018) for details on ROPE and other Bayesian methods to aide decision-making \link{https://doi.org/10.3758/s13423-016-1221-4} and \link{https://doi.org/10.1177/251524591877130}.
+#' @param rope_ci The credible interval probability to use for ROPE. Defaults to 0.89. 
+#' @param rope_hdi The credible interval probability to use in computing the highest density interval (HDI) of the posterior distribution for ROPE. This defaults to 0.95.
+#' @param cred.int.level The credible interval probability to use in computing HDI for samples, defaults to 0.89.
+#' @param hypothesis Direction of a hypothesis if two samples are provided. Options are "unequal", "equal", "greater", and "lesser", read as "sample1 greater than sample2".
+#' @param support Optional support vector to include all possible values the random variable (samples) might take. This defaults to NULL in which case each method will use default behavior to attempt to calculate a dense support, but it is a good idea to supply this with some suitable vector. For example, the Beta method uses \code{seq(0.0001, 0.9999, 0.0001)} for support. 
+#' 
+#' @details 
+#' 
+#' Prior distributions default to be weakly informative and in some cases you may wish to change them. 
+#' \itemize{
+#'    \item{\textbf{"t" and "gaussian" methods: } \code{priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ) } , where mu is the mean, n is the number of prior observations, and s2 is variance}
+#'    \item{\textbf{"beta" method: } \code{priors = list( a=c(0.5, 0.5), b=c(0.5, 0.5) )}, where a and b are shape parameters of the beta distribution.}
+#'    \item{\textbf{"lognormal" methods: } \code{priors = list( mu_log=c(log(10),log(10)),n=c(1,1),sigma_log=c(log(3),log(3)) ) }, where mu_log is the mean on log scale, n is the number of prior observations, and sigma_log is the standard deviation on log scale }
+#' }
+#' 
+#' See examples for plots of these prior distributions.
+#' 
+#' 
+#' @examples 
+#' makeMvLn<-function(bins=500,mu_log,sigma_log){
+#'    setNames(data.frame(matrix(hist(rlnorm(2000,mu_log, sigma_log), breaks=seq(1,bins,5), plot=F)$counts, nrow=1)), paste0("b",seq(1,bins,5))[-1] ) }
+#'    set.seed(123)
+#' mv_ln<-rbind(do.call(rbind, lapply(1:30, function(i){makeMvLn(mu_log=log(130), sigma_log=log(1.3) )})),
+#'              do.call(rbind, lapply(1:30, function(i){makeMvLn(mu_log=log(100), sigma_log=log(1.2) )})))
+#'              
+#' # lognormal mv
+#' ln_mv_ex <- conjugate(s1 = mv_ln[1:30,], s2= mv_ln[31:60,], method = "lognormal",
+#'                    priors = list( mu_log=c(log(10),log(10)),n=c(1,1),sigma_log=c(log(3),log(3)) ),
+#'                    plot=T, rope_range = NULL, rope_ci = 0.89, rope_hdi = 0.95,
+#'                    cred.int.level = 0.89, hypothesis="equal", support=NULL)
+#' 
+#' # lognormal sv
+#' ln_sv_ex <- conjugate(s1=rlnorm(100, log(130), log(1.3)), s2= rlnorm(100, log(100), log(1.6)), method = "lognormal",
+#'                    priors = list( mu_log=c(log(10),log(10)),n=c(1,1),sigma_log=c(log(3),log(3)) ),
+#'                    plot=T, rope_range = NULL, rope_ci = 0.89, rope_hdi = 0.95,
+#'                    cred.int.level = 0.89, hypothesis="equal", support=NULL)
+#' 
+#' # Z test mv example
+#'
+#' makeMvGauss<-function(bins=180,mu,sigma){
+#'    setNames(data.frame(matrix(hist(rnorm(2000,mu, sigma), breaks=seq(1,bins,1), plot=F)$counts, nrow=1)),paste0("b",1:(bins-1) ))
+#'    }
+#' mv_gauss<-rbind(do.call(rbind, lapply(1:30, function(i){makeMvGauss(bins=180, mu=50, sigma=10 )})),
+#'                 do.call(rbind, lapply(1:30, function(i){makeMvGauss(bins=180, mu=60, sigma=12 )})))
+#'                 
+#' gauss_mv_ex <- conjugate(s1=mv_gauss[1:30,], s2= mv_gauss[31:60,], method = "gaussian",
+#'                   priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ),
+#'                   plot=F, rope_range = c(-0.1, 0.1), rope_ci = 0.89, rope_hdi = 0.95,
+#'                   cred.int.level = 0.89, hypothesis="equal", support=NULL)
+#'                   
+#' # Z test sv example
+#' set.seed(123)
+#' gauss_sv_ex_bad <- conjugate(s1=rnorm(15, 50,10), s2= rnorm(15, 60,12), method = "gaussian",
+#'                   priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ),
+#'                   plot=T, rope_range = c(-10, 10), rope_ci = 0.89, rope_hdi = 0.95,
+#'                   cred.int.level = 0.89, hypothesis="equal", support=NULL)
+#'                   
+#' # Here the plot clearly shows we have a problem with the default support, so we specify one
+#' # naturally the longer the support vector the more time this takes, but supports below 100k length 
+#' # tend to be reasonably fast.
+#' 
+#' gauss_sv_ex <- conjugate(s1=rnorm(15, 50,10), s2= rnorm(15, 60,12), method = "gaussian",
+#'                   priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ),
+#'                   plot=F, rope_range = c(-10, 10), rope_ci = 0.89, rope_hdi = 0.95,
+#'                   cred.int.level = 0.89, hypothesis="equal", support=seq(-20,120, 0.01))
+#' # Note that the ROPE probability is somewhat unstable here since the distribution of differences is much wider than the ROPE interval.
+#' 
+#' # T test mv example 
+#' 
+#' makeMvGauss<-function(bins=180,mu,sigma){
+#'    setNames(data.frame(matrix(hist(rnorm(2000,mu, sigma), breaks=seq(1,bins,1), plot=F)$counts, nrow=1)),paste0("b",1:(bins-1) ))
+#'    }
+#' mv_gauss<-rbind(do.call(rbind, lapply(1:30, function(i){makeMvGauss(bins=180, mu=50, sigma=10 )})),
+#'                 do.call(rbind, lapply(1:30, function(i){makeMvGauss(bins=180, mu=60, sigma=12 )})))
+#'
+#' gaussianMeans_mv_ex <- conjugate(s1=mv_gauss[1:30,], s2= mv_gauss[31:60,], method="t",
+#'                         priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ),
+#'                         plot=F, rope_range = c(-0.1, 0.1), rope_ci = 0.89, rope_hdi = 0.95,
+#'                         cred.int.level = 0.89, hypothesis="equal", support=NULL)
+#'                         
+#'                         
+#' # T test sv example
+#' 
+#' gaussianMeans_sv_ex <- conjugate(s1=rnorm(10, 50,10), s2= rnorm(10, 60,12), method="t",
+#'                         priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ),
+#'                         plot=F, rope_range = c(-0.1, 0.1), rope_ci = 0.89, rope_hdi = 0.95,
+#'                         cred.int.level = 0.89, hypothesis="equal", support=NULL)
+#' 
+#' 
+#' 
+#' # beta mv example
+#' 
+#' makeMvBeta<-function(n=100,a,b){
+#'   setNames(data.frame(matrix(hist(rbeta(2000,a,b), breaks=seq(0,1,length.out=n), plot=F)$counts, nrow=1)),paste0("b0.",1:(n-1)))
+#' }
+#' 
+#' mv_beta<-rbind(do.call(rbind, lapply(1:30, function(i){makeMvBeta(n=100, a=5, b=8 )})),
+#'                do.call(rbind, lapply(1:30, function(i){makeMvBeta(n=100, a=10, b=3 )})))
+#' 
+#' beta_mv_ex <- conjugate(s1 = mv_beta[1:30,], s2= mv_beta[31:60,], method="beta",
+#'               priors = list(a=c(0.5,0.5),b=c(0.5,0.5)),
+#'               plot=F, rope_range = c(-0.1, 0.1), rope_ci = 0.89, rope_hdi = 0.95,
+#'               cred.int.level = 0.89, hypothesis="equal")
+#' 
+#' # beta sv example
+#' 
+#' beta_sv_ex <- conjugate(s1 = rbeta(20, 5, 5), s2= rbeta(20, 8, 5), method="beta",
+#'               priors = list(a=c(0.5,0.5),b=c(0.5,0.5)),
+#'               plot=T, rope_range = c(-0.1, 0.1), rope_ci = 0.89, rope_hdi = 0.95,
+#'               cred.int.level = 0.89, hypothesis="equal")
+#' 
+#' # Plots of prior distributions
+#' set.seed(123)
+#' plot(seq(0,1,0.0001), dbeta(seq(0,1,0.0001), 0.5, 0.5), ylab="Density", xlab="Support", main="Beta", type="l")
+#' 
+#' plot(seq(-20,20.001), dnorm(seq(-20,20.001), 0, sqrt(20)), ylab="Density", xlab="Support", main="T and Gaussian", type="l")
+#' 
+#' plot(seq(0,70,0.001), dlnorm(seq(0,70,0.001), log(10), log(3)), ylab="Density", xlab="Support", main="Lognormal", type="l")
+#' 
+#' @return 
+#' 
+#' A list with named elements:
+#' \itemize{
+#'    \item{\textbf{summary}: A data frame containing HDI/HDE values for each sample and the ROPE as well as posterior probability of the hypothesis.}
+#'    \item{\textbf{posterior}: A list of updated parameters in the same format as the prior for the given method.}
+#'    \item{\textbf{plot_df}: A data frame of probabilities along the support for each sample. This is used for making the ggplot.}
+#'    \item{\textbf{rope_df}: A data frame of draws from the ROPE posterior.}
+#'    \item{\textbf{plot}: A ggplot showing the distribution of samples and optionally the distribution of differences/ROPE}
+#' }
+#' 
+#' @keywords bayesian, conjugate, ROPE
+#' @export
+
+conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lognormal"),
+                     priors=NULL, plot=F, rope_range = NULL,
+                    rope_ci = 0.89, rope_hdi = 0.95, cred.int.level = 0.89, hypothesis="equal",
+                    support=NULL){
+  
+  #* `Check sample class`
+  if(is.matrix(s1)|is.data.frame(s1)){ vec=F
+  } else if(is.vector(s1)) { vec=T 
+  } else{ stop("s1 must be a vector, data.frame, or matrix.") }
+  
+  matched_arg<-match.arg(method, choices = c("t", "gaussian", "beta", "lognormal"))
+  #* `Pick method`
+  
+  if(matched_arg == "t" & vec){
+    res<-.conj_gaussian_means_sv(s1, s2, priors, plot, rope_range, rope_ci, rope_hdi, cred.int.level, hypothesis, support)
+    
+  } else if(matched_arg == "t" & !vec){
+    res<-.conj_gaussian_means_mv(s1, s2, priors, plot, rope_range, rope_ci, rope_hdi, cred.int.level, hypothesis, support)
+    
+  } else if(matched_arg == "gaussian" & vec){
+    res<-.conj_gaussian_sv(s1, s2, priors, plot, rope_range, rope_ci, rope_hdi, cred.int.level, hypothesis, support)
+    
+  } else if(matched_arg == "gaussian" & !vec){
+    res<-.conj_gaussian_mv(s1, s2, priors, plot, rope_range, rope_ci, rope_hdi, cred.int.level, hypothesis, support)
+    
+  } else if(matched_arg == "beta" & vec){
+    res<-.conj_beta_sv(s1, s2, priors, plot, rope_range, rope_ci, rope_hdi, cred.int.level, hypothesis)
+    
+  } else if(matched_arg == "beta" & !vec){
+    res<-.conj_beta_sv(s1, s2, priors, plot, rope_range, rope_ci, rope_hdi, cred.int.level, hypothesis)
+    
+  } else if(matched_arg == "lognormal" & vec){
+    res<-.conj_lognormal_sv(s1, s2, priors, plot, rope_range, rope_ci, rope_hdi, cred.int.level, hypothesis, support)
+    
+  } else if(matched_arg == "lognormal" & !vec){
+    res<-.conj_lognormal_mv(s1, s2, priors, plot, rope_range, rope_ci, rope_hdi, cred.int.level, hypothesis, support)
+    
+  } 
+  
+  #* `Make plot`
+  
+  if(plot){
+    p <- ggplot2::ggplot(res$plot_df, ggplot2::aes(x=range, y=prob))+
+      ggplot2::geom_area(data=res$plot_df[res$plot_df$sample == "Sample 1",],fill="red",alpha=0.5)+
+      ggplot2::geom_vline(ggplot2::aes(xintercept=res$summary$HDI_1_low ),color="red",linewidth=1.1)+
+      ggplot2::geom_vline(ggplot2::aes(xintercept=res$summary$HDE_1), color="red",linetype="dashed",linewidth=1.1)+
+      ggplot2::geom_vline(ggplot2::aes(xintercept=res$summary$HDI_1_high),color="red",linewidth=1.1)+
+      ggplot2::labs(x="Posterior Distribution of Random Variable", y="Density", title = "Distribution of Samples",
+                    subtitle=paste0("HDE: ",round(res$summary$HDE_1,2),
+                                    "\nHDI: [",round(res$summary$HDI_1_low,2),", ",
+                                    round(res$summary$HDI_1_high,2),"]"))+
+      pcv_theme()
+    
+    if(!is.null(s2)){
+      
+      if(res$summary$post.prob<1e-5){post.prob.text = "<1e-5"} else { post.prob.text<-round(res$summary$post.prob,5)}
+      
+      p <- p +
+        ggplot2::geom_area(data=res$plot_df[res$plot_df$sample == "Sample 2",],fill="blue",alpha=0.5)+
+        ggplot2::geom_vline(ggplot2::aes(xintercept=res$summary$HDI_2_low),color="blue",size=1.1)+
+        ggplot2::geom_vline(ggplot2::aes(xintercept=res$summary$HDE_2),color="blue",linetype="dashed",size=1.1)+
+        ggplot2::geom_vline(ggplot2::aes(xintercept=res$summary$HDI_2_high),color="blue",size=1.1)+
+        ggplot2::labs(subtitle = paste0(
+          "Sample 1:  ",round(res$summary$HDE_1, 2)," [",round(res$summary$HDI_1_low,2),", ",round(res$summary$HDI_1_high,2),"]\n",
+          "Sample 2:  ",round(res$summary$HDE_2,2)," [",round(res$summary$HDI_2_low,2),", ",round(res$summary$HDI_2_high,2),"]\n",
+          "P[p1",res$dirSymbol,"p2] = ",post.prob.text))
+      res<-res[-which(names(res)=="dirSymbol")]
+      
+      if(length(rope_range) == 2){
+        p <- p + ggplot2::ggplot(res$rope_df, ggplot2::aes(x=X))+
+          ggplot2::geom_histogram(bins=100,fill="purple",color="purple", alpha=0.7)+
+          ggplot2::geom_histogram(data=data.frame("X"=res$rope_df[res$rope_df$X > rope_range[1] & res$rope_df$X < rope_range[2] &
+                                                                    res$rope_df$X > res$summary$HDI_rope_low & res$rope_df$X < res$summary$HDI_rope_high,]),
+                                  bins=100,fill="gray10",color="gray10")+
+          ggplot2::geom_segment(ggplot2::aes(x=rope_range[1],xend=rope_range[2],y=0,yend=0),linewidth=2,color="gray70")+
+          ggplot2::geom_vline(ggplot2::aes(xintercept=res$summary$HDI_rope_low),linewidth=0.7)+
+          ggplot2::geom_vline(ggplot2::aes(xintercept=res$summary$HDE_rope),linetype="dashed",linewidth=0.7)+
+          ggplot2::geom_vline(ggplot2::aes(xintercept=res$summary$HDI_rope_high),linewidth=0.7)+
+          ggplot2::labs(x="Posterior of Difference", y="Frequency", title = "Distribution of Difference",
+                        subtitle =  paste0(
+                          "Median Difference of ",round(res$summary$HDE_rope,2),"\n",
+                          100*rope_hdi,"% CI [",round(res$summary$HDI_rope_low,2),", ",round(res$summary$HDI_rope_high,2),"]\n",
+                          rope_ci,"% HDI in [", rope_range[1],", ",rope_range[2], "]: ",round(res$summary$rope_prob,2)))+
+          pcv_theme()+
+          ggplot2::theme(axis.title.y.left = ggplot2::element_blank(), axis.text.y.left = ggplot2::element_blank())+
+          patchwork::plot_layout(widths = c(2,1))
+      }
+    }
+    plot(p)
+    res$plot<-p
+  }
+  return(res)
+}
+
+
+# res<-.conj_lognormal_mv(s1 = mv_ln[1:30,], s2= mv_ln[31:60,],
+#                                             priors = list( mu_log=c(log(10),log(10)),n=c(1,1),sigma_log=c(log(3),log(3)) ),
+#                                             plot=T, rope_range = c(-0.1, 0.1), rope_ci = 0.89, rope_hdi = 0.95,
+#                                             cred.int.level = 0.89, hypothesis="equal", support=NULL)
+
+
+
+
+#' bayes_beta(dat=df[df$trait=="yii_hist_Fv.over.Fm" & df$id=="tp4",], col="treatment", compare = NULL,
+#'            freq="value", bin="label",
+#'            plot=T, rope_int=c(-0.05,0.05))
+#'            
+#' So at first I made this to use long data and with the intention of working mostly with the MV traits
+#' Now I'm thinking that it should be good for long or wide data and SV or MV traits.
+#' I could ask for arguments as things like longdata[condition, "value"] or wide$col
+#' OR I could have some set of args to set like col="area.pixels", etc.
+#' 
+#' The first is more flexible if that's a concern which I think it is.
+#' I also think that encourages better practices with priors.
+#' If it can be easily plugged into an lapply then that would make sense to me.
+#' something like lapply(fixCompare, function(i){thisFunction(subset1, subset2, etc)})
+#' should be accessible/shown in the docs. BUT with long MV trait data that probably does get more complex.
+#' For that example I'd have things like:
+#' s1<-as.numeric(g1[rep(row.names(g1), g1[[freq]]) & g1$CONDITIONS, bin])
+#' for wide MV traits...
+#' hm. This might benefit from sv and mv methods for each distribution.
+#' 
+#' wide MV traits have a vector for each image which should be aggregated like what happens in pcvjoyplot.R
+#' The thing is that the inputs are totally different to do that. The s1, s2 option works great for sv traits
+#' but for wide mv traits I need:
+#' columns to take
+#' variable to group by
+#' well it could take s1 and s2 as data.frames or matrices. 
+#' 
+#' 
+#' 
+#' I also think this has to have a specific function for each distribution that is supported,
+#' then the main function can just call those methods.
+#' 
+#' The distributions that make sense to use include beta, normal, possibly a gamma/lognormal type thing?
+#' lognormal is probably super easy to implement just as a logged normal given conjugacy
+#' 
+#' should I build in a way to do a "ROPE" like comparison when there is one sample?
+#' basically just "prob that this posterior is in X interval"? Seems reasonable enough to me to include that.
+#' 
+
+#' ***********************************************************************************************
+#' *************** `lognormal distribution (multi value)` ****************************************
+#' ***********************************************************************************************
+#' log(130), log(1.3)
+
+
+#' @description
+#' Internal function for Bayesian comparison of log-normal data represented by single value traits.
+#' @param s1 A data.frame or matrix of multi value traits. The column names should include a number representing the "bin".
+#' @param s2 An optional second sample of the same form as s2.
+#' 
+#' @examples 
+#' makeMvLn<-function(bins=500,mu_log,sigma_log){
+#'    setNames(data.frame(matrix(hist(rlnorm(2000,mu_log, sigma_log), breaks=seq(1,bins,5), plot=F)$counts, nrow=1)), paste0("b",seq(1,bins,5))[-1] ) }
+#'    set.seed(123)
+#' mv_ln<-rbind(do.call(rbind, lapply(1:30, function(i){makeMvLn(mu_log=log(130), sigma_log=log(1.3) )})),
+#'              do.call(rbind, lapply(1:30, function(i){makeMvLn(mu_log=log(100), sigma_log=log(1.2) )})))
+#'              
+#' .conj_lognormal_mv(s1 = mv_ln[1:30,], s2= mv_ln[31:60,],
+#'                    priors = list( mu_log=c(log(10),log(10)),n=c(1,1),sigma_log=c(log(3),log(3)) ),
+#'                    plot=F, rope_range = NULL, rope_ci = 0.89, rope_hdi = 0.95,
+#'                    cred.int.level = 0.89, hypothesis="equal", support=NULL)
+#' @keywords internal
+#' @noRd
+
+.conj_lognormal_mv<-function(s1 = NULL, s2= NULL,
+                             priors=NULL,
+                             plot=F, rope_range = NULL, rope_ci = 0.89, rope_hdi = 0.95,
+                             cred.int.level = 0.89, hypothesis="equal", support=NULL){
+  out <- list()
+  #* `make default prior if none provided`
+  if(is.null(priors)){
+    priors <- list( mu_log=c(log(10),log(10)),n=c(1,1),sigma_log=c(log(3),log(3)) )
+  }
+  #* `Standardize sample 1 class and names`
+  if(is.null(colnames(s1))){
+    bins<-(1:ncol(s1))
+    colnames(s1)<-paste0("b", bins )
+    warning(paste0("Assuming unnamed columns represent bins from ", min(bins), " to ", max(bins)))
+  }
+  if(is.matrix(s1)){ s1<-as.data.frame(s1) }
+  
+  #* `Reorder columns if they are not in the numeric order`
+  histCols<-colnames(s1)
+  histCols_bin <- as.numeric(sub("[a-zA-Z_.]+","",colnames(s1)))
+  bins_order<-sort(histCols_bin, index.return=T)$ix
+  s1<-s1[,bins_order]
+  
+  #* `Define support if it is missing`
+  if(is.null(support)){
+    support<-seq(min(histCols_bin), max(histCols_bin), length.out=10000)
+  }
+  
+  #* `Turn s1 matrix into a vector`
+  X1<-rep(histCols_bin[bins_order], as.numeric(round(colSums(s1))) )
+  
+  #* `Get mean and variance from s1`
+    xbar_1 <- mean(X1)
+    s2_1 <- var(X1)/(nrow(s1)-1)
+    n1 <-nrow(s1)
+    #* `Add prior distribution`
+    # n1_n<-n1+priors$n[1]
+    # xbar_1_n<-(xbar_1*n1+ priors$mu[1]*priors$n[1])/n1_n
+    # s2_1_n <- ( (s2_1*(n1-1)) + (priors$s2[1]*(priors$n[1]-1)) ) / (n1_n-2)
+    #* `lognormal method of moments`
+    #* Might change prior to use lognormal params and add them in here.
+    
+    # mu_ls = log(xbar_1_n / sqrt((s2_1_n/xbar_1_n^2)+1))
+    # sigma_ls = sqrt(log((s2_1_n/xbar_1_n^2)+1))
+    
+    mu_ls = log(xbar_1 / sqrt((s2_1/xbar_1^2)+1))
+    sigma_ls = sqrt(log((s2_1/xbar_1^2)+1))
+    
+    n1_n<-n1+priors$n[1]
+    mu_ls_n = ((mu_ls * n1) + (priors$mu_log[1] * priors$n[1])) / n1_n
+    sigma_ls_n = ((sigma_ls * n1) + (priors$sigma_log[1] * priors$n[1])) / n1_n
+    
+    #* `posterior`
+    dens1 <- dlnorm(support, mu_ls_n, sigma_ls_n)
+    pdf1 <- dens1/sum(dens1)
+    hde1 <- exp(mu_ls_n)
+    hdi1 <- qlnorm(c((1-cred.int.level)/2, (1-((1-cred.int.level)/2))), mu_ls_n, sigma_ls_n)
+    #* `Store summary`
+    out$summary<-data.frame(HDE=hde1, HDI_low = hdi1[1], HDI_high = hdi1[2])
+    out$posterior$mu_log <- mu_ls_n
+    out$posterior$n <- n1_n
+    out$posterior$sigma_log <- sigma_ls_n
+    #* `save s1 data for plotting`
+    if(plot){
+      out$plot_df <- data.frame("range"=support,
+                                "prob"=pdf1,
+                                "sample"=rep("Sample 1",length(support)))
+    }
+  if(!is.null(s2)){
+    #* `Standardize sample 1 class and names`
+    if(is.null(colnames(s2))){
+      bins<-(1:ncol(s2))
+      colnames(s2)<-paste0("b", bins )
+      warning(paste0("Assuming unnamed columns represent bins from ", min(bins), " to ", max(bins)))
+    }
+    if(is.matrix(s2)){ s2<-as.data.frame(s2) }
+    
+    #* `Reorder columns if they are not in the numeric order`
+    histCols<-colnames(s2)
+    histCols_bin <- as.numeric(sub("[a-zA-Z_.]+","",colnames(s1)))
+    bins_order<-sort(histCols_bin, index.return=T)$ix
+    s2<-s2[,bins_order]
+    
+    #* `Turn s2 matrix into a vector`
+    X2<-rep(histCols_bin[bins_order], as.numeric(round(colSums(s2))) )
+      
+      xbar_2 <- mean(X2)
+      s2_2 <- var(X2)/(nrow(s2)-1)
+      n2 <-nrow(s2)
+      # n2_n<-n2+priors$n[2]
+      # xbar_2_n<-(xbar_2*n2+ priors$mu[2]*priors$n[2])/n2_n
+      # s2_2_n <- ( (s2_2*(n2-1)) + (priors$s2[2]*(priors$n[2]-1)) ) / (n2_n-2)
+      # 
+      # mu_ls_2 = log(xbar_2_n / sqrt((s2_2_n/xbar_2_n^2)+1))
+      # sigma_ls_2 = sqrt(log((s2_2_n/xbar_2_n^2)+1))
+      
+      mu_ls_2 = log(xbar_2 / sqrt((s2_2/xbar_2^2)+1))
+      sigma_ls_2 = sqrt(log((s2_2/xbar_2^2)+1))
+      
+      n2_n<-n2+priors$n[2]
+      mu_ls_2_n = ((mu_ls_2 * n2) + (priors$mu_log[2] * priors$n[2])) / n2_n
+      sigma_ls_2_n = ((sigma_ls_2 * n2) + (priors$sigma_log[2] * priors$n[2])) / n2_n
+      
+      
+      dens2 <- dlnorm(support, mu_ls_2_n, sigma_ls_2_n)
+      pdf2 <- dens2/sum(dens2)
+      hde2 <- exp(mu_ls_2_n)
+      hdi2 <- qlnorm(c((1-cred.int.level)/2, (1-((1-cred.int.level)/2))), mu_ls_2_n, sigma_ls_2_n)
+      
+      out$summary<-data.frame(HDE_1=hde1, HDI_1_low = hdi1[1], HDI_1_high = hdi1[2],
+                              HDE_2=hde2, HDI_2_low = hdi2[1], HDI_2_high = hdi2[2])
+      out$posterior$mu_log <- c(mu_ls_n, mu_ls_2_n)
+      out$posterior$n <- c(n1_n, n2_n)
+      out$posterior$sigma_log <- c(sigma_ls_n, sigma_ls_2_n)
+      
+      #* `Keep data from s2 for plotting`
+      if(plot){
+        out$plot_df <- rbind(out$plot_df, data.frame("range"=support,
+                                                     "prob"=pdf2,
+                                                     "sample"=rep("Sample 2",length(support)))
+        )
+      }
+      #* `Test hypothesis on posterior distributions`
+      if(!all(c(as.matrix(s1), as.matrix(s2))==0)){
+        post.prob.out <-  .post.prob.from.pdfs(pdf1, pdf2, hypothesis)
+        post.prob <-post.prob.out$post.prob
+        dirSymbol <-post.prob.out$direction
+      }else{
+        post.prob <- 1
+        dirSymbol = "="
+      }
+      out$summary$hyp = hypothesis
+      out$summary$post.prob = post.prob
+      out$dirSymbol = dirSymbol
+  }
+  #* `ROPE Comparison`
+  if(!is.null(rope_range)){
+    if(length(rope_range) == 2){
+      post1 = rlnorm(10000,mu_ls_n, sigma_ls_n)
+      if(!is.null(s2)){
+        post2 = rlnorm(10000,mu_ls_2_n, sigma_ls_2_n)
+        posterior = post1 - post2
+      } else {
+        posterior=post1
+      }
+      hdi_diff <- as.numeric(bayestestR::hdi(posterior, ci = rope_hdi ))[2:3]
+      hde_diff <- median(posterior)
+      rope_prob <- as.numeric(bayestestR::rope(posterior, range = rope_range, ci_method = "HDI", ci=rope_ci))
+      rope_test <-  data.frame(HDE_rope=hde_diff, HDI_rope_low = hdi_diff[1], HDI_rope_high = hdi_diff[2], rope_prob = rope_prob)
+      out$summary <- cbind(out$summary,rope_test)
+      if(plot){
+        out$rope_df <- data.frame("X"=posterior)
+      }
+    }else{
+      stop("rope must be a vector of length 2")
+    }
+  }
+  return(out)
+}
+
+
+
+
+#' ***********************************************************************************************
+#' *************** `lognormal distribution (single value)` ****************************************
+#' ***********************************************************************************************
+
+#' @description
+#' Internal function for Bayesian comparison of log-normal data represented by single value traits.
+#' Lognormal method of moments
+#' 
+#' \bar{x} \sim e^{\mu + \sigma^2 / 2}
+#' \s^2 \sim (e^{\alpha^2} -1) \cdot e^{2 \cdot \mu + \sigma^2}
+#' 
+#' Calculate Sigma:
+#' 
+#' \bar{x}^2 \sim e^{2 \cdot \mu + \sigma^2}
+#' s^2 \sim (e^\alpha^2 -1) \cdot \bar{x}^2
+#' (s^2 / \bar{x}^2) +1 \sim e^\alpha^2
+#' \alpha^2 \sim ln((s^2 / \bar{x}^2) +1 )
+#' \alpha \sim \sqrt{ln((s^2 / \bar{x}^2) +1 )}
+#' 
+#' Calculate Mu:
+#' 
+#' \bar{x}^2 \sim e^{2 \cdot \mu + \sigma^2}
+#' 2 \cdot ln(\bar{x}) \sim 2 \cdot \mu + \sigma^2
+#' \mu \sim ln(\bar{x} / \sqrt{(s^2 / \bar{x}^2) +1 })
+#' 
+#' @param s1 A vector of numerics drawn from a gaussian distribution.
+#' @param s2 An optional second sample of the same form as s2.
+#' @examples
+#' .conj_lognormal_sv(s1=rlnorm(100, log(130), log(1.3)), s2= rlnorm(100, log(100), log(1.6)),
+#'                   priors = list( mu_log=c(log(10),log(10)),n=c(1,1),sigma_log=c(log(3),log(3)) ),
+#'                   plot=F, rope_range = c(-0.1, 0.1), rope_ci = 0.89, rope_hdi = 0.95,
+#'                   cred.int.level = 0.89, hypothesis="equal", support=NULL)
+#' @keywords internal
+#' @noRd
+
+.conj_lognormal_sv<-function(s1 = NULL, s2= NULL, 
+                             priors=NULL,
+                             plot=F, rope_range = NULL, rope_ci = 0.89, rope_hdi = 0.95,
+                             cred.int.level = 0.89, hypothesis="equal", support=NULL){
+  out <- list()
+  #* `make default prior if none provided`
+  if(is.null(priors)){
+    priors <- list( mu_log=c(log(10),log(10)),n=c(1,1),sigma_log=c(log(3),log(3)) )
+  }
+  #* `Define support if it is missing`
+  if(is.null(support)){
+    support<-seq(floor(min(c(s1,s2))*0.75), ceiling(max(c(s1,s2))/0.75), length.out=10000)
+  }
+  #* `Get mean and variance from s1`
+  if(length(s1)>1){
+    xbar_1 <- mean(s1)
+    s2_1 <- var(s1)/(length(s1)-1)
+    n1 <-length(s1)
+    #* `Add prior distribution`
+    # n1_n<-n1+priors$n[1]
+    # xbar_1_n<-(xbar_1*n1+ priors$mu[1]*priors$n[1])/n1_n
+    # s2_1_n <- ( (s2_1*(n1-1)) + (priors$s2[1]*(priors$n[1]-1)) ) / (n1_n-2)
+    #* `lognormal method of moments`
+    #* Might change prior to use lognormal params and add them in here.
+    
+    # mu_ls = log(xbar_1_n / sqrt((s2_1_n/xbar_1_n^2)+1))
+    # sigma_ls = sqrt(log((s2_1_n/xbar_1_n^2)+1))
+    
+    mu_ls = log(xbar_1 / sqrt((s2_1/xbar_1^2)+1))
+    sigma_ls = sqrt(log((s2_1/xbar_1^2)+1))
+    
+    n1_n<-n1+priors$n[1]
+    mu_ls_n = ((mu_ls * n1) + (priors$mu_log[1] * priors$n[1])) / n1_n
+    sigma_ls_n = ((sigma_ls * n1) + (priors$sigma_log[1] * priors$n[1])) / n1_n
+    
+    #* `posterior`
+    dens1 <- dlnorm(support, mu_ls_n, sigma_ls_n)
+    pdf1 <- dens1/sum(dens1)
+    hde1 <- exp(mu_ls_n)
+    hdi1 <- qlnorm(c((1-cred.int.level)/2, (1-((1-cred.int.level)/2))), mu_ls_n, sigma_ls_n)
+    #* `Store summary`
+    out$summary<-data.frame(HDE=hde1, HDI_low = hdi1[1], HDI_high = hdi1[2])
+    out$posterior$mu_log <- mu_ls_n
+    out$posterior$n <- n1_n
+    out$posterior$sigma_log <- sigma_ls_n
+    #* `save s1 data for plotting`
+    if(plot){
+      out$plot_df <- data.frame("range"=support,
+                                "prob"=pdf1,
+                                "sample"=rep("Sample 1",length(support)))
+    } 
+  } else {
+    stop("s1 must be a numeric of length 2 or greater")
+  }
+  if(!is.null(s2)){
+    if(length(s2) > 1){
+     
+      xbar_2 <- mean(s2)
+      s2_2 <- var(s2)/(length(s2)-1)
+      n2 <-length(s2)
+      # n2_n<-n2+priors$n[2]
+      # xbar_2_n<-(xbar_2*n2+ priors$mu[2]*priors$n[2])/n2_n
+      # s2_2_n <- ( (s2_2*(n2-1)) + (priors$s2[2]*(priors$n[2]-1)) ) / (n2_n-2)
+      # 
+      # mu_ls_2 = log(xbar_2_n / sqrt((s2_2_n/xbar_2_n^2)+1))
+      # sigma_ls_2 = sqrt(log((s2_2_n/xbar_2_n^2)+1))
+      
+      mu_ls_2 = log(xbar_2 / sqrt((s2_2/xbar_2^2)+1))
+      sigma_ls_2 = sqrt(log((s2_2/xbar_2^2)+1))
+      
+      n2_n<-n2+priors$n[2]
+      mu_ls_2_n = ((mu_ls_2 * n2) + (priors$mu_log[2] * priors$n[2])) / n2_n
+      sigma_ls_2_n = ((sigma_ls_2 * n2) + (priors$sigma_log[2] * priors$n[2])) / n2_n
+      
+      
+      dens2 <- dlnorm(support, mu_ls_2_n, sigma_ls_2_n)
+      pdf2 <- dens2/sum(dens2)
+      hde2 <- exp(mu_ls_2_n)
+      hdi2 <- qlnorm(c((1-cred.int.level)/2, (1-((1-cred.int.level)/2))), mu_ls_2_n, sigma_ls_2_n)
+      
+      out$summary<-data.frame(HDE_1=hde1, HDI_1_low = hdi1[1], HDI_1_high = hdi1[2],
+                              HDE_2=hde2, HDI_2_low = hdi2[1], HDI_2_high = hdi2[2])
+      out$posterior$mu_log <- c(mu_ls_n, mu_ls_2_n)
+      out$posterior$n <- c(n1_n, n2_n)
+      out$posterior$sigma_log <- c(sigma_ls_n, sigma_ls_2_n)
+      
+      #* `Keep data from s2 for plotting`
+      if(plot){
+        out$plot_df <- rbind(out$plot_df, data.frame("range"=support,
+                                                     "prob"=pdf2,
+                                                     "sample"=rep("Sample 2",length(support)))
+        )
+      }
+      #* `Test hypothesis on posterior distributions`
+      if(!all(c(s1, s2)==0)){
+        post.prob.out <-  .post.prob.from.pdfs(pdf1, pdf2, hypothesis)
+        post.prob <-post.prob.out$post.prob
+        dirSymbol <-post.prob.out$direction
+      }else{
+        post.prob <- 1
+        dirSymbol = "="
+      }
+      out$summary$hyp = hypothesis
+      out$summary$post.prob = post.prob
+      out$dirSymbol = dirSymbol
+    } else{
+      stop("s2 must be a numeric of length 2 or greater if provided")
+    }
+  }
+  #* `ROPE Comparison`
+  if(!is.null(rope_range)){
+    if(length(rope_range) == 2){
+      post1 = rlnorm(10000,mu_ls, sigma_ls)
+      if(!is.null(s2)){
+        post2 = rlnorm(10000,mu_ls_2, sigma_ls_2)
+        posterior = post1 - post2
+      } else {
+        posterior=post1
+      }
+      hdi_diff <- as.numeric(bayestestR::hdi(posterior, ci = rope_hdi ))[2:3]
+      hde_diff <- median(posterior)
+      rope_prob <- as.numeric(bayestestR::rope(posterior, range = rope_range, ci_method = "HDI", ci=rope_ci))
+      rope_test <-  data.frame(HDE_rope=hde_diff, HDI_rope_low = hdi_diff[1], HDI_rope_high = hdi_diff[2], rope_prob = rope_prob)
+      out$summary <- cbind(out$summary,rope_test)
+      if(plot){
+        out$rope_df <- data.frame("X"=posterior)
+      }
+    }else{
+      stop("rope must be a vector of length 2")
+    }
+  }
+  return(out)
+}
+
+
+
+#' ***********************************************************************************************
+#' *************** `Gaussian Dist (single value, Z test)` ****************************************
+#' ***********************************************************************************************
+#' same as T, just don't use standard error
+#' @description
+#' Internal function for Bayesian comparisosns of gaussian data represented by single value traits.
+#' This version uses the entire posterior distribution instead of the sampling distribution of the mean.
+#' In frequentist terms this is analogous to a Z test as opposed to a T test. Generally the T test is desired, 
+#' but this is provided for completeness.
+#' @param s1 A vector of numerics drawn from a gaussian distribution.
+#' @param s2 An optional second sample of the same form as s2.
+#' @examples
+#' .conj_gaussian_sv(s1=rnorm(100, 50,10), s2= rnorm(100, 60,12),
+#'                   priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ),
+#'                   plot=F, rope_range = c(-0.1, 0.1), rope_ci = 0.89, rope_hdi = 0.95,
+#'                   cred.int.level = 0.89, hypothesis="equal", support=NULL)
+#' @keywords internal
+#' @noRd
+
+.conj_gaussian_sv<-function(s1 = NULL, s2= NULL, priors = NULL,
+                                  plot=F, rope_range = NULL, rope_ci = 0.89, rope_hdi = 0.95,
+                                  cred.int.level = 0.89, hypothesis="equal", support=NULL){
+  out <- list()
+  #* `make default prior if none provided`
+  if(is.null(priors)){
+    priors <- list( mu=c(0,0),n=c(1,1),s2=c(20,20) )
+  }
+  #* `Define support if it is missing`
+  if(is.null(support)){
+    support<-seq(floor(min(c(s1,s2))*0.8), ceiling(max(c(s1,s2))/0.8), length.out=10000)
+  }
+  #* `Get Mean, Variance, SE, and DF from s1`
+  if(length(s1) > 1){
+    n1 <- length(s1) # n samples
+    m1 = mean(s1) # xbar
+    s2_1 = var(s1) # s^2
+    
+    v1 = priors$n[1] - 1 # prior DF
+    n1_n = priors$n[1] + n1 # total N including prior
+    m1_n = (n1*m1 + priors$n[1]*priors$mu[1])/n1_n # weighted mean of prior and data
+    v1_n = v1 + n1 # degrees of freedom including data
+    s2_1_n = ((n1-1)*s2_1 + v1*priors$s2[1] + priors$n[1]*n1*(priors$mu[1] - m1)^2 / n1_n)/v1_n # pooled variance
+    sigma_1<-sqrt(s2_1_n) # standard error of the mean
+    
+    post_mean_d1 <- extraDistr::dlst(support, v1_n, m1_n, sigma_1)
+    post_mean_pdf1 <- post_mean_d1/sum(post_mean_d1)
+    hde1_mean <- m1_n
+    hdi1_mean <- m1_n + qt(c((1-cred.int.level)/2, (1-((1-cred.int.level)/2))),v1_n)*sigma_1
+    
+    out$summary<-data.frame(HDE=hde1_mean, HDI_low = hdi1_mean[1], HDI_high = hdi1_mean[2])
+    out$posterior$mu <- m1_n
+    out$posterior$n <- n1_n
+    out$posterior$s2 <- sigma_1
+    #* `Save data for plotting`
+    if(plot){
+      out$plot_df <- data.frame("range"=support,
+                                "prob"=post_mean_pdf1,
+                                "sample"=rep("Sample 1",length(support))
+      )
+    } 
+  }else{
+    stop("s1 must be a numeric of length 2 or greater")
+  }
+  #* `Get Mean, Variance, SE, and DF from s2`
+  if(!is.null(s2)){
+    if(length(s2) > 1){
+      n2 <- length(s2) # n samples
+      m2 = mean(s2) # xbar
+      s2_2 = var(s2) # s^2
+      
+      v2 = priors$n[2] - 1 # prior DF
+      n2_n = priors$n[2] + n1 # total N including prior
+      m2_n = (n2*m2 + priors$n[2]*priors$mu[2])/n2_n # weighted mean of prior and data
+      v2_n = v2 + n2 # degrees of freedom including data
+      s2_2_n = ((n2-1)*s2_2 + v2*priors$s2[2] + priors$n[2]*n2*(priors$mu[2] - m2)^2/n2_n)/v2_n # pooled variance
+      sigma_2<-sqrt(s2_2_n) # standard error of the mean
+      
+      post_mean_d2 <- extraDistr::dlst(support,v2_n,m2_n, sigma_2)
+      post_mean_pdf2 <- post_mean_d2/sum(post_mean_d2)
+      hde2_mean <- m2_n
+      hdi2_mean <- m2_n + qt(c((1-cred.int.level)/2, (1-((1-cred.int.level)/2))),v2_n)*sigma_2
+      
+      out$summary<-data.frame(HDE_1=hde1_mean, HDI_1_low = hdi1_mean[1], HDI_1_high = hdi1_mean[2],
+                              HDE_2=hde2_mean, HDI_2_low = hdi2_mean[1], HDI_2_high = hdi2_mean[2])
+      out$posterior$mu <- c(m1_n, m2_n)
+      out$posterior$n <- c(n1_n, n2_n)
+      out$posterior$s2 <- c(sigma_1, sigma_2)
+      #* `Keep data from s2 for plotting`
+      if(plot){
+        out$plot_df <- rbind(out$plot_df, data.frame("range"=support,
+                                                     "prob"=post_mean_pdf2,
+                                                     "sample"=rep("Sample 2",length(support)))
+        )
+      } 
+      #* `Test hypothesis on posterior distributions`
+      if(!all(c(s1, s2)==0)){
+        post.prob.out <-  .post.prob.from.pdfs(post_mean_pdf1, post_mean_pdf2, hypothesis)
+        post.prob <-post.prob.out$post.prob
+        dirSymbol <-post.prob.out$direction
+      }else{
+        post.prob <- 1
+        dirSymbol = "="
+      }
+      out$summary$hyp = hypothesis
+      out$summary$post.prob = post.prob
+      out$dirSymbol = dirSymbol
+    }else{
+      stop("If provided then s2 must be a numeric of length 2 or greater")
+    }
+  }
+  #* `ROPE Comparison`
+  if(!is.null(rope_range)){
+    if(length(rope_range) == 2){
+      post1 = extraDistr::rlst(10000,v1_n, m1_n, sigma_1)
+      if(!is.null(s2)){
+        post2 = extraDistr::rlst(10000,v2_n, m2_n, sigma_2)
+        posterior = post1 - post2
+      } else {
+        posterior=post1
+      }
+      hdi_diff <- as.numeric(bayestestR::hdi(posterior, ci = rope_hdi ))[2:3]
+      hde_diff <- median(posterior)
+      rope_prob <- as.numeric(bayestestR::rope(posterior, range = rope_range, ci_method = "HDI", ci=rope_ci))
+      rope_test <-  data.frame(HDE_rope=hde_diff, HDI_rope_low = hdi_diff[1], HDI_rope_high = hdi_diff[2], rope_prob = rope_prob)
+      out$summary <- cbind(out$summary,rope_test)
+      if(plot){
+        out$rope_df <- data.frame("X"=posterior)
+      }
+    }else{
+      stop("rope must be a vector of length 2")
+    }
+  }
+  return(out)
+}
+
+
+
+#' ***********************************************************************************************
+#' *************** `Gaussian Dist (multi value, Z test)` ****************************************
+#' ***********************************************************************************************
+
+#' @description
+#' Internal function for Bayesian comparisosns of gaussian data represented by multi value traits.
+#' This version uses the entire posterior distribution instead of the sampling distribution of the mean.
+#' In frequentist terms this is analogous to a Z test as opposed to a T test. Generally the T test is desired, 
+#' but this is provided for completeness.
+#' @param s1 A vector of numerics drawn from a gaussian distribution.
+#' @param s2 An optional second sample of the same form as s2.
+#' @examples
+#' 
+#' makeMvGauss<-function(bins=180,mu,sigma){
+#'    setNames(data.frame(matrix(hist(rnorm(2000,mu, sigma), breaks=seq(1,bins,1), plot=F)$counts, nrow=1)),paste0("b",1:(bins-1) ))
+#'    }
+#' mv_gauss<-rbind(do.call(rbind, lapply(1:30, function(i){makeMvGauss(bins=180, mu=50, sigma=10 )})),
+#'                 do.call(rbind, lapply(1:30, function(i){makeMvGauss(bins=180, mu=60, sigma=12 )})))
+#'                 
+#' .conj_gaussian_mv(s1=mv_gauss[1:30,], s2= mv_gauss[31:60,],
+#'                   priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ),
+#'                   plot=F, rope_range = c(-0.1, 0.1), rope_ci = 0.89, rope_hdi = 0.95,
+#'                   cred.int.level = 0.89, hypothesis="equal", support=NULL)
+#' @keywords internal
+#' @noRd
+
+.conj_gaussian_mv<-function(s1 = NULL, s2= NULL, priors = NULL,
+                                  plot=F, rope_range = NULL, rope_ci = 0.89, rope_hdi = 0.95,
+                                  cred.int.level = 0.89, hypothesis="equal", support=NULL){
+  out <- list()
+  #* `make default prior if none provided`
+  if(is.null(priors)){
+    priors <- list( mu=c(0,0),n=c(1,1),s2=c(20,20) )
+  }
+  #* `Standardize sample 1 class and names`
+  if(is.null(colnames(s1))){
+    bins<-(1:ncol(s1))/100
+    colnames(s1)<-paste0("b", bins )
+    warning(paste0("Assuming unnamed columns represent bins from ", min(bins), " to ", max(bins)))
+  }
+  if(is.matrix(s1)){ s1<-as.data.frame(s1) }
+  
+  #* `Reorder columns if they are not in the numeric order`
+  histCols<-colnames(s1)
+  histCols_bin <- as.numeric(sub("[a-zA-Z_.]+","",colnames(s1)))
+  bins_order<-sort(histCols_bin, index.return=T)$ix
+  s1<-s1[,bins_order]
+  
+  #* `Define support if it is missing`
+  if(is.null(support)){
+    support<-seq(min(bins_order), max(bins_order), length.out=10000)
+  }
+  
+  #* `Turn s1 matrix into a vector`
+  X1<-rep(histCols_bin[bins_order], as.numeric(round(colSums(s1))) )
+  
+  #* `Get Mean, Variance, SE, and DF from s2`
+  n1 <- nrow(s1) # n samples
+  m1 = mean(X1) # xbar
+  s2_1 = var(X1) # s^2
+  
+  v1 = priors$n[1] - 1 # prior DF
+  n1_n = priors$n[1] + n1 # total N including prior
+  m1_n = (n1*m1 + priors$n[1]*priors$mu[1])/n1_n # weighted mean of prior and data
+  v1_n = v1 + n1 # degrees of freedom including data
+  s2_1_n = ((n1-1)*s2_1 + v1*priors$s2[1] + priors$n[1]*n1*(priors$mu[1] - m1)^2/n1_n)/v1_n # pooled variance
+  sigma_1<-sqrt(s2_1_n) # standard error of the mean
+  
+  post_mean_d1 <- extraDistr::dlst(support,v1_n,m1_n, sigma_1)
+  post_mean_pdf1 <- post_mean_d1/sum(post_mean_d1)
+  hde1_mean <- m1_n
+  hdi1_mean <- m1_n + qt(c((1-cred.int.level)/2, (1-((1-cred.int.level)/2))),v1_n)*sigma_1
+  
+  out$summary<-data.frame(HDE=hde1_mean, HDI_low = hdi1_mean[1], HDI_high = hdi1_mean[2])
+  out$posterior$mu <- m1_n
+  out$posterior$n <- n1_n
+  out$posterior$s2 <- sigma_1
+  #* `Save data for plotting`
+  if(plot){
+    out$plot_df <- data.frame("range"=support,
+                              "prob"=post_mean_pdf1,
+                              "sample"=rep("Sample 1",length(support))
+    )
+  }
+  
+  if(!is.null(s2)){
+    #* `Standardize sample 2 class and names`
+    if(is.null(colnames(s2))){
+      bins<-(1:ncol(s2))/100
+      colnames(s2)<-paste0("b", bins )
+      warning(paste0("Assuming unnamed columns represent bins from ", min(bins), " to ", max(bins)))
+    }
+    if(is.matrix(s2)){ s2<-as.data.frame(s2) }
+    
+    #* `Reorder columns if they are not in the numeric order`
+    histCols<-colnames(s2)
+    histCols_bin <- as.numeric(sub("[a-zA-Z_.]+","",colnames(s2)))
+    bins_order<-sort(histCols_bin, index.return=T)$ix
+    s2<-s2[,bins_order]
+    
+    #* `Turn s2 matrix into a vector`
+    X2<-rep(histCols_bin[bins_order], as.numeric(round(colSums(s2))) )
+    
+    #* `Get Mean, Variance, SE, and DF from s2`
+    n2 <- nrow(s2) # n samples
+    m2 = mean(X2) # xbar
+    s2_2 = var(X2) # s^2
+    
+    v2 = priors$n[2] - 1 # prior DF
+    n2_n = priors$n[2] + n2 # total N including prior
+    m2_n = (n2*m2 + priors$n[2]*priors$mu[2])/n2_n # weighted mean of prior and data
+    v2_n = v2 + n2 # degrees of freedom including data
+    s2_2_n = ((n2-1)*s2_2 + v2*priors$s2[2] + priors$n[2]*n2*(priors$mu[2] - m2)^2/n2_n)/v2_n # pooled variance
+    sigma_2<-sqrt(s2_2_n) # standard error of the mean
+    
+    post_mean_d2 <- extraDistr::dlst(support,v2_n,m2_n, sigma_2)
+    post_mean_pdf2 <- post_mean_d2/sum(post_mean_d2)
+    hde2_mean <- m2_n
+    hdi2_mean <- m2_n + qt(c((1-cred.int.level)/2, (1-((1-cred.int.level)/2))),v2_n)*sigma_2
+    
+    out$summary<-data.frame(HDE_1=hde1_mean, HDI_1_low = hdi1_mean[1], HDI_1_high = hdi1_mean[2],
+                            HDE_2=hde2_mean, HDI_2_low = hdi2_mean[1], HDI_2_high = hdi2_mean[2])
+    out$posterior$mu <- c(m1_n, m2_n)
+    out$posterior$n <- c(n1_n, n2_n)
+    out$posterior$s2 <- c(sigma_1, sigma_2)
+    #* `Save data for plotting`
+    if(plot){
+      out$plot_df <- rbind(out$plot_df, data.frame("range"=support,
+                                                   "prob"=post_mean_pdf2,
+                                                   "sample"=rep("Sample 2",length(support)))
+      )
+    }
+    if(!all(c(as.matrix(s1),as.matrix(s2))==0)){
+      post.prob.out <-  .post.prob.from.pdfs(post_mean_pdf1, post_mean_pdf2, hypothesis)
+      post.prob <-post.prob.out$post.prob
+      dirSymbol <-post.prob.out$direction
+    }else{
+      post.prob <- 1
+    }
+    out$summary$hyp = hypothesis
+    out$summary$post.prob = post.prob
+    out$dirSymbol = dirSymbol
+  }
+  #* `ROPE Comparison`
+  if(!is.null(rope_range)){
+    if(length(rope_range) == 2){
+      post1 = extraDistr::rlst(10000,v1_n, m1_n, sigma_1)
+      if(!is.null(s2)){
+        post2 = extraDistr::rlst(10000,v2_n, m2_n, sigma_2)
+        posterior = post1 - post2
+      } else {
+        posterior = post1
+      }
+      hdi_diff <- as.numeric(bayestestR::hdi(posterior, ci = rope_hdi ))[2:3]
+      hde_diff <- median(posterior)
+      rope_prob <- as.numeric(bayestestR::rope(posterior, range = rope_range, ci_method = "HDI", ci=rope_ci))
+      rope_test <-  data.frame(HDE_rope=hde_diff, HDI_rope_low = hdi_diff[1], HDI_rope_high = hdi_diff[2], rope_prob = rope_prob)
+      out$summary <- cbind(out$summary,rope_test)
+      if(plot){
+        out$rope_df <- data.frame("X"=posterior)
+      }
+    }else{
+      stop("rope must be a vector of length 2")
+    }
+  }
+  
+  return(out)
+  
+}
+
+
+
+#' ***********************************************************************************************
+#' *************** `Gaussian Means (single value)` *********************************************
+#' ***********************************************************************************************
+
+#' @description
+#' Internal function for Bayesian T Tests of gaussian data represented by single value traits.
+#' @param s1 A vector of numerics drawn from a gaussian distribution.
+#' @param s2 An optional second sample of the same form as s2.
+#' @examples
+#' .conj_gaussian_means_sv(s1=rnorm(100, 50,10), s2= rnorm(100, 60,12),
+#'                         priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ),
+#'                         plot=F, rope_range = c(-0.1, 0.1), rope_ci = 0.89, rope_hdi = 0.95,
+#'                         cred.int.level = 0.89, hypothesis="equal", support=NULL)
+#' @keywords internal
+#' @noRd
+.conj_gaussian_means_sv<-function(s1 = NULL, s2= NULL, priors = NULL,
+                            plot=F, rope_range = NULL, rope_ci = 0.89, rope_hdi = 0.95,
+                            cred.int.level = 0.89, hypothesis="equal", support=NULL){
+  out <- list()
+  #* `make default prior if none provided`
+  if(is.null(priors)){
+    priors <- list( mu=c(0,0),n=c(1,1),s2=c(20,20) )
+  }
+  #* `Define support if it is missing`
+  if(is.null(support)){
+    support<-seq(floor(min(c(s1,s2))*0.8), ceiling(max(c(s1,s2))/0.8), length.out=10000)
+  }
+  #* `Get Mean, Variance, SE, and DF from s1`
+  if(length(s1) > 1){
+    n1 <- length(s1) # n samples
+    m1 = mean(s1) # xbar
+    s2_1 = var(s1) # s^2
+    
+    v1 = priors$n[1] - 1 # prior DF
+    n1_n = priors$n[1] + n1 # total N including prior
+    m1_n = (n1*m1 + priors$n[1]*priors$mu[1])/n1_n # weighted mean of prior and data
+    v1_n = v1 + n1 # degrees of freedom including data
+    s2_1_n = ((n1-1)*s2_1 + v1*priors$s2[1] + priors$n[1]*n1*(priors$mu[1] - m1)^2/n1_n)/v1_n # pooled variance
+    se1<-sqrt(s2_1_n/n1_n) # standard error of the mean
+    
+    post_mean_d1 <- extraDistr::dlst(support,v1_n,m1_n, se1)
+    post_mean_pdf1 <- post_mean_d1/sum(post_mean_d1)
+    hde1_mean <- m1_n
+    hdi1_mean <- m1_n + qt(c((1-cred.int.level)/2, (1-((1-cred.int.level)/2))),v1_n)*se1
+    
+    out$summary<-data.frame(HDE=hde1_mean, HDI_low = hdi1_mean[1], HDI_high = hdi1_mean[2])
+    out$posterior$mu <- m1_n
+    out$posterior$n <- n1_n
+    out$posterior$s2 <- s2_1_n
+    #* `Save data for plotting`
+    if(plot){
+      out$plot_df <- data.frame("range"=support,
+                       "prob"=post_mean_pdf1,
+                       "sample"=rep("Sample 1",length(support))
+      )
+    } 
+  }else{
+    stop("s1 must be a numeric of length 2 or greater")
+  }
+  #* `Get Mean, Variance, SE, and DF from s2`
+  if(!is.null(s2)){
+    if(length(s2) > 1){
+      n2 <- length(s2) # n samples
+      m2 = mean(s2) # xbar
+      s2_2 = var(s2) # s^2
+      
+      v2 = priors$n[2] - 1 # prior DF
+      n2_n = priors$n[2] + n1 # total N including prior
+      m2_n = (n2*m2 + priors$n[2]*priors$mu[2])/n2_n # weighted mean of prior and data
+      v2_n = v2 + n2 # degrees of freedom including data
+      s2_2_n = ((n2-1)*s2_2 + v2*priors$s2[2] + priors$n[2]*n2*(priors$mu[2] - m2)^2/n2_n)/v2_n # pooled variance
+      se2<-sqrt(s2_2_n/n2_n) # standard error of the mean
+      
+      post_mean_d2 <- extraDistr::dlst(support,v2_n,m2_n, se2)
+      post_mean_pdf2 <- post_mean_d2/sum(post_mean_d2)
+      hde2_mean <- m2_n
+      hdi2_mean <- m2_n + qt(c((1-cred.int.level)/2, (1-((1-cred.int.level)/2))),v2_n)*se2
+      
+      out$summary<-data.frame(HDE_1=hde1_mean, HDI_1_low = hdi1_mean[1], HDI_1_high = hdi1_mean[2],
+                              HDE_2=hde2_mean, HDI_2_low = hdi2_mean[1], HDI_2_high = hdi2_mean[2])
+      out$posterior$mu <- c(m1_n, m2_n)
+      out$posterior$n <- c(n1_n, n2_n)
+      out$posterior$s2 <- c(s2_1_n, s2_2_n)
+      #* `Keep data from s2 for plotting`
+      if(plot){
+        out$plot_df <- rbind(out$plot_df, data.frame("range"=support,
+                                  "prob"=post_mean_pdf2,
+                                  "sample"=rep("Sample 2",length(support)))
+        )
+      } 
+    #* `Test hypothesis on posterior distributions`
+    if(!all(c(s1, s2)==0)){
+      post.prob.out <-  .post.prob.from.pdfs(post_mean_pdf1, post_mean_pdf2, hypothesis)
+      post.prob <-post.prob.out$post.prob
+      dirSymbol <-post.prob.out$direction
+    }else{
+      post.prob <- 1
+      dirSymbol = "="
+    }
+    out$summary$hyp = hypothesis
+    out$summary$post.prob = post.prob
+    out$dirSymbol = dirSymbol
+    }else{
+      stop("If provided then s2 must be a numeric of length 2 or greater")
+    }
+  }
+  #* `ROPE Comparison`
+  if(!is.null(rope_range)){
+    if(length(rope_range) == 2){
+      post1 = extraDistr::rlst(10000,v1_n, m1_n, se1)
+      if(!is.null(s2)){
+        post2 = extraDistr::rlst(10000,v2_n, m2_n, se2)
+        posterior = post1 - post2
+      } else {
+        posterior=post1
+      }
+      hdi_diff <- as.numeric(bayestestR::hdi(posterior, ci = rope_hdi ))[2:3]
+      hde_diff <- median(posterior)
+      rope_prob <- as.numeric(bayestestR::rope(posterior, range = rope_range, ci_method = "HDI", ci=rope_ci))
+      rope_test <-  data.frame(HDE_rope=hde_diff, HDI_rope_low = hdi_diff[1], HDI_rope_high = hdi_diff[2], rope_prob = rope_prob)
+      out$summary <- cbind(out$summary,rope_test)
+      if(plot){
+        out$rope_df <- data.frame("X"=posterior)
+      }
+    }else{
+      stop("rope must be a vector of length 2")
+    }
+  }
+  return(out)
+}
+
+
+
+
+
+#' ***********************************************************************************************
+#' *************** `Gaussian Means (multi value)` *********************************************
+#' ***********************************************************************************************
+
+#' @description
+#' Internal function for calculating \alpha and \beta of a distribution represented by multi value traits.
+#' @param s1 A data.frame or matrix of multi value traits. The column names should include a number representing the "bin".
+#' @param s2 An optional second sample of the same form as s2.
+#' @examples
+#' makeMvGauss<-function(bins=180,mu,sigma){
+#'    setNames(data.frame(matrix(hist(rnorm(2000,mu, sigma), breaks=seq(1,bins,1), plot=F)$counts, nrow=1)),paste0("b",1:(bins-1) ))
+#'    }
+#' mv_gauss<-rbind(do.call(rbind, lapply(1:30, function(i){makeMvGauss(bins=180, mu=50, sigma=10 )})),
+#'                 do.call(rbind, lapply(1:30, function(i){makeMvGauss(bins=180, mu=60, sigma=12 )})))
+#' .conj_gaussian_means_mv(s1 = mv_gauss[1:30,], s2= mv_gauss[31:60,],
+#'                         priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ),
+#'                         plot=F, rope_range = c(-0.1,0.1), rope_ci = 0.89, rope_hdi = 0.95,
+#'                         cred.int.level = 0.89, hypothesis="equal", support=NULL)
+#' @keywords internal
+#' @noRd
+
+.conj_gaussian_means_mv<-function(s1 = NULL, s2= NULL, priors = NULL,
+                            plot=F, rope_range = NULL, rope_ci = 0.89, rope_hdi = 0.95,
+                            cred.int.level = 0.89, hypothesis="equal", support=NULL){
+  out <- list()
+  #* `make default prior if none provided`
+  if(is.null(priors)){
+    priors <- list( mu=c(0,0),n=c(1,1),s2=c(20,20) )
+  }
+  #* `Standardize sample 1 class and names`
+  if(is.null(colnames(s1))){
+    bins<-(1:ncol(s1))/100
+    colnames(s1)<-paste0("b", bins )
+    warning(paste0("Assuming unnamed columns represent bins from ", min(bins), " to ", max(bins)))
+  }
+  if(is.matrix(s1)){ s1<-as.data.frame(s1) }
+  
+  #* `Reorder columns if they are not in the numeric order`
+  histCols<-colnames(s1)
+  histCols_bin <- as.numeric(sub("[a-zA-Z_.]+","",colnames(s1)))
+  bins_order<-sort(histCols_bin, index.return=T)$ix
+  s1<-s1[,bins_order]
+  
+  #* `Define support if it is missing`
+  if(is.null(support)){
+    support<-seq(min(bins_order), max(bins_order), length.out=10000)
+  }
+  
+  #* `Turn s1 matrix into a vector`
+  X1<-rep(histCols_bin[bins_order], as.numeric(round(colSums(s1))) )
+  
+  #* `Get Mean, Variance, SE, and DF from s2`
+  n1 <- nrow(s1) # n samples
+  m1 = mean(X1) # xbar
+  s2_1 = var(X1) # s^2
+  
+  v1 = priors$n[1] - 1 # prior DF
+  n1_n = priors$n[1] + n1 # total N including prior
+  m1_n = (n1*m1 + priors$n[1]*priors$mu[1])/n1_n # weighted mean of prior and data
+  v1_n = v1 + n1 # degrees of freedom including data
+  s2_1_n = ((n1-1)*s2_1 + v1*priors$s2[1] + priors$n[1]*n1*(priors$mu[1] - m1)^2/n1_n)/v1_n # pooled variance
+  se1<-sqrt(s2_1_n/n1_n) # standard error of the mean
+  
+  post_mean_d1 <- extraDistr::dlst(support,v1_n,m1_n, se1)
+  post_mean_pdf1 <- post_mean_d1/sum(post_mean_d1)
+  hde1_mean <- m1_n
+  hdi1_mean <- m1_n + qt(c((1-cred.int.level)/2, (1-((1-cred.int.level)/2))),v1_n)*se1
+  
+  out$summary<-data.frame(HDE=hde1_mean, HDI_low = hdi1_mean[1], HDI_high = hdi1_mean[2])
+  out$posterior$mu <- m1_n
+  out$posterior$n <- n1_n
+  out$posterior$s2 <- s2_1_n
+  #* `Save data for plotting`
+  if(plot){
+    out$plot_df <- data.frame("range"=support,
+                              "prob"=post_mean_pdf1,
+                              "sample"=rep("Sample 1",length(support))
+    )
+  }
+  
+  if(!is.null(s2)){
+    #* `Standardize sample 2 class and names`
+    if(is.null(colnames(s2))){
+      bins<-(1:ncol(s2))/100
+      colnames(s2)<-paste0("b", bins )
+      warning(paste0("Assuming unnamed columns represent bins from ", min(bins), " to ", max(bins)))
+    }
+    if(is.matrix(s2)){ s2<-as.data.frame(s2) }
+    
+    #* `Reorder columns if they are not in the numeric order`
+    histCols<-colnames(s2)
+    histCols_bin <- as.numeric(sub("[a-zA-Z_.]+","",colnames(s2)))
+    bins_order<-sort(histCols_bin, index.return=T)$ix
+    s2<-s2[,bins_order]
+    
+    #* `Turn s2 matrix into a vector`
+    X2<-rep(histCols_bin[bins_order], as.numeric(round(colSums(s2))) )
+    
+    #* `Get Mean, Variance, SE, and DF from s2`
+    n2 <- nrow(s2) # n samples
+    m2 = mean(X2) # xbar
+    s2_2 = var(X2) # s^2
+    
+    v2 = priors$n[2] - 1 # prior DF
+    n2_n = priors$n[2] + n2 # total N including prior
+    m2_n = (n2*m2 + priors$n[2]*priors$mu[2])/n2_n # weighted mean of prior and data
+    v2_n = v2 + n2 # degrees of freedom including data
+    s2_2_n = ((n2-1)*s2_2 + v2*priors$s2[2] + priors$n[2]*n2*(priors$mu[2] - m2)^2/n2_n)/v2_n # pooled variance
+    se2<-sqrt(s2_2_n/n2_n) # standard error of the mean
+    
+    post_mean_d2 <- extraDistr::dlst(support,v2_n,m2_n, se2)
+    post_mean_pdf2 <- post_mean_d2/sum(post_mean_d2)
+    hde2_mean <- m2_n
+    hdi2_mean <- m2_n + qt(c((1-cred.int.level)/2, (1-((1-cred.int.level)/2))),v2_n)*se2
+    
+    out$summary<-data.frame(HDE_1=hde1_mean, HDI_1_low = hdi1_mean[1], HDI_1_high = hdi1_mean[2],
+                            HDE_2=hde2_mean, HDI_2_low = hdi2_mean[1], HDI_2_high = hdi2_mean[2])
+    out$posterior$mu <- c(m1_n, m2_n)
+    out$posterior$n <- c(n1_n, n2_n)
+    out$posterior$s2 <- c(s2_1_n, s2_2_n)
+    #* `Save data for plotting`
+    if(plot){
+      out$plot_df <- rbind(out$plot_df, data.frame("range"=support,
+                                "prob"=post_mean_pdf2,
+                                "sample"=rep("Sample 2",length(support)))
+      )
+    }
+    if(!all(c(as.matrix(s1),as.matrix(s2))==0)){
+      post.prob.out <-  .post.prob.from.pdfs(post_mean_pdf1, post_mean_pdf2, hypothesis)
+      post.prob <-post.prob.out$post.prob
+      dirSymbol <-post.prob.out$direction
+    }else{
+      post.prob <- 1
+    }
+    out$summary$hyp = hypothesis
+    out$summary$post.prob = post.prob
+    out$dirSymbol = dirSymbol
+  }
+  #* `ROPE Comparison`
+  if(!is.null(rope_range)){
+    if(length(rope_range) == 2){
+      post1 = extraDistr::rlst(10000,v1_n, m1_n, se1)
+      if(!is.null(s2)){
+      post2 = extraDistr::rlst(10000,v2_n, m2_n, se2)
+      posterior = post1 - post2
+      } else {
+        posterior = post1
+      }
+      hdi_diff <- as.numeric(bayestestR::hdi(posterior, ci = rope_hdi ))[2:3]
+      hde_diff <- median(posterior)
+      rope_prob <- as.numeric(bayestestR::rope(posterior, range = rope_range, ci_method = "HDI", ci=rope_ci))
+      rope_test <-  data.frame(HDE_rope=hde_diff, HDI_rope_low = hdi_diff[1], HDI_rope_high = hdi_diff[2], rope_prob = rope_prob)
+      out$summary <- cbind(out$summary,rope_test)
+      if(plot){
+        out$rope_df <- data.frame("X"=posterior)
+      }
+    }else{
+      stop("rope must be a vector of length 2")
+    }
+  }
+  
+  return(out)
+
+}
+
+
+
+
+
+
+
+#' ***********************************************************************************************
+#' *************** `Beta (multi value)` *******************************************************
+#' ***********************************************************************************************
+
+
+#' @description
+#' Internal function for calculating \alpha and \beta of a distribution represented by multi value traits.
+#' @param s1 A data.frame or matrix of multi value traits. The column names should include a number between 0.0001 and 0.9999 representing the "bin".
+#' @param s2 An optional second sample of the same form as s2.
+#' @examples
+#' makeMvBeta<-function(n=100,a,b){
+#'   setNames(data.frame(matrix(hist(rbeta(2000,a,b), breaks=seq(0,1,length.out=n), plot=F)$counts, nrow=1)),paste0("b0.",1:(n-1)))
+#' }
+#' 
+#' mv_beta<-rbind(do.call(rbind, lapply(1:30, function(i){makeMvBeta(n=100, a=5, b=8 )})),
+#'                do.call(rbind, lapply(1:30, function(i){makeMvBeta(n=100, a=10, b=3 )})))
+#' 
+#' .conj_beta_mv(s1 = mv_beta[1:30,], s2= mv_beta[31:60,], priors = list(a=c(0.5,0.5),b=c(0.5,0.5)),
+#'               plot=F, rope_range = c(-0.1, 0.1), rope_ci = 0.89, rope_hdi = 0.95,
+#'               cred.int.level = 0.89, hypothesis="equal")
+#' @keywords internal
+#' @noRd
+.conj_beta_mv<-function(s1 = NULL, s2= NULL, priors = NULL,
+                        plot=F, rope_range = NULL, rope_ci = 0.89, rope_hdi = 0.95,
+                        cred.int.level = 0.89, hypothesis="equal"){
+  #* `make default prior if none provided`
+  if(is.null(priors)){
+    priors <- list(a=c(0.5,0.5),b=c(0.5,0.5))
+  }
+  #* `Define dense Support`
+  beta_support <-seq(0.0001, 0.9999, 0.0001)
+  out <- list()
+  #* `Standardize sample 1 class and names`
+  if(is.null(colnames(s1))){
+    bins<-(1:ncol(s1))/100
+    colnames(s1)<-paste0("b", bins )
+    warning(paste0("Assuming unnamed columns represent bins from ", min(bins), " to ", max(bins)))
+  }
+  if(is.matrix(s1)){ s1<-as.data.frame(s1) }
+  
+  #* `Reorder columns if they are not in the numeric order`
+  histCols<-colnames(s1)
+  histCols_bin <- as.numeric(sub("[a-zA-Z_.]+","",colnames(s1)))
+  if(any(histCols_bin>1)){
+    histCols_bin<-histCols_bin/100
+  }
+  bins_order<-sort(histCols_bin, index.return=T)$ix
+  s1<-s1[,bins_order]
+  
+  #* `Turn matrix into a vector`
+  X1<-rep(histCols_bin[bins_order], as.numeric(round(colSums(s1))) )
+  
+  #* `get parameters for s1 using method of moments``
+  #* y ~ Beta(\alpha, \beta)
+  #* \alpha ~ \bar{y}( ( (\bar{y} * (1-\bar{y}))/\bar(var) )-1 )
+  #* \beta ~ (1-\bar{y})( ( (\bar{y} * (1-\bar{y}))/\bar(var) )-1 )
+  mu1 <- mean(X1) #' \bar{y}
+  nu1 <- var(X1)/(nrow(s1)-1) #' \bar{var} the unbiased sample variance
+  alpha1 <- mu1*((mu1*(1-mu1))/(nu1) - 1)
+  beta1 <- (1-mu1)*((mu1*(1-mu1))/(nu1) - 1)
+  
+  #* `Add priors`
+  a1_prime <- alpha1 + priors$a[1]
+  b1_prime <- beta1 + priors$b[1]
+  
+  #* `calculate density`
+  dens1 <- dbeta(beta_support, a1_prime, b1_prime)
+  pdf1 <- dens1/sum(dens1)
+  
+  #* `calculate highest density interval`
+  hdi1 <- qbeta(c((1-cred.int.level)/2, (1-((1-cred.int.level)/2))),a1_prime,b1_prime)
+  
+  #* `calculate highest density estimate``
+  if(a1_prime <= 1 & b1_prime > 1){
+    hde1 <- 0
+  }else if(a1_prime > 1 & b1_prime <= 1){
+    hde1 <- 1
+  }else{
+    hde1 <- (a1_prime-1)/(a1_prime+b1_prime-2)
+  }
+  
+  #* `save summary and parameters`
+  out$summary <- data.frame(HDE=hde1, HDI_low = hdi1[1], HDI_high = hdi1[2])
+  out$posterior$a <- a1_prime
+  out$posterior$b <- b1_prime
+  
+  #* `keep data for plotting`
+  if(plot){
+    out$plot_df <- data.frame("range"=beta_support, "prob"=pdf1, "sample"=rep("Sample 1",length(beta_support) ))
+  }
+  if(!is.null(s2)){
+    #* `Standardize sample 2 class and names`
+    if(is.null(colnames(s2))){
+      bins<-(1:ncol(s2))/100
+      colnames(s2)<-paste0("b", bins )
+      warning(paste0("Assuming unnamed columns represent bins from ", min(bins), " to ", max(bins)))
+    }
+    if(is.matrix(s2)){ s2<-as.data.frame(s2)  }
+    
+    #* `Reorder columns if they are not in the numeric order`
+    histCols<-colnames(s2)
+    histCols_bin <- as.numeric(sub("[a-zA-Z_.]+","",colnames(s2)))
+    bins_order<-sort(histCols_bin, index.return=T)$ix
+    s2<-s2[,bins_order]
+    
+    #* `Turn matrix into a vector`
+    X2<-rep(histCols_bin[bins_order], as.numeric(round(colSums(s2))) )
+    
+    #* `Method of Moments for Alpha and Beta`
+    mu2 <- mean(X2) 
+    nu2 <- var(X2)/(nrow(s2)-1)
+    alpha2 <- mu2*((mu2*(1-mu2))/(nu2) - 1)
+    beta2 <- (1-mu2)*((mu2*(1-mu2))/(nu2) - 1)
+    a2_prime <- priors$a[2] + alpha2
+    b2_prime <- priors$b[2] + beta2
+    dens2 <- dbeta(beta_support, a2_prime, b2_prime)
+    pdf2 <- dens2/sum(dens2)
+    hdi2 <- qbeta(c((1-cred.int.level)/2, (1-((1-cred.int.level)/2))),a2_prime,b2_prime)
+    if(a2_prime <= 1 & b2_prime > 1){
+      hde2 <- 0
+    }else if(a2_prime > 1 & b2_prime <= 1){
+      hde2 <- 1
+    }else{
+      hde2 <- (a2_prime-1)/(a2_prime+b2_prime-2)
+    }
+    out$summary <- data.frame(HDE_1=hde1, HDI_1_low = hdi1[1], HDI_1_high = hdi1[2], HDE_2=hde2, HDI_2_low = hdi2[1], HDI_2_high = hdi2[2])
+    out$posterior$a <- c(a1_prime, a2_prime)
+    out$posterior$b <- c(b1_prime, b2_prime)
+    
+    if(!all(c(as.matrix(s1),as.matrix(s2))==0)){
+      post.prob.out <-  .post.prob.from.pdfs(pdf1, pdf2, hypothesis)
+      post.prob <-post.prob.out$post.prob
+      dirSymbol <-post.prob.out$direction
+    }else{
+      post.prob <- 1
+    }
+    out$summary$hyp = hypothesis
+    out$summary$post.prob = post.prob
+    out$dirSymbol = dirSymbol
+  
+    #* `Keep data from s2 for plotting`
+    if(plot){
+      out$plot_df <- rbind(out$plot_df,data.frame("range"=beta_support, "prob"=pdf2, "sample"=rep("Sample 2",length(beta_support)) ))
+    }
+  }
+  #* `Use ROPE method to test if the difference in distributions is meaningful`
+  if(!is.null(rope_range)){
+    if(length(rope_range) == 2){
+      post1 <- rbeta(10000,a1_prime,b1_prime)
+      if(!is.null(s2)){
+        post2 <- rbeta(10000,a2_prime,b2_prime)
+        posterior <- post1 - post2
+      } else {
+        posterior <- post1
+      }
+      hdi_diff <- as.numeric(bayestestR::hdi(posterior, ci = rope_hdi ))[2:3]
+      hde_diff <- median(posterior)
+      rope_prob <- as.numeric(bayestestR::rope(posterior, range = rope_range, ci_method = "HDI", ci=rope_ci))
+      rope_test <-  data.frame(HDE_rope=hde_diff, HDI_rope_low = hdi_diff[1], HDI_rope_high = hdi_diff[2], rope_prob = rope_prob)
+      out$summary <- cbind(out$summary,rope_test)
+      if(plot){
+        out$rope_df <- data.frame("X"=posterior)
+      }
+    }else{
+      stop("rope must be a vector of length 2")
+    }
+  }
+  return(out)
+}
+
+#' ***********************************************************************************************
+#' *************** `Beta (single value)` *******************************************************
+#' ***********************************************************************************************
+
+
+#' @description
+#' Internal function for calculating \alpha and \beta of a distribution represented by multi value traits.
+#' @param s1 A vector of numerics drawn from a beta distribution.
+#' @param s2 An optional second sample of the same form as s2.
+#' @examples
+#' .conj_beta_sv(s1 = rbeta(100, 5, 10), s2= rbeta(100, 10, 5), priors = list(a=c(0.5,0.5),b=c(0.5,0.5)),
+#'               plot=F, rope_range = c(-0.1, 0.1), rope_ci = 0.89, rope_hdi = 0.95,
+#'               cred.int.level = 0.89, hypothesis="equal")
+#' @keywords internal
+#' @noRd
+.conj_beta_sv<-function(s1 = NULL, s2= NULL, priors = NULL,
+                       plot=F, rope_range = NULL, rope_ci = 0.89, rope_hdi = 0.95,
+                       cred.int.level = 0.89, hypothesis="equal"){
+
+  if(any(c(s1, s2)>1)){stop("Values above 1 cannot be used with the beta distribution")}
+  #* `make default prior if none provided`
+  if(is.null(priors)){
+    priors <- list(a=c(0.5,0.5),b=c(0.5,0.5))
+  }
+  #* `Define dense Support`
+  beta_support <-seq(0.0001, 0.9999, 0.0001)
+  out <- list()
+  
+  #* `get parameters for s1 using method of moments``
+  #* y ~ Beta(\alpha, \beta)
+  #* \alpha ~ \bar{y}( ( (\bar{y} * (1-\bar{y}))/\bar(var) )-1 )
+  #* \beta ~ (1-\bar{y})( ( (\bar{y} * (1-\bar{y}))/\bar(var) )-1 )
+  mu1 <- mean(s1) #' \bar{y}
+  nu1 <- var(s1)/(length(s1)-1) #' \bar{var} the unbiased sample variance
+  alpha1 <- mu1*((mu1*(1-mu1))/(nu1) - 1)
+  beta1 <- (1-mu1)*((mu1*(1-mu1))/(nu1) - 1)
+  
+  #* `Add priors in`
+  a1_prime <- priors$a[1] + alpha1
+  b1_prime <- priors$b[1] + beta1
+  
+  #* `calculate density over support``
+  dens1 <- dbeta(beta_support, a1_prime, b1_prime)
+  pdf1 <- dens1/sum(dens1)
+  
+  #* `calculate highest density interval`
+  hdi1 <- qbeta(c((1-cred.int.level)/2, (1-((1-cred.int.level)/2))),a1_prime,b1_prime)
+  
+  #* `calculate highest density estimate``
+  if(a1_prime <= 1 & b1_prime > 1){
+    hde1 <- 0
+  }else if(a1_prime > 1 & b1_prime <= 1){
+    hde1 <- 1
+  }else{
+    hde1 <- (a1_prime-1)/(a1_prime+b1_prime-2)
+  }
+  
+  #* `save summary and parameters`
+  out$summary <- data.frame(HDE=hde1, HDI_low = hdi1[1], HDI_high = hdi1[2])
+  out$posterior$a <- a1_prime
+  out$posterior$b <- b1_prime
+  
+  #* `keep data for plotting`
+  if(plot){
+    out$plot_df <- data.frame("range"=beta_support, "prob"=pdf1, "sample"=rep("Sample 1",length(beta_support) ))
+  }
+  #* `get parameters for s2 if it exists using method of moments`
+  if(!is.null(s2)){
+    mu2 <- mean(s2) 
+    nu2 <- var(s2)/(length(s2)-1)
+    alpha2 <- mu2*((mu2*(1-mu2))/(nu2) - 1)
+    beta2 <- (1-mu2)*((mu2*(1-mu2))/(nu2) - 1)
+    a2_prime <- priors$a[2] + alpha2
+    b2_prime <- priors$b[2] + beta2
+    dens2 <- dbeta(beta_support, a2_prime, b2_prime)
+    pdf2 <- dens2/sum(dens2)
+    hdi2 <- qbeta(c((1-cred.int.level)/2, (1-((1-cred.int.level)/2))),a2_prime,b2_prime)
+    if(a2_prime <= 1 & b2_prime > 1){
+      hde2 <- 0
+    }else if(a2_prime > 1 & b2_prime <= 1){
+      hde2 <- 1
+    }else{
+      hde2 <- (a2_prime-1)/(a2_prime+b2_prime-2)
+    }
+    out$summary <- data.frame(HDE_1=hde1, HDI_1_low = hdi1[1], HDI_1_high = hdi1[2], HDE_2=hde2, HDI_2_low = hdi2[1], HDI_2_high = hdi2[2])
+    out$posterior$a <- c(a1_prime, a2_prime)
+    out$posterior$b <- c(b1_prime, b2_prime)
+    
+    if(!all(c(s1,s2)==0)){
+      post.prob.out <-  .post.prob.from.pdfs(pdf1, pdf2, hypothesis)
+      post.prob <-post.prob.out$post.prob
+      dirSymbol <-post.prob.out$direction
+      } else{
+      post.prob <- 1
+    }
+    out$summary$hyp = hypothesis
+    out$summary$post.prob = post.prob
+    out$dirSymbol = dirSymbol
+    #* `Keep data from s2 for plotting`
+    if(plot){
+      out$plot_df <- rbind(out$plot_df,data.frame("range"=beta_support, "prob"=pdf2, "sample"=rep("Sample 2",length(beta_support)) ))
+    }
+  }
+  #* `Use ROPE method to test if the difference in distributions is meaningful`
+  if(!is.null(rope_range)){
+    if(length(rope_range) == 2){
+      post1 = rbeta(10000,a1_prime,b1_prime)
+      if(!is.null(s2)){
+        post2 = rbeta(10000,a2_prime,b2_prime)
+        posterior = post1 - post2 
+      } else {
+        posterior = post1
+      }
+      hdi_diff <- as.numeric(bayestestR::hdi(posterior, ci = rope_hdi ))[2:3]
+      hde_diff <- median(posterior)
+      rope_prob <- as.numeric(bayestestR::rope(posterior, range = rope_range, ci_method = "HDI", ci=rope_ci))
+      rope_test <-  data.frame(HDE_rope=hde_diff, HDI_rope_low = hdi_diff[1], HDI_rope_high = hdi_diff[2], rope_prob = rope_prob)
+      out$summary <- cbind(out$summary,rope_test)
+      if(plot){
+        out$rope_df <- data.frame("X"=posterior)
+      }
+    }else{
+      stop("rope must be a vector of length 2")
+    }
+  }
+  return(out)
+}
+
+
+#' ***********************************************************************************************
+#' *************** `General Functions` *******************************************************
+#' ***********************************************************************************************
+
+
+#' @keywords internal
+#' @noRd
+.post.prob.from.pdfs<-function(pdf1, pdf2, hypothesis){
+  if(hypothesis == "unequal"){
+    post.prob <- 1-sum(apply(cbind(pdf1, pdf2),MARGIN=1,function(i) min(i)),na.rm=T)
+    dirSymbol="!="
+  } else if(hypothesis == "equal"){
+    post.prob <- sum(apply(cbind(pdf1, pdf2),MARGIN=1,function(i) min(i)),na.rm=T)
+    dirSymbol="="
+  }else if(hypothesis == "lesser"){
+    direction <- pdf1 <= pdf2
+    post.prob <- sum(pdf1 * direction,na.rm=T)
+    dirSymbol="<"
+  }else if(hypothesis == "greater"){
+    direction <- pdf1 >= pdf2
+    post.prob <- sum(pdf1 * direction,na.rm=T)
+    dirSymbol=">"
+  }else{
+    stop("hypothesis must be either unequal, equal, lesser, or greater")
+  }
+  return(list('post.prob'=post.prob, "direction" = dirSymbol))
+}
+
+
+
