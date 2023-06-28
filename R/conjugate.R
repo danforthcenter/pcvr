@@ -1,6 +1,10 @@
+#' Bayesian testing using conjugate priors and method of moments for single or multi value traits.
+#' 
 #' @description
-#' Internal function for Bayesian comparison of log-normal data represented by single value traits.
-#' @param s1 A data.frame or matrix of multi value traits. The column names should include a number representing the "bin".
+#' Function to perform bayesian tests and ROPE comparisons using single or multi value traits with several distributions.
+#' 
+#' 
+#' @param s1 A data.frame or matrix of multi value traits or a vector of single value traits. If a multi value trait is used then column names should include a number representing the "bin".
 #' @param s2 An optional second sample of the same form as s2.
 #' @param method The distribution/method to use. Currently "t", "gaussian", "beta", and "lognormal" are supported. Note that "t" and "gaussian" both use a T distribution with "t" testing for a difference of means and "gaussian" testing for a difference in the distributions (similar to a Z test).
 #' @param priors Prior distributions described as a list. This varies by method, see details. By default this is NULL and weak priors (jeffrey's prior where appropriate) are used. The \code{posterior} part of output can also be recycled as a new prior if Bayesian updating is appropriate for your use.
@@ -16,6 +20,10 @@
 #' @param cred.int.level The credible interval probability to use in computing HDI for samples, defaults to 0.89.
 #' @param hypothesis Direction of a hypothesis if two samples are provided. Options are "unequal", "equal", "greater", and "lesser", read as "sample1 greater than sample2".
 #' @param support Optional support vector to include all possible values the random variable (samples) might take. This defaults to NULL in which case each method will use default behavior to attempt to calculate a dense support, but it is a good idea to supply this with some suitable vector. For example, the Beta method uses \code{seq(0.0001, 0.9999, 0.0001)} for support. 
+#' 
+#' @import bayestestR
+#' @import ggplot2
+#' @import patchwork
 #' 
 #' @details 
 #' 
@@ -39,7 +47,7 @@
 #' # lognormal mv
 #' ln_mv_ex <- conjugate(s1 = mv_ln[1:30,], s2= mv_ln[31:60,], method = "lognormal",
 #'                    priors = list( mu_log=c(log(10),log(10)),n=c(1,1),sigma_log=c(log(3),log(3)) ),
-#'                    plot=T, rope_range = NULL, rope_ci = 0.89, rope_hdi = 0.95,
+#'                    plot=T, rope_range = c(-40,40), rope_ci = 0.89, rope_hdi = 0.95,
 #'                    cred.int.level = 0.89, hypothesis="equal", support=NULL)
 #' 
 #' # lognormal sv
@@ -58,7 +66,7 @@
 #'                 
 #' gauss_mv_ex <- conjugate(s1=mv_gauss[1:30,], s2= mv_gauss[31:60,], method = "gaussian",
 #'                   priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ),
-#'                   plot=F, rope_range = c(-0.1, 0.1), rope_ci = 0.89, rope_hdi = 0.95,
+#'                   plot=T, rope_range = c(-25, 25), rope_ci = 0.89, rope_hdi = 0.95,
 #'                   cred.int.level = 0.89, hypothesis="equal", support=NULL)
 #'                   
 #' # Z test sv example
@@ -74,7 +82,7 @@
 #' 
 #' gauss_sv_ex <- conjugate(s1=rnorm(15, 50,10), s2= rnorm(15, 60,12), method = "gaussian",
 #'                   priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ),
-#'                   plot=F, rope_range = c(-10, 10), rope_ci = 0.89, rope_hdi = 0.95,
+#'                   plot=T, rope_range = c(-10, 10), rope_ci = 0.89, rope_hdi = 0.95,
 #'                   cred.int.level = 0.89, hypothesis="equal", support=seq(-20,120, 0.01))
 #' # Note that the ROPE probability is somewhat unstable here since the distribution of differences is much wider than the ROPE interval.
 #' 
@@ -88,7 +96,7 @@
 #'
 #' gaussianMeans_mv_ex <- conjugate(s1=mv_gauss[1:30,], s2= mv_gauss[31:60,], method="t",
 #'                         priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ),
-#'                         plot=F, rope_range = c(-0.1, 0.1), rope_ci = 0.89, rope_hdi = 0.95,
+#'                         plot=T, rope_range = c(-5,5), rope_ci = 0.89, rope_hdi = 0.95,
 #'                         cred.int.level = 0.89, hypothesis="equal", support=NULL)
 #'                         
 #'                         
@@ -96,7 +104,7 @@
 #' 
 #' gaussianMeans_sv_ex <- conjugate(s1=rnorm(10, 50,10), s2= rnorm(10, 60,12), method="t",
 #'                         priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ),
-#'                         plot=F, rope_range = c(-0.1, 0.1), rope_ci = 0.89, rope_hdi = 0.95,
+#'                         plot=T, rope_range = c(-5,8), rope_ci = 0.89, rope_hdi = 0.95,
 #'                         cred.int.level = 0.89, hypothesis="equal", support=NULL)
 #' 
 #' 
@@ -112,7 +120,7 @@
 #' 
 #' beta_mv_ex <- conjugate(s1 = mv_beta[1:30,], s2= mv_beta[31:60,], method="beta",
 #'               priors = list(a=c(0.5,0.5),b=c(0.5,0.5)),
-#'               plot=F, rope_range = c(-0.1, 0.1), rope_ci = 0.89, rope_hdi = 0.95,
+#'               plot=T, rope_range = c(-0.1, 0.1), rope_ci = 0.89, rope_hdi = 0.95,
 #'               cred.int.level = 0.89, hypothesis="equal")
 #' 
 #' # beta sv example
@@ -121,6 +129,46 @@
 #'               priors = list(a=c(0.5,0.5),b=c(0.5,0.5)),
 #'               plot=T, rope_range = c(-0.1, 0.1), rope_ci = 0.89, rope_hdi = 0.95,
 #'               cred.int.level = 0.89, hypothesis="equal")
+#' 
+#' # Example usage with plantCV data
+#' ## Not run:
+#' library(data.table)
+#' wide<-read.pcv("https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv", mode="wide", singleValueOnly = T, multiValPattern = "hist", reader="fread")
+#' wide$genotype = substr(wide$barcode, 3,5)
+#' wide$genotype = ifelse(wide$genotype == "002", "B73",
+#'                        ifelse(wide$genotype == "003", "W605S",
+#'                               ifelse(wide$genotype == "004", "MM", "Mo17")))
+#' wide$fertilizer = substr(wide$barcode, 8, 8)
+#' wide$fertilizer = ifelse(wide$fertilizer == "A", "100",
+#'                          ifelse(wide$fertilizer == "B", "50", "0"))
+#' wide<-bw.time(wide,timeCol="timestamp", group="barcode")
+#' 
+#' mo17_sample <- wide[wide$genotype=="Mo17" & wide$DAS > 18 & wide$fertilizer == 100, grepl("hue_freq", colnames(wide))]
+#' B73_sample <- wide[wide$genotype=="B73" & wide$DAS > 18 & wide$fertilizer == 100, grepl("hue_freq", colnames(wide))]
+#' 
+#' hue_res_t <- conjugate(s1 = mo17_sample, s2= B73_sample, method="t",
+#'               priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ),
+#'               plot=T, rope_range = c(-10,10), rope_ci = 0.89, rope_hdi = 0.95,
+#'               cred.int.level = 0.89, hypothesis="equal")
+#'               
+#' hue_res_ln <- conjugate(s1 = mo17_sample, s2= B73_sample, method="lognormal",
+#'               plot=T, rope_range = c(-10,10), rope_ci = 0.89, rope_hdi = 0.95,
+#'               cred.int.level = 0.89, hypothesis="equal")
+#' # Picking the right distribution makes a difference, checking plots of your data (see ?pcv.joyplot for mv traits)
+#' # will be useful.
+#' 
+#' pixels_per_cmsq <- 42.5^2   # pixel per cm^2
+#' wide$area_cm2<-wide$area.pixels / pixels_per_cmsq
+#' 
+#' mo17_area <- wide[wide$genotype=="Mo17" & wide$DAS > 18 & wide$fertilizer == 100, "area_cm2"]
+#' B73_area <- wide[wide$genotype=="B73" & wide$DAS > 18 & wide$fertilizer == 100, "area_cm2"]
+#' 
+#' area_res_t <- conjugate(s1 = mo17_area, s2= B73_area, method="t",
+#'               priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ),
+#'               plot=T, rope_range = c(-5,5), rope_ci = 0.89, rope_hdi = 0.95,
+#'               cred.int.level = 0.89, hypothesis="equal")
+#' 
+#' ## End(Not run)
 #' 
 #' # Plots of prior distributions
 #' set.seed(123)
@@ -144,11 +192,12 @@
 #' @keywords bayesian, conjugate, ROPE
 #' @export
 
+#* ***** `Note: adapt plotting so it doesn't use entire support if dists are in the middle` *****
+
 conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lognormal"),
                      priors=NULL, plot=F, rope_range = NULL,
                     rope_ci = 0.89, rope_hdi = 0.95, cred.int.level = 0.89, hypothesis="equal",
                     support=NULL){
-  
   #* `Check sample class`
   if(is.matrix(s1)|is.data.frame(s1)){ vec=F
   } else if(is.vector(s1)) { vec=T 
@@ -173,7 +222,7 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
     res<-.conj_beta_sv(s1, s2, priors, plot, rope_range, rope_ci, rope_hdi, cred.int.level, hypothesis)
     
   } else if(matched_arg == "beta" & !vec){
-    res<-.conj_beta_sv(s1, s2, priors, plot, rope_range, rope_ci, rope_hdi, cred.int.level, hypothesis)
+    res<-.conj_beta_mv(s1, s2, priors, plot, rope_range, rope_ci, rope_hdi, cred.int.level, hypothesis)
     
   } else if(matched_arg == "lognormal" & vec){
     res<-.conj_lognormal_sv(s1, s2, priors, plot, rope_range, rope_ci, rope_hdi, cred.int.level, hypothesis, support)
@@ -211,7 +260,19 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
           "Sample 2:  ",round(res$summary$HDE_2,2)," [",round(res$summary$HDI_2_low,2),", ",round(res$summary$HDI_2_high,2),"]\n",
           "P[p1",res$dirSymbol,"p2] = ",post.prob.text))
       res<-res[-which(names(res)=="dirSymbol")]
-      
+    }
+    #* `make x axis range if using default support`
+    if(is.null(support)){
+      if(!is.null(s2)){
+        x_lower<-min( res$summary[,c("HDI_1_low", "HDI_2_low")] )/1.1
+        x_upper<-max( res$summary[,c("HDI_1_high", "HDI_2_high")] )*1.1
+      } else{
+        x_lower<-res$summary$HDI_1_low / 1.1
+        x_upper<-res$summary$HDI_1_high * 1.1
+      }
+      p<-p+ggplot2::coord_cartesian(xlim=c(x_lower, x_upper))
+    }
+    
       if(length(rope_range) == 2){
         p <- p + ggplot2::ggplot(res$rope_df, ggplot2::aes(x=X))+
           ggplot2::geom_histogram(bins=100,fill="purple",color="purple", alpha=0.7)+
@@ -231,59 +292,11 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
           ggplot2::theme(axis.title.y.left = ggplot2::element_blank(), axis.text.y.left = ggplot2::element_blank())+
           patchwork::plot_layout(widths = c(2,1))
       }
-    }
     plot(p)
     res$plot<-p
   }
   return(res)
 }
-
-
-# res<-.conj_lognormal_mv(s1 = mv_ln[1:30,], s2= mv_ln[31:60,],
-#                                             priors = list( mu_log=c(log(10),log(10)),n=c(1,1),sigma_log=c(log(3),log(3)) ),
-#                                             plot=T, rope_range = c(-0.1, 0.1), rope_ci = 0.89, rope_hdi = 0.95,
-#                                             cred.int.level = 0.89, hypothesis="equal", support=NULL)
-
-
-
-
-#' bayes_beta(dat=df[df$trait=="yii_hist_Fv.over.Fm" & df$id=="tp4",], col="treatment", compare = NULL,
-#'            freq="value", bin="label",
-#'            plot=T, rope_int=c(-0.05,0.05))
-#'            
-#' So at first I made this to use long data and with the intention of working mostly with the MV traits
-#' Now I'm thinking that it should be good for long or wide data and SV or MV traits.
-#' I could ask for arguments as things like longdata[condition, "value"] or wide$col
-#' OR I could have some set of args to set like col="area.pixels", etc.
-#' 
-#' The first is more flexible if that's a concern which I think it is.
-#' I also think that encourages better practices with priors.
-#' If it can be easily plugged into an lapply then that would make sense to me.
-#' something like lapply(fixCompare, function(i){thisFunction(subset1, subset2, etc)})
-#' should be accessible/shown in the docs. BUT with long MV trait data that probably does get more complex.
-#' For that example I'd have things like:
-#' s1<-as.numeric(g1[rep(row.names(g1), g1[[freq]]) & g1$CONDITIONS, bin])
-#' for wide MV traits...
-#' hm. This might benefit from sv and mv methods for each distribution.
-#' 
-#' wide MV traits have a vector for each image which should be aggregated like what happens in pcvjoyplot.R
-#' The thing is that the inputs are totally different to do that. The s1, s2 option works great for sv traits
-#' but for wide mv traits I need:
-#' columns to take
-#' variable to group by
-#' well it could take s1 and s2 as data.frames or matrices. 
-#' 
-#' 
-#' 
-#' I also think this has to have a specific function for each distribution that is supported,
-#' then the main function can just call those methods.
-#' 
-#' The distributions that make sense to use include beta, normal, possibly a gamma/lognormal type thing?
-#' lognormal is probably super easy to implement just as a logged normal given conjugacy
-#' 
-#' should I build in a way to do a "ROPE" like comparison when there is one sample?
-#' basically just "prob that this posterior is in X interval"? Seems reasonable enough to me to include that.
-#' 
 
 #' ***********************************************************************************************
 #' *************** `lognormal distribution (multi value)` ****************************************
