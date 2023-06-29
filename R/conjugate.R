@@ -160,8 +160,8 @@
 #' pixels_per_cmsq <- 42.5^2   # pixel per cm^2
 #' wide$area_cm2<-wide$area.pixels / pixels_per_cmsq
 #' 
-#' mo17_area <- wide[wide$genotype=="Mo17" & wide$DAS > 18 & wide$fertilizer == 100, "area_cm2"]
-#' B73_area <- wide[wide$genotype=="B73" & wide$DAS > 18 & wide$fertilizer == 100, "area_cm2"]
+#' mo17_area <- wide[wide$genotype=="Mo17" & wide$DAS > 18 & wide$fertilizer == 50, "area_cm2"]
+#' B73_area <- wide[wide$genotype=="B73" & wide$DAS > 18 & wide$fertilizer == 50, "area_cm2"]
 #' 
 #' area_res_t <- conjugate(s1 = mo17_area, s2= B73_area, method="t",
 #'               priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ),
@@ -252,9 +252,9 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
       
       p <- p +
         ggplot2::geom_area(data=res$plot_df[res$plot_df$sample == "Sample 2",],fill="blue",alpha=0.5)+
-        ggplot2::geom_vline(ggplot2::aes(xintercept=res$summary$HDI_2_low),color="blue",size=1.1)+
-        ggplot2::geom_vline(ggplot2::aes(xintercept=res$summary$HDE_2),color="blue",linetype="dashed",size=1.1)+
-        ggplot2::geom_vline(ggplot2::aes(xintercept=res$summary$HDI_2_high),color="blue",size=1.1)+
+        ggplot2::geom_vline(ggplot2::aes(xintercept=res$summary$HDI_2_low),color="blue",linewidth=1.1)+
+        ggplot2::geom_vline(ggplot2::aes(xintercept=res$summary$HDE_2),color="blue",linetype="dashed",linewidth=1.1)+
+        ggplot2::geom_vline(ggplot2::aes(xintercept=res$summary$HDI_2_high),color="blue",linewidth=1.1)+
         ggplot2::labs(subtitle = paste0(
           "Sample 1:  ",round(res$summary$HDE_1, 2)," [",round(res$summary$HDI_1_low,2),", ",round(res$summary$HDI_1_high,2),"]\n",
           "Sample 2:  ",round(res$summary$HDE_2,2)," [",round(res$summary$HDI_2_low,2),", ",round(res$summary$HDI_2_high,2),"]\n",
@@ -278,7 +278,7 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
           ggplot2::geom_histogram(bins=100,fill="purple",color="purple", alpha=0.7)+
           ggplot2::geom_histogram(data=data.frame("X"=res$rope_df[res$rope_df$X > rope_range[1] & res$rope_df$X < rope_range[2] &
                                                                     res$rope_df$X > res$summary$HDI_rope_low & res$rope_df$X < res$summary$HDI_rope_high,]),
-                                  bins=100,fill="gray10",color="gray10")+
+                                  bins=100,fill="gray30",color="gray30")+
           ggplot2::geom_segment(ggplot2::aes(x=rope_range[1],xend=rope_range[2],y=0,yend=0),linewidth=2,color="gray70")+
           ggplot2::geom_vline(ggplot2::aes(xintercept=res$summary$HDI_rope_low),linewidth=0.7)+
           ggplot2::geom_vline(ggplot2::aes(xintercept=res$summary$HDE_rope),linetype="dashed",linewidth=0.7)+

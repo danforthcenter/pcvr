@@ -12,6 +12,7 @@ pcvBox(
   compare = F,
   trait = "trait",
   value = "value",
+  method = "t.test",
   showPoints = F,
   ...
 )
@@ -30,6 +31,8 @@ pcvBox(
 \item{trait}{If the data is in long format then `trait` is used to subset data for the phenotype Y. Defaults to "trait".}
 
 \item{value}{If the data is in long format then `value` is used for numeric values for the phenotype Y. Defaults to "value".}
+
+\item{method}{One of "t.test" or "wilcox.test".}
 
 \item{showPoints}{Logical, should all points be shown? Defaults to FALSE.}
 

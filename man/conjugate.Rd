@@ -192,8 +192,8 @@ hue_res_ln <- conjugate(s1 = mo17_sample, s2= B73_sample, method="lognormal",
 pixels_per_cmsq <- 42.5^2   # pixel per cm^2
 wide$area_cm2<-wide$area.pixels / pixels_per_cmsq
 
-mo17_area <- wide[wide$genotype=="Mo17" & wide$DAS > 18 & wide$fertilizer == 100, "area_cm2"]
-B73_area <- wide[wide$genotype=="B73" & wide$DAS > 18 & wide$fertilizer == 100, "area_cm2"]
+mo17_area <- wide[wide$genotype=="Mo17" & wide$DAS > 18 & wide$fertilizer == 50, "area_cm2"]
+B73_area <- wide[wide$genotype=="B73" & wide$DAS > 18 & wide$fertilizer == 50, "area_cm2"]
 
 area_res_t <- conjugate(s1 = mo17_area, s2= B73_area, method="t",
               priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ),
