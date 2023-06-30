@@ -42,7 +42,7 @@
 #' wide$fertilizer = substr(wide$barcode, 8, 8)
 #' wide$fertilizer = ifelse(wide$fertilizer == "A", "100",
 #'                          ifelse(wide$fertilizer == "B", "50", "0"))
-#' p<-pcv.joyplot(hue_wide, index = "hue_frequencies", group=c("inoc", "soil"))
+#' p<-pcv.joyplot(wide, index = "hue_frequencies", group=c("genotype", "fertilizer"))
 #' # For some color traits it makes sense to show the actual represented color, which can be done easily by adding new fill scales.
 #' p+scale_fill_gradientn(colors = scales::hue_pal(l=65)(360))
 #' @export

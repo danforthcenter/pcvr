@@ -7,6 +7,7 @@
 #' @param compare Groups to compare. By default this is set to FALSE, which corresponds to no testing. Other values of compare are passed to fixCompare to make t.test comparisons using ggpubr. In short, NULL will run all pairwise T tests, a single value of the X axis variable will compare that level to all other levels of the X variable, alternatively this can be a list as used by ggpubr: list(c("level1", "level2"), c("level1", "level3"))
 #' @param trait If the data is in long format then `trait` is used to subset data for the phenotype Y. Defaults to "trait".
 #' @param value If the data is in long format then `value` is used for numeric values for the phenotype Y. Defaults to "value".
+#' @param method One of "t.test" or "wilcox.test".
 #' @param showPoints Logical, should all points be shown? Defaults to FALSE.
 #' @param ... Additional parameters passed to geom_boxplot
 #' @keywords Bellwether, ggplot
@@ -24,7 +25,7 @@
 #' pcvBox(df2, x="treatment", y="area")
 #' pcvBox(df1,x='treatment' , y='area.pixels', fill='treatment')
 
-pcvBox<-function(df=df,x='treatment' , y='area.pixels', fill = NULL, compare=F, trait="trait", value="value", showPoints=F, ...){
+pcvBox<-function(df=df,x='treatment' , y='area.pixels', fill = NULL, compare=F, trait="trait", value="value",method="t.test", showPoints=F, ...){
   if(! (y %in% colnames(df)) && all(c(trait, value) %in% colnames(df))){
     df<-df[df[[trait]]==y,]
     ylab = y
@@ -51,7 +52,7 @@ pcvBox<-function(df=df,x='treatment' , y='area.pixels', fill = NULL, compare=F, 
     ggplot2::theme(axis.text.x.bottom = ggplot2::element_text(angle = 0, hjust = 1))
   if(!(is.logical(compare))){
     compare<-fixCompare(compare, df, x)
-    p<-p+ggpubr::stat_compare_means(method="t.test", comparisons = compare , label = "p.format")
+    p<-p+ggpubr::stat_compare_means(method=method, comparisons = compare , label = "p.format")
   }
   return(p)
 }

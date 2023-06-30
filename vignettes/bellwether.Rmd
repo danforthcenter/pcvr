@@ -186,11 +186,26 @@ ggplot(sv, aes(x=DAS, y=area_cm2, group=interaction(genotype, fertilizer, lex.or
 
 ### Single day comparisons
 
+Non-longitudinal data (or single day data from larger longitudinal data) can be compared with frequentist or Bayesian options.
+
+The `pcvBox` function is a simple wrapper around ggplot and ggpubr functions that compares data with either T tests or Wilcox tests.
+
 ```{r}
 pcvBox(sv[sv$genotype=='MM' & sv$DAS==15, ], x="fertilizer", y="area_cm2", compare="0", showPoints = T)+
   labs(y=expression("Area"~"(cm"^2~")"),
        fill="Soil Fertilizer")
 ```
+
+Alternatively the `conjugate` function compares several types of distributions using a Bayesian test and optionally evaluates a region of practical equivalence (ROPE). This function can be used with either wide or long single value data or wide multi-value data. See `?pcvr::conjugate` for details on usage and available options.
+
+```{r}
+mo17_area <- sv[sv$genotype=="Mo17" & sv$DAS > 18 & sv$fertilizer == 100, "area_cm2"]
+B73_area <- sv[sv$genotype=="B73" & sv$DAS > 18 & sv$fertilizer == 100, "area_cm2"]
+
+area_res_t <- conjugate(s1 = mo17_area, s2= B73_area, method="t", plot=T, rope_range = c(-5,5))
+```
+
+Here we can see a dramatic difference in our posterior distributions between genotypes and the distribution of differences between these samples is entirely outside of our ROPE which.
 
 ### Relative Tolerance
 
@@ -452,6 +467,17 @@ p<-pcv.joyplot(hue_wide[hue_wide$fertilizer==0 & hue_wide$DAS %in% c(7,12,18),],
 p+scale_fill_gradientn(colors = scales::hue_pal(l=65)(360))+scale_y_discrete(limits=c("7", "12", "18"))
 ```
 
+As mentioned previously the `conjugate` function can be used with wide multi-value data. To use multi value data the samples should be data frames or matrices representing color histograms. Here we compare our color histograms assuming a lognormal distribution and find that they are very similar in this parameterization.
+
+```{r}
+mo17_sample <- hue_wide[hue_wide$genotype=="Mo17" & hue_wide$DAS > 18 & hue_wide$fertilizer == 100, grepl("hue_freq", colnames(hue_wide))]
+B73_sample <- hue_wide[hue_wide$genotype=="B73" & hue_wide$DAS > 18 & hue_wide$fertilizer == 100, grepl("hue_freq", colnames(hue_wide))]
+
+hue_res_ln <- conjugate(s1 = mo17_sample, s2= B73_sample, method="lognormal",
+              plot=T, rope_range = c(-20,20), hypothesis="equal")
+```
+
+
 ### Ordination
 
 Ordinations are another common way to look at multi value traits. The `pcadf` function in `pcvr` has several options for how this can work.
@@ -483,7 +509,7 @@ pcadf(hue_wide, cols = "hue_frequencies", color = c("genotype", "fertilizer"),  
 
 Since color data is exported from plantCV as histogram data we can also use Earth Mover's Distance (EMD) to compare images. Conceptually EMD is a distance that quantifies how much work it would take to turn one histogram into another. Here we do pairwise comparisons of all our rows and return a long dataframe of those distances. Note that even running several cores in parallel this can take a lot of time for larger datasets since the number of comparisons quickly can become unwieldy. The output also will require more work to keep analyzing, so make sure this is what you want to be doing before using EMD to compare color histograms. If you are only interested in a change of the mean then this is probably not the best way to use your data.
 
-Here is a fast example of a place where EMD makes a lot of sense. In this simulated data we have five generating distributions. Normal, Log Normal, Bimodal, Trimodal, and Uniform. We could use some gaussian mixtures to characterize the multi-modal histograms but that will get clunky for comparing to the unimodal or uniform distributions. Instead, we can use EMD.
+Here is a fast example of a place where EMD makes a lot of sense. In this simulated data we have five generating distributions. Normal, Log Normal, Bimodal, Trimodal, and Uniform. We could use some gaussian mixtures to characterize the multi-modal histograms but that will get clunky for comparing to the unimodal or uniform distributions. The `conjugate` function would not work here since these distributions do not share a common parameterization. Instead, we can use EMD.
 
 
 
