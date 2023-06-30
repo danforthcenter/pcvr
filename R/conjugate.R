@@ -29,9 +29,9 @@
 #' 
 #' Prior distributions default to be weakly informative and in some cases you may wish to change them. 
 #' \itemize{
-#'    \item{\textbf{"t" and "gaussian" methods: } \code{priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ) } , where mu is the mean, n is the number of prior observations, and s2 is variance}
-#'    \item{\textbf{"beta" method: } \code{priors = list( a=c(0.5, 0.5), b=c(0.5, 0.5) )}, where a and b are shape parameters of the beta distribution.}
-#'    \item{\textbf{"lognormal" methods: } \code{priors = list( mu_log=c(log(10),log(10)),n=c(1,1),sigma_log=c(log(3),log(3)) ) }, where mu_log is the mean on log scale, n is the number of prior observations, and sigma_log is the standard deviation on log scale }
+#'    \item{\strong{"t" and "gaussian":} \code{priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ) } , where mu is the mean, n is the number of prior observations, and s2 is variance}
+#'    \item{\strong{"beta":} \code{priors = list( a=c(0.5, 0.5), b=c(0.5, 0.5) )}, where a and b are shape parameters of the beta distribution.}
+#'    \item{\strong{"lognormal": } \code{priors = list( mu_log=c(log(10),log(10)),n=c(1,1),sigma_log=c(log(3),log(3)) ) }, where mu_log is the mean on log scale, n is the number of prior observations, and sigma_log is the standard deviation on log scale }
 #' }
 #' 
 #' See examples for plots of these prior distributions.
@@ -182,17 +182,15 @@
 #' 
 #' A list with named elements:
 #' \itemize{
-#'    \item{\textbf{summary}: A data frame containing HDI/HDE values for each sample and the ROPE as well as posterior probability of the hypothesis.}
-#'    \item{\textbf{posterior}: A list of updated parameters in the same format as the prior for the given method.}
-#'    \item{\textbf{plot_df}: A data frame of probabilities along the support for each sample. This is used for making the ggplot.}
-#'    \item{\textbf{rope_df}: A data frame of draws from the ROPE posterior.}
-#'    \item{\textbf{plot}: A ggplot showing the distribution of samples and optionally the distribution of differences/ROPE}
+#'    \item{\strong{summary}: A data frame containing HDI/HDE values for each sample and the ROPE as well as posterior probability of the hypothesis.}
+#'    \item{\strong{posterior}: A list of updated parameters in the same format as the prior for the given method.}
+#'    \item{\strong{plot_df}: A data frame of probabilities along the support for each sample. This is used for making the ggplot.}
+#'    \item{\strong{rope_df}: A data frame of draws from the ROPE posterior.}
+#'    \item{\strong{plot}: A ggplot showing the distribution of samples and optionally the distribution of differences/ROPE}
 #' }
 #' 
 #' @keywords bayesian, conjugate, ROPE
 #' @export
-
-#* ***** `Note: adapt plotting so it doesn't use entire support if dists are in the middle` *****
 
 conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lognormal"),
                      priors=NULL, plot=F, rope_range = NULL,
