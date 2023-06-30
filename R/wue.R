@@ -3,8 +3,9 @@
 #' @description Water use efficiency (WUE) is the change in biomass per unit of water metabolized.
 #' Using image based phenotypes and watering data we can calculate pseudo-WUE (pwue) over time.
 #' Here area is used as a proxy for biomass and transpiration is approximated using watering data.
-#' The equation is then \eqn{\frac{P_[t] - P_[t-1]}{W_[t]-W_[t-1] }}{P_[t] - P_[t-1] / W_[t]-W_[t-1]},
+#' The equation is then \eqn{\frac{P_{t} - P_{t-1}}{W_{t}-W_{t-1} }}{P_[t] - P_[t-1] / W_[t]-W_[t-1]},
 #' where P is the phenotype and W is the weight before watering.
+#' 
 #' 
 #' @param df Dataframe containing wide single-value phenotype data. This should already be aggregated to one row per plant per day (angles/rotations combined).
 #' @param w Watering data as returned from bw.water.
@@ -49,6 +50,11 @@
 #' 
 #' @export
 
+#* ***** `NOTES:` *****
+#* It seems like collin's script was using cumulative sums a lot as opposed to a lag method like I initially thought of.
+#* there could be value in having an option for either I guess. Hopefully katie can clarify what the best idea is and what
+#* options should exist
+
 pwue<-function(df, w, pheno="area.pixels", timeGroup=c("barcode", "DAS"), id="barcode"){
   #* `format watering data`
   w<-data.table::as.data.table(w[, !grepl("^timestamp$|^local_time$",colnames(w))])
@@ -76,9 +82,9 @@ pwue<-function(df, w, pheno="area.pixels", timeGroup=c("barcode", "DAS"), id="ba
   x<-data.table::setorderv(x, cols = timeGroup)
   
   #* how to handle 0s is not obvious to me yet. They'll make Inf once I do the division, so maybe just make them
-  #* a very small number?
+  #* a very small number? This is somewhere I need to talk to users.
   #* x$water_amount <- ifelse(x$water_amount <=0, 0.1, x$water_amount)
-  
+  #* `Do Pseudo WUE calculation`
   x<-do.call(rbind, lapply(split(x, by=id), function(d){
     d$deltaWeight_before <- d$weight_before - data.table::shift(d$weight_before, n=1, type="lag")
     d[[paste0("delta_",pheno)]] <- d[[pheno]] - data.table::shift(d[[pheno]], n=1, type="lag")

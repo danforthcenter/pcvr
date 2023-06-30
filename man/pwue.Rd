@@ -30,7 +30,7 @@ A data frame containing the bellwether watering data joined to phenotype data wi
 Water use efficiency (WUE) is the change in biomass per unit of water metabolized.
 Using image based phenotypes and watering data we can calculate pseudo-WUE (pwue) over time.
 Here area is used as a proxy for biomass and transpiration is approximated using watering data.
-The equation is then \eqn{\frac{P_[t] - P_[t-1]}{W_[t]-W_[t-1] }}{P_[t] - P_[t-1] / W_[t]-W_[t-1]},
+The equation is then \eqn{\frac{P_{t} - P_{t-1}}{W_{t}-W_{t-1} }}{P_[t] - P_[t-1] / W_[t]-W_[t-1]},
 where P is the phenotype and W is the weight before watering.
 }
 \examples{
