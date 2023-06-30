@@ -10,7 +10,7 @@
 #' @param bin Column containing histogram (multi value trait) bins. Defaults to "label".
 #' @param freq Column containing histogram counts. Defaults to "value"
 #' @param trait Column containing phenotype names. Defaults to "trait".
-#' @param fillx Logical, whether or not to use ggridges::geom_density_ridges_gradient . Default is T, if F then ggridges::geom_density_ridges is used instead, with arbitrary fill.
+#' @param fillx Logical, whether or not to use \code{ggridges::geom_density_ridges_gradient} . Default is T, if F then \code{ggridges::geom_density_ridges} is used instead, with arbitrary fill. Note that \code{ggridges::geom_density_ridges_gradient} may issue a message about deprecated ggplot2 features.
 #' @keywords bayesian, ggplot, multi value trait, pcv.hists
 #' @import ggplot2
 #' @import ggridges
@@ -247,16 +247,16 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL,
   }
   if(fillx){dens_df$group = interaction(dens_df[,group])}
   ggridgeLayer<-if(fillx){
-    list(ggridges::geom_density_ridges_gradient(ggplot2::aes(x = xdens, y = y,
+    list(suppressMessages(ggridges::geom_density_ridges_gradient(ggplot2::aes(x = xdens, y = y,
                                                         height =ydens,fill=stat(x)),
-                                           show.legend=F, stat="identity", rel_min_height = 0.001),
+                                           show.legend=F, stat="identity", rel_min_height = 0.001)),
          ggplot2::scale_fill_viridis_c(option="plasma",
                                         limits = c(min(dens_df$xdens[dens_df$ydens>0.001],na.rm=T),
                                                    max(dens_df$xdens[dens_df$ydens>0.001], na.rm=T)))
          )
   } else{
-    list(ggridges::geom_density_ridges2(ggplot2::aes(x = xdens, y = y, height =ydens, fill = y, color=y),
-                                   show.legend=F, stat="identity"),
+    list(suppressMessages(ggridges::geom_density_ridges2(ggplot2::aes(x = xdens, y = y, height =ydens, fill = y, color=y),
+                                   show.legend=F, stat="identity")),
       ggplot2::scale_color_viridis_d(option="viridis"),
       ggplot2::scale_fill_viridis_d(option="viridis")
       )

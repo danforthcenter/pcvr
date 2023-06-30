@@ -39,7 +39,7 @@ pcv.joyplot(
 
 \item{trait}{Column containing phenotype names. Defaults to "trait".}
 
-\item{fillx}{Logical, whether or not to use ggridges::geom_density_ridges_gradient . Default is T, if F then ggridges::geom_density_ridges is used instead, with arbitrary fill.}
+\item{fillx}{Logical, whether or not to use \code{ggridges::geom_density_ridges_gradient} . Default is T, if F then \code{ggridges::geom_density_ridges} is used instead, with arbitrary fill. Note that \code{ggridges::geom_density_ridges_gradient} may issue a message about deprecated ggplot2 features.}
 }
 \value{
 Returns either a ggplot object or a list containing a ggplot and a dataframe of statistical comparisons (if compare is not FALSE).

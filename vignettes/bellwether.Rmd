@@ -18,6 +18,13 @@ vignette: >
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+```{css}
+.static-code {
+  background-color: white;
+  border: 1px solid lightgray;
+}
+```
+
 ```{r}
 library(pcvr) # devtools::load_all()
 library(data.table) # for fread
@@ -33,7 +40,7 @@ The Bellwether phenotyping facility at the Donald Danforth Plant Science Center 
 
 Installation of `pcvr` from github is possible with the `remotes` or `devtools` packages. 
 
-```
+```{r, class.source="static-code", eval=F}
 devtools::install_github("joshqsumner/pcvr", build_vignettes = TRUE)
 library(pcvr)
 ```
@@ -43,7 +50,16 @@ If you clone that repository and are making edits then you can easily use your l
 
 Functions in `pcvr` use colorblind friendly palettes from the `viridis` package if they specify color/fill scales. Some functions do not specify a color/fill scale and use `ggplot2` defaults. If you use these functions or base work off of them please be mindful of your choices regarding color. 
 
-As a final note before starting into `pcvr`, this vignette is laid out to help guide analyses from Bellwether experiments these functions tend to be generalizable and can be used for other plantCV data as well.
+As a final note before starting into `pcvr`, this vignette is laid out to help guide analyses from Bellwether experiments these functions tend to be generalizable and can be used for other plantCV data as well. There are some code chunks in this vignette that you are only presented to demonstrate syntax and that you are not meant to run locally if following along. Those are identified by style:
+
+```{r, class.source="static-code", eval=F}
+complicatedFunction("syntax") # do not run this style
+```
+
+```{r}
+1+1 # run this style
+```
+
 
 
 ## Read In Data
@@ -70,21 +86,21 @@ sv$fertilizer = ifelse(sv$fertilizer == "A", "100",
 Sometimes large plantCV output may be too large to be read into memory for R. In that case `read.pcv` has a `filter` argument which will filter rows using awk through linux/unix outside of R. That feature would work as shown below to read only single value traits into memory. This can take a few minutes but allows the entirely workflow to be documented in one R file. 
 
 
-```{r, eval=F}
+```{r, class.source="static-code", eval=F}
 example<-read.pcv("prohibitivelyLargeFile.csv",
    filters = list("trait in area, convex_hull_area, solidity, perimeter, width, height, longest_path, convex_hull_vertices, ellipse_major_axis, ellipse_minor_axis, ellipse_angle, ellipse_eccentricity, hue_circular_mean, hue_circular_std, hue_median", "sample in default"))
 ```
 
-### `read.pcv.bw`
+### `read.pcv.3`
 
-Legacy Bellwether data (plantCV version 3 output) can also be read in with `read.pcv.bw` which is a wrapper around `read.pcv` which attempts to do several common tasks related bellwether data joining internally. This should be considered experimental as it is based on plantCV version 3 and earlier outputs/bellwether experiments can take many formats and this has only been considered with a few datasets. With the older plantCV output the data is already in a wider format so here the default mode is "long". Note that while `read.pcv` works fine with this older data and still has some added benefits the reasons to use it in place of `data.table::fread` or `base::read.csv` are less compelling.
+Legacy Bellwether data (plantCV version 3 output) can also be read in with `read.pcv.3` which is a wrapper around `read.pcv` which attempts to do several common tasks related bellwether data joining internally. This should be considered experimental as it is based on plantCV version 3 and earlier outputs/bellwether experiments can take many formats and this has only been considered with a few datasets. With the older plantCV output the data is already in a wider format so here the default mode is "long". Note that while `read.pcv` works fine with this older data and still has some added benefits the reasons to use it in place of `data.table::fread` or `base::read.csv` are less compelling.
 
 ```{r, eval=F}
-bw<-read.pcv.bw( file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv3Phenos.csv",metaCol=NULL)
+bw<-read.pcv.3( file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv3Phenos.csv",metaCol=NULL)
 
-bw<-read.pcv.bw( file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv3Phenos.csv",metaCol="meta", metaForm="vis_view_angle_zoom_horizontal_gain_exposure_v_new_n_rep", joinSnapshot = "id")
+bw<-read.pcv.3( file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv3Phenos.csv",metaCol="meta", metaForm="vis_view_angle_zoom_horizontal_gain_exposure_v_new_n_rep", joinSnapshot = "id")
 
-bw<-read.pcv.bw( file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv3Phenos.csv",
+bw<-read.pcv.3( file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv3Phenos.csv",
    snapshotFile="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv3Snapshot.csv",
    designFile="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv3Design.csv",
    metaCol="meta",metaForm="vis_view_angle_zoom_horizontal_gain_exposure_v_new_n_rep",
@@ -102,7 +118,18 @@ sv<-bw.time(sv, plantingDelay = 0, phenotype="area.pixels", cutoff=10, timeCol="
 
 Note that in these plots, and particularly clearly in the DAE plot, there are lots of plants which show a vertical line on their last day, indicating that our grouping might be incorrect. For this data that is due to the imaging schedule changing and getting 2 separate images at each rotation on the last day.
 
-If we plot our time data then we might see that there are a few outliers or we might check a summary of our phenotype and see some outliers, either from experiment conditions or from the image analysis workflow. The `bw.outliers` function can be used to remove outliers relative to a phenotype using cook's distance. Here just over 6 percent of data are removed as outliers.
+We can combine images taken at different angles of the same plant on a given day with `aggregate`, where we will also remove some columns we aren't using. In this case we use the mean of observations, but some people prefer a sum. Either way is fine. Here we also remove the DAE column since it can be different for different angles and we are not concerned about adjusting for emergence here. 
+
+```{r}
+phenotypes <- c('area.pixels', 'convex_hull_area.pixels', 'convex_hull_vertices', 'ellipse_angle.degrees', 'ellipse_eccentricity', 'ellipse_major_axis.pixels', 'ellipse_minor_axis.pixels', 'height.pixels', 'hue_circular_mean.degrees', 'hue_circular_std.degrees', 'hue_median.degrees', 'longest_path.pixels', 'perimeter.pixels', 'solidity', 'width.pixels')
+phenoForm<-paste0("cbind(", paste0(phenotypes, collapse=", "), ")")
+groupForm<-"DAS+DAP+barcode+genotype+fertilizer"
+form<-as.formula(paste0(phenoForm, "~", groupForm))
+sv<-aggregate(form, data=sv, mean, na.rm=T)
+```
+
+
+The `bw.outliers` function can be used to remove outliers relative to a phenotype using cook's distance. Here just over 6 percent of data are removed as outliers.
 
 ```{r}
 sv<-bw.outliers(sv, phenotype="area.pixels", group = c("DAS", "genotype", "fertilizer"), plotgroup = c("barcode", "rotation"))
@@ -126,16 +153,6 @@ ggplot(water[water$weight_after!=-1,], aes(x=DAS, y=water_amount, group=barcode,
   pcv_theme()+
   guides(color=guide_legend(title="Condition", nrow=3,byrow=T))+
   theme(legend.position="bottom")
-```
-
-Finally, we can combine images taken at different angles of the same plant on a given day with `aggregate`, where we will also remove some columns we aren't using. In this case we use the mean of observations, but some people prefer a sum. Either way is fine. Here we also remove the DAE column since it can be different for different angles and we are not concerned about adjusting for emergence here. 
-
-```{r}
-phenotypes <- c('area.pixels', 'convex_hull_area.pixels', 'convex_hull_vertices', 'ellipse_angle.degrees', 'ellipse_eccentricity', 'ellipse_major_axis.pixels', 'ellipse_minor_axis.pixels', 'height.pixels', 'hue_circular_mean.degrees', 'hue_circular_std.degrees', 'hue_median.degrees', 'longest_path.pixels', 'perimeter.pixels', 'solidity', 'width.pixels')
-phenoForm<-paste0("cbind(", paste0(phenotypes, collapse=", "), ")")
-groupForm<-"DAS+DAP+barcode+genotype+fertilizer"
-form<-as.formula(paste0(phenoForm, "~", groupForm))
-sv<-aggregate(form, data=sv, mean, na.rm=T)
 ```
 
 
@@ -326,9 +343,9 @@ ss<-growthSS(model="gompertz", form =  area_cm2~DAS|barcode/group, sigma="spline
              priors = list("A" = 130, "B" = 10, "C" = 1.2))
 ```
 
-Now we have most of our model components in the `ss` object.
+Now we have most of our model components in the `ss` object. Since we specified a gompertz model we have three parameters, the asymptote (`A`), the inflection point (`B`), and the growth rate (`C`). For other model options see `?pcvr::growthSim` for details on the parameters.
 
-Before trying to fit the model it is generally a good idea to check a plot of the data and make sure you have everything defined correctly.
+Before trying to fit the model it is generally a good idea to check one last plot of the data and make sure you have everything defined correctly.
 
 ```{r}
 ggplot(sv, aes(x=DAS, y=area_cm2, group=barcode, color=group))+
@@ -348,11 +365,9 @@ The `brms` package is not automatically imported by `pcvr`, so before fitting mo
 library(brms)
 ```
 
-
-```{r, eval=F}
-fit <- brm(ss$formula, prior = ss$prior, data = ss$df, family = ss$family, 
-                           iter = 2000, cores = 4, chains = 4, init = ss$initfun, 
-                           control = list(adapt_delta = 0.999, max_treedepth = 20), backend = "cmdstanr")
+```{r, class.source="static-code", eval=F}
+fit <- fitGrowth(ss, iter = 1000, cores = 2, chains = 2, backend = "cmdstanr",
+               control = list(adapt_delta = 0.999, max_treedepth = 20)) # options to increase performance
 ```
 
 ```{r, eval=F}
@@ -450,7 +465,7 @@ hue_wide<-aggregate(form, data=hue_wide, mean, na.rm=T)
 
 ### Joyplots
 
-Joyplots are a common way to look at lots of distributions. Here we check the hue histograms as joyplots using the 18th day and add a new fill for the hue colorspace. Note that this uses the `ggridges` package which relies on some deprecated `ggplot2` features, hopefully this will be addressed soon but in the meantime you may get a warning message using `pcv.joyplot`. 
+Joyplots are a common way to look at lots of distributions. Here we check the hue histograms as joyplots using the 18th day and add a new fill for the hue colorspace.
 
 
 ```{r, message=F}
@@ -499,10 +514,6 @@ When the trace is cluttered it generally helps to either use a facet or to retur
 plots<-pcadf(hue_wide, cols = "hue_frequencies", color = c("genotype", "fertilizer"),  trace="DAS", returnData=F, facet = c(1,2,3,4))
 
 (plots[[1]]+plots[[2]]) / (plots[[3]]+plots[[2]]) + plot_layout(guides = "collect")
-```
-
-```{r}
-pcadf(hue_wide, cols = "hue_frequencies", color = c("genotype", "fertilizer"),  facet="DAS", returnData=F)
 ```
 
 ### Earth Mover's Distance
@@ -615,15 +626,16 @@ dim(hue_ag2)
 
 As it stands our EMD data is potentially difficult to use for those unfamiliar with distance matrix based analysis. Here we represent our distances as a network to help use the results.
 
-```{r, eval=F}
+```{r}
+set.seed(456)
 net<-pcv.net(EMD$data, meta = c("fertilizer", "genotype", "DAS"), filter=0.5)
 ```
 
-```{r, eval=F}
+```{r}
 net.plot(net, fill = "DAS", shape = "fertilizer", size=2)
 ```
 
-This is a much more complicated network! Parsing biological meaning out of this would require more work than the first example with 5 very different distributions. In general if you pick to use EMD with or without networks start small and consider what each step should mean conceptually for your experiment.
+This is a much more complicated network! Parsing biological meaning out of this would require more work than the first example with 5 very different distributions, but there is a pretty strong cluster in the upper right corner of plants with low fertilizer at the end of the experiment. In general if you pick to use EMD with or without networks start small and consider what each step should mean conceptually for your experiment.
 
 ## Conclusion
 

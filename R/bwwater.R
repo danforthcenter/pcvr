@@ -2,7 +2,7 @@
 #' 
 #' @param file Path to a json file of lemnatech metadata.
 #' @param envKey Character string representing the json key for environment data. By default this is set to "environment". Currently there are no situations where this makes sense to change.
-#' @keywords read.csv, pcv, wide, long
+#' @keywords watering, json
 #' @import jsonlite
 #' @return A data frame containing the bellwether watering data
 #' @examples

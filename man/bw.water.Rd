@@ -20,7 +20,5 @@ Read in lemnatech watering data from metadata.json files
 \examples{
 wateringData<-bw.water("example.json") 
 }
-\keyword{long}
-\keyword{pcv,}
-\keyword{read.csv,}
-\keyword{wide,}
+\keyword{json}
+\keyword{watering,}
