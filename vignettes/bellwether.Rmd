@@ -365,6 +365,8 @@ The `brms` package is not automatically imported by `pcvr`, so before fitting mo
 library(brms)
 ```
 
+The `fitGrowth` function is a wrapper around `brms::brm` which automatically uses the output from `growthSS`. Any additional arguments to `brms::brm` can still be specified, a few examples of which are shown here. 
+
 ```{r, class.source="static-code", eval=F}
 fit <- fitGrowth(ss, iter = 1000, cores = 2, chains = 2, backend = "cmdstanr",
                control = list(adapt_delta = 0.999, max_treedepth = 20)) # options to increase performance
