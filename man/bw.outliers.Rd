@@ -48,6 +48,9 @@ The input dataframe with outliers removed.
 Remove outliers from bellwether data using cook's distance
 }
 \examples{
+
+## Not run:
+
 sv<-read.pcv("https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv", mode="wide", singleValueOnly = T, reader="fread")
 sv$genotype = substr(sv$barcode, 3,5)
 sv$genotype = ifelse(sv$genotype == "002", "B73",
@@ -72,6 +75,7 @@ svl<-bw.time(svl, plantingDelay = 0, phenotype="area", cutoff=10, timeCol="times
 
 svl<-bw.outliers(df = svl, phenotype="area", naTo0 = F, group = c("DAS", "genotype", "fertilizer"), plotgroup=c('barcode',"rotation"), plot=T, wide=F)
 
+## End(Not run)
 
 }
 \keyword{Bellwether,}

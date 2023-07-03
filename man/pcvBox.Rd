@@ -46,6 +46,8 @@ Boxplot for plantCV data in wide format (each phenotype as a column)
 }
 \examples{
 
+## Not run: 
+
 df1<-read.pcv("../dataScienceEducation/troubleShootingSeminar/longPCVdata_nonElbonian.csv", "wide", T)
 dim(df1)
 df2<-read.pcv("../dataScienceEducation/troubleShootingSeminar/longPCVdata_nonElbonian.csv", "long", T)
@@ -53,6 +55,8 @@ dim(df2)
 pcvBox(df1,x='treatment' , y='area.pixels')
 pcvBox(df2, x="treatment", y="area")
 pcvBox(df1,x='treatment' , y='area.pixels', fill='treatment')
+
+## End(Not run) 
 }
 \keyword{Bellwether,}
 \keyword{ggplot}

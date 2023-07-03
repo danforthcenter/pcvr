@@ -46,6 +46,8 @@ Often in bellwether experiments we are curious about the effect of some treatmen
 }
 \examples{
 
+## Not run:
+
 sv<-read.pcv("https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv", mode="wide", singleValueOnly = T, reader="fread")
 sv$genotype = substr(sv$barcode, 3,5)
 sv$genotype = ifelse(sv$genotype == "002", "B73",
@@ -74,6 +76,8 @@ method = c("proportion", "difference", "zscore")
 naTo0=T
 rt <-relativeTolerance(df, phenotypes, grouping, control, controlGroup, method, naTo0)
 sum(is.na(rt$))
+
+## End(Not run)
 
 }
 \keyword{single-value-trait}

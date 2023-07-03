@@ -14,6 +14,9 @@
 #' @return Returns a dataframe potentially with several files merged into it.
 #' 
 #' @examples 
+#' 
+#' ## Not run:
+#' 
 #' bw<-read.pcv.3( file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv3Phenos.csv",metaCol=NULL)
 #' bw<-read.pcv.3( file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv3Phenos.csv",metaCol="meta", metaForm="vis_view_angle_zoom_horizontal_gain_exposure_v_new_n_rep", joinSnapshot = "id")
 #' bw<-read.pcv.3( file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv3Phenos.csv",
@@ -21,6 +24,8 @@
 #'    designFile="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv3Design.csv",
 #'    metaCol="meta",metaForm="vis_view_angle_zoom_horizontal_gain_exposure_v_new_n_rep",
 #'    joinSnapshot="id",conversions = list(area=13.2*3.7/46856))
+#'    
+#' ## End(Not run)
 #'    
 #' @export
 

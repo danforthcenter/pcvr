@@ -16,6 +16,8 @@
 #' @keywords single-value-trait
 #' @examples 
 #' 
+#' ## Not run:
+#' 
 #' sv<-read.pcv("https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv", mode="wide", singleValueOnly = T, reader="fread")
 #' sv$genotype = substr(sv$barcode, 3,5)
 #' sv$genotype = ifelse(sv$genotype == "002", "B73",
@@ -44,6 +46,8 @@
 #' naTo0=T
 #' rt <-relativeTolerance(df, phenotypes, grouping, control, controlGroup, method, naTo0)
 #' sum(is.na(rt$))
+#' 
+#' ## End(Not run)
 #' 
 #' @export
 #' 

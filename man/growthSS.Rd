@@ -30,6 +30,8 @@ Ease of use brms starter function for 6 growth model parameterizations
 }
 \examples{
 
+## Not run:
+
 simdf<-growthSim("logistic", n=20, t=25, params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))
 ss<-growthSS(model = "logistic", form=y~time|id/group, sigma="spline", df=simdf, priors = list("A"=130, "B"=12, "C"=3))
 lapply(ss,class)
@@ -37,6 +39,8 @@ ss$initfun()
 fit_test <- brm(ss$formula, prior = ss$prior, data = ss$df, family = ss$family, # main components of the model
               iter = 1000, cores = 2, chains = 2, init = ss$initfun, # parameters controling chain number, chain length, parallelization and starting values
               control = list(adapt_delta = 0.999, max_treedepth = 20), backend = "cmdstanr") # options to increase performance
+## End(Not run)              
+              
 }
 \keyword{Bayesian,}
 \keyword{brms}

@@ -6,7 +6,11 @@
 #' @import jsonlite
 #' @return A data frame containing the bellwether watering data
 #' @examples
+#' ## Not run: 
+#' 
 #' wateringData<-bw.water("example.json") 
+#' 
+#' ## End(Not run) 
 #' @export
 
 bw.water<-function(file = NULL, envKey="environment"){

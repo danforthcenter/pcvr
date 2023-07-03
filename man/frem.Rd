@@ -43,6 +43,8 @@ df, des, phenotypes, timeCol, cor, returnData, combine, markSingular, time
 }
 \examples{
 
+## Not run:
+
 x<-read.pcv("/home/jsumner/Desktop/shares/mgehan_share/llima/Maize_Project_2022/nir_maize_first_exp_results.csv",
    filters = list("trait in area, convex_hull_area, solidity, perimeter, width, height, longest_path, convex_hull_vertices, ellipse_major_axis, ellipse_minor_axis, ellipse_angle, ellipse_eccentricity, hue_circular_mean, hue_circular_std, hue_median", "sample in default"))
    x$image<-sub("/shares/mgehan_share/raw_data/raw_image/maize_project_2022/MG001_E_060722_corrected/", "",x$image)
@@ -72,6 +74,8 @@ frem(bw, des, phenotypes, timeCol, T, F, F, T, "all")
 frem(bw, des, phenotypes, timeCol, T, F, F, T, "all")
 frem(bw, des, phenotypes, timeCol, T, F, F, F, NULL)
 frem(bw, des, phenotypes, timeCol, T, F, F, T, 1)
+
+## End(Not run)
 
 }
 \keyword{long}

@@ -14,8 +14,12 @@
 #' @return Returns a ggplot object
 #' @export
 #' @examples 
+#' ## Not run: 
 #' df <- read.pcv.bw("pcvTestData.csv")
 #' bellwetherBox(df, x="genotype", y = "area.pixels", time = 19)
+#' ## End(Not run:)
+
+
 
 bellwetherBox<-function(df=NULL,x=NULL , y=NULL, time=NULL, timeCol="DAS", compare=F, fill = NULL,  ...){
   df<-df[complete.cases(df[,c(x,y,timeCol)]),]

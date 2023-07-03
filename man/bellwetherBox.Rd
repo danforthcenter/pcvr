@@ -39,8 +39,10 @@ Returns a ggplot object
 Boxplots for bellwether data
 }
 \examples{
+## Not run: 
 df <- read.pcv.bw("pcvTestData.csv")
 bellwetherBox(df, x="genotype", y = "area.pixels", time = 19)
+## End(Not run:)
 }
 \keyword{Bellwether,}
 \keyword{ggplot}

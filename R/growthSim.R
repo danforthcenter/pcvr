@@ -12,6 +12,9 @@
 #' @return Returns a dataframe of example growth data following the input parameters.
 #' 
 #' @examples 
+#' 
+#' ## Not run:
+#' 
 #' simdf<-growthSim("logistic", n=20, t=25, params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))
 #' ggplot(simdf,aes(time, y, group=interaction(group,id)))+ geom_line(aes(color=group))+labs(title="Logistic")
 #' 
@@ -29,6 +32,8 @@
 #' 
 #' simdf<-growthSim("power law", n=20, t=25, params = list("A"=c(16, 11), "B"=c(0.75, 0.7)))
 #' ggplot(simdf,aes(time, y, group=interaction(group,id)))+ geom_line(aes(color=group))+labs(title="Power Law")
+#' 
+#' ## End(Not run)
 #' 
 #' @details 
 #'     The \code{params} argument requires some understanding of how each growth model is parameterized. Examples of each are below should help, as will the examples.

@@ -17,6 +17,8 @@
 #' @export
 #' @examples 
 #' 
+#' ## Not run: 
+#' 
 #' df1<-read.pcv("../dataScienceEducation/troubleShootingSeminar/longPCVdata_nonElbonian.csv", "wide", T)
 #' dim(df1)
 #' df2<-read.pcv("../dataScienceEducation/troubleShootingSeminar/longPCVdata_nonElbonian.csv", "long", T)
@@ -24,6 +26,8 @@
 #' pcvBox(df1,x='treatment' , y='area.pixels')
 #' pcvBox(df2, x="treatment", y="area")
 #' pcvBox(df1,x='treatment' , y='area.pixels', fill='treatment')
+#' 
+#' ## End(Not run) 
 
 pcvBox<-function(df=df,x='treatment' , y='area.pixels', fill = NULL, compare=F, trait="trait", value="value",method="t.test", showPoints=F, ...){
   if(! (y %in% colnames(df)) && all(c(trait, value) %in% colnames(df))){

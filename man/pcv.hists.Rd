@@ -56,11 +56,17 @@ The method argument is used for statistical testing of groups. There are current
 }
 }
 \examples{
+
+## Not run:
+
 df <- read.pcv("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest2.csv", "long", F)
 pcv.hists(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"))
 pcv.hists(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"), method="ks")
 pcv.hists(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"), method="beta")
 pcv.hists(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"), method="gaussian")
+
+## Not run:
+
 }
 \keyword{bayesian,}
 \keyword{ggplot,}

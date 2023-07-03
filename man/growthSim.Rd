@@ -43,6 +43,9 @@ The \code{params} argument requires some understanding of how each growth model 
     Note that for these distributions parameters do not exist in a vacuum. Changing one can make the others look different in the resulting data. The examples are a good place to start if you are unsure what parameters to use.
 }
 \examples{
+
+## Not run:
+
 simdf<-growthSim("logistic", n=20, t=25, params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))
 ggplot(simdf,aes(time, y, group=interaction(group,id)))+ geom_line(aes(color=group))+labs(title="Logistic")
 
@@ -60,6 +63,8 @@ ggplot(simdf,aes(time, y, group=interaction(group,id)))+ geom_line(aes(color=gro
 
 simdf<-growthSim("power law", n=20, t=25, params = list("A"=c(16, 11), "B"=c(0.75, 0.7)))
 ggplot(simdf,aes(time, y, group=interaction(group,id)))+ geom_line(aes(color=group))+labs(title="Power Law")
+
+## End(Not run)
 
 }
 \keyword{curve,}

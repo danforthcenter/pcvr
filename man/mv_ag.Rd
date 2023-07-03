@@ -36,7 +36,9 @@ Returns a dataframe summarized by the specified groups over the multi-value trai
 EMD can get very heavy with large datasets. For an example lemnatech dataset filtering for images from every 5th day there are 6332^2 = 40,094,224 pairwise EMD values. In long format that's a 40 million row dataframe, which is unwieldy. This function is to help reduce the size of datasets before comparing histograms and moving on with matrix methods or network analysis.
 }
 \examples{
-library(pcvr)
+
+## Not run:
+
 hue_wide<-read.pcv("https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv", mode="wide", singleValueOnly = T, multiValPattern = "hist", reader="fread")
 hue_wide$genotype = substr(hue_wide$barcode, 3,5)
 hue_wide$genotype = ifelse(hue_wide$genotype == "002", "B73",
@@ -56,6 +58,8 @@ hue_ag1<-mv_ag(df=hue_wide, group = c("DAS", "genotype", "fertilizer"),  n_per_g
 dim(hue_ag1)
 hue_ag2<-mv_ag(hue_wide, group = c("DAS", "genotype", "fertilizer"),  n_per_group=1, keep=c("area.pixels", "height.pixels"))
 dim(hue_ag2)
+
+## End(Not run)
 
 }
 \keyword{distance,}

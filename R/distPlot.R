@@ -15,6 +15,7 @@
 #' @export
 #' @examples 
 #' 
+#' ## Not run:
 #' 
 #' print(load(url("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/brmsFits.rdata")))
 #' library(brms)
@@ -29,6 +30,8 @@
 #' patch=T
 #' from3to25<-list(fit_3, fit_5, fit_7, fit_9, fit_11, fit_13, fit_15, fit_17, fit_19, fit_21, fit_23, fit_25)
 #' distributionPlot(fits = from3to25, form = y~time|id/group, params=params, d=d, priors=priors)
+#' 
+#' ## End(Not run)
 
 
 distributionPlot<-function(fits, form, priors=NULL, params=NULL, d, maxTime=NULL, patch=T){

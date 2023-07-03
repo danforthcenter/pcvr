@@ -27,6 +27,9 @@
 #' @return Returns either a ggplot object or a list containing a ggplot and a dataframe of statistical comparisons (if compare is not FALSE).
 #' 
 #' @examples 
+#' 
+#' ## Not run: 
+#' 
 #' df <- read.pcv("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest2.csv", "long", F)
 #' wide_beta <- read.pcv("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest2.csv", "wide", F)
 #' pcv.joyplot(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"))
@@ -45,6 +48,9 @@
 #' p<-pcv.joyplot(wide, index = "hue_frequencies", group=c("genotype", "fertilizer"))
 #' # For some color traits it makes sense to show the actual represented color, which can be done easily by adding new fill scales.
 #' p+scale_fill_gradientn(colors = scales::hue_pal(l=65)(360))
+#' 
+#' ## End(Not run)
+#' 
 #' @export
 
 
@@ -261,8 +267,6 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL,
       ggplot2::scale_fill_viridis_d(option="viridis")
       )
   }
-  # sub2<-dens_df[dens_df$timepoint=="tp4" & dens_df$genotype=="G6",]
-  # ggplot(sub2, aes(x=xdens, y=ydens))+geom_line()
   p<-ggplot2::ggplot(dens_df)+
     facet_layer+
     ggridgeLayer+

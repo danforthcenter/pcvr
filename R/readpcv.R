@@ -15,6 +15,8 @@
 #' @return Returns a data.frame in wide or long format.
 #' @examples 
 #' 
+#' ## Not run: 
+#' 
 #' file = "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest1.csv"
 #' df1<-read.pcv(file, "wide", T, multiValPattern = "hist|frequencies")
 #' df1b<-read.pcv(file, "wide", T, multiValPattern = c("index_frequencies_index_ari", "index_frequencies_index_ci_rededge", "index_frequencies_index_ndvi", "npq_hist_NPQ", "yii_hist_Fq'/Fm'", "yii_hist_Fv/Fm"))
@@ -40,6 +42,7 @@
 #' # There may be situations where you want to use some dimension reduction methods on a multi-value trait, in which case it makes sense to read in data like:
 #' x4<-read.pcv(fileBig, reader="fread", filters = list("trait in blue_frequencies"), mode="wide", singleValueOnly=F)
 #' 
+#' ## End(Not run) 
 #' 
 #' @export
 read.pcv<-function(filepath, mode="wide", singleValueOnly=T,

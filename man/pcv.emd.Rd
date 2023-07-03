@@ -48,6 +48,9 @@ A dataframe/matrix (if plot=F) or a list with a dataframe/matrix and a ggplot (i
 pcv.emd can be used to calculate Earth Mover's Distance between pairwise histograms in a wide dataframe of multi value traits.
 }
 \examples{
+
+## Not run:
+
 makeHist<-function(mu, sd){hist(rnorm(10000,mu,sd), breaks=seq(1,100,1), plot=F)$counts}
 test<-as.data.frame(do.call(rbind, lapply(seq(30,54,3), function(d) {
     x<-as.data.frame(do.call(rbind, lapply(1:10, function(i) makeHist(mu=d, sd=5))))
@@ -77,6 +80,8 @@ plot(x=c(18,36,54,72, 108, 135), y = c(0.74, 2.89, 6.86, 10.99, 26.25, 42.44), x
 lines(x=1:150, y = emdTime(1:150)) # exponential function
 
 plot(x=1:1000, y=emdTime(1:1000), type="l", xlab="N Input Images", ylab="time (seconds)")
+
+## End(Not run)
 
 }
 \keyword{distance,}

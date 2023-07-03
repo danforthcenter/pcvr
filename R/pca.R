@@ -14,6 +14,8 @@
 #' @import FactoMineR
 #' @examples
 #' 
+#' ## Not run:
+#' 
 #' hue_wide<-read.pcv("https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv", mode="wide", singleValueOnly = T, multiValPattern = "hist", reader="fread")
 #' hue_wide$genotype = substr(hue_wide$barcode, 3,5)
 #' hue_wide$genotype = ifelse(hue_wide$genotype == "002", "B73",
@@ -25,6 +27,8 @@
 #' hue_wide<-bw.time(hue_wide,timeCol="timestamp", group="barcode")
 #' 
 #' pcadf(hue_wide, cols = "hue_frequencies", color = "time_geno_fert", returnData=F)
+#' 
+#' ## End(Not run)
 #' 
 #' @export
 

@@ -18,6 +18,9 @@
 #' 
 #' @keywords emd, earth mover's distance, multi-value trait, histogram
 #' @examples 
+#' 
+#' ## Not run:
+#' 
 #' makeHist<-function(mu, sd){hist(rnorm(10000,mu,sd), breaks=seq(1,100,1), plot=F)$counts}
 #' test<-as.data.frame(do.call(rbind, lapply(seq(30,54,3), function(d) {
 #'     x<-as.data.frame(do.call(rbind, lapply(1:10, function(i) makeHist(mu=d, sd=5))))
@@ -47,6 +50,8 @@
 #' lines(x=1:150, y = emdTime(1:150)) # exponential function
 #' 
 #' plot(x=1:1000, y=emdTime(1:1000), type="l", xlab="N Input Images", ylab="time (seconds)")
+#' 
+#' ## End(Not run)
 #' 
 #' @export
 #' 

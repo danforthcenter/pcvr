@@ -27,11 +27,15 @@ Note that columns that sum to 0 in the training or test data will be removed.
 }
 \examples{
 
+## Not run:
+
 file = "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest1.csv"
 df1<-read.pcv(file, "wide", T, multiValPattern = c("index_frequencies_index_ari", "index_frequencies_index_ci_rededge", "npq_hist_NPQ", "yii_hist_Fq'/Fm'", "yii_hist_Fv/Fm"))
 colnames(df1)<-sub("index_frequencies_index_ndvi.", "ndvi_", colnames(df1))
 x<-pcv.plsr(df=df1, resps = "area.pixels", spectra = grepl("^ndvi_", colnames(df1)))
 x<-pcv.plsr(df=df1, resps = "area.pixels", spectra = "^ndvi_")
+
+## End(Not run)
 
 }
 \keyword{PLSR}
