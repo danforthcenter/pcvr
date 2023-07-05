@@ -13,7 +13,8 @@ frem(
   returnData = F,
   combine = T,
   markSingular = F,
-  time = NULL
+  time = NULL,
+  ...
 )
 }
 \arguments{
@@ -34,6 +35,8 @@ frem(
 \item{markSingular}{Logical, should singular fits be marked in the variance explained plot? This is FALSE by default but it is good practice to check with TRUE in some situations. If TRUE this will add white markings to the plot where models had singular fits, which is the most common problem with this type of model.}
 
 \item{time}{If the data contains multiple timepoints then which should be used? This can be left NULL which will use the maximum time if \code{timeCol} is specified. If a single number is provided then that time value will be used. Multiple numbers will include those timepoints. The string "all" will include all timepoints.}
+
+\item{...}{Additional arguments passed to \code{lme4::lmer}.}
 }
 \value{
 Returns either a plot (if returnData=F) or a list with a plot and data/a list of dataframes (depending on returnData and cor).

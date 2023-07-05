@@ -4,13 +4,7 @@
 \alias{pwue}
 \title{Calculate pseudo water use efficiency from phenotype and watering data}
 \usage{
-pwue(
-  df,
-  w,
-  pheno = "area.pixels",
-  timeGroup = c("barcode", "DAS"),
-  id = "barcode"
-)
+pwue(df, w, pheno = "area.pixels", time = "DAS", id = "barcode")
 }
 \arguments{
 \item{df}{Dataframe containing wide single-value phenotype data. This should already be aggregated to one row per plant per day (angles/rotations combined).}
@@ -19,9 +13,9 @@ pwue(
 
 \item{pheno}{Phenotype column name, defaults to "area.pixels"}
 
-\item{timeGroup}{Variable(s) that identify a plant on a given day. Defaults to \code{c("barcode", "DAS")}.}
-
 \item{id}{Variable(s) that identify a plant over time. Defaults to \code{"barcode"}.}
+
+\item{timeGroup}{Variable(s) that identify a plant on a given day. Defaults to \code{c("barcode", "DAS")}.}
 }
 \value{
 A data frame containing the bellwether watering data joined to phenotype data with new columns for change in the phenotype, change in the pre-watering weight, and pseudo-water use efficiency (pWUE).
@@ -48,20 +42,23 @@ phenotypes <- c('area.pixels', 'convex_hull_area.pixels', 'convex_hull_vertices'
 phenoForm<-paste0("cbind(", paste0(phenotypes, collapse=", "), ")")
 groupForm<-"DAS+DAP+barcode+genotype+fertilizer"
 sv<-aggregate(as.formula(paste0(phenoForm, "~", groupForm)), data=sv, mean, na.rm=T)
-sv<-bw.outliers(sv, phenotype="area.pixels", group = c("DAS", "genotype", "fertilizer"), plotgroup = c("barcode", "rotation"))
+sv<-bw.outliers(sv, phenotype="area.pixels", group = c("DAS", "genotype", "fertilizer"), plotgroup = c("barcode"))
 water<-bw.water("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/metadata.json")
 
 df<-sv
 w<-water
 pheno="area.pixels"
-timeGroup = c("barcode", "DAS")
 id =c("barcode")
+time="DAS"
 
-x<-pwue(sv, water, "area.pixels", c("barcode", "DAS"), c("barcode"))
+x<-pwue(sv, water, "area.pixels", "DAS", c("barcode"))
 library(ggplot2)
 ggplot(x, aes(x=DAS, y=pWUE, group = barcode))+
   geom_line()+
   theme_minimal()
+ 
+x[which(x$pWUE< -100),]
+x[x$pWUE < -100,] # note the counter-intuitive handling of NAs in the index column. Either use data.table or wrap conditions in which().
 
 ## End(Not run)
 

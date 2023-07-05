@@ -30,69 +30,73 @@
 #' phenoForm<-paste0("cbind(", paste0(phenotypes, collapse=", "), ")")
 #' groupForm<-"DAS+DAP+barcode+genotype+fertilizer"
 #' sv<-aggregate(as.formula(paste0(phenoForm, "~", groupForm)), data=sv, mean, na.rm=T)
-#' sv<-bw.outliers(sv, phenotype="area.pixels", group = c("DAS", "genotype", "fertilizer"), plotgroup = c("barcode", "rotation"))
+#' sv<-bw.outliers(sv, phenotype="area.pixels", group = c("DAS", "genotype", "fertilizer"), plotgroup = c("barcode"))
 #' water<-bw.water("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/metadata.json")
 #' 
 #' df<-sv
 #' w<-water
 #' pheno="area.pixels"
-#' timeGroup = c("barcode", "DAS")
 #' id =c("barcode")
+#' time="DAS"
 #' 
-#' x<-pwue(sv, water, "area.pixels", c("barcode", "DAS"), c("barcode"))
+#' x<-pwue(sv, water, "area.pixels", "DAS", c("barcode"))
 #' library(ggplot2)
 #' ggplot(x, aes(x=DAS, y=pWUE, group = barcode))+
 #'   geom_line()+
 #'   theme_minimal()
+#'  
+#' x[which(x$pWUE< -100),]
+#' x[x$pWUE < -100,] # note the counter-intuitive handling of NAs in the index column. Either use data.table or wrap conditions in which().
 #' 
 #' ## End(Not run)
 #' 
 #' 
 #' @export
 
-#* ***** `NOTES:` *****
-#* It seems like collin's script was using cumulative sums a lot as opposed to a lag method like I initially thought of.
-#* there could be value in having an option for either I guess. Hopefully katie can clarify what the best idea is and what
-#* options should exist
-
-pwue<-function(df, w, pheno="area.pixels", timeGroup=c("barcode", "DAS"), id="barcode"){
+pwue<-function(df, w, pheno="area.pixels", time="DAS", id="barcode"){
   #* `format watering data`
-  w<-data.table::as.data.table(w[, !grepl("^timestamp$|^local_time$",colnames(w))])
-  w<-data.table::setorderv(w, cols = timeGroup) # arrange plants by time
+  w<-w[, !grepl("^timestamp$|^local_time$",colnames(w))]
+  w$snapshot_sorter <- as.numeric(sub("snapshot", "", w$snapshot))
+  #w<-data.table::setorderv(w, cols = c(id,time, 'snapshot_sorter')) # arrange plants by time
   w<-w[!w$weight_before<0,] # remove errors
-  
-  #* `group by barcode+DAS to pseudo aggregate waterings`
-  if(max(as.numeric(table(w[,..timeGroup]))) > 1){ # if multiple waterings then aggregate
-    ags<-lapply(split(w, by=timeGroup), function(wd){
-      const_cols<-names(which(unlist(lapply(wd, function(i) {length(unique(i))} ))==1)) # take columns that are constant in subset
-      out<-wd[1, ..const_cols]
-      out$water_amount <- sum(wd$water_amount, na.rm=T)
-      out$weight_before <- min(wd$weight_before, na.rm=T)
-      out$weight_after <- max(wd$weight_after, na.rm=T)
-      out
-    })
-    const_cols<-Reduce(intersect, lapply(ags,colnames)) # column names could be wrong if n=1 for anything
-    w <- do.call(rbind, lapply(ags, function(wd){ wd[, ..const_cols]}))
-  }
   #* `format phenotype data`
-  df<-data.table::as.data.table(df[, !grepl("^timestamp$|^local_time$",colnames(w))])
+  df<-df[, !grepl("^timestamp$|^local_time$",colnames(df))]
+  #* `join datasets`
+  x<-data.table::as.data.table(plyr::join(df, w, by=intersect(colnames(df), colnames(w)), type="left", match="all"))
   
-  #* `join data`
-  x<-data.table::as.data.table(plyr::join(df, w, by=intersect(colnames(df), colnames(w))))
-  x<-data.table::setorderv(x, cols = timeGroup)
+  # x_df<-as.data.frame(x)
+  # sum(is.na(x$DAS))
+  # sum(is.na(x_df[,"DAS"]))
+  # sum(is.na(x_df[x_df$water_amount>20,"DAS"]))
+  # sum(is.na(x_df[which(x_df$water_amount>20),"DAS"]))
   
-  #* how to handle 0s is not obvious to me yet. They'll make Inf once I do the division, so maybe just make them
-  #* a very small number? This is somewhere I need to talk to users.
-  #* x$water_amount <- ifelse(x$water_amount <=0, 0.1, x$water_amount)
-  #* `Do Pseudo WUE calculation`
-  x<-do.call(rbind, lapply(split(x, by=id), function(d){
-    d$deltaWeight_before <- d$weight_before - data.table::shift(d$weight_before, n=1, type="lag")
+  x<-data.table::setorderv(x, cols = c(id,time, "snapshot_sorter")) # x can have duplicate pheno rows if w has >1 watering per day.
+  #* `calculate delta values and pwue`
+  x_deltas<-data.table::rbindlist(lapply(split(x, by=id), function(d){
+      # could lead the weight before or lag the weight after?
+    #* `water transpired/lost`
+    d$water_used_between_waterings <- d$weight_after - data.table::shift(d$weight_before, n=1, type="lead")
+    #* `sum if there are multiple waterings per day`
+    if( any(duplicated(d[[time]])) ){
+      d<-data.table::rbindlist(lapply(unique(d[[time]]), function(tm){
+        sub<-d[d[[time]]==tm, ]
+        out<-sub[1,]
+        if(all(is.na(sub$water_used_between_waterings))){
+          out$water_used_between_waterings <- NA
+        } else{
+          out$water_used_between_waterings <- sum(sub$water_used_between_waterings, na.rm=T) 
+        }
+        out[[pheno]] <- mean(sub[[pheno]], na.rm=T)
+        out
+      }))
+    }
+    #* `calculate delta phenotype`
     d[[paste0("delta_",pheno)]] <- d[[pheno]] - data.table::shift(d[[pheno]], n=1, type="lag")
-    #* by water amount this is delta_pheno / water_previous
-    d$pWUE <- d[[paste0("delta_",pheno)]] / d$deltaWeight_before
+    #* `calculate pseudo-WUE`
+    d$pWUE <- d[[paste0("delta_",pheno)]] / d$water_used_between_waterings
     d
   }))
-  
-  return(x)
+  data.table::setDF(x_deltas)
+  return(x_deltas)
 }
 
