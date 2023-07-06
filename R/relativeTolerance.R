@@ -40,7 +40,7 @@
 #' sv$height_cm <- sv$height.pixels/42.5
 #' 
 #' df=sv
-#' phenotypes=phenotypes = c("area.pixels")
+#' phenotypes = c("area_cm2", "height_cm")
 #' grouping = c("fertilizer", "genotype", "DAS") # need to include genotype so that the interaction effect is included
 #' controlGroup = "100" 
 #' control = "fertilizer"

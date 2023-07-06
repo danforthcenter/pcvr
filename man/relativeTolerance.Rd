@@ -64,11 +64,14 @@ sv<-bw.outliers(sv, phenotype="area.pixels", group = c("DAS", "genotype", "ferti
 pixels_per_cmsq <- 42.5^2   # pixel per cm^2
 sv$area_cm2<-sv$area.pixels / pixels_per_cmsq
 sv$height_cm <- sv$height.pixels/42.5
+
 df=sv
-phenotypes=phenotypes = c("area_cm2", "height_cm")
+phenotypes = c("area_cm2", "height_cm")
 grouping = c("fertilizer", "genotype", "DAS") # need to include genotype so that the interaction effect is included
 controlGroup = "100" 
 control = "fertilizer"
+wide=T
+
 rt <-relativeTolerance(df, phenotypes, grouping, control, controlGroup)
 head(rt)
 sapply(rt, function(c) sum(is.na(c)))
