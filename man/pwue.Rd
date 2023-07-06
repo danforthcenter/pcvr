@@ -51,7 +51,7 @@ pheno="area.pixels"
 id =c("barcode")
 time="DAS"
 
-x<-pwue(sv, water, "area.pixels", "DAS", c("barcode"))
+x<-pwue(df, w, pheno, time, id)
 library(ggplot2)
 ggplot(x, aes(x=DAS, y=pWUE, group = barcode))+
   geom_line()+

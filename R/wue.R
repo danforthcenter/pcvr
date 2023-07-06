@@ -39,7 +39,7 @@
 #' id =c("barcode")
 #' time="DAS"
 #' 
-#' x<-pwue(sv, water, "area.pixels", "DAS", c("barcode"))
+#' x<-pwue(df, w, pheno, time, id)
 #' library(ggplot2)
 #' ggplot(x, aes(x=DAS, y=pWUE, group = barcode))+
 #'   geom_line()+
@@ -63,16 +63,10 @@ pwue<-function(df, w, pheno="area.pixels", time="DAS", id="barcode"){
   df<-df[, !grepl("^timestamp$|^local_time$",colnames(df))]
   #* `join datasets`
   x<-data.table::as.data.table(plyr::join(df, w, by=intersect(colnames(df), colnames(w)), type="left", match="all"))
-  
-  # x_df<-as.data.frame(x)
-  # sum(is.na(x$DAS))
-  # sum(is.na(x_df[,"DAS"]))
-  # sum(is.na(x_df[x_df$water_amount>20,"DAS"]))
-  # sum(is.na(x_df[which(x_df$water_amount>20),"DAS"]))
-  
   x<-data.table::setorderv(x, cols = c(id,time, "snapshot_sorter")) # x can have duplicate pheno rows if w has >1 watering per day.
   #* `calculate delta values and pwue`
   x_deltas<-data.table::rbindlist(lapply(split(x, by=id), function(d){
+    d<-data.table::setorderv(d, cols = c(time))
       # could lead the weight before or lag the weight after?
     #* `water transpired/lost`
     d$water_used_between_waterings <- d$weight_after - data.table::shift(d$weight_before, n=1, type="lead")
@@ -80,6 +74,7 @@ pwue<-function(df, w, pheno="area.pixels", time="DAS", id="barcode"){
     if( any(duplicated(d[[time]])) ){
       d<-data.table::rbindlist(lapply(unique(d[[time]]), function(tm){
         sub<-d[d[[time]]==tm, ]
+        sub<-data.table::setorderv(sub, cols = c("snapshot_sorter"))
         out<-sub[1,]
         if(all(is.na(sub$water_used_between_waterings))){
           out$water_used_between_waterings <- NA
@@ -91,7 +86,7 @@ pwue<-function(df, w, pheno="area.pixels", time="DAS", id="barcode"){
       }))
     }
     #* `calculate delta phenotype`
-    d[[paste0("delta_",pheno)]] <- d[[pheno]] - data.table::shift(d[[pheno]], n=1, type="lag")
+    d[[paste0("delta_",pheno)]] <- pmax(d[[pheno]] - data.table::shift(d[[pheno]], n=1, type="lag"), 0, na.rm=F)
     #* `calculate pseudo-WUE`
     d$pWUE <- d[[paste0("delta_",pheno)]] / d$water_used_between_waterings
     d
