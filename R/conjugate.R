@@ -6,7 +6,8 @@
 #' 
 #' @param s1 A data.frame or matrix of multi value traits or a vector of single value traits. If a multi value trait is used then column names should include a number representing the "bin".
 #' @param s2 An optional second sample of the same form as s2.
-#' @param method The distribution/method to use. Currently "t", "gaussian", "beta", and "lognormal" are supported. Note that "t" and "gaussian" both use a T distribution with "t" testing for a difference of means and "gaussian" testing for a difference in the distributions (similar to a Z test).
+#' @param method The distribution/method to use. Currently "t", "gaussian", "beta", "lognormal", and "poisson" are supported.
+#' Note that "t" and "gaussian" both use a T distribution with "t" testing for a difference of means and "gaussian" testing for a difference in the distributions (similar to a Z test).
 #' @param priors Prior distributions described as a list. This varies by method, see details. By default this is NULL and weak priors (jeffrey's prior where appropriate) are used. The \code{posterior} part of output can also be recycled as a new prior if Bayesian updating is appropriate for your use.
 #' @param plot Logical, should a ggplot be made and returned.
 #' @param rope_range Optional vector specifying a region of practical equivalence.
@@ -24,6 +25,7 @@
 #' @import bayestestR
 #' @import ggplot2
 #' @import patchwork
+#' @import extraDistr
 #' 
 #' @details 
 #' 
@@ -129,6 +131,13 @@
 #'               priors = list(a=c(0.5,0.5),b=c(0.5,0.5)),
 #'               plot=T, rope_range = c(-0.1, 0.1), rope_ci = 0.89, rope_hdi = 0.95,
 #'               cred.int.level = 0.89, hypothesis="equal")
+#'
+#' # poisson sv example
+#' 
+#' poisson_sv_ex <- conjugate(s1 = rpois(20, 10), s2= rbeta(20, 8), method="poisson",
+#'               priors = list(a=c(0.5,0.5),b=c(0.5,0.5)),
+#'               plot=T, rope_range = c(-1, 1), rope_ci = 0.89, rope_hdi = 0.95,
+#'               cred.int.level = 0.89, hypothesis="equal")
 #' 
 #' # Example usage with plantCV data
 #' ## Not run:
@@ -174,6 +183,8 @@
 #' set.seed(123)
 #' plot(seq(0,1,0.0001), dbeta(seq(0,1,0.0001), 0.5, 0.5), ylab="Density", xlab="Support", main="Beta", type="l")
 #' 
+#' plot(seq(0,10,0.01), dgamma(seq(0,10,0.01), 0.5, 0.5), ylab="Density", xlab="Support", main="Poisson (gamma prior on Lambda parameter)", type="l")
+#'
 #' plot(seq(-20,20.001), dnorm(seq(-20,20.001), 0, sqrt(20)), ylab="Density", xlab="Support", main="T and Gaussian", type="l")
 #' 
 #' plot(seq(0,70,0.001), dlnorm(seq(0,70,0.001), log(10), log(3)), ylab="Density", xlab="Support", main="Lognormal", type="l")
@@ -192,7 +203,7 @@
 #' @keywords bayesian, conjugate, ROPE
 #' @export
 
-conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lognormal"),
+conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lognormal", "poisson"),
                      priors=NULL, plot=F, rope_range = NULL,
                     rope_ci = 0.89, rope_hdi = 0.95, cred.int.level = 0.89, hypothesis="equal",
                     support=NULL){
@@ -201,7 +212,7 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
   } else if(is.vector(s1)) { vec=T 
   } else{ stop("s1 must be a vector, data.frame, or matrix.") }
   
-  matched_arg<-match.arg(method, choices = c("t", "gaussian", "beta", "lognormal"))
+  matched_arg<-match.arg(method, choices = c("t", "gaussian", "beta", "lognormal", "poisson"))
   #* `Pick method`
   
   if(matched_arg == "t" & vec){
@@ -227,6 +238,9 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
     
   } else if(matched_arg == "lognormal" & !vec){
     res<-.conj_lognormal_mv(s1, s2, priors, plot, rope_range, rope_ci, rope_hdi, cred.int.level, hypothesis, support)
+    
+  } else if(matched_arg == "poisson" & vec){
+    res<-.conj_poisson_sv(s1, s2, priors, plot, rope_range, rope_ci, rope_hdi, cred.int.level, hypothesis, support)
     
   } 
   
@@ -1567,6 +1581,310 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
   }
   return(out)
 }
+
+
+
+
+
+
+#' ***********************************************************************************************
+#' *************** `Poisson (single value)` *******************************************************
+#' ***********************************************************************************************
+
+#' @description
+#' Internal function for calculating posterior distribution of \Lambda parameter for poisson data.
+#' The conjugate prior on Lambda is a Gamma(A,B)
+#' A=B=0.5 is a reasonable weak default prior
+#' 
+#' So if leaf count is Poisson distributed:
+#' count ~ Pois(\labmda)
+#' \labmda ~ gamma(A, B)
+#' A = A_[prior] + sum(x)
+#' B = B_[prior] / (1+n)
+#' 
+#' via MoM \hat(\labmda) =  = 1/n +sum^1_n(x)
+#' @param s1 A vector of numerics drawn from a beta distribution.
+#' @param s2 An optional second sample of the same form as s2.
+#' @examples
+#' .conj_poisson_sv(s1 = rpois(20, 10), s2= rbeta(20, 8), priors = list(a=c(0.5,0.5),b=c(0.5,0.5)),
+#'               plot=F, rope_range = c(-1,1), rope_ci = 0.89, rope_hdi = 0.95,
+#'               cred.int.level = 0.89, hypothesis="equal")
+#' @keywords internal
+#' @noRd
+
+.conj_poisson_sv<-function(s1 = NULL, s2= NULL, priors = NULL,
+                        plot=F, rope_range = NULL, rope_ci = 0.89, rope_hdi = 0.95,
+                        cred.int.level = 0.89, hypothesis="equal", support=NULL){
+  #* `Check samples`
+  if(any(abs(c(s1,s2)-round(c(s1,s2)))>.Machine$double.eps^0.5) | any(c(s1,s2)<0) ){stop("Only positive whole numbers can be used in the Poisson distribution")}
+  #* `make default prior if none provided`
+  if(is.null(priors)){
+    priors <- list(a=c(0.5,0.5),b=c(0.5,0.5)) # gamma prior on lambda
+  }
+  #* `Define dense Support if missing`
+  if(is.null(support)){
+    upper <- max(c(s1,s2))*2
+    support <-seq(0, upper, 0.01)
+  }
+  out <- list()
+  
+  #* `Use conjugate gamma prior on lambda``
+  a1_prime <- priors$a[1] + sum(s1)
+  b1_prime <- priors$b[1] + length(s1)
+  
+  #* `calculate density over support``
+  dens1 <- dgamma(support, a1_prime, b1_prime)
+  pdf1 <- dens1/sum(dens1)
+  
+  #* `calculate highest density interval`
+  hdi1 <- qgamma(c((1-cred.int.level)/2, (1-((1-cred.int.level)/2))),a1_prime,b1_prime)
+  
+  #* `calculate highest density estimate``
+  if(a1_prime <= 1 & b1_prime > 1){
+    hde1 <- 0
+  }else if(a1_prime > 1 & b1_prime <= 1){
+    hde1 <- Inf
+  }else{
+    hde1 <- (a1_prime-1)/b1_prime 
+  }
+  
+  #* `save summary and parameters`
+  out$summary <- data.frame(HDE=hde1, HDI_low = hdi1[1], HDI_high = hdi1[2])
+  out$posterior$a <- a1_prime
+  out$posterior$b <- b1_prime
+  
+  #* `keep data for plotting`
+  if(plot){
+    out$plot_df <- data.frame("range"=support, "prob"=pdf1, "sample"=rep("Sample 1",length(support) ))
+  }
+  #* `get parameters for s2 if it exists using method of moments`
+  if(!is.null(s2)){
+    a2_prime = priors$a[2]+sum(s2)
+    b2_prime = priors$b[2]+length(s2)
+    dens2 <- dgamma(support, a2_prime, b2_prime)
+    pdf2 <- dens2/sum(dens2)
+    hdi2 <- qgamma(c((1-cred.int.level)/2, (1-((1-cred.int.level)/2))),a2_prime,b2_prime)
+    if(a2_prime <= 1 & b2_prime > 1){
+      hde2 <- 0
+    }else if(a2_prime > 1 & b2_prime <= 1){
+      hde2 <- Inf
+    }else{
+      hde2 <- (a2_prime-1)/b2_prime 
+    }
+    out$summary <- data.frame(HDE_1=hde1, HDI_1_low = hdi1[1], HDI_1_high = hdi1[2],
+                              HDE_2=hde2, HDI_2_low = hdi2[1], HDI_2_high = hdi2[2])
+    out$posterior$a <- c(a1_prime, a2_prime)
+    out$posterior$b <- c(b1_prime, b2_prime)
+    
+    if(!all(c(s1,s2)==0)){
+      post.prob.out <-  .post.prob.from.pdfs(pdf1, pdf2, hypothesis)
+      post.prob <-post.prob.out$post.prob
+      dirSymbol <-post.prob.out$direction
+    } else{
+      post.prob <- 1
+    }
+    out$summary$hyp = hypothesis
+    out$summary$post.prob = post.prob
+    out$dirSymbol = dirSymbol
+    #* `Keep data from s2 for plotting`
+    if(plot){
+      out$plot_df <- rbind(out$plot_df,data.frame("range"=support, "prob"=pdf2, "sample"=rep("Sample 2",length(support)) ))
+    }
+  }
+  #* `Use ROPE method to test if the difference in distributions is meaningful`
+  if(!is.null(rope_range)){
+    if(length(rope_range) == 2){
+      post1 = rgamma(10000,a1_prime,b1_prime)
+      if(!is.null(s2)){
+        post2 = rgamma(10000,a2_prime,b2_prime)
+        posterior = post1 - post2 
+      } else {
+        posterior = post1
+      }
+      hdi_diff <- as.numeric(bayestestR::hdi(posterior, ci = rope_hdi ))[2:3]
+      hde_diff <- median(posterior)
+      rope_prob <- as.numeric(bayestestR::rope(posterior, range = rope_range, ci_method = "HDI", ci=rope_ci))
+      rope_test <-  data.frame(HDE_rope=hde_diff, HDI_rope_low = hdi_diff[1], HDI_rope_high = hdi_diff[2], rope_prob = rope_prob)
+      out$summary <- cbind(out$summary,rope_test)
+      if(plot){
+        out$rope_df <- data.frame("X"=posterior)
+      }
+    }else{
+      stop("rope must be a vector of length 2")
+    }
+  }
+  return(out)
+}
+
+
+
+
+#' ***********************************************************************************************
+#' *************** `Neg Binomial (single value)` *******************************************************
+#' ***********************************************************************************************
+
+#' @description
+#' Negative binomial via conjugate beta prior and method of moments
+#' @param s1 A vector of numerics drawn from a negative binomial distribution.
+#' @param s2 An optional second sample of the same form as s2.
+#' @examples
+#' .conj_beta_sv(s1 = rbeta(100, 5, 10), s2= rbeta(100, 10, 5), priors = list(a=c(0.5,0.5),b=c(0.5,0.5)),
+#'               plot=F, rope_range = c(-0.1, 0.1), rope_ci = 0.89, rope_hdi = 0.95,
+#'               cred.int.level = 0.89, hypothesis="equal")
+#' @keywords internal
+#' @noRd
+
+.conj_negbin_sv<-function(s1 = NULL, s2= NULL, priors = NULL,
+                           plot=F, rope_range = NULL, rope_ci = 0.89, rope_hdi = 0.95,
+                           cred.int.level = 0.89, hypothesis="equal", support=NULL){
+  
+  
+  # conjugacy: 
+  # if counts ~ nbinom(n, r)
+  # where n is the number of successful trials
+  #   and r is the prob of success per trial
+  # 
+  # if r is known then p ~ beta(A, B)
+  # A' = A + r*n
+  # B' = B + sum(x-(r*n))
+  #
+  # Using MoM:
+  # 
+  #* \bar{x} = k(1-p)/p
+  #* s^2 = \bar{x}/p
+  #* k = \bar{x}^2 / (s^2 - \bar{x})
+  #* p = \bar{x}/s^2
+  
+  # s1<-rnbinom(10, 10, 0.5)
+  # s2<-rnbinom(10, 10, 0.25)
+  # 
+  # s1
+  # s2
+  # mean(s1) # obs mean: 9.2
+  # mean(s2) # obs mean: 31.7
+  # (10*(1-0.5))/0.5 # MoM Mean1: 10
+  # (10*(1-0.25))/0.25 # MoM Mean2: 30
+  # 
+  # var(s1) # obs var1: 16.8
+  # var(s2) # obs var2: 101
+  # (10*(1-0.5))/0.5/0.5 # MoM var1: 20
+  # (10*(1-0.25))/0.25/0.25 # MoM var2: 120
+  
+  #* I don't have a way to get K if it is unknown yet
+  #* 
+  
+  #* `Check samples`
+  if(any(abs(c(s1,s2)-round(c(s1,s2)))>.Machine$double.eps^0.5) | any(c(s1,s2)<0) ){stop("Only positive whole numbers can be used in the Negative Binomial distribution")}
+  #* `make default prior if none provided`
+  if(is.null(priors)){
+    priors <- list(a=c(0.5,0.5),b=c(0.5,0.5)) # beta prior on P
+  }
+  #* `Define dense Support if missing`
+  if(is.null(support)){
+    upper <- max(c(s1,s2))*2
+    support <-seq(0, upper, 0.01)
+  }
+  out <- list()
+  
+  #* `Use conjugate gamma prior on lambda``
+  a1_prime <- priors$a[1] + sum(s1)
+  b1_prime <- priors$b[1] + length(s1)
+  
+  #* `calculate density over support``
+  dens1 <- dgamma(support, a1_prime, b1_prime)
+  pdf1 <- dens1/sum(dens1)
+  
+  #* `calculate highest density interval`
+  hdi1 <- qgamma(c((1-cred.int.level)/2, (1-((1-cred.int.level)/2))),a1_prime,b1_prime)
+  
+  #* `calculate highest density estimate``
+  if(a1_prime <= 1 & b1_prime > 1){
+    hde1 <- 0
+  }else if(a1_prime > 1 & b1_prime <= 1){
+    hde1 <- Inf
+  }else{
+    hde1 <- (a1_prime-1)/b1_prime 
+  }
+  
+  #* `save summary and parameters`
+  out$summary <- data.frame(HDE=hde1, HDI_low = hdi1[1], HDI_high = hdi1[2])
+  out$posterior$a <- a1_prime
+  out$posterior$b <- b1_prime
+  
+  #* `keep data for plotting`
+  if(plot){
+    out$plot_df <- data.frame("range"=support, "prob"=pdf1, "sample"=rep("Sample 1",length(support) ))
+  }
+  #* `get parameters for s2 if it exists using method of moments`
+  if(!is.null(s2)){
+    a2_prime = priors$a[2]+sum(s2)
+    b2_prime = priors$b[2]+length(s2)
+    dens2 <- dgamma(support, a2_prime, b2_prime)
+    pdf2 <- dens2/sum(dens2)
+    hdi2 <- qgamma(c((1-cred.int.level)/2, (1-((1-cred.int.level)/2))),a2_prime,b2_prime)
+    if(a2_prime <= 1 & b2_prime > 1){
+      hde2 <- 0
+    }else if(a2_prime > 1 & b2_prime <= 1){
+      hde2 <- Inf
+    }else{
+      hde2 <- (a2_prime-1)/b2_prime 
+    }
+    out$summary <- data.frame(HDE_1=hde1, HDI_1_low = hdi1[1], HDI_1_high = hdi1[2],
+                              HDE_2=hde2, HDI_2_low = hdi2[1], HDI_2_high = hdi2[2])
+    out$posterior$a <- c(a1_prime, a2_prime)
+    out$posterior$b <- c(b1_prime, b2_prime)
+    
+    if(!all(c(s1,s2)==0)){
+      post.prob.out <-  .post.prob.from.pdfs(pdf1, pdf2, hypothesis)
+      post.prob <-post.prob.out$post.prob
+      dirSymbol <-post.prob.out$direction
+    } else{
+      post.prob <- 1
+    }
+    out$summary$hyp = hypothesis
+    out$summary$post.prob = post.prob
+    out$dirSymbol = dirSymbol
+    #* `Keep data from s2 for plotting`
+    if(plot){
+      out$plot_df <- rbind(out$plot_df,data.frame("range"=support, "prob"=pdf2, "sample"=rep("Sample 2",length(support)) ))
+    }
+  }
+  #* `Use ROPE method to test if the difference in distributions is meaningful`
+  if(!is.null(rope_range)){
+    if(length(rope_range) == 2){
+      post1 = rgamma(10000,a1_prime,b1_prime)
+      if(!is.null(s2)){
+        post2 = rgamma(10000,a2_prime,b2_prime)
+        posterior = post1 - post2 
+      } else {
+        posterior = post1
+      }
+      hdi_diff <- as.numeric(bayestestR::hdi(posterior, ci = rope_hdi ))[2:3]
+      hde_diff <- median(posterior)
+      rope_prob <- as.numeric(bayestestR::rope(posterior, range = rope_range, ci_method = "HDI", ci=rope_ci))
+      rope_test <-  data.frame(HDE_rope=hde_diff, HDI_rope_low = hdi_diff[1], HDI_rope_high = hdi_diff[2], rope_prob = rope_prob)
+      out$summary <- cbind(out$summary,rope_test)
+      if(plot){
+        out$rope_df <- data.frame("X"=posterior)
+      }
+    }else{
+      stop("rope must be a vector of length 2")
+    }
+  }
+  return(out)
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 #' ***********************************************************************************************

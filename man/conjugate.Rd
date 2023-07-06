@@ -7,7 +7,7 @@
 conjugate(
   s1 = NULL,
   s2 = NULL,
-  method = c("t", "gaussian", "beta", "lognormal"),
+  method = c("t", "gaussian", "beta", "lognormal", "poisson"),
   priors = NULL,
   plot = F,
   rope_range = NULL,
@@ -23,7 +23,8 @@ conjugate(
 
 \item{s2}{An optional second sample of the same form as s2.}
 
-\item{method}{The distribution/method to use. Currently "t", "gaussian", "beta", and "lognormal" are supported. Note that "t" and "gaussian" both use a T distribution with "t" testing for a difference of means and "gaussian" testing for a difference in the distributions (similar to a Z test).}
+\item{method}{The distribution/method to use. Currently "t", "gaussian", "beta", "lognormal", and "poisson" are supported.
+Note that "t" and "gaussian" both use a T distribution with "t" testing for a difference of means and "gaussian" testing for a difference in the distributions (similar to a Z test).}
 
 \item{priors}{Prior distributions described as a list. This varies by method, see details. By default this is NULL and weak priors (jeffrey's prior where appropriate) are used. The \code{posterior} part of output can also be recycled as a new prior if Bayesian updating is appropriate for your use.}
 
@@ -162,6 +163,13 @@ beta_sv_ex <- conjugate(s1 = rbeta(20, 5, 5), s2= rbeta(20, 8, 5), method="beta"
               plot=T, rope_range = c(-0.1, 0.1), rope_ci = 0.89, rope_hdi = 0.95,
               cred.int.level = 0.89, hypothesis="equal")
 
+# poisson sv example
+
+poisson_sv_ex <- conjugate(s1 = rpois(20, 10), s2= rbeta(20, 8), method="poisson",
+              priors = list(a=c(0.5,0.5),b=c(0.5,0.5)),
+              plot=T, rope_range = c(-1, 1), rope_ci = 0.89, rope_hdi = 0.95,
+              cred.int.level = 0.89, hypothesis="equal")
+
 # Example usage with plantCV data
 ## Not run:
 library(data.table)
@@ -205,6 +213,8 @@ area_res_t <- conjugate(s1 = mo17_area, s2= B73_area, method="t",
 # Plots of prior distributions
 set.seed(123)
 plot(seq(0,1,0.0001), dbeta(seq(0,1,0.0001), 0.5, 0.5), ylab="Density", xlab="Support", main="Beta", type="l")
+
+plot(seq(0,10,0.01), dgamma(seq(0,10,0.01), 0.5, 0.5), ylab="Density", xlab="Support", main="Poisson (gamma prior on Lambda parameter)", type="l")
 
 plot(seq(-20,20.001), dnorm(seq(-20,20.001), 0, sqrt(20)), ylab="Density", xlab="Support", main="T and Gaussian", type="l")
 
