@@ -157,6 +157,8 @@ sv_ag<-bw.outliers(df = sv_ag_withOutliers, phenotype="area.pixels", group = c("
 dim(sv_ag)
 ```
 
+#### Watering Data
+
 We might also want to check the watering data, which can be read easily from json with `bw.water`.
 
 ```{r}
@@ -178,6 +180,23 @@ ggplot(water[water$weight_after!=-1,], aes(x=DAS, y=water_amount, group=barcode,
   labs(y="Watering Amount (g)")+
   theme(legend.position="bottom")
 ```
+
+A common use for watering data is to look at water use efficiency (WUE). Here we can calculate an approximation of WUE based on the change in some phenotype (area) over the change in weight between waterings. Note that the plants in this example are very young and as such the data in this example is dominated by noise.
+
+
+```{r}
+test<-pwue(sv_ag, water, "area.pixels", "DAS", c("barcode"))
+
+ggplot(test, aes(x=DAS, y=pWUE, color=genotype, group=barcode))+
+  geom_line()+
+  guides(color=guide_legend(override.aes = list(linewidth=5)))+
+  labs(y=expression("Pseudo WUE ("~frac(Delta~textstyle("Area")[" pixels"],
+                                        Delta~textstyle("Weight")[" g"] )~")" ))+
+  pcv_theme()
+```
+
+
+
 
 ## FREM
 
