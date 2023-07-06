@@ -256,20 +256,33 @@ Here we can see a dramatic difference in our posterior distributions between gen
 
 Often bellwether experiments involve comparing stress tolerance between groups. For example in this dataset we might want to know which genotype shows the most resilience to reduced fertilizer. To easily check this we can change out data with `relativeTolerance`. Details on this function can be read with `?pcvr::relativeTolerance`.
 
-This should probably reduce the dimensions of the dataset, something like katie's method with a mean and SE for each.
-AKA just compare averages.
+```{r}
+rt<-relativeTolerance(sv_ag, phenotypes = c("area_cm2", "height_cm"), 
+                      grouping = c("fertilizer", "genotype", "DAS"), control = "fertilizer", controlGroup="100")
 
 
+ggplot(rt[rt$phenotype == "area_cm2", ],
+       aes(x=DAS, y=mu_rel, fill = interaction(fertilizer, genotype)) )+
+  geom_col(position="dodge")+
+  pcv_theme()+
+  labs(y="Relative Tolerance", fill="Fertilizer\nand Genotype")
+```
 
+Looking at the entire data for the area phenotype is very busy so we might subset to look at something more specific, where we see some odd products of the plants germinating on the bellwether system.
 
 ```{r}
-rt<-relativeTolerance(sv_ag, phenotypes = c("area_cm2", "height_cm"), grouping = c("fertilizer", "genotype", "DAS"), control = "fertilizer", controlGroup="100", method =  c("proportion", "difference", "zscore"), naTo0=T)
+pd<-rt[rt$phenotype == "area_cm2" & rt$DAS %in% c(5:19) & rt$fertilizer=="0", ]
+pd$upper_2se <- pd$mu_rel + 2* pd$se_rel
+pd$lower_2se <- pd$mu_rel - 2* pd$se_rel
 
-pcvBox(rt[rt$DAS==19, ], x="fertilizer", y="area_cm2_proportion", showPoints = T)+
-  labs(y=expression("Proportion of Control Area"))+
-  facet_wrap(~genotype)+theme(legend.position="none")+
-  scale_x_discrete(limits = c("0", "50", "100"))
+ggplot(pd, aes(x=DAS, y=mu_rel, fill = genotype) )+
+  geom_col(position="dodge")+
+  geom_errorbar( aes(ymin = lower_2se, ymax = upper_2se,
+                     group = genotype), position="dodge" )+
+  pcv_theme()+
+  labs(y="Relative Tolerance")
 ```
+
 
 ### Cumulative Phenotypes
 

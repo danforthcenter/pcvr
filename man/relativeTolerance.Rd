@@ -10,8 +10,6 @@ relativeTolerance(
   grouping = NULL,
   control = NULL,
   controlGroup = NULL,
-  method = c("proportion", "difference", "zscore"),
-  naTo0 = F,
   wide = T,
   traitCol = "trait",
   valueCol = "value"
@@ -28,10 +26,6 @@ relativeTolerance(
 
 \item{controlGroup}{The level of the control variable to compare groups against.}
 
-\item{method}{The method or methods to use, any of "proportion", "difference", or "zscore". These methods will be appended to the added column names ('phenotype_method').}
-
-\item{naTo0}{Logical, should NA and Inf values be replaced with 0? This is useful if output are going to be used in a cumulative step, but otherwise should be left False}
-
 \item{wide}{Logical, is the input data in wide format? Defaults to TRUE.}
 
 \item{traitCol}{Column with phenotype names, defaults to "trait". This should generally not need to be changed from the default.}
@@ -42,7 +36,9 @@ relativeTolerance(
 A dataframe with relative tolerance columns added.
 }
 \description{
-Often in bellwether experiments we are curious about the effect of some treatment vs control. For certain routes in analysing the data this requires considering phenotypes as relative differences compared to a control.
+Often in bellwether experiments we are curious about the effect of some treatment vs control.
+For certain routes in analysing the data this requires considering phenotypes as relative differences compared to a control.
+Note that the \code{conjugate} function can also be useful in considering the relative tolerance to stress between groups.
 }
 \examples{
 
@@ -58,12 +54,13 @@ sv$fertilizer = ifelse(sv$fertilizer == "A", "100",
               ifelse(sv$fertilizer == "B", "50", "0"))
               
 sv<-bw.time(sv, plantingDelay = 0, phenotype="area.pixels", cutoff=10, timeCol="timestamp", group=c("barcode", "rotation"), plot=T)
-sv<-bw.outliers(sv, phenotype="area.pixels", group = c("DAS", "genotype", "fertilizer"), plotgroup = c("barcode", "rotation"))
 phenotypes <- c('area.pixels', 'convex_hull_area.pixels', 'convex_hull_vertices', 'ellipse_angle.degrees', 'ellipse_eccentricity', 'ellipse_major_axis.pixels', 'ellipse_minor_axis.pixels', 'height.pixels', 'hue_circular_mean.degrees', 'hue_circular_std.degrees', 'hue_median.degrees', 'longest_path.pixels', 'perimeter.pixels', 'solidity', 'width.pixels')
 phenoForm<-paste0("cbind(", paste0(phenotypes, collapse=", "), ")")
 groupForm<-"DAS+DAP+barcode+genotype+fertilizer"
 form<-as.formula(paste0(phenoForm, "~", groupForm))
 sv<-aggregate(form, data=sv, mean, na.rm=T)
+sv<-bw.outliers(sv, phenotype="area.pixels", group = c("DAS", "genotype", "fertilizer"), plotgroup = c("barcode"))
+
 pixels_per_cmsq <- 42.5^2   # pixel per cm^2
 sv$area_cm2<-sv$area.pixels / pixels_per_cmsq
 sv$height_cm <- sv$height.pixels/42.5
@@ -72,10 +69,9 @@ phenotypes=phenotypes = c("area_cm2", "height_cm")
 grouping = c("fertilizer", "genotype", "DAS") # need to include genotype so that the interaction effect is included
 controlGroup = "100" 
 control = "fertilizer"
-method = c("proportion", "difference", "zscore")
-naTo0=T
-rt <-relativeTolerance(df, phenotypes, grouping, control, controlGroup, method, naTo0)
-sum(is.na(rt$))
+rt <-relativeTolerance(df, phenotypes, grouping, control, controlGroup)
+head(rt)
+sapply(rt, function(c) sum(is.na(c)))
 
 ## End(Not run)
 
