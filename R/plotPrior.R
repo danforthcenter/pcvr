@@ -33,7 +33,7 @@
 #'
 #' @export
 
-plotPrior<-function(priors, type = "density", n=1000, t=25){
+plotPrior<-function(priors, type = "density", n=200, t=25){
   
   densPlots<-lapply(1:length(priors), function(i){
     pri=priors[[i]]
@@ -72,49 +72,23 @@ plotPrior<-function(priors, type = "density", n=1000, t=25){
       simdf <- do.call(rbind, lapply(1:n,  function(i) {
         iter_params <- .prior_sampler(priors)
         x<-growthSim(model = "logistic", n = 1, t = t, params = iter_params); x$id = paste0("id_",i);x } )) # simulate data using prior draw
-      x_margin_plot = densPlots[["B"]] +
-        ggplot2::labs(x="Inflection Point Prior")+
-        ggplot2::theme(plot.title = ggplot2::element_blank(), panel.grid = ggplot2::element_blank(),
-                       axis.text.y = ggplot2::element_blank(),axis.title.y = ggplot2::element_blank(),
-                       legend.position = "none" )
-      y_margin_plot = densPlots[["A"]] + ggplot2::scale_y_reverse(position = "right")+ 
-        ggplot2::scale_x_continuous(position = "top")+
-        ggplot2::labs(x="Asymptote Prior")+
-        ggplot2::coord_flip() + 
-        ggplot2::theme(plot.title = ggplot2::element_blank(), panel.grid = ggplot2::element_blank(),
-                       axis.text = ggplot2::element_blank(),axis.title.x = ggplot2::element_blank(),
-                       legend.position = "none" )
+      x_margin_plot = densPlots[["B"]] 
+      y_margin_plot = densPlots[["A"]] 
       
       } else if(type=="gompertz"){
         
       simdf <- do.call(rbind, lapply(1:n, function(i) {
         iter_params <- .prior_sampler(priors)
         x<-growthSim(model = "gompertz", n = 1, t = t, params = iter_params); x$id = paste0("id_",i);x } ))
-      x_margin_plot = densPlots[["B"]] +
-        ggplot2::labs(x="Inflection Point Prior")+
-        ggplot2::theme(plot.title = ggplot2::element_blank(), panel.grid = ggplot2::element_blank(),
-                       axis.text.y = ggplot2::element_blank(),axis.title.y = ggplot2::element_blank(),
-                       legend.position = "none" )
-      y_margin_plot = densPlots[["A"]] + ggplot2::scale_y_reverse(position = "right")+ 
-        ggplot2::scale_x_continuous(position = "top")+
-        ggplot2::labs(x="Asymptote Prior")+
-        ggplot2::coord_flip() + 
-        ggplot2::theme(plot.title = ggplot2::element_blank(), panel.grid = ggplot2::element_blank(),
-                       axis.text = ggplot2::element_blank(),axis.title.x = ggplot2::element_blank(),
-                       legend.position = "none" )
+      x_margin_plot = densPlots[["B"]]
+      y_margin_plot = densPlots[["A"]] 
       
       } else if(type=="monomolecular"){
         
       simdf <- do.call(rbind, lapply(1:n,  function(i) {
         iter_params <- .prior_sampler(priors)
         x<-growthSim(model = "monomolecular", n = 1, t = t, params = iter_params); x$id = paste0("id_",i);x } ))
-      y_margin_plot = densPlots[["A"]] + ggplot2::scale_y_reverse(position = "right")+ 
-        ggplot2::scale_x_continuous(position = "top")+
-        ggplot2::labs(x="Asymptote Prior")+
-        ggplot2::coord_flip() + 
-        ggplot2::theme(plot.title = ggplot2::element_blank(), panel.grid = ggplot2::element_blank(),
-                       axis.text = ggplot2::element_blank(),axis.title.x = ggplot2::element_blank(),
-                       legend.position = "none" )
+      y_margin_plot = densPlots[["A"]] 
       
       } else if(type=="exponential"){
       simdf <- do.call(rbind, lapply(1:n,  function(i) {
@@ -141,6 +115,33 @@ plotPrior<-function(priors, type = "density", n=1000, t=25){
       ggplot2::labs(y="Y", title=paste0(n," curves simulated from prior draws"),
                     color="Prior")
     
+    xLims <- ggplot2::layer_scales(model_plot)$x$range$range
+    yLims <- ggplot2::layer_scales(model_plot)$y$range$range
+    
+    if(!is.null(y_margin_plot)){
+      y_margin_plot <- y_margin_plot + 
+        ggplot2::scale_y_reverse(position = "right")+ 
+        ggplot2::scale_x_continuous(position = "top", limits = yLims)+
+        ggplot2::labs(x="Asymptote Prior")+
+        ggplot2::coord_flip() + 
+        ggplot2::theme(plot.title = ggplot2::element_blank(), panel.grid = ggplot2::element_blank(),
+                       axis.text = ggplot2::element_blank(),axis.title.x = ggplot2::element_blank(),
+                       legend.position = "none" )
+    }
+    
+    if(!is.null(x_margin_plot)){
+      x_margin_plot <- x_margin_plot + 
+        ggplot2::labs(x="Inflection Point Prior")+
+        ggplot2::theme(plot.title = ggplot2::element_blank(), panel.grid = ggplot2::element_blank(),
+                       axis.text.y = ggplot2::element_blank(),axis.title.y = ggplot2::element_blank(),
+                       legend.position = "none" )+
+        ggplot2::coord_cartesian(xlim=xLims)
+    }
+    
+    
+    
+    
+    
     if(!is.null(x_margin_plot) & !is.null(y_margin_plot)){
       
       design = c(patchwork::area(1,1,6,6), # model plot
@@ -149,13 +150,13 @@ plotPrior<-function(priors, type = "density", n=1000, t=25){
       model_plot <- model_plot + x_margin_plot + y_margin_plot + patchwork::plot_layout(design = design)
       
     } else if(!is.null(y_margin_plot) & is.null(x_margin_plot)){
-      
+
       design = c(patchwork::area(1,1,6,6), # model plot
                  patchwork::area(1,7,6,7)) # y margin
       model_plot <- model_plot + y_margin_plot + patchwork::plot_layout(design = design)
       
     } else if(is.null(y_margin_plot) & !is.null(x_margin_plot)){
-      
+
       design = c(patchwork::area(1,1,6,6), # model plot
                  patchwork::area(7,1,7,6)) # x margin
       model_plot <- model_plot + x_margin_plot + patchwork::plot_layout(design = design)

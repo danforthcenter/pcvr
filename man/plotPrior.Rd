@@ -4,7 +4,7 @@
 \alias{plotPrior}
 \title{Check priors used in ease of use brms functions}
 \usage{
-plotPrior(priors, type = "density", n = 1000, t = 25)
+plotPrior(priors, type = "density", n = 200, t = 25)
 }
 \arguments{
 \item{priors}{A named list of means for prior distributions. This takes the same input as the prior argument of \code{\link{growthSS}}.}

@@ -393,10 +393,20 @@ In `growthSS` priors can be specified as a brmsprior object (in which case it is
 We can check the priors made by `growthSS` with the `plotPrior` function.
 
 ```{r}
-priors = list("A" = 130, "B" = 10, "C" = 1.2)
+priors = list("A" = 130, "B" = 10, "C" = 0.2)
 priorPlots<-plotPrior(priors)
 priorPlots[[1]]/priorPlots[[2]]/priorPlots[[3]]
 ```
+
+Looking at the prior distributions this way is useful, but for those still familiarizing with a given growth model the parameter values may not be very intuitive. To help with picking reasonable priors while familiarizing with the meaning of the model parameters the `plotPrior` function can also simulate growth curves by making draws from the specified prior distributions. Here is an example of using `plotPrior` in this way to pick between possible sets of prior distributions for a gompertz model. For asymptotic distributions the prior on "A" is added to the y margin. For distributions with an inflection point the prior on "B" is shown in the x margin. Arbitrary numbers of priors can be compared in this manner, but more than two or three can be cluttered so an iterative process is recommended if you are learning about your growth model.
+
+```{r}
+twoPriors = list("A" = c(100, 130), "B" = c(6, 12), "C" = c(0.5, 0.25))
+plotPrior(twoPriors, "gompertz",n=100)[[1]]
+```
+
+This 
+
 
 
 ##### Using `growthSS`
@@ -417,7 +427,7 @@ Here our priors are informed by a general understanding of what we expect to see
 
 ```{r, eval=F}
 ss<-growthSS(model="gompertz", form =  area_cm2~DAS|barcode/group, sigma="spline", df=sv_ag,
-             priors = list("A" = 130, "B" = 10, "C" = 1.2))
+             priors = list("A" = 130, "B" = 10, "C" = 0.5))
 ```
 
 Now we have most of our model components in the `ss` object. Since we specified a gompertz model we have three parameters, the asymptote (`A`), the inflection point (`B`), and the growth rate (`C`). For other model options see `?pcvr::growthSim` for details on the parameters.
