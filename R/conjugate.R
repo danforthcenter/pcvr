@@ -6,7 +6,7 @@
 #' 
 #' @param s1 A data.frame or matrix of multi value traits or a vector of single value traits. If a multi value trait is used then column names should include a number representing the "bin".
 #' @param s2 An optional second sample of the same form as s2.
-#' @param method The distribution/method to use. Currently "t", "gaussian", "beta", "lognormal", and "poisson" are supported.
+#' @param method The distribution/method to use. Currently "t", "gaussian", "beta", "lognormal", "poisson", and "negbin" (negative binomial) are supported. The count distributions (poisson and negative binomial) are only implemented for single value traits.
 #' Note that "t" and "gaussian" both use a T distribution with "t" testing for a difference of means and "gaussian" testing for a difference in the distributions (similar to a Z test).
 #' @param priors Prior distributions described as a list. This varies by method, see details. By default this is NULL and weak priors (jeffrey's prior where appropriate) are used. The \code{posterior} part of output can also be recycled as a new prior if Bayesian updating is appropriate for your use.
 #' @param plot Logical, should a ggplot be made and returned.
@@ -34,6 +34,8 @@
 #'    \item{\strong{"t" and "gaussian":} \code{priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ) } , where mu is the mean, n is the number of prior observations, and s2 is variance}
 #'    \item{\strong{"beta":} \code{priors = list( a=c(0.5, 0.5), b=c(0.5, 0.5) )}, where a and b are shape parameters of the beta distribution.}
 #'    \item{\strong{"lognormal": } \code{priors = list( mu_log=c(log(10),log(10)),n=c(1,1),sigma_log=c(log(3),log(3)) ) }, where mu_log is the mean on log scale, n is the number of prior observations, and sigma_log is the standard deviation on log scale }
+#'    \item{\strong{"poisson": } \code{priors = list(a=c(0.5,0.5),b=c(0.5,0.5))}, where a and b are shape parameters of the gamma distribution.}
+#'    \item{\strong{"negbin": } \code{priors = list(r=c(10,10), a=c(0.5,0.5),b=c(0.5,0.5))}, where r is the r parameter of the negative binomial distribution (representing the number of successes required) and where a and b are shape parameters of the beta distribution. Note that the r value is not updated. The conjugate beta prior is only valid when r is fixed and known, which is a limitation for this method.}
 #' }
 #' 
 #' See examples for plots of these prior distributions.
@@ -139,6 +141,15 @@
 #'               plot=T, rope_range = c(-1, 1), rope_ci = 0.89, rope_hdi = 0.95,
 #'               cred.int.level = 0.89, hypothesis="equal")
 #' 
+#' # negative binomial sv example
+#' # knowing r (required number of successes) is an important caveat for this method.
+#' # in the current implementation we suggest using the poisson method for data such as leaf counts
+#' 
+#' negbin_sv_ex <- conjugate(s1 = rnbinom(20, 10, 0.5), s2= rnbinom(20, 10, 0.25), method="poisson",
+#'               priors = list(r = c(10, 10), a=c(0.5,0.5),b=c(0.5,0.5)),
+#'               plot=T, rope_range = c(-1, 1), rope_ci = 0.89, rope_hdi = 0.95,
+#'               cred.int.level = 0.89, hypothesis="equal")
+#'               
 #' # Example usage with plantCV data
 #' ## Not run:
 #' library(data.table)
@@ -194,7 +205,7 @@
 #' A list with named elements:
 #' \itemize{
 #'    \item{\strong{summary}: A data frame containing HDI/HDE values for each sample and the ROPE as well as posterior probability of the hypothesis.}
-#'    \item{\strong{posterior}: A list of updated parameters in the same format as the prior for the given method.}
+#'    \item{\strong{posterior}: A list of updated parameters in the same format as the prior for the given method. If desired this does allow for Bayesian updating.}
 #'    \item{\strong{plot_df}: A data frame of probabilities along the support for each sample. This is used for making the ggplot.}
 #'    \item{\strong{rope_df}: A data frame of draws from the ROPE posterior.}
 #'    \item{\strong{plot}: A ggplot showing the distribution of samples and optionally the distribution of differences/ROPE}
@@ -203,7 +214,7 @@
 #' @keywords bayesian, conjugate, ROPE
 #' @export
 
-conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lognormal", "poisson"),
+conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lognormal", "poisson", "negbin"),
                      priors=NULL, plot=F, rope_range = NULL,
                     rope_ci = 0.89, rope_hdi = 0.95, cred.int.level = 0.89, hypothesis="equal",
                     support=NULL){
@@ -212,7 +223,7 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
   } else if(is.vector(s1)) { vec=T 
   } else{ stop("s1 must be a vector, data.frame, or matrix.") }
   
-  matched_arg<-match.arg(method, choices = c("t", "gaussian", "beta", "lognormal", "poisson"))
+  matched_arg<-match.arg(method, choices = c("t", "gaussian", "beta", "lognormal", "poisson", "negbin"))
   #* `Pick method`
   
   if(matched_arg == "t" & vec){
@@ -242,8 +253,11 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
   } else if(matched_arg == "poisson" & vec){
     res<-.conj_poisson_sv(s1, s2, priors, plot, rope_range, rope_ci, rope_hdi, cred.int.level, hypothesis, support)
     
+  } else if(matched_arg == "negbin" & vec){
+    res<-.conj_negbin_sv(s1, s2, priors, plot, rope_range, rope_ci, rope_hdi, cred.int.level, hypothesis, support)
+    
   } 
-  
+
   #* `Make plot`
   
   if(plot){
@@ -1724,11 +1738,57 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
 #' ***********************************************************************************************
 
 #' @description
-#' Negative binomial via conjugate beta prior and method of moments
+#' Negative binomial via conjugate beta prior GIVEN A KNOWN R
+#' conjugacy: 
+#' if counts ~ nbinom(n, r)
+#' where n is the number of successful trials
+#'   and r is the prob of success per trial which is fixed and known
+#' 
+#' if r is known then p ~ beta(A, B)
+#' note that the compendium of conjugate priors seems to have a typo for this relationship,
+#' but the wikipedia conjugate prior article is correct
+#' A' = A + r*n
+#' B' = B + sum(x)
+#'
+#' Using MoM:
+#' 
+#' \bar{x} = k(1-p)/p
+#' s^2 = \bar{x}/p
+#' r = \bar{x}^2 / (s^2 - \bar{x})
+#' p = \bar{x}/s^2
+#' 
 #' @param s1 A vector of numerics drawn from a negative binomial distribution.
 #' @param s2 An optional second sample of the same form as s2.
 #' @examples
-#' .conj_beta_sv(s1 = rbeta(100, 5, 10), s2= rbeta(100, 10, 5), priors = list(a=c(0.5,0.5),b=c(0.5,0.5)),
+#' set.seed(123)
+#' true_p1 = 0.7
+#' true_p2 = 0.25
+#' true_r1 = 10
+#' true_r2 = 10
+#' s1<-rnbinom(10, true_r1, true_p1)
+#' s2<-rnbinom(10, true_r2, true_p2)
+#' priors = list(a=c(0.5, 0.5), b=c(0.5, 0.5))
+#' s1
+#' s2
+#' xbar1<-(true_r1*(1-true_p1))/true_p1 # MoM Mean1: 10
+#' xbar2<-(true_r2*(1-true_p2))/true_p2 # MoM Mean2: 30
+#' 
+#' var1 <- (true_r1*(1-true_p1))/true_p1/true_p1 # MoM var1: 20
+#' var2 <- (true_r2*(1-true_p2))/true_p2/true_p2 # MoM var2: 120
+#' 
+#' (obs_xbar1 = mean(s1))
+#' (obs_var1 = var(s1))
+#' (f1 = xbar1^2 / (var1 - xbar1)) # number of failures in getting r trials
+#' (p1 = xbar1/var1)
+#' (a1_prime <- 0.5 + true_r1 * length(s1))
+#' (b1_prime_wiki <- 0.5 + sum(s1) )
+#' # (b1_prime_comp <- 0.5 + sum(s1) - (true_r1 * length(s1))) # -0.5
+#' 
+#' plot(density(rbeta(1000,a1_prime, b1_prime_wiki)), xlim=c(0,1))
+#' # lines(density(rbeta(1000,a1_prime, b1_prime_comp)), xlim=c(0,1), col="blue")
+#' abline(v=p1, col="red")
+#' 
+#' .conj_negbin_sv(s1 = rnbinom(10, 10, 0.5), s2= rnbinom(100, 10, 0.25), priors = list(r = c(10,10), a=c(0.5,0.5),b=c(0.5,0.5)),
 #'               plot=F, rope_range = c(-0.1, 0.1), rope_ci = 0.89, rope_hdi = 0.95,
 #'               cred.int.level = 0.89, hypothesis="equal")
 #' @keywords internal
@@ -1737,47 +1797,13 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
 .conj_negbin_sv<-function(s1 = NULL, s2= NULL, priors = NULL,
                            plot=F, rope_range = NULL, rope_ci = 0.89, rope_hdi = 0.95,
                            cred.int.level = 0.89, hypothesis="equal", support=NULL){
-  
-  
-  # conjugacy: 
-  # if counts ~ nbinom(n, r)
-  # where n is the number of successful trials
-  #   and r is the prob of success per trial
-  # 
-  # if r is known then p ~ beta(A, B)
-  # A' = A + r*n
-  # B' = B + sum(x-(r*n))
-  #
-  # Using MoM:
-  # 
-  #* \bar{x} = k(1-p)/p
-  #* s^2 = \bar{x}/p
-  #* k = \bar{x}^2 / (s^2 - \bar{x})
-  #* p = \bar{x}/s^2
-  
-  # s1<-rnbinom(10, 10, 0.5)
-  # s2<-rnbinom(10, 10, 0.25)
-  # 
-  # s1
-  # s2
-  # mean(s1) # obs mean: 9.2
-  # mean(s2) # obs mean: 31.7
-  # (10*(1-0.5))/0.5 # MoM Mean1: 10
-  # (10*(1-0.25))/0.25 # MoM Mean2: 30
-  # 
-  # var(s1) # obs var1: 16.8
-  # var(s2) # obs var2: 101
-  # (10*(1-0.5))/0.5/0.5 # MoM var1: 20
-  # (10*(1-0.25))/0.25/0.25 # MoM var2: 120
-  
-  #* I don't have a way to get K if it is unknown yet
-  #* 
-  
+
   #* `Check samples`
   if(any(abs(c(s1,s2)-round(c(s1,s2)))>.Machine$double.eps^0.5) | any(c(s1,s2)<0) ){stop("Only positive whole numbers can be used in the Negative Binomial distribution")}
   #* `make default prior if none provided`
   if(is.null(priors)){
-    priors <- list(a=c(0.5,0.5),b=c(0.5,0.5)) # beta prior on P
+    priors <- list(r=c(10, 10), a=c(0.5,0.5),b=c(0.5,0.5)) # beta prior on P
+    warning("True value of r for negative binomial distribution has defaulted to 10, you should add a prior including r parameter.")
   }
   #* `Define dense Support if missing`
   if(is.null(support)){
@@ -1786,28 +1812,30 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
   }
   out <- list()
   
-  #* `Use conjugate gamma prior on lambda``
-  a1_prime <- priors$a[1] + sum(s1)
-  b1_prime <- priors$b[1] + length(s1)
+  #* `Use conjugate beta prior on probability`
+  #* Note that this is very sensitive to the R value being appropriate
+  a1_prime <- priors$a[1] + priors$r[1] * length(s1)
+  b1_prime <- priors$b[1] + sum(s1) 
   
   #* `calculate density over support``
-  dens1 <- dgamma(support, a1_prime, b1_prime)
+  dens1 <- dbeta(support, a1_prime, b1_prime)
   pdf1 <- dens1/sum(dens1)
   
   #* `calculate highest density interval`
-  hdi1 <- qgamma(c((1-cred.int.level)/2, (1-((1-cred.int.level)/2))),a1_prime,b1_prime)
+  hdi1 <- qbeta(c((1-cred.int.level)/2, (1-((1-cred.int.level)/2))),a1_prime,b1_prime)
   
   #* `calculate highest density estimate``
   if(a1_prime <= 1 & b1_prime > 1){
     hde1 <- 0
   }else if(a1_prime > 1 & b1_prime <= 1){
-    hde1 <- Inf
+    hde1 <- 1
   }else{
-    hde1 <- (a1_prime-1)/b1_prime 
+    hde1 <- (a1_prime-1)/(a1_prime+b1_prime-2) # ~ p1 ~ xbar1/var1 
   }
   
   #* `save summary and parameters`
   out$summary <- data.frame(HDE=hde1, HDI_low = hdi1[1], HDI_high = hdi1[2])
+  out$posterior$r <- priors$r[1]
   out$posterior$a <- a1_prime
   out$posterior$b <- b1_prime
   
@@ -1817,20 +1845,23 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
   }
   #* `get parameters for s2 if it exists using method of moments`
   if(!is.null(s2)){
-    a2_prime = priors$a[2]+sum(s2)
-    b2_prime = priors$b[2]+length(s2)
-    dens2 <- dgamma(support, a2_prime, b2_prime)
+    #* `Use conjugate beta prior on probability`
+    a2_prime <- priors$a[2] + priors$r[2] * length(s2)
+    b2_prime <- priors$b[2] + sum(s2) 
+    
+    dens2 <- dbeta(support, a2_prime, b2_prime)
     pdf2 <- dens2/sum(dens2)
-    hdi2 <- qgamma(c((1-cred.int.level)/2, (1-((1-cred.int.level)/2))),a2_prime,b2_prime)
+    hdi2 <- qbeta(c((1-cred.int.level)/2, (1-((1-cred.int.level)/2))),a2_prime,b2_prime)
     if(a2_prime <= 1 & b2_prime > 1){
       hde2 <- 0
     }else if(a2_prime > 1 & b2_prime <= 1){
-      hde2 <- Inf
+      hde2 <- 1
     }else{
-      hde2 <- (a2_prime-1)/b2_prime 
+      hde2 <- (a2_prime-1)/(a2_prime+b2_prime-2) # ~ p2 ~ xbar2/var2
     }
     out$summary <- data.frame(HDE_1=hde1, HDI_1_low = hdi1[1], HDI_1_high = hdi1[2],
                               HDE_2=hde2, HDI_2_low = hdi2[1], HDI_2_high = hdi2[2])
+    out$posterior$r <- priors$r
     out$posterior$a <- c(a1_prime, a2_prime)
     out$posterior$b <- c(b1_prime, b2_prime)
     
@@ -1852,9 +1883,9 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
   #* `Use ROPE method to test if the difference in distributions is meaningful`
   if(!is.null(rope_range)){
     if(length(rope_range) == 2){
-      post1 = rgamma(10000,a1_prime,b1_prime)
+      post1 = rbeta(10000,a1_prime,b1_prime)
       if(!is.null(s2)){
-        post2 = rgamma(10000,a2_prime,b2_prime)
+        post2 = rbeta(10000,a2_prime,b2_prime)
         posterior = post1 - post2 
       } else {
         posterior = post1
