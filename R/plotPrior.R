@@ -138,10 +138,6 @@ plotPrior<-function(priors, type = "density", n=200, t=25){
         ggplot2::coord_cartesian(xlim=xLims)
     }
     
-    
-    
-    
-    
     if(!is.null(x_margin_plot) & !is.null(y_margin_plot)){
       
       design = c(patchwork::area(1,1,6,6), # model plot

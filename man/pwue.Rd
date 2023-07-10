@@ -57,8 +57,8 @@ ggplot(x, aes(x=DAS, y=pWUE, group = barcode))+
   geom_line()+
   theme_minimal()
  
-x[which(x$pWUE< -100),]
-x[x$pWUE < -100,] # note the counter-intuitive handling of NAs in the index column. Either use data.table or wrap conditions in which().
+head(x[which(x$pWUE< -100),])
+head(x[x$pWUE < -100,]) # note the counter-intuitive handling of NAs in the index column. Either use data.table or wrap conditions in which().
 
 ## End(Not run)
 

@@ -45,8 +45,8 @@
 #'   geom_line()+
 #'   theme_minimal()
 #'  
-#' x[which(x$pWUE< -100),]
-#' x[x$pWUE < -100,] # note the counter-intuitive handling of NAs in the index column. Either use data.table or wrap conditions in which().
+#' head(x[which(x$pWUE< -100),])
+#' head(x[x$pWUE < -100,]) # note the counter-intuitive handling of NAs in the index column. Either use data.table or wrap conditions in which().
 #' 
 #' ## End(Not run)
 #' 
@@ -67,7 +67,7 @@ pwue<-function(df, w, pheno="area.pixels", time="DAS", id="barcode"){
   #* `calculate delta values and pwue`
   x_deltas<-data.table::rbindlist(lapply(split(x, by=id), function(d){
     d<-data.table::setorderv(d, cols = c(time))
-      # could lead the weight before or lag the weight after?
+      # could lead the weight before or lag the weight after
     #* `water transpired/lost`
     d$water_used_between_waterings <- d$weight_after - data.table::shift(d$weight_before, n=1, type="lead")
     #* `sum if there are multiple waterings per day`
