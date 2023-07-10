@@ -11,6 +11,8 @@ pcv.sub.read(inputFile, filters, reader = "read.csv", awk = NULL, ...)
 
 \item{filters}{filtering conditions, see read.pcv for details. Format as list("trait in area, perimeter", "other in value")}
 
+\item{reader}{reader argument passed from read.pcv, defaults to read.csv.}
+
 \item{awk}{Optional awk command to use instead.}
 }
 \value{

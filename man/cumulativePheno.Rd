@@ -19,17 +19,15 @@ cumulativePheno(
 
 \item{phenotypes}{A character vector of column names for the phenotypes that should be compared against control.}
 
+\item{group}{A character vector of column names that identify groups in the data. Defaults to "barcode". These groups will be calibrated separately, with the exception of the group that identifies a control within the greater hierarchy.}
+
+\item{timeCol}{Column name to use for time data.}
+
+\item{wide}{Logical, is the data wide format? Defaults to TRUE.}
+
 \item{traitCol}{Column with phenotype names, defaults to "trait". This should generally not need to be changed from the default.}
 
 \item{valueCol}{Column with phenotype values, defaults to "value". This should generally not need to be changed from the default.}
-
-\item{grouping}{A character vector of column names that identify groups in the data. Defaults to "barcode". These groups will be calibrated separately, with the exception of the group that identifies a control within the greater hierarchy.}
-
-\item{control}{A column name for the variable to be used to select the control observations. If left NULL (the default) then this will be taken as the first string in the group argument.}
-
-\item{controlGroup}{The level of the control variable to compare groups against.}
-
-\item{method}{The method or methods to use, any of "proportion", "difference", or "zscore". These methods will be appended to the added column names ('phenotype_method').}
 }
 \value{
 A dataframe with cumulative sum columns added for specified phenotypes

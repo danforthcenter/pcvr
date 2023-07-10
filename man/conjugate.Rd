@@ -35,7 +35,7 @@ This interval is considered practically equivalent to no effect.
 Kruschke (2018) suggests c(-0.1, 0.1) as a broadly reasonable ROPE for standardized parameters.
 That range could also be rescaled by a standard deviation/magnitude for non-standardized parameters, but ultimately this should be informed by your setting and scientific question.
 Note that a ROPE interval much smaller than the difference distributions HDI can be somewhat unstable (see examples).
-See Kruschke (2018) for details on ROPE and other Bayesian methods to aide decision-making \link{https://doi.org/10.3758/s13423-016-1221-4} and \link{https://doi.org/10.1177/251524591877130}.}
+See Kruschke (2018) for details on ROPE and other Bayesian methods to aide decision-making \url{https://doi.org/10.3758/s13423-016-1221-4} and \url{https://doi.org/10.1177/251524591877130}.}
 
 \item{rope_ci}{The credible interval probability to use for ROPE. Defaults to 0.89.}
 

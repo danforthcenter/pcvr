@@ -29,6 +29,8 @@ pcadf(
 \item{returnData}{Logical, should data be returned?}
 
 \item{ncp}{Optional, number of principal components to return attached to dataframe if data is returned. Defaults to all.}
+
+\item{split}{Time variable to split data on if a facet on time is used. See bellwether vignette for examples.}
 }
 \description{
 Function to run a PCA, plot and optionally return the data with PCA coordinates and pca object

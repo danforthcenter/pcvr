@@ -53,30 +53,26 @@ x<-read.pcv("/home/jsumner/Desktop/shares/mgehan_share/llima/Maize_Project_2022/
    x$image<-sub("/shares/mgehan_share/raw_data/raw_image/maize_project_2022/MG001_E_060722_corrected/", "",x$image)
    write.csv(x, "/home/jsumner/Desktop/stargate/fahlgren_lab/pcvrTestData/bw_example.csv", row.names=F)
    
-
-bw<-read.pcv("/home/jsumner/Desktop/stargate/fahlgren_lab/pcvrTestData/bw_example.csv", "long")
-bw<-bw[nchar(bw$barcode)==13,]
-bars<-bw$barcode
-bars<-substr(bars,3,13)
-genotype<-substr(bars, 1,3)
-bars<-substr(bars,4,11)
-meta2<-substr(bars,1,2)
-id<-substr(bars,3,8)
-bw$genotype = genotype
-bw$meta = meta2
-bw$id = id
-bw$date<-lubridate::ymd(substr(bw$timestamp,1,10))
-begin <- min(bw$date)
-bw$day <- as.numeric(bw$date - begin)+1
+library(data.table)
+wide<-read.pcv("https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv", mode="wide",
+ singleValueOnly = T, reader="fread")
+wide$genotype = substr(wide$barcode, 3,5)
+wide$genotype = ifelse(wide$genotype == "002", "B73",
+                       ifelse(wide$genotype == "003", "W605S",
+                              ifelse(wide$genotype == "004", "MM", "Mo17")))
+wide$fertilizer = substr(wide$barcode, 8, 8)
+wide$fertilizer = ifelse(wide$fertilizer == "A", "100",
+                         ifelse(wide$fertilizer == "B", "50", "0"))
+wide<-bw.time(wide,timeCol="timestamp", group="barcode")
 
 des=c("genotype", "meta")
 phenotypes = colnames(bw)[19:33]
 timeCol = "day"
 
-frem(bw, des, phenotypes, timeCol, T, F, F, T, "all")
-frem(bw, des, phenotypes, timeCol, T, F, F, T, "all")
-frem(bw, des, phenotypes, timeCol, T, F, F, F, NULL)
-frem(bw, des, phenotypes, timeCol, T, F, F, T, 1)
+frem(wide, des, phenotypes, timeCol, T, F, F, T, "all")
+frem(wide, des, phenotypes, timeCol, T, F, F, T, "all")
+frem(wide, des, phenotypes, timeCol, T, F, F, F, NULL)
+frem(wide, des, phenotypes, timeCol, T, F, F, T, 1)
 
 ## End(Not run)
 

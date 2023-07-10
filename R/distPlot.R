@@ -96,7 +96,7 @@ distributionPlot<-function(fits, form, priors=NULL, params=NULL, d, maxTime=NULL
     time<-max(fit$data[[x]], na.rm=T)
     fitDraws<-do.call(cbind, lapply(params, function(par){
       draws<-as.data.frame(fit)[grepl(par, colnames(as.data.frame(fit)))]
-      if(nrow(prior_draws(fit))>1){draws<-draws[!grepl("^prior_", colnames(draws))]}
+      if(nrow(brms::prior_draws(fit))>1){draws<-draws[!grepl("^prior_", colnames(draws))]}
       splits<-strsplit(colnames(draws), split = "")
       mx<-max(unlist(lapply(splits,length)))
       ind<-which(unlist(lapply(1:mx, function(i) {length(unique(rapply(splits, function(j) {j[i]})))!=1 })))
@@ -114,7 +114,7 @@ distributionPlot<-function(fits, form, priors=NULL, params=NULL, d, maxTime=NULL
   #* otherwise, I need to extract and parse the prior
   #* OR I can ask for an argument describing the prior/giving an example vector for the prior.
   
-  if(all(unlist(lapply(fits, function(fit) nrow(prior_draws(fit))<1 )))){ # if no models were fit with sample_prior = T
+  if(all(unlist(lapply(fits, function(fit) nrow(brms::prior_draws(fit))<1 )))){ # if no models were fit with sample_prior = T
     if(!is.null(prior)){ # if prior is supplied as argument
       USEPRIOR=T
       if(class(priors[[1]])!="list"){
@@ -130,7 +130,7 @@ distributionPlot<-function(fits, form, priors=NULL, params=NULL, d, maxTime=NULL
       prior_df[[x]]<-0
     } else{USEPRIOR = F}
   } else { #* `need to fit some models with sample_prior and see how this works with them`
-    prior_df<-prior_draws(fits[[1]])
+    prior_df<-brms::prior_draws(fits[[1]])
     prior_df<-prior_df[ ,grepl(paste0("b_", paste0(params,collapse="|")), colnames(prior_df))]
     colnames(prior_df)<-gsub(group, "",colnames(prior_df))
     colnames(prior_df)<-gsub("^b_","",colnames(prior_df))

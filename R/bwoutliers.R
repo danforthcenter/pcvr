@@ -4,7 +4,7 @@
 #' @param phenotype Column to use to classify outliers.
 #' @param naTo0 Logical, should NA values to changed to 0.
 #' @param group  Grouping variables to find outliers as a character vector. This is typically time  and design variables (DAS, genotype, treatment, etc). These are used as predictors for `phenotype` in a generalized linear model.
-#' @param plotGroup Grouping variables for drawing plots if plot=T. Typically this is an identifier for images of a plant over time and defaults to c('barcode',"rotation").
+#' @param plotgroup Grouping variables for drawing plots if plot=T. Typically this is an identifier for images of a plant over time and defaults to c('barcode',"rotation").
 #' @param plot Logical, if TRUE then a list is returned with a ggplot and a dataframe.
 #' @param wide Logical, is the data in wide format? Defaults to TRUE.
 #' @param x Optional specification for x axis variable if plot is true. If left NULL (the default) then the first element of `group` is used.

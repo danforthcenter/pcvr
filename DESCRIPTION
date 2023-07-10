@@ -13,6 +13,8 @@ LazyData: true
 RoxygenNote: 7.2.3
 Imports: 
     FactoMineR,
+    stats,
+    utils,
     data.table,
     ggplot2,
     ggpubr,

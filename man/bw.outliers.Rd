@@ -27,6 +27,8 @@ bw.outliers(
 
 \item{group}{Grouping variables to find outliers as a character vector. This is typically time  and design variables (DAS, genotype, treatment, etc). These are used as predictors for `phenotype` in a generalized linear model.}
 
+\item{plotgroup}{Grouping variables for drawing plots if plot=T. Typically this is an identifier for images of a plant over time and defaults to c('barcode',"rotation").}
+
 \item{plot}{Logical, if TRUE then a list is returned with a ggplot and a dataframe.}
 
 \item{wide}{Logical, is the data in wide format? Defaults to TRUE.}
@@ -38,8 +40,6 @@ bw.outliers(
 \item{valueCol}{Column with phenotype values, defaults to "value". This should generally not need to be changed from the default.}
 
 \item{idCol}{Column(s) that identify individuals over time. Defaults to plotGroup.}
-
-\item{plotGroup}{Grouping variables for drawing plots if plot=T. Typically this is an identifier for images of a plant over time and defaults to c('barcode',"rotation").}
 }
 \value{
 The input dataframe with outliers removed.

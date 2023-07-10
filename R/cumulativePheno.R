@@ -6,10 +6,9 @@
 #' 
 #' @param df Dataframe to use, this is expected to be in wide format although in the future long may also be supported.
 #' @param phenotypes A character vector of column names for the phenotypes that should be compared against control.
-#' @param grouping A character vector of column names that identify groups in the data. Defaults to "barcode". These groups will be calibrated separately, with the exception of the group that identifies a control within the greater hierarchy.
-#' @param control A column name for the variable to be used to select the control observations. If left NULL (the default) then this will be taken as the first string in the group argument.
-#' @param controlGroup The level of the control variable to compare groups against.
-#' @param method The method or methods to use, any of "proportion", "difference", or "zscore". These methods will be appended to the added column names ('phenotype_method').
+#' @param group A character vector of column names that identify groups in the data. Defaults to "barcode". These groups will be calibrated separately, with the exception of the group that identifies a control within the greater hierarchy.
+#' @param timeCol Column name to use for time data.
+#' @param wide Logical, is the data wide format? Defaults to TRUE.
 #' @param traitCol Column with phenotype names, defaults to "trait". This should generally not need to be changed from the default.
 #' @param valueCol Column with phenotype values, defaults to "value". This should generally not need to be changed from the default.
 #' @return A dataframe with cumulative sum columns added for specified phenotypes

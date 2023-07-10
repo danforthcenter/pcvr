@@ -13,9 +13,9 @@ pwue(df, w, pheno = "area.pixels", time = "DAS", id = "barcode")
 
 \item{pheno}{Phenotype column name, defaults to "area.pixels"}
 
-\item{id}{Variable(s) that identify a plant over time. Defaults to \code{"barcode"}.}
+\item{time}{Variable(s) that identify a plant on a given day. Defaults to \code{c("barcode", "DAS")}.}
 
-\item{timeGroup}{Variable(s) that identify a plant on a given day. Defaults to \code{c("barcode", "DAS")}.}
+\item{id}{Variable(s) that identify a plant over time. Defaults to \code{"barcode"}.}
 }
 \value{
 A data frame containing the bellwether watering data joined to phenotype data with new columns for change in the phenotype, change in the pre-watering weight, and pseudo-water use efficiency (pWUE).

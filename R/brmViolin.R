@@ -146,7 +146,7 @@ brmViolin<-function(model, params=NULL,hyp="num/denom>1.05", compareX=NULL, agai
     facet_layer=ggplot2::facet_wrap(~param, scales="free_y") } else{
     facet_layer=ggplot2::facet_grid(as.formula(paste0("param~", facet)), scales="free_y") }
   
-  violinPlot<-ggplot2::ggplot(ldj, ggplot2::aes(x=.data[[x]], y=draw, fill=discrete_post_prob))+
+  violinPlot<-ggplot2::ggplot(ldj, ggplot2::aes(x=.data[[x]], y=.data[['draw']], fill=.data[['discrete_post_prob']]))+
     facet_layer+
     ggplot2::geom_violin()+
     lapply(unique(ldj$param), function(p) {

@@ -7,6 +7,7 @@
 #' @param facet Optional column or vector to facet/split plots on. If this is a character then it is taken as a column name. Numeric vectors are taken as values of trace to split on, if trace=NULL and this is numeric then plots will be split by the split argument. If this is a vector then a list of plots is returned.
 #' @param returnData Logical, should data be returned?
 #' @param ncp Optional, number of principal components to return attached to dataframe if data is returned. Defaults to all.
+#' @param split Time variable to split data on if a facet on time is used. See bellwether vignette for examples.
 #' @keywords pca
 #' @details If data is returned then it will contain the coordinates from the PCA and will not contain the columns that were reduced.
 #' 
