@@ -308,7 +308,7 @@ ggplot(pd, aes(x=DAS, y=mu_rel, fill = genotype) )+
 Sometimes we might want to use the cumulative difference over time
 
 ```{r}
-cp<-cumulativePheno(rt, phenotypes = c("area_cm2", "height_cm"), group="barcode", timeCol="DAS")
+cp<-cumulativePheno(sv_ag, phenotypes = c("area_cm2", "height_cm"), group="barcode", timeCol="DAS")
 ```
 
 

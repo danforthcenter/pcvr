@@ -23,6 +23,7 @@ Imports:
     patchwork,
     extraDistr,
     parallel,
+    bayestestR,
     viridis,
     scales
 Suggests: 
