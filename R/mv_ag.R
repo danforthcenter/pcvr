@@ -10,6 +10,7 @@
 #' @param keep A vector of single value traits to also average over groups.
 #' @param parallel Optionally the groups can be run in parallel with this number of cores, defaults to 1 if the "mc.cores" option is not set globally.
 #' @keywords emd, earth mover's distance, multi-value trait, network
+#' @import parallel
 #' @examples 
 #' 
 #' ## Not run:

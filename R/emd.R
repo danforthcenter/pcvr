@@ -14,6 +14,7 @@
 #' @param value A column name for the values to be drawn from in long data. Defaults to "value".
 #' @param raiseError Logical, should warnings/errors be raised for potentially large output? It is easy to ask for very many comparisons with this function so the goal of this argument is to catch a few of those and give estimates of how much time something may take. If the function is expected to take very long then a warning or an error is raised. If this is set to FALSE then no time estimates are made.
 #' @import ggplot2
+#' @import parallel
 #' @return A dataframe/matrix (if plot=F) or a list with a dataframe/matrix and a ggplot (if plot=T). The returned data contains pairwise EMD values.
 #' 
 #' @keywords emd, earth mover's distance, multi-value trait, histogram

@@ -23,12 +23,12 @@ Imports:
     patchwork,
     scales,
     extraDistr,
+    parallel,
     viridis
 Suggests: 
     knitr,
     rmarkdown,
     brms,
-    parallel,
     caret,
     vroom
 VignetteBuilder: knitr
