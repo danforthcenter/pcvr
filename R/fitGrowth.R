@@ -29,7 +29,7 @@ fitGrowth<-function(ss, iter = 2000, cores = getOption("mc.cores",1), chains = 4
       prior <-ss$prior
     }
   fit<-brms::brm(formula = ss$formula, prior = prior, data = ss$df, family=ss$family,
-                 iter = iter, init = ss$initfun(), cores = cores, chains = chains, backend=backend, ...)
+                 iter = iter, init = ss$initfun, cores = cores, chains = chains, backend=backend, ...)
   return(fit)
 }
 

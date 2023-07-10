@@ -15,7 +15,7 @@
 #' 
 #' @import lme4
 #' @import ggplot2
-#' @import scales
+#' @importFrom scales percent_format
 #' @import patchwork
 #' 
 #' @keywords read.csv, pcv, wide, long

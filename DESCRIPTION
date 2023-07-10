@@ -21,14 +21,13 @@ Imports:
     jsonlite,
     lme4,
     patchwork,
-    scales,
     extraDistr,
     parallel,
-    viridis
+    viridis,
+    scales
 Suggests: 
     knitr,
     rmarkdown,
     brms,
-    caret,
-    vroom
+    caret
 VignetteBuilder: knitr
