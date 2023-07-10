@@ -7,7 +7,7 @@
 conjugate(
   s1 = NULL,
   s2 = NULL,
-  method = c("t", "gaussian", "beta", "lognormal"),
+  method = c("t", "gaussian", "beta", "lognormal", "poisson", "negbin"),
   priors = NULL,
   plot = F,
   rope_range = NULL,
@@ -23,7 +23,8 @@ conjugate(
 
 \item{s2}{An optional second sample of the same form as s2.}
 
-\item{method}{The distribution/method to use. Currently "t", "gaussian", "beta", and "lognormal" are supported. Note that "t" and "gaussian" both use a T distribution with "t" testing for a difference of means and "gaussian" testing for a difference in the distributions (similar to a Z test).}
+\item{method}{The distribution/method to use. Currently "t", "gaussian", "beta", "lognormal", "poisson", and "negbin" (negative binomial) are supported. The count distributions (poisson and negative binomial) are only implemented for single value traits.
+Note that "t" and "gaussian" both use a T distribution with "t" testing for a difference of means and "gaussian" testing for a difference in the distributions (similar to a Z test).}
 
 \item{priors}{Prior distributions described as a list. This varies by method, see details. By default this is NULL and weak priors (jeffrey's prior where appropriate) are used. The \code{posterior} part of output can also be recycled as a new prior if Bayesian updating is appropriate for your use.}
 
@@ -50,7 +51,7 @@ See Kruschke (2018) for details on ROPE and other Bayesian methods to aide decis
 A list with named elements:
 \itemize{
    \item{\strong{summary}: A data frame containing HDI/HDE values for each sample and the ROPE as well as posterior probability of the hypothesis.}
-   \item{\strong{posterior}: A list of updated parameters in the same format as the prior for the given method.}
+   \item{\strong{posterior}: A list of updated parameters in the same format as the prior for the given method. If desired this does allow for Bayesian updating.}
    \item{\strong{plot_df}: A data frame of probabilities along the support for each sample. This is used for making the ggplot.}
    \item{\strong{rope_df}: A data frame of draws from the ROPE posterior.}
    \item{\strong{plot}: A ggplot showing the distribution of samples and optionally the distribution of differences/ROPE}
@@ -65,6 +66,8 @@ Prior distributions default to be weakly informative and in some cases you may w
    \item{\strong{"t" and "gaussian":} \code{priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ) } , where mu is the mean, n is the number of prior observations, and s2 is variance}
    \item{\strong{"beta":} \code{priors = list( a=c(0.5, 0.5), b=c(0.5, 0.5) )}, where a and b are shape parameters of the beta distribution.}
    \item{\strong{"lognormal": } \code{priors = list( mu_log=c(log(10),log(10)),n=c(1,1),sigma_log=c(log(3),log(3)) ) }, where mu_log is the mean on log scale, n is the number of prior observations, and sigma_log is the standard deviation on log scale }
+   \item{\strong{"poisson": } \code{priors = list(a=c(0.5,0.5),b=c(0.5,0.5))}, where a and b are shape parameters of the gamma distribution.}
+   \item{\strong{"negbin": } \code{priors = list(r=c(10,10), a=c(0.5,0.5),b=c(0.5,0.5))}, where r is the r parameter of the negative binomial distribution (representing the number of successes required) and where a and b are shape parameters of the beta distribution. Note that the r value is not updated. The conjugate beta prior is only valid when r is fixed and known, which is a limitation for this method.}
 }
 
 See examples for plots of these prior distributions.
@@ -162,6 +165,22 @@ beta_sv_ex <- conjugate(s1 = rbeta(20, 5, 5), s2= rbeta(20, 8, 5), method="beta"
               plot=T, rope_range = c(-0.1, 0.1), rope_ci = 0.89, rope_hdi = 0.95,
               cred.int.level = 0.89, hypothesis="equal")
 
+# poisson sv example
+
+poisson_sv_ex <- conjugate(s1 = rpois(20, 10), s2= rbeta(20, 8), method="poisson",
+              priors = list(a=c(0.5,0.5),b=c(0.5,0.5)),
+              plot=T, rope_range = c(-1, 1), rope_ci = 0.89, rope_hdi = 0.95,
+              cred.int.level = 0.89, hypothesis="equal")
+
+# negative binomial sv example
+# knowing r (required number of successes) is an important caveat for this method.
+# in the current implementation we suggest using the poisson method for data such as leaf counts
+
+negbin_sv_ex <- conjugate(s1 = rnbinom(20, 10, 0.5), s2= rnbinom(20, 10, 0.25), method="poisson",
+              priors = list(r = c(10, 10), a=c(0.5,0.5),b=c(0.5,0.5)),
+              plot=T, rope_range = c(-1, 1), rope_ci = 0.89, rope_hdi = 0.95,
+              cred.int.level = 0.89, hypothesis="equal")
+              
 # Example usage with plantCV data
 ## Not run:
 library(data.table)
@@ -205,6 +224,8 @@ area_res_t <- conjugate(s1 = mo17_area, s2= B73_area, method="t",
 # Plots of prior distributions
 set.seed(123)
 plot(seq(0,1,0.0001), dbeta(seq(0,1,0.0001), 0.5, 0.5), ylab="Density", xlab="Support", main="Beta", type="l")
+
+plot(seq(0,10,0.01), dgamma(seq(0,10,0.01), 0.5, 0.5), ylab="Density", xlab="Support", main="Poisson (gamma prior on Lambda parameter)", type="l")
 
 plot(seq(-20,20.001), dnorm(seq(-20,20.001), 0, sqrt(20)), ylab="Density", xlab="Support", main="T and Gaussian", type="l")
 

@@ -22,6 +22,9 @@ Returns a ggplot showing a brms model's credible intervals and optionally the in
 Function to visualize brms models similar to those made using growthSS outputs.
 }
 \examples{
+
+## Not run:
+
 simdf<-growthSim("logistic", n=20, t=25, params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))
 ss<-growthSS(model = "logistic", form=y~time|id/group, sigma="spline", df=simdf, priors = list("A"=130, "B"=12, "C"=3))
 lapply(ss,class)
@@ -34,6 +37,8 @@ print(load(url("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/
 brmPlot(fit_25, form = y~time|id/group)
 brmPlot(fit_9, form = y~time|id/group)
 brmPlot(fit_15, form = y~time|id/group)
+
+## End(Not run)
 
 }
 \keyword{exponential,}

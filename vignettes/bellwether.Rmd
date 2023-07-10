@@ -18,6 +18,17 @@ vignette: >
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+```{css}
+.static-code {
+  background-color: white;
+  border: 1px solid lightgray;
+}
+.simulated {
+  background-color: #EEF8FB;
+  border: 1px solid #287C94;
+}
+```
+
 ```{r}
 library(pcvr) # devtools::load_all()
 library(data.table) # for fread
@@ -31,9 +42,9 @@ library(patchwork) # for easy ggplot manipulation/combination
 The Bellwether phenotyping facility at the Donald Danforth Plant Science Center allows for high throughput image based phenotyping of up to 1140 plants over the course of several weeks. This generates a massive amount of image data which is typically analysed using plantCV, a python based image analysis tool developed and maintained by the Data Science Core Facility at DDPSC. The plantCV output from a Bellwether experiment consists of numeric phenotypes commonly broken into two categories, single value traits and multi value traits. Single value traits are phenotypes where one image yields one value, things like plant height or plant area. Multi value traits require multiple numbers to describe a single image and currently are limited to color histograms in various color spaces. Here we will focus only on the hue channel of HSV color, but there are lots of options with your data. This package is being developed to help with common analysis tasks that arise in using plantCV output. If your goal or experiment seems to be unsupported then please consider raising an [issue on github](https://github.com/joshqsumner/pcvr/issues/new/choose) so we can know what directions to take development in for the future.
 
 
-Installation of `pcvr` from github is possible with the `remotes` or `devtools` packages. 
+Installation of `pcvr` from github is possible with the `remotes` or `devtools` packages. You may need to restart R after installing or reinstalling packages.
 
-```
+```{r, class.source="static-code", eval=F}
 devtools::install_github("joshqsumner/pcvr", build_vignettes = TRUE)
 library(pcvr)
 ```
@@ -43,7 +54,20 @@ If you clone that repository and are making edits then you can easily use your l
 
 Functions in `pcvr` use colorblind friendly palettes from the `viridis` package if they specify color/fill scales. Some functions do not specify a color/fill scale and use `ggplot2` defaults. If you use these functions or base work off of them please be mindful of your choices regarding color. 
 
-As a final note before starting into `pcvr`, this vignette is laid out to help guide analyses from Bellwether experiments these functions tend to be generalizable and can be used for other plantCV data as well.
+As a final note before starting into `pcvr`, this vignette is laid out to help guide analyses from Bellwether experiments these functions tend to be generalizable and can be used for other plantCV data as well. There are some code chunks in this vignette that you are only presented to demonstrate syntax and that you are not meant to run locally if following along. Those are identified by style:
+
+```{r, class.source="static-code", eval=F}
+complicatedFunction("syntax") # do not run this style
+```
+
+```{r}
+1+1 # run this style
+```
+
+```{r, class.source="simulated", eval=T}
+support<-seq(0,1,0.0001) # this style is simulated data
+plot(support, dbeta(support, 5,5), type="l", main="simulated example")
+```
 
 
 ## Read In Data
@@ -57,38 +81,48 @@ The single value traits can be read in and converted to wide format with `read.p
 ```{r}
 sv<-read.pcv("https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv", mode="wide", singleValueOnly = T, reader="fread")
 
-sv$genotype = substr(sv$barcode, 3,5)
-sv$genotype = ifelse(sv$genotype == "002", "B73",
-                     ifelse(sv$genotype == "003", "W605S",
-                            ifelse(sv$genotype == "004", "MM", "Mo17")))
-sv$fertilizer = substr(sv$barcode, 8, 8)
-sv$fertilizer = ifelse(sv$fertilizer == "A", "100",
-                     ifelse(sv$fertilizer == "B", "50", "0"))
+if(T){ # we can parse barcodes for the metadata that we need
+  sv$genotype = substr(sv$barcode, 3,5)
+  sv$genotype = ifelse(sv$genotype == "002", "B73",
+                       ifelse(sv$genotype == "003", "W605S",
+                              ifelse(sv$genotype == "004", "MM", "Mo17")))
+  sv$fertilizer = substr(sv$barcode, 8, 8)
+  sv$fertilizer = ifelse(sv$fertilizer == "A", "100",
+                       ifelse(sv$fertilizer == "B", "50", "0"))
+} else { # or we might use a key file and join it to our data
+  key<-read.csv("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/smallPhenotyperRun_key.csv")
+  sv<-merge(sv, key, by="barcode")
+}
 ```
 
 
 Sometimes large plantCV output may be too large to be read into memory for R. In that case `read.pcv` has a `filter` argument which will filter rows using awk through linux/unix outside of R. That feature would work as shown below to read only single value traits into memory. This can take a few minutes but allows the entirely workflow to be documented in one R file. 
 
 
-```{r, eval=F}
+```{r, class.source="static-code", eval=F}
 example<-read.pcv("prohibitivelyLargeFile.csv",
    filters = list("trait in area, convex_hull_area, solidity, perimeter, width, height, longest_path, convex_hull_vertices, ellipse_major_axis, ellipse_minor_axis, ellipse_angle, ellipse_eccentricity, hue_circular_mean, hue_circular_std, hue_median", "sample in default"))
 ```
 
-### `read.pcv.bw`
+### `read.pcv.3`
 
-Legacy Bellwether data (plantCV version 3 output) can also be read in with `read.pcv.bw` which is a wrapper around `read.pcv` which attempts to do several common tasks related bellwether data joining internally. This should be considered experimental as it is based on plantCV version 3 and earlier outputs/bellwether experiments can take many formats and this has only been considered with a few datasets. With the older plantCV output the data is already in a wider format so here the default mode is "long". Note that while `read.pcv` works fine with this older data and still has some added benefits the reasons to use it in place of `data.table::fread` or `base::read.csv` are less compelling.
+Legacy Bellwether data (plantCV version 3 output) can also be read in with `read.pcv.3` which is a wrapper around `read.pcv` which attempts to do several common tasks related bellwether data joining internally. This should be considered experimental as it is based on plantCV version 3 and earlier outputs/bellwether experiments can take many formats and this has only been considered with a few datasets. With the older plantCV output the data is already in a wider format so here the default mode is "long". Note that while `read.pcv` works fine with this older data and still has some added benefits the reasons to use it in place of `data.table::fread` or `base::read.csv` are less compelling.
+
+Here we have examples of reading in various amounts of plantCV 3 bellwether data. In the final example we also list a conversion to take area from pixels to $\text{cm}^2$ for the 5MP camera that was used prior to 2023. Note that the conversion would change for a different camera such as the current 18MP camera. It is a good idea to check your color chip sizes if you are not sure about the appropriate conversion.
 
 ```{r, eval=F}
-bw<-read.pcv.bw( file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv3Phenos.csv",metaCol=NULL)
+bw_onlyPhenos<-read.pcv.3( file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv3Phenos.csv",metaCol=NULL)
+colnames(bw_onlyPhenos)
 
-bw<-read.pcv.bw( file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv3Phenos.csv",metaCol="meta", metaForm="vis_view_angle_zoom_horizontal_gain_exposure_v_new_n_rep", joinSnapshot = "id")
+bw_phenosAndMeta<-read.pcv.3( file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv3Phenos.csv",metaCol="meta", metaForm="vis_view_angle_zoom_horizontal_gain_exposure_v_new_n_rep", joinSnapshot = "id")
+colnames(bw_phenosAndMeta)
 
-bw<-read.pcv.bw( file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv3Phenos.csv",
+bw_all<-read.pcv.3( file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv3Phenos.csv",
    snapshotFile="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv3Snapshot.csv",
    designFile="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv3Design.csv",
    metaCol="meta",metaForm="vis_view_angle_zoom_horizontal_gain_exposure_v_new_n_rep",
-   joinSnapshot="id",conversions = list(area=13.2*3.7/46856))
+   joinSnapshot="id", conversions = list(area=13.2*3.7/46856))
+colnames(bw_all)
 ```
 
 
@@ -98,15 +132,32 @@ Often we want to convert our timestamp data from the lemnatech into either days 
 
 ```{r}
 sv<-bw.time(sv, plantingDelay = 0, phenotype="area.pixels", cutoff=10, timeCol="timestamp", group=c("barcode", "rotation"), plot=T)
+head(sv)
+dim(sv)
 ```
 
 Note that in these plots, and particularly clearly in the DAE plot, there are lots of plants which show a vertical line on their last day, indicating that our grouping might be incorrect. For this data that is due to the imaging schedule changing and getting 2 separate images at each rotation on the last day.
 
-If we plot our time data then we might see that there are a few outliers or we might check a summary of our phenotype and see some outliers, either from experiment conditions or from the image analysis workflow. The `bw.outliers` function can be used to remove outliers relative to a phenotype using cook's distance. Here just over 6 percent of data are removed as outliers.
+We can combine images taken at different angles of the same plant on a given day with `aggregate`, where we will also remove some columns we aren't using. In this case we use the mean of observations, but some people prefer a sum. Either way is fine. Here we also remove the DAE and DAP columns since we will not be using them. 
 
 ```{r}
-sv<-bw.outliers(sv, phenotype="area.pixels", group = c("DAS", "genotype", "fertilizer"), plotgroup = c("barcode", "rotation"))
+phenotypes <- c('area.pixels', 'convex_hull_area.pixels', 'convex_hull_vertices', 'ellipse_angle.degrees', 'ellipse_eccentricity', 'ellipse_major_axis.pixels', 'ellipse_minor_axis.pixels', 'height.pixels', 'hue_circular_mean.degrees', 'hue_circular_std.degrees', 'hue_median.degrees', 'longest_path.pixels', 'perimeter.pixels', 'solidity', 'width.pixels')
+phenoForm<-paste0("cbind(", paste0(phenotypes, collapse=", "), ")")
+groupForm<-"DAS+barcode+genotype+fertilizer"
+form<-as.formula(paste0(phenoForm, "~", groupForm))
+sv_ag_withOutliers<-aggregate(form, data=sv, mean, na.rm=T)
+dim(sv_ag_withOutliers)
 ```
+
+
+The `bw.outliers` function can be used to remove outliers relative to a phenotype using cook's distance. Here just over 4 percent of data are removed as outliers. The plot shows removed data points in red.
+
+```{r}
+sv_ag<-bw.outliers(df = sv_ag_withOutliers, phenotype="area.pixels", group = c("DAS", "genotype", "fertilizer"), plotgroup = c("barcode"))
+dim(sv_ag)
+```
+
+#### Watering Data
 
 We might also want to check the watering data, which can be read easily from json with `bw.water`.
 
@@ -121,40 +172,48 @@ water$fertilizer = substr(water$barcode, 8, 8)
 water$fertilizer = ifelse(water$fertilizer == "A", "100",
                      ifelse(water$fertilizer == "B", "50", "0"))
 
-ggplot(water[water$weight_after!=-1,], aes(x=DAS, y=water_amount, group=barcode,color=interaction(genotype,fertilizer)))+
+ggplot(water[water$weight_after!=-1,], aes(x=DAS, y=water_amount, group=barcode,color=genotype))+
+  facet_wrap(~factor(fertilizer, levels = c("0", "50", "100")))+
   geom_line()+
   pcv_theme()+
-  guides(color=guide_legend(title="Condition", nrow=3,byrow=T))+
+  guides(color=guide_legend(title="Condition", override.aes = list(linewidth=5)))+
+  labs(y="Watering Amount (g)")+
   theme(legend.position="bottom")
 ```
 
-Finally, we can combine images taken at different angles of the same plant on a given day with `aggregate`, where we will also remove some columns we aren't using. In this case we use the mean of observations, but some people prefer a sum. Either way is fine. Here we also remove the DAE column since it can be different for different angles and we are not concerned about adjusting for emergence here. 
+A common use for watering data is to look at water use efficiency (WUE). Here we can calculate an approximation of WUE based on the change in some phenotype (area) over the change in weight between waterings. Note that the plants in this example are very young and as such the data in this example is dominated by noise.
+
 
 ```{r}
-phenotypes <- c('area.pixels', 'convex_hull_area.pixels', 'convex_hull_vertices', 'ellipse_angle.degrees', 'ellipse_eccentricity', 'ellipse_major_axis.pixels', 'ellipse_minor_axis.pixels', 'height.pixels', 'hue_circular_mean.degrees', 'hue_circular_std.degrees', 'hue_median.degrees', 'longest_path.pixels', 'perimeter.pixels', 'solidity', 'width.pixels')
-phenoForm<-paste0("cbind(", paste0(phenotypes, collapse=", "), ")")
-groupForm<-"DAS+DAP+barcode+genotype+fertilizer"
-form<-as.formula(paste0(phenoForm, "~", groupForm))
-sv<-aggregate(form, data=sv, mean, na.rm=T)
+test<-pwue(sv_ag, water, "area.pixels", "DAS", c("barcode"))
+
+ggplot(test, aes(x=DAS, y=pWUE, color=genotype, group=barcode))+
+  geom_line()+
+  guides(color=guide_legend(override.aes = list(linewidth=5)))+
+  labs(y=expression("Pseudo WUE ("~frac(Delta~textstyle("Area")[" pixels"],
+                                        Delta~textstyle("Weight")[" g"] )~")" ))+
+  pcv_theme()
 ```
+
+
 
 
 ## FREM
 
-Now that our data is read in and has undergone some basic quality control we want to know which phenotypes are best explained by our design variables. The `frem` function partitions variance using a fully random effects model (frem). Here we provide our dataframe, the design variables, the phenotypes, and the column representing time. By default `frem` will use the last timepoint, but this is controlled with the `time` argument.
+Now that our data is read in and has undergone some basic quality control we want to know which phenotypes are best explained by our design variables. The `frem` function partitions variance using a fully random effects model (frem). Here we provide our dataframe, the design variables, the phenotypes, and the column representing time. By default `frem` will use the last timepoint, but this is controlled with the `time` argument. For this first example we mark the singular model fits (`markSingular=T`) to indicate places where `lme4::lmer` had some convergence issues. Generally these issues are minor and do not cause problems for interpreting these models, but you can pass additional arguments to `lme4::lmer` through additional arguments if desired.
 
 ```{r}
-frem(sv, des=c("genotype", "fertilizer"),
+frem(sv_ag, des=c("genotype", "fertilizer"),
      phenotypes=c('area.pixels', 'convex_hull_area.pixels', 'convex_hull_vertices', 'ellipse_angle.degrees', 'ellipse_eccentricity', 'ellipse_major_axis.pixels', 'ellipse_minor_axis.pixels', 'height.pixels', 'hue_circular_mean.degrees', 'hue_circular_std.degrees', 'hue_median.degrees', 'longest_path.pixels', 'perimeter.pixels', 'solidity', 'width.pixels'),
-     timeCol="DAS", cor=T, returnData=F, combine=F, markSingular=T)
+     timeCol="DAS", cor=T, returnData=F, combine=F, markSingular=T, time=NULL)
 ```
 
-Here we look at how much variance in each phenotype was explained over the course of the experiment.
+Here we look at how much variance in each phenotype was explained over the course of the experiment. We could also specify a set of times (`time = c(10:14)` for example) if we are most interested in a particular timeframe.
 
 ```{r}
-frem(sv, des=c("genotype", "fertilizer"),
+frem(sv_ag, des=c("genotype", "fertilizer"),
      phenotypes=c('area.pixels', 'convex_hull_area.pixels', 'convex_hull_vertices', 'ellipse_angle.degrees', 'ellipse_eccentricity', 'ellipse_major_axis.pixels', 'ellipse_minor_axis.pixels', 'height.pixels', 'hue_circular_mean.degrees', 'hue_circular_std.degrees', 'hue_median.degrees', 'longest_path.pixels', 'perimeter.pixels', 'solidity', 'width.pixels'),
-     timeCol="DAS", F, F, F, T, "all")
+     timeCol="DAS", cor=F, returnData=F, combine=F, markSingular=F, time="all")
 ```
 
 This informs our next steps. Hue and size based phenotypes are well explained by our design variables so we might decide to focus more complex analyses on those. In this experiment mini maize is one of the genotypes and the fertilizer treatment has an option with no nitrogen, so this intuitively makes sense and passes an eye check.
@@ -165,22 +224,26 @@ Most analysis focus on single value traits, that is phenotypes where one image r
 
 ```{r}
 pixels_per_cmsq <- 42.5^2   # pixel per cm^2
-sv$area_cm2<-sv$area.pixels / pixels_per_cmsq
-sv$height_cm <- sv$height.pixels/42.5
+sv_ag$area_cm2<-sv_ag$area.pixels / pixels_per_cmsq
+sv_ag$height_cm <- sv_ag$height.pixels/42.5
 ```
 
 
-### Loess Plots
+### Growth Trendlines
 
 Trendlines help us decide what next steps make the most sense and give a general impression of which conditions yielded healthier plants.
 
 ```{r}
-ggplot(sv, aes(x=DAS, y=area_cm2, group=interaction(genotype, fertilizer, lex.order=T),
-                                color = interaction(genotype, fertilizer, lex.order=T)))+
-  geom_smooth(method="loess", se=T)+
+ggplot(sv_ag, aes(x=DAS, y=area_cm2, group=interaction(genotype, fertilizer, lex.order=T),
+                                color = genotype))+
+  facet_wrap(~factor(fertilizer, levels = c("0", "50", "100")))+
+  geom_smooth(method="loess", se=T, fill = "gray90")+
+  geom_line(aes(group=barcode), linewidth=0.15)+
   labs(y=expression("Area"~"(cm"^2~")"),
-       color="Genotype\nand Soil")+
-  pcv_theme()+theme(axis.text.x.bottom=element_text(angle=0))
+       color="Genotype")+
+  guides(color=guide_legend(override.aes = list(linewidth=5)))+
+  pcv_theme()+
+  theme(axis.text.x.bottom=element_text(angle=0))
 ```
 
 
@@ -188,19 +251,20 @@ ggplot(sv, aes(x=DAS, y=area_cm2, group=interaction(genotype, fertilizer, lex.or
 
 Non-longitudinal data (or single day data from larger longitudinal data) can be compared with frequentist or Bayesian options.
 
-The `pcvBox` function is a simple wrapper around ggplot and ggpubr functions that compares data with either T tests or Wilcox tests.
+The `pcvBox` function is a simple wrapper around ggplot and ggpubr functions that compares data with either T tests (the default) or Wilcox tests.
 
 ```{r}
-pcvBox(sv[sv$genotype=='MM' & sv$DAS==15, ], x="fertilizer", y="area_cm2", compare="0", showPoints = T)+
+pcvBox(sv_ag[sv_ag$genotype=='MM' & sv_ag$DAS==15, ], x="fertilizer", y="area_cm2", compare="0", showPoints = T)+
   labs(y=expression("Area"~"(cm"^2~")"),
-       fill="Soil Fertilizer")
+       fill="Soil Fertilizer")+
+  scale_x_discrete(limits = c("0", "50", "100"))
 ```
 
 Alternatively the `conjugate` function compares several types of distributions using a Bayesian test and optionally evaluates a region of practical equivalence (ROPE). This function can be used with either wide or long single value data or wide multi-value data. See `?pcvr::conjugate` for details on usage and available options.
 
 ```{r}
-mo17_area <- sv[sv$genotype=="Mo17" & sv$DAS > 18 & sv$fertilizer == 100, "area_cm2"]
-B73_area <- sv[sv$genotype=="B73" & sv$DAS > 18 & sv$fertilizer == 100, "area_cm2"]
+mo17_area <- sv_ag[sv_ag$genotype=="Mo17" & sv_ag$DAS > 18 & sv_ag$fertilizer == 100, "area_cm2"]
+B73_area <- sv_ag[sv_ag$genotype=="B73" & sv_ag$DAS > 18 & sv_ag$fertilizer == 100, "area_cm2"]
 
 area_res_t <- conjugate(s1 = mo17_area, s2= B73_area, method="t", plot=T, rope_range = c(-5,5))
 ```
@@ -212,12 +276,32 @@ Here we can see a dramatic difference in our posterior distributions between gen
 Often bellwether experiments involve comparing stress tolerance between groups. For example in this dataset we might want to know which genotype shows the most resilience to reduced fertilizer. To easily check this we can change out data with `relativeTolerance`. Details on this function can be read with `?pcvr::relativeTolerance`.
 
 ```{r}
-rt<-relativeTolerance(sv, phenotypes = c("area_cm2", "height_cm"), grouping = c("fertilizer", "genotype", "DAS"), control = "fertilizer", controlGroup="100", method =  c("proportion", "difference", "zscore"), naTo0=T)
+rt<-relativeTolerance(sv_ag, phenotypes = c("area_cm2", "height_cm"), 
+                      grouping = c("fertilizer", "genotype", "DAS"), control = "fertilizer", controlGroup="100")
 
-pcvBox(rt[rt$DAS==19, ], x="fertilizer", y="area_cm2_proportion", showPoints = T)+
-  labs(y=expression("Proportion of Control Area"))+
-  facet_wrap(~genotype)+theme(legend.position="none")
+
+ggplot(rt[rt$phenotype == "area_cm2", ],
+       aes(x=DAS, y=mu_rel, fill = interaction(fertilizer, genotype)) )+
+  geom_col(position="dodge")+
+  pcv_theme()+
+  labs(y="Relative Tolerance", fill="Fertilizer\nand Genotype")
 ```
+
+Looking at the entire data for the area phenotype is very busy so we might subset to look at something more specific, where we see some odd products of the plants germinating on the bellwether system.
+
+```{r}
+pd<-rt[rt$phenotype == "area_cm2" & rt$DAS %in% c(5:19) & rt$fertilizer=="0", ]
+pd$upper_2se <- pd$mu_rel + 2* pd$se_rel
+pd$lower_2se <- pd$mu_rel - 2* pd$se_rel
+
+ggplot(pd, aes(x=DAS, y=mu_rel, fill = genotype) )+
+  geom_col(position="dodge")+
+  geom_errorbar( aes(ymin = lower_2se, ymax = upper_2se,
+                     group = genotype), position="dodge" )+
+  pcv_theme()+
+  labs(y="Relative Tolerance")
+```
+
 
 ### Cumulative Phenotypes
 
@@ -231,19 +315,21 @@ cp<-cumulativePheno(rt, phenotypes = c("area_cm2", "height_cm"), group="barcode"
 We can check that this worked correctly with trendlines:
 
 ```{r}
-ggplot(cp, aes(x=DAS, y=area_cm2_csum, color = interaction(genotype, fertilizer), group= barcode))+
+ggplot(cp, aes(x=DAS, y=area_cm2_csum, color = genotype, group= barcode))+
+  facet_wrap(~factor(fertilizer, levels = c("0", "50", "100")))+
   geom_line()+
-  theme_minimal()+
+  pcv_theme()+
   labs(y=expression("Cumulative Sum of Area"~"(cm"^2~")"),
-       color="Genotype\nand Soil")
+       color="Genotype")
 ```
 
-And we can use this new phenotype data to analyse data from the entire experiment using just the last day.
+And we can use this new phenotype data to analyse data from the entire experiment using just the last day. Here we don't specify a comparison group so `pcvBox` does not make any statistical comparisons.
 
 ```{r}
 pcvBox(cp[cp$DAS==19, ], x="fertilizer", y="area_cm2_csum", showPoints = T)+
   labs(y=expression("Cumulative Area"))+
-  facet_wrap(~genotype)+theme(legend.position="none")
+  facet_wrap(~genotype)+theme(legend.position="none")+
+  scale_x_discrete(limits = c("0", "50", "100"))
 ```
 
 
@@ -256,7 +342,7 @@ Longitudinal modeling is the most comprehensive way to use the single value trai
 
 Based on literature and observed trends there are 6 common growth models that `pcvr` supports. Those are shown here using the `growthSim` function.
 
-```{r}
+```{r,  class.source="simulated", class.output="simulated"}
 simdf<-growthSim("logistic", n=20, t=25, params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))
 l<-ggplot(simdf,aes(time, y, group=interaction(group,id)))+
   geom_line(aes(color=group))+labs(title="Logistic")+theme_minimal()+theme(legend.position="none")
@@ -290,7 +376,7 @@ Typically at least one of these models will be a good fit to your bellwether dat
 
 #### Model setup 
 
-Coding a multilevel bayesian model can be involved. Even with the greatly simplified syntax used by `brms` this can present a barrier to entry for some people who could benefit from using very robust models. To help get around this potential issue for the specific case of measuring growth over time `pcvr` includes several functions to work with `brms`, the first of which is `growthSS`, a self-starter helper function for use with `brms::brm`.
+Coding a multilevel bayesian model can be a difficult and time consuming process. Even with the greatly simplified syntax used by `brms` this can present a barrier to entry for some people who could benefit from using very robust models. To help get around this potential issue for the specific case of measuring growth over time `pcvr` includes several functions to work with `brms`, the first of which is `growthSS`, a self-starter helper function for use with `brms::brm`.
 
 ##### submodel options
 
@@ -304,13 +390,23 @@ An important part of bayesian statistics is setting an appropriate prior. These 
 
 In `growthSS` priors can be specified as a brmsprior object (in which case it is used as is), a named list (names representing parameters), or a numeric vector, where values will be used to generate lognormal priors with a long right tail. Lognormal priors with long right tails are used because the values for our growth curves are strictly positive and the lognormal distribution is easily interpreted. The tail is a product of the variance, which is assumed to be 0.25 for simplicity and to ensure priors are wide. This means that only a location parameter needs to be provided. If a list is used then each element of the list can be length 1 in which case each group will use the same prior or it can be a vector of the same length as `unique(data$group)` where `group` is your grouping variable from the form argument to `growthSS`. If a vector is used then a warning will be printed to check that the assumed order of groups is correct. The `growthSim` function can be useful in thinking about what a reasonable prior distribution might be, although priors should not be picked by trying to get a great fit by eye to your collected data.
 
-We can check our priors with the `plotPrior` function.
+We can check the priors made by `growthSS` with the `plotPrior` function.
 
 ```{r}
-priors = list("A" = 130, "B" = 10, "C" = 1.2)
+priors = list("A" = 130, "B" = 10, "C" = 0.2)
 priorPlots<-plotPrior(priors)
 priorPlots[[1]]/priorPlots[[2]]/priorPlots[[3]]
 ```
+
+Looking at the prior distributions this way is useful, but for those still familiarizing with a given growth model the parameter values may not be very intuitive. To help with picking reasonable priors while familiarizing with the meaning of the model parameters the `plotPrior` function can also simulate growth curves by making draws from the specified prior distributions. Here is an example of using `plotPrior` in this way to pick between possible sets of prior distributions for a gompertz model. For asymptotic distributions the prior on "A" is added to the y margin. For distributions with an inflection point the prior on "B" is shown in the x margin. Arbitrary numbers of priors can be compared in this manner, but more than two or three can be cluttered so an iterative process is recommended if you are learning about your growth model.
+
+```{r}
+twoPriors = list("A" = c(100, 130), "B" = c(6, 12), "C" = c(0.5, 0.25))
+plotPrior(twoPriors, "gompertz",n=100)[[1]]
+```
+
+This 
+
 
 
 ##### Using `growthSS`
@@ -318,20 +414,28 @@ priorPlots[[1]]/priorPlots[[2]]/priorPlots[[3]]
 Now we're ready to define the necessary variables in our data and use the `growthSS` function. 
 
 ```{r}
-sv$group<-interaction(sv$fertilizer, sv$genotype)
+sv_ag$group<-interaction(sv_ag$fertilizer, sv_ag$genotype)
 ```
+
+The `brms` package is not automatically imported by `pcvr`, so before fitting models we would need to load that package. For details on installing [`brms`](https://github.com/paul-buerkner/brms) and either [`rstan`](https://mc-stan.org/rstan/) or [`cmdstanr`](https://mc-stan.org/cmdstanr/) (with `cmdstanr` being recommended), see those packages linked documentation.
 
 ```{r, eval=F}
-ss<-growthSS(model="gompertz", form =  area_cm2~DAS|barcode/group, sigma="spline", df=sv,
-             priors = list("A" = 130, "B" = 10, "C" = 1.2))
+library(brms)
 ```
 
-Now we have most of our model components in the `ss` object.
+Here our priors are informed by a general understanding of what we expect to see for a plant on the bellwether system. In general the example priors 
 
-Before trying to fit the model it is generally a good idea to check a plot of the data and make sure you have everything defined correctly.
+```{r, eval=F}
+ss<-growthSS(model="gompertz", form =  area_cm2~DAS|barcode/group, sigma="spline", df=sv_ag,
+             priors = list("A" = 130, "B" = 10, "C" = 0.5))
+```
+
+Now we have most of our model components in the `ss` object. Since we specified a gompertz model we have three parameters, the asymptote (`A`), the inflection point (`B`), and the growth rate (`C`). For other model options see `?pcvr::growthSim` for details on the parameters.
+
+Before trying to fit the model it is generally a good idea to check one last plot of the data and make sure you have everything defined correctly.
 
 ```{r}
-ggplot(sv, aes(x=DAS, y=area_cm2, group=barcode, color=group))+
+ggplot(sv_ag, aes(x=DAS, y=area_cm2, group=barcode, color=group))+
   geom_line()+theme_minimal()+
   labs(y=expression("Area"~"(cm"^2~")"),
        color="Genotype\nand Soil")
@@ -342,17 +446,11 @@ This looks okay, there are no strange jumps in the data or glaring problems.
 
 #### Running Models
 
-The `brms` package is not automatically imported by `pcvr`, so before fitting models we would need to load that package.
+The `fitGrowth` function is a wrapper around `brms::brm` which automatically uses the output from `growthSS`. Any additional arguments to `brms::brm` can still be specified, a few examples of which are shown here. 
 
-```{r, eval=F}
-library(brms)
-```
-
-
-```{r, eval=F}
-fit <- brm(ss$formula, prior = ss$prior, data = ss$df, family = ss$family, 
-                           iter = 2000, cores = 4, chains = 4, init = ss$initfun, 
-                           control = list(adapt_delta = 0.999, max_treedepth = 20), backend = "cmdstanr")
+```{r, class.source="static-code", eval=F}
+fit <- fitGrowth(ss, iter = 1000, cores = 2, chains = 2, backend = "cmdstanr",
+               control = list(adapt_delta = 0.999, max_treedepth = 20)) # options to increase performance
 ```
 
 ```{r, eval=F}
@@ -416,7 +514,7 @@ distributionPlot(fits = from3to25, form = y~time|id/group, params=c("A", "B", "C
 Working with multi value traits leads to different statistical challenges than the single value traits. Generally reading the data in as wide format makes for a significantly smaller object in memory terms since there are not lots of duplicated metadata (identifiers for each row when every image has hundreds of rows potentially). Note that for many questions even about color it is not necessary to use the entire color histograms. Make sure that you have a good reason to use the complete color data before going down this particular path for too long. As an example, a very simple comparison of the circular mean of Hue here will show our treatment effect in this data. 
 
 ```{r}
-ggplot(sv[sv$DAS==18,], aes(x = fertilizer, y=hue_circular_mean.degrees, fill = fertilizer))+
+ggplot(sv_ag[sv_ag$DAS==18,], aes(x = fertilizer, y=hue_circular_mean.degrees, fill = fertilizer))+
   geom_boxplot(outlier.shape=NA)+
   geom_jitter(width=0.05, size=0.5)+
   scale_fill_manual(values = c(viridis::viridis(3,1,0.1)), breaks = c('0','50','100'))+
@@ -450,7 +548,7 @@ hue_wide<-aggregate(form, data=hue_wide, mean, na.rm=T)
 
 ### Joyplots
 
-Joyplots are a common way to look at lots of distributions. Here we check the hue histograms as joyplots using the 18th day and add a new fill for the hue colorspace. Note that this uses the `ggridges` package which relies on some deprecated `ggplot2` features, hopefully this will be addressed soon but in the meantime you may get a warning message using `pcv.joyplot`. 
+Joyplots are a common way to look at lots of distributions. Here we check the hue histograms as joyplots using the 18th day and add a new fill for the hue colorspace.
 
 
 ```{r, message=F}
@@ -483,7 +581,9 @@ hue_res_ln <- conjugate(s1 = mo17_sample, s2= B73_sample, method="lognormal",
 Ordinations are another common way to look at multi value traits. The `pcadf` function in `pcvr` has several options for how this can work.
 
 ```{r}
-pcadf(hue_wide, cols = "hue_frequencies", color = c("genotype", "fertilizer"), returnData=F)
+# could use facet="fertilizer" here but I want to reorder manually instead of changing the data
+pcadf(hue_wide, cols = "hue_frequencies", color = "genotype", returnData=F)+
+  facet_wrap(~factor(fertilizer, levels=c("0", "50", "100")))
 ```
 
 
@@ -501,10 +601,6 @@ plots<-pcadf(hue_wide, cols = "hue_frequencies", color = c("genotype", "fertiliz
 (plots[[1]]+plots[[2]]) / (plots[[3]]+plots[[2]]) + plot_layout(guides = "collect")
 ```
 
-```{r}
-pcadf(hue_wide, cols = "hue_frequencies", color = c("genotype", "fertilizer"),  facet="DAS", returnData=F)
-```
-
 ### Earth Mover's Distance
 
 Since color data is exported from plantCV as histogram data we can also use Earth Mover's Distance (EMD) to compare images. Conceptually EMD is a distance that quantifies how much work it would take to turn one histogram into another. Here we do pairwise comparisons of all our rows and return a long dataframe of those distances. Note that even running several cores in parallel this can take a lot of time for larger datasets since the number of comparisons quickly can become unwieldy. The output also will require more work to keep analyzing, so make sure this is what you want to be doing before using EMD to compare color histograms. If you are only interested in a change of the mean then this is probably not the best way to use your data.
@@ -513,7 +609,7 @@ Here is a fast example of a place where EMD makes a lot of sense. In this simula
 
 
 
-```{r}
+```{r,  class.source="simulated", class.output="simulated"}
 set.seed(123)
 
 simFreqs<-function(vec, group){
@@ -530,8 +626,6 @@ sim_df<-rbind(do.call(rbind, lapply(1:10, function(i){ simFreqs(rnorm(200, 50, 1
       do.call(rbind, lapply(1:10, function(i){ simFreqs( runif(200,1,180), group="uniform") }))
       )
 
-#* plot the different groups, run emd, show failings for A vs B
-
 sim_df_long<-as.data.frame(data.table::melt(data.table::as.data.table(sim_df), id.vars = "group"))
 sim_df_long$bin<-as.numeric(sub("sim_", "", sim_df_long$variable))
 
@@ -547,7 +641,7 @@ Our plots show very different distributions, so we get EMD between our images an
 
 
 
-```{r}
+```{r,  class.source="simulated", class.output="simulated"}
 sim_emd<-pcv.emd(df = sim_df, cols="sim_", reorder=c("group"),
         mat =F, plot=T, parallel = 1, raiseError=T)
 sim_emd$plot
@@ -559,7 +653,7 @@ Now we can filter edge strength during our network building step for EMD > 0.5, 
 
 
 
-```{r}
+```{r,  class.source="simulated", class.output="simulated"}
 emd = sim_emd$data; meta = NULL; dissim=T; distCol="emd"; filter = 0.5; direction="greater"
 n<-pcv.net(sim_emd$data, filter = 0.5)
 net.plot(n, fill="group")
@@ -570,7 +664,7 @@ The distributions separate very well from each other, but we don't actually see 
 
 
 
-```{r}
+```{r,  class.source="simulated", class.output="simulated"}
 n<-pcv.net(sim_emd$data, filter = '0.5')
 net.plot(n, fill="group")
 ```
@@ -584,13 +678,11 @@ Here is an example using our hue data, note that these examples will just loadin
 
 ```{r, eval=F}
 EMD<-pcv.emd(df = hue_wide[hue_wide$DAS %in% c(5,12,19),], cols="hue_frequencies", reorder=c("fertilizer", "genotype", "DAS"),
-             mat =F, plot=T, parallel = 12, raiseError=T) 
-save(EMD, file="/home/jsumner/Desktop/stargate/fahlgren_lab/pcvr/data/bw_vignette_small_emd.rda")
+             mat =F, plot=T, parallel = 12, raiseError=T)
 ```
 
 ```{r, eval=F, include=F}
 data(bw_vignette_small_emd, package = "pcvr")
-# print(load("/home/jsumner/Desktop/stargate/fahlgren_lab/pcvr/data/bw_vignette_small_emd.rda"))
 ```
 
 ```{r, eval=F, include=F}
@@ -615,15 +707,16 @@ dim(hue_ag2)
 
 As it stands our EMD data is potentially difficult to use for those unfamiliar with distance matrix based analysis. Here we represent our distances as a network to help use the results.
 
-```{r, eval=F}
+```{r}
+set.seed(456)
 net<-pcv.net(EMD$data, meta = c("fertilizer", "genotype", "DAS"), filter=0.5)
 ```
 
-```{r, eval=F}
+```{r}
 net.plot(net, fill = "DAS", shape = "fertilizer", size=2)
 ```
 
-This is a much more complicated network! Parsing biological meaning out of this would require more work than the first example with 5 very different distributions. In general if you pick to use EMD with or without networks start small and consider what each step should mean conceptually for your experiment.
+This is a much more complicated network! Parsing biological meaning out of this would require more work than the first example with 5 very different distributions, but there is a pretty strong cluster in the upper right corner of plants with low fertilizer at the end of the experiment. In general if you pick to use EMD with or without networks start small and consider what each step should mean conceptually for your experiment.
 
 ## Conclusion
 

@@ -39,7 +39,7 @@ pcv.joyplot(
 
 \item{trait}{Column containing phenotype names. Defaults to "trait".}
 
-\item{fillx}{Logical, whether or not to use ggridges::geom_density_ridges_gradient . Default is T, if F then ggridges::geom_density_ridges is used instead, with arbitrary fill.}
+\item{fillx}{Logical, whether or not to use \code{ggridges::geom_density_ridges_gradient} . Default is T, if F then \code{ggridges::geom_density_ridges} is used instead, with arbitrary fill. Note that \code{ggridges::geom_density_ridges_gradient} may issue a message about deprecated ggplot2 features.}
 }
 \value{
 Returns either a ggplot object or a list containing a ggplot and a dataframe of statistical comparisons (if compare is not FALSE).
@@ -57,6 +57,9 @@ The method argument is used for statistical testing of groups. There are current
 }
 }
 \examples{
+
+## Not run: 
+
 df <- read.pcv("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest2.csv", "long", F)
 wide_beta <- read.pcv("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest2.csv", "wide", F)
 pcv.joyplot(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"))
@@ -75,6 +78,9 @@ wide$fertilizer = ifelse(wide$fertilizer == "A", "100",
 p<-pcv.joyplot(wide, index = "hue_frequencies", group=c("genotype", "fertilizer"))
 # For some color traits it makes sense to show the actual represented color, which can be done easily by adding new fill scales.
 p+scale_fill_gradientn(colors = scales::hue_pal(l=65)(360))
+
+## End(Not run)
+
 }
 \keyword{bayesian,}
 \keyword{ggplot,}

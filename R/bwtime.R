@@ -18,6 +18,8 @@
 #' @export
 #' @examples 
 #' 
+#' ## Not run:
+#' 
 #' sv<-read.pcv("https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv", mode="wide", singleValueOnly = T, reader="fread")
 #' sv$genotype = substr(sv$barcode, 3,5)
 #' sv$genotype = ifelse(sv$genotype == "002", "B73",
@@ -39,6 +41,7 @@
 #'                    ifelse(svl$fertilizer == "B", "50", "0"))
 #' svl<-bw.time(svl, plantingDelay = 0, phenotype="area", cutoff=10, timeCol="timestamp", group=c("barcode", "rotation"), plot=F,wide=F)
 #' 
+#' ## End(Not run)
 #'
 bw.time<-function(df = NULL, mode=NULL, plantingDelay = NULL,
                   phenotype=NULL, cutoff=1, timeCol="timestamp",

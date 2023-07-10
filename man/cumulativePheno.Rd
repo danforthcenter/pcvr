@@ -39,6 +39,8 @@ Often in bellwether experiments we are curious about the effect of some treatmen
 }
 \examples{
 
+## Not run:
+
 sv<-read.pcv("https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv", mode="wide", singleValueOnly = T, reader="fread")
 sv$genotype = substr(sv$barcode, 3,5)
 sv$genotype = ifelse(sv$genotype == "002", "B73",
@@ -76,6 +78,7 @@ sv_l$fertilizer = ifelse(sv_l$fertilizer == "A", "100",
 sv_l<-bw.time(sv_l, plantingDelay = 0, phenotype="area", cutoff=10, timeCol="timestamp", group=c("barcode", "rotation"), wide=F)
 sv_l<-cumulativePheno(sv_l, phenotypes=c("area", "height"), group=c("barcode", "rotation"), timeCol="DAS", wide=F)
 
+## End(Not run)
 
 }
 \keyword{single-value-traits}

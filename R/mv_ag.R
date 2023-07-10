@@ -11,7 +11,9 @@
 #' @param parallel Optionally the groups can be run in parallel with this number of cores, defaults to 1 if the "mc.cores" option is not set globally.
 #' @keywords emd, earth mover's distance, multi-value trait, network
 #' @examples 
-#' library(pcvr)
+#' 
+#' ## Not run:
+#' 
 #' hue_wide<-read.pcv("https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv", mode="wide", singleValueOnly = T, multiValPattern = "hist", reader="fread")
 #' hue_wide$genotype = substr(hue_wide$barcode, 3,5)
 #' hue_wide$genotype = ifelse(hue_wide$genotype == "002", "B73",
@@ -31,6 +33,8 @@
 #' dim(hue_ag1)
 #' hue_ag2<-mv_ag(hue_wide, group = c("DAS", "genotype", "fertilizer"),  n_per_group=1, keep=c("area.pixels", "height.pixels"))
 #' dim(hue_ag2)
+#' 
+#' ## End(Not run)
 #' 
 #' @return Returns a dataframe summarized by the specified groups over the multi-value traits.
 #' @export

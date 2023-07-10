@@ -28,7 +28,24 @@ A named list of elements to make it easier to fit common brms models.
 \description{
 Ease of use brms starter function for 6 growth model parameterizations
 }
+\details{
+Default priors are not provided, but these can serve as starting points for each distribution. 
+You are encouraged to use \code{growthSim} to consider what kind of trendlines result from changes to your prior and for interpretation of each parameter.
+You should not looking back and forth at your data trying to match your observed growth exactly with a prior distribution,
+rather this should be informed by an understanding of the plants you are using and expectations based on previous research. 
+
+\itemize{
+   \item \bold{Logistic}: \code{list(A = 130, B = 12, C = 3)}
+    \item \bold{Gompertz}: \code{list(A = 130, B = 12, C = 1.25)}
+    \item \bold{Monomolecular}: \code{list(A = 130, B = 2)}
+    \item \bold{Exponential}: \code{list(A = 15, B = 0.1)}
+    \item \bold{Linear}: \code{list(A = 1)}
+    \item \bold{Power Law}: \code{list(A = 13, B = 2)}
+}
+}
 \examples{
+
+## Not run:
 
 simdf<-growthSim("logistic", n=20, t=25, params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))
 ss<-growthSS(model = "logistic", form=y~time|id/group, sigma="spline", df=simdf, priors = list("A"=130, "B"=12, "C"=3))
@@ -37,6 +54,8 @@ ss$initfun()
 fit_test <- brm(ss$formula, prior = ss$prior, data = ss$df, family = ss$family, # main components of the model
               iter = 1000, cores = 2, chains = 2, init = ss$initfun, # parameters controling chain number, chain length, parallelization and starting values
               control = list(adapt_delta = 0.999, max_treedepth = 20), backend = "cmdstanr") # options to increase performance
+## End(Not run)              
+              
 }
 \keyword{Bayesian,}
 \keyword{brms}

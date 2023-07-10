@@ -22,12 +22,12 @@ Imports:
     lme4,
     patchwork,
     scales,
+    extraDistr,
     viridis
 Suggests: 
     knitr,
     rmarkdown,
     brms,
-    extraDistr,
     parallel,
     caret,
     vroom

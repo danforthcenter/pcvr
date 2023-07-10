@@ -27,11 +27,17 @@
 #' @return Returns either a ggplot object or a list containing a ggplot and a dataframe of statistical comparisons (if compare is not FALSE).
 #' 
 #' @examples 
+#' 
+#' ## Not run:
+#' 
 #' df <- read.pcv("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest2.csv", "long", F)
 #' pcv.hists(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"))
 #' pcv.hists(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"), method="ks")
 #' pcv.hists(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"), method="beta")
 #' pcv.hists(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"), method="gaussian")
+#' 
+#' ## Not run:
+#' 
 #' @export
 
 

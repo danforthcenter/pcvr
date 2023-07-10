@@ -11,7 +11,7 @@
 #' @param combine Logical, should plots be combined with patchwork? Defaults to T, which works well when there is a single timepoint being used.
 #' @param markSingular Logical, should singular fits be marked in the variance explained plot? This is FALSE by default but it is good practice to check with TRUE in some situations. If TRUE this will add white markings to the plot where models had singular fits, which is the most common problem with this type of model.
 #' @param time If the data contains multiple timepoints then which should be used? This can be left NULL which will use the maximum time if \code{timeCol} is specified. If a single number is provided then that time value will be used. Multiple numbers will include those timepoints. The string "all" will include all timepoints.
-#' 
+#' @param ... Additional arguments passed to \code{lme4::lmer}.
 #' 
 #' @import lme4
 #' @import ggplot2
@@ -23,6 +23,8 @@
 #' @return Returns either a plot (if returnData=F) or a list with a plot and data/a list of dataframes (depending on returnData and cor).
 #' 
 #' @examples 
+#' 
+#' ## Not run:
 #' 
 #' x<-read.pcv("/home/jsumner/Desktop/shares/mgehan_share/llima/Maize_Project_2022/nir_maize_first_exp_results.csv",
 #'    filters = list("trait in area, convex_hull_area, solidity, perimeter, width, height, longest_path, convex_hull_vertices, ellipse_major_axis, ellipse_minor_axis, ellipse_angle, ellipse_eccentricity, hue_circular_mean, hue_circular_std, hue_median", "sample in default"))
@@ -54,9 +56,11 @@
 #' frem(bw, des, phenotypes, timeCol, T, F, F, F, NULL)
 #' frem(bw, des, phenotypes, timeCol, T, F, F, T, 1)
 #' 
+#' ## End(Not run)
+#' 
 #' @export
 
-frem<-function(df, des, phenotypes, timeCol=NULL, cor=T, returnData=F, combine=T, markSingular = F,time=NULL){
+frem<-function(df, des, phenotypes, timeCol=NULL, cor=T, returnData=F, combine=T, markSingular = F,time=NULL, ...){
   #* `check for values`
   if(any(missing(df), missing(des), missing(phenotypes))){
     stop("df, des, phenotypes, and timeCol arguments need to be specified.")
@@ -96,7 +100,7 @@ frem<-function(df, des, phenotypes, timeCol=NULL, cor=T, returnData=F, combine=T
     do.call(rbind, lapply(phenotypes, function(e){
       
       fmla <- as.formula(paste0("as.numeric(",e,") ~ ",ind_fmla))
-      model <- suppressMessages(lme4::lmer(fmla,data = sub))
+      model <- suppressMessages(lme4::lmer(fmla,data = sub, ...))
       if(length(model@optinfo$conv$lme4)>=1){
         singular<-any(grepl("isSingular",model@optinfo$conv$lme4$messages))
       } else {singular=F}

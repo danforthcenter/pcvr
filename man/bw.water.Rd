@@ -18,9 +18,11 @@ A data frame containing the bellwether watering data
 Read in lemnatech watering data from metadata.json files
 }
 \examples{
+## Not run: 
+
 wateringData<-bw.water("example.json") 
+
+## End(Not run) 
 }
-\keyword{long}
-\keyword{pcv,}
-\keyword{read.csv,}
-\keyword{wide,}
+\keyword{json}
+\keyword{watering,}

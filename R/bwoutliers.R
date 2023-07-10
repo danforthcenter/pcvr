@@ -14,6 +14,9 @@
 #' @keywords Bellwether, ggplot
 #' @import ggplot2
 #' @examples 
+#' 
+#' ## Not run:
+#' 
 #' sv<-read.pcv("https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv", mode="wide", singleValueOnly = T, reader="fread")
 #' sv$genotype = substr(sv$barcode, 3,5)
 #' sv$genotype = ifelse(sv$genotype == "002", "B73",
@@ -38,6 +41,7 @@
 #' 
 #' svl<-bw.outliers(df = svl, phenotype="area", naTo0 = F, group = c("DAS", "genotype", "fertilizer"), plotgroup=c('barcode',"rotation"), plot=T, wide=F)
 #' 
+#' ## End(Not run)
 #' 
 #' @return The input dataframe with outliers removed.
 #' @export
@@ -61,8 +65,9 @@ bw.outliers<-function(df = NULL,
     outlierForm<-paste("as.numeric(",phenotype,")~", paste(paste0("as.factor(",group,")"),collapse=":"))
     if(outlierMethod=="cooks"){
       cooksd <- cooks.distance(glm(data=df, as.formula(outlierForm)))
-      summary(cooksd)
+      # summary(cooksd)
       outlierCutoff<-3*mean(cooksd, na.rm=T)
+      cooksd[is.na(cooksd)] <- outlierCutoff - 0.1 # keeping NAs by assigning a value below cutoff.
       cooksd_df<-data.frame("outlier" = cooksd)
       df<-cbind(df, cooksd_df) 
       pctRm<-paste0(100*(1-round(nrow(df[df$outlier < outlierCutoff, ]) / nrow(df), 5)), "% removed as outliers using Cook's Distance")
@@ -76,6 +81,7 @@ bw.outliers<-function(df = NULL,
     if(outlierMethod=="cooks"){
       cooksd <- cooks.distance(glm(data=subdf, as.formula(outlierForm)))
       outlierCutoff<-3*mean(cooksd, na.rm=T)
+      cooksd[is.na(cooksd)] <- outlierCutoff - 0.1 # keeping NAs by assigning a value below cutoff.
       cooksd_df<-data.frame("outlier" = cooksd)
       subdf<-cbind(subdf, cooksd_df)
       pctRm<-paste0(100*(1-round(nrow(subdf[subdf$outlier < outlierCutoff, ]) / nrow(subdf), 5)),
@@ -91,8 +97,8 @@ bw.outliers<-function(df = NULL,
     rmdf_plotData<-df[df$outlier >= outlierCutoff, ]
     if(is.null(x)){x = group[1]}
     p<-ggplot2::ggplot()+
-      ggplot2::geom_line(data=rmdf_plotData, aes(x=.data[[x]], y=.data[[phenotype]], group=.data[["grouping"]]), linewidth=0.15, color="red")+
-      ggplot2::geom_line(data=out_plotData, aes(x=.data[[x]], y=.data[[phenotype]], group=.data[["grouping"]]),linewidth=0.25 )+
+      ggplot2::geom_line(data=rmdf_plotData, ggplot2::aes(x=.data[[x]], y=.data[[phenotype]], group=.data[["grouping"]]), linewidth=0.15, color="red")+
+      ggplot2::geom_line(data=out_plotData, ggplot2::aes(x=.data[[x]], y=.data[[phenotype]], group=.data[["grouping"]]),linewidth=0.25 )+
       ggplot2::labs(title=pctRm)+
       pcv_theme()
     print(p)
@@ -103,8 +109,8 @@ bw.outliers<-function(df = NULL,
     rmdf_plotData<-plotdf[plotdf$outlier >= outlierCutoff, ]
     if(is.null(x)){x = group[1]}
     p<-ggplot2::ggplot()+
-      ggplot2::geom_line(data=rmdf_plotData, aes(x=.data[[x]], y=.data[[valueCol]], group=.data[["grouping"]]), linewidth=0.15, color="red")+
-      ggplot2::geom_line(data=out_plotData, aes(x=.data[[x]], y=.data[[valueCol]], group=.data[["grouping"]]),linewidth=0.25 )+
+      ggplot2::geom_line(data=rmdf_plotData, ggplot2::aes(x=.data[[x]], y=.data[[valueCol]], group=.data[["grouping"]]), linewidth=0.15, color="red")+
+      ggplot2::geom_line(data=out_plotData, ggplot2::aes(x=.data[[x]], y=.data[[valueCol]], group=.data[["grouping"]]),linewidth=0.25 )+
       ggplot2::labs(title=pctRm)+
       pcv_theme()
     print(p)
