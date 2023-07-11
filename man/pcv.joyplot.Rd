@@ -104,9 +104,9 @@ There are currently four options, "beta", "gaussian", "ks", and "emd".
 ## Not run: 
 
 df <- read.pcv(
-  "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest2.csv", "long", F)
+  "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest2.csv", "long", FALSE)
 wide_beta <- read.pcv(
-  "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest2.csv", "wide", F)
+  "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest2.csv", "wide", FALSE)
 pcv.joyplot(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"))
 pcv.joyplot(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"),
   method="ks")

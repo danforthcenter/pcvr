@@ -79,12 +79,12 @@ Read in plantCV csv output in wide or long format
 ## Not run: 
 
 file = "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest1.csv"
-df1<-read.pcv(file, "wide", T, multiValPattern = "hist|frequencies")
-df1b<-read.pcv(file, "wide", T, multiValPattern = c("index_frequencies_index_ari",
+df1<-read.pcv(file, "wide", TRUE, multiValPattern = "hist|frequencies")
+df1b<-read.pcv(file, "wide", TRUE, multiValPattern = c("index_frequencies_index_ari",
 "index_frequencies_index_ci_rededge", "index_frequencies_index_ndvi", "npq_hist_NPQ",
 "yii_hist_Fq'/Fm'", "yii_hist_Fv/Fm"))
 identical(df1, df1b)
-df2<-read.pcv(file, "long", T)
+df2<-read.pcv(file, "long", TRUE)
 dim(df2)
 # Note only data stored on a Unix style system can be subset before reading in.
 # For DDPSC employees there are larger datasets on stargate that

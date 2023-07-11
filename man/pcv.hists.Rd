@@ -94,7 +94,7 @@ There are currently four options, "beta", "gaussian", "ks", and "emd".
 
 df <- read.pcv(
   "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest2.csv",
- "long", F)
+ "long", FALSE)
 pcv.hists(df, index = "index_frequencies_index_ndvi", 
    group=c("genotype", "timepoint"))
 pcv.hists(df, index = "index_frequencies_index_ndvi", 
