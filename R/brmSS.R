@@ -73,14 +73,14 @@ growthSS<-function(model, form, sigma=NULL, df, priors=NULL){
       x<-x3[1]
       individual = x3[2]
       group = x3[3] 
-      if(length(unique(df[[group]]))==1){USEGROUP=F}else{USEGROUP=T} # if there is only one group then ignore grouping for parameter and variance formulas
+      if(length(unique(df[[group]]))==1){USEGROUP=FALSE}else{USEGROUP=TRUE} # if there is only one group then ignore grouping for parameter and variance formulas
     } else if (grepl("\\|", x)){
       x2<-trimws(strsplit(x, "[|]")[[1]])
       x<-x2[1]
       individual = x2[2]
       group="dummy"
       df[[group]]<-"dummy"
-      USEGROUP=F
+      USEGROUP=FALSE
     } else {stop("form must specify grouping at least for individual level for observations ( y ~ x|individual ). See documentation and examples.")}
     #* `convert group to character to avoid unexpected factor stuff`
     df[[group]]<-as.character(df[[group]])
@@ -132,9 +132,9 @@ growthSS<-function(model, form, sigma=NULL, df, priors=NULL){
         }
       } 
       #* `Combining for brms formula`
-      bayesForm<-brms::bf(formula = growthForm, sigmaForm, parForm, autocor = corForm, nl=T)
+      bayesForm<-brms::bf(formula = growthForm, sigmaForm, parForm, autocor = corForm, nl=TRUE)
     }else{
-      bayesForm<-brms::bf(formula = growthForm,parForm,autocor = corForm,nl=T)
+      bayesForm<-brms::bf(formula = growthForm,parForm,autocor = corForm,nl=TRUE)
     }
     out[["formula"]]<-bayesForm
   #* ***** `Make make priors` *****

@@ -109,18 +109,18 @@
 pcv.joyplot<-function(df = NULL, index = NULL, group = NULL,
                       method=NULL,
                       compare= NULL, priors=NULL,hyp=NULL, support = NULL,
-                      bin="label", freq="value", trait="trait", fillx=T){
+                      bin="label", freq="value", trait="trait", fillx=TRUE){
   
   #* ***** `troubleshooting test values`
   # df=df; index = "yii_hist_Fv.over.Fm"; group=c("timepoint", "genotype"); method="emd"
-  # compare= NULL; priors=NULL; bin="label"; freq="value"; trait="trait";hyp=NULL; fillx=T    ;index='index_frequencies_index_ari' 
+  # compare= NULL; priors=NULL; bin="label"; freq="value"; trait="trait";hyp=NULL; fillx=TRUE    ;index='index_frequencies_index_ari' 
   #* `wide vs long test values`
   #* 
   #* df=hue_wide; index = "hue_frequencies"; group=c("fertilizer", "genotype"); method=NULL
-  #* compare= F; priors=NULL; bin="label"; freq="value"; trait="trait";hyp=NULL; fillx=T 
+  #* compare= F; priors=NULL; bin="label"; freq="value"; trait="trait";hyp=NULL; fillx=TRUE 
   #* 
   #* df=long; index = "hue_frequencies"; group=c("fertilizer", "genotype"); method="ks"
-  #* compare= NULL; priors=NULL; bin="label"; freq="value"; trait="trait";hyp=NULL; fillx=T 
+  #* compare= NULL; priors=NULL; bin="label"; freq="value"; trait="trait";hyp=NULL; fillx=TRUE 
   #* 
   #* ***** `general calculated values`
 
@@ -143,13 +143,13 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL,
   if(length(group)==1){sub$fill = sub[[group]]; sub$y = sub[[group]]; facet_layer = list()}#ggplot2::facet_wrap(paste0("~",group)) }
   if(length(group)==2){sub$fill = sub[[group[1] ]]; sub$y = sub[[group[1] ]]; facet_layer=ggplot2::facet_grid(as.formula(paste0("~",group[2])))} # check this change, added group[1] to facet_grid
   
-  sub$grouping<-interaction(sub[,c(group)], drop=T)
+  sub$grouping<-interaction(sub[,c(group)], drop=TRUE)
   
   # default compare to NULL, but if F then skip all testing 
-  if(is.logical(compare) && compare==F){
-    doStats=F
-  } else if(is.null(compare)){compareTests<-fixCompare(compare,sub,"grouping", T) ; doStats=T
-  }else{compareTests=fixCompare(compare,sub,"grouping"); doStats=T}
+  if(is.logical(compare) && compare==FALSE){
+    doStats=FALSE
+  } else if(is.null(compare)){compareTests<-fixCompare(compare,sub,"grouping", T) ; doStats=TRUE
+  }else{compareTests=fixCompare(compare,sub,"grouping"); doStats=TRUE}
   if(is.null(hyp)){hyp<-"unequal"}
   
   #* ***** `default joyplot`
@@ -174,10 +174,10 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL,
         } else if(mode=="wide"){
           histCols <- colnames(sub)[grepl(index, colnames(sub))]
           histCols_bin <- as.numeric(sub(paste0(index, "[.]?"), "", colnames(sub)[grepl(index, colnames(sub))]))
-          bins_order<-sort(histCols_bin, index.return=T)$ix
+          bins_order<-sort(histCols_bin, index.return=TRUE)$ix
           histCols <- histCols[bins_order]
-          d1s<-colSums(d1[,histCols],na.rm=T)
-          d2s<-colSums(d2[,histCols],na.rm=T)
+          d1s<-colSums(d1[,histCols],na.rm=TRUE)
+          d2s<-colSums(d2[,histCols],na.rm=TRUE)
         }
         emd_res <- emd1d(d1s, d2s)
         data.frame(group1 = g1, group2 = g2, emd = emd_res, method="emd")
@@ -234,13 +234,13 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL,
         my_dense2 <- dbeta(support, alpha2, beta2)
         my_pdf2 <- my_dense2/sum(my_dense2)
         if(hyp=="unequal"){
-          post.prob = 1-sum(apply(cbind(my_pdf1,my_pdf2), MARGIN=1,function(i) min(i)),na.rm=T) # P[pdf1 != pdf2]
+          post.prob = 1-sum(apply(cbind(my_pdf1,my_pdf2), MARGIN=1,function(i) min(i)),na.rm=TRUE) # P[pdf1 != pdf2]
         } else if (hyp == "lesser"){
           direction <- my_pdf1 <= my_pdf2
-          post.prob <- sum(my_pdf1*direction,na.rm=T)
+          post.prob <- sum(my_pdf1*direction,na.rm=TRUE)
         } else if(hyp == "greater"){
           direction <- my_pdf1 >= my_pdf2
-          post.prob <- sum(my_pdf1*direction,na.rm=T)
+          post.prob <- sum(my_pdf1*direction,na.rm=TRUE)
         }
         ret<-data.frame(group1 = g1, group2 = g2, post.prob = post.prob, method="beta", null = hyp)
         ret
@@ -285,19 +285,19 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL,
         
         if(hyp=="unequal"){
           post.prob.mu = 1-sum(apply(cbind(post_mean_pdf1,post_mean_pdf2),
-                                     MARGIN=1,function(i) min(i)),na.rm=T) # P[pdf1 != pdf2]
+                                     MARGIN=1,function(i) min(i)),na.rm=TRUE) # P[pdf1 != pdf2]
           post.prob.dist = 1-sum(apply(cbind(post_pdf1,post_pdf2),
-                                       MARGIN=1,function(i) min(i)),na.rm=T) # P[pdf1 != pdf2]
+                                       MARGIN=1,function(i) min(i)),na.rm=TRUE) # P[pdf1 != pdf2]
         } else if (hyp == "lesser"){
           direction.mu <- post_mean_pdf1 <= post_mean_pdf2
-          post.prob.mu <- sum(post_mean_pdf1*direction.mu,na.rm=T)
+          post.prob.mu <- sum(post_mean_pdf1*direction.mu,na.rm=TRUE)
           direction.dist <-  post_pdf1 <= post_pdf2
-          post.prob.dist <- sum(post_pdf1*direction.dist,na.rm=T)
+          post.prob.dist <- sum(post_pdf1*direction.dist,na.rm=TRUE)
         } else if(hyp == "greater"){
           direction.mu <- post_mean_pdf1 >= post_mean_pdf2
-          post.prob.mu <- sum(post_mean_pdf1*direction.mu,na.rm=T)
+          post.prob.mu <- sum(post_mean_pdf1*direction.mu,na.rm=TRUE)
           direction.dist <-  post_pdf1 >= post_pdf2
-          post.prob.dist <- sum(post_pdf1*direction.dist,na.rm=T)
+          post.prob.dist <- sum(post_pdf1*direction.dist,na.rm=TRUE)
         }
         ret<-data.frame(group1 = g1, group2 = g2, post.prob.mu = post.prob.mu,
                         post.prob.dist = post.prob.dist, method="gaussian", null = hyp)
@@ -310,15 +310,15 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL,
     x<-NULL # to make R CMD check happy with stat(x)
     list(suppressMessages(ggridges::geom_density_ridges_gradient(ggplot2::aes(x = .data$xdens, y = .data$y,
                                                         height = .data$ydens, fill=stat(x)),
-                                           show.legend=F, stat="identity", rel_min_height = 0.001)),
+                                           show.legend=FALSE, stat="identity", rel_min_height = 0.001)),
          ggplot2::scale_fill_viridis_c(option="plasma",
-                                        limits = c(min(dens_df$xdens[dens_df$ydens>0.001],na.rm=T),
-                                                   max(dens_df$xdens[dens_df$ydens>0.001], na.rm=T)))
+                                        limits = c(min(dens_df$xdens[dens_df$ydens>0.001],na.rm=TRUE),
+                                                   max(dens_df$xdens[dens_df$ydens>0.001], na.rm=TRUE)))
          )
   } else{
     list(suppressMessages(ggridges::geom_density_ridges2(ggplot2::aes(x = .data$xdens, y = .data$y,
                                                                       height =.data$ydens, fill = .data$y, color=.data$y),
-                                   show.legend=F, stat="identity")),
+                                   show.legend=FALSE, stat="identity")),
       ggplot2::scale_color_viridis_d(option="viridis"),
       ggplot2::scale_fill_viridis_d(option="viridis")
       )
@@ -337,11 +337,11 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL,
 
 
 long.dens.default <- function(d = NULL, group_internal=NULL, bin_internal= NULL, freq_internal= NULL){
-  datsp=split(d, d$grouping, drop=T)
+  datsp=split(d, d$grouping, drop=TRUE)
   bw<-min(diff(sort(as.numeric(unique(d$bin )))))*0.75
   distParams<-lapply(datsp, function(D){
     X1 <- as.numeric(D[rep(rownames(D), round(D[[freq_internal]])), bin_internal])
-    dens<-density(X1, from = min(d$bin,na.rm=T), to = max(d$bin,na.rm=T), n = 2^10, bw=bw)
+    dens<-density(X1, from = min(d$bin,na.rm=TRUE), to = max(d$bin,na.rm=TRUE), n = 2^10, bw=bw)
     return(dens)
   })
   names(distParams)<-names(datsp)
@@ -359,15 +359,15 @@ long.dens.default <- function(d = NULL, group_internal=NULL, bin_internal= NULL,
 wide.dens.default<-function(d=NULL, colPattern = NULL, group_internal=NULL){
   histCols <- colnames(d)[grepl(colPattern, colnames(d))]
   histCols_bin <- as.numeric(sub(paste0(colPattern, "[.]?"), "", colnames(d)[grepl(colPattern, colnames(d))]))
-  bins_order<-sort(histCols_bin, index.return=T)$ix
+  bins_order<-sort(histCols_bin, index.return=TRUE)$ix
   histCols <- histCols[bins_order]
-  datsp=split(d, d$grouping, drop=T)
+  datsp=split(d, d$grouping, drop=TRUE)
   bw<-min(diff(sort(as.numeric(histCols_bin))))*0.75
   
   distParams<-lapply(datsp, function(D){
     D<-D[,histCols]
     X1<-rep(histCols_bin[bins_order], as.numeric(round(colSums(D))) )
-    dens<-density(X1, from = min(histCols_bin,na.rm=T), to = max(histCols_bin,na.rm=T), n = 2^10, bw=bw)
+    dens<-density(X1, from = min(histCols_bin,na.rm=TRUE), to = max(histCols_bin,na.rm=TRUE), n = 2^10, bw=bw)
     return(dens)
   })
   
@@ -384,7 +384,7 @@ wide.dens.default<-function(d=NULL, colPattern = NULL, group_internal=NULL){
 }
 
 long.dens.beta<-function(d = NULL, group_internal=NULL, bin_internal= NULL, freq_internal=NULL){
-  datsp=split(d, d$grouping, drop=T) # split data into panel groups
+  datsp=split(d, d$grouping, drop=TRUE) # split data into panel groups
   
   if(is.null(priors)){ priors = list(a = rep(0.5, times=length(datsp)), b = rep(0.5, times=length(datsp))) } # assume weak prior on everything
   
@@ -416,9 +416,9 @@ long.dens.beta<-function(d = NULL, group_internal=NULL, bin_internal= NULL, freq
 wide.dens.beta<-function(d = NULL, colPattern = NULL, group_internal=NULL){
   histCols <- colnames(d)[grepl(colPattern, colnames(d))]
   histCols_bin <- as.numeric(sub(paste0(colPattern, "[.]?"), "", colnames(d)[grepl(colPattern, colnames(d))]))
-  bins_order<-sort(histCols_bin, index.return=T)$ix
+  bins_order<-sort(histCols_bin, index.return=TRUE)$ix
   histCols <- histCols[bins_order]
-  datsp=split(d, d$grouping, drop=T)
+  datsp=split(d, d$grouping, drop=TRUE)
   if(is.null(priors)){ priors = list(a = rep(0.5, times=length(datsp)), b = rep(0.5, times=length(datsp))) } # assume weak prior on everything
   bw<-min(diff(sort(as.numeric(histCols_bin))))*0.75
   distParams<-lapply(1:length(datsp), function(i){
@@ -448,7 +448,7 @@ wide.dens.beta<-function(d = NULL, colPattern = NULL, group_internal=NULL){
 
 
 long.dens.gaussian<-function(d=NULL, group_internal=NULL, bin_internal= NULL, freq_internal= NULL){
-  datsp=split(d, d$grouping, drop=T)
+  datsp=split(d, d$grouping, drop=TRUE)
   if(is.null(priors)){ priors <- list( m=rep(0,length(datsp)), n=rep(1,length(datsp)), s2=rep(20,length(datsp)) ) } # mean, number, and variance
   distParams<-lapply(1:length(datsp), function(i){ 
     D=datsp[[i]]
@@ -464,7 +464,7 @@ long.dens.gaussian<-function(d=NULL, group_internal=NULL, bin_internal= NULL, fr
     list(m = m1_n, s2 = s2_n, n = n1_n, DF = newDF)
   })
   names(distParams)<-names(datsp)
-  support<-seq(floor(min(d$bin, na.rm=T)), ceiling(max(d$bin, na.rm=T)), length.out=1000*round(diff(range(d$bin, na.rm=T)))  )
+  support<-seq(floor(min(d$bin, na.rm=TRUE)), ceiling(max(d$bin, na.rm=TRUE)), length.out=1000*round(diff(range(d$bin, na.rm=TRUE)))  )
   
   dens_df<-do.call(rbind, lapply(names(distParams), function(nm){
     pars<-distParams[[nm]]
@@ -482,9 +482,9 @@ long.dens.gaussian<-function(d=NULL, group_internal=NULL, bin_internal= NULL, fr
 wide.dens.gaussian<-function(d=NULL, colPattern=NULL, group_internal=NULL ){
   histCols <- colnames(d)[grepl(colPattern, colnames(d))]
   histCols_bin <- as.numeric(sub(paste0(colPattern, "[.]?"), "", colnames(d)[grepl(colPattern, colnames(d))]))
-  bins_order<-sort(histCols_bin, index.return=T)$ix
+  bins_order<-sort(histCols_bin, index.return=TRUE)$ix
   histCols <- histCols[bins_order]
-  datsp=split(d, d$grouping, drop=T)
+  datsp=split(d, d$grouping, drop=TRUE)
   
   if(is.null(priors)){ priors <- list( m=rep(0,length(datsp)), n=rep(1,length(datsp)), s2=rep(20,length(datsp)) ) } # mean, number, and variance
   distParams<-lapply(1:length(datsp), function(i){ 
@@ -502,7 +502,7 @@ wide.dens.gaussian<-function(d=NULL, colPattern=NULL, group_internal=NULL ){
     list(m = m1_n, s2 = s2_n, n = n1_n, DF = newDF)
   })
   names(distParams)<-names(datsp)
-  support<-seq(floor(min(d$bin, na.rm=T)), ceiling(max(d$bin, na.rm=T)), length.out=1000*round(diff(range(d$bin, na.rm=T)))  )
+  support<-seq(floor(min(d$bin, na.rm=TRUE)), ceiling(max(d$bin, na.rm=TRUE)), length.out=1000*round(diff(range(d$bin, na.rm=TRUE)))  )
   
   dens_df<-do.call(rbind, lapply(names(distParams), function(nm){
     pars<-distParams[[nm]]

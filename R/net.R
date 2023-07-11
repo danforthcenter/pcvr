@@ -18,7 +18,7 @@
 #' This defaults to 0.5 which does some filtering, although that should not be considered
 #' the best behavior for every setting. If this is NULL then your network will be
 #' almost always be a single blob, if set too high there will be very few nodes.
-#' Note that this filtering happens after converting to dissimilarity if dissim=T.
+#' Note that this filtering happens after converting to dissimilarity if dissim=TRUE.
 #' @param direction Direction of filtering, can be either "greater" or "lesser".
 #' @import ggplot2
 #' @import igraph
@@ -34,8 +34,8 @@
 #' df1<-read.pcv(file, "wide", T, multiValPattern = c("index_frequencies_index_ari",
 #' "index_frequencies_index_ci_rededge", "npq_hist_NPQ", "yii_hist_Fq'/Fm'", "yii_hist_Fv/Fm"))
 #' colnames(df1)<-sub("index_frequencies_index_ndvi.", "ndvi_", colnames(df1))
-#' emd_df<-pcv.emd(df1, cols="ndvi_", reorder=c("treatment", "genotype"), mat =F,
-#'    plot=F, parallel = 1)
+#' emd_df<-pcv.emd(df1, cols="ndvi_", reorder=c("treatment", "genotype"), mat =FALSE,
+#'    plot=FALSE, parallel = 1)
 #' net<-pcv.net(emd_df, meta = c("treatment", "genotype"))
 #' 
 #' ## End(Not run)
@@ -48,8 +48,8 @@
 #' @export
 #' 
 
-pcv.net<-function(emd = NULL, meta = NULL, dissim=T, distCol="emd", filter = 0.5, direction="greater"){
-  #* emd = emd_df; meta = c("genotype", "treatment"); dissim=T; distCol="emd"; direction="greater";filter=NULL
+pcv.net<-function(emd = NULL, meta = NULL, dissim=TRUE, distCol="emd", filter = 0.5, direction="greater"){
+  #* emd = emd_df; meta = c("genotype", "treatment"); dissim=TRUE; distCol="emd"; direction="greater";filter=NULL
   #* format distCol into a similarity col
   if(is.data.frame(emd)){
     #* convert to dissimilarity if metric is similarity
@@ -69,7 +69,7 @@ pcv.net<-function(emd = NULL, meta = NULL, dissim=T, distCol="emd", filter = 0.5
       }
     }
     #* turn long data into a graph and extract nodes/edges
-    g<-igraph::graph_from_data_frame(emd, directed=F)
+    g<-igraph::graph_from_data_frame(emd, directed=FALSE)
   } else{stop("emd must be a dataframe.")}
   if(is.null(meta)){meta<-unique(sub("_i$|_j$","",colnames(emd)[grepl("_i$|_j$", colnames(emd))])) }
   
@@ -89,7 +89,7 @@ pcv.net<-function(emd = NULL, meta = NULL, dissim=T, distCol="emd", filter = 0.5
     f
     } ) # this can be NA if there is no 'from' edge connected to a node, so check 'to' edges as well.
   colnames(gg)[newCols]<-meta
-  gg[,newCols]<-type.convert(gg[,newCols], as.is=T)
+  gg[,newCols]<-type.convert(gg[,newCols], as.is=TRUE)
   
   #* Calculate network metrics
   gg$betweenness<-igraph::betweenness(g)

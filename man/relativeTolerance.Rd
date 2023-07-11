@@ -10,7 +10,7 @@ relativeTolerance(
   grouping = NULL,
   control = NULL,
   controlGroup = NULL,
-  wide = T,
+  wide = TRUE,
   traitCol = "trait",
   valueCol = "value"
 )
@@ -64,7 +64,7 @@ sv$fertilizer = ifelse(sv$fertilizer == "A", "100",
               ifelse(sv$fertilizer == "B", "50", "0"))
               
 sv<-bw.time(sv, plantingDelay = 0, phenotype="area.pixels",
- cutoff=10, timeCol="timestamp", group=c("barcode", "rotation"), plot=T)
+ cutoff=10, timeCol="timestamp", group=c("barcode", "rotation"), plot=TRUE)
 phenotypes <- c('area.pixels', 'convex_hull_area.pixels',
  'convex_hull_vertices', 'ellipse_angle.degrees', 'ellipse_eccentricity',
   'ellipse_major_axis.pixels', 'ellipse_minor_axis.pixels', 'height.pixels',
@@ -74,7 +74,7 @@ phenotypes <- c('area.pixels', 'convex_hull_area.pixels',
 phenoForm<-paste0("cbind(", paste0(phenotypes, collapse=", "), ")")
 groupForm<-"DAS+DAP+barcode+genotype+fertilizer"
 form<-as.formula(paste0(phenoForm, "~", groupForm))
-sv<-aggregate(form, data=sv, mean, na.rm=T)
+sv<-aggregate(form, data=sv, mean, na.rm=TRUE)
 sv<-bw.outliers(sv, phenotype="area.pixels",
    group = c("DAS", "genotype", "fertilizer"),
    plotgroup = c("barcode"))
@@ -88,7 +88,7 @@ phenotypes = c("area_cm2", "height_cm")
 grouping = c("fertilizer", "genotype", "DAS")
 controlGroup = "100" 
 control = "fertilizer"
-wide=T
+wide=TRUE
 
 rt <-relativeTolerance(df, phenotypes, grouping, control, controlGroup)
 head(rt)

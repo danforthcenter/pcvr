@@ -72,7 +72,7 @@
 #' @examples 
 #' makeMvLn<-function(bins=500,mu_log,sigma_log){
 #'    setNames(data.frame(matrix(hist(rlnorm(2000,mu_log, sigma_log),
-#'       breaks=seq(1,bins,5), plot=F)$counts, nrow=1)),
+#'       breaks=seq(1,bins,5), plot=FALSE)$counts, nrow=1)),
 #'     paste0("b",seq(1,bins,5))[-1] ) }
 #'    set.seed(123) 
 #' mv_ln<-rbind(do.call(rbind,
@@ -85,21 +85,21 @@
 #' # lognormal mv
 #' ln_mv_ex <- conjugate(s1 = mv_ln[1:30,], s2= mv_ln[31:60,], method = "lognormal",
 #'                    priors = list( mu_log=c(log(10),log(10)),n=c(1,1),sigma_log=c(log(3),log(3)) ),
-#'                    plot=T, rope_range = c(-40,40), rope_ci = 0.89, rope_hdi = 0.95,
+#'                    plot=TRUE, rope_range = c(-40,40), rope_ci = 0.89, rope_hdi = 0.95,
 #'                    cred.int.level = 0.89, hypothesis="equal", support=NULL)
 #' 
 #' # lognormal sv
 #' ln_sv_ex <- conjugate(s1=rlnorm(100, log(130), log(1.3)), s2= rlnorm(100, log(100), log(1.6)),
 #'  method = "lognormal",
 #'                    priors = list( mu_log=c(log(10),log(10)),n=c(1,1),sigma_log=c(log(3),log(3)) ),
-#'                    plot=T, rope_range = NULL, rope_ci = 0.89, rope_hdi = 0.95,
+#'                    plot=TRUE, rope_range = NULL, rope_ci = 0.89, rope_hdi = 0.95,
 #'                    cred.int.level = 0.89, hypothesis="equal", support=NULL)
 #' 
 #' # Z test mv example
 #'
 #' makeMvGauss<-function(bins=180,mu,sigma){
 #'    setNames(data.frame(matrix(hist(rnorm(2000,mu, sigma),
-#'    breaks=seq(1,bins,1), plot=F)$counts, nrow=1)),
+#'    breaks=seq(1,bins,1), plot=FALSE)$counts, nrow=1)),
 #'    paste0("b",1:(bins-1) ))
 #'    }
 #' mv_gauss<-rbind(do.call(rbind, lapply(1:30, function(i){makeMvGauss(bins=180, mu=50, sigma=10 )})),
@@ -107,14 +107,14 @@
 #'                 
 #' gauss_mv_ex <- conjugate(s1=mv_gauss[1:30,], s2= mv_gauss[31:60,], method = "gaussian",
 #'                   priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ),
-#'                   plot=T, rope_range = c(-25, 25), rope_ci = 0.89, rope_hdi = 0.95,
+#'                   plot=TRUE, rope_range = c(-25, 25), rope_ci = 0.89, rope_hdi = 0.95,
 #'                   cred.int.level = 0.89, hypothesis="equal", support=NULL)
 #'                   
 #' # Z test sv example
 #' set.seed(123)
 #' gauss_sv_ex_bad <- conjugate(s1=rnorm(15, 50,10), s2= rnorm(15, 60,12), method = "gaussian",
 #'                   priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ),
-#'                   plot=T, rope_range = c(-10, 10), rope_ci = 0.89, rope_hdi = 0.95,
+#'                   plot=TRUE, rope_range = c(-10, 10), rope_ci = 0.89, rope_hdi = 0.95,
 #'                   cred.int.level = 0.89, hypothesis="equal", support=NULL)
 #'                   
 #' # Here the plot clearly shows we have a problem with the default support, so we specify one
@@ -123,7 +123,7 @@
 #' 
 #' gauss_sv_ex <- conjugate(s1=rnorm(15, 50,10), s2= rnorm(15, 60,12), method = "gaussian",
 #'                   priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ),
-#'                   plot=T, rope_range = c(-10, 10), rope_ci = 0.89, rope_hdi = 0.95,
+#'                   plot=TRUE, rope_range = c(-10, 10), rope_ci = 0.89, rope_hdi = 0.95,
 #'                   cred.int.level = 0.89, hypothesis="equal", support=seq(-20,120, 0.01))
 #' # Note that the ROPE probability is somewhat unstable here since the distribution of differences
 #' # is much wider than the ROPE interval.
@@ -132,7 +132,7 @@
 #' 
 #' makeMvGauss<-function(bins=180,mu,sigma){
 #'    setNames(data.frame(matrix(hist(rnorm(2000,mu, sigma),
-#'     breaks=seq(1,bins,1), plot=F)$counts, nrow=1)),
+#'     breaks=seq(1,bins,1), plot=FALSE)$counts, nrow=1)),
 #'    paste0("b",1:(bins-1) ))
 #'    }
 #' mv_gauss<-rbind(do.call(rbind, lapply(1:30, function(i){makeMvGauss(bins=180, mu=50, sigma=10 )})),
@@ -140,7 +140,7 @@
 #'
 #' gaussianMeans_mv_ex <- conjugate(s1=mv_gauss[1:30,], s2= mv_gauss[31:60,], method="t",
 #'                         priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ),
-#'                         plot=T, rope_range = c(-5,5), rope_ci = 0.89, rope_hdi = 0.95,
+#'                         plot=TRUE, rope_range = c(-5,5), rope_ci = 0.89, rope_hdi = 0.95,
 #'                         cred.int.level = 0.89, hypothesis="equal", support=NULL)
 #'                         
 #'                         
@@ -148,7 +148,7 @@
 #' 
 #' gaussianMeans_sv_ex <- conjugate(s1=rnorm(10, 50,10), s2= rnorm(10, 60,12), method="t",
 #'                         priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ),
-#'                         plot=T, rope_range = c(-5,8), rope_ci = 0.89, rope_hdi = 0.95,
+#'                         plot=TRUE, rope_range = c(-5,8), rope_ci = 0.89, rope_hdi = 0.95,
 #'                         cred.int.level = 0.89, hypothesis="equal", support=NULL)
 #' 
 #' 
@@ -157,7 +157,7 @@
 #' 
 #' makeMvBeta<-function(n=100,a,b){
 #'   setNames(data.frame(matrix(hist(rbeta(2000,a,b),
-#'   breaks=seq(0,1,length.out=n), plot=F)$counts, nrow=1)),
+#'   breaks=seq(0,1,length.out=n), plot=FALSE)$counts, nrow=1)),
 #'   paste0("b0.",1:(n-1)))
 #' }
 #' 
@@ -166,21 +166,21 @@
 #' 
 #' beta_mv_ex <- conjugate(s1 = mv_beta[1:30,], s2= mv_beta[31:60,], method="beta",
 #'               priors = list(a=c(0.5,0.5),b=c(0.5,0.5)),
-#'               plot=T, rope_range = c(-0.1, 0.1), rope_ci = 0.89, rope_hdi = 0.95,
+#'               plot=TRUE, rope_range = c(-0.1, 0.1), rope_ci = 0.89, rope_hdi = 0.95,
 #'               cred.int.level = 0.89, hypothesis="equal")
 #' 
 #' # beta sv example
 #' 
 #' beta_sv_ex <- conjugate(s1 = rbeta(20, 5, 5), s2= rbeta(20, 8, 5), method="beta",
 #'               priors = list(a=c(0.5,0.5),b=c(0.5,0.5)),
-#'               plot=T, rope_range = c(-0.1, 0.1), rope_ci = 0.89, rope_hdi = 0.95,
+#'               plot=TRUE, rope_range = c(-0.1, 0.1), rope_ci = 0.89, rope_hdi = 0.95,
 #'               cred.int.level = 0.89, hypothesis="equal")
 #'
 #' # poisson sv example
 #' 
 #' poisson_sv_ex <- conjugate(s1 = rpois(20, 10), s2= rbeta(20, 8), method="poisson",
 #'               priors = list(a=c(0.5,0.5),b=c(0.5,0.5)),
-#'               plot=T, rope_range = c(-1, 1), rope_ci = 0.89, rope_hdi = 0.95,
+#'               plot=TRUE, rope_range = c(-1, 1), rope_ci = 0.89, rope_hdi = 0.95,
 #'               cred.int.level = 0.89, hypothesis="equal")
 #' 
 #' # negative binomial sv example
@@ -189,7 +189,7 @@
 #' 
 #' negbin_sv_ex <- conjugate(s1 = rnbinom(20, 10, 0.5), s2= rnbinom(20, 10, 0.25), method="poisson",
 #'               priors = list(r = c(10, 10), a=c(0.5,0.5),b=c(0.5,0.5)),
-#'               plot=T, rope_range = c(-1, 1), rope_ci = 0.89, rope_hdi = 0.95,
+#'               plot=TRUE, rope_range = c(-1, 1), rope_ci = 0.89, rope_hdi = 0.95,
 #'               cred.int.level = 0.89, hypothesis="equal")
 #'               
 #' # Example usage with plantCV data
@@ -219,11 +219,11 @@
 #' 
 #' hue_res_t <- conjugate(s1 = mo17_sample, s2= B73_sample, method="t",
 #'               priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ),
-#'               plot=T, rope_range = c(-10,10), rope_ci = 0.89, rope_hdi = 0.95,
+#'               plot=TRUE, rope_range = c(-10,10), rope_ci = 0.89, rope_hdi = 0.95,
 #'               cred.int.level = 0.89, hypothesis="equal")
 #'               
 #' hue_res_ln <- conjugate(s1 = mo17_sample, s2= B73_sample, method="lognormal",
-#'               plot=T, rope_range = c(-10,10), rope_ci = 0.89, rope_hdi = 0.95,
+#'               plot=TRUE, rope_range = c(-10,10), rope_ci = 0.89, rope_hdi = 0.95,
 #'               cred.int.level = 0.89, hypothesis="equal")
 #' # Picking the right distribution makes a difference,
 #' # checking plots of your data (see ?pcv.joyplot for mv traits)
@@ -237,7 +237,7 @@
 #' 
 #' area_res_t <- conjugate(s1 = mo17_area, s2= B73_area, method="t",
 #'               priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ),
-#'               plot=T, rope_range = c(-5,5), rope_ci = 0.89, rope_hdi = 0.95,
+#'               plot=TRUE, rope_range = c(-5,5), rope_ci = 0.89, rope_hdi = 0.95,
 #'               cred.int.level = 0.89, hypothesis="equal")
 #' 
 #' ## End(Not run)
@@ -275,12 +275,12 @@
 #' @export
 
 conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lognormal", "poisson", "negbin"),
-                     priors=NULL, plot=F, rope_range = NULL,
+                     priors=NULL, plot=FALSE, rope_range = NULL,
                     rope_ci = 0.89, rope_hdi = 0.95, cred.int.level = 0.89, hypothesis="equal",
                     support=NULL){
   #* `Check sample class`
-  if(is.matrix(s1)|is.data.frame(s1)){ vec=F
-  } else if(is.vector(s1)) { vec=T 
+  if(is.matrix(s1)|is.data.frame(s1)){ vec=FALSE
+  } else if(is.vector(s1)) { vec=TRUE 
   } else{ stop("s1 must be a vector, data.frame, or matrix.") }
   
   matched_arg<-match.arg(method, choices = c("t", "gaussian", "beta", "lognormal", "poisson", "negbin"))
@@ -397,21 +397,21 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
 #' 
 #' @examples 
 #' makeMvLn<-function(bins=500,mu_log,sigma_log){
-#'    setNames(data.frame(matrix(hist(rlnorm(2000,mu_log, sigma_log), breaks=seq(1,bins,5), plot=F)$counts, nrow=1)), paste0("b",seq(1,bins,5))[-1] ) }
+#'    setNames(data.frame(matrix(hist(rlnorm(2000,mu_log, sigma_log), breaks=seq(1,bins,5), plot=FALSE)$counts, nrow=1)), paste0("b",seq(1,bins,5))[-1] ) }
 #'    set.seed(123)
 #' mv_ln<-rbind(do.call(rbind, lapply(1:30, function(i){makeMvLn(mu_log=log(130), sigma_log=log(1.3) )})),
 #'              do.call(rbind, lapply(1:30, function(i){makeMvLn(mu_log=log(100), sigma_log=log(1.2) )})))
 #'              
 #' .conj_lognormal_mv(s1 = mv_ln[1:30,], s2= mv_ln[31:60,],
 #'                    priors = list( mu_log=c(log(10),log(10)),n=c(1,1),sigma_log=c(log(3),log(3)) ),
-#'                    plot=F, rope_range = NULL, rope_ci = 0.89, rope_hdi = 0.95,
+#'                    plot=FALSE, rope_range = NULL, rope_ci = 0.89, rope_hdi = 0.95,
 #'                    cred.int.level = 0.89, hypothesis="equal", support=NULL)
 #' @keywords internal
 #' @noRd
 
 .conj_lognormal_mv<-function(s1 = NULL, s2= NULL,
                              priors=NULL,
-                             plot=F, rope_range = NULL, rope_ci = 0.89, rope_hdi = 0.95,
+                             plot=FALSE, rope_range = NULL, rope_ci = 0.89, rope_hdi = 0.95,
                              cred.int.level = 0.89, hypothesis="equal", support=NULL){
   out <- list()
   #* `make default prior if none provided`
@@ -429,7 +429,7 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
   #* `Reorder columns if they are not in the numeric order`
   histCols<-colnames(s1)
   histCols_bin <- as.numeric(sub("[a-zA-Z_.]+","",colnames(s1)))
-  bins_order<-sort(histCols_bin, index.return=T)$ix
+  bins_order<-sort(histCols_bin, index.return=TRUE)$ix
   s1<-s1[,bins_order]
   
   #* `Define support if it is missing`
@@ -489,7 +489,7 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
     #* `Reorder columns if they are not in the numeric order`
     histCols<-colnames(s2)
     histCols_bin <- as.numeric(sub("[a-zA-Z_.]+","",colnames(s1)))
-    bins_order<-sort(histCols_bin, index.return=T)$ix
+    bins_order<-sort(histCols_bin, index.return=TRUE)$ix
     s2<-s2[,bins_order]
     
     #* `Turn s2 matrix into a vector`
@@ -602,14 +602,14 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
 #' @examples
 #' .conj_lognormal_sv(s1=rlnorm(100, log(130), log(1.3)), s2= rlnorm(100, log(100), log(1.6)),
 #'                   priors = list( mu_log=c(log(10),log(10)),n=c(1,1),sigma_log=c(log(3),log(3)) ),
-#'                   plot=F, rope_range = c(-0.1, 0.1), rope_ci = 0.89, rope_hdi = 0.95,
+#'                   plot=FALSE, rope_range = c(-0.1, 0.1), rope_ci = 0.89, rope_hdi = 0.95,
 #'                   cred.int.level = 0.89, hypothesis="equal", support=NULL)
 #' @keywords internal
 #' @noRd
 
 .conj_lognormal_sv<-function(s1 = NULL, s2= NULL, 
                              priors=NULL,
-                             plot=F, rope_range = NULL, rope_ci = 0.89, rope_hdi = 0.95,
+                             plot=FALSE, rope_range = NULL, rope_ci = 0.89, rope_hdi = 0.95,
                              cred.int.level = 0.89, hypothesis="equal", support=NULL){
   out <- list()
   #* `make default prior if none provided`
@@ -757,13 +757,13 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
 #' @examples
 #' .conj_gaussian_sv(s1=rnorm(100, 50,10), s2= rnorm(100, 60,12),
 #'                   priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ),
-#'                   plot=F, rope_range = c(-0.1, 0.1), rope_ci = 0.89, rope_hdi = 0.95,
+#'                   plot=FALSE, rope_range = c(-0.1, 0.1), rope_ci = 0.89, rope_hdi = 0.95,
 #'                   cred.int.level = 0.89, hypothesis="equal", support=NULL)
 #' @keywords internal
 #' @noRd
 
 .conj_gaussian_sv<-function(s1 = NULL, s2= NULL, priors = NULL,
-                                  plot=F, rope_range = NULL, rope_ci = 0.89, rope_hdi = 0.95,
+                                  plot=FALSE, rope_range = NULL, rope_ci = 0.89, rope_hdi = 0.95,
                                   cred.int.level = 0.89, hypothesis="equal", support=NULL){
   out <- list()
   #* `make default prior if none provided`
@@ -895,20 +895,20 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
 #' 
 #' makeMvGauss<-function(bins=180,mu,sigma){
 #'    setNames(data.frame(matrix(hist(rnorm(2000,mu, sigma),
-#'    breaks=seq(1,bins,1), plot=F)$counts, nrow=1)),paste0("b",1:(bins-1) ))
+#'    breaks=seq(1,bins,1), plot=FALSE)$counts, nrow=1)),paste0("b",1:(bins-1) ))
 #'    }
 #' mv_gauss<-rbind(do.call(rbind, lapply(1:30, function(i){makeMvGauss(bins=180, mu=50, sigma=10 )})),
 #'                 do.call(rbind, lapply(1:30, function(i){makeMvGauss(bins=180, mu=60, sigma=12 )})))
 #'                 
 #' .conj_gaussian_mv(s1=mv_gauss[1:30,], s2= mv_gauss[31:60,],
 #'                   priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ),
-#'                   plot=F, rope_range = c(-0.1, 0.1), rope_ci = 0.89, rope_hdi = 0.95,
+#'                   plot=FALSE, rope_range = c(-0.1, 0.1), rope_ci = 0.89, rope_hdi = 0.95,
 #'                   cred.int.level = 0.89, hypothesis="equal", support=NULL)
 #' @keywords internal
 #' @noRd
 
 .conj_gaussian_mv<-function(s1 = NULL, s2= NULL, priors = NULL,
-                                  plot=F, rope_range = NULL, rope_ci = 0.89, rope_hdi = 0.95,
+                                  plot=FALSE, rope_range = NULL, rope_ci = 0.89, rope_hdi = 0.95,
                                   cred.int.level = 0.89, hypothesis="equal", support=NULL){
   out <- list()
   #* `make default prior if none provided`
@@ -926,7 +926,7 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
   #* `Reorder columns if they are not in the numeric order`
   histCols<-colnames(s1)
   histCols_bin <- as.numeric(sub("[a-zA-Z_.]+","",colnames(s1)))
-  bins_order<-sort(histCols_bin, index.return=T)$ix
+  bins_order<-sort(histCols_bin, index.return=TRUE)$ix
   s1<-s1[,bins_order]
   
   #* `Define support if it is missing`
@@ -978,7 +978,7 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
     #* `Reorder columns if they are not in the numeric order`
     histCols<-colnames(s2)
     histCols_bin <- as.numeric(sub("[a-zA-Z_.]+","",colnames(s2)))
-    bins_order<-sort(histCols_bin, index.return=T)$ix
+    bins_order<-sort(histCols_bin, index.return=TRUE)$ix
     s2<-s2[,bins_order]
     
     #* `Turn s2 matrix into a vector`
@@ -1064,12 +1064,12 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
 #' @examples
 #' .conj_gaussian_means_sv(s1=rnorm(100, 50,10), s2= rnorm(100, 60,12),
 #'                         priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ),
-#'                         plot=F, rope_range = c(-0.1, 0.1), rope_ci = 0.89, rope_hdi = 0.95,
+#'                         plot=FALSE, rope_range = c(-0.1, 0.1), rope_ci = 0.89, rope_hdi = 0.95,
 #'                         cred.int.level = 0.89, hypothesis="equal", support=NULL)
 #' @keywords internal
 #' @noRd
 .conj_gaussian_means_sv<-function(s1 = NULL, s2= NULL, priors = NULL,
-                            plot=F, rope_range = NULL, rope_ci = 0.89, rope_hdi = 0.95,
+                            plot=FALSE, rope_range = NULL, rope_ci = 0.89, rope_hdi = 0.95,
                             cred.int.level = 0.89, hypothesis="equal", support=NULL){
   out <- list()
   #* `make default prior if none provided`
@@ -1199,19 +1199,19 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
 #' @examples
 #' makeMvGauss<-function(bins=180,mu,sigma){
 #'    setNames(data.frame(matrix(hist(rnorm(2000,mu, sigma),
-#'    breaks=seq(1,bins,1), plot=F)$counts, nrow=1)),paste0("b",1:(bins-1) ))
+#'    breaks=seq(1,bins,1), plot=FALSE)$counts, nrow=1)),paste0("b",1:(bins-1) ))
 #'    }
 #' mv_gauss<-rbind(do.call(rbind, lapply(1:30, function(i){makeMvGauss(bins=180, mu=50, sigma=10 )})),
 #'                 do.call(rbind, lapply(1:30, function(i){makeMvGauss(bins=180, mu=60, sigma=12 )})))
 #' .conj_gaussian_means_mv(s1 = mv_gauss[1:30,], s2= mv_gauss[31:60,],
 #'                         priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ),
-#'                         plot=F, rope_range = c(-0.1,0.1), rope_ci = 0.89, rope_hdi = 0.95,
+#'                         plot=FALSE, rope_range = c(-0.1,0.1), rope_ci = 0.89, rope_hdi = 0.95,
 #'                         cred.int.level = 0.89, hypothesis="equal", support=NULL)
 #' @keywords internal
 #' @noRd
 
 .conj_gaussian_means_mv<-function(s1 = NULL, s2= NULL, priors = NULL,
-                            plot=F, rope_range = NULL, rope_ci = 0.89, rope_hdi = 0.95,
+                            plot=FALSE, rope_range = NULL, rope_ci = 0.89, rope_hdi = 0.95,
                             cred.int.level = 0.89, hypothesis="equal", support=NULL){
   out <- list()
   #* `make default prior if none provided`
@@ -1229,7 +1229,7 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
   #* `Reorder columns if they are not in the numeric order`
   histCols<-colnames(s1)
   histCols_bin <- as.numeric(sub("[a-zA-Z_.]+","",colnames(s1)))
-  bins_order<-sort(histCols_bin, index.return=T)$ix
+  bins_order<-sort(histCols_bin, index.return=TRUE)$ix
   s1<-s1[,bins_order]
   
   #* `Define support if it is missing`
@@ -1281,7 +1281,7 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
     #* `Reorder columns if they are not in the numeric order`
     histCols<-colnames(s2)
     histCols_bin <- as.numeric(sub("[a-zA-Z_.]+","",colnames(s2)))
-    bins_order<-sort(histCols_bin, index.return=T)$ix
+    bins_order<-sort(histCols_bin, index.return=TRUE)$ix
     s2<-s2[,bins_order]
     
     #* `Turn s2 matrix into a vector`
@@ -1372,19 +1372,19 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
 #' @examples
 #' makeMvBeta<-function(n=100,a,b){
 #'   setNames(data.frame(matrix(hist(rbeta(2000,a,b),
-#'   breaks=seq(0,1,length.out=n), plot=F)$counts, nrow=1)),paste0("b0.",1:(n-1)))
+#'   breaks=seq(0,1,length.out=n), plot=FALSE)$counts, nrow=1)),paste0("b0.",1:(n-1)))
 #' }
 #' 
 #' mv_beta<-rbind(do.call(rbind, lapply(1:30, function(i){makeMvBeta(n=100, a=5, b=8 )})),
 #'                do.call(rbind, lapply(1:30, function(i){makeMvBeta(n=100, a=10, b=3 )})))
 #' 
 #' .conj_beta_mv(s1 = mv_beta[1:30,], s2= mv_beta[31:60,], priors = list(a=c(0.5,0.5),b=c(0.5,0.5)),
-#'               plot=F, rope_range = c(-0.1, 0.1), rope_ci = 0.89, rope_hdi = 0.95,
+#'               plot=FALSE, rope_range = c(-0.1, 0.1), rope_ci = 0.89, rope_hdi = 0.95,
 #'               cred.int.level = 0.89, hypothesis="equal")
 #' @keywords internal
 #' @noRd
 .conj_beta_mv<-function(s1 = NULL, s2= NULL, priors = NULL,
-                        plot=F, rope_range = NULL, rope_ci = 0.89, rope_hdi = 0.95,
+                        plot=FALSE, rope_range = NULL, rope_ci = 0.89, rope_hdi = 0.95,
                         cred.int.level = 0.89, hypothesis="equal"){
   #* `make default prior if none provided`
   if(is.null(priors)){
@@ -1407,7 +1407,7 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
   if(any(histCols_bin>1)){
     histCols_bin<-histCols_bin/100
   }
-  bins_order<-sort(histCols_bin, index.return=T)$ix
+  bins_order<-sort(histCols_bin, index.return=TRUE)$ix
   s1<-s1[,bins_order]
   
   #* `Turn matrix into a vector`
@@ -1463,7 +1463,7 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
     #* `Reorder columns if they are not in the numeric order`
     histCols<-colnames(s2)
     histCols_bin <- as.numeric(sub("[a-zA-Z_.]+","",colnames(s2)))
-    bins_order<-sort(histCols_bin, index.return=T)$ix
+    bins_order<-sort(histCols_bin, index.return=TRUE)$ix
     s2<-s2[,bins_order]
     
     #* `Turn matrix into a vector`
@@ -1542,12 +1542,12 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
 #' @param s2 An optional second sample of the same form as s2.
 #' @examples
 #' .conj_beta_sv(s1 = rbeta(100, 5, 10), s2= rbeta(100, 10, 5), priors = list(a=c(0.5,0.5),b=c(0.5,0.5)),
-#'               plot=F, rope_range = c(-0.1, 0.1), rope_ci = 0.89, rope_hdi = 0.95,
+#'               plot=FALSE, rope_range = c(-0.1, 0.1), rope_ci = 0.89, rope_hdi = 0.95,
 #'               cred.int.level = 0.89, hypothesis="equal")
 #' @keywords internal
 #' @noRd
 .conj_beta_sv<-function(s1 = NULL, s2= NULL, priors = NULL,
-                       plot=F, rope_range = NULL, rope_ci = 0.89, rope_hdi = 0.95,
+                       plot=FALSE, rope_range = NULL, rope_ci = 0.89, rope_hdi = 0.95,
                        cred.int.level = 0.89, hypothesis="equal"){
 
   if(any(c(s1, s2)>1)){stop("Values above 1 cannot be used with the beta distribution")}
@@ -1684,13 +1684,13 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
 #' @param s2 An optional second sample of the same form as s2.
 #' @examples
 #' .conj_poisson_sv(s1 = rpois(20, 10), s2= rbeta(20, 8), priors = list(a=c(0.5,0.5),b=c(0.5,0.5)),
-#'               plot=F, rope_range = c(-1,1), rope_ci = 0.89, rope_hdi = 0.95,
+#'               plot=FALSE, rope_range = c(-1,1), rope_ci = 0.89, rope_hdi = 0.95,
 #'               cred.int.level = 0.89, hypothesis="equal")
 #' @keywords internal
 #' @noRd
 
 .conj_poisson_sv<-function(s1 = NULL, s2= NULL, priors = NULL,
-                        plot=F, rope_range = NULL, rope_ci = 0.89, rope_hdi = 0.95,
+                        plot=FALSE, rope_range = NULL, rope_ci = 0.89, rope_hdi = 0.95,
                         cred.int.level = 0.89, hypothesis="equal", support=NULL){
   #* `Check samples`
   if(any(abs(c(s1,s2)-round(c(s1,s2)))>.Machine$double.eps^0.5) | any(c(s1,s2)<0) ){stop("Only positive whole numbers can be used in the Poisson distribution")}
@@ -1852,13 +1852,13 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
 #' abline(v=p1, col="red")
 #' 
 #' .conj_negbin_sv(s1 = rnbinom(10, 10, 0.5), s2= rnbinom(100, 10, 0.25), priors = list(r = c(10,10), a=c(0.5,0.5),b=c(0.5,0.5)),
-#'               plot=F, rope_range = c(-0.1, 0.1), rope_ci = 0.89, rope_hdi = 0.95,
+#'               plot=FALSE, rope_range = c(-0.1, 0.1), rope_ci = 0.89, rope_hdi = 0.95,
 #'               cred.int.level = 0.89, hypothesis="equal")
 #' @keywords internal
 #' @noRd
 
 .conj_negbin_sv<-function(s1 = NULL, s2= NULL, priors = NULL,
-                           plot=F, rope_range = NULL, rope_ci = 0.89, rope_hdi = 0.95,
+                           plot=FALSE, rope_range = NULL, rope_ci = 0.89, rope_hdi = 0.95,
                            cred.int.level = 0.89, hypothesis="equal", support=NULL){
 
   #* `Check samples`
@@ -1990,18 +1990,18 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
 #' @noRd
 .post.prob.from.pdfs<-function(pdf1, pdf2, hypothesis){
   if(hypothesis == "unequal"){
-    post.prob <- 1-sum(apply(cbind(pdf1, pdf2),MARGIN=1,function(i) min(i)),na.rm=T)
+    post.prob <- 1-sum(apply(cbind(pdf1, pdf2),MARGIN=1,function(i) min(i)),na.rm=TRUE)
     dirSymbol="!="
   } else if(hypothesis == "equal"){
-    post.prob <- sum(apply(cbind(pdf1, pdf2),MARGIN=1,function(i) min(i)),na.rm=T)
+    post.prob <- sum(apply(cbind(pdf1, pdf2),MARGIN=1,function(i) min(i)),na.rm=TRUE)
     dirSymbol="="
   }else if(hypothesis == "lesser"){
     direction <- pdf1 <= pdf2
-    post.prob <- sum(pdf1 * direction,na.rm=T)
+    post.prob <- sum(pdf1 * direction,na.rm=TRUE)
     dirSymbol="<"
   }else if(hypothesis == "greater"){
     direction <- pdf1 >= pdf2
-    post.prob <- sum(pdf1 * direction,na.rm=T)
+    post.prob <- sum(pdf1 * direction,na.rm=TRUE)
     dirSymbol=">"
   }else{
     stop("hypothesis must be either unequal, equal, lesser, or greater")

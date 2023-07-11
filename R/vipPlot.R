@@ -28,7 +28,7 @@
 #' 
 #' @export
 
-plotVIP<-function(plsrObject, i=1, mean=F, removePattern = ".*_"){
+plotVIP<-function(plsrObject, i=1, mean=FALSE, removePattern = ".*_"){
   d<-plsrObject[[i]]$vip_df
   d$spectra<-as.numeric(sub(removePattern, "", d$wavelength))
   if(mean){
@@ -44,7 +44,7 @@ plotVIP<-function(plsrObject, i=1, mean=F, removePattern = ".*_"){
     p<-ggplot2::ggplot(d2, ggplot2::aes(x=.data$spectra, y=.data$VIP, group=.data$component, color=.data$component))+
       ggplot2::geom_line()+
       ggplot2::geom_hline(yintercept=1, linetype=5)+
-      #scale_color_viridis(option="plasma", discrete=T, direction=1, begin=0.1, end=0.9)+
+      #scale_color_viridis(option="plasma", discrete=TRUE, direction=1, begin=0.1, end=0.9)+
       ggplot2::guides(alpha="none", color = ggplot2::guide_legend(override.aes = list(linewidth=3)))+
       ggplot2::labs(title=paste0(plsrObject[[i]]$model_performance$outcome), y="VIP", x="Spectra", color="Component")+
       pcv_theme()+

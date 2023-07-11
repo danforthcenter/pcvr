@@ -9,11 +9,11 @@ pcvBox(
   x = "treatment",
   y = "area.pixels",
   fill = NULL,
-  compare = F,
+  compare = FALSE,
   trait = "trait",
   value = "value",
   method = "t.test",
-  showPoints = F,
+  showPoints = FALSE,
   ...
 )
 }

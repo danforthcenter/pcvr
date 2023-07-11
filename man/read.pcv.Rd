@@ -7,7 +7,7 @@
 read.pcv(
   filepath,
   mode = "wide",
-  singleValueOnly = T,
+  singleValueOnly = TRUE,
   traitCol = "trait",
   labelCol = "label",
   valueCol = "value",
@@ -38,7 +38,7 @@ This should generally not need to be changed from the default.}
 \item{valueCol}{Column with phenotype values, defaults to "value".
 This should generally not need to be changed from the default.}
 
-\item{multiValPattern}{If `singleValueOnly`=TRUE then this is used to identify multi value traits.
+\item{multiValPattern}{If `singleValueOnly`=TRUERUE then this is used to identify multi value traits.
 By default this is "hist|frequencies".
 If this argument has length of 1 then it is taken as either a single phenotype
 or a regex pattern to find values of `trait` that are multi-value phenotypes.
@@ -49,7 +49,7 @@ defaults to NULL in which case `data.table::fread` is used if filters are in pla
 and `read.csv` is used otherwise.
 Other useful options are "vroom" and "fread", from the vroom and data.table packages, respectively.
 With files that are still very large after subsetting "fread" or "vroom" should be used.
-Note that if you use `read.csv` with filters in place then you will need to specify `header=F`
+Note that if you use `read.csv` with filters in place then you will need to specify `header=FALSE`
 so that the piped output from awk is read correctly.}
 
 \item{filters}{If a very large pcv output file is read then it may be desireable
@@ -111,7 +111,7 @@ dim(x3c)
 # There may be situations where you want to use wide mv traits which can read in easily:
 x4<-read.pcv(fileBig, reader="fread",
   filters = list("trait in blue_frequencies"),
-  mode="wide", singleValueOnly=F)
+  mode="wide", singleValueOnly=FALSE)
 
 ## End(Not run) 
 

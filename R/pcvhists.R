@@ -101,23 +101,23 @@ pcv.hists<-function(df = NULL, index = NULL, group = NULL,
   if(length(group)==1){sub$fill = sub[[group]]; sub$y = sub[[group]]; facet_layer = list() }
   if(length(group)==2){sub$fill = sub[[group[1] ]]; sub$y = sub[[group[1] ]]; facet_layer=ggplot2::facet_grid(as.formula(paste0("~",group[2])))}
   
-  sub$grouping<-interaction(sub[,c(group)], drop=T)
+  sub$grouping<-interaction(sub[,c(group)], drop=TRUE)
   
   # default compare to NULL, but if F then skip all testing 
-  if(is.logical(compare) && compare==F){
-    doStats=F
-  } else if(is.null(compare)){compareTests<-fixCompare(compare,sub,"grouping", T) ; doStats=T
-  }else{compareTests=fixCompare(compare,sub,"grouping"); doStats=T}
+  if(is.logical(compare) && compare==FALSE){
+    doStats=FALSE
+  } else if(is.null(compare)){compareTests<-fixCompare(compare,sub,"grouping", T) ; doStats=TRUE
+  }else{compareTests=fixCompare(compare,sub,"grouping"); doStats=TRUE}
   if(is.null(hyp)){hyp<-"unequal"}
   
   #* ***** `default joyplot`
   if(is.null(method) | match.arg(method, choices = c("beta", "gaussian", "ks", "mixture", "emd"))=="emd"){
     
-    datsp=split(sub, sub$grouping, drop=T)
+    datsp=split(sub, sub$grouping, drop=TRUE)
     bw<-min(diff(sort(as.numeric(unique(sub[[bin]])))))*0.75
     distParams<-lapply(datsp, function(D){
       X1 <- as.numeric(D[rep(rownames(D), D[[freq]]), bin])
-      dens<-density(X1, from = min(sub$bin,na.rm=T), to = max(sub$bin,na.rm=T), n = 2^10, bw=bw) 
+      dens<-density(X1, from = min(sub$bin,na.rm=TRUE), to = max(sub$bin,na.rm=TRUE), n = 2^10, bw=bw) 
       return(dens)
     })
     names(distParams)<-names(datsp)
@@ -163,11 +163,11 @@ pcv.hists<-function(df = NULL, index = NULL, group = NULL,
     
   } else if(match.arg(method, choices = c("beta", "gaussian", "ks", "mixture", "emd"))=="ks"){
     #* ***** `Non parametric joyplot`
-    datsp=split(sub, sub$grouping, drop=T)
+    datsp=split(sub, sub$grouping, drop=TRUE)
     bw<-min(diff(sort(as.numeric(unique(sub[[bin]])))))*0.75 # calculating a set bandwidth for all groups
     distParams<-lapply(datsp, function(D){
       X1 <- as.numeric(D[rep(rownames(D), D[[freq]]), bin])
-      dens<-density(X1, from = min(sub$bin,na.rm=T), to = max(sub$bin,na.rm=T), n = 2^10, bw=bw)
+      dens<-density(X1, from = min(sub$bin,na.rm=TRUE), to = max(sub$bin,na.rm=TRUE), n = 2^10, bw=bw)
       return(dens)
     })
     names(distParams)<-names(datsp)
@@ -205,7 +205,7 @@ pcv.hists<-function(df = NULL, index = NULL, group = NULL,
     }
   } else if(match.arg(method, choices = c("beta", "gaussian", "ks", "emd"))=="beta"){
     #* ***** `Beta distribution joyplot`
-    datsp=split(sub, sub$grouping, drop=T) # split data into panel groups
+    datsp=split(sub, sub$grouping, drop=TRUE) # split data into panel groups
     
     if(is.null(priors)){ priors = list(a = rep(0.5, times=length(datsp)), b = rep(0.5, times=length(datsp))) } # assume weak prior on everything
     
@@ -267,13 +267,13 @@ pcv.hists<-function(df = NULL, index = NULL, group = NULL,
         my_dense2 <- dbeta(support, alpha2, beta2)
         my_pdf2 <- my_dense2/sum(my_dense2)
         if(hyp=="unequal"){
-          post.prob = 1-sum(apply(cbind(my_pdf1,my_pdf2), MARGIN=1,function(i) min(i)),na.rm=T) # P[pdf1 != pdf2]
+          post.prob = 1-sum(apply(cbind(my_pdf1,my_pdf2), MARGIN=1,function(i) min(i)),na.rm=TRUE) # P[pdf1 != pdf2]
         } else if (hyp == "lesser"){
           direction <- my_pdf1 <= my_pdf2
-          post.prob <- sum(my_pdf1*direction,na.rm=T)
+          post.prob <- sum(my_pdf1*direction,na.rm=TRUE)
         } else if(hyp == "greater"){
           direction <- my_pdf1 >= my_pdf2
-          post.prob <- sum(my_pdf1*direction,na.rm=T)
+          post.prob <- sum(my_pdf1*direction,na.rm=TRUE)
         }
         ret<-data.frame(group1 = g1, group2 = g2, post.prob = post.prob, method="beta", null = hyp)
         ret
@@ -282,7 +282,7 @@ pcv.hists<-function(df = NULL, index = NULL, group = NULL,
     
   } else if(match.arg(method, choices = c("beta", "gaussian", "ks"))=="gaussian"){
     #* ***** `Gaussian distribution joyplot`
-    datsp=split(sub, sub$grouping, drop=T)
+    datsp=split(sub, sub$grouping, drop=TRUE)
     if(is.null(priors)){ priors <- list( m=rep(0,length(datsp)), n=rep(1,length(datsp)), s2=rep(20,length(datsp)) ) } # mean, number, and variance
     distParams<-lapply(1:length(datsp), function(i){ 
       D=datsp[[i]]
@@ -301,7 +301,7 @@ pcv.hists<-function(df = NULL, index = NULL, group = NULL,
     
     p<-ggplot2::ggplot(data.frame(x=seq(0.1,1,0.1)))+
       facet_layer+
-      geom_area(data=sub, aes(x=.data$bin, y = .data$freq), fill="gray40", color="gray40", show.legend=F)+
+      geom_area(data=sub, aes(x=.data$bin, y = .data$freq), fill="gray40", color="gray40", show.legend=FALSE)+
       lapply(1:length(distParams), function(i){ #* plot distribution of mean on top of total density
         pars<-distParams[[i]]
         lapDat<-data.frame(x=seq(0,1,0.1), y = 0, mu = pars$m)
@@ -317,7 +317,7 @@ pcv.hists<-function(df = NULL, index = NULL, group = NULL,
       ggplot2::labs(x=index, y=freq)
     
     
-    support<-seq(floor(min(sub$bin, na.rm=T)), ceiling(max(sub$bin, na.rm=T)), length.out=1000*round(diff(range(sub$bin, na.rm=T)))  )
+    support<-seq(floor(min(sub$bin, na.rm=TRUE)), ceiling(max(sub$bin, na.rm=TRUE)), length.out=1000*round(diff(range(sub$bin, na.rm=TRUE)))  )
     
     dens_df<-do.call(rbind, lapply(names(distParams), function(nm){
       pars<-distParams[[nm]]
@@ -358,19 +358,19 @@ pcv.hists<-function(df = NULL, index = NULL, group = NULL,
         
         if(hyp=="unequal"){
           post.prob.mu = 1-sum(apply(cbind(post_mean_pdf1,post_mean_pdf2),
-                                     MARGIN=1,function(i) min(i)),na.rm=T) # P[pdf1 != pdf2]
+                                     MARGIN=1,function(i) min(i)),na.rm=TRUE) # P[pdf1 != pdf2]
           post.prob.dist = 1-sum(apply(cbind(post_pdf1,post_pdf2),
-                                       MARGIN=1,function(i) min(i)),na.rm=T) # P[pdf1 != pdf2]
+                                       MARGIN=1,function(i) min(i)),na.rm=TRUE) # P[pdf1 != pdf2]
         } else if (hyp == "lesser"){
           direction.mu <- post_mean_pdf1 <= post_mean_pdf2
-          post.prob.mu <- sum(post_mean_pdf1*direction.mu,na.rm=T)
+          post.prob.mu <- sum(post_mean_pdf1*direction.mu,na.rm=TRUE)
           direction.dist <-  post_pdf1 <= post_pdf2
-          post.prob.dist <- sum(post_pdf1*direction.dist,na.rm=T)
+          post.prob.dist <- sum(post_pdf1*direction.dist,na.rm=TRUE)
         } else if(hyp == "greater"){
           direction.mu <- post_mean_pdf1 >= post_mean_pdf2
-          post.prob.mu <- sum(post_mean_pdf1*direction.mu,na.rm=T)
+          post.prob.mu <- sum(post_mean_pdf1*direction.mu,na.rm=TRUE)
           direction.dist <-  post_pdf1 >= post_pdf2
-          post.prob.dist <- sum(post_pdf1*direction.dist,na.rm=T)
+          post.prob.dist <- sum(post_pdf1*direction.dist,na.rm=TRUE)
         }
         ret<-data.frame(group1 = g1, group2 = g2, post.prob.mu = post.prob.mu,
                         post.prob.dist = post.prob.dist, method="gaussian", null = hyp)

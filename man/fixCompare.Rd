@@ -4,7 +4,7 @@
 \alias{fixCompare}
 \title{Helper function for making comparisons between groups in various functions.}
 \usage{
-fixCompare(compare, dat, col, likeToLike = F)
+fixCompare(compare, dat, col, likeToLike = FALSE)
 }
 \arguments{
 \item{compare}{Groups to compare. By default this is set to FALSE, which corresponds to no testing.

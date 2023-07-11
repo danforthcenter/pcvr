@@ -36,7 +36,7 @@
 #'            ifelse(sv$fertilizer == "B", "50", "0"))
 #' sv<-bw.time(sv, plantingDelay = 0,
 #'       phenotype="area.pixels", cutoff=10, timeCol="timestamp",
-#'       group=c("barcode", "rotation"), plot=T)
+#'       group=c("barcode", "rotation"), plot=TRUE)
 #' phenotypes <- c('area.pixels', 'convex_hull_area.pixels',
 #'             'convex_hull_vertices', 'ellipse_angle.degrees',
 #'             'ellipse_eccentricity', 'ellipse_major_axis.pixels',
@@ -46,7 +46,7 @@
 #'             'solidity', 'width.pixels')
 #' phenoForm<-paste0("cbind(", paste0(phenotypes, collapse=", "), ")")
 #' groupForm<-"DAS+DAP+barcode+genotype+fertilizer"
-#' sv<-aggregate(as.formula(paste0(phenoForm, "~", groupForm)), data=sv, mean, na.rm=T)
+#' sv<-aggregate(as.formula(paste0(phenoForm, "~", groupForm)), data=sv, mean, na.rm=TRUE)
 #' sv<-bw.outliers(sv, phenotype="area.pixels",
 #'       group = c("DAS", "genotype", "fertilizer"), plotgroup = c("barcode"))
 #' water<-bw.water("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/metadata.json")
@@ -81,7 +81,7 @@ pwue<-function(df, w, pheno="area.pixels", time="DAS", id="barcode"){
   #* `format phenotype data`
   df<-df[, !grepl("^timestamp$|^local_time$",colnames(df))]
   #* `join datasets`
-  x<-data.table::as.data.table(merge(df, w, by=intersect(colnames(df), colnames(w)), all.x=T))
+  x<-data.table::as.data.table(merge(df, w, by=intersect(colnames(df), colnames(w)), all.x=TRUE))
   x<-data.table::setorderv(x, cols = c(id,time, "snapshot_sorter")) # x can have duplicate pheno rows if w has >1 watering per day.
   #* `calculate delta values and pwue`
   x_deltas<-data.table::rbindlist(lapply(split(x, by=id), function(d){
@@ -98,14 +98,14 @@ pwue<-function(df, w, pheno="area.pixels", time="DAS", id="barcode"){
         if(all(is.na(sub$water_used_between_waterings))){
           out$water_used_between_waterings <- NA
         } else{
-          out$water_used_between_waterings <- sum(sub$water_used_between_waterings, na.rm=T) 
+          out$water_used_between_waterings <- sum(sub$water_used_between_waterings, na.rm=TRUE) 
         }
-        out[[pheno]] <- mean(sub[[pheno]], na.rm=T)
+        out[[pheno]] <- mean(sub[[pheno]], na.rm=TRUE)
         out
       }))
     }
     #* `calculate delta phenotype`
-    d[[paste0("delta_",pheno)]] <- pmax(d[[pheno]] - data.table::shift(d[[pheno]], n=1, type="lag"), 0, na.rm=F)
+    d[[paste0("delta_",pheno)]] <- pmax(d[[pheno]] - data.table::shift(d[[pheno]], n=1, type="lag"), 0, na.rm=FALSE)
     #* `calculate pseudo-WUE`
     d$pWUE <- d[[paste0("delta_",pheno)]] / d$water_used_between_waterings
     d

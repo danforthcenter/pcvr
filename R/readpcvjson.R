@@ -31,7 +31,7 @@
 
 read.pcv.jsn<-function(file, dtSuffix = "datatype", valSuffix = "value", labSuffix = "label", output = "sv"){
   
-  jsn<-as.data.frame(jsonlite::fromJSON(file, flatten=T))
+  jsn<-as.data.frame(jsonlite::fromJSON(file, flatten=TRUE))
   fieldTypes<-unique(unlist(lapply(colnames(jsn), function(c){ x<-strsplit(c,"[.]")[[1]]; x[length(x)] })))
   
   if(!all(c(dtSuffix, valSuffix, labSuffix) %in% fieldTypes)){

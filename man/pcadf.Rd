@@ -10,7 +10,7 @@ pcadf(
   color = NULL,
   trace = NULL,
   facet = NULL,
-  returnData = T,
+  returnData = TRUE,
   ncp = NULL,
   split = "DAS"
 )
@@ -64,7 +64,7 @@ hue_wide$fertilizer = ifelse(hue_wide$fertilizer == "A", "100",
                              ifelse(hue_wide$fertilizer == "B", "50", "0"))
 hue_wide<-bw.time(hue_wide,timeCol="timestamp", group="barcode")
 
-pcadf(hue_wide, cols = "hue_frequencies", color = "time_geno_fert", returnData=F)
+pcadf(hue_wide, cols = "hue_frequencies", color = "time_geno_fert", returnData=FALSE)
 
 ## End(Not run)
 

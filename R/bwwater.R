@@ -22,11 +22,11 @@ bw.water<-function(file = NULL, envKey="environment"){
   env$snapshot<-rownames(env)
   rownames(env)<-NULL
   env <- as.data.frame(apply(env, 2, as.character))
-  env<-type.convert(env, as.is=T)
+  env<-type.convert(env, as.is=TRUE)
   if("timestamp" %in% colnames(env)){
     tryCatch({
       time <-as.POSIXct(env$timestamp)
-      begin<-min(time,na.rm=T)
+      begin<-min(time,na.rm=TRUE)
       DAS<-as.numeric((time-begin)/24/60/60)
       env$DAS<-DAS
     }, error = function(err){}, warning=function(warn){})

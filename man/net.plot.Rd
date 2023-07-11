@@ -47,7 +47,7 @@ df1<-read.pcv(file, "wide", T, multiValPattern = c("index_frequencies_index_ari"
  "index_frequencies_index_ci_rededge", "npq_hist_NPQ", "yii_hist_Fq'/Fm'", "yii_hist_Fv/Fm"))
 colnames(df1)<-sub("index_frequencies_index_ndvi.", "ndvi_", colnames(df1))
 emd_df<-pcv.emd(df1, cols="ndvi_", reorder=c("treatment", "genotype", "X"),
-   mat =F, plot=F, parallel = 1)
+   mat =FALSE, plot=FALSE, parallel = 1)
 network<-pcv.net(emd_df, meta = c("treatment", "genotype"))
 net=network; fill = "strength"; shape = "genotype"; size=5; edgeWeight="emd"
 net.plot(network, fill = "strength", shape = "genotype", size=5, edgeFilter=0.5)

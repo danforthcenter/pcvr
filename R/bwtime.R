@@ -42,7 +42,7 @@
 #' sv$fertilizer = ifelse(sv$fertilizer == "A", "100",
 #'                    ifelse(sv$fertilizer == "B", "50", "0"))
 #' sv<-bw.time(sv, plantingDelay = 0, phenotype="area.pixels", cutoff=10,
-#'  timeCol="timestamp", group=c("barcode", "rotation"), plot=F)
+#'  timeCol="timestamp", group=c("barcode", "rotation"), plot=FALSE)
 #' 
 #' 
 #' svl<-read.pcv(
@@ -56,20 +56,20 @@
 #' svl$fertilizer = ifelse(svl$fertilizer == "A", "100",
 #'                    ifelse(svl$fertilizer == "B", "50", "0"))
 #' svl<-bw.time(svl, plantingDelay = 0, phenotype="area", cutoff=10, timeCol="timestamp",
-#'  group=c("barcode", "rotation"), plot=F,wide=F)
+#'  group=c("barcode", "rotation"), plot=FALSE,wide=FALSE)
 #' 
 #' ## End(Not run)
 #'
 bw.time<-function(df = NULL, mode=NULL, plantingDelay = NULL,
                   phenotype=NULL, cutoff=1, timeCol="timestamp",
-                  group="Barcodes", plot=T, wide=T, format="%Y-%m-%d %H:%M:%S", traitCol="trait", valueCol="value"){
+                  group="Barcodes", plot=TRUE, wide=TRUE, format="%Y-%m-%d %H:%M:%S", traitCol="trait", valueCol="value"){
   if(is.null(mode) || !mode %in% c("DAS", "DAP", "DAE")){ mode=c("DAP", "DAE") }
   if(is.null(plantingDelay) & "DAP" %in% mode){mode<-mode[-which(mode=="DAP")]}
   if(is.null(phenotype) & "DAE" %in% mode){mode<-mode[-which(mode=="DAE")]}
   
   if(!is.integer(df[[timeCol]])){
     df[[timeCol]]<-as.POSIXct(strptime(df[[timeCol]],format = format))
-    beg <- min(df[[timeCol]], na.rm=T)
+    beg <- min(df[[timeCol]], na.rm=TRUE)
     df$DAS <- floor(as.numeric((df[[timeCol]] - beg)/60/60/24))
     timeCol="DAS"
   }
@@ -81,7 +81,7 @@ bw.time<-function(df = NULL, mode=NULL, plantingDelay = NULL,
     df<-do.call(rbind, lapply( split(df, DAE_SPLIT), function(d){
       subd<-d[d[[phenotype]] >= cutoff & !is.na(d[[phenotype]]) , ]
       if(nrow(subd)==0){subd<-data.frame(DAS=max(df[[timeCol]])+1) ; colnames(subd)<-timeCol} # if all NA area then remove all rows
-      d$DAE<-d[[timeCol]] - min(subd[[timeCol]], na.rm=T)
+      d$DAE<-d[[timeCol]] - min(subd[[timeCol]], na.rm=TRUE)
       d
     }))
   } else if ("DAE" %in% mode & !wide){
@@ -89,7 +89,7 @@ bw.time<-function(df = NULL, mode=NULL, plantingDelay = NULL,
     df<-do.call(rbind, lapply( split(df, DAE_SPLIT), function(d){
       subd<-d[ d[[traitCol]]==phenotype & d[[valueCol]]>=cutoff & !is.na(d[[valueCol]])  , ]
       if(nrow(subd)==0){subd<-data.frame(DAS=max(df[[timeCol]])+1) ; colnames(subd)<-timeCol}
-      d$DAE<-d[[timeCol]] - min(subd[[timeCol]], na.rm=T)
+      d$DAE<-d[[timeCol]] - min(subd[[timeCol]], na.rm=TRUE)
       d
     }))
   }

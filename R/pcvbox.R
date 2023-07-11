@@ -37,7 +37,7 @@
 #' 
 #' ## End(Not run) 
 
-pcvBox<-function(df=df,x='treatment' , y='area.pixels', fill = NULL, compare=F, trait="trait", value="value",method="t.test", showPoints=F, ...){
+pcvBox<-function(df=df,x='treatment' , y='area.pixels', fill = NULL, compare=FALSE, trait="trait", value="value",method="t.test", showPoints=FALSE, ...){
   if(! (y %in% colnames(df)) && all(c(trait, value) %in% colnames(df))){
     df<-df[df[[trait]]==y,]
     ylab = y

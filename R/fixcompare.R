@@ -14,7 +14,7 @@
 #' @return A list of comparisons as used in the "comparisons" argument of \code{ggpubr::stat_compare_means}.
 #' @export
 #'
-fixCompare<-function(compare, dat, col, likeToLike=F){
+fixCompare<-function(compare, dat, col, likeToLike=FALSE){
   if(!is.null(compare)){
     if(length(compare)==2 & !is.list(compare)){
       compare = list(compare) }
@@ -23,7 +23,7 @@ fixCompare<-function(compare, dat, col, likeToLike=F){
       compare<-lapply(levels(dat[[col]])[!levels(dat[[col]]) %in% compare], function(l) c(compare, l))
     }
   } else if (is.null(compare)){
-    compare<-combn(unique(dat[[col]]),2,simplify=F)
+    compare<-combn(unique(dat[[col]]),2,simplify=FALSE)
   }
   if(likeToLike){
     index<-unlist(lapply(compare, function(comp){

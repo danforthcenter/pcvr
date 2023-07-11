@@ -45,7 +45,7 @@
 #' brmViolin(model = bw_vignette_fit, params = NULL,
 #'         hyp="num/denom>1.05", compareX = c("0.B73", "50.B73", "100.B73"), againstY = "0.B73",
 #'         group_sep = "[.]", groups_into = c("soil", "genotype"), x="soil", facet="genotype",
-#'         returnData=F)
+#'         returnData=FALSE)
 #'      
 #' ## End(Not run)
 #' 
@@ -68,9 +68,9 @@ brmViolin<-function(model, params=NULL,hyp="num/denom>1.05", compareX=NULL, agai
   # groups_into = c("soil", "inoc"); x="inoc"; facet="soil"
   
   #* parse arguments
-  compareFew=F
+  compareFew=FALSE
   if(!is.null(compareX) & !is.null(againstY)){
-    compareFew=T
+    compareFew=TRUE
     if(!againstY %in% compareX){compareX<-c(compareX, againstY)} # make sure all violins will be filled if both are provided
   }
   
@@ -84,8 +84,8 @@ brmViolin<-function(model, params=NULL,hyp="num/denom>1.05", compareX=NULL, agai
   }
   
   if(is.null(group_sep) | is.null(groups_into)){
-    useGroups=F
-  } else {useGroups=T}
+    useGroups=FALSE
+  } else {useGroups=TRUE}
   
   #* internals
   
@@ -104,7 +104,7 @@ brmViolin<-function(model, params=NULL,hyp="num/denom>1.05", compareX=NULL, agai
   group_string<-trimws(strsplit(as.character(model[[1]]$formula$pforms[[params[1]]])[3], "[+]")[[1]])[2]
   
   groupings<-unique(sub(paste0(".*",group_string),"",colnames(draws)))
-  p1<-combn(groupings, 2, simplify=F)
+  p1<-combn(groupings, 2, simplify=FALSE)
   p2<-lapply(p1,rev)
   p3<-lapply(unique(groupings), function(g) c(g,g))
   comparisons = c(p1,p2,p3)
@@ -135,7 +135,7 @@ brmViolin<-function(model, params=NULL,hyp="num/denom>1.05", compareX=NULL, agai
                                      ifelse(hyps_df$Post.Prob >= 0.95, "B",
                                      ifelse(hyps_df$Post.Prob >= 0.85, "C",
                                      ifelse(hyps_df$Post.Prob >= 0.75, "D", "E")))),
-                                     levels=c("A","B","C","D","E"),ordered=T)
+                                     levels=c("A","B","C","D","E"),ordered=TRUE)
   
   longdraw<-as.data.frame(data.table::melt(data.table::as.data.table(draws), measure.vars = colnames(draws), value.name="draw"))
   longdraw$param <- substr(longdraw$variable, 1,1)
@@ -148,7 +148,7 @@ brmViolin<-function(model, params=NULL,hyp="num/denom>1.05", compareX=NULL, agai
       if(suppressWarnings(any(is.na(as.numeric(group_meta[[col]]))))){
         group_meta[[col]] <- factor(group_meta[[col]])
       }else{
-        group_meta[[col]] <- factor(group_meta[[col]], levels= sort(as.numeric(unique(group_meta[[col]]))), ordered=T)
+        group_meta[[col]] <- factor(group_meta[[col]], levels= sort(as.numeric(unique(group_meta[[col]]))), ordered=TRUE)
       }
     }
     
@@ -174,7 +174,7 @@ brmViolin<-function(model, params=NULL,hyp="num/denom>1.05", compareX=NULL, agai
       ggplot2::geom_hline(data=x, ggplot2::aes(yintercept = mean), linetype=5, linewidth=0.5)
     })+
     ggplot2::scale_fill_manual(values = virPal,breaks=c("A","B","C","D","E"),
-                      labels = c(">99%", ">95%", ">85%", ">75%", "<75%"),drop=F)+
+                      labels = c(">99%", ">95%", ">85%", ">75%", "<75%"),drop=FALSE)+
     ggplot2::labs(y="Posterior Distribution", x=x, fill="Discrete Posterior Probability")+
     pcv_theme()+
     ggplot2::theme(legend.position="bottom", axis.text.x.bottom = ggplot2::element_text(angle=0,hjust=0.5),

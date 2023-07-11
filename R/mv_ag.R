@@ -41,7 +41,7 @@
 #' phenoForm<-paste0("cbind(", paste0(phenotypes, collapse=", "), ")")
 #' groupForm<-"DAS+barcode+genotype+fertilizer"
 #' form<-as.formula(paste0(phenoForm, "~", groupForm))
-#' hue_wide<-aggregate(form, data=hue_wide, mean, na.rm=T)
+#' hue_wide<-aggregate(form, data=hue_wide, mean, na.rm=TRUE)
 #' dim(hue_wide)
 #' hue_ag1<-mv_ag(df=hue_wide, group = c("DAS", "genotype", "fertilizer"),
 #'  n_per_group=2, keep=c("area.pixels", "height.pixels"))
@@ -57,12 +57,12 @@
 
 mv_ag<-function(df, group, mvCols="frequencies", n_per_group=1, outRows=NULL, keep=NULL, parallel=getOption("mc.cores",1)){
   #* ***** [calculated values]
-  multi_group=F
+  multi_group=FALSE
   if(length(group)>1){
     original_group=group
     df$INTERNAL_MULTI_GROUP = as.character(interaction(df[,group]))
     group="INTERNAL_MULTI_GROUP"
-    multi_group=T
+    multi_group=TRUE
   }
   dat_sp <-split(x=df, f=df[[group]])
   if(!is.null(outRows)){n_per_group = round(length(dat_sp)/outRows) }
@@ -70,11 +70,11 @@ mv_ag<-function(df, group, mvCols="frequencies", n_per_group=1, outRows=NULL, ke
   if(is.numeric(mvCols)){mvCols<-colnames(df)[mvCols]}
   #* ***** [do stuff]
   out<-do.call(rbind, parallel::mclapply(dat_sp, function(d){
-    mv<-as.matrix(d[,mvCols], rownames.force=T)
+    mv<-as.matrix(d[,mvCols], rownames.force=TRUE)
     mv<-mv/rowSums(mv) # rescale everything to sum to 1
     if(nrow(mv) < n_per_group){ iter_n = nrow(mv) } else{ iter_n = n_per_group }
     if(is.null(rownames(mv))){rownames(mv)<-1:nrow(mv)} # should be redundant
-    nms<-sample(rownames(mv), nrow(mv), replace=F)
+    nms<-sample(rownames(mv), nrow(mv), replace=FALSE)
     if(nrow(mv)>1 & iter_n>1){ 
       index<-cut(1:nrow(mv), iter_n)
       nms_split<-split(nms, index)
