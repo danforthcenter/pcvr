@@ -53,7 +53,7 @@
 #' # reorder randomly for similarity to real data
 #' test$meta1<-rep(LETTERS[1:3], length.out = nrow(test))
 #' test$meta2<-rep(LETTERS[4:5], length.out = nrow(test))
-#' pcv.emd(test, cols="V", reorder="Mu", mat =FALSE, plot=FALSE, parallel = 1)
+#' 
 #' x<-pcv.emd(df=test, cols="V", reorder="Mu",
 #'    include = c("meta1", "meta2"), mat =FALSE,
 #'    plot=FALSE, parallel = 1)
@@ -61,15 +61,17 @@
 #' 
 #' file = "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest1.csv"
 #' df1<-read.pcv(file, "wide", TRUE, multiValPattern = c("index_frequencies_index_ari",
-#' "index_frequencies_index_ci_rededge", "npq_hist_NPQ", "yii_hist_Fq'/Fm'", "yii_hist_Fv/Fm"))
+#'  "index_frequencies_index_ci_rededge", "npq_hist_NPQ", "yii_hist_Fq'/Fm'", "yii_hist_Fv/Fm"))
+#'  
 #' colnames(df1)<-sub("index_frequencies_index_ndvi.", "ndvi_", colnames(df1))
+#' 
 #' w<-pcv.emd(df1, cols="ndvi_", reorder=c("treatment", "genotype"), 
 #'   mat =FALSE, plot=TRUE, parallel = 1)
-#' df_long<-read.pcv(file, "long", FALSE)
-#' l<-pcv.emd(df = df_long, cols="index_frequencies_index_ndvi",
-#'    reorder=c("treatment", "genotype"),
-#'    mat =FALSE, plot=TRUE, longTrait="trait", id="image", value="value")
-#' l$plot + theme(axis.text = element_blank())
+#' # df_long<-read.pcv(file, "long", FALSE)
+#' # l<-pcv.emd(df = df_long, cols="index_frequencies_index_ndvi",
+#' #    reorder=c("treatment", "genotype"),
+#' #    mat =FALSE, plot=TRUE, longTrait="trait", id="image", value="value")
+#' # l$plot + theme(axis.text = element_blank())
 #' 
 #' # Note on computational complexity
 #' # This scales as O^2, see the plot below for some idea
