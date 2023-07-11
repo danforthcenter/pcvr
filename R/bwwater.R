@@ -6,6 +6,7 @@
 #'  Currently there are no situations where this makes sense to change.
 #' @keywords watering, json
 #' @import jsonlite
+#' @importFrom utils type.convert
 #' @return A data frame containing the bellwether watering data
 #' @examples
 #' ## Not run: 

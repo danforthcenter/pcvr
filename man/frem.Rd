@@ -59,7 +59,9 @@ df, des, phenotypes, timeCol, cor, returnData, combine, markSingular, time
 ## Not run:
 
 library(data.table)
-wide<-read.pcv("https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv",
+wide<-read.pcv(
+ paste0("https://media.githubusercontent.com/media/joshqsumner/",
+ "pcvrTestData/main/smallPhenotyperRun.csv"),
  mode="wide",
  singleValueOnly = T, reader="fread")
 wide$genotype = substr(wide$barcode, 3,5)

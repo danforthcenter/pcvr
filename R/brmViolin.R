@@ -35,6 +35,8 @@
 #' @import ggplot2
 #' @import viridis
 #' @import parallel
+#' @importFrom utils combn
+#' @importFrom stats as.formula setNames
 #' 
 #' @examples 
 #' 

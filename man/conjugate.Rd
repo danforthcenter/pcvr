@@ -105,11 +105,16 @@ See examples for plots of these prior distributions.
 }
 \examples{
 makeMvLn<-function(bins=500,mu_log,sigma_log){
-   setNames(data.frame(matrix(hist(rlnorm(2000,mu_log, sigma_log), breaks=seq(1,bins,5), plot=F)$counts, nrow=1)),
+   setNames(data.frame(matrix(hist(rlnorm(2000,mu_log, sigma_log),
+      breaks=seq(1,bins,5), plot=F)$counts, nrow=1)),
     paste0("b",seq(1,bins,5))[-1] ) }
-   set.seed(123)
-mv_ln<-rbind(do.call(rbind, lapply(1:30, function(i){makeMvLn(mu_log=log(130), sigma_log=log(1.3) )})),
-             do.call(rbind, lapply(1:30, function(i){makeMvLn(mu_log=log(100), sigma_log=log(1.2) )})))
+   set.seed(123) 
+mv_ln<-rbind(do.call(rbind,
+           lapply(1:30, function(i){makeMvLn(mu_log=log(130),
+             sigma_log=log(1.3) )})),
+          do.call(rbind,
+           lapply(1:30, function(i){makeMvLn(mu_log=log(100),
+             sigma_log=log(1.2) )})))
              
 # lognormal mv
 ln_mv_ex <- conjugate(s1 = mv_ln[1:30,], s2= mv_ln[31:60,], method = "lognormal",
@@ -127,7 +132,8 @@ ln_sv_ex <- conjugate(s1=rlnorm(100, log(130), log(1.3)), s2= rlnorm(100, log(10
 # Z test mv example
 
 makeMvGauss<-function(bins=180,mu,sigma){
-   setNames(data.frame(matrix(hist(rnorm(2000,mu, sigma), breaks=seq(1,bins,1), plot=F)$counts, nrow=1)),
+   setNames(data.frame(matrix(hist(rnorm(2000,mu, sigma),
+   breaks=seq(1,bins,1), plot=F)$counts, nrow=1)),
    paste0("b",1:(bins-1) ))
    }
 mv_gauss<-rbind(do.call(rbind, lapply(1:30, function(i){makeMvGauss(bins=180, mu=50, sigma=10 )})),
@@ -159,7 +165,8 @@ gauss_sv_ex <- conjugate(s1=rnorm(15, 50,10), s2= rnorm(15, 60,12), method = "ga
 # T test mv example 
 
 makeMvGauss<-function(bins=180,mu,sigma){
-   setNames(data.frame(matrix(hist(rnorm(2000,mu, sigma), breaks=seq(1,bins,1), plot=F)$counts, nrow=1)),
+   setNames(data.frame(matrix(hist(rnorm(2000,mu, sigma),
+    breaks=seq(1,bins,1), plot=F)$counts, nrow=1)),
    paste0("b",1:(bins-1) ))
    }
 mv_gauss<-rbind(do.call(rbind, lapply(1:30, function(i){makeMvGauss(bins=180, mu=50, sigma=10 )})),
@@ -183,7 +190,8 @@ gaussianMeans_sv_ex <- conjugate(s1=rnorm(10, 50,10), s2= rnorm(10, 60,12), meth
 # beta mv example
 
 makeMvBeta<-function(n=100,a,b){
-  setNames(data.frame(matrix(hist(rbeta(2000,a,b), breaks=seq(0,1,length.out=n), plot=F)$counts, nrow=1)),
+  setNames(data.frame(matrix(hist(rbeta(2000,a,b),
+  breaks=seq(0,1,length.out=n), plot=F)$counts, nrow=1)),
   paste0("b0.",1:(n-1)))
 }
 
@@ -221,7 +229,9 @@ negbin_sv_ex <- conjugate(s1 = rnbinom(20, 10, 0.5), s2= rnbinom(20, 10, 0.25), 
 # Example usage with plantCV data
 ## Not run:
 library(data.table)
-wide<-read.pcv("https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv",
+wide<-read.pcv(
+ paste0("https://media.githubusercontent.com/media/joshqsumner/",
+ "pcvrTestData/main/smallPhenotyperRun.csv"),
  mode="wide", singleValueOnly = T, multiValPattern = "hist", reader="fread")
 wide$genotype = substr(wide$barcode, 3,5)
 wide$genotype = ifelse(wide$genotype == "002", "B73",
@@ -232,8 +242,14 @@ wide$fertilizer = ifelse(wide$fertilizer == "A", "100",
                          ifelse(wide$fertilizer == "B", "50", "0"))
 wide<-bw.time(wide,timeCol="timestamp", group="barcode")
 
-mo17_sample <- wide[wide$genotype=="Mo17" & wide$DAS > 18 & wide$fertilizer == 100, grepl("hue_freq", colnames(wide))]
-B73_sample <- wide[wide$genotype=="B73" & wide$DAS > 18 & wide$fertilizer == 100, grepl("hue_freq", colnames(wide))]
+mo17_sample <- wide[wide$genotype=="Mo17" &
+                    wide$DAS > 18 &
+                    wide$fertilizer == 100,
+                    grepl("hue_freq", colnames(wide))]
+B73_sample <- wide[wide$genotype=="B73" &
+                   wide$DAS > 18 &
+                   wide$fertilizer == 100,
+                   grepl("hue_freq", colnames(wide))]
 
 hue_res_t <- conjugate(s1 = mo17_sample, s2= B73_sample, method="t",
               priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ),
@@ -243,7 +259,8 @@ hue_res_t <- conjugate(s1 = mo17_sample, s2= B73_sample, method="t",
 hue_res_ln <- conjugate(s1 = mo17_sample, s2= B73_sample, method="lognormal",
               plot=T, rope_range = c(-10,10), rope_ci = 0.89, rope_hdi = 0.95,
               cred.int.level = 0.89, hypothesis="equal")
-# Picking the right distribution makes a difference, checking plots of your data (see ?pcv.joyplot for mv traits)
+# Picking the right distribution makes a difference,
+# checking plots of your data (see ?pcv.joyplot for mv traits)
 # will be useful.
 
 pixels_per_cmsq <- 42.5^2   # pixel per cm^2

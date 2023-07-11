@@ -49,11 +49,14 @@
 #'     x<-as.data.frame(do.call(rbind, lapply(1:10, function(i) makeHist(mu=d, sd=5))))
 #'     x$Mu = round(d,-1)
 #'     x})))
-#' test<-test[sample(rownames(test), nrow(test), replace=F),] #* reorder randomly for similarity to real data
+#' test<-test[sample(rownames(test), nrow(test), replace=F),]
+#' # reorder randomly for similarity to real data
 #' test$meta1<-rep(LETTERS[1:3], length.out = nrow(test))
 #' test$meta2<-rep(LETTERS[4:5], length.out = nrow(test))
 #' pcv.emd(test, cols="V", reorder="Mu", mat =F, plot=F, parallel = 1)
-#' x<-pcv.emd(df=test, cols="V", reorder="Mu", include = c("meta1", "meta2"), mat =F, plot=F, parallel = 1)
+#' x<-pcv.emd(df=test, cols="V", reorder="Mu",
+#'    include = c("meta1", "meta2"), mat =F,
+#'    plot=F, parallel = 1)
 #' head(x)
 #' 
 #' file = "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest1.csv"
@@ -153,7 +156,7 @@ pcv.emd<-function(df, cols=NULL, reorder=NULL, include=reorder, mat=F, plot = T,
     if(mat){
       p<-stats::heatmap(out_data)
     }else{
-      p<-ggplot2::ggplot(out_data, ggplot2::aes(x=i, y=j, fill=emd))+
+      p<-ggplot2::ggplot(out_data, ggplot2::aes(x=.data$i, y=.data$j, fill=.data$emd))+
         ggplot2::geom_tile(color=NA)+
         ggplot2::labs(fill = "Earth Mover's Distance")+
         ggplot2::theme_minimal()+

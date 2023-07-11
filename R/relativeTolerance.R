@@ -21,6 +21,7 @@
 #' @param valueCol Column with phenotype values, defaults to "value".
 #'    This should generally not need to be changed from the default.
 #' @return A dataframe with relative tolerance columns added.
+#' @importFrom stats sd setNames
 #' @keywords single-value-trait
 #' @examples 
 #' 

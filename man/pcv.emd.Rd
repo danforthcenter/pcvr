@@ -78,11 +78,14 @@ test<-as.data.frame(do.call(rbind, lapply(seq(30,54,3), function(d) {
     x<-as.data.frame(do.call(rbind, lapply(1:10, function(i) makeHist(mu=d, sd=5))))
     x$Mu = round(d,-1)
     x})))
-test<-test[sample(rownames(test), nrow(test), replace=F),] #* reorder randomly for similarity to real data
+test<-test[sample(rownames(test), nrow(test), replace=F),]
+# reorder randomly for similarity to real data
 test$meta1<-rep(LETTERS[1:3], length.out = nrow(test))
 test$meta2<-rep(LETTERS[4:5], length.out = nrow(test))
 pcv.emd(test, cols="V", reorder="Mu", mat =F, plot=F, parallel = 1)
-x<-pcv.emd(df=test, cols="V", reorder="Mu", include = c("meta1", "meta2"), mat =F, plot=F, parallel = 1)
+x<-pcv.emd(df=test, cols="V", reorder="Mu",
+   include = c("meta1", "meta2"), mat =F,
+   plot=F, parallel = 1)
 head(x)
 
 file = "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest1.csv"

@@ -21,6 +21,7 @@
 #'  This should generally not need to be changed from the default.
 #' @return A dataframe with cumulative sum columns added for specified phenotypes
 #' @keywords single-value-traits
+#' @importFrom stats setNames
 #' @examples 
 #' 
 #' ## Not run:

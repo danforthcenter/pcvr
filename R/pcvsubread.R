@@ -5,7 +5,9 @@
 #'  Format as list("trait in area, perimeter", "other in value")
 #' @param reader reader argument passed from read.pcv, defaults to read.csv.
 #' @param awk Optional awk command to use instead.
+#' @param ... further arguments passed from \code{read.pcv}.
 #' @import data.table
+#' @importFrom utils read.csv
 #' @return Returns a dataframe after subsetting happens outside of R using the awk statement from \code{awkHelper}.
 #' @keywords read.csv, pcv, wide, long
 #' @export

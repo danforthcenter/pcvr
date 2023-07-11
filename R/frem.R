@@ -25,6 +25,7 @@
 #' @import lme4
 #' @import ggplot2
 #' @importFrom scales percent_format
+#' @importFrom stats as.formula na.omit
 #' @import patchwork
 #' 
 #' @keywords read.csv, pcv, wide, long
@@ -37,7 +38,9 @@
 #' ## Not run:
 #' 
 #' library(data.table)
-#' wide<-read.pcv("https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv",
+#' wide<-read.pcv(
+#'  paste0("https://media.githubusercontent.com/media/joshqsumner/",
+#'  "pcvrTestData/main/smallPhenotyperRun.csv"),
 #'  mode="wide",
 #'  singleValueOnly = T, reader="fread")
 #' wide$genotype = substr(wide$barcode, 3,5)
@@ -156,7 +159,7 @@ frem<-function(df, des, phenotypes, timeCol=NULL, cor=T, returnData=F, combine=T
   
   if(!LONGITUDINAL){
     p <- ggplot2::ggplot(data=anova_dat)+
-      ggplot2::geom_col(ggplot2::aes(y =Phenotypes, x = value, fill=variable))+
+      ggplot2::geom_col(ggplot2::aes(y =.data$Phenotypes, x = .data$value, fill=.data$variable))+
       ggplot2::xlab("Variance Explained")+
       ggplot2::guides(fill=ggplot2::guide_legend(title="", reverse=T))+
       ggplot2::theme_minimal()+
@@ -168,16 +171,16 @@ frem<-function(df, des, phenotypes, timeCol=NULL, cor=T, returnData=F, combine=T
     
     if(markSingular){
       p<-p+ggplot2::geom_point(data=anova_dat[as.logical(anova_dat$singular) & anova_dat$variable=="Unexplained",],
-                               aes(x=0.99, y=Phenotypes), color="white", shape=0)
+                               aes(x=0.99, y=.data$Phenotypes), color="white", shape=0)
     }
     if(dummyX){
       p<-p+ggplot2::theme(axis.title.x.bottom=ggplot2::element_blank())
     }
     
   } else{
-    p <- ggplot(data = anova_dat, aes(x=.data[[timeCol]], y=value, fill=variable))+
+    p <- ggplot(data = anova_dat, aes(x=.data[[timeCol]], y=.data$value, fill=.data$variable))+
       ggplot2::geom_area()+
-      ggplot2::facet_wrap(~Phenotypes)+
+      ggplot2::facet_wrap(~.data$Phenotypes)+
       ggplot2::ylab("Variance Explained")+
       ggplot2::guides(fill=ggplot2::guide_legend(title="", reverse=T))+
       ggplot2::scale_y_continuous(expand=c(0,0,0,0), labels = scales::percent_format())+
@@ -209,8 +212,8 @@ frem<-function(df, des, phenotypes, timeCol=NULL, cor=T, returnData=F, combine=T
       x$Var1 <- ordered(x$Var1,levels=unexp$Phenotypes[order(unexp$value)])
       x$Var2 <- ordered(x$Var2,levels=unexp$Phenotypes[order(unexp$value)])
       
-      p2 <- ggplot2::ggplot(x,ggplot2::aes(Var1,Var2))+
-        ggplot2::geom_point(ggplot2::aes(color=value),size=4)+
+      p2 <- ggplot2::ggplot(x,ggplot2::aes(.data$Var1, .data$Var2))+
+        ggplot2::geom_point(ggplot2::aes(color=.data$value),size=4)+
         ggplot2::scale_color_gradient2(limits=c(-1,1),
                                        midpoint = 0)+
         ggplot2::theme_minimal()+

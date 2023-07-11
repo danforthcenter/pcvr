@@ -22,6 +22,8 @@
 #' @param direction Direction of filtering, can be either "greater" or "lesser".
 #' @import ggplot2
 #' @import igraph
+#' @importFrom utils type.convert
+#' @importFrom stats quantile
 #' 
 #' @keywords emd, earth mover's distance, multi-value trait, network
 #' @examples 

@@ -7,6 +7,8 @@
 #' @param priors A named list of means for prior distributions. Currently this function makes lognormal priors for all growth model parameters. This is done because the values are strictly positive and the lognormal distribution is easily interpreted. If this argument is not provided then priors are not returned and a different set of priors will need to be made for the model using \code{brms::set_prior}. This works similarly to the \code{params} argument in \code{growthSim}. Names should correspond to parameter names from the \code{model} argument. A numeric vector can also be used, but specifying names is best practice for clarity. See details.
 #' @keywords Bayesian, brms
 #' 
+#' @importFrom stats as.formula rgamma
+#' 
 #' @details 
 #' 
 #' Default priors are not provided, but these can serve as starting points for each distribution. 
@@ -42,16 +44,16 @@
 #' sigma="spline", df=simdf, priors = list("A"=130, "B"=12, "C"=3))
 #' lapply(ss,class)
 #' ss$initfun()
-#' fit_test <- brm( # main components of the model
-#'          ss$formula, prior = ss$prior, data = ss$df, family = ss$family,
-#'          # parameters controling chain number, chain length, parallelization and starting values
-#'          iter = 1000, cores = 2, chains = 2, init = ss$initfun, 
-#'          # options to increase performance
-#'          control = list(adapt_delta = 0.999, max_treedepth = 20), backend = "cmdstanr")
+#' # fit_test <- brm( # main components of the model
+#' #         ss$formula, prior = ss$prior, data = ss$df, family = ss$family,
+#' #         # parameters controling chain number, chain length, parallelization and starting values
+#' #         iter = 1000, cores = 2, chains = 2, init = ss$initfun, 
+#' #         # options to increase performance
+#' #        control = list(adapt_delta = 0.999, max_treedepth = 20), backend = "cmdstanr")
 #' # or 
 #' 
-#' fit_test <- fitGrowth(ss, iter = 1000, cores = 2, chains = 2, backend = "cmdstanr",
-#'   control = list(adapt_delta = 0.999, max_treedepth = 20))
+#' # fit_test <- fitGrowth(ss, iter = 1000, cores = 2, chains = 2, backend = "cmdstanr",
+#' #  control = list(adapt_delta = 0.999, max_treedepth = 20))
 #' 
 #' ## End(Not run)              
 #'               

@@ -10,6 +10,7 @@
 #' @param likeToLike Logical, should only similar groups be compared
 #'   (currently defined as part 1 and 2 of group, split on [.])
 #' @keywords internal
+#' @importFrom utils combn
 #' @return A list of comparisons as used in the "comparisons" argument of \code{ggpubr::stat_compare_means}.
 #' @export
 #'

@@ -40,6 +40,7 @@
 #'   which can be overwritten with these extra arguments.
 #' @keywords read.csv, pcv, wide, long
 #' @return Returns a data.frame in wide or long format.
+#' @importFrom stats as.formula
 #' @examples 
 #' 
 #' ## Not run: 
@@ -75,7 +76,9 @@
 #' dim(x3c)
 #' 
 #' # There may be situations where you want to use wide mv traits which can read in easily:
-#' x4<-read.pcv(fileBig, reader="fread", filters = list("trait in blue_frequencies"), mode="wide", singleValueOnly=F)
+#' x4<-read.pcv(fileBig, reader="fread",
+#'   filters = list("trait in blue_frequencies"),
+#'   mode="wide", singleValueOnly=F)
 #' 
 #' ## End(Not run) 
 #' 

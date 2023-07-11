@@ -21,6 +21,7 @@
 #' defaults to 1 if the "mc.cores" option is not set globally.
 #' @keywords emd, earth mover's distance, multi-value trait, network
 #' @import parallel
+#' @importFrom stats setNames
 #' @examples 
 #' 
 #' ## Not run:

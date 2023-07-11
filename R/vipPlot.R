@@ -33,7 +33,7 @@ plotVIP<-function(plsrObject, i=1, mean=F, removePattern = ".*_"){
   d$spectra<-as.numeric(sub(removePattern, "", d$wavelength))
   if(mean){
     d$meanVIP<-rowMeans(as.data.frame(d[, colnames(d)[grepl("VIP_[0-9]+?$", colnames(d))]]))
-    p<-ggplot2::ggplot(d,ggplot2::aes(x=spectra, y=meanVIP))+
+    p<-ggplot2::ggplot(d,ggplot2::aes(x=.data$spectra, y=.data$meanVIP))+
       ggplot2::geom_line()+
       ggplot2::geom_hline(yintercept=1, linetype=5)+
       ggplot2::labs(title=paste0(plsrObject[[i]]$model_performance$outcome), y="Mean VIP", x="Spectra")
@@ -41,7 +41,7 @@ plotVIP<-function(plsrObject, i=1, mean=F, removePattern = ".*_"){
     cols<-c(which(grepl("VIP", colnames(d))), which(colnames(d)=="spectra"))
     d2<-as.data.frame(data.table::melt(data.table::as.data.table(d[,cols]), id.vars = "spectra", value.name = "VIP"))
     d2$component<-factor(as.numeric(sub("VIP_", "", d2$variable)))
-    p<-ggplot2::ggplot(d2, ggplot2::aes(x=spectra, y=VIP, group=component, color=component))+
+    p<-ggplot2::ggplot(d2, ggplot2::aes(x=.data$spectra, y=.data$VIP, group=.data$component, color=.data$component))+
       ggplot2::geom_line()+
       ggplot2::geom_hline(yintercept=1, linetype=5)+
       #scale_color_viridis(option="plasma", discrete=T, direction=1, begin=0.1, end=0.9)+
