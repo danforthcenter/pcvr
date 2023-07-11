@@ -232,7 +232,7 @@ library(data.table)
 wide<-read.pcv(
  paste0("https://media.githubusercontent.com/media/joshqsumner/",
  "pcvrTestData/main/smallPhenotyperRun.csv"),
- mode="wide", singleValueOnly = T, multiValPattern = "hist", reader="fread")
+ mode="wide", singleValueOnly =TRUE, multiValPattern = "hist", reader="fread")
 wide$genotype = substr(wide$barcode, 3,5)
 wide$genotype = ifelse(wide$genotype == "002", "B73",
                        ifelse(wide$genotype == "003", "W605S",
