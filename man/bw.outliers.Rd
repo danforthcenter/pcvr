@@ -10,7 +10,7 @@ bw.outliers(
   naTo0 = F,
   group = c(),
   plotgroup = c("barcode", "rotation"),
-  plot = T,
+  plot = TRUE,
   wide = T,
   x = NULL,
   traitCol = "trait",
@@ -29,7 +29,7 @@ bw.outliers(
 This is typically time  and design variables (DAS, genotype, treatment, etc).
 These are used as predictors for `phenotype` in a generalized linear model.}
 
-\item{plotgroup}{Grouping variables for drawing plots if plot=T.
+\item{plotgroup}{Grouping variables for drawing plots if plot=TRUE.
 Typically this is an identifier for images of a plant
 over time and defaults to c('barcode',"rotation").}
 
@@ -70,10 +70,10 @@ sv$fertilizer = substr(sv$barcode, 8, 8)
 sv$fertilizer = ifelse(sv$fertilizer == "A", "100",
                    ifelse(sv$fertilizer == "B", "50", "0"))
 sv<-bw.time(sv, plantingDelay = 0, phenotype="area.pixels", cutoff=10, timeCol="timestamp",
- group=c("barcode", "rotation"), plot=F)
+ group=c("barcode", "rotation"), plot=FALSE)
 sv<-bw.outliers(df = sv, phenotype="area.pixels", naTo0 = F, 
  group = c("DAS", "genotype", "fertilizer"),
- plotgroup=c('barcode',"rotation"), plot=T)
+ plotgroup=c('barcode',"rotation"), plot=TRUE)
 
 
 svl<-read.pcv(
@@ -87,10 +87,10 @@ svl$fertilizer = substr(svl$barcode, 8, 8)
 svl$fertilizer = ifelse(svl$fertilizer == "A", "100",
                    ifelse(svl$fertilizer == "B", "50", "0"))
 svl<-bw.time(svl, plantingDelay = 0, phenotype="area", cutoff=10, timeCol="timestamp",
- group=c("barcode", "rotation"), plot=F,wide=F)
+ group=c("barcode", "rotation"), plot=FALSE,wide=FALSE)
 
 svl<-bw.outliers(df = svl, phenotype="area", naTo0 = F, group = c("DAS", "genotype", "fertilizer"),
- plotgroup=c('barcode',"rotation"), plot=T, wide=F)
+ plotgroup=c('barcode',"rotation"), plot=TRUE, wide=FALSE)
 
 ## End(Not run)
 

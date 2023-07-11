@@ -40,13 +40,13 @@
 #'                              ifelse(hue_wide$fertilizer == "B", "50", "0"))
 #' hue_wide<-bw.time(hue_wide,timeCol="timestamp", group="barcode")
 #' 
-#' pcadf(hue_wide, cols = "hue_frequencies", color = "time_geno_fert", returnData=F)
+#' pcadf(hue_wide, cols = "hue_frequencies", color = "time_geno_fert", returnData=FALSE)
 #' 
 #' ## End(Not run)
 #' 
 #' @export
 
-pcadf<-function(df=NULL, cols=NULL, color=NULL, trace=NULL,facet=NULL, returnData=T, ncp=NULL, split="DAS"){
+pcadf<-function(df=NULL, cols=NULL, color=NULL, trace=NULL,facet=NULL, returnData=TRUE, ncp=NULL, split="DAS"){
   if(is.character(cols) & length(cols)==1){
     cols<-which(grepl(cols,colnames(df)))
   }
@@ -55,7 +55,7 @@ pcadf<-function(df=NULL, cols=NULL, color=NULL, trace=NULL,facet=NULL, returnDat
     color=paste(color,collapse=".")
   }
   if(is.null(ncp)){ncp=min(dim(df[,cols]))-1}
-  pca<-FactoMineR::PCA(df[,cols], ncp=ncp, graph=F)
+  pca<-FactoMineR::PCA(df[,cols], ncp=ncp, graph=FALSE)
   pc1Var<-round(pca$eig[1,2], 3)
   pc2Var<-round(pca$eig[2,2], 3)
   coords<-as.data.frame(pca$ind)
@@ -64,23 +64,23 @@ pcadf<-function(df=NULL, cols=NULL, color=NULL, trace=NULL,facet=NULL, returnDat
   if(!is.numeric(cols)){ cols<-which(colnames(df) %in% cols) }
   pca.df<-cbind(df[, -cols], coords)
   if(!is.null(trace)){
-    pca.df<-pca.df[ sort(pca.df[[trace]], index.return=T)$ix ,]
+    pca.df<-pca.df[ sort(pca.df[[trace]], index.return=TRUE)$ix ,]
   }
-  traceSplit=F
-  FACET=F
-  additive=T
+  traceSplit=FALSE
+  FACET=FALSE
+  additive=TRUE
   if(!is.null(facet)){
     if(is.character(facet)){
-      FACET=T
+      FACET=TRUE
       facetLayer = ggplot2::facet_wrap(as.formula(paste0("~",paste(facet, collapse="+"))))
     }else if(is.numeric(facet) ){ # & !is.null(trace)
-      traceSplit=T
+      traceSplit=TRUE
       traceSplits = facet
-      traceDraw=T
+      traceDraw=TRUE
       if(is.null(trace)){
         trace=split
-        traceDraw=F
-        additive=F
+        traceDraw=FALSE
+        additive=FALSE
       }
     }
   }

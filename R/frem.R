@@ -30,7 +30,7 @@
 #' 
 #' @keywords read.csv, pcv, wide, long
 #' 
-#' @return Returns either a plot (if returnData=F) or a list with a plot and 
+#' @return Returns either a plot (if returnData=FALSE) or a list with a plot and 
 #' data/a list of dataframes (depending on returnData and cor).
 #' 
 #' @examples 
@@ -65,7 +65,7 @@
 #' 
 #' @export
 
-frem<-function(df, des, phenotypes, timeCol=NULL, cor=T, returnData=F, combine=T, markSingular = F,time=NULL, ...){
+frem<-function(df, des, phenotypes, timeCol=NULL, cor=TRUE, returnData=FALSE, combine=TRUE, markSingular = F,time=NULL, ...){
   #* `check for values`
   if(any(missing(df), missing(des), missing(phenotypes))){
     stop("df, des, phenotypes, and timeCol arguments need to be specified.")
@@ -73,8 +73,8 @@ frem<-function(df, des, phenotypes, timeCol=NULL, cor=T, returnData=F, combine=T
   if(is.null(timeCol)){
     timeCol = "dummy_x_axis"
     df[[timeCol]]=1
-    dummyX=T
-  } else{dummyX=F}
+    dummyX=TRUE
+  } else{dummyX=FALSE}
   #* `Make formulas`
   ext <- FALSE
   if(length(des)==2){
@@ -86,15 +86,15 @@ frem<-function(df, des, phenotypes, timeCol=NULL, cor=T, returnData=F, combine=T
   #* `Find time and subset data`
   if(is.null(time)){
     dat <- na.omit(df[df[[timeCol]]==max(df[[timeCol]]),c(des,phenotypes,timeCol)])
-    LONGITUDINAL=F
+    LONGITUDINAL=FALSE
   } else if(is.numeric(time) & length(time)==1){
     dat <- na.omit(df[df[[timeCol]]==time, c(des,phenotypes,timeCol)])
-    LONGITUDINAL=F
+    LONGITUDINAL=FALSE
   } else if(is.numeric(time) & length(time)>1){
-    LONGITUDINAL=T
+    LONGITUDINAL=TRUE
     dat <- na.omit(df[df[[timeCol]] %in% time, c(des,phenotypes,timeCol)])
   } else if(time=="all"){
-    LONGITUDINAL=T
+    LONGITUDINAL=TRUE
     dat <-na.omit(df[,c(des,phenotypes,timeCol)])
   }
   
@@ -108,7 +108,7 @@ frem<-function(df, des, phenotypes, timeCol=NULL, cor=T, returnData=F, combine=T
       model <- suppressMessages(lme4::lmer(fmla,data = sub, ...))
       if(length(model@optinfo$conv$lme4)>=1){
         singular<-any(grepl("isSingular",model@optinfo$conv$lme4$messages))
-      } else {singular=F}
+      } else {singular=FALSE}
       re<- lme4::VarCorr(model)
       res<-attr(lme4::VarCorr(model), "sc")^2
       
@@ -161,7 +161,7 @@ frem<-function(df, des, phenotypes, timeCol=NULL, cor=T, returnData=F, combine=T
     p <- ggplot2::ggplot(data=anova_dat)+
       ggplot2::geom_col(ggplot2::aes(y =.data$Phenotypes, x = .data$value, fill=.data$variable))+
       ggplot2::xlab("Variance Explained")+
-      ggplot2::guides(fill=ggplot2::guide_legend(title="", reverse=T))+
+      ggplot2::guides(fill=ggplot2::guide_legend(title="", reverse=TRUE))+
       ggplot2::theme_minimal()+
       ggplot2::scale_x_continuous(expand=c(0,0,0,0), labels = scales::percent_format())+
       ggplot2::theme(axis.text = ggplot2::element_text(size = 14),
@@ -182,7 +182,7 @@ frem<-function(df, des, phenotypes, timeCol=NULL, cor=T, returnData=F, combine=T
       ggplot2::geom_area()+
       ggplot2::facet_wrap(~.data$Phenotypes)+
       ggplot2::ylab("Variance Explained")+
-      ggplot2::guides(fill=ggplot2::guide_legend(title="", reverse=T))+
+      ggplot2::guides(fill=ggplot2::guide_legend(title="", reverse=TRUE))+
       ggplot2::scale_y_continuous(expand=c(0,0,0,0), labels = scales::percent_format())+
       ggplot2::scale_x_continuous(expand=c(0,0,0,0), labels=~round(.) )+
       ggplot2::theme_minimal()+

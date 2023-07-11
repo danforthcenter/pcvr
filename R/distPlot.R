@@ -5,7 +5,7 @@
 #' @param form A formula describing the growth model similar to \code{\link{growthSS}}
 #'    and \code{\link{brmPlot}} such as: outcome ~ predictor |individual/group
 #' @param priors a named list of samples from the prior distributions for each parameter in
-#'     \code{params}. This is only used if sample_prior=F in the brmsfit object.
+#'     \code{params}. This is only used if sample_prior=FALSE in the brmsfit object.
 #'     If left NULL then no prior is included.
 #' @param params a vector of parameters to include distribution plots of. 
 #'     Defaults to NULL which will use all parameters from the top level model.
@@ -36,7 +36,7 @@
 #' params = c("A", "B", "C")
 #' d <- simdf
 #' maxTime = NULL
-#' patch=T
+#' patch=TRUE
 #' from3to25<-list(fit_3, fit_5, fit_7, fit_9, fit_11,
 #'     fit_13, fit_15, fit_17, fit_19, fit_21, fit_23, fit_25)
 #' distributionPlot(fits = from3to25, form = y~time|id/group,
@@ -45,7 +45,7 @@
 #' ## End(Not run)
 
 
-distributionPlot<-function(fits, form, priors=NULL, params=NULL, d, maxTime=NULL, patch=T){
+distributionPlot<-function(fits, form, priors=NULL, params=NULL, d, maxTime=NULL, patch=TRUE){
   #* ***** `Check args`
   if(missing(fits)){stop("A list of fits must be supplied")}
   if(missing(form)){stop("A formula must be supplied")}
@@ -61,11 +61,11 @@ distributionPlot<-function(fits, form, priors=NULL, params=NULL, d, maxTime=NULL
   } else {stop("form must specify grouping for observations. See documentation and examples.")}
   fitData<-fits[[length(fits)]]$data
   dSplit<-split(d, d[[group]])
-  startTime<-min(unlist(lapply(fits, function(ft){min(ft$data[[x]], na.rm=T)})))
+  startTime<-min(unlist(lapply(fits, function(ft){min(ft$data[[x]], na.rm=TRUE)})))
   if(is.null(maxTime)){
-    endTime<-max(unlist(lapply(fits, function(ft){max(ft$data[[x]], na.rm=T)})))
+    endTime<-max(unlist(lapply(fits, function(ft){max(ft$data[[x]], na.rm=TRUE)})))
   }
-  byTime <- mean(diff(unlist(lapply(fits, function(ft){max(ft$data[[x]], na.rm=T)}))))
+  byTime <- mean(diff(unlist(lapply(fits, function(ft){max(ft$data[[x]], na.rm=TRUE)}))))
   timeRange<-seq(startTime, endTime, byTime)
   virOptions<-c('C', 'G', 'B', 'D', 'A', 'H', 'E', 'F')
   palettes<-lapply(1:length(unique(fitData[[group]])), function(i) viridis::viridis(length(timeRange),begin=0.1,end=1,option = virOptions[i],direction = 1))
@@ -95,7 +95,7 @@ distributionPlot<-function(fits, form, priors=NULL, params=NULL, d, maxTime=NULL
   growthTrendPlots<-lapply(1:length(dSplit), function(i){
     dt<-dSplit[[i]]
     ggplot2::ggplot(dt, ggplot2::aes(x=.data[[x]], y = .data[[y]], color = .data[[x]], group = .data[[individual]] ))+
-      ggplot2::geom_line(show.legend=F)+
+      ggplot2::geom_line(show.legend=FALSE)+
       viridis::scale_color_viridis(begin=0.1, end=1, option = virOptions[i], direction=1 )+
       ggplot2::scale_x_continuous(limits = c(startTime, endTime))+
       pcv_theme()
@@ -104,7 +104,7 @@ distributionPlot<-function(fits, form, priors=NULL, params=NULL, d, maxTime=NULL
   #* ***** `posterior distribution extraction`
   
   posts<-do.call(rbind, lapply(fits, function(fit){
-    time<-max(fit$data[[x]], na.rm=T)
+    time<-max(fit$data[[x]], na.rm=TRUE)
     fitDraws<-do.call(cbind, lapply(params, function(par){
       draws<-as.data.frame(fit)[grepl(par, colnames(as.data.frame(fit)))]
       if(nrow(brms::prior_draws(fit))>1){draws<-draws[!grepl("^prior_", colnames(draws))]}
@@ -121,13 +121,13 @@ distributionPlot<-function(fits, form, priors=NULL, params=NULL, d, maxTime=NULL
   } ))
   
   #* ***** `prior distribution extraction`
-  #* If the model was fit with sample_prior=T then this is super easy
+  #* If the model was fit with sample_prior=TRUE then this is super easy
   #* otherwise, I need to extract and parse the prior
   #* OR I can ask for an argument describing the prior/giving an example vector for the prior.
   
   if(all(unlist(lapply(fits, function(fit) nrow(brms::prior_draws(fit))<1 )))){ # if no models were fit with sample_prior = T
     if(!is.null(priors)){ # if prior is supplied as argument
-      USEPRIOR=T
+      USEPRIOR=TRUE
       if( ! methods::is(priors[[1]], "list")){
         priors<-lapply(1:length(unique(d[[group]])), function(i) priors)
         names(priors)<-unique(d[[group]])
@@ -146,7 +146,7 @@ distributionPlot<-function(fits, form, priors=NULL, params=NULL, d, maxTime=NULL
     colnames(prior_df)<-gsub(group, "",colnames(prior_df))
     colnames(prior_df)<-gsub("^b_","",colnames(prior_df))
     prior_df[[x]]<-0
-    USEPRIOR=T
+    USEPRIOR=TRUE
   }
   
   #* ***** `posterior distribution plots`
@@ -156,13 +156,13 @@ distributionPlot<-function(fits, form, priors=NULL, params=NULL, d, maxTime=NULL
   if(USEPRIOR){
     posts<-rbind(prior_df, posts)
   }
-  posts[[x]]<-factor(posts[[x]], levels = sort(as.numeric(unique(posts[[x]]))), ordered=T)
+  posts[[x]]<-factor(posts[[x]], levels = sort(as.numeric(unique(posts[[x]]))), ordered=TRUE)
   
   lapply(posts,summary)
   
   xlims<-lapply(params, function(par){
     diff<-as.numeric(as.matrix(posts[,grepl(paste0("^",par,"_"),colnames(posts))]))
-    c(min(diff,na.rm=T), max(diff,na.rm=T))
+    c(min(diff,na.rm=TRUE), max(diff,na.rm=TRUE))
   })
   names(xlims)<-params
   postPlots<-lapply(unique(fitData[[group]]), function(groupVal){

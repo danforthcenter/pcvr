@@ -9,9 +9,9 @@ frem(
   des,
   phenotypes,
   timeCol = NULL,
-  cor = T,
-  returnData = F,
-  combine = T,
+  cor = TRUE,
+  returnData = FALSE,
+  combine = TRUE,
   markSingular = F,
   time = NULL,
   ...
@@ -48,7 +48,7 @@ This can be left NULL which will use the maximum time if \code{timeCol} is speci
 \item{...}{Additional arguments passed to \code{lme4::lmer}.}
 }
 \value{
-Returns either a plot (if returnData=F) or a list with a plot and 
+Returns either a plot (if returnData=FALSE) or a list with a plot and 
 data/a list of dataframes (depending on returnData and cor).
 }
 \description{

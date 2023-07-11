@@ -12,8 +12,8 @@ bw.time(
   cutoff = 1,
   timeCol = "timestamp",
   group = "Barcodes",
-  plot = T,
-  wide = T,
+  plot = TRUE,
+  wide = TRUE,
   format = "\%Y-\%m-\%d \%H:\%M:\%S",
   traitCol = "trait",
   valueCol = "value"
@@ -76,7 +76,7 @@ sv$fertilizer = substr(sv$barcode, 8, 8)
 sv$fertilizer = ifelse(sv$fertilizer == "A", "100",
                    ifelse(sv$fertilizer == "B", "50", "0"))
 sv<-bw.time(sv, plantingDelay = 0, phenotype="area.pixels", cutoff=10,
- timeCol="timestamp", group=c("barcode", "rotation"), plot=F)
+ timeCol="timestamp", group=c("barcode", "rotation"), plot=FALSE)
 
 
 svl<-read.pcv(
@@ -90,7 +90,7 @@ svl$fertilizer = substr(svl$barcode, 8, 8)
 svl$fertilizer = ifelse(svl$fertilizer == "A", "100",
                    ifelse(svl$fertilizer == "B", "50", "0"))
 svl<-bw.time(svl, plantingDelay = 0, phenotype="area", cutoff=10, timeCol="timestamp",
- group=c("barcode", "rotation"), plot=F,wide=F)
+ group=c("barcode", "rotation"), plot=FALSE,wide=FALSE)
 
 ## End(Not run)
 

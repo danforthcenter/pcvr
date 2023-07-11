@@ -9,7 +9,7 @@ bellwetherGrowth(
   x = "DAS",
   y = "area_adj",
   group = c("Barcodes", "angle"),
-  warn = T,
+  warn = TRUE,
   color = NULL,
   ...
 )

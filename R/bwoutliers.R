@@ -6,7 +6,7 @@
 #' @param group  Grouping variables to find outliers as a character vector.
 #' This is typically time  and design variables (DAS, genotype, treatment, etc).
 #' These are used as predictors for `phenotype` in a generalized linear model.
-#' @param plotgroup Grouping variables for drawing plots if plot=T.
+#' @param plotgroup Grouping variables for drawing plots if plot=TRUE.
 #' Typically this is an identifier for images of a plant
 #' over time and defaults to c('barcode',"rotation").
 #' @param plot Logical, if TRUE then a list is returned with a ggplot and a dataframe.
@@ -37,10 +37,10 @@
 #' sv$fertilizer = ifelse(sv$fertilizer == "A", "100",
 #'                    ifelse(sv$fertilizer == "B", "50", "0"))
 #' sv<-bw.time(sv, plantingDelay = 0, phenotype="area.pixels", cutoff=10, timeCol="timestamp",
-#'  group=c("barcode", "rotation"), plot=F)
+#'  group=c("barcode", "rotation"), plot=FALSE)
 #' sv<-bw.outliers(df = sv, phenotype="area.pixels", naTo0 = F, 
 #'  group = c("DAS", "genotype", "fertilizer"),
-#'  plotgroup=c('barcode',"rotation"), plot=T)
+#'  plotgroup=c('barcode',"rotation"), plot=TRUE)
 #' 
 #' 
 #' svl<-read.pcv(
@@ -54,10 +54,10 @@
 #' svl$fertilizer = ifelse(svl$fertilizer == "A", "100",
 #'                    ifelse(svl$fertilizer == "B", "50", "0"))
 #' svl<-bw.time(svl, plantingDelay = 0, phenotype="area", cutoff=10, timeCol="timestamp",
-#'  group=c("barcode", "rotation"), plot=F,wide=F)
+#'  group=c("barcode", "rotation"), plot=FALSE,wide=FALSE)
 #' 
 #' svl<-bw.outliers(df = svl, phenotype="area", naTo0 = F, group = c("DAS", "genotype", "fertilizer"),
-#'  plotgroup=c('barcode',"rotation"), plot=T, wide=F)
+#'  plotgroup=c('barcode',"rotation"), plot=TRUE, wide=FALSE)
 #' 
 #' ## End(Not run)
 #' 
@@ -70,8 +70,8 @@ bw.outliers<-function(df = NULL,
                       naTo0 = F,
                       group = c(),
                       plotgroup=c('barcode',"rotation"),
-                      plot=T,  wide = T, x=NULL, traitCol="trait", valueCol="value", idCol=NULL){
-  # df = svl; phenotype="area"; naTo0 = F; group = c("DAS", "genotype", "fertilizer"); plotgroup=c("barcode","rotation"); plot=F
+                      plot=TRUE,  wide = T, x=NULL, traitCol="trait", valueCol="value", idCol=NULL){
+  # df = svl; phenotype="area"; naTo0 = F; group = c("DAS", "genotype", "fertilizer"); plotgroup=c("barcode","rotation"); plot=FALSE
   # wide = F ; traitCol="trait"; valueCol="value"; idCol=c("barcode","rotation")
   if(is.null(idCol)){idCol = plotgroup}
   outlierMethod = "cooks"
@@ -84,7 +84,7 @@ bw.outliers<-function(df = NULL,
     if(outlierMethod=="cooks"){
       cooksd <- cooks.distance(glm(data=df, as.formula(outlierForm)))
       # summary(cooksd)
-      outlierCutoff<-3*mean(cooksd, na.rm=T)
+      outlierCutoff<-3*mean(cooksd, na.rm=TRUE)
       cooksd[is.na(cooksd)] <- outlierCutoff - 0.1 # keeping NAs by assigning a value below cutoff.
       cooksd_df<-data.frame("outlier" = cooksd)
       df<-cbind(df, cooksd_df) 
@@ -98,7 +98,7 @@ bw.outliers<-function(df = NULL,
     outlierForm<-paste("as.numeric(",valueCol,")~", paste(paste0("as.factor(",group,")"),collapse=":"))
     if(outlierMethod=="cooks"){
       cooksd <- cooks.distance(glm(data=subdf, as.formula(outlierForm)))
-      outlierCutoff<-3*mean(cooksd, na.rm=T)
+      outlierCutoff<-3*mean(cooksd, na.rm=TRUE)
       cooksd[is.na(cooksd)] <- outlierCutoff - 0.1 # keeping NAs by assigning a value below cutoff.
       cooksd_df<-data.frame("outlier" = cooksd)
       subdf<-cbind(subdf, cooksd_df)

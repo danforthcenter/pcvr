@@ -4,7 +4,7 @@
 \alias{plotVIP}
 \title{Plot Variable Influence on Projection}
 \usage{
-plotVIP(plsrObject, i = 1, mean = F, removePattern = ".*_")
+plotVIP(plsrObject, i = 1, mean = FALSE, removePattern = ".*_")
 }
 \arguments{
 \item{plsrObject}{Output from pcv.plsr}

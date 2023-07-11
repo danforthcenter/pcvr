@@ -28,7 +28,7 @@
 #'  "index_frequencies_index_ci_rededge", "npq_hist_NPQ", "yii_hist_Fq'/Fm'", "yii_hist_Fv/Fm"))
 #' colnames(df1)<-sub("index_frequencies_index_ndvi.", "ndvi_", colnames(df1))
 #' emd_df<-pcv.emd(df1, cols="ndvi_", reorder=c("treatment", "genotype", "X"),
-#'    mat =F, plot=F, parallel = 1)
+#'    mat =FALSE, plot=FALSE, parallel = 1)
 #' network<-pcv.net(emd_df, meta = c("treatment", "genotype"))
 #' net=network; fill = "strength"; shape = "genotype"; size=5; edgeWeight="emd"
 #' net.plot(network, fill = "strength", shape = "genotype", size=5, edgeFilter=0.5)
@@ -71,7 +71,7 @@ net.plot<-function(net, fill="strength", shape=NULL, size = 3, edgeWeight="emd",
                                                   linewidth=.data[[edgeWeight]]),colour="black",alpha=0.1) +
     ggplot2::geom_point(data=nodes, size=size, ggplot2::aes(x=.data$V1,y=.data$V2,
                                                             fill = .data[[fill]], color=.data[[fill]],
-                                                            shape=.data[[shape]]), alpha=1, show.legend=T)+
+                                                            shape=.data[[shape]]), alpha=1, show.legend=TRUE)+
     ggplot2::scale_linewidth(range=c(0.1,1.5))+
     #* note that scaling shape should work, but there is a documented ggplot2 bug where this messes up the legend, so 
     #* until that is fixed I will not specify fillable shapes.

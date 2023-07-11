@@ -48,7 +48,7 @@ sv$fertilizer = ifelse(sv$fertilizer == "A", "100",
            ifelse(sv$fertilizer == "B", "50", "0"))
 sv<-bw.time(sv, plantingDelay = 0,
       phenotype="area.pixels", cutoff=10, timeCol="timestamp",
-      group=c("barcode", "rotation"), plot=T)
+      group=c("barcode", "rotation"), plot=TRUE)
 phenotypes <- c('area.pixels', 'convex_hull_area.pixels',
             'convex_hull_vertices', 'ellipse_angle.degrees',
             'ellipse_eccentricity', 'ellipse_major_axis.pixels',
@@ -58,7 +58,7 @@ phenotypes <- c('area.pixels', 'convex_hull_area.pixels',
             'solidity', 'width.pixels')
 phenoForm<-paste0("cbind(", paste0(phenotypes, collapse=", "), ")")
 groupForm<-"DAS+DAP+barcode+genotype+fertilizer"
-sv<-aggregate(as.formula(paste0(phenoForm, "~", groupForm)), data=sv, mean, na.rm=T)
+sv<-aggregate(as.formula(paste0(phenoForm, "~", groupForm)), data=sv, mean, na.rm=TRUE)
 sv<-bw.outliers(sv, phenotype="area.pixels",
       group = c("DAS", "genotype", "fertilizer"), plotgroup = c("barcode"))
 water<-bw.water("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/metadata.json")

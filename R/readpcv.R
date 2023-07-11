@@ -13,7 +13,7 @@
 #' (ellipseCenter.x vs ellipseCenter.y, etc)
 #' @param valueCol Column with phenotype values, defaults to "value".
 #'   This should generally not need to be changed from the default.
-#' @param multiValPattern If `singleValueOnly`=TRUE then this is used to identify multi value traits.
+#' @param multiValPattern If `singleValueOnly`=TRUERUE then this is used to identify multi value traits.
 #'   By default this is "hist|frequencies".
 #'   If this argument has length of 1 then it is taken as either a single phenotype
 #'   or a regex pattern to find values of `trait` that are multi-value phenotypes.
@@ -23,7 +23,7 @@
 #'   and `read.csv` is used otherwise.
 #'   Other useful options are "vroom" and "fread", from the vroom and data.table packages, respectively.
 #'   With files that are still very large after subsetting "fread" or "vroom" should be used.
-#'   Note that if you use `read.csv` with filters in place then you will need to specify `header=F`
+#'   Note that if you use `read.csv` with filters in place then you will need to specify `header=FALSE`
 #'   so that the piped output from awk is read correctly.
 #' @param filters If a very large pcv output file is read then it may be desireable
 #'   to subset it before reading it into R, either for ease of use or because of RAM limitations.
@@ -78,12 +78,12 @@
 #' # There may be situations where you want to use wide mv traits which can read in easily:
 #' x4<-read.pcv(fileBig, reader="fread",
 #'   filters = list("trait in blue_frequencies"),
-#'   mode="wide", singleValueOnly=F)
+#'   mode="wide", singleValueOnly=FALSE)
 #' 
 #' ## End(Not run) 
 #' 
 #' @export
-read.pcv<-function(filepath, mode="wide", singleValueOnly=T,
+read.pcv<-function(filepath, mode="wide", singleValueOnly=TRUE,
                    traitCol="trait", labelCol="label", valueCol="value",
                    multiValPattern = "hist|frequencies", reader=NULL, filters=NULL, awk=NULL, ...){
   if(is.null(filters) & is.null(awk)){
@@ -97,7 +97,7 @@ read.pcv<-function(filepath, mode="wide", singleValueOnly=T,
     }
   if(!is.null(filters)){
     if(singleValueOnly & any(unlist(lapply(filters, function(filt) any(grepl(multiValPattern,strsplit(filt, " ")[[1]][-c(1:2)] )))))){
-      warning("Your filters specify a value that would be filtered by multiValPattern since singleValueOnly=T, proceeding with singleValueOnly=F. Consider changing multiValPattern or singleValueOnly argument.")
+      warning("Your filters specify a value that would be filtered by multiValPattern since singleValueOnly=TRUE, proceeding with singleValueOnly=FALSE. Consider changing multiValPattern or singleValueOnly argument.")
       }
   }
   if(singleValueOnly & traitCol %in% colnames(df1)){
@@ -119,7 +119,7 @@ read.pcv<-function(filepath, mode="wide", singleValueOnly=T,
       mvCols_reordered<-unlist(lapply(unique_mvTraits, function(umt){
         iterCols = histCols[grepl(umt, histCols)]
         iterCols_numeric = as.numeric( gsub(paste0(umt, "."), "", iterCols) )
-        bins_order<-sort(iterCols_numeric, index.return=T)$ix
+        bins_order<-sort(iterCols_numeric, index.return=TRUE)$ix
         iterCols[bins_order]
       }))
       #* combine the histCols and the other columns, in the new order.

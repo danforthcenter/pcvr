@@ -25,7 +25,7 @@
 #' bellwetherGrowth(df=bw,x='DAS' , y='area_adj', group=c('Barcodes',"angle") )
 #' ## End(Not run)
 
- bellwetherGrowth<-function(df=NULL,x='DAS' , y='area_adj', group=c('Barcodes',"angle"),warn=T, color=NULL, ...){
+ bellwetherGrowth<-function(df=NULL,x='DAS' , y='area_adj', group=c('Barcodes',"angle"),warn=TRUE, color=NULL, ...){
    tab<-table(interaction(df[,c(x,group)]))
    if(any(tab>1) & warn){
      dataname<-deparse(substitute(df))
@@ -35,7 +35,7 @@
      eval(parse(text=dupString))
      w<-paste0("There are ", length(nms), " observations that are not uniquely identified on",
                " the `x` variable by specified `groups`.\nThe max number of duplicates is ",
-               max(tab,na.rm=T),".\nRun `", dupString, "` to see the duplicated rows,\n",
+               max(tab,na.rm=TRUE),".\nRun `", dupString, "` to see the duplicated rows,\n",
                " or ",firstDup, " to see the first duplicated instance.",
                "\n\n Plot output will group these duplicates and show the mean of ", y)
      warning(w)

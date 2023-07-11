@@ -36,7 +36,7 @@
 #'    If this is set to FALSE then no time estimates are made.
 #' @import ggplot2
 #' @import parallel
-#' @return A dataframe/matrix (if plot=F) or a list with a dataframe/matrix and a ggplot (if plot=T).
+#' @return A dataframe/matrix (if plot=FALSE) or a list with a dataframe/matrix and a ggplot (if plot=TRUE).
 #'  The returned data contains pairwise EMD values.
 #' 
 #' @keywords emd, earth mover's distance, multi-value trait, histogram
@@ -44,29 +44,29 @@
 #' 
 #' ## Not run:
 #' 
-#' makeHist<-function(mu, sd){hist(rnorm(10000,mu,sd), breaks=seq(1,100,1), plot=F)$counts}
+#' makeHist<-function(mu, sd){hist(rnorm(10000,mu,sd), breaks=seq(1,100,1), plot=FALSE)$counts}
 #' test<-as.data.frame(do.call(rbind, lapply(seq(30,54,3), function(d) {
 #'     x<-as.data.frame(do.call(rbind, lapply(1:10, function(i) makeHist(mu=d, sd=5))))
 #'     x$Mu = round(d,-1)
 #'     x})))
-#' test<-test[sample(rownames(test), nrow(test), replace=F),]
+#' test<-test[sample(rownames(test), nrow(test), replace=FALSE),]
 #' # reorder randomly for similarity to real data
 #' test$meta1<-rep(LETTERS[1:3], length.out = nrow(test))
 #' test$meta2<-rep(LETTERS[4:5], length.out = nrow(test))
-#' pcv.emd(test, cols="V", reorder="Mu", mat =F, plot=F, parallel = 1)
+#' pcv.emd(test, cols="V", reorder="Mu", mat =FALSE, plot=FALSE, parallel = 1)
 #' x<-pcv.emd(df=test, cols="V", reorder="Mu",
-#'    include = c("meta1", "meta2"), mat =F,
-#'    plot=F, parallel = 1)
+#'    include = c("meta1", "meta2"), mat =FALSE,
+#'    plot=FALSE, parallel = 1)
 #' head(x)
 #' 
 #' file = "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest1.csv"
 #' df1<-read.pcv(file, "wide", T, multiValPattern = c("index_frequencies_index_ari",
 #' "index_frequencies_index_ci_rededge", "npq_hist_NPQ", "yii_hist_Fq'/Fm'", "yii_hist_Fv/Fm"))
 #' colnames(df1)<-sub("index_frequencies_index_ndvi.", "ndvi_", colnames(df1))
-#' w<-pcv.emd(df1, cols="ndvi_", reorder=c("treatment", "genotype"), mat =F, plot=T, parallel = 1)
+#' w<-pcv.emd(df1, cols="ndvi_", reorder=c("treatment", "genotype"), mat =FALSE, plot=TRUE, parallel = 1)
 #' df_long<-read.pcv(file, "long", F)
 #' l<-pcv.emd(df = df_long, cols="index_frequencies_index_ndvi", reorder=c("treatment", "genotype"),
-#'  mat =F, plot=T, longTrait="trait", id="image", value="value")
+#'  mat =FALSE, plot=TRUE, longTrait="trait", id="image", value="value")
 #' l$plot + theme(axis.text = element_blank())
 #' 
 #' #* Note on computational complexity
@@ -84,12 +84,12 @@
 #' 
 #' @export
 #' 
-pcv.emd<-function(df, cols=NULL, reorder=NULL, include=reorder, mat=F, plot = T, parallel = getOption("mc.cores",1), longTrait=NULL, id="image", value="value", raiseError=T){
-  # df = df1; cols="ndvi_"; reorder=c("treatment", "genotype"); mat =F; plot=T; parallel = 1; include=reorder; longTrait=F; id="image";value="value"
+pcv.emd<-function(df, cols=NULL, reorder=NULL, include=reorder, mat=FALSE, plot = T, parallel = getOption("mc.cores",1), longTrait=NULL, id="image", value="value", raiseError=TRUE){
+  # df = df1; cols="ndvi_"; reorder=c("treatment", "genotype"); mat =FALSE; plot=TRUE; parallel = 1; include=reorder; longTrait=FALSE; id="image";value="value"
   # df_long<-read.pcv(file, "long", F)
-  # df = df_long; cols="index_frequencies_index_ndvi"; reorder=c("treatment", "genotype"); mat =F; plot=T; parallel = 1; include=reorder;
+  # df = df_long; cols="index_frequencies_index_ndvi"; reorder=c("treatment", "genotype"); mat =FALSE; plot=TRUE; parallel = 1; include=reorder;
   # longTrait="trait"; id="image"; value="value"
-  if(!is.null(longTrait)){traitCol = longTrait ; long=T}else{long=F}
+  if(!is.null(longTrait)){traitCol = longTrait ; long=TRUE}else{long=FALSE}
   if(!is.null(reorder)){ df<-df[order(interaction(df[,reorder])),] }
   if(long){
     df<-df[grepl(cols, df[[traitCol]]), ]
@@ -101,9 +101,9 @@ pcv.emd<-function(df, cols=NULL, reorder=NULL, include=reorder, mat=F, plot = T,
       if(eT_sec <= 300){message(paste0("Estimated time of calculation is roughly ", round(eT_sec,1), " seconds using ", parallel, " cores in parallel."))
       } else if(eT_min < 60){warning(paste0("Estimated time of calculation is roughly ", round(eT_min,2), " minutes using ", parallel, " cores in parallel."))
           } else if(eT_min > 60){stop(paste0("Stopping, estimated time of calculation is roughly ", round(eT_hour,2), " hours using ", parallel, " cores in parallel.",
-                                    "\nIf you wish to proceed then rerun this command with raiseError=F"))}
+                                    "\nIf you wish to proceed then rerun this command with raiseError=FALSE"))}
     }
-    df$INNER_ID_EMD<-interaction(df[,id], drop=T)
+    df$INNER_ID_EMD<-interaction(df[,id], drop=TRUE)
     if(mat){ # make dist matrix
       out_data<-matrix(
         unlist(lapply(unique(df$INNER_ID_EMD), function(i){parallel::mclapply(unique(df$INNER_ID_EMD), function(j){
@@ -130,7 +130,7 @@ pcv.emd<-function(df, cols=NULL, reorder=NULL, include=reorder, mat=F, plot = T,
       if(eT_sec <= 300){message(paste0("Estimated time of calculation is roughly ", round(eT_sec,1), " seconds using ", parallel, " cores in parallel."))
       } else if(eT_min < 60){warning(paste0("Estimated time of calculation is roughly ", round(eT_min,2), " minutes using ", parallel, " cores in parallel."))
       } else if(eT_min > 60){stop(paste0("Stopping, estimated time of calculation is roughly ", round(eT_hour,2), " hours using ", parallel, " cores in parallel.",
-                                         "\nIf you wish to proceed then rerun this command with raiseError=F"))}
+                                         "\nIf you wish to proceed then rerun this command with raiseError=FALSE"))}
     }
       if(mat){# make dist matrix
         out_data<-matrix(

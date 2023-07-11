@@ -16,7 +16,7 @@ pcv.joyplot(
   bin = "label",
   freq = "value",
   trait = "trait",
-  fillx = T
+  fillx = TRUE
 )
 }
 \arguments{

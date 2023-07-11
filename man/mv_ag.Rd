@@ -64,7 +64,7 @@ phenotypes <- colnames(hue_wide)[19:225]
 phenoForm<-paste0("cbind(", paste0(phenotypes, collapse=", "), ")")
 groupForm<-"DAS+barcode+genotype+fertilizer"
 form<-as.formula(paste0(phenoForm, "~", groupForm))
-hue_wide<-aggregate(form, data=hue_wide, mean, na.rm=T)
+hue_wide<-aggregate(form, data=hue_wide, mean, na.rm=TRUE)
 dim(hue_wide)
 hue_ag1<-mv_ag(df=hue_wide, group = c("DAS", "genotype", "fertilizer"),
  n_per_group=2, keep=c("area.pixels", "height.pixels"))

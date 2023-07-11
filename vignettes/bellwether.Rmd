@@ -131,7 +131,7 @@ colnames(bw_all)
 Often we want to convert our timestamp data from the lemnatech into either days after start (DAS), days after planting (DAP), or days after emergence (DAE). By default the `bw.time` function will add columns called DAS, DAP, and DAE to your data. Days after emergence requires using a phenotype and a value to classify emergence. Here an area greater than 10 pixels is considered an emerged plant. In this example with a planting delay of 0 DAP and DAE will be the same, but both are still created for the purpose of the example.
 
 ```{r}
-sv<-bw.time(sv, plantingDelay = 0, phenotype="area.pixels", cutoff=10, timeCol="timestamp", group=c("barcode", "rotation"), plot=T)
+sv<-bw.time(sv, plantingDelay = 0, phenotype="area.pixels", cutoff=10, timeCol="timestamp", group=c("barcode", "rotation"), plot=TRUE)
 head(sv)
 dim(sv)
 ```
@@ -145,7 +145,7 @@ phenotypes <- c('area.pixels', 'convex_hull_area.pixels', 'convex_hull_vertices'
 phenoForm<-paste0("cbind(", paste0(phenotypes, collapse=", "), ")")
 groupForm<-"DAS+barcode+genotype+fertilizer"
 form<-as.formula(paste0(phenoForm, "~", groupForm))
-sv_ag_withOutliers<-aggregate(form, data=sv, mean, na.rm=T)
+sv_ag_withOutliers<-aggregate(form, data=sv, mean, na.rm=TRUE)
 dim(sv_ag_withOutliers)
 ```
 
@@ -200,12 +200,12 @@ ggplot(test, aes(x=DAS, y=pWUE, color=genotype, group=barcode))+
 
 ## FREM
 
-Now that our data is read in and has undergone some basic quality control we want to know which phenotypes are best explained by our design variables. The `frem` function partitions variance using a fully random effects model (frem). Here we provide our dataframe, the design variables, the phenotypes, and the column representing time. By default `frem` will use the last timepoint, but this is controlled with the `time` argument. For this first example we mark the singular model fits (`markSingular=T`) to indicate places where `lme4::lmer` had some convergence issues. Generally these issues are minor and do not cause problems for interpreting these models, but you can pass additional arguments to `lme4::lmer` through additional arguments if desired.
+Now that our data is read in and has undergone some basic quality control we want to know which phenotypes are best explained by our design variables. The `frem` function partitions variance using a fully random effects model (frem). Here we provide our dataframe, the design variables, the phenotypes, and the column representing time. By default `frem` will use the last timepoint, but this is controlled with the `time` argument. For this first example we mark the singular model fits (`markSingular=TRUE`) to indicate places where `lme4::lmer` had some convergence issues. Generally these issues are minor and do not cause problems for interpreting these models, but you can pass additional arguments to `lme4::lmer` through additional arguments if desired.
 
 ```{r}
 frem(sv_ag, des=c("genotype", "fertilizer"),
      phenotypes=c('area.pixels', 'convex_hull_area.pixels', 'convex_hull_vertices', 'ellipse_angle.degrees', 'ellipse_eccentricity', 'ellipse_major_axis.pixels', 'ellipse_minor_axis.pixels', 'height.pixels', 'hue_circular_mean.degrees', 'hue_circular_std.degrees', 'hue_median.degrees', 'longest_path.pixels', 'perimeter.pixels', 'solidity', 'width.pixels'),
-     timeCol="DAS", cor=T, returnData=F, combine=F, markSingular=T, time=NULL)
+     timeCol="DAS", cor=TRUE, returnData=F, combine=F, markSingular=TRUE, time=NULL)
 ```
 
 Here we look at how much variance in each phenotype was explained over the course of the experiment. We could also specify a set of times (`time = c(10:14)` for example) if we are most interested in a particular timeframe.
@@ -234,10 +234,10 @@ sv_ag$height_cm <- sv_ag$height.pixels/42.5
 Trendlines help us decide what next steps make the most sense and give a general impression of which conditions yielded healthier plants.
 
 ```{r}
-ggplot(sv_ag, aes(x=DAS, y=area_cm2, group=interaction(genotype, fertilizer, lex.order=T),
+ggplot(sv_ag, aes(x=DAS, y=area_cm2, group=interaction(genotype, fertilizer, lex.order=TRUE),
                                 color = genotype))+
   facet_wrap(~factor(fertilizer, levels = c("0", "50", "100")))+
-  geom_smooth(method="loess", se=T, fill = "gray90")+
+  geom_smooth(method="loess", se=TRUE, fill = "gray90")+
   geom_line(aes(group=barcode), linewidth=0.15)+
   labs(y=expression("Area"~"(cm"^2~")"),
        color="Genotype")+
@@ -266,7 +266,7 @@ Alternatively the `conjugate` function compares several types of distributions u
 mo17_area <- sv_ag[sv_ag$genotype=="Mo17" & sv_ag$DAS > 18 & sv_ag$fertilizer == 100, "area_cm2"]
 B73_area <- sv_ag[sv_ag$genotype=="B73" & sv_ag$DAS > 18 & sv_ag$fertilizer == 100, "area_cm2"]
 
-area_res_t <- conjugate(s1 = mo17_area, s2= B73_area, method="t", plot=T, rope_range = c(-5,5))
+area_res_t <- conjugate(s1 = mo17_area, s2= B73_area, method="t", plot=TRUE, rope_range = c(-5,5))
 ```
 
 Here we can see a dramatic difference in our posterior distributions between genotypes and the distribution of differences between these samples is entirely outside of our ROPE which.
@@ -419,13 +419,13 @@ sv_ag$group<-interaction(sv_ag$fertilizer, sv_ag$genotype)
 
 The `brms` package is not automatically imported by `pcvr`, so before fitting models we would need to load that package. For details on installing [`brms`](https://github.com/paul-buerkner/brms) and either [`rstan`](https://mc-stan.org/rstan/) or [`cmdstanr`](https://mc-stan.org/cmdstanr/) (with `cmdstanr` being recommended), see those packages linked documentation.
 
-```{r, eval=F}
+```{r, eval=FALSE}
 library(brms)
 ```
 
 Here our priors are informed by a general understanding of what we expect to see for a plant on the bellwether system. In general the example priors 
 
-```{r, eval=F}
+```{r, eval=FALSE}
 ss<-growthSS(model="gompertz", form =  area_cm2~DAS|barcode/group, sigma="spline", df=sv_ag,
              priors = list("A" = 130, "B" = 10, "C" = 0.5))
 ```
@@ -448,12 +448,12 @@ This looks okay, there are no strange jumps in the data or glaring problems.
 
 The `fitGrowth` function is a wrapper around `brms::brm` which automatically uses the output from `growthSS`. Any additional arguments to `brms::brm` can still be specified, a few examples of which are shown here. 
 
-```{r, class.source="static-code", eval=F}
+```{r, class.source="static-code", eval=FALSE}
 fit <- fitGrowth(ss, iter = 1000, cores = 2, chains = 2, backend = "cmdstanr",
                control = list(adapt_delta = 0.999, max_treedepth = 20)) # options to increase performance
 ```
 
-```{r, eval=F}
+```{r, eval=FALSE}
 data(bw_vignette_fit)
 fit<-bw_vignette_fit
 ```
@@ -463,7 +463,7 @@ fit<-bw_vignette_fit
 
 We can visualize credible intervals from a `brms` model and compare that to our growth trendlines to get an intuitive understanding of how well the model fit. Note that since this vignette does not load brms these are only a picture of the output from `brmPlot` and `brmViolin`. The code is present to run this locally if you have brms installed and choose to.
 
-```{r, eval=F}
+```{r, eval=FALSE}
 brmPlot(fit, form = area_cm2~DAS|barcode/group, df = ss$df)+ 
   labs(y=expression("Area"~"(cm"^2~")"))
 ```
@@ -472,7 +472,7 @@ brmPlot(fit, form = area_cm2~DAS|barcode/group, df = ss$df)+
 
 In this case our model has 12 groups (3 soil conditions in each of 4 genotypes), so we might want to pull out only a few groups to look at. 
 
-```{r, eval=F}
+```{r, eval=FALSE}
 brmPlot(fit, form = area_cm2~DAS|barcode/group, df = ss$df, groups = c("0.B73", "50.B73", "100.B73"))+
   labs(y=expression("Area"~"(cm"^2~")"))
 ```
@@ -483,11 +483,11 @@ brmPlot(fit, form = area_cm2~DAS|barcode/group, df = ss$df, groups = c("0.B73", 
 
 Now we probably have some ideas about what we want to test in our data. The `brms::hypothesis` function offers incredible flexibility to test all kinds of hypotheses. For some comparisons `pcvr` has a helper function called `brmViolin` to visualize posterior distributions and the posterior probability of some hypotheses associated with them.
 
-```{r, eval=F}
+```{r, eval=FALSE}
 brmViolin(model = fit, params = NULL,
           hyp="num/denom>1.05", compareX = c("0.B73", "50.B73", "100.B73"), againstY = "0.B73",
           group_sep = "[.]", groups_into = c("soil", "genotype"), x="soil", facet="genotype",
-          returnData=F)
+          returnData=FALSE)
 ```
 
 ![](brmViolin_vigPlot.png)
@@ -500,7 +500,7 @@ There are a lot of options for how to use this function and even more ways to us
 
 As a final note on `brms`, there is a possiblity of making interesting early stopping rules in a Bayesian framework. Currently this does not have an obvious Bellwether implementation but it should be noted as a benefit of the method. If you have models fit to subsets of your data then the `distPlot` function will show changes in the posterior distribution for some or all of your parameters over time or over another subset variable. Here the growth trend plots are also a legend for the time of each posterior distribution.
 
-```{r, eval=F}
+```{r, eval=FALSE}
 print(load(url("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/brmsFits.rdata")))
 from3to25<-list(fit_3, fit_5, fit_7, fit_9, fit_11, fit_13, fit_15, fit_17, fit_19, fit_21, fit_23, fit_25)
 
@@ -543,7 +543,7 @@ phenotypes <- colnames(hue_wide)[19:225]
 phenoForm<-paste0("cbind(", paste0(phenotypes, collapse=", "), ")")
 groupForm<-"DAS+barcode+genotype+fertilizer"
 form<-as.formula(paste0(phenoForm, "~", groupForm))
-hue_wide<-aggregate(form, data=hue_wide, mean, na.rm=T)
+hue_wide<-aggregate(form, data=hue_wide, mean, na.rm=TRUE)
 ```
 
 
@@ -552,7 +552,7 @@ hue_wide<-aggregate(form, data=hue_wide, mean, na.rm=T)
 Joyplots are a common way to look at lots of distributions. Here we check the hue histograms as joyplots using the 18th day and add a new fill for the hue colorspace.
 
 
-```{r, message=F}
+```{r, message=FALSE}
 p<-pcv.joyplot(hue_wide[hue_wide$DAS==18,], index = "hue_frequencies", group=c("fertilizer", "genotype"), method=NULL,
                trait=NULL,compare=NULL)
 p+scale_fill_gradientn(colors = scales::hue_pal(l=65)(360))+scale_y_discrete(limits=c("0", "50", "100"))
@@ -560,7 +560,7 @@ p+scale_fill_gradientn(colors = scales::hue_pal(l=65)(360))+scale_y_discrete(lim
 
 We can also subset the data and change the group argument to look at very specific comparisons.
 
-```{r, message=F}
+```{r, message=FALSE}
 p<-pcv.joyplot(hue_wide[hue_wide$fertilizer==0 & hue_wide$DAS %in% c(7,12,18),], index = "hue_frequencies", group=c("DAS", "genotype"),
                trait=NULL,compare=NULL)
 p+scale_fill_gradientn(colors = scales::hue_pal(l=65)(360))+scale_y_discrete(limits=c("7", "12", "18"))
@@ -573,7 +573,7 @@ mo17_sample <- hue_wide[hue_wide$genotype=="Mo17" & hue_wide$DAS > 18 & hue_wide
 B73_sample <- hue_wide[hue_wide$genotype=="B73" & hue_wide$DAS > 18 & hue_wide$fertilizer == 100, grepl("hue_freq", colnames(hue_wide))]
 
 hue_res_ln <- conjugate(s1 = mo17_sample, s2= B73_sample, method="lognormal",
-              plot=T, rope_range = c(-20,20), hypothesis="equal")
+              plot=TRUE, rope_range = c(-20,20), hypothesis="equal")
 ```
 
 
@@ -583,7 +583,7 @@ Ordinations are another common way to look at multi value traits. The `pcadf` fu
 
 ```{r}
 # could use facet="fertilizer" here but I want to reorder manually instead of changing the data
-pcadf(hue_wide, cols = "hue_frequencies", color = "genotype", returnData=F)+
+pcadf(hue_wide, cols = "hue_frequencies", color = "genotype", returnData=FALSE)+
   facet_wrap(~factor(fertilizer, levels=c("0", "50", "100")))
 ```
 
@@ -591,13 +591,13 @@ pcadf(hue_wide, cols = "hue_frequencies", color = "genotype", returnData=F)+
 This is potentially useful but it does not show us the time component well. We can facet by day or add traces easily. Using the trace argument we can view the movement of groups over time, but that can be cluttered.
 
 ```{r}
-pcadf(hue_wide, cols = "hue_frequencies", color = c("genotype", "fertilizer"),  trace="DAS", returnData=F)
+pcadf(hue_wide, cols = "hue_frequencies", color = c("genotype", "fertilizer"),  trace="DAS", returnData=FALSE)
 ```
 
 When the trace is cluttered it generally helps to either use a facet or to return a list of plots showing a few days at a time in the trace. Both those options are done using the `facet` argument.
 
 ```{r}
-plots<-pcadf(hue_wide, cols = "hue_frequencies", color = c("genotype", "fertilizer"),  trace="DAS", returnData=F, facet = c(1,2,3,4))
+plots<-pcadf(hue_wide, cols = "hue_frequencies", color = c("genotype", "fertilizer"),  trace="DAS", returnData=FALSE, facet = c(1,2,3,4))
 
 (plots[[1]]+plots[[2]]) / (plots[[3]]+plots[[2]]) + plot_layout(guides = "collect")
 ```
@@ -614,7 +614,7 @@ Here is a fast example of a place where EMD makes a lot of sense. In this simula
 set.seed(123)
 
 simFreqs<-function(vec, group){
-  s1<-hist(vec, breaks=seq(1,181,1), plot=F)$counts
+  s1<-hist(vec, breaks=seq(1,181,1), plot=FALSE)$counts
   s1d<-as.data.frame(cbind(data.frame(group), matrix(s1,nrow=1)))
   colnames(s1d)<-c('group', paste0("sim_",1:180))
   s1d
@@ -644,7 +644,7 @@ Our plots show very different distributions, so we get EMD between our images an
 
 ```{r,  class.source="simulated", class.output="simulated"}
 sim_emd<-pcv.emd(df = sim_df, cols="sim_", reorder=c("group"),
-        mat =F, plot=T, parallel = 1, raiseError=T)
+        mat =FALSE, plot=TRUE, parallel = 1, raiseError=TRUE)
 sim_emd$plot
 ```
 
@@ -655,7 +655,7 @@ Now we can filter edge strength during our network building step for EMD > 0.5, 
 
 
 ```{r,  class.source="simulated", class.output="simulated"}
-emd = sim_emd$data; meta = NULL; dissim=T; distCol="emd"; filter = 0.5; direction="greater"
+emd = sim_emd$data; meta = NULL; dissim=TRUE; distCol="emd"; filter = 0.5; direction="greater"
 n<-pcv.net(sim_emd$data, filter = 0.5)
 net.plot(n, fill="group")
 ```
@@ -677,17 +677,17 @@ Just as we'd expect, our uniform distribution shows up now and is the most diffe
 Here is an example using our hue data, note that these examples will just loading the rdata that was generated by the code below, which took around 3 minutes to run. 
 
 
-```{r, eval=F}
+```{r, eval=FALSE}
 EMD<-pcv.emd(df = hue_wide[hue_wide$DAS %in% c(5,12,19),], cols="hue_frequencies", reorder=c("fertilizer", "genotype", "DAS"),
-             mat =F, plot=T, parallel = 12, raiseError=T)
+             mat =FALSE, plot=TRUE, parallel = 12, raiseError=TRUE)
 ```
 
-```{r, include=F}
+```{r, include=FALSE}
 data(bw_vignette_small_emd)
 EMD<-bw_vignette_small_emd
 ```
 
-```{r, eval=F, include=F}
+```{r, eval=FALSE, include=FALSE}
 head(EMD$data)
 EMD$plot
 ```

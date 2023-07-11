@@ -7,7 +7,7 @@
 pcv.net(
   emd = NULL,
   meta = NULL,
-  dissim = T,
+  dissim = TRUE,
   distCol = "emd",
   filter = 0.5,
   direction = "greater"
@@ -33,7 +33,7 @@ kept or a character string ("0.5") in which case the strongest X percentage of e
 This defaults to 0.5 which does some filtering, although that should not be considered
 the best behavior for every setting. If this is NULL then your network will be
 almost always be a single blob, if set too high there will be very few nodes.
-Note that this filtering happens after converting to dissimilarity if dissim=T.}
+Note that this filtering happens after converting to dissimilarity if dissim=TRUE.}
 
 \item{direction}{Direction of filtering, can be either "greater" or "lesser".}
 }
@@ -54,8 +54,8 @@ file = "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest
 df1<-read.pcv(file, "wide", T, multiValPattern = c("index_frequencies_index_ari",
 "index_frequencies_index_ci_rededge", "npq_hist_NPQ", "yii_hist_Fq'/Fm'", "yii_hist_Fv/Fm"))
 colnames(df1)<-sub("index_frequencies_index_ndvi.", "ndvi_", colnames(df1))
-emd_df<-pcv.emd(df1, cols="ndvi_", reorder=c("treatment", "genotype"), mat =F,
-   plot=F, parallel = 1)
+emd_df<-pcv.emd(df1, cols="ndvi_", reorder=c("treatment", "genotype"), mat =FALSE,
+   plot=FALSE, parallel = 1)
 net<-pcv.net(emd_df, meta = c("treatment", "genotype"))
 
 ## End(Not run)

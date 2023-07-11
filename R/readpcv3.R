@@ -106,7 +106,7 @@ read.pcv.3<-function(
       snp<-snp[snp$tiles!="",] 
     }
     if(any(grepl("barcode",colnames(snp)))){
-      colnames(snp)[which(grepl("barcode",colnames(snp), ignore.case=T))] <- "Barcodes" 
+      colnames(snp)[which(grepl("barcode",colnames(snp), ignore.case=TRUE))] <- "Barcodes" 
     }
     phenos<-merge(phenos, snp, by=joinSnapshot)
     #* `parse time data`
@@ -125,7 +125,7 @@ read.pcv.3<-function(
   if(!is.null(designFile)){
     des<-read.csv(designFile)
     bycol=colnames(phenos)[colnames(phenos)%in%colnames(des)]
-    phenos<-merge(phenos, des, by=bycol, all.x=T)
+    phenos<-merge(phenos, des, by=bycol, all.x=TRUE)
   }
   return(phenos)
 }
