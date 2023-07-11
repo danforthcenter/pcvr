@@ -45,7 +45,7 @@
 #' @import ggplot2
 #' @import patchwork
 #' @import extraDistr
-#' @importFrom stats var median rnorm dnorm qbeta rbeta dbeta qbeta rlnorm dlnorm qlnorm qt rgamma qgamma dgamma
+#' @importFrom stats var median rnorm dnorm qbeta rbeta dbeta qbeta rlnorm dlnorm qlnorm qt rgamma qgamma dgamma rpois
 #' 
 #' @details 
 #' 
@@ -178,7 +178,7 @@
 #'
 #' # poisson sv example
 #' 
-#' poisson_sv_ex <- conjugate(s1 = rpois(20, 10), s2= rbeta(20, 8), method="poisson",
+#' poisson_sv_ex <- conjugate(s1 = rpois(20, 10), s2= rpois(20, 8), method="poisson",
 #'               priors = list(a=c(0.5,0.5),b=c(0.5,0.5)),
 #'               plot=TRUE, rope_range = c(-1, 1), rope_ci = 0.89, rope_hdi = 0.95,
 #'               cred.int.level = 0.89, hypothesis="equal")
@@ -1683,7 +1683,7 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
 #' @param s1 A vector of numerics drawn from a beta distribution.
 #' @param s2 An optional second sample of the same form as s2.
 #' @examples
-#' .conj_poisson_sv(s1 = rpois(20, 10), s2= rbeta(20, 8), priors = list(a=c(0.5,0.5),b=c(0.5,0.5)),
+#' .conj_poisson_sv(s1 = rpois(20, 10), s2= rpois(20, 8), priors = list(a=c(0.5,0.5),b=c(0.5,0.5)),
 #'               plot=FALSE, rope_range = c(-1,1), rope_ci = 0.89, rope_hdi = 0.95,
 #'               cred.int.level = 0.89, hypothesis="equal")
 #' @keywords internal
