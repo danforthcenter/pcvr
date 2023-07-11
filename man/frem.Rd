@@ -74,7 +74,7 @@ wide$fertilizer = ifelse(wide$fertilizer == "A", "100",
 wide<-bw.time(wide,timeCol="timestamp", group="barcode")
 
 des=c("genotype", "meta")
-phenotypes = colnames(bw)[19:33]
+phenotypes = colnames(wide)[19:33]
 timeCol = "day"
 
 frem(wide, des, phenotypes, timeCol, T, F, F, T, "all")
