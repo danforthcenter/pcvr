@@ -5,8 +5,6 @@
 #' @param s1 Histogram as a numeric vector of counts per position.
 #' @param s2 Histogram as a numeric vector of counts per position. Must be the same length as s1.
 #' 
-#' @import ggplot2
-#' 
 #' @keywords emd, earth mover's distance, multi-value trait, histogram
 #' @return Returns EMD between two samples as a numeric.
 #' @examples 
