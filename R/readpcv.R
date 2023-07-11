@@ -41,6 +41,7 @@
 #' @keywords read.csv, pcv, wide, long
 #' @return Returns a data.frame in wide or long format.
 #' @importFrom stats as.formula
+#' @import data.table
 #' @examples 
 #' 
 #' ## Not run: 
@@ -88,7 +89,9 @@ read.pcv<-function(filepath, mode="wide", singleValueOnly=TRUE,
                    multiValPattern = "hist|frequencies", reader=NULL, filters=NULL, awk=NULL, ...){
   if(is.null(filters) & is.null(awk)){
     if(is.null(reader)){reader="read.csv"}
-    readingFunction<-match.fun(reader)
+    if(reader!="fread"){
+      readingFunction<-match.fun(reader)
+    }else{readingFunction<-data.table::fread}
     df1<-as.data.frame(readingFunction(filepath, ...))
   } else{
     if(is.null(reader)){reader="fread"}

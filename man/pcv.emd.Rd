@@ -10,7 +10,7 @@ pcv.emd(
   reorder = NULL,
   include = reorder,
   mat = FALSE,
-  plot = T,
+  plot = TRUE,
   parallel = getOption("mc.cores", 1),
   longTrait = NULL,
   id = "image",

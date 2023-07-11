@@ -67,7 +67,7 @@ Time conversion and plotting for bellwether data
 
 sv<-read.pcv(
 "https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv",
- mode="wide", singleValueOnly = T, reader="fread")
+ mode="wide", singleValueOnly =TRUE, reader="fread")
 sv$genotype = substr(sv$barcode, 3,5)
 sv$genotype = ifelse(sv$genotype == "002", "B73",
                      ifelse(sv$genotype == "003", "W605S",
@@ -81,7 +81,7 @@ sv<-bw.time(sv, plantingDelay = 0, phenotype="area.pixels", cutoff=10,
 
 svl<-read.pcv(
 "https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv",
- mode="long", singleValueOnly = T, reader="fread")
+ mode="long", singleValueOnly =TRUE, reader="fread")
 svl$genotype = substr(svl$barcode, 3,5)
 svl$genotype = ifelse(svl$genotype == "002", "B73",
                      ifelse(svl$genotype == "003", "W605S",

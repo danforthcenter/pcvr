@@ -12,7 +12,7 @@ frem(
   cor = TRUE,
   returnData = FALSE,
   combine = TRUE,
-  markSingular = F,
+  markSingular = FALSE,
   time = NULL,
   ...
 )
@@ -63,7 +63,7 @@ wide<-read.pcv(
  paste0("https://media.githubusercontent.com/media/joshqsumner/",
  "pcvrTestData/main/smallPhenotyperRun.csv"),
  mode="wide",
- singleValueOnly = T, reader="fread")
+ singleValueOnly =TRUE, reader="fread")
 wide$genotype = substr(wide$barcode, 3,5)
 wide$genotype = ifelse(wide$genotype == "002", "B73",
                        ifelse(wide$genotype == "003", "W605S",
