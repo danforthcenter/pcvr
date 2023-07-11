@@ -63,7 +63,7 @@
 #' sv_l<-read.pcv(
 #' "https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv",
 #'  mode="long", singleValueOnly =TRUE, reader="fread")
-#' sv_l$genotype = substr(sv$barcode, 3,5)
+#' sv_l$genotype = substr(sv_l$barcode, 3,5)
 #' sv_l$genotype = ifelse(sv_l$genotype == "002", "B73",
 #'               ifelse(sv_l$genotype == "003", "W605S",
 #'               ifelse(sv_l$genotype == "004", "MM", "Mo17")))
