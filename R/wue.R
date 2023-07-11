@@ -81,7 +81,7 @@ pwue<-function(df, w, pheno="area.pixels", time="DAS", id="barcode"){
   #* `format phenotype data`
   df<-df[, !grepl("^timestamp$|^local_time$",colnames(df))]
   #* `join datasets`
-  x<-data.table::as.data.table(plyr::join(df, w, by=intersect(colnames(df), colnames(w)), type="left", match="all"))
+  x<-data.table::as.data.table(merge(df, w, by=intersect(colnames(df), colnames(w)), all.x=T))
   x<-data.table::setorderv(x, cols = c(id,time, "snapshot_sorter")) # x can have duplicate pheno rows if w has >1 watering per day.
   #* `calculate delta values and pwue`
   x_deltas<-data.table::rbindlist(lapply(split(x, by=id), function(d){

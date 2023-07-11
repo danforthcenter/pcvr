@@ -360,7 +360,7 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
     }
     
       if(length(rope_range) == 2){
-        p <- p + ggplot2::ggplot(res$rope_df, ggplot2::aes(x=X))+
+        p <- p + ggplot2::ggplot(res$rope_df, ggplot2::aes(x=.data$X))+
           ggplot2::geom_histogram(bins=100,fill="purple",color="purple", alpha=0.7)+
           ggplot2::geom_histogram(data=data.frame("X"=res$rope_df[res$rope_df$X > rope_range[1] & res$rope_df$X < rope_range[2] &
                                                                     res$rope_df$X > res$summary$HDI_rope_low & res$rope_df$X < res$summary$HDI_rope_high,]),

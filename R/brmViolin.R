@@ -41,11 +41,11 @@
 #' @examples 
 #' 
 #' ## Not run:
-#' 
-#' ex<-brmViolin(model = list(fit1, fit2, fit3), params = NULL, cores = 10,
-#'      hyp="num/denom>1.05", compareX = c("123.heat", "123.drought", "123.control"),
-#'      againstY = "123.control", group_sep = "[.]",
-#'      groups_into = c("genotype", "trt"), x="trt", facet="genotype")
+#' data(bw_vignette_fit)
+#' brmViolin(model = bw_vignette_fit, params = NULL,
+#'         hyp="num/denom>1.05", compareX = c("0.B73", "50.B73", "100.B73"), againstY = "0.B73",
+#'         group_sep = "[.]", groups_into = c("soil", "genotype"), x="soil", facet="genotype",
+#'         returnData=F)
 #'      
 #' ## End(Not run)
 #' 

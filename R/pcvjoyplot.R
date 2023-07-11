@@ -307,6 +307,7 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL,
   }
   if(fillx){dens_df$group = interaction(dens_df[,group])}
   ggridgeLayer<-if(fillx){
+    x<-NULL # to make R CMD check happy with stat(x)
     list(suppressMessages(ggridges::geom_density_ridges_gradient(ggplot2::aes(x = .data$xdens, y = .data$y,
                                                         height = .data$ydens, fill=stat(x)),
                                            show.legend=F, stat="identity", rel_min_height = 0.001)),
