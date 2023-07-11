@@ -9,18 +9,23 @@ awkHelper(inputFile, filters, awk = NULL)
 \arguments{
 \item{inputFile}{Path to csv file of plantCV output, should be provided internally in read.pcv}
 
-\item{filters}{filtering conditions, see read.pcv for details. Format as list("trait in area, perimeter", "other contains stringToMatch")}
+\item{filters}{filtering conditions, see read.pcv for details. Format as
+list("trait in area, perimeter", "other contains stringToMatch")}
 
 \item{awk}{Optional awk command to use instead.}
 }
 \value{
-Returns a character string representing a unix style awk statement which is typically passed to \code{pipe} or used as a connection in \code{data.table::fread}.
+Returns a character string representing a unix style awk statement
+  which is typically passed to \code{pipe} or used as a connection in \code{data.table::fread}.
 }
 \description{
 subset helper function for use reading in large data, called in pcv.sub.read
 }
 \details{
-awkHelper attempts to make awk commands from human readable input. Currently when filters are supplied the input file has quotes removed by `sed` then is piped into awk, so an equivalent command line statement may be: sed 's/\"//g' pcvrTest2.csv | awk -F ','  '{ if (NR==1 || $18=="area") { print } }'
+awkHelper attempts to make awk commands from human readable input.
+Currently when filters are supplied the input file has quotes removed by `sed`
+then is piped into awk, so an equivalent command line statement may be:
+sed 's/\"//g' pcvrTest2.csv | awk -F ','  '{ if (NR==1 || $18=="area") { print } }'
 }
 \keyword{long}
 \keyword{pcv,}

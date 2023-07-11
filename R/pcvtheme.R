@@ -1,10 +1,10 @@
 #' Default theme for ggplots made by pcvr functions.
-#'
+#' 
 #' @import ggplot2
 #' @importFrom ggplot2 %+replace%
 #' @export
 #' 
-pcv_theme<-function(...){
+pcv_theme<-function(){
 ggplot2::theme_minimal() %+replace% 
   ggplot2::theme(axis.text.x.bottom = ggplot2::element_text(hjust=1),
                  axis.line.y.left = ggplot2::element_line(),

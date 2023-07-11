@@ -4,7 +4,7 @@
 \alias{pcv_theme}
 \title{Default theme for ggplots made by pcvr functions.}
 \usage{
-pcv_theme(...)
+pcv_theme()
 }
 \description{
 Default theme for ggplots made by pcvr functions.

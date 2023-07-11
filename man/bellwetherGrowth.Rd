@@ -21,9 +21,12 @@ bellwetherGrowth(
 
 \item{y}{Y axis variable name (phenotype)}
 
-\item{group}{Set of variables to use in grouping observations. These taken together should identify a unique plant (or unique plant at a unique angle) across time.}
+\item{group}{Set of variables to use in grouping observations.
+These taken together should identify a unique plant (or unique plant at a unique angle) across time.}
 
-\item{warn}{Logical, should a warning be printed if there are duplicate values for a timepoint (`x`) using the `group` variables. If TRUE then the warning will suggest how to find duplicates to amend `group`.}
+\item{warn}{Logical, should a warning be printed if there are duplicate values for a timepoint (`x`)
+using the `group` variables.
+If TRUE then the warning will suggest how to find duplicates to amend `group`.}
 
 \item{color}{Optional variable to use for line colors.}
 
@@ -37,7 +40,11 @@ Growth curve plot for bellwether data
 }
 \examples{
 ## Not run:
-bw<-read.pcv.bw( file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv3Phenos.csv", snapshotFile="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv3Snapshot.csv", designFile="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv3Design.csv",metaCol="meta",metaForm="vis_view_angle_zoom_horizontal_gain_exposure_v_new_n_rep",joinSnapshot="id",conversions = list(area=13.2*3.7/46856) )
+bw<-read.pcv.3( file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv3Phenos.csv",
+ snapshotFile="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv3Snapshot.csv",
+ designFile="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv3Design.csv",
+ metaCol="meta",metaForm="vis_view_angle_zoom_horizontal_gain_exposure_v_new_n_rep",
+ joinSnapshot="id",conversions = list(area=13.2*3.7/46856) )
 bellwetherGrowth(df=bw,x='DAS' , y='area_adj', group=c('Barcodes',"angle") )
 ## End(Not run)
 }

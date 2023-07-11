@@ -24,22 +24,32 @@ frem(
 
 \item{phenotypes}{Phenotype column names (data is assumed to be in wide format) as a character vector.}
 
-\item{timeCol}{A column of the data that denotes time for longitudinal experiments. If left NULL (the default) then all data is assumed to be from one timepoint.}
+\item{timeCol}{A column of the data that denotes time for longitudinal experiments.
+If left NULL (the default) then all data is assumed to be from one timepoint.}
 
 \item{cor}{Logical, should a correlation plot be made? Defaults to TRUE.}
 
 \item{returnData}{Logical, should the used to make plots be returned? Defaults to FALSE.}
 
-\item{combine}{Logical, should plots be combined with patchwork? Defaults to T, which works well when there is a single timepoint being used.}
+\item{combine}{Logical, should plots be combined with patchwork?
+Defaults to T, which works well when there is a single timepoint being used.}
 
-\item{markSingular}{Logical, should singular fits be marked in the variance explained plot? This is FALSE by default but it is good practice to check with TRUE in some situations. If TRUE this will add white markings to the plot where models had singular fits, which is the most common problem with this type of model.}
+\item{markSingular}{Logical, should singular fits be marked in the variance explained plot?
+This is FALSE by default but it is good practice to check with TRUE in some situations.
+ If TRUE this will add white markings to the plot where models had singular fits,
+  which is the most common problem with this type of model.}
 
-\item{time}{If the data contains multiple timepoints then which should be used? This can be left NULL which will use the maximum time if \code{timeCol} is specified. If a single number is provided then that time value will be used. Multiple numbers will include those timepoints. The string "all" will include all timepoints.}
+\item{time}{If the data contains multiple timepoints then which should be used?
+This can be left NULL which will use the maximum time if \code{timeCol} is specified.
+ If a single number is provided then that time value will be used.
+  Multiple numbers will include those timepoints.
+   The string "all" will include all timepoints.}
 
 \item{...}{Additional arguments passed to \code{lme4::lmer}.}
 }
 \value{
-Returns either a plot (if returnData=F) or a list with a plot and data/a list of dataframes (depending on returnData and cor).
+Returns either a plot (if returnData=F) or a list with a plot and 
+data/a list of dataframes (depending on returnData and cor).
 }
 \description{
 df, des, phenotypes, timeCol, cor, returnData, combine, markSingular, time
@@ -48,35 +58,27 @@ df, des, phenotypes, timeCol, cor, returnData, combine, markSingular, time
 
 ## Not run:
 
-x<-read.pcv("/home/jsumner/Desktop/shares/mgehan_share/llima/Maize_Project_2022/nir_maize_first_exp_results.csv",
-   filters = list("trait in area, convex_hull_area, solidity, perimeter, width, height, longest_path, convex_hull_vertices, ellipse_major_axis, ellipse_minor_axis, ellipse_angle, ellipse_eccentricity, hue_circular_mean, hue_circular_std, hue_median", "sample in default"))
-   x$image<-sub("/shares/mgehan_share/raw_data/raw_image/maize_project_2022/MG001_E_060722_corrected/", "",x$image)
-   write.csv(x, "/home/jsumner/Desktop/stargate/fahlgren_lab/pcvrTestData/bw_example.csv", row.names=F)
-   
-
-bw<-read.pcv("/home/jsumner/Desktop/stargate/fahlgren_lab/pcvrTestData/bw_example.csv", "long")
-bw<-bw[nchar(bw$barcode)==13,]
-bars<-bw$barcode
-bars<-substr(bars,3,13)
-genotype<-substr(bars, 1,3)
-bars<-substr(bars,4,11)
-meta2<-substr(bars,1,2)
-id<-substr(bars,3,8)
-bw$genotype = genotype
-bw$meta = meta2
-bw$id = id
-bw$date<-lubridate::ymd(substr(bw$timestamp,1,10))
-begin <- min(bw$date)
-bw$day <- as.numeric(bw$date - begin)+1
+library(data.table)
+wide<-read.pcv("https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv",
+ mode="wide",
+ singleValueOnly = T, reader="fread")
+wide$genotype = substr(wide$barcode, 3,5)
+wide$genotype = ifelse(wide$genotype == "002", "B73",
+                       ifelse(wide$genotype == "003", "W605S",
+                              ifelse(wide$genotype == "004", "MM", "Mo17")))
+wide$fertilizer = substr(wide$barcode, 8, 8)
+wide$fertilizer = ifelse(wide$fertilizer == "A", "100",
+                         ifelse(wide$fertilizer == "B", "50", "0"))
+wide<-bw.time(wide,timeCol="timestamp", group="barcode")
 
 des=c("genotype", "meta")
 phenotypes = colnames(bw)[19:33]
 timeCol = "day"
 
-frem(bw, des, phenotypes, timeCol, T, F, F, T, "all")
-frem(bw, des, phenotypes, timeCol, T, F, F, T, "all")
-frem(bw, des, phenotypes, timeCol, T, F, F, F, NULL)
-frem(bw, des, phenotypes, timeCol, T, F, F, T, 1)
+frem(wide, des, phenotypes, timeCol, T, F, F, T, "all")
+frem(wide, des, phenotypes, timeCol, T, F, F, T, "all")
+frem(wide, des, phenotypes, timeCol, T, F, F, F, NULL)
+frem(wide, des, phenotypes, timeCol, T, F, F, T, 1)
 
 ## End(Not run)
 

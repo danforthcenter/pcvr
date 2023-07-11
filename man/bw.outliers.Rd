@@ -25,21 +25,29 @@ bw.outliers(
 
 \item{naTo0}{Logical, should NA values to changed to 0.}
 
-\item{group}{Grouping variables to find outliers as a character vector. This is typically time  and design variables (DAS, genotype, treatment, etc). These are used as predictors for `phenotype` in a generalized linear model.}
+\item{group}{Grouping variables to find outliers as a character vector.
+This is typically time  and design variables (DAS, genotype, treatment, etc).
+These are used as predictors for `phenotype` in a generalized linear model.}
+
+\item{plotgroup}{Grouping variables for drawing plots if plot=T.
+Typically this is an identifier for images of a plant
+over time and defaults to c('barcode',"rotation").}
 
 \item{plot}{Logical, if TRUE then a list is returned with a ggplot and a dataframe.}
 
 \item{wide}{Logical, is the data in wide format? Defaults to TRUE.}
 
-\item{x}{Optional specification for x axis variable if plot is true. If left NULL (the default) then the first element of `group` is used.}
+\item{x}{Optional specification for x axis variable if plot is true.
+If left NULL (the default) then the first element of `group` is used.}
 
-\item{traitCol}{Column with phenotype names, defaults to "trait". This should generally not need to be changed from the default.}
+\item{traitCol}{Column with phenotype names, defaults to "trait".
+This should generally not need to be changed from the default.}
 
-\item{valueCol}{Column with phenotype values, defaults to "value". This should generally not need to be changed from the default.}
+\item{valueCol}{Column with phenotype values, defaults to "value".
+This should generally not need to be changed from the default.}
 
-\item{idCol}{Column(s) that identify individuals over time. Defaults to plotGroup.}
-
-\item{plotGroup}{Grouping variables for drawing plots if plot=T. Typically this is an identifier for images of a plant over time and defaults to c('barcode',"rotation").}
+\item{idCol}{Column(s) that identify individuals over time.
+Defaults to plotGroup.}
 }
 \value{
 The input dataframe with outliers removed.
@@ -51,7 +59,9 @@ Remove outliers from bellwether data using cook's distance
 
 ## Not run:
 
-sv<-read.pcv("https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv", mode="wide", singleValueOnly = T, reader="fread")
+sv<-read.pcv(
+"https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv",
+ mode="wide", singleValueOnly = T, reader="fread")
 sv$genotype = substr(sv$barcode, 3,5)
 sv$genotype = ifelse(sv$genotype == "002", "B73",
                      ifelse(sv$genotype == "003", "W605S",
@@ -59,11 +69,16 @@ sv$genotype = ifelse(sv$genotype == "002", "B73",
 sv$fertilizer = substr(sv$barcode, 8, 8)
 sv$fertilizer = ifelse(sv$fertilizer == "A", "100",
                    ifelse(sv$fertilizer == "B", "50", "0"))
-sv<-bw.time(sv, plantingDelay = 0, phenotype="area.pixels", cutoff=10, timeCol="timestamp", group=c("barcode", "rotation"), plot=F)
-sv<-bw.outliers(df = sv, phenotype="area.pixels", naTo0 = F, group = c("DAS", "genotype", "fertilizer"), plotgroup=c('barcode',"rotation"), plot=T)
+sv<-bw.time(sv, plantingDelay = 0, phenotype="area.pixels", cutoff=10, timeCol="timestamp",
+ group=c("barcode", "rotation"), plot=F)
+sv<-bw.outliers(df = sv, phenotype="area.pixels", naTo0 = F, 
+ group = c("DAS", "genotype", "fertilizer"),
+ plotgroup=c('barcode',"rotation"), plot=T)
 
 
-svl<-read.pcv("https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv", mode="long", singleValueOnly = T, reader="fread")
+svl<-read.pcv(
+"https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv",
+ mode="long", singleValueOnly = T, reader="fread")
 svl$genotype = substr(svl$barcode, 3,5)
 svl$genotype = ifelse(svl$genotype == "002", "B73",
                      ifelse(svl$genotype == "003", "W605S",
@@ -71,9 +86,11 @@ svl$genotype = ifelse(svl$genotype == "002", "B73",
 svl$fertilizer = substr(svl$barcode, 8, 8)
 svl$fertilizer = ifelse(svl$fertilizer == "A", "100",
                    ifelse(svl$fertilizer == "B", "50", "0"))
-svl<-bw.time(svl, plantingDelay = 0, phenotype="area", cutoff=10, timeCol="timestamp", group=c("barcode", "rotation"), plot=F,wide=F)
+svl<-bw.time(svl, plantingDelay = 0, phenotype="area", cutoff=10, timeCol="timestamp",
+ group=c("barcode", "rotation"), plot=F,wide=F)
 
-svl<-bw.outliers(df = svl, phenotype="area", naTo0 = F, group = c("DAS", "genotype", "fertilizer"), plotgroup=c('barcode',"rotation"), plot=T, wide=F)
+svl<-bw.outliers(df = svl, phenotype="area", naTo0 = F, group = c("DAS", "genotype", "fertilizer"),
+ plotgroup=c('barcode',"rotation"), plot=T, wide=F)
 
 ## End(Not run)
 

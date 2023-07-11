@@ -3,18 +3,25 @@
 #' 
 #' 
 #' @param inputFile Path to csv file of plantCV output, should be provided internally in read.pcv
-#' @param filters filtering conditions, see read.pcv for details. Format as list("trait in area, perimeter", "other contains stringToMatch")
+#' @param filters filtering conditions, see read.pcv for details. Format as
+#' list("trait in area, perimeter", "other contains stringToMatch")
 #' @param awk Optional awk command to use instead.
 #' @keywords read.csv, pcv, wide, long
-#' @details awkHelper attempts to make awk commands from human readable input. Currently when filters are supplied the input file has quotes removed by `sed` then is piped into awk, so an equivalent command line statement may be: sed 's/\"//g' pcvrTest2.csv | awk -F ','  '{ if (NR==1 || $18=="area") { print } }'
-#' @return Returns a character string representing a unix style awk statement which is typically passed to \code{pipe} or used as a connection in \code{data.table::fread}.
+#' @details awkHelper attempts to make awk commands from human readable input.
+#' Currently when filters are supplied the input file has quotes removed by `sed`
+#' then is piped into awk, so an equivalent command line statement may be:
+#' sed 's/\"//g' pcvrTest2.csv | awk -F ','  '{ if (NR==1 || $18=="area") { print } }'
+#' @return Returns a character string representing a unix style awk statement
+#'   which is typically passed to \code{pipe} or used as a connection in \code{data.table::fread}.
 #' @examples 
 #' ## Not run: 
 #' inputFile = "localCSVfile.csv"
 #' filters = "trait contains area, perimeter"
-#' cat(awkHelper(inputFile, filters)) # `sed 's/"//g' /home/jsumner/Desktop/stargate/fahlgren_lab/pcvrTestData/pcvrTest1.csv |  awk -F  ','  '{ if ( ( ($18 ~ /area|perimeter/) ) ) { print } }'`
+#' cat(awkHelper(inputFile, filters))
+#' # `sed 's/"//g' /home/jsumner/Desktop/stargate/fahlgren_lab/pcvrTestData/pcvrTest1.csv |  awk -F  ','  '{ if ( ( ($18 ~ /area|perimeter/) ) ) { print } }'`
 #' filters = list("trait in area, width, height")
-#' cat(awkHelper(inputFile, filters)) # `sed 's/"//g' /home/jsumner/Desktop/stargate/fahlgren_lab/pcvrTestData/pcvrTest1.csv |  awk -F  ','  '{ if ( ( ($18=="area") || ($18=="width") || ($18=="height") ) ) { print } }'`
+#' cat(awkHelper(inputFile, filters))
+#' # `sed 's/"//g' /home/jsumner/Desktop/stargate/fahlgren_lab/pcvrTestData/pcvrTest1.csv |  awk -F  ','  '{ if ( ( ($18=="area") || ($18=="width") || ($18=="height") ) ) { print } }'`
 #' ## End(Not run)
 #' @export
 awkHelper<-function(inputFile, filters, awk=NULL){

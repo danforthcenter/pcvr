@@ -1,7 +1,9 @@
 #' reader function called within read.pcv when large data is used
 #' 
 #' @param inputFile Path to csv file of plantCV output, should be provided internally in read.pcv
-#' @param filters filtering conditions, see read.pcv for details. Format as list("trait in area, perimeter", "other in value")
+#' @param filters filtering conditions, see read.pcv for details.
+#'  Format as list("trait in area, perimeter", "other in value")
+#' @param reader reader argument passed from read.pcv, defaults to read.csv.
 #' @param awk Optional awk command to use instead.
 #' @import data.table
 #' @return Returns a dataframe after subsetting happens outside of R using the awk statement from \code{awkHelper}.

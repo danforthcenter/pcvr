@@ -4,7 +4,9 @@
 #' 
 #' @param df Data frame containing metadata and spectral histogram data
 #' @param resps Vector of response variables.
-#' @param spectra Either one column name (in the case of long data) or a set of columns in the case of wide data. If a single character string is provided and it is not one of the column names then it is taken to be a pattern that will match some set of column names in the data to use (see examples).
+#' @param spectra Either one column name (in the case of long data) or a set of columns in the case of wide data.
+#'  If a single character string is provided and it is not one of the column names then it is
+#'  taken to be a pattern that will match some set of column names in the data to use (see examples).
 #' @param train Proportion of data to use as training data. 
 #' @param cv Number of cross validation iterations.
 #' @param ... Further arguments passed to caret::train.
@@ -19,7 +21,8 @@
 #' ## Not run:
 #' 
 #' file = "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest1.csv"
-#' df1<-read.pcv(file, "wide", T, multiValPattern = c("index_frequencies_index_ari", "index_frequencies_index_ci_rededge", "npq_hist_NPQ", "yii_hist_Fq'/Fm'", "yii_hist_Fv/Fm"))
+#' df1<-read.pcv(file, "wide", T, multiValPattern = c("index_frequencies_index_ari",
+#' "index_frequencies_index_ci_rededge", "npq_hist_NPQ", "yii_hist_Fq'/Fm'", "yii_hist_Fv/Fm"))
 #' colnames(df1)<-sub("index_frequencies_index_ndvi.", "ndvi_", colnames(df1))
 #' x<-pcv.plsr(df=df1, resps = "area.pixels", spectra = grepl("^ndvi_", colnames(df1)))
 #' x<-pcv.plsr(df=df1, resps = "area.pixels", spectra = "^ndvi_")

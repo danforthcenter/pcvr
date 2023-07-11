@@ -1,14 +1,25 @@
 #' Function to run a PCA, plot and optionally return the data with PCA coordinates and pca object
 #' 
 #' @param df Dataframe to ordinate
-#' @param cols columns to reduce dimensions of. Can be specified with names or positions. If this is length of 1 then it is treated as regex pattern to match the column names that should be used.
+#' @param cols columns to reduce dimensions of. Can be specified with names or positions.
+#' If this is length of 1 then it is treated as regex pattern to match
+#' the column names that should be used.
 #' @param color column name(s) used to color points in the pca plot.
-#' @param trace Optional column to use to show changes over by way of geom_path, generally this would be a time variable.
-#' @param facet Optional column or vector to facet/split plots on. If this is a character then it is taken as a column name. Numeric vectors are taken as values of trace to split on, if trace=NULL and this is numeric then plots will be split by the split argument. If this is a vector then a list of plots is returned.
+#' @param trace Optional column to use to show changes over by way of geom_path,
+#'  generally this would be a time variable.
+#' @param facet Optional column or vector to facet/split plots on. 
+#' If this is a character then it is taken as a column name. 
+#' Numeric vectors are taken as values of trace to split on, 
+#' if trace=NULL and this is numeric then plots will be split by the split argument.
+#'  If this is a vector then a list of plots is returned.
 #' @param returnData Logical, should data be returned?
-#' @param ncp Optional, number of principal components to return attached to dataframe if data is returned. Defaults to all.
+#' @param ncp Optional, number of principal components to return attached
+#'  to dataframe if data is returned. Defaults to all.
+#' @param split Time variable to split data on if a facet on time is used.
+#'  See bellwether vignette for examples.
 #' @keywords pca
-#' @details If data is returned then it will contain the coordinates from the PCA and will not contain the columns that were reduced.
+#' @details If data is returned then it will contain the coordinates from the
+#'  PCA and will not contain the columns that were reduced.
 #' 
 #' @import ggplot2
 #' @import FactoMineR
@@ -16,7 +27,9 @@
 #' 
 #' ## Not run:
 #' 
-#' hue_wide<-read.pcv("https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv", mode="wide", singleValueOnly = T, multiValPattern = "hist", reader="fread")
+#' hue_wide<-read.pcv(
+#'   "https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv",
+#'    mode="wide", singleValueOnly = T, multiValPattern = "hist", reader="fread")
 #' hue_wide$genotype = substr(hue_wide$barcode, 3,5)
 #' hue_wide$genotype = ifelse(hue_wide$genotype == "002", "B73",
 #'                            ifelse(hue_wide$genotype == "003", "W605S",

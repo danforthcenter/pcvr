@@ -7,30 +7,48 @@
 #' where P is the phenotype and W is the weight before watering.
 #' 
 #' 
-#' @param df Dataframe containing wide single-value phenotype data. This should already be aggregated to one row per plant per day (angles/rotations combined).
+#' @param df Dataframe containing wide single-value phenotype data.
+#'     This should already be aggregated to one row per plant per day (angles/rotations combined).
 #' @param w Watering data as returned from bw.water.
 #' @param pheno Phenotype column name, defaults to "area.pixels"
-#' @param timeGroup Variable(s) that identify a plant on a given day. Defaults to \code{c("barcode", "DAS")}.
+#' @param time Variable(s) that identify a plant on a given day.
+#'     Defaults to \code{c("barcode", "DAS")}.
 #' @param id Variable(s) that identify a plant over time. Defaults to \code{"barcode"}.
 #' @keywords read.csv, pcv, wide, long
 #' @import jsonlite
-#' @return A data frame containing the bellwether watering data joined to phenotype data with new columns for change in the phenotype, change in the pre-watering weight, and pseudo-water use efficiency (pWUE).
+#' @return A data frame containing the bellwether watering data joined
+#'     to phenotype data with new columns for change in the phenotype,
+#'     change in the pre-watering weight, and pseudo-water use efficiency (pWUE).
 #' @examples
 #' 
 #' ## Not run:
 #' 
 #' library(data.table)
-#' sv<-read.pcv("https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv", mode="wide", singleValueOnly = T, reader="fread")
+#' sv<-read.pcv(
+#'    "https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv",
+#'    mode="wide", singleValueOnly = T, reader="fread")
 #' sv$genotype = substr(sv$barcode, 3,5)
-#' sv$genotype = ifelse(sv$genotype == "002", "B73", ifelse(sv$genotype == "003", "W605S", ifelse(sv$genotype == "004", "MM", "Mo17")))
+#' sv$genotype = ifelse(sv$genotype == "002", "B73",
+#'      ifelse(sv$genotype == "003", "W605S",
+#'      ifelse(sv$genotype == "004", "MM", "Mo17")))
 #' sv$fertilizer = substr(sv$barcode, 8, 8)
-#' sv$fertilizer = ifelse(sv$fertilizer == "A", "100", ifelse(sv$fertilizer == "B", "50", "0"))
-#' sv<-bw.time(sv, plantingDelay = 0, phenotype="area.pixels", cutoff=10, timeCol="timestamp", group=c("barcode", "rotation"), plot=T)
-#' phenotypes <- c('area.pixels', 'convex_hull_area.pixels', 'convex_hull_vertices', 'ellipse_angle.degrees', 'ellipse_eccentricity', 'ellipse_major_axis.pixels', 'ellipse_minor_axis.pixels', 'height.pixels', 'hue_circular_mean.degrees', 'hue_circular_std.degrees', 'hue_median.degrees', 'longest_path.pixels', 'perimeter.pixels', 'solidity', 'width.pixels')
+#' sv$fertilizer = ifelse(sv$fertilizer == "A", "100",
+#'            ifelse(sv$fertilizer == "B", "50", "0"))
+#' sv<-bw.time(sv, plantingDelay = 0,
+#'       phenotype="area.pixels", cutoff=10, timeCol="timestamp",
+#'       group=c("barcode", "rotation"), plot=T)
+#' phenotypes <- c('area.pixels', 'convex_hull_area.pixels',
+#'             'convex_hull_vertices', 'ellipse_angle.degrees',
+#'             'ellipse_eccentricity', 'ellipse_major_axis.pixels',
+#'             'ellipse_minor_axis.pixels', 'height.pixels',
+#'             'hue_circular_mean.degrees', 'hue_circular_std.degrees',
+#'             'hue_median.degrees', 'longest_path.pixels', 'perimeter.pixels',
+#'             'solidity', 'width.pixels')
 #' phenoForm<-paste0("cbind(", paste0(phenotypes, collapse=", "), ")")
 #' groupForm<-"DAS+DAP+barcode+genotype+fertilizer"
 #' sv<-aggregate(as.formula(paste0(phenoForm, "~", groupForm)), data=sv, mean, na.rm=T)
-#' sv<-bw.outliers(sv, phenotype="area.pixels", group = c("DAS", "genotype", "fertilizer"), plotgroup = c("barcode"))
+#' sv<-bw.outliers(sv, phenotype="area.pixels",
+#'       group = c("DAS", "genotype", "fertilizer"), plotgroup = c("barcode"))
 #' water<-bw.water("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/metadata.json")
 #' 
 #' df<-sv
@@ -46,7 +64,8 @@
 #'   theme_minimal()
 #'  
 #' head(x[which(x$pWUE< -100),])
-#' head(x[x$pWUE < -100,]) # note the counter-intuitive handling of NAs in the index column. Either use data.table or wrap conditions in which().
+#' head(x[x$pWUE < -100,]) # note the counter-intuitive handling of NAs in the index column.
+#' # Either use data.table or wrap conditions in which().
 #' 
 #' ## End(Not run)
 #' 

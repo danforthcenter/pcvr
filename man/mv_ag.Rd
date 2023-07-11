@@ -17,29 +17,41 @@ mv_ag(
 \arguments{
 \item{df}{A dataframe with multi value traits in wide format.}
 
-\item{group}{Vector of column names for variables which uniquely identify groups in the data to summarize data over. Typically this would be the design variables and a time variable.}
+\item{group}{Vector of column names for variables which uniquely identify groups
+in the data to summarize data over. Typically this would be the design variables
+and a time variable.}
 
-\item{mvCols}{Either a vector of column names/positions representing multi value traits or a character string that identifies the multi value trait columns as a regex pattern. Defaults to "frequencies".}
+\item{mvCols}{Either a vector of column names/positions representing multi value
+traits or a character string that identifies the multi value trait columns as a
+regex pattern. Defaults to "frequencies".}
 
 \item{n_per_group}{Number of rows to return for each group.}
 
-\item{outRows}{Optionally this is a different way to specify how many rows to return. This will often not be exact so that groups have the same number of observations each.}
+\item{outRows}{Optionally this is a different way to specify how many rows to return.
+This will often not be exact so that groups have the same number of observations each.}
 
 \item{keep}{A vector of single value traits to also average over groups.}
 
-\item{parallel}{Optionally the groups can be run in parallel with this number of cores, defaults to 1 if the "mc.cores" option is not set globally.}
+\item{parallel}{Optionally the groups can be run in parallel with this number of cores,
+defaults to 1 if the "mc.cores" option is not set globally.}
 }
 \value{
 Returns a dataframe summarized by the specified groups over the multi-value traits.
 }
 \description{
-EMD can get very heavy with large datasets. For an example lemnatech dataset filtering for images from every 5th day there are 6332^2 = 40,094,224 pairwise EMD values. In long format that's a 40 million row dataframe, which is unwieldy. This function is to help reduce the size of datasets before comparing histograms and moving on with matrix methods or network analysis.
+EMD can get very heavy with large datasets. For an example
+lemnatech dataset filtering for images from every 5th day there are
+6332^2 = 40,094,224 pairwise EMD values. In long format that's a 40 million row dataframe,
+which is unwieldy. This function is to help reduce the size of datasets before
+comparing histograms and moving on with matrix methods or network analysis.
 }
 \examples{
 
 ## Not run:
 
-hue_wide<-read.pcv("https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv", mode="wide", singleValueOnly = T, multiValPattern = "hist", reader="fread")
+hue_wide<-read.pcv(
+"https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv",
+ mode="wide", singleValueOnly = T, multiValPattern = "hist", reader="fread")
 hue_wide$genotype = substr(hue_wide$barcode, 3,5)
 hue_wide$genotype = ifelse(hue_wide$genotype == "002", "B73",
                            ifelse(hue_wide$genotype == "003", "W605S",
@@ -54,9 +66,11 @@ groupForm<-"DAS+barcode+genotype+fertilizer"
 form<-as.formula(paste0(phenoForm, "~", groupForm))
 hue_wide<-aggregate(form, data=hue_wide, mean, na.rm=T)
 dim(hue_wide)
-hue_ag1<-mv_ag(df=hue_wide, group = c("DAS", "genotype", "fertilizer"),  n_per_group=2, keep=c("area.pixels", "height.pixels"))
+hue_ag1<-mv_ag(df=hue_wide, group = c("DAS", "genotype", "fertilizer"),
+ n_per_group=2, keep=c("area.pixels", "height.pixels"))
 dim(hue_ag1)
-hue_ag2<-mv_ag(hue_wide, group = c("DAS", "genotype", "fertilizer"),  n_per_group=1, keep=c("area.pixels", "height.pixels"))
+hue_ag2<-mv_ag(hue_wide, group = c("DAS", "genotype", "fertilizer"),
+ n_per_group=1, keep=c("area.pixels", "height.pixels"))
 dim(hue_ag2)
 
 ## End(Not run)
