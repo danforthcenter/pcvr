@@ -67,7 +67,7 @@
 #' 
 #' df <- read.pcv(
 #'   "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest2.csv",
-#'  "long", F)
+#'  "long", FALSE)
 #' pcv.hists(df, index = "index_frequencies_index_ndvi", 
 #'    group=c("genotype", "timepoint"))
 #' pcv.hists(df, index = "index_frequencies_index_ndvi", 
@@ -106,7 +106,7 @@ pcv.hists<-function(df = NULL, index = NULL, group = NULL,
   # default compare to NULL, but if F then skip all testing 
   if(is.logical(compare) && compare==FALSE){
     doStats=FALSE
-  } else if(is.null(compare)){compareTests<-fixCompare(compare,sub,"grouping", T) ; doStats=TRUE
+  } else if(is.null(compare)){compareTests<-fixCompare(compare,sub,"grouping", TRUE) ; doStats=TRUE
   }else{compareTests=fixCompare(compare,sub,"grouping"); doStats=TRUE}
   if(is.null(hyp)){hyp<-"unequal"}
   

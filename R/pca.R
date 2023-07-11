@@ -115,7 +115,7 @@ pcadf<-function(df=NULL, cols=NULL, color=NULL, trace=NULL,facet=NULL, returnDat
       p<-p+ggplot2::theme(legend.position="none")
     }
     if(!is.null(trace) & traceDraw){
-      p<-p+ggplot2::geom_path(data = pca.df[pca.df[[trace]]>=prevTrace & pca.df[[trace]]<=maxTrace, ], ggplot2::aes(group=.data[[color]]),linewidth=0.15, show.legend = F)
+      p<-p+ggplot2::geom_path(data = pca.df[pca.df[[trace]]>=prevTrace & pca.df[[trace]]<=maxTrace, ], ggplot2::aes(group=.data[[color]]),linewidth=0.15, show.legend = FALSE)
     }
     if(FACET){
       p<-p+facetLayer
@@ -132,7 +132,7 @@ pcadf<-function(df=NULL, cols=NULL, color=NULL, trace=NULL,facet=NULL, returnDat
       plots<-plots+ggplot2::theme(legend.position="none")
     }
     if(!is.null(trace)){
-      plots<-plots+ggplot2::geom_path(ggplot2::aes(group=.data[[color]]),linewidth=0.15, show.legend = F)
+      plots<-plots+ggplot2::geom_path(ggplot2::aes(group=.data[[color]]),linewidth=0.15, show.legend = FALSE)
     }
     if(FACET){
       plots<-plots+facetLayer

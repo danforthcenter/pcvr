@@ -15,7 +15,7 @@ brmViolin(
   x = NULL,
   facet = NULL,
   cores = getOption("mc.cores", 1),
-  returnData = F
+  returnData = FALSE
 )
 }
 \arguments{

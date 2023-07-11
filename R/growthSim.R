@@ -108,7 +108,7 @@ growthSim<-function(model=c("logistic", "gompertz", "monomolecular", "exponentia
   
   out<-do.call(rbind,lapply(1:length(params[[1]]), function(i) {
     pars<-lapply(params, function(p) p[i])
-    as.data.frame(rbind(do.call(rbind,lapply(1:n,function(e) data.frame("id"=paste0("id_",e),"group"=letters[i],"time"=1:t,"y"=gsi(1:t, pars, noise),stringsAsFactors = F)))))
+    as.data.frame(rbind(do.call(rbind,lapply(1:n,function(e) data.frame("id"=paste0("id_",e),"group"=letters[i],"time"=1:t,"y"=gsi(1:t, pars, noise),stringsAsFactors = FALSE)))))
   }))
   return(out)
 }

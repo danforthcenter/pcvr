@@ -75,9 +75,9 @@
 #' ## Not run: 
 #' 
 #' df <- read.pcv(
-#'   "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest2.csv", "long", F)
+#'   "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest2.csv", "long", FALSE)
 #' wide_beta <- read.pcv(
-#'   "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest2.csv", "wide", F)
+#'   "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest2.csv", "wide", FALSE)
 #' pcv.joyplot(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"))
 #' pcv.joyplot(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"),
 #'   method="ks")
@@ -148,7 +148,7 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL,
   # default compare to NULL, but if F then skip all testing 
   if(is.logical(compare) && compare==FALSE){
     doStats=FALSE
-  } else if(is.null(compare)){compareTests<-fixCompare(compare,sub,"grouping", T) ; doStats=TRUE
+  } else if(is.null(compare)){compareTests<-fixCompare(compare,sub,"grouping", TRUE) ; doStats=TRUE
   }else{compareTests=fixCompare(compare,sub,"grouping"); doStats=TRUE}
   if(is.null(hyp)){hyp<-"unequal"}
   
