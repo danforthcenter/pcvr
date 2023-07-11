@@ -212,7 +212,7 @@ beta_sv_ex <- conjugate(s1 = rbeta(20, 5, 5), s2= rbeta(20, 8, 5), method="beta"
 
 # poisson sv example
 
-poisson_sv_ex <- conjugate(s1 = rpois(20, 10), s2= rbeta(20, 8), method="poisson",
+poisson_sv_ex <- conjugate(s1 = rpois(20, 10), s2= rpois(20, 8), method="poisson",
               priors = list(a=c(0.5,0.5),b=c(0.5,0.5)),
               plot=TRUE, rope_range = c(-1, 1), rope_ci = 0.89, rope_hdi = 0.95,
               cred.int.level = 0.89, hypothesis="equal")
