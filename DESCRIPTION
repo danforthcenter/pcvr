@@ -17,7 +17,6 @@ Imports:
     stats,
     utils,
     methods,
-    curl,
     data.table,
     ggplot2,
     ggpubr,
@@ -35,5 +34,7 @@ Suggests:
     knitr,
     rmarkdown,
     brms,
+    vroom,
+    curl,
     caret
 VignetteBuilder: knitr
