@@ -21,31 +21,53 @@ pcv.emd(
 \arguments{
 \item{df}{Data frame to use with multi value traits in wide format or long format}
 
-\item{cols}{Columns to use. Defaults to NULL in which case all columns are used. Single strings will be used to regex a pattern in column names (see examples). A vector of names, positions, or booleans will also work. For long data this is taken as a regex pattern (or full name) to use in filtering the longTrait column.}
+\item{cols}{Columns to use. Defaults to NULL in which case all columns are used.
+Single strings will be used to regex a pattern in column names (see examples).
+ A vector of names, positions, or booleans will also work.
+ For long data this is taken as a regex pattern (or full name)
+ to use in filtering the longTrait column.}
 
-\item{reorder}{Should data be reordered to put similar rows together in the resulting plot? This takes a vector of column names of length 1 or more (see examples).}
+\item{reorder}{Should data be reordered to put similar rows together in the resulting plot?
+This takes a vector of column names of length 1 or more (see examples).}
 
-\item{include}{if a long dataframe is returned then these columns will be added to the dataframe, labelled for i and j (the row positions for compared histograms). If a matrix is returned then this information is stored in the row names. This defaults to \link{rescale}.}
+\item{include}{if a long dataframe is returned then these columns will be added to the dataframe,
+labelled for i and j (the row positions for compared histograms).
+If a matrix is returned then this information is stored in the row names.
+This defaults to \link{rescale}.}
 
-\item{mat}{Logical, should data be returned as an nrow x nrow matrix or as a long dataframe? By Default this is FALSE and a long dataframe is returned. Both options are comparable in terms of speed, although for large datasets the matrix version may be slightly faster.}
+\item{mat}{Logical, should data be returned as an nrow x nrow matrix or as a long dataframe?
+By Default this is FALSE and a long dataframe is returned.
+Both options are comparable in terms of speed,
+although for large datasets the matrix version may be slightly faster.}
 
-\item{plot}{Logical, should a plot be returned? For a matrix this is made with image(), for a dataframe this uses ggplot.}
+\item{plot}{Logical, should a plot be returned? For a matrix this is made with heatmap(),
+for a dataframe this uses ggplot.}
 
 \item{parallel}{Number of cores to use. Defaults to 1 unless the "mc.cores" option is set.}
 
-\item{longTrait}{Defaults to NULL, in which case the data is assumed to be in long format. If this is a character string then it is taken as a column name of long data and the other arguments will assume data is long.}
+\item{longTrait}{Defaults to NULL, in which case the data is assumed to be in long format.
+If this is a character string then it is taken as a column name of long data
+and the other arguments will assume data is long.}
 
-\item{id}{A vector of column names that uniquely identifies observations if the data is in long format. Defaults to "image".}
+\item{id}{A vector of column names that uniquely identifies observations if the
+data is in long format. Defaults to "image".}
 
-\item{value}{A column name for the values to be drawn from in long data. Defaults to "value".}
+\item{value}{A column name for the values to be drawn from in long data.
+Defaults to "value".}
 
-\item{raiseError}{Logical, should warnings/errors be raised for potentially large output? It is easy to ask for very many comparisons with this function so the goal of this argument is to catch a few of those and give estimates of how much time something may take. If the function is expected to take very long then a warning or an error is raised. If this is set to FALSE then no time estimates are made.}
+\item{raiseError}{Logical, should warnings/errors be raised for potentially large output?
+It is easy to ask for very many comparisons with this function so the goal of this argument 
+is to catch a few of those and give estimates of how much time something may take.
+ If the function is expected to take very long then a warning or an error is raised.
+  If this is set to FALSE then no time estimates are made.}
 }
 \value{
-A dataframe/matrix (if plot=F) or a list with a dataframe/matrix and a ggplot (if plot=T). The returned data contains pairwise EMD values.
+A dataframe/matrix (if plot=F) or a list with a dataframe/matrix and a ggplot (if plot=T).
+ The returned data contains pairwise EMD values.
 }
 \description{
-pcv.emd can be used to calculate Earth Mover's Distance between pairwise histograms in a wide dataframe of multi value traits.
+pcv.emd can be used to calculate Earth Mover's Distance between pairwise histograms 
+in a wide dataframe of multi value traits. The is expected to be used with output from \code{mv_ag}.
 }
 \examples{
 
@@ -64,11 +86,13 @@ x<-pcv.emd(df=test, cols="V", reorder="Mu", include = c("meta1", "meta2"), mat =
 head(x)
 
 file = "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest1.csv"
-df1<-read.pcv(file, "wide", T, multiValPattern = c("index_frequencies_index_ari", "index_frequencies_index_ci_rededge", "npq_hist_NPQ", "yii_hist_Fq'/Fm'", "yii_hist_Fv/Fm"))
+df1<-read.pcv(file, "wide", T, multiValPattern = c("index_frequencies_index_ari",
+"index_frequencies_index_ci_rededge", "npq_hist_NPQ", "yii_hist_Fq'/Fm'", "yii_hist_Fv/Fm"))
 colnames(df1)<-sub("index_frequencies_index_ndvi.", "ndvi_", colnames(df1))
 w<-pcv.emd(df1, cols="ndvi_", reorder=c("treatment", "genotype"), mat =F, plot=T, parallel = 1)
 df_long<-read.pcv(file, "long", F)
-l<-pcv.emd(df = df_long, cols="index_frequencies_index_ndvi", reorder=c("treatment", "genotype"), mat =F, plot=T, longTrait="trait", id="image", value="value")
+l<-pcv.emd(df = df_long, cols="index_frequencies_index_ndvi", reorder=c("treatment", "genotype"),
+ mat =F, plot=T, longTrait="trait", id="image", value="value")
 l$plot + theme(axis.text = element_blank())
 
 #* Note on computational complexity
@@ -76,7 +100,8 @@ l$plot + theme(axis.text = element_blank())
 emdTime<-function(x, n=1){
 x^2 / n * 0.0023
 }
-plot(x=c(18,36,54,72, 108, 135), y = c(0.74, 2.89, 6.86, 10.99, 26.25, 42.44), xlab="N Input Images", ylab="time (seconds)") # benchmarked test data
+plot(x=c(18,36,54,72, 108, 135), y = c(0.74, 2.89, 6.86, 10.99, 26.25, 42.44),
+xlab="N Input Images", ylab="time (seconds)") # benchmarked test data
 lines(x=1:150, y = emdTime(1:150)) # exponential function
 
 plot(x=1:1000, y=emdTime(1:1000), type="l", xlab="N Input Images", ylab="time (seconds)")

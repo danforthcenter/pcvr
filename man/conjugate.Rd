@@ -19,42 +19,65 @@ conjugate(
 )
 }
 \arguments{
-\item{s1}{A data.frame or matrix of multi value traits or a vector of single value traits. If a multi value trait is used then column names should include a number representing the "bin".}
+\item{s1}{A data.frame or matrix of multi value traits or a vector of single value traits.
+If a multi value trait is used then column names should include a number representing the "bin".}
 
 \item{s2}{An optional second sample of the same form as s2.}
 
-\item{method}{The distribution/method to use. Currently "t", "gaussian", "beta", "lognormal", "poisson", and "negbin" (negative binomial) are supported. The count distributions (poisson and negative binomial) are only implemented for single value traits.
-Note that "t" and "gaussian" both use a T distribution with "t" testing for a difference of means and "gaussian" testing for a difference in the distributions (similar to a Z test).}
+\item{method}{The distribution/method to use.
+Currently "t", "gaussian", "beta", "lognormal", "poisson", and "negbin" (negative binomial)
+ are supported. The count distributions (poisson and negative binomial) 
+ are only implemented for single value traits.
+Note that "t" and "gaussian" both use a T distribution with "t" testing for a difference
+ of means and "gaussian" testing for a difference in the distributions (similar to a Z test).}
 
-\item{priors}{Prior distributions described as a list. This varies by method, see details. By default this is NULL and weak priors (jeffrey's prior where appropriate) are used. The \code{posterior} part of output can also be recycled as a new prior if Bayesian updating is appropriate for your use.}
+\item{priors}{Prior distributions described as a list. This varies by method, see details.
+By default this is NULL and weak priors (jeffrey's prior where appropriate) are used.
+The \code{posterior} part of output can also be recycled as a new prior if Bayesian
+updating is appropriate for your use.}
 
 \item{plot}{Logical, should a ggplot be made and returned.}
 
 \item{rope_range}{Optional vector specifying a region of practical equivalence.
 This interval is considered practically equivalent to no effect.
 Kruschke (2018) suggests c(-0.1, 0.1) as a broadly reasonable ROPE for standardized parameters.
-That range could also be rescaled by a standard deviation/magnitude for non-standardized parameters, but ultimately this should be informed by your setting and scientific question.
-Note that a ROPE interval much smaller than the difference distributions HDI can be somewhat unstable (see examples).
-See Kruschke (2018) for details on ROPE and other Bayesian methods to aide decision-making \url{https://doi.org/10.3758/s13423-016-1221-4} and \url{https://doi.org/10.1177/251524591877130}.}
+That range could also be rescaled by a standard deviation/magnitude for
+non-standardized parameters, but ultimately this should be informed by your
+setting and scientific question.
+See Kruschke (2018) for details on ROPE and other Bayesian methods to aide
+decision-making \url{https://doi.org/10.3758/s13423-016-1221-4}
+and \url{https://doi.org/10.1177/251524591877130}.}
 
 \item{rope_ci}{The credible interval probability to use for ROPE. Defaults to 0.89.}
 
-\item{rope_hdi}{The credible interval probability to use in computing the highest density interval (HDI) of the posterior distribution for ROPE. This defaults to 0.95.}
+\item{rope_hdi}{The credible interval probability to use in computing the highest
+density interval (HDI) of the posterior distribution for ROPE. This defaults to 0.95.}
 
-\item{cred.int.level}{The credible interval probability to use in computing HDI for samples, defaults to 0.89.}
+\item{cred.int.level}{The credible interval probability to use 
+in computing HDI for samples, defaults to 0.89.}
 
-\item{hypothesis}{Direction of a hypothesis if two samples are provided. Options are "unequal", "equal", "greater", and "lesser", read as "sample1 greater than sample2".}
+\item{hypothesis}{Direction of a hypothesis if two samples are provided.
+Options are "unequal", "equal", "greater", and "lesser",
+ read as "sample1 greater than sample2".}
 
-\item{support}{Optional support vector to include all possible values the random variable (samples) might take. This defaults to NULL in which case each method will use default behavior to attempt to calculate a dense support, but it is a good idea to supply this with some suitable vector. For example, the Beta method uses \code{seq(0.0001, 0.9999, 0.0001)} for support.}
+\item{support}{Optional support vector to include all possible values the random variable
+(samples) might take. This defaults to NULL in which case each method will use default
+behavior to attempt to calculate a dense support, but it is a good idea to supply this 
+with some suitable vector. For example, the Beta method uses \code{seq(0.0001, 0.9999, 0.0001)}
+for support.}
 }
 \value{
 A list with named elements:
 \itemize{
-   \item{\strong{summary}: A data frame containing HDI/HDE values for each sample and the ROPE as well as posterior probability of the hypothesis.}
-   \item{\strong{posterior}: A list of updated parameters in the same format as the prior for the given method. If desired this does allow for Bayesian updating.}
-   \item{\strong{plot_df}: A data frame of probabilities along the support for each sample. This is used for making the ggplot.}
+   \item{\strong{summary}: A data frame containing HDI/HDE values for each sample and 
+   the ROPE as well as posterior probability of the hypothesis.}
+   \item{\strong{posterior}: A list of updated parameters in the same format as the prior
+    for the given method. If desired this does allow for Bayesian updating.}
+   \item{\strong{plot_df}: A data frame of probabilities along the support for each sample.
+    This is used for making the ggplot.}
    \item{\strong{rope_df}: A data frame of draws from the ROPE posterior.}
-   \item{\strong{plot}: A ggplot showing the distribution of samples and optionally the distribution of differences/ROPE}
+   \item{\strong{plot}: A ggplot showing the distribution of samples and optionally the 
+   distribution of differences/ROPE}
 }
 }
 \description{
@@ -63,18 +86,27 @@ Function to perform bayesian tests and ROPE comparisons using single or multi va
 \details{
 Prior distributions default to be weakly informative and in some cases you may wish to change them. 
 \itemize{
-   \item{\strong{"t" and "gaussian":} \code{priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ) } , where mu is the mean, n is the number of prior observations, and s2 is variance}
-   \item{\strong{"beta":} \code{priors = list( a=c(0.5, 0.5), b=c(0.5, 0.5) )}, where a and b are shape parameters of the beta distribution.}
-   \item{\strong{"lognormal": } \code{priors = list( mu_log=c(log(10),log(10)),n=c(1,1),sigma_log=c(log(3),log(3)) ) }, where mu_log is the mean on log scale, n is the number of prior observations, and sigma_log is the standard deviation on log scale }
-   \item{\strong{"poisson": } \code{priors = list(a=c(0.5,0.5),b=c(0.5,0.5))}, where a and b are shape parameters of the gamma distribution.}
-   \item{\strong{"negbin": } \code{priors = list(r=c(10,10), a=c(0.5,0.5),b=c(0.5,0.5))}, where r is the r parameter of the negative binomial distribution (representing the number of successes required) and where a and b are shape parameters of the beta distribution. Note that the r value is not updated. The conjugate beta prior is only valid when r is fixed and known, which is a limitation for this method.}
+   \item{\strong{"t" and "gaussian":} \code{priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ) },
+    where mu is the mean, n is the number of prior observations, and s2 is variance}
+   \item{\strong{"beta":} \code{priors = list( a=c(0.5, 0.5), b=c(0.5, 0.5) )},
+    where a and b are shape parameters of the beta distribution.}
+   \item{\strong{"lognormal": } \code{priors = list( mu_log=c(log(10),log(10)),n=c(1,1),sigma_log=c(log(3),log(3)) ) },
+    where mu_log is the mean on log scale, n is the number of prior observations, and sigma_log is the
+    standard deviation on log scale }
+   \item{\strong{"poisson": } \code{priors = list(a=c(0.5,0.5),b=c(0.5,0.5))},
+    where a and b are shape parameters of the gamma distribution.}
+   \item{\strong{"negbin": } \code{priors = list(r=c(10,10), a=c(0.5,0.5),b=c(0.5,0.5))},
+    where r is the r parameter of the negative binomial distribution (representing the number of successes required)
+     and where a and b are shape parameters of the beta distribution. Note that the r value is not updated.
+      The conjugate beta prior is only valid when r is fixed and known, which is a limitation for this method.}
 }
 
 See examples for plots of these prior distributions.
 }
 \examples{
 makeMvLn<-function(bins=500,mu_log,sigma_log){
-   setNames(data.frame(matrix(hist(rlnorm(2000,mu_log, sigma_log), breaks=seq(1,bins,5), plot=F)$counts, nrow=1)), paste0("b",seq(1,bins,5))[-1] ) }
+   setNames(data.frame(matrix(hist(rlnorm(2000,mu_log, sigma_log), breaks=seq(1,bins,5), plot=F)$counts, nrow=1)),
+    paste0("b",seq(1,bins,5))[-1] ) }
    set.seed(123)
 mv_ln<-rbind(do.call(rbind, lapply(1:30, function(i){makeMvLn(mu_log=log(130), sigma_log=log(1.3) )})),
              do.call(rbind, lapply(1:30, function(i){makeMvLn(mu_log=log(100), sigma_log=log(1.2) )})))
@@ -86,7 +118,8 @@ ln_mv_ex <- conjugate(s1 = mv_ln[1:30,], s2= mv_ln[31:60,], method = "lognormal"
                    cred.int.level = 0.89, hypothesis="equal", support=NULL)
 
 # lognormal sv
-ln_sv_ex <- conjugate(s1=rlnorm(100, log(130), log(1.3)), s2= rlnorm(100, log(100), log(1.6)), method = "lognormal",
+ln_sv_ex <- conjugate(s1=rlnorm(100, log(130), log(1.3)), s2= rlnorm(100, log(100), log(1.6)),
+ method = "lognormal",
                    priors = list( mu_log=c(log(10),log(10)),n=c(1,1),sigma_log=c(log(3),log(3)) ),
                    plot=T, rope_range = NULL, rope_ci = 0.89, rope_hdi = 0.95,
                    cred.int.level = 0.89, hypothesis="equal", support=NULL)
@@ -94,7 +127,8 @@ ln_sv_ex <- conjugate(s1=rlnorm(100, log(130), log(1.3)), s2= rlnorm(100, log(10
 # Z test mv example
 
 makeMvGauss<-function(bins=180,mu,sigma){
-   setNames(data.frame(matrix(hist(rnorm(2000,mu, sigma), breaks=seq(1,bins,1), plot=F)$counts, nrow=1)),paste0("b",1:(bins-1) ))
+   setNames(data.frame(matrix(hist(rnorm(2000,mu, sigma), breaks=seq(1,bins,1), plot=F)$counts, nrow=1)),
+   paste0("b",1:(bins-1) ))
    }
 mv_gauss<-rbind(do.call(rbind, lapply(1:30, function(i){makeMvGauss(bins=180, mu=50, sigma=10 )})),
                 do.call(rbind, lapply(1:30, function(i){makeMvGauss(bins=180, mu=60, sigma=12 )})))
@@ -119,12 +153,14 @@ gauss_sv_ex <- conjugate(s1=rnorm(15, 50,10), s2= rnorm(15, 60,12), method = "ga
                   priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ),
                   plot=T, rope_range = c(-10, 10), rope_ci = 0.89, rope_hdi = 0.95,
                   cred.int.level = 0.89, hypothesis="equal", support=seq(-20,120, 0.01))
-# Note that the ROPE probability is somewhat unstable here since the distribution of differences is much wider than the ROPE interval.
+# Note that the ROPE probability is somewhat unstable here since the distribution of differences
+# is much wider than the ROPE interval.
 
 # T test mv example 
 
 makeMvGauss<-function(bins=180,mu,sigma){
-   setNames(data.frame(matrix(hist(rnorm(2000,mu, sigma), breaks=seq(1,bins,1), plot=F)$counts, nrow=1)),paste0("b",1:(bins-1) ))
+   setNames(data.frame(matrix(hist(rnorm(2000,mu, sigma), breaks=seq(1,bins,1), plot=F)$counts, nrow=1)),
+   paste0("b",1:(bins-1) ))
    }
 mv_gauss<-rbind(do.call(rbind, lapply(1:30, function(i){makeMvGauss(bins=180, mu=50, sigma=10 )})),
                 do.call(rbind, lapply(1:30, function(i){makeMvGauss(bins=180, mu=60, sigma=12 )})))
@@ -147,7 +183,8 @@ gaussianMeans_sv_ex <- conjugate(s1=rnorm(10, 50,10), s2= rnorm(10, 60,12), meth
 # beta mv example
 
 makeMvBeta<-function(n=100,a,b){
-  setNames(data.frame(matrix(hist(rbeta(2000,a,b), breaks=seq(0,1,length.out=n), plot=F)$counts, nrow=1)),paste0("b0.",1:(n-1)))
+  setNames(data.frame(matrix(hist(rbeta(2000,a,b), breaks=seq(0,1,length.out=n), plot=F)$counts, nrow=1)),
+  paste0("b0.",1:(n-1)))
 }
 
 mv_beta<-rbind(do.call(rbind, lapply(1:30, function(i){makeMvBeta(n=100, a=5, b=8 )})),
@@ -184,7 +221,8 @@ negbin_sv_ex <- conjugate(s1 = rnbinom(20, 10, 0.5), s2= rnbinom(20, 10, 0.25), 
 # Example usage with plantCV data
 ## Not run:
 library(data.table)
-wide<-read.pcv("https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv", mode="wide", singleValueOnly = T, multiValPattern = "hist", reader="fread")
+wide<-read.pcv("https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv",
+ mode="wide", singleValueOnly = T, multiValPattern = "hist", reader="fread")
 wide$genotype = substr(wide$barcode, 3,5)
 wide$genotype = ifelse(wide$genotype == "002", "B73",
                        ifelse(wide$genotype == "003", "W605S",
@@ -223,13 +261,17 @@ area_res_t <- conjugate(s1 = mo17_area, s2= B73_area, method="t",
 
 # Plots of prior distributions
 set.seed(123)
-plot(seq(0,1,0.0001), dbeta(seq(0,1,0.0001), 0.5, 0.5), ylab="Density", xlab="Support", main="Beta", type="l")
+plot(seq(0,1,0.0001), dbeta(seq(0,1,0.0001), 0.5, 0.5), ylab="Density",
+ xlab="Support", main="Beta", type="l")
 
-plot(seq(0,10,0.01), dgamma(seq(0,10,0.01), 0.5, 0.5), ylab="Density", xlab="Support", main="Poisson (gamma prior on Lambda parameter)", type="l")
+plot(seq(0,10,0.01), dgamma(seq(0,10,0.01), 0.5, 0.5), ylab="Density", xlab="Support",
+ main="Poisson (gamma prior on Lambda parameter)", type="l")
 
-plot(seq(-20,20.001), dnorm(seq(-20,20.001), 0, sqrt(20)), ylab="Density", xlab="Support", main="T and Gaussian", type="l")
+plot(seq(-20,20.001), dnorm(seq(-20,20.001), 0, sqrt(20)), ylab="Density", 
+xlab="Support", main="T and Gaussian", type="l")
 
-plot(seq(0,70,0.001), dlnorm(seq(0,70,0.001), log(10), log(3)), ylab="Density", xlab="Support", main="Lognormal", type="l")
+plot(seq(0,70,0.001), dlnorm(seq(0,70,0.001), log(10), log(3)), ylab="Density", 
+xlab="Support", main="Lognormal", type="l")
 
 }
 \keyword{ROPE}

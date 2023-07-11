@@ -15,13 +15,18 @@ distributionPlot(
 )
 }
 \arguments{
-\item{fits}{A list of brmsfit objects following the same data over time. Currently checkpointing is not supported.}
+\item{fits}{A list of brmsfit objects following the same data over time.
+Currently checkpointing is not supported.}
 
-\item{form}{A formula describing the growth model similar to \code{\link{growthSS}} and \code{\link{brmPlot}} such as: outcome ~ predictor |individual/group}
+\item{form}{A formula describing the growth model similar to \code{\link{growthSS}}
+and \code{\link{brmPlot}} such as: outcome ~ predictor |individual/group}
 
-\item{priors}{a named list of samples from the prior distributions for each parameter in \code{params}. This is only used if sample_prior=F in the brmsfit object. If left NULL then no prior is included.}
+\item{priors}{a named list of samples from the prior distributions for each parameter in
+\code{params}. This is only used if sample_prior=F in the brmsfit object.
+If left NULL then no prior is included.}
 
-\item{params}{a vector of parameters to include distribution plots of. Defaults to NULL which will use all parameters from the top level model.}
+\item{params}{a vector of parameters to include distribution plots of. 
+Defaults to NULL which will use all parameters from the top level model.}
 
 \item{d}{data used to fit models (this is used to plot each subject's trend line)}
 
@@ -45,13 +50,17 @@ library(ggplot2)
 library(patchwork)
 fits<-list(fit_3, fit_15)
 form <- y~time|id/group
-priors<-list("phi1"=rlnorm(2000, log(130), 0.25), "phi2"=rlnorm(2000, log(12), 0.25), "phi3"=rlnorm(2000, log(3), 0.25))
+priors<-list("phi1"=rlnorm(2000, log(130), 0.25),
+   "phi2"=rlnorm(2000, log(12), 0.25),
+   "phi3"=rlnorm(2000, log(3), 0.25))
 params = c("A", "B", "C")
 d <- simdf
 maxTime = NULL
 patch=T
-from3to25<-list(fit_3, fit_5, fit_7, fit_9, fit_11, fit_13, fit_15, fit_17, fit_19, fit_21, fit_23, fit_25)
-distributionPlot(fits = from3to25, form = y~time|id/group, params=params, d=d, priors=priors)
+from3to25<-list(fit_3, fit_5, fit_7, fit_9, fit_11,
+    fit_13, fit_15, fit_17, fit_19, fit_21, fit_23, fit_25)
+distributionPlot(fits = from3to25, form = y~time|id/group,
+     params=params, d=d, priors=priors)
 
 ## End(Not run)
 }

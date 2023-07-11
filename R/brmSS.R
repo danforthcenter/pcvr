@@ -24,22 +24,35 @@
 #' }
 #' 
 #' @return A named list of elements to make it easier to fit common brms models.
-#' \code{formula}: A \code{brms::bf} formula specifying the growth model, autocorrelation, variance submodel, and models for each variable in the growth model.
+#' \code{formula}: A \code{brms::bf} formula specifying the growth model, autocorrelation, variance submodel,
+#' and models for each variable in the growth model.
 #' \code{prior}: A brmsprior/data.frame object.
-#' \code{initfun}: A function to randomly initialize chains using a random draw from a gamma distribution (confines initial values to positive and makes correct number of initial values for chains and groups).
+#' \code{initfun}: A function to randomly initialize chains using a random draw from a gamma
+#' distribution (confines initial values to positive and makes correct number
+#' of initial values for chains and groups).
 #' \code{df} The data input, possibly with dummy variables added if needed.
 #' \code{family} The model family, currently this will always be "student".
 #' @examples 
 #' 
 #' ## Not run:
 #' 
-#' simdf<-growthSim("logistic", n=20, t=25, params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))
-#' ss<-growthSS(model = "logistic", form=y~time|id/group, sigma="spline", df=simdf, priors = list("A"=130, "B"=12, "C"=3))
+#' simdf<-growthSim("logistic", n=20, t=25,
+#' params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))
+#' ss<-growthSS(model = "logistic", form=y~time|id/group,
+#' sigma="spline", df=simdf, priors = list("A"=130, "B"=12, "C"=3))
 #' lapply(ss,class)
 #' ss$initfun()
-#' fit_test <- brm(ss$formula, prior = ss$prior, data = ss$df, family = ss$family, # main components of the model
-#'               iter = 1000, cores = 2, chains = 2, init = ss$initfun, # parameters controling chain number, chain length, parallelization and starting values
-#'               control = list(adapt_delta = 0.999, max_treedepth = 20), backend = "cmdstanr") # options to increase performance
+#' fit_test <- brm( # main components of the model
+#'          ss$formula, prior = ss$prior, data = ss$df, family = ss$family,
+#'          # parameters controling chain number, chain length, parallelization and starting values
+#'          iter = 1000, cores = 2, chains = 2, init = ss$initfun, 
+#'          # options to increase performance
+#'          control = list(adapt_delta = 0.999, max_treedepth = 20), backend = "cmdstanr")
+#' # or 
+#' 
+#' fit_test <- fitGrowth(ss, iter = 1000, cores = 2, chains = 2, backend = "cmdstanr",
+#'   control = list(adapt_delta = 0.999, max_treedepth = 20))
+#' 
 #' ## End(Not run)              
 #'               
 #' @export

@@ -1,24 +1,34 @@
 #' Calculate relative tolerance of some phenotype(s) relative to control
 #' 
 #' @description Often in bellwether experiments we are curious about the effect of some treatment vs control.
-#' For certain routes in analysing the data this requires considering phenotypes as relative differences compared to a control.
-#' Note that the \code{conjugate} function can also be useful in considering the relative tolerance to stress between groups.
+#' For certain routes in analysing the data this requires considering
+#'   phenotypes as relative differences compared to a control. Note that the \code{conjugate} 
+#'   function can also be useful in considering the relative tolerance to stress between groups.
 #' 
-#' @param df Dataframe to use, this is expected to be in wide format although in the future long may also be supported.
-#' @param phenotypes A character vector of column names for the phenotypes that should be compared against control.
-#' @param grouping A character vector of column names that identify groups in the data. These groups will be calibrated separately, with the exception of the group that identifies a control within the greater hierarchy. Note that for levels of grouping where the control group does not exist the output will be NA.
-#' @param control A column name for the variable to be used to select the control observations. If left NULL (the default) then this will be taken as the first string in the group argument.
+#' @param df Dataframe to use, by default this is expected to be wide.
+#' @param phenotypes A character vector of column names for the phenotypes
+#'     that should be compared against control.
+#' @param grouping A character vector of column names that identify groups in the data.
+#'    These groups will be calibrated separately,
+#'    with the exception of the group that identifies a control within the greater hierarchy.
+#'    Note that for levels of grouping where the control group does not exist the output will be NA.
+#' @param control A column name for the variable to be used to select the control observations.
+#'     If left NULL (the default) then this will be taken as the first string in the group argument.
 #' @param controlGroup The level of the control variable to compare groups against.
 #' @param wide Logical, is the input data in wide format? Defaults to TRUE.
-#' @param traitCol Column with phenotype names, defaults to "trait". This should generally not need to be changed from the default.
-#' @param valueCol Column with phenotype values, defaults to "value". This should generally not need to be changed from the default.
+#' @param traitCol Column with phenotype names, defaults to "trait".
+#'    This should generally not need to be changed from the default.
+#' @param valueCol Column with phenotype values, defaults to "value".
+#'    This should generally not need to be changed from the default.
 #' @return A dataframe with relative tolerance columns added.
 #' @keywords single-value-trait
 #' @examples 
 #' 
 #' ## Not run:
 #' 
-#' sv<-read.pcv("https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv", mode="wide", singleValueOnly = T, reader="fread")
+#' sv<-read.pcv(
+#'    "https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv",
+#'     mode="wide", singleValueOnly = T, reader="fread")
 #' sv$genotype = substr(sv$barcode, 3,5)
 #' sv$genotype = ifelse(sv$genotype == "002", "B73",
 #'               ifelse(sv$genotype == "003", "W605S",
@@ -27,13 +37,21 @@
 #' sv$fertilizer = ifelse(sv$fertilizer == "A", "100",
 #'               ifelse(sv$fertilizer == "B", "50", "0"))
 #'               
-#' sv<-bw.time(sv, plantingDelay = 0, phenotype="area.pixels", cutoff=10, timeCol="timestamp", group=c("barcode", "rotation"), plot=T)
-#' phenotypes <- c('area.pixels', 'convex_hull_area.pixels', 'convex_hull_vertices', 'ellipse_angle.degrees', 'ellipse_eccentricity', 'ellipse_major_axis.pixels', 'ellipse_minor_axis.pixels', 'height.pixels', 'hue_circular_mean.degrees', 'hue_circular_std.degrees', 'hue_median.degrees', 'longest_path.pixels', 'perimeter.pixels', 'solidity', 'width.pixels')
+#' sv<-bw.time(sv, plantingDelay = 0, phenotype="area.pixels",
+#'  cutoff=10, timeCol="timestamp", group=c("barcode", "rotation"), plot=T)
+#' phenotypes <- c('area.pixels', 'convex_hull_area.pixels',
+#'  'convex_hull_vertices', 'ellipse_angle.degrees', 'ellipse_eccentricity',
+#'   'ellipse_major_axis.pixels', 'ellipse_minor_axis.pixels', 'height.pixels',
+#'    'hue_circular_mean.degrees', 'hue_circular_std.degrees',
+#'     'hue_median.degrees', 'longest_path.pixels', 'perimeter.pixels',
+#'      'solidity', 'width.pixels')
 #' phenoForm<-paste0("cbind(", paste0(phenotypes, collapse=", "), ")")
 #' groupForm<-"DAS+DAP+barcode+genotype+fertilizer"
 #' form<-as.formula(paste0(phenoForm, "~", groupForm))
 #' sv<-aggregate(form, data=sv, mean, na.rm=T)
-#' sv<-bw.outliers(sv, phenotype="area.pixels", group = c("DAS", "genotype", "fertilizer"), plotgroup = c("barcode"))
+#' sv<-bw.outliers(sv, phenotype="area.pixels",
+#'    group = c("DAS", "genotype", "fertilizer"),
+#'    plotgroup = c("barcode"))
 #' 
 #' pixels_per_cmsq <- 42.5^2   # pixel per cm^2
 #' sv$area_cm2<-sv$area.pixels / pixels_per_cmsq
@@ -41,7 +59,7 @@
 #' 
 #' df=sv
 #' phenotypes = c("area_cm2", "height_cm")
-#' grouping = c("fertilizer", "genotype", "DAS") # need to include genotype so that the interaction effect is included
+#' grouping = c("fertilizer", "genotype", "DAS")
 #' controlGroup = "100" 
 #' control = "fertilizer"
 #' wide=T

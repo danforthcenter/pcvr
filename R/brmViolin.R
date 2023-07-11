@@ -3,16 +3,32 @@
 #' 
 #' 
 #' @param model A brmsfit object or a list of brmsfit objects
-#' @param params A list of parameters to use from the model. Defaults to NULL in which case all growth model parameters are used.
-#' @param hyp A character string defining the hypothesis to be tested. Defaults to "num/denom > 1.05". The "num" and "denom" names should be kept, but the direction and magnitude can be changed.
-#' @param compareX Which groups in the model should be compared as numerator options? Defaults to NULL in which case a plot will not be made but the data will be returned.
-#' @param againstY Which group in the model should be used as the denominator (typically a control group to compare against)? Defaults to NULL in which case a plot will not be made but the data will be returned.
-#' @param group_sep A regex pattern to match the separation of grouping terms in the models group term (see the formula argument of \code{\link{growthSS}}). The default uses "[.]" to break on a single period.
-#' @param groups_into A vector of column names to make after groups are split by group_sep. If this or groups_sep are NULL then no groups are assumed.
+#' @param params A list of parameters to use from the model.
+#' Defaults to NULL in which case all growth model parameters are used.
+#' @param hyp A character string defining the hypothesis to be tested.
+#' Defaults to "num/denom > 1.05". The "num" and "denom" names should be kept,
+#' but the direction and magnitude can be changed.
+#' @param compareX Which groups in the model should be compared as numerator options?
+#' Defaults to NULL in which case a plot will not be made but the data will be returned.
+#' @param againstY Which group in the model should be used as the
+#' denominator (typically a control group to compare against)?
+#' Defaults to NULL in which case a plot will not be made but the data will be returned.
+#' @param group_sep A regex pattern to match the separation of grouping
+#' terms in the models group term (see the formula argument of \code{\link{growthSS}}).
+#' The default uses "[.]" to break on a single period.
+#' @param groups_into A vector of column names to make after groups are split by group_sep.
+#' If this or groups_sep are NULL then no groups are assumed.
 #' @param x The variable to be plotted on the x axis (should be from groups_into).
-#' @param facet The variable to be used to facet the ggplot (should be another option from groups_into). If left NULL then the plot will only be faceted by params. Note that with the nature of againstY this faceting is often redundant but it does add labels which are helpful for keeping results organized..
-#' @param cores Optional number of cores to run hypotheses in parallel. Defaults to 1 unless the "mc.cores" option is set.
-#' @param returnData Logical, should data be returned? This is treated as TRUE if a plot will not be generated but otherwise defaults to FALSE.
+#' @param facet The variable to be used to facet the
+#' ggplot (should be another option from groups_into).
+#' If left NULL then the plot will only be faceted by params.
+#' Note that with the nature of againstY this faceting is often redundant
+#' but it does add labels which are helpful for keeping results organized..
+#' @param cores Optional number of cores to run hypotheses in parallel.
+#' Defaults to 1 unless the "mc.cores" option is set.
+#' @param returnData Logical, should data be returned?
+#' This is treated as TRUE if a plot will not be generated but
+#' otherwise defaults to FALSE.
 #' 
 #' @keywords growth curve, logistic, gompertz, monomolecular, linear, exponential, power-law, brms, ggplot2
 #' 
@@ -25,12 +41,14 @@
 #' ## Not run:
 #' 
 #' ex<-brmViolin(model = list(fit1, fit2, fit3), params = NULL, cores = 10,
-#'      hyp="num/denom>1.05", compareX = c("123.heat", "123.drought", "123.control"), againstY = "123.control", group_sep = "[.]",
+#'      hyp="num/denom>1.05", compareX = c("123.heat", "123.drought", "123.control"),
+#'      againstY = "123.control", group_sep = "[.]",
 #'      groups_into = c("genotype", "trt"), x="trt", facet="genotype")
 #'      
 #' ## End(Not run)
 #' 
-#' @return Returns a ggplot showing a brms model's posterior distributions as violins and filled by posterior probability of some hypothesis.
+#' @return Returns a ggplot showing a brms model's posterior distributions
+#' as violins and filled by posterior probability of some hypothesis.
 #' 
 #' @export
 
@@ -43,7 +61,7 @@ brmViolin<-function(model, params=NULL,hyp="num/denom>1.05", compareX=NULL, agai
   # print(load("brmsModels/soil0_areaModel.rdata"))
   # print(load("brmsModels/soil50_areaModel.rdata"))
   # print(load("brmsModels/soil100_areaModel.rdata"))
-  # model = list(s0_gompertz_area, s50_gompertz_area, s100_gompertz_area); params = NULL; cores = getOption("mc.cores",1)
+  # model = list(s0_gompertz_area, s50_gompertz_area, s100_gompertz_area);params = NULL; cores = getOption("mc.cores",1)
   # hyp="num/denom>1.05"; compareX = c("0.drip", "0.mock", "0.slurry"); againstY = "0.mock"; group_sep = "[.]"
   # groups_into = c("soil", "inoc"); x="inoc"; facet="soil"
   

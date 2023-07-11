@@ -1,12 +1,16 @@
 #' Check priors used in ease of use brms functions
 #' 
-#' @param priors A named list of means for prior distributions. This takes the same input as the prior argument of \code{\link{growthSS}}.
-#' @param type Either "density", the default, or a model name from \code{growthSS} model options ("logistic", "gompertz", "monomolecular", "exponential", "linear", "power law").
-#' If this is a model type then n draws from the prior will be simulated as growth trendlines and densities will be plotted on margins.
+#' @param priors A named list of means for prior distributions.
+#' This takes the same input as the prior argument of \code{\link{growthSS}}.
+#' @param type Either "density", the default, or a model name from \code{growthSS}
+#' model options ("logistic", "gompertz", "monomolecular", "exponential", "linear", "power law").
+#' If this is a model type then n draws from the prior will be simulated as growth
+#' trendlines and densities will be plotted on margins.
 #' @param n Numeric, if type is a model then how many draws from the prior should be simulated?
 #' @param t Numeric, time passed to growthSim. Defaults to 25 (the growthSim default).
 #' @keywords Bayesian, brms, prior
-#' @return A named list of plots showing prior distributions that \code{growthSS} would use, optionally with a plot of simulated growth curves using draws from those priors.
+#' @return A named list of plots showing prior distributions that \code{growthSS} would use,
+#' optionally with a plot of simulated growth curves using draws from those priors.
 #' @import ggplot2
 #' @import patchwork
 #' @examples 

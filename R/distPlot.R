@@ -1,9 +1,14 @@
 #' Function for plotting iterations of posterior distributions
 #' 
-#' @param fits A list of brmsfit objects following the same data over time. Currently checkpointing is not supported.
-#' @param form A formula describing the growth model similar to \code{\link{growthSS}} and \code{\link{brmPlot}} such as: outcome ~ predictor |individual/group
-#' @param priors a named list of samples from the prior distributions for each parameter in \code{params}. This is only used if sample_prior=F in the brmsfit object. If left NULL then no prior is included.
-#' @param params a vector of parameters to include distribution plots of. Defaults to NULL which will use all parameters from the top level model.
+#' @param fits A list of brmsfit objects following the same data over time.
+#'    Currently checkpointing is not supported.
+#' @param form A formula describing the growth model similar to \code{\link{growthSS}}
+#'    and \code{\link{brmPlot}} such as: outcome ~ predictor |individual/group
+#' @param priors a named list of samples from the prior distributions for each parameter in
+#'     \code{params}. This is only used if sample_prior=F in the brmsfit object.
+#'     If left NULL then no prior is included.
+#' @param params a vector of parameters to include distribution plots of. 
+#'     Defaults to NULL which will use all parameters from the top level model.
 #' @param d data used to fit models (this is used to plot each subject's trend line)
 #' @param maxTime Optional parameter to designate a max time not observed in the models so far
 #' @param patch Logical, should a patchwork plot be returned or should lists of ggplots be returned?
@@ -23,13 +28,17 @@
 #' library(patchwork)
 #' fits<-list(fit_3, fit_15)
 #' form <- y~time|id/group
-#' priors<-list("phi1"=rlnorm(2000, log(130), 0.25), "phi2"=rlnorm(2000, log(12), 0.25), "phi3"=rlnorm(2000, log(3), 0.25))
+#' priors<-list("phi1"=rlnorm(2000, log(130), 0.25),
+#'    "phi2"=rlnorm(2000, log(12), 0.25),
+#'    "phi3"=rlnorm(2000, log(3), 0.25))
 #' params = c("A", "B", "C")
 #' d <- simdf
 #' maxTime = NULL
 #' patch=T
-#' from3to25<-list(fit_3, fit_5, fit_7, fit_9, fit_11, fit_13, fit_15, fit_17, fit_19, fit_21, fit_23, fit_25)
-#' distributionPlot(fits = from3to25, form = y~time|id/group, params=params, d=d, priors=priors)
+#' from3to25<-list(fit_3, fit_5, fit_7, fit_9, fit_11,
+#'     fit_13, fit_15, fit_17, fit_19, fit_21, fit_23, fit_25)
+#' distributionPlot(fits = from3to25, form = y~time|id/group,
+#'      params=params, d=d, priors=priors)
 #' 
 #' ## End(Not run)
 
@@ -117,7 +126,7 @@ distributionPlot<-function(fits, form, priors=NULL, params=NULL, d, maxTime=NULL
   if(all(unlist(lapply(fits, function(fit) nrow(brms::prior_draws(fit))<1 )))){ # if no models were fit with sample_prior = T
     if(!is.null(prior)){ # if prior is supplied as argument
       USEPRIOR=T
-      if(class(priors[[1]])!="list"){
+      if( !is(priors[[1]], "list")){
         priors<-lapply(1:length(unique(d[[group]])), function(i) priors)
         names(priors)<-unique(d[[group]])
       }

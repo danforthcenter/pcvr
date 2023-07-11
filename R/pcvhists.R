@@ -2,11 +2,24 @@
 #' 
 #' @param df Data frame to use. Long format with multi value traits is expected.
 #' @param index A multi value trait as a character string. Must be present in `trait`.
-#' @param group A length 1 or 2 character vector. This is used for faceting the joyplot and identifying groups for testing. If this is length 1 then no faceting is done.
-#' @param method A method to use in comparing distributions/means. Currently "beta", "gaussian", and "ks" are supported. See details for explanations of tests.
-#' @param compare Groups to compare. By default this is set to FALSE, which corresponds to no testing. Other values of compare are passed to fixCompare to make t.test comparisons using ggpubr. In short, NULL will run all pairwise T tests, a single value of the X axis variable will compare that level to all other levels of the X variable, alternatively this can be a list as used by ggpubr: list(c("level1", "level2"), c("level1", "level3"))
-#' @param priors Parameters for prior distributions if using method = "beta" or "gaussian". If left NULL then wide weak priors are used. This can be set as a single set of parameters or with unique values for each group in `compare`, but it is advised to use the default priors.
-#' @param hyp Hypothesis to test for beta and gaussian methods, one of "unequal", "greater", "lesser". Defaults to "unequal" if left NULL.
+#' @param group A length 1 or 2 character vector.
+#' This is used for faceting the joyplot and identifying groups for testing.
+#' If this is length 1 then no faceting is done.
+#' @param method A method to use in comparing distributions/means.
+#' Currently "beta", "gaussian", and "ks" are supported.
+#' See details for explanations of tests.
+#' @param compare Groups to compare. By default this is set to FALSE,
+#' which corresponds to no testing. Other values of compare are passed to fixCompare
+#'  to make t.test comparisons using ggpubr. In short, NULL will run all pairwise T tests,
+#'   a single value of the X axis variable will compare that level to all 
+#'   other levels of the X variable, alternatively this can be a list as used 
+#'   by ggpubr: list(c("level1", "level2"), c("level1", "level3"))
+#' @param priors Parameters for prior distributions if using method = "beta" 
+#' or "gaussian". If left NULL then wide weak priors are used. 
+#' This can be set as a single set of parameters or with unique values for each group in `compare`,
+#'  but it is advised to use the default priors.
+#' @param hyp Hypothesis to test for beta and gaussian methods, one of "unequal", "greater", "lesser". 
+#' Defaults to "unequal" if left NULL.
 #' @param bin Column containing histogram (multi value trait) bins. Defaults to "label".
 #' @param freq Column containing histogram counts. Defaults to "value"
 #' @param trait Column containing phenotype names. Defaults to "trait".
@@ -16,25 +29,51 @@
 #' @details 
 #' This function is similar to pcv.joyplot but uses different plotting aesthetics.
 #' 
-#' The method argument is used for statistical testing of groups. There are currently four options, "beta", "gaussian", "ks", and "emd".
+#' The method argument is used for statistical testing of groups. 
+#' There are currently four options, "beta", "gaussian", "ks", and "emd".
 #' \itemize{
-#'  \item{"beta"}{The beta method is for use with bounded data (0,1) and creates a posterior beta distribution using the histogram counts and bins and priors (which default to beta(0.5,0.5)). The posterior distributions are compared across the groups in `compare` and a posterior probability is returned for each which corresponds to P[hyp]. }
-#'  \item{"gaussian"}{The gaussian method is for use with multi value traits that are not bounded 0-1 and are roughly gaussian. Like the beta method this assumes weak priors and uses the histogram data to make a posterior distribution (here a T distribution). Here there will be two posterior probabilities returned for each comparison, one compares the distribution of means only and is roughly analogous to a T test, the other compares the entire posterior distributions and is more similar to a Z test. The posterior probability still takes the form P[hyp]. Note that currently these consider pixels as reps, so it is easy to have very small biological changes at very high posterior probability.}
-#'  \item{"ks"}{The ks method performs a ks test on the PDF of each histogram over a set support range. This returns a P value corresponding to a standard KS test that distributions are the same. For this method `hyp` is ignored.}
-#'  \item{"emd}{The emd method returns earth mover's distance for compared histograms. This is done via the emdist package and can be very slow. This is included because it is canonical but in the case where EMD is desired it may be worth implementing it directly.}
+#'  \item{"beta": }{The beta method is for use with bounded data (0,1) and creates a
+#'   posterior beta distribution using the histogram counts and bins and 
+#'   priors (which default to beta(0.5,0.5)). 
+#'   The posterior distributions are compared across the groups in `compare`
+#'    and a posterior probability is returned for each which corresponds to P[hyp]. }
+#'  \item{"gaussian": }{The gaussian method is for use with multi value traits 
+#'  that are not bounded 0-1 and are roughly gaussian. Like the beta method 
+#'  this assumes weak priors and uses the histogram data to make a posterior 
+#'  distribution (here a T distribution). Here there will be two posterior
+#'   probabilities returned for each comparison, one compares the distribution
+#'    of means only and is roughly analogous to a T test, the other compares 
+#'    the entire posterior distributions and is more similar to a Z test. 
+#'    The posterior probability still takes the form P[hyp].
+#'     Note that currently these consider pixels as reps, 
+#'     so it is easy to have very small biological changes at very high posterior probability.}
+#'  \item{"ks": }{The ks method performs a ks test on the PDF of each histogram 
+#'  over a set support range. This returns a P value corresponding to a 
+#'  standard KS test that distributions are the same. For this method `hyp` is ignored.}
+#'  \item{"emd": }{The emd method returns earth mover's distance for compared 
+#'  histograms. This is done via the emdist package and can be very slow. 
+#'  This is included because it is canonical but in the case where EMD is
+#'   desired it may be worth implementing it directly.}
 #' }
 #' 
-#' @return Returns either a ggplot object or a list containing a ggplot and a dataframe of statistical comparisons (if compare is not FALSE).
+#' @return Returns either a ggplot object or a list containing a ggplot 
+#' and a dataframe of statistical comparisons (if compare is not FALSE).
 #' 
 #' @examples 
 #' 
 #' ## Not run:
 #' 
-#' df <- read.pcv("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest2.csv", "long", F)
-#' pcv.hists(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"))
-#' pcv.hists(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"), method="ks")
-#' pcv.hists(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"), method="beta")
-#' pcv.hists(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"), method="gaussian")
+#' df <- read.pcv(
+#'   "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest2.csv",
+#'  "long", F)
+#' pcv.hists(df, index = "index_frequencies_index_ndvi", 
+#'    group=c("genotype", "timepoint"))
+#' pcv.hists(df, index = "index_frequencies_index_ndvi", 
+#'    group=c("genotype", "timepoint"), method="ks")
+#' pcv.hists(df, index = "index_frequencies_index_ndvi",
+#'   group=c("genotype", "timepoint"), method="beta")
+#' pcv.hists(df, index = "index_frequencies_index_ndvi", 
+#'   group=c("genotype", "timepoint"), method="gaussian")
 #' 
 #' ## Not run:
 #' 

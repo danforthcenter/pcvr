@@ -15,13 +15,20 @@ read.pcv.jsn(
 \arguments{
 \item{file}{Path to the plantCV output json.}
 
-\item{dtSuffix}{Suffix for columns denoting data type. This will be one of the innermost keys in the json. Default is "datatype"}
+\item{dtSuffix}{Suffix for columns denoting data type.
+This will be one of the innermost keys in the json. Default is "datatype"}
 
-\item{valSuffix}{Suffix for columns denoting phenotype values. This will be one of the innermost keys in the json. Default is "value"}
+\item{valSuffix}{Suffix for columns denoting phenotype values.
+This will be one of the innermost keys in the json. Default is "value"}
 
-\item{labSuffix}{Suffix for columns denoting phenotype labels. This will be one of the innermost keys in the json. Default is "label"}
+\item{labSuffix}{Suffix for columns denoting phenotype labels.
+This will be one of the innermost keys in the json. Default is "label"}
 
-\item{output}{What phenotypes should be returned? This can be a vector of names present in "label" or one of the built in options. Built in options are "sv" for single value traits only, "mv" for multi value traits only, and "all" for all traits. Note that by default tuple value data is output with single value data in a wide format.}
+\item{output}{What phenotypes should be returned?
+This can be a vector of names present in "label" or one of the built in options.
+Built in options are "sv" for single value traits only,
+"mv" for multi value traits only, and "all" for all traits.
+Note that by default tuple value data is output with single value data in a wide format.}
 }
 \value{
 Returns a dataframe.

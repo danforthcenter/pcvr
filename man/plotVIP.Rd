@@ -9,9 +9,11 @@ plotVIP(plsrObject, i = 1, mean = F, removePattern = ".*_")
 \arguments{
 \item{plsrObject}{Output from pcv.plsr}
 
-\item{i}{An index from the plsrObject to use if the plsrObject contains models for several outcomes. Can be a name or a position. Defaults to 1.}
+\item{i}{An index from the plsrObject to use if the plsrObject contains models for several outcomes.
+Can be a name or a position. Defaults to 1.}
 
-\item{mean}{Logical, should the mean be plotted (T) or should the components be shown individually (F, the default).}
+\item{mean}{Logical, should the mean be plotted (T)
+or should the components be shown individually (F, the default).}
 
 \item{removePattern}{A pattern to remove to make the wavelength column into a numeric.}
 }
@@ -23,7 +25,9 @@ This function is used to visualize variable influence on projection (vip) from a
 ## Not run:
 
 file = "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest1.csv"
-df1<-read.pcv(file, "wide", T, multiValPattern = c("index_frequencies_index_ari", "index_frequencies_index_ci_rededge", "npq_hist_NPQ", "yii_hist_Fq'/Fm'", "yii_hist_Fv/Fm"))
+df1<-read.pcv(file, "wide", T,
+   multiValPattern = c("index_frequencies_index_ari", "index_frequencies_index_ci_rededge",
+   "npq_hist_NPQ", "yii_hist_Fq'/Fm'", "yii_hist_Fv/Fm"))
 colnames(df1)<-sub("index_frequencies_index_ndvi.", "ndvi_", colnames(df1))
 x<-pcv.plsr(df=df1, resps = "area.pixels", spectra = grepl("^ndvi_", colnames(df1)))
 plotVIP(x)

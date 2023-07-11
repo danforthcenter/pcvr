@@ -22,30 +22,41 @@ bw.time(
 \arguments{
 \item{df}{Data frame to use, this can be in wide or long format as specified by the wide argument.}
 
-\item{mode}{One of "DAS", "DAP" or "DAE" (Days After Planting and Days After Emergence). Defaults to NULL in which case all columns are added. Note that if timeCol is not an integer then DAS is always returned.}
+\item{mode}{One of "DAS", "DAP" or "DAE" (Days After Planting and Days After Emergence).
+Defaults to NULL in which case all columns are added.
+Note that if timeCol is not an integer then DAS is always returned.}
 
 \item{plantingDelay}{If `mode` includes "DAP" then `plantingDelay` is used to adjust "DAS"}
 
 \item{phenotype}{If `mode` includes "DAE" then this is the phenotype used to classify emergence.}
 
-\item{cutoff}{If `mode` inlcludes "DAE" then this value is used to classify emergence. Defaults to 1, meaning an image with a value of 1 or more for `phenotype` has "emerged".}
+\item{cutoff}{If `mode` inlcludes "DAE" then this value is used to classify emergence.
+Defaults to 1, meaning an image with a value of 1 or more for `phenotype` has "emerged".}
 
-\item{timeCol}{Column of input time values, defaults to "timestamp". If this is not an integer then it is assumed to be a timestamp in the format of the format argument.}
+\item{timeCol}{Column of input time values, defaults to "timestamp".
+If this is not an integer then it is assumed to be
+a timestamp in the format of the format argument.}
 
-\item{group}{Grouping variables to specify unique plants as a character vector. This defaults to "Barcodes". These taken together should identify a unique plant across time, although often "angle" or "rotation" should be added.}
+\item{group}{Grouping variables to specify unique plants as a character vector.
+This defaults to "Barcodes". These taken together should identify a unique plant across time,
+although often "angle" or "rotation" should be added.}
 
 \item{plot}{Logical, should plots of the new time variables be printed?}
 
 \item{wide}{Logical, is data in wide format? Defaults to TRUE.}
 
-\item{format}{An R POSIXct format, defaults to lemnatech standard format. This is only used if timeCol is not an integer.}
+\item{format}{An R POSIXct format, defaults to lemnatech standard format.
+This is only used if timeCol is not an integer.}
 
-\item{traitCol}{Column with phenotype names, defaults to "trait". This should generally not need to be changed from the default.}
+\item{traitCol}{Column with phenotype names, defaults to "trait".
+This should generally not need to be changed from the default.}
 
-\item{valueCol}{Column with phenotype values, defaults to "value". This should generally not need to be changed from the default.}
+\item{valueCol}{Column with phenotype values, defaults to "value".
+This should generally not need to be changed from the default.}
 }
 \value{
-The input dataframe with new integer columns for different ways of describing time in the experiment.
+The input dataframe with new integer columns for different ways
+of describing time in the experiment.
 }
 \description{
 Time conversion and plotting for bellwether data
@@ -54,7 +65,9 @@ Time conversion and plotting for bellwether data
 
 ## Not run:
 
-sv<-read.pcv("https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv", mode="wide", singleValueOnly = T, reader="fread")
+sv<-read.pcv(
+"https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv",
+ mode="wide", singleValueOnly = T, reader="fread")
 sv$genotype = substr(sv$barcode, 3,5)
 sv$genotype = ifelse(sv$genotype == "002", "B73",
                      ifelse(sv$genotype == "003", "W605S",
@@ -62,10 +75,13 @@ sv$genotype = ifelse(sv$genotype == "002", "B73",
 sv$fertilizer = substr(sv$barcode, 8, 8)
 sv$fertilizer = ifelse(sv$fertilizer == "A", "100",
                    ifelse(sv$fertilizer == "B", "50", "0"))
-sv<-bw.time(sv, plantingDelay = 0, phenotype="area.pixels", cutoff=10, timeCol="timestamp", group=c("barcode", "rotation"), plot=F)
+sv<-bw.time(sv, plantingDelay = 0, phenotype="area.pixels", cutoff=10,
+ timeCol="timestamp", group=c("barcode", "rotation"), plot=F)
 
 
-svl<-read.pcv("https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv", mode="long", singleValueOnly = T, reader="fread")
+svl<-read.pcv(
+"https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv",
+ mode="long", singleValueOnly = T, reader="fread")
 svl$genotype = substr(svl$barcode, 3,5)
 svl$genotype = ifelse(svl$genotype == "002", "B73",
                      ifelse(svl$genotype == "003", "W605S",
@@ -73,7 +89,8 @@ svl$genotype = ifelse(svl$genotype == "002", "B73",
 svl$fertilizer = substr(svl$barcode, 8, 8)
 svl$fertilizer = ifelse(svl$fertilizer == "A", "100",
                    ifelse(svl$fertilizer == "B", "50", "0"))
-svl<-bw.time(svl, plantingDelay = 0, phenotype="area", cutoff=10, timeCol="timestamp", group=c("barcode", "rotation"), plot=F,wide=F)
+svl<-bw.time(svl, plantingDelay = 0, phenotype="area", cutoff=10, timeCol="timestamp",
+ group=c("barcode", "rotation"), plot=F,wide=F)
 
 ## End(Not run)
 

@@ -3,21 +3,31 @@
 #' @param df Data frame to use. Can be in long or wide format.
 #' @param phenotype Column to use to classify outliers.
 #' @param naTo0 Logical, should NA values to changed to 0.
-#' @param group  Grouping variables to find outliers as a character vector. This is typically time  and design variables (DAS, genotype, treatment, etc). These are used as predictors for `phenotype` in a generalized linear model.
-#' @param plotgroup Grouping variables for drawing plots if plot=T. Typically this is an identifier for images of a plant over time and defaults to c('barcode',"rotation").
+#' @param group  Grouping variables to find outliers as a character vector.
+#' This is typically time  and design variables (DAS, genotype, treatment, etc).
+#' These are used as predictors for `phenotype` in a generalized linear model.
+#' @param plotgroup Grouping variables for drawing plots if plot=T.
+#' Typically this is an identifier for images of a plant
+#' over time and defaults to c('barcode',"rotation").
 #' @param plot Logical, if TRUE then a list is returned with a ggplot and a dataframe.
 #' @param wide Logical, is the data in wide format? Defaults to TRUE.
-#' @param x Optional specification for x axis variable if plot is true. If left NULL (the default) then the first element of `group` is used.
-#' @param traitCol Column with phenotype names, defaults to "trait". This should generally not need to be changed from the default.
-#' @param valueCol Column with phenotype values, defaults to "value". This should generally not need to be changed from the default.
-#' @param idCol Column(s) that identify individuals over time. Defaults to plotGroup.
+#' @param x Optional specification for x axis variable if plot is true.
+#' If left NULL (the default) then the first element of `group` is used.
+#' @param traitCol Column with phenotype names, defaults to "trait".
+#' This should generally not need to be changed from the default.
+#' @param valueCol Column with phenotype values, defaults to "value".
+#' This should generally not need to be changed from the default.
+#' @param idCol Column(s) that identify individuals over time.
+#' Defaults to plotGroup.
 #' @keywords Bellwether, ggplot
 #' @import ggplot2
 #' @examples 
 #' 
 #' ## Not run:
 #' 
-#' sv<-read.pcv("https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv", mode="wide", singleValueOnly = T, reader="fread")
+#' sv<-read.pcv(
+#' "https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv",
+#'  mode="wide", singleValueOnly = T, reader="fread")
 #' sv$genotype = substr(sv$barcode, 3,5)
 #' sv$genotype = ifelse(sv$genotype == "002", "B73",
 #'                      ifelse(sv$genotype == "003", "W605S",
@@ -25,11 +35,16 @@
 #' sv$fertilizer = substr(sv$barcode, 8, 8)
 #' sv$fertilizer = ifelse(sv$fertilizer == "A", "100",
 #'                    ifelse(sv$fertilizer == "B", "50", "0"))
-#' sv<-bw.time(sv, plantingDelay = 0, phenotype="area.pixels", cutoff=10, timeCol="timestamp", group=c("barcode", "rotation"), plot=F)
-#' sv<-bw.outliers(df = sv, phenotype="area.pixels", naTo0 = F, group = c("DAS", "genotype", "fertilizer"), plotgroup=c('barcode',"rotation"), plot=T)
+#' sv<-bw.time(sv, plantingDelay = 0, phenotype="area.pixels", cutoff=10, timeCol="timestamp",
+#'  group=c("barcode", "rotation"), plot=F)
+#' sv<-bw.outliers(df = sv, phenotype="area.pixels", naTo0 = F, 
+#'  group = c("DAS", "genotype", "fertilizer"),
+#'  plotgroup=c('barcode',"rotation"), plot=T)
 #' 
 #' 
-#' svl<-read.pcv("https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv", mode="long", singleValueOnly = T, reader="fread")
+#' svl<-read.pcv(
+#' "https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv",
+#'  mode="long", singleValueOnly = T, reader="fread")
 #' svl$genotype = substr(svl$barcode, 3,5)
 #' svl$genotype = ifelse(svl$genotype == "002", "B73",
 #'                      ifelse(svl$genotype == "003", "W605S",
@@ -37,9 +52,11 @@
 #' svl$fertilizer = substr(svl$barcode, 8, 8)
 #' svl$fertilizer = ifelse(svl$fertilizer == "A", "100",
 #'                    ifelse(svl$fertilizer == "B", "50", "0"))
-#' svl<-bw.time(svl, plantingDelay = 0, phenotype="area", cutoff=10, timeCol="timestamp", group=c("barcode", "rotation"), plot=F,wide=F)
+#' svl<-bw.time(svl, plantingDelay = 0, phenotype="area", cutoff=10, timeCol="timestamp",
+#'  group=c("barcode", "rotation"), plot=F,wide=F)
 #' 
-#' svl<-bw.outliers(df = svl, phenotype="area", naTo0 = F, group = c("DAS", "genotype", "fertilizer"), plotgroup=c('barcode',"rotation"), plot=T, wide=F)
+#' svl<-bw.outliers(df = svl, phenotype="area", naTo0 = F, group = c("DAS", "genotype", "fertilizer"),
+#'  plotgroup=c('barcode',"rotation"), plot=T, wide=F)
 #' 
 #' ## End(Not run)
 #' 

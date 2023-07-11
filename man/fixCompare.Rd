@@ -7,13 +7,18 @@
 fixCompare(compare, dat, col, likeToLike = F)
 }
 \arguments{
-\item{compare}{Groups to compare. By default this is set to FALSE, which corresponds to no testing. Other values of compare are passed to fixCompare to make t.test comparisons using ggpubr. In short, NULL will run all pairwise T tests, a single value of the X axis variable will compare that level to all other levels of the X variable, alternatively this can be a list as used by ggpubr: list(c("level1", "level2"), c("level1", "level3"))}
+\item{compare}{Groups to compare. By default this is set to FALSE, which corresponds to no testing.
+Other values of compare are passed to fixCompare to make t.test comparisons using ggpubr.
+In short, NULL will run all pairwise T tests, a single value of the X axis variable will compare that
+level to all other levels of the X variable, alternatively this can be a list as used by
+ggpubr: list(c("level1", "level2"), c("level1", "level3"))}
 
 \item{dat}{Dataframe to use}
 
 \item{col}{Column as a character string to find values of `compare` in.}
 
-\item{likeToLike}{Logical, should only similar groups be compared (currently defined as part 1 and 2 of group, split on [.])}
+\item{likeToLike}{Logical, should only similar groups be compared
+(currently defined as part 1 and 2 of group, split on [.])}
 }
 \value{
 A list of comparisons as used in the "comparisons" argument of \code{ggpubr::stat_compare_means}.

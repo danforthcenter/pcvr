@@ -1,21 +1,43 @@
 #' Earth Mover's Distance between spectral histograms
 #' 
-#' @description pcv.emd can be used to calculate Earth Mover's Distance between pairwise histograms in a wide dataframe of multi value traits.
+#' @description pcv.emd can be used to calculate Earth Mover's Distance between pairwise histograms 
+#' in a wide dataframe of multi value traits. The is expected to be used with output from \code{mv_ag}.
 #' 
 #' @param df Data frame to use with multi value traits in wide format or long format
-#' @param cols Columns to use. Defaults to NULL in which case all columns are used. Single strings will be used to regex a pattern in column names (see examples). A vector of names, positions, or booleans will also work. For long data this is taken as a regex pattern (or full name) to use in filtering the longTrait column.
-#' @param reorder Should data be reordered to put similar rows together in the resulting plot? This takes a vector of column names of length 1 or more (see examples).
-#' @param include if a long dataframe is returned then these columns will be added to the dataframe, labelled for i and j (the row positions for compared histograms). If a matrix is returned then this information is stored in the row names. This defaults to \link{rescale}.
-#' @param mat Logical, should data be returned as an nrow x nrow matrix or as a long dataframe? By Default this is FALSE and a long dataframe is returned. Both options are comparable in terms of speed, although for large datasets the matrix version may be slightly faster.
-#' @param plot Logical, should a plot be returned? For a matrix this is made with image(), for a dataframe this uses ggplot.
+#' @param cols Columns to use. Defaults to NULL in which case all columns are used.
+#' Single strings will be used to regex a pattern in column names (see examples).
+#'  A vector of names, positions, or booleans will also work.
+#'  For long data this is taken as a regex pattern (or full name)
+#'  to use in filtering the longTrait column.
+#' @param reorder Should data be reordered to put similar rows together in the resulting plot?
+#'  This takes a vector of column names of length 1 or more (see examples).
+#' @param include if a long dataframe is returned then these columns will be added to the dataframe,
+#'  labelled for i and j (the row positions for compared histograms).
+#'  If a matrix is returned then this information is stored in the row names.
+#'  This defaults to \link{rescale}.
+#' @param mat Logical, should data be returned as an nrow x nrow matrix or as a long dataframe?
+#'  By Default this is FALSE and a long dataframe is returned.
+#'  Both options are comparable in terms of speed,
+#'  although for large datasets the matrix version may be slightly faster.
+#' @param plot Logical, should a plot be returned? For a matrix this is made with heatmap(),
+#'  for a dataframe this uses ggplot.
 #' @param parallel Number of cores to use. Defaults to 1 unless the "mc.cores" option is set.
-#' @param longTrait Defaults to NULL, in which case the data is assumed to be in long format. If this is a character string then it is taken as a column name of long data and the other arguments will assume data is long.
-#' @param id A vector of column names that uniquely identifies observations if the data is in long format. Defaults to "image".
-#' @param value A column name for the values to be drawn from in long data. Defaults to "value".
-#' @param raiseError Logical, should warnings/errors be raised for potentially large output? It is easy to ask for very many comparisons with this function so the goal of this argument is to catch a few of those and give estimates of how much time something may take. If the function is expected to take very long then a warning or an error is raised. If this is set to FALSE then no time estimates are made.
+#' @param longTrait Defaults to NULL, in which case the data is assumed to be in long format.
+#'  If this is a character string then it is taken as a column name of long data
+#'  and the other arguments will assume data is long.
+#' @param id A vector of column names that uniquely identifies observations if the
+#' data is in long format. Defaults to "image".
+#' @param value A column name for the values to be drawn from in long data.
+#' Defaults to "value".
+#' @param raiseError Logical, should warnings/errors be raised for potentially large output?
+#'  It is easy to ask for very many comparisons with this function so the goal of this argument 
+#'  is to catch a few of those and give estimates of how much time something may take.
+#'   If the function is expected to take very long then a warning or an error is raised.
+#'    If this is set to FALSE then no time estimates are made.
 #' @import ggplot2
 #' @import parallel
-#' @return A dataframe/matrix (if plot=F) or a list with a dataframe/matrix and a ggplot (if plot=T). The returned data contains pairwise EMD values.
+#' @return A dataframe/matrix (if plot=F) or a list with a dataframe/matrix and a ggplot (if plot=T).
+#'  The returned data contains pairwise EMD values.
 #' 
 #' @keywords emd, earth mover's distance, multi-value trait, histogram
 #' @examples 
@@ -35,11 +57,13 @@
 #' head(x)
 #' 
 #' file = "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest1.csv"
-#' df1<-read.pcv(file, "wide", T, multiValPattern = c("index_frequencies_index_ari", "index_frequencies_index_ci_rededge", "npq_hist_NPQ", "yii_hist_Fq'/Fm'", "yii_hist_Fv/Fm"))
+#' df1<-read.pcv(file, "wide", T, multiValPattern = c("index_frequencies_index_ari",
+#' "index_frequencies_index_ci_rededge", "npq_hist_NPQ", "yii_hist_Fq'/Fm'", "yii_hist_Fv/Fm"))
 #' colnames(df1)<-sub("index_frequencies_index_ndvi.", "ndvi_", colnames(df1))
 #' w<-pcv.emd(df1, cols="ndvi_", reorder=c("treatment", "genotype"), mat =F, plot=T, parallel = 1)
 #' df_long<-read.pcv(file, "long", F)
-#' l<-pcv.emd(df = df_long, cols="index_frequencies_index_ndvi", reorder=c("treatment", "genotype"), mat =F, plot=T, longTrait="trait", id="image", value="value")
+#' l<-pcv.emd(df = df_long, cols="index_frequencies_index_ndvi", reorder=c("treatment", "genotype"),
+#'  mat =F, plot=T, longTrait="trait", id="image", value="value")
 #' l$plot + theme(axis.text = element_blank())
 #' 
 #' #* Note on computational complexity
@@ -47,7 +71,8 @@
 #' emdTime<-function(x, n=1){
 #' x^2 / n * 0.0023
 #' }
-#' plot(x=c(18,36,54,72, 108, 135), y = c(0.74, 2.89, 6.86, 10.99, 26.25, 42.44), xlab="N Input Images", ylab="time (seconds)") # benchmarked test data
+#' plot(x=c(18,36,54,72, 108, 135), y = c(0.74, 2.89, 6.86, 10.99, 26.25, 42.44),
+#' xlab="N Input Images", ylab="time (seconds)") # benchmarked test data
 #' lines(x=1:150, y = emdTime(1:150)) # exponential function
 #' 
 #' plot(x=1:1000, y=emdTime(1:1000), type="l", xlab="N Input Images", ylab="time (seconds)")
@@ -78,9 +103,9 @@ pcv.emd<-function(df, cols=NULL, reorder=NULL, include=reorder, mat=F, plot = T,
     df$INNER_ID_EMD<-interaction(df[,id], drop=T)
     if(mat){ # make dist matrix
       out_data<-matrix(
-        unlist(lapply(unique(df$INNER_ID_EMD), function(i){innerLapply(unique(df$INNER_ID_EMD), function(j){
+        unlist(lapply(unique(df$INNER_ID_EMD), function(i){parallel::mclapply(unique(df$INNER_ID_EMD), function(j){
           if(i==j){0}else{emd1d(as.numeric(df[df$INNER_ID_EMD==as.character(i), value]), as.numeric(df[df$INNER_ID_EMD==as.character(j), value]))}
-        })})), nrow=length(unique(df$INNER_ID_EMD)), ncol = length(unique(df$INNER_ID_EMD)) )
+        }, mc.cores=parallel)})), nrow=length(unique(df$INNER_ID_EMD)), ncol = length(unique(df$INNER_ID_EMD)) )
     }else{ # make long data
       out_data<-do.call(rbind, lapply(unique(df$INNER_ID_EMD), function(i){
         do.call(rbind, parallel::mclapply(unique(df$INNER_ID_EMD), function(j){
@@ -106,9 +131,9 @@ pcv.emd<-function(df, cols=NULL, reorder=NULL, include=reorder, mat=F, plot = T,
     }
       if(mat){# make dist matrix
         out_data<-matrix(
-          unlist(lapply(1:nrow(df), function(i){innerLapply(1:nrow(df), function(j){
+          unlist(lapply(1:nrow(df), function(i){parallel::mclapply(1:nrow(df), function(j){
             if(i==j){0}else{emd1d(as.numeric(df[i, cols]), as.numeric(df[j, cols]))}
-          })})), nrow=nrow(df), ncol = nrow(df) )
+          }, mc.cores = parallel)})), nrow=nrow(df), ncol = nrow(df) )
         if(!is.null(include)){
           rownames(out_data)<-interaction(df[,include])
         }
@@ -126,7 +151,7 @@ pcv.emd<-function(df, cols=NULL, reorder=NULL, include=reorder, mat=F, plot = T,
   }
   if(plot){
     if(mat){
-      p<-image(out_data)
+      p<-stats::heatmap(out_data)
     }else{
       p<-ggplot2::ggplot(out_data, ggplot2::aes(x=i, y=j, fill=emd))+
         ggplot2::geom_tile(color=NA)+

@@ -18,13 +18,19 @@ net.plot(
 
 \item{fill}{Variable name(s) from the nodes data to be used to color points. By default "strength" is used.}
 
-\item{shape}{Optional discrete variable name(s) from the nodes data to be used to change the shape of points. If this variable is numeric it will be coerced to character.}
+\item{shape}{Optional discrete variable name(s) from the nodes data to be used to change the shape of points.
+If this variable is numeric it will be coerced to character.}
 
 \item{size}{Size of points, defaults to 3.}
 
-\item{edgeWeight}{Edge dataframe column to weight connections between nodes. Defaults to "emd" for compatability with \code{pcv.emd}.}
+\item{edgeWeight}{Edge dataframe column to weight connections between nodes. Defaults to "emd" 
+for compatability with \code{pcv.emd}.}
 
-\item{edgeFilter}{How should edges be filtered? This can be either a numeric (0.5) in which case it is taken as a filter where only edges with values greater than or equal to that number are kept or a character string ("0.5") in which case the strongest X percentage of edges are kept. This defaults to NULL which does no filtering, although that should not be considered the best standard behaviour. See details.}
+\item{edgeFilter}{How should edges be filtered? This can be either a numeric (0.5) 
+in which case it is taken as a filter where only edges with values greater than or equal to 
+that number are kept or a character string ("0.5") in which case the strongest 
+X percentage of edges are kept. This defaults to NULL which does no filtering, 
+although that should not be considered the best standard behaviour. See details.}
 }
 \value{
 Returns a ggplot of a network.
@@ -37,9 +43,11 @@ Easy igraph visualization with pcv.net output
 ## Not run:
 
 file = "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest1.csv"
-df1<-read.pcv(file, "wide", T, multiValPattern = c("index_frequencies_index_ari", "index_frequencies_index_ci_rededge", "npq_hist_NPQ", "yii_hist_Fq'/Fm'", "yii_hist_Fv/Fm"))
+df1<-read.pcv(file, "wide", T, multiValPattern = c("index_frequencies_index_ari",
+ "index_frequencies_index_ci_rededge", "npq_hist_NPQ", "yii_hist_Fq'/Fm'", "yii_hist_Fv/Fm"))
 colnames(df1)<-sub("index_frequencies_index_ndvi.", "ndvi_", colnames(df1))
-emd_df<-pcv.emd(df1, cols="ndvi_", reorder=c("treatment", "genotype", "X"), mat =F, plot=F, parallel = 1)
+emd_df<-pcv.emd(df1, cols="ndvi_", reorder=c("treatment", "genotype", "X"),
+   mat =F, plot=F, parallel = 1)
 network<-pcv.net(emd_df, meta = c("treatment", "genotype"))
 net=network; fill = "strength"; shape = "genotype"; size=5; edgeWeight="emd"
 net.plot(network, fill = "strength", shape = "genotype", size=5, edgeFilter=0.5)
