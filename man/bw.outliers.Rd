@@ -89,8 +89,9 @@ svl$fertilizer = ifelse(svl$fertilizer == "A", "100",
 svl<-bw.time(svl, plantingDelay = 0, phenotype="area", cutoff=10, timeCol="timestamp",
  group=c("barcode", "rotation"), plot=FALSE,wide=FALSE)
 
-svl<-bw.outliers(df = svl, phenotype="area", naTo0 =FALSE, group = c("DAS", "genotype", "fertilizer"),
- plotgroup=c('barcode',"rotation"), plot=TRUE, wide=FALSE)
+svl<-bw.outliers(df = svl, phenotype="area", naTo0 =FALSE,
+  group = c("DAS", "genotype", "fertilizer"),
+  plotgroup=c('barcode',"rotation"), plot=TRUE, wide=FALSE)
 
 ## End(Not run)
 

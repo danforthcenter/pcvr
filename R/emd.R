@@ -63,14 +63,17 @@
 #' df1<-read.pcv(file, "wide", T, multiValPattern = c("index_frequencies_index_ari",
 #' "index_frequencies_index_ci_rededge", "npq_hist_NPQ", "yii_hist_Fq'/Fm'", "yii_hist_Fv/Fm"))
 #' colnames(df1)<-sub("index_frequencies_index_ndvi.", "ndvi_", colnames(df1))
-#' w<-pcv.emd(df1, cols="ndvi_", reorder=c("treatment", "genotype"), mat =FALSE, plot=TRUE, parallel = 1)
+#' w<-pcv.emd(df1, cols="ndvi_", reorder=c("treatment", "genotype"), 
+#'   mat =FALSE, plot=TRUE, parallel = 1)
 #' df_long<-read.pcv(file, "long", F)
-#' l<-pcv.emd(df = df_long, cols="index_frequencies_index_ndvi", reorder=c("treatment", "genotype"),
-#'  mat =FALSE, plot=TRUE, longTrait="trait", id="image", value="value")
+#' l<-pcv.emd(df = df_long, cols="index_frequencies_index_ndvi",
+#'    reorder=c("treatment", "genotype"),
+#'    mat =FALSE, plot=TRUE, longTrait="trait", id="image", value="value")
 #' l$plot + theme(axis.text = element_blank())
 #' 
-#' #* Note on computational complexity
-#' #* This scales as O^2, see the plot below for some idea of the time for different input data sizes.
+#' # Note on computational complexity
+#' # This scales as O^2, see the plot below for some idea
+#' # of the time for different input data sizes.
 #' emdTime<-function(x, n=1){
 #' x^2 / n * 0.0023
 #' }
