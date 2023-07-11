@@ -60,12 +60,12 @@
 #' head(x)
 #' 
 #' file = "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest1.csv"
-#' df1<-read.pcv(file, "wide", T, multiValPattern = c("index_frequencies_index_ari",
+#' df1<-read.pcv(file, "wide", TRUE, multiValPattern = c("index_frequencies_index_ari",
 #' "index_frequencies_index_ci_rededge", "npq_hist_NPQ", "yii_hist_Fq'/Fm'", "yii_hist_Fv/Fm"))
 #' colnames(df1)<-sub("index_frequencies_index_ndvi.", "ndvi_", colnames(df1))
 #' w<-pcv.emd(df1, cols="ndvi_", reorder=c("treatment", "genotype"), 
 #'   mat =FALSE, plot=TRUE, parallel = 1)
-#' df_long<-read.pcv(file, "long", F)
+#' df_long<-read.pcv(file, "long", FALSE)
 #' l<-pcv.emd(df = df_long, cols="index_frequencies_index_ndvi",
 #'    reorder=c("treatment", "genotype"),
 #'    mat =FALSE, plot=TRUE, longTrait="trait", id="image", value="value")
@@ -89,7 +89,7 @@
 #' 
 pcv.emd<-function(df, cols=NULL, reorder=NULL, include=reorder, mat=FALSE, plot =TRUE, parallel = getOption("mc.cores",1), longTrait=NULL, id="image", value="value", raiseError=TRUE){
   # df = df1; cols="ndvi_"; reorder=c("treatment", "genotype"); mat =FALSE; plot=TRUE; parallel = 1; include=reorder; longTrait=FALSE; id="image";value="value"
-  # df_long<-read.pcv(file, "long", F)
+  # df_long<-read.pcv(file, "long", FALSE)
   # df = df_long; cols="index_frequencies_index_ndvi"; reorder=c("treatment", "genotype"); mat =FALSE; plot=TRUE; parallel = 1; include=reorder;
   # longTrait="trait"; id="image"; value="value"
   if(!is.null(longTrait)){traitCol = longTrait ; long=TRUE}else{long=FALSE}

@@ -56,7 +56,7 @@
 
 brmViolin<-function(model, params=NULL,hyp="num/denom>1.05", compareX=NULL, againstY=NULL,
                     group_sep="[.]", groups_into = c(), x=NULL, facet=NULL,
-                    cores=getOption("mc.cores",1), returnData = F){
+                    cores=getOption("mc.cores",1), returnData = FALSE){
   #* Example Args for testing
 
   # setwd("/home/jsumner/Desktop/stargate/SINC/SINC2/statisticalAnalysis")
