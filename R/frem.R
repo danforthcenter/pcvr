@@ -42,7 +42,7 @@
 #'  paste0("https://media.githubusercontent.com/media/joshqsumner/",
 #'  "pcvrTestData/main/smallPhenotyperRun.csv"),
 #'  mode="wide",
-#'  singleValueOnly = T, reader="fread")
+#'  singleValueOnly =TRUE, reader="fread")
 #' wide$genotype = substr(wide$barcode, 3,5)
 #' wide$genotype = ifelse(wide$genotype == "002", "B73",
 #'                        ifelse(wide$genotype == "003", "W605S",
@@ -65,7 +65,7 @@
 #' 
 #' @export
 
-frem<-function(df, des, phenotypes, timeCol=NULL, cor=TRUE, returnData=FALSE, combine=TRUE, markSingular = F,time=NULL, ...){
+frem<-function(df, des, phenotypes, timeCol=NULL, cor=TRUE, returnData=FALSE, combine=TRUE, markSingular =FALSE,time=NULL, ...){
   #* `check for values`
   if(any(missing(df), missing(des), missing(phenotypes))){
     stop("df, des, phenotypes, and timeCol arguments need to be specified.")

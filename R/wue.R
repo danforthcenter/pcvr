@@ -26,7 +26,7 @@
 #' library(data.table)
 #' sv<-read.pcv(
 #'    "https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv",
-#'    mode="wide", singleValueOnly = T, reader="fread")
+#'    mode="wide", singleValueOnly =TRUE, reader="fread")
 #' sv$genotype = substr(sv$barcode, 3,5)
 #' sv$genotype = ifelse(sv$genotype == "002", "B73",
 #'      ifelse(sv$genotype == "003", "W605S",
