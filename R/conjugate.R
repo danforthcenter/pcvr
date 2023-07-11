@@ -45,7 +45,7 @@
 #' @import ggplot2
 #' @import patchwork
 #' @import extraDistr
-#' @importFrom stats var mean median rnorm dnorm qbeta rbeta dbeta qbeta rlnorm dlnorm qlnorm qt rgamma qgamma dgamma
+#' @importFrom stats var median rnorm dnorm qbeta rbeta dbeta qbeta rlnorm dlnorm qlnorm qt rgamma qgamma dgamma
 #' 
 #' @details 
 #' 
