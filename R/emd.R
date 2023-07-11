@@ -84,7 +84,7 @@
 #' 
 #' @export
 #' 
-pcv.emd<-function(df, cols=NULL, reorder=NULL, include=reorder, mat=FALSE, plot = T, parallel = getOption("mc.cores",1), longTrait=NULL, id="image", value="value", raiseError=TRUE){
+pcv.emd<-function(df, cols=NULL, reorder=NULL, include=reorder, mat=FALSE, plot =TRUE, parallel = getOption("mc.cores",1), longTrait=NULL, id="image", value="value", raiseError=TRUE){
   # df = df1; cols="ndvi_"; reorder=c("treatment", "genotype"); mat =FALSE; plot=TRUE; parallel = 1; include=reorder; longTrait=FALSE; id="image";value="value"
   # df_long<-read.pcv(file, "long", F)
   # df = df_long; cols="index_frequencies_index_ndvi"; reorder=c("treatment", "genotype"); mat =FALSE; plot=TRUE; parallel = 1; include=reorder;

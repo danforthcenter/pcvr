@@ -28,7 +28,7 @@
 #' 
 #' sv<-read.pcv(
 #' "https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv",
-#'  mode="wide", singleValueOnly = T, reader="fread")
+#'  mode="wide", singleValueOnly =TRUE, reader="fread")
 #' sv$genotype = substr(sv$barcode, 3,5)
 #' sv$genotype = ifelse(sv$genotype == "002", "B73",
 #'                      ifelse(sv$genotype == "003", "W605S",
@@ -38,14 +38,14 @@
 #'                    ifelse(sv$fertilizer == "B", "50", "0"))
 #' sv<-bw.time(sv, plantingDelay = 0, phenotype="area.pixels", cutoff=10, timeCol="timestamp",
 #'  group=c("barcode", "rotation"), plot=FALSE)
-#' sv<-bw.outliers(df = sv, phenotype="area.pixels", naTo0 = F, 
+#' sv<-bw.outliers(df = sv, phenotype="area.pixels", naTo0 =FALSE, 
 #'  group = c("DAS", "genotype", "fertilizer"),
 #'  plotgroup=c('barcode',"rotation"), plot=TRUE)
 #' 
 #' 
 #' svl<-read.pcv(
 #' "https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv",
-#'  mode="long", singleValueOnly = T, reader="fread")
+#'  mode="long", singleValueOnly =TRUE, reader="fread")
 #' svl$genotype = substr(svl$barcode, 3,5)
 #' svl$genotype = ifelse(svl$genotype == "002", "B73",
 #'                      ifelse(svl$genotype == "003", "W605S",
@@ -56,7 +56,7 @@
 #' svl<-bw.time(svl, plantingDelay = 0, phenotype="area", cutoff=10, timeCol="timestamp",
 #'  group=c("barcode", "rotation"), plot=FALSE,wide=FALSE)
 #' 
-#' svl<-bw.outliers(df = svl, phenotype="area", naTo0 = F, group = c("DAS", "genotype", "fertilizer"),
+#' svl<-bw.outliers(df = svl, phenotype="area", naTo0 =FALSE, group = c("DAS", "genotype", "fertilizer"),
 #'  plotgroup=c('barcode',"rotation"), plot=TRUE, wide=FALSE)
 #' 
 #' ## End(Not run)
@@ -67,10 +67,10 @@
 
 bw.outliers<-function(df = NULL,
                       phenotype,
-                      naTo0 = F,
+                      naTo0 =FALSE,
                       group = c(),
                       plotgroup=c('barcode',"rotation"),
-                      plot=TRUE,  wide = T, x=NULL, traitCol="trait", valueCol="value", idCol=NULL){
+                      plot=TRUE,  wide =TRUE, x=NULL, traitCol="trait", valueCol="value", idCol=NULL){
   # df = svl; phenotype="area"; naTo0 = F; group = c("DAS", "genotype", "fertilizer"); plotgroup=c("barcode","rotation"); plot=FALSE
   # wide = F ; traitCol="trait"; valueCol="value"; idCol=c("barcode","rotation")
   if(is.null(idCol)){idCol = plotgroup}
