@@ -13,6 +13,7 @@
 #' optionally with a plot of simulated growth curves using draws from those priors.
 #' @import ggplot2
 #' @import patchwork
+#' @importFrom stats rlnorm dlnorm
 #' @examples 
 #' 
 #' ## Not run:
@@ -55,7 +56,7 @@ plotPrior<-function(priors, type = "density", n=200, t=25){
                  item = as.character(o))
     }))
     
-    ggplot2::ggplot(pri_df, ggplot2::aes(x = support, y = dens, fill=item, group=item))+
+    ggplot2::ggplot(pri_df, ggplot2::aes(x = .data$support, y = .data$dens, fill=.data$item, group=.data$item))+
       ggplot2::geom_polygon(alpha = 0.5)+
       ggplot2::theme_minimal()+ggplot2::labs(y="Density", title=nm, fill="Prior")
     
@@ -112,7 +113,7 @@ plotPrior<-function(priors, type = "density", n=200, t=25){
       }
     
     model_plot<-ggplot2::ggplot(simdf,
-                    ggplot2::aes(x= time, y=y,group=interaction(id,group), color=group))+
+                    ggplot2::aes(x= .data$time, y=.data$y,group=interaction(.data$id, .data$group), color=.data$group))+
       ggplot2::geom_line(linewidth=0.1)+
       ggplot2::theme_minimal()+
       ggplot2::guides(color = ggplot2::guide_legend(override.aes = list(linewidth=5)))+

@@ -35,7 +35,7 @@
 #' which was generally a wider format to start with than pcv4 output.
 #' @param ... Other arguments passed to \code{read.pcv}.
 #' @keywords read.csv, pcv, bellwether, pcv3
-#' 
+#' @importFrom utils read.csv
 #' @return Returns a dataframe potentially with several files merged into it.
 #' 
 #' @examples 

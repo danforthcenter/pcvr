@@ -40,7 +40,8 @@ Growth curve plot for bellwether data
 }
 \examples{
 ## Not run:
-bw<-read.pcv.3( file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv3Phenos.csv",
+bw<-read.pcv.3(
+ file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv3Phenos.csv",
  snapshotFile="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv3Snapshot.csv",
  designFile="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv3Design.csv",
  metaCol="meta",metaForm="vis_view_angle_zoom_horizontal_gain_exposure_v_new_n_rep",

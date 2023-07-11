@@ -21,6 +21,7 @@
 #' Defaults to plotGroup.
 #' @keywords Bellwether, ggplot
 #' @import ggplot2
+#' @importFrom stats complete.cases cooks.distance glm as.formula
 #' @examples 
 #' 
 #' ## Not run:

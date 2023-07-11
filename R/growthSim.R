@@ -11,6 +11,8 @@
 #' @keywords growth curve, logistic, gompertz, monomolecular, linear, exponential, power-law
 #' @return Returns a dataframe of example growth data following the input parameters.
 #' 
+#' @importFrom stats rnorm
+#' 
 #' @examples 
 #' 
 #' ## Not run:

@@ -15,6 +15,8 @@ Format as list("trait in area, perimeter", "other in value")}
 \item{reader}{reader argument passed from read.pcv, defaults to read.csv.}
 
 \item{awk}{Optional awk command to use instead.}
+
+\item{...}{further arguments passed from \code{read.pcv}.}
 }
 \value{
 Returns a dataframe after subsetting happens outside of R using the awk statement from \code{awkHelper}.

@@ -455,6 +455,7 @@ fit <- fitGrowth(ss, iter = 1000, cores = 2, chains = 2, backend = "cmdstanr",
 
 ```{r, eval=F}
 data(bw_vignette_fit, package = "pcvr")
+fit<-bw_vignette_fit
 ```
 
 
@@ -681,8 +682,9 @@ EMD<-pcv.emd(df = hue_wide[hue_wide$DAS %in% c(5,12,19),], cols="hue_frequencies
              mat =F, plot=T, parallel = 12, raiseError=T)
 ```
 
-```{r, eval=F, include=F}
+```{r, include=F}
 data(bw_vignette_small_emd, package = "pcvr")
+EMD<-bw_vignette_small_emd
 ```
 
 ```{r, eval=F, include=F}

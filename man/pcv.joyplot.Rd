@@ -12,6 +12,7 @@ pcv.joyplot(
   compare = NULL,
   priors = NULL,
   hyp = NULL,
+  support = NULL,
   bin = "label",
   freq = "value",
   trait = "trait",
@@ -50,6 +51,8 @@ advised to use the default priors.}
 
 \item{hyp}{Hypothesis to test for beta and gaussian methods,
 one of "unequal", "greater", "lesser". Defaults to "unequal" if left NULL.}
+
+\item{support}{Support range if statistical comparisons are done. Similar to those used in \code{conjugate}.}
 
 \item{bin}{Column containing histogram (multi value trait) bins. Defaults to "label".}
 

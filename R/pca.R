@@ -23,6 +23,7 @@
 #' 
 #' @import ggplot2
 #' @import FactoMineR
+#' @importFrom stats as.formula
 #' @examples
 #' 
 #' ## Not run:
@@ -104,7 +105,7 @@ pcadf<-function(df=NULL, cols=NULL, color=NULL, trace=NULL,facet=NULL, returnDat
       } else{ pca.df.sub<-pca.df[pca.df[[trace]]==maxTrace, ] }
     
     p<-ggplot2::ggplot(pca.df.sub,
-                           ggplot2::aes(x=pc1, y=pc2, color = .data[[color]]))+
+                           ggplot2::aes(x=.data$pc1, y=.data$pc2, color = .data[[color]]))+
       ggplot2::geom_point()+
       ggplot2::labs(x=paste0("PC 1 (",pc1Var,"%)"),y=paste0("PC 2 (",pc2Var,"%)"),
                     title = TITLE)+
@@ -123,7 +124,7 @@ pcadf<-function(df=NULL, cols=NULL, color=NULL, trace=NULL,facet=NULL, returnDat
   })
   
   } else{
-    plots<-ggplot2::ggplot(pca.df, ggplot2::aes(x=pc1, y=pc2, color = .data[[color]]))+
+    plots<-ggplot2::ggplot(pca.df, ggplot2::aes(x=.data$pc1, y=.data$pc2, color = .data[[color]]))+
       ggplot2::geom_point()+
       ggplot2::labs(x=paste0("PC 1 (",pc1Var,"%)"),y=paste0("PC 2 (",pc2Var,"%)"))+
       pcv_theme()

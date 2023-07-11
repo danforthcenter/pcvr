@@ -56,16 +56,16 @@ ss<-growthSS(model = "logistic", form=y~time|id/group,
 sigma="spline", df=simdf, priors = list("A"=130, "B"=12, "C"=3))
 lapply(ss,class)
 ss$initfun()
-fit_test <- brm( # main components of the model
-         ss$formula, prior = ss$prior, data = ss$df, family = ss$family,
-         # parameters controling chain number, chain length, parallelization and starting values
-         iter = 1000, cores = 2, chains = 2, init = ss$initfun, 
-         # options to increase performance
-         control = list(adapt_delta = 0.999, max_treedepth = 20), backend = "cmdstanr")
+# fit_test <- brm( # main components of the model
+#         ss$formula, prior = ss$prior, data = ss$df, family = ss$family,
+#         # parameters controling chain number, chain length, parallelization and starting values
+#         iter = 1000, cores = 2, chains = 2, init = ss$initfun, 
+#         # options to increase performance
+#        control = list(adapt_delta = 0.999, max_treedepth = 20), backend = "cmdstanr")
 # or 
 
-fit_test <- fitGrowth(ss, iter = 1000, cores = 2, chains = 2, backend = "cmdstanr",
-  control = list(adapt_delta = 0.999, max_treedepth = 20))
+# fit_test <- fitGrowth(ss, iter = 1000, cores = 2, chains = 2, backend = "cmdstanr",
+#  control = list(adapt_delta = 0.999, max_treedepth = 20))
 
 ## End(Not run)              
               

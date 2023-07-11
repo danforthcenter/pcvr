@@ -16,6 +16,7 @@
 #' X percentage of edges are kept. This defaults to NULL which does no filtering, 
 #' although that should not be considered the best standard behaviour. See details.
 #' @import ggplot2
+#' @importFrom stats quantile
 #' 
 #' @keywords emd, earth mover's distance, multi-value trait, network
 #' @examples 
@@ -66,8 +67,11 @@ net.plot<-function(net, fill="strength", shape=NULL, size = 3, edgeWeight="emd",
   
   
   p<-ggplot2::ggplot(nodes)+
-    ggplot2::geom_segment(data=edges,ggplot2::aes(x=from.x, xend = to.x, y=from.y, yend = to.y, linewidth=.data[[edgeWeight]]),colour="black",alpha=0.1) +
-    ggplot2::geom_point(data=nodes, size=size, ggplot2::aes(x=V1,y=V2, fill = .data[[fill]], color=.data[[fill]], shape=.data[[shape]]), alpha=1, show.legend=T)+
+    ggplot2::geom_segment(data=edges,ggplot2::aes(x=.data$from.x, xend = .data$to.x, y=.data$from.y, yend = .data$to.y,
+                                                  linewidth=.data[[edgeWeight]]),colour="black",alpha=0.1) +
+    ggplot2::geom_point(data=nodes, size=size, ggplot2::aes(x=.data$V1,y=.data$V2,
+                                                            fill = .data[[fill]], color=.data[[fill]],
+                                                            shape=.data[[shape]]), alpha=1, show.legend=T)+
     ggplot2::scale_linewidth(range=c(0.1,1.5))+
     #* note that scaling shape should work, but there is a documented ggplot2 bug where this messes up the legend, so 
     #* until that is fixed I will not specify fillable shapes.

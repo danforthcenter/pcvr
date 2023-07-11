@@ -18,7 +18,8 @@ Defaults to NULL in which case all groups in the model are plotted.}
 \item{df}{An optional dataframe to use in plotting observed growth curves on top of the model.}
 }
 \value{
-Returns a ggplot showing a brms model's credible intervals and optionally the individual growth lines.
+Returns a ggplot showing a brms model's credible
+intervals and optionally the individual growth lines.
 }
 \description{
 Function to visualize brms models similar to those made using growthSS outputs.
@@ -27,13 +28,8 @@ Function to visualize brms models similar to those made using growthSS outputs.
 
 ## Not run:
 
-simdf<-growthSim("logistic", n=20, t=25, params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))
-ss<-growthSS(model = "logistic", form=y~time|id/group, sigma="spline", df=simdf, priors = list("A"=130, "B"=12, "C"=3))
-lapply(ss,class)
-ss$initfun()
-fit_test <- fitGrowth(ss, iter = 1000, cores = 2, chains = 2, backend = "cmdstanr",
-  control = list(adapt_delta = 0.999, max_treedepth = 20))
-brmPlot(fit_test, y~time|id/group, df=NULL)
+data(bw_vignette_fit)
+brmPlot(bw_vignette_fit, y~time|id/group, df=NULL)
 print(load(url("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/brmsFits.rdata")))
 brmPlot(fit_25, form = y~time|id/group)
 brmPlot(fit_9, form = y~time|id/group)

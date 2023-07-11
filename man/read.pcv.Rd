@@ -109,7 +109,9 @@ dim(x3b)
 dim(x3c)
 
 # There may be situations where you want to use wide mv traits which can read in easily:
-x4<-read.pcv(fileBig, reader="fread", filters = list("trait in blue_frequencies"), mode="wide", singleValueOnly=F)
+x4<-read.pcv(fileBig, reader="fread",
+  filters = list("trait in blue_frequencies"),
+  mode="wide", singleValueOnly=F)
 
 ## End(Not run) 
 

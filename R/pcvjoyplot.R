@@ -25,6 +25,7 @@
 #'  advised to use the default priors.
 #' @param hyp Hypothesis to test for beta and gaussian methods,
 #'  one of "unequal", "greater", "lesser". Defaults to "unequal" if left NULL.
+#' @param support Support range if statistical comparisons are done. Similar to those used in \code{conjugate}.
 #' @param bin Column containing histogram (multi value trait) bins. Defaults to "label".
 #' @param freq Column containing histogram counts. Defaults to "value"
 #' @param trait Column containing phenotype names. Defaults to "trait".
@@ -35,6 +36,8 @@
 #' @keywords bayesian, ggplot, multi value trait, pcv.hists
 #' @import ggplot2
 #' @import ggridges
+#' @importFrom stats setNames var dbeta density aggregate as.formula ks.test
+#' @import extraDistr
 #' 
 #' @details 
 #' The method argument is used for statistical testing of groups.
@@ -105,7 +108,7 @@
 
 pcv.joyplot<-function(df = NULL, index = NULL, group = NULL,
                       method=NULL,
-                      compare= NULL, priors=NULL,hyp=NULL,
+                      compare= NULL, priors=NULL,hyp=NULL, support = NULL,
                       bin="label", freq="value", trait="trait", fillx=T){
   
   #* ***** `troubleshooting test values`
@@ -154,7 +157,7 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL,
     if(mode=="wide"){
       o<-wide.dens.default(d=sub, colPattern = index, group_internal=group)
     } else if(mode=="long"){
-      o<-long.dens.default(d=sub, group_internal=group)
+      o<-long.dens.default(d=sub, group_internal=group, bin_internal = bin, freq_internal= freq)
     }
     distParams = o[[1]]
     dens_df = o[[2]]
@@ -186,7 +189,7 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL,
     if(mode=="wide"){
       o<-wide.dens.default(d=sub, colPattern = index, group_internal=group)
     } else if(mode=="long"){
-      o<-long.dens.default(d=sub, group_internal=group)
+      o<-long.dens.default(d=sub, group_internal=group, bin_internal= bin, freq_internal= freq)
     }
     distParams = o[[1]]
     dens_df = o[[2]]
@@ -207,7 +210,7 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL,
     if(mode=="wide"){
       o<-wide.dens.beta(d=sub, colPattern = index, group_internal=group)
     } else if(mode=="long"){
-      o<-long.dens.beta(d=sub, group_internal=group)
+      o<-long.dens.beta(d=sub, group_internal=group, bin_internal= bin, freq_internal= freq)
     }
     distParams = o[[1]]
     dens_df = o[[2]]
@@ -223,6 +226,8 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL,
         beta1<-distParams[[g1]][2]
         alpha2<-distParams[[g2]][1]
         beta2<-distParams[[g2]][2]
+        
+        support<-seq(0.0001, 0.9999, 0.0001)
         
         my_dense1 <- dbeta(support, alpha1, beta1)
         my_pdf1 <- my_dense1/sum(my_dense1)
@@ -246,7 +251,7 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL,
     if(mode=="wide"){
       o<-wide.dens.gaussian(d=sub, colPattern = index, group_internal=group)
     } else if(mode=="long"){
-      o<-long.dens.gaussian(d=sub, group_internal=group)
+      o<-long.dens.gaussian(d=sub, group_internal=group, bin_internal= bin, freq_internal= freq)
     }
     distParams = o[[1]]
     dens_df = o[[2]]
@@ -302,15 +307,16 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL,
   }
   if(fillx){dens_df$group = interaction(dens_df[,group])}
   ggridgeLayer<-if(fillx){
-    list(suppressMessages(ggridges::geom_density_ridges_gradient(ggplot2::aes(x = xdens, y = y,
-                                                        height =ydens,fill=stat(x)),
+    list(suppressMessages(ggridges::geom_density_ridges_gradient(ggplot2::aes(x = .data$xdens, y = .data$y,
+                                                        height = .data$ydens, fill=stat(x)),
                                            show.legend=F, stat="identity", rel_min_height = 0.001)),
          ggplot2::scale_fill_viridis_c(option="plasma",
                                         limits = c(min(dens_df$xdens[dens_df$ydens>0.001],na.rm=T),
                                                    max(dens_df$xdens[dens_df$ydens>0.001], na.rm=T)))
          )
   } else{
-    list(suppressMessages(ggridges::geom_density_ridges2(ggplot2::aes(x = xdens, y = y, height =ydens, fill = y, color=y),
+    list(suppressMessages(ggridges::geom_density_ridges2(ggplot2::aes(x = .data$xdens, y = .data$y,
+                                                                      height =.data$ydens, fill = .data$y, color=.data$y),
                                    show.legend=F, stat="identity")),
       ggplot2::scale_color_viridis_d(option="viridis"),
       ggplot2::scale_fill_viridis_d(option="viridis")
@@ -329,11 +335,11 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL,
 
 
 
-long.dens.default <- function(d = NULL, group_internal=NULL){
+long.dens.default <- function(d = NULL, group_internal=NULL, bin_internal= NULL, freq_internal= NULL){
   datsp=split(d, d$grouping, drop=T)
   bw<-min(diff(sort(as.numeric(unique(d$bin )))))*0.75
   distParams<-lapply(datsp, function(D){
-    X1 <- as.numeric(D[rep(rownames(D), round(D$freq)), bin])
+    X1 <- as.numeric(D[rep(rownames(D), round(D[[freq_internal]])), bin_internal])
     dens<-density(X1, from = min(d$bin,na.rm=T), to = max(d$bin,na.rm=T), n = 2^10, bw=bw)
     return(dens)
   })
@@ -376,14 +382,14 @@ wide.dens.default<-function(d=NULL, colPattern = NULL, group_internal=NULL){
   return(list(distParams, dens_df))
 }
 
-long.dens.beta<-function(d = NULL, group_internal=NULL){
+long.dens.beta<-function(d = NULL, group_internal=NULL, bin_internal= NULL, freq_internal=NULL){
   datsp=split(d, d$grouping, drop=T) # split data into panel groups
   
   if(is.null(priors)){ priors = list(a = rep(0.5, times=length(datsp)), b = rep(0.5, times=length(datsp))) } # assume weak prior on everything
   
   distParams<-lapply(1:length(datsp), function(i){ # get beta parameters from histogram data per panel
     D=datsp[[i]]
-    X1 <- as.numeric(D[rep(rownames(D), D[[freq]]), bin])
+    X1 <- as.numeric(D[rep(rownames(D), D[[freq_internal]]), bin_internal])
     n1<- length(X1)
     xbar1 = (1/n1) * sum(X1)
     variance1 = (1/(n1))*sum( (X1 - xbar1)^2 )
@@ -428,6 +434,7 @@ wide.dens.beta<-function(d = NULL, colPattern = NULL, group_internal=NULL){
   
   dens_df<-do.call(rbind, lapply(names(distParams), function(nm){
     pars<-distParams[[nm]]
+    support <- seq(0.0001, 0.9999, 0.0001)
     dens<-dbeta(support, pars[1], pars[1])
     out<-data.frame(xdens= support, ydens=dens)
     out[,(ncol(out)+1):(ncol(out)+length(group_internal))]<-lapply(strsplit(nm, "[.]")[[1]], identity)
@@ -439,12 +446,12 @@ wide.dens.beta<-function(d = NULL, colPattern = NULL, group_internal=NULL){
 }
 
 
-long.dens.gaussian<-function(d=NULL, group_internal=NULL){
+long.dens.gaussian<-function(d=NULL, group_internal=NULL, bin_internal= NULL, freq_internal= NULL){
   datsp=split(d, d$grouping, drop=T)
   if(is.null(priors)){ priors <- list( m=rep(0,length(datsp)), n=rep(1,length(datsp)), s2=rep(20,length(datsp)) ) } # mean, number, and variance
   distParams<-lapply(1:length(datsp), function(i){ 
     D=datsp[[i]]
-    X1 <- as.numeric(D[rep(rownames(D), D[[freq]]), bin])
+    X1 <- as.numeric(D[rep(rownames(D), D[[freq_internal]]), bin_internal])
     obs_n = length(X1)
     obs_m = mean(X1)
     obs_s2 = var(X1)

@@ -25,6 +25,8 @@
 #' @param trait Column containing phenotype names. Defaults to "trait".
 #' @keywords bayesian, ggplot, multi value trait, pcv.joyplot
 #' @import ggplot2
+#' @import extraDistr
+#' @importFrom stats aggregate density dbeta var ks.test as.formula
 #' 
 #' @details 
 #' This function is similar to pcv.joyplot but uses different plotting aesthetics.
@@ -299,14 +301,14 @@ pcv.hists<-function(df = NULL, index = NULL, group = NULL,
     
     p<-ggplot2::ggplot(data.frame(x=seq(0.1,1,0.1)))+
       facet_layer+
-      geom_area(data=sub, aes(x=bin, y = freq), fill="gray40", color="gray40", show.legend=F)+
+      geom_area(data=sub, aes(x=.data$bin, y = .data$freq), fill="gray40", color="gray40", show.legend=F)+
       lapply(1:length(distParams), function(i){ #* plot distribution of mean on top of total density
         pars<-distParams[[i]]
         lapDat<-data.frame(x=seq(0,1,0.1), y = 0, mu = pars$m)
         lapDat[[group[1] ]]=strsplit(names(distParams)[i],"[.]")[[1]][1]
         if(length(group)==2){lapDat[[group[2] ]] = strsplit(names(distParams)[i],"[.]")[[1]][2]}
         lapDat$fill <-lapDat[[group[1] ]]
-        ggplot2::geom_vline(data = lapDat, ggplot2::aes(xintercept = mean(mu), color = .data$fill), linewidth=1)
+        ggplot2::geom_vline(data = lapDat, ggplot2::aes(xintercept = mean(.data$mu), color = .data$fill), linewidth=1)
       })+
       ggplot2::scale_x_continuous(n.breaks=5, labels = ~round(.,1))+
       ggplot2::coord_cartesian(ylim=c(0,15))+

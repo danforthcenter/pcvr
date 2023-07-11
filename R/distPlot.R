@@ -15,6 +15,8 @@
 #' @keywords Bayesian, brms
 #' @import ggplot2
 #' @import patchwork
+#' @importFrom methods is
+#' @importFrom stats setNames
 #' @import viridis
 #' @return A ggplot or a list of ggplots (depending on patch).
 #' @export
@@ -124,9 +126,9 @@ distributionPlot<-function(fits, form, priors=NULL, params=NULL, d, maxTime=NULL
   #* OR I can ask for an argument describing the prior/giving an example vector for the prior.
   
   if(all(unlist(lapply(fits, function(fit) nrow(brms::prior_draws(fit))<1 )))){ # if no models were fit with sample_prior = T
-    if(!is.null(prior)){ # if prior is supplied as argument
+    if(!is.null(priors)){ # if prior is supplied as argument
       USEPRIOR=T
-      if( !is(priors[[1]], "list")){
+      if( ! methods::is(priors[[1]], "list")){
         priors<-lapply(1:length(unique(d[[group]])), function(i) priors)
         names(priors)<-unique(d[[group]])
       }

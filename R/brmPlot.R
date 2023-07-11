@@ -9,17 +9,13 @@
 #' @keywords growth-curve, logistic, gompertz, monomolecular, linear, exponential, power-law
 #' @import ggplot2
 #' @import viridis
+#' @importFrom stats as.formula
 #' @examples 
 #' 
 #' ## Not run:
 #' 
-#' simdf<-growthSim("logistic", n=20, t=25, params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))
-#' ss<-growthSS(model = "logistic", form=y~time|id/group, sigma="spline", df=simdf, priors = list("A"=130, "B"=12, "C"=3))
-#' lapply(ss,class)
-#' ss$initfun()
-#' fit_test <- fitGrowth(ss, iter = 1000, cores = 2, chains = 2, backend = "cmdstanr",
-#'   control = list(adapt_delta = 0.999, max_treedepth = 20))
-#' brmPlot(fit_test, y~time|id/group, df=NULL)
+#' data(bw_vignette_fit)
+#' brmPlot(bw_vignette_fit, y~time|id/group, df=NULL)
 #' print(load(url("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/brmsFits.rdata")))
 #' brmPlot(fit_25, form = y~time|id/group)
 #' brmPlot(fit_9, form = y~time|id/group)
@@ -27,7 +23,8 @@
 #' 
 #' ## End(Not run)
 #' 
-#' @return Returns a ggplot showing a brms model's credible intervals and optionally the individual growth lines.
+#' @return Returns a ggplot showing a brms model's credible
+#' intervals and optionally the individual growth lines.
 #' 
 #' @export
 
@@ -56,9 +53,11 @@ brmPlot<-function(fit, form, groups = NULL, df=NULL){
       df<-df[df[[group]] %in% groups, ]
     }
   }
-  p<-ggplot2::ggplot(predictions, ggplot2::aes(x=.data[[x]], y=Estimate))+
+  p<-ggplot2::ggplot(predictions, ggplot2::aes(x=.data[[x]], y=.data$Estimate))+
     ggplot2::facet_wrap(as.formula(paste0("~",group)))+
-    lapply(seq(1,49,2),function(i) ggplot2::geom_ribbon(ggplot2::aes(ymin=.data[[paste0("Q",i)]],ymax=.data[[paste0("Q",100-i)]]),fill=avg_pal[i],alpha=0.5))+
+    lapply(seq(1,49,2),function(i) ggplot2::geom_ribbon(ggplot2::aes(ymin=.data[[paste0("Q",i)]],
+                                                                     ymax=.data[[paste0("Q",100-i)]]),
+                                                        fill=avg_pal[i],alpha=0.5))+
     ggplot2::labs(x=x, y=y)+
     pcv_theme()
   
