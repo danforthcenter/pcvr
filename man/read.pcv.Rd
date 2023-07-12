@@ -78,6 +78,7 @@ Read in plantCV csv output in wide or long format
 
 ## Not run: 
 
+if(FALSE){
 file = "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest1.csv"
 df1<-read.pcv(file, "wide", TRUE, multiValPattern = "hist|frequencies")
 df1b<-read.pcv(file, "wide", TRUE, multiValPattern = c("index_frequencies_index_ari",
@@ -112,7 +113,7 @@ dim(x3c)
 x4<-read.pcv(fileBig, reader="fread",
   filters = list("trait in blue_frequencies"),
   mode="wide", singleValueOnly=FALSE)
-
+}
 ## End(Not run) 
 
 }
