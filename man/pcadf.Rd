@@ -64,7 +64,9 @@ hue_wide$fertilizer = ifelse(hue_wide$fertilizer == "A", "100",
                              ifelse(hue_wide$fertilizer == "B", "50", "0"))
 hue_wide<-bw.time(hue_wide,timeCol="timestamp", group="barcode")
 
-pcadf(hue_wide, cols = "hue_frequencies", color = "time_geno_fert", returnData=FALSE)
+hue_wide$geno_fertilizer<-interaction(hue_wide$fertilizer, hue_wide$genotype)
+
+pcadf(hue_wide, cols = "hue_frequencies", color = "geno_fertilizer", returnData=FALSE)
 
 ## End(Not run)
 
