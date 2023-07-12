@@ -78,13 +78,13 @@
 #'   "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest2.csv", "long", FALSE)
 #' wide_beta <- read.pcv(
 #'   "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest2.csv", "wide", FALSE)
-#' pcv.joyplot(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"))
-#' pcv.joyplot(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"),
-#'   method="ks")
-#' pcv.joyplot(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"),
-#'   method="beta")
-#' pcv.joyplot(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"),
-#'   method="gaussian")
+#' x <- pcv.joyplot(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"))
+#' # pcv.joyplot(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"),
+#' #   method="ks")
+#' # pcv.joyplot(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"),
+#' #   method="beta")
+#' # pcv.joyplot(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"),
+#' #   method="gaussian")
 #' 
 #' wide<-read.pcv(
 #' "https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv",
@@ -208,9 +208,9 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL,
     #* ***** `Beta distribution joyplot`
     
     if(mode=="wide"){
-      o<-wide.dens.beta(d=sub, colPattern = index, group_internal=group)
+      o<-wide.dens.beta(d=sub, colPattern = index, group_internal=group, priors)
     } else if(mode=="long"){
-      o<-long.dens.beta(d=sub, group_internal=group, bin_internal= bin, freq_internal= freq)
+      o<-long.dens.beta(d=sub, group_internal=group, bin_internal= bin, freq_internal= freq, priors)
     }
     distParams = o[[1]]
     dens_df = o[[2]]
@@ -249,9 +249,9 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL,
   } else if(match.arg(method, choices = c("beta", "gaussian", "ks"))=="gaussian"){
     #* ***** `Gaussian distribution joyplot`
     if(mode=="wide"){
-      o<-wide.dens.gaussian(d=sub, colPattern = index, group_internal=group)
+      o<-wide.dens.gaussian(d=sub, colPattern = index, group_internal=group, priors)
     } else if(mode=="long"){
-      o<-long.dens.gaussian(d=sub, group_internal=group, bin_internal= bin, freq_internal= freq)
+      o<-long.dens.gaussian(d=sub, group_internal=group, bin_internal= bin, freq_internal= freq, priors)
     }
     distParams = o[[1]]
     dens_df = o[[2]]
@@ -383,7 +383,7 @@ wide.dens.default<-function(d=NULL, colPattern = NULL, group_internal=NULL){
   return(list(distParams, dens_df))
 }
 
-long.dens.beta<-function(d = NULL, group_internal=NULL, bin_internal= NULL, freq_internal=NULL){
+long.dens.beta<-function(d = NULL, group_internal=NULL, bin_internal= NULL, freq_internal=NULL, priors = NULL){
   datsp=split(d, d$grouping, drop=TRUE) # split data into panel groups
   
   if(is.null(priors)){ priors = list(a = rep(0.5, times=length(datsp)), b = rep(0.5, times=length(datsp))) } # assume weak prior on everything
@@ -413,7 +413,7 @@ long.dens.beta<-function(d = NULL, group_internal=NULL, bin_internal= NULL, freq
   return(list(distParams, dens_df))
 }
 
-wide.dens.beta<-function(d = NULL, colPattern = NULL, group_internal=NULL){
+wide.dens.beta<-function(d = NULL, colPattern = NULL, group_internal=NULL, priors = NULL){
   histCols <- colnames(d)[grepl(colPattern, colnames(d))]
   histCols_bin <- as.numeric(sub(paste0(colPattern, "[.]?"), "", colnames(d)[grepl(colPattern, colnames(d))]))
   bins_order<-sort(histCols_bin, index.return=TRUE)$ix
@@ -447,7 +447,7 @@ wide.dens.beta<-function(d = NULL, colPattern = NULL, group_internal=NULL){
 }
 
 
-long.dens.gaussian<-function(d=NULL, group_internal=NULL, bin_internal= NULL, freq_internal= NULL){
+long.dens.gaussian<-function(d=NULL, group_internal=NULL, bin_internal= NULL, freq_internal= NULL, priors = NULL){
   datsp=split(d, d$grouping, drop=TRUE)
   if(is.null(priors)){ priors <- list( m=rep(0,length(datsp)), n=rep(1,length(datsp)), s2=rep(20,length(datsp)) ) } # mean, number, and variance
   distParams<-lapply(1:length(datsp), function(i){ 
@@ -479,7 +479,7 @@ long.dens.gaussian<-function(d=NULL, group_internal=NULL, bin_internal= NULL, fr
 }
 
 
-wide.dens.gaussian<-function(d=NULL, colPattern=NULL, group_internal=NULL ){
+wide.dens.gaussian<-function(d=NULL, colPattern=NULL, group_internal=NULL, priors = NULL ){
   histCols <- colnames(d)[grepl(colPattern, colnames(d))]
   histCols_bin <- as.numeric(sub(paste0(colPattern, "[.]?"), "", colnames(d)[grepl(colPattern, colnames(d))]))
   bins_order<-sort(histCols_bin, index.return=TRUE)$ix
