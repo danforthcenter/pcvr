@@ -21,10 +21,12 @@
 #' 
 #' ## Not run:
 #' 
-#' file="/home/jsumner/Desktop/stargate/SINC/SINC1/plantCV_sinc1/sinc1_vis_sv_out_full.json"
+#' if(F){
+#' file="path/to/your/json/file.json"
 #' x<-read.pcv.jsn(file, output="sv")
 #' y<-read.pcv.jsn(file, output = c("area", "perimeter"))
 #' z<-read.pcv.jsn(file, output = "mv")
+#' }
 #' 
 #' ## End(Not run)
 
