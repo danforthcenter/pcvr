@@ -97,9 +97,10 @@
 #' wide$fertilizer = ifelse(wide$fertilizer == "A", "100",
 #'                          ifelse(wide$fertilizer == "B", "50", "0"))
 #' p<-pcv.joyplot(wide, index = "hue_frequencies", group=c("genotype", "fertilizer"))
+#' 
 #' # For some color traits it makes sense to show the actual
 #' # represented color, which can be done easily by adding new fill scales.
-#' p+scale_fill_gradientn(colors = scales::hue_pal(l=65)(360))
+#' p+ggplot2::scale_fill_gradientn(colors = scales::hue_pal(l=65)(360))
 #' 
 #' ## End(Not run)
 #' 
