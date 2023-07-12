@@ -107,13 +107,13 @@ df <- read.pcv(
   "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest2.csv", "long", FALSE)
 wide_beta <- read.pcv(
   "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest2.csv", "wide", FALSE)
-pcv.joyplot(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"))
-pcv.joyplot(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"),
-  method="ks")
-pcv.joyplot(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"),
-  method="beta")
-pcv.joyplot(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"),
-  method="gaussian")
+x <- pcv.joyplot(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"))
+# pcv.joyplot(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"),
+#   method="ks")
+# pcv.joyplot(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"),
+#   method="beta")
+# pcv.joyplot(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"),
+#   method="gaussian")
 
 wide<-read.pcv(
 "https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv",
