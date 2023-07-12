@@ -59,9 +59,26 @@ Boxplot for plantCV data in wide format (each phenotype as a column)
 
 ## Not run: 
 
-pcvBox(df1,x='treatment' , y='area.pixels')
-pcvBox(df2, x="treatment", y="area")
-pcvBox(df1,x='treatment' , y='area.pixels', fill='treatment')
+sv<-read.pcv(
+"https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv",
+ mode="wide", singleValueOnly =TRUE, reader="fread")
+sv$genotype = substr(sv$barcode, 3,5)
+sv$genotype = ifelse(sv$genotype == "002", "B73",
+              ifelse(sv$genotype == "003", "W605S",
+              ifelse(sv$genotype == "004", "MM", "Mo17")))
+sv$fertilizer = substr(sv$barcode, 8, 8)
+sv$fertilizer = ifelse(sv$fertilizer == "A", "100",
+              ifelse(sv$fertilizer == "B", "50", "0"))
+              
+sv<-bw.time(sv, plantingDelay = 0, phenotype="area.pixels", cutoff=10,
+ timeCol="timestamp", group=c("barcode", "rotation"), plot=TRUE)
+ 
+pixels_per_cmsq <- 42.5^2   # pixel per cm^2
+sv$area_cm2<-sv$area.pixels / pixels_per_cmsq
+sv$height_cm <- sv$height.pixels/42.5
+
+pcvBox(sv[sv$genotype=='MM' & sv_ag$DAS==15, ],
+  x="fertilizer", y="area_cm2", compare="0", showPoints = T)
 
 ## End(Not run) 
 }
