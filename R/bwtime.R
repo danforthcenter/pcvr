@@ -97,10 +97,6 @@ bw.time<-function(df = NULL, mode=NULL, plantingDelay = NULL,
   if(plot & !is.null(phenotype) & wide){
     plotDat<-df
     plotDat$plotGroup<-interaction(plotDat[,c(group)])
-    p<-ggplot2::ggplot(plotDat, ggplot2::aes(x=.data[[timeCol]], y=.data[[phenotype]], group=.data$plotGroup))+
-      ggplot2::geom_line()+
-      pcv_theme()
-    print(p)
     for(m in mode){
       p<-ggplot2::ggplot(plotDat, ggplot2::aes(x=.data[[m]],y=.data[[phenotype]], group=.data$plotGroup))+
         ggplot2::geom_line()+
@@ -112,10 +108,6 @@ bw.time<-function(df = NULL, mode=NULL, plantingDelay = NULL,
     #* plot long data
     plotDat<-df[df[[traitCol]]==phenotype, ]
     plotDat$plotGroup<-interaction(plotDat[,c(group)])
-    p<-ggplot2::ggplot(plotDat, ggplot2::aes(x=.data[[timeCol]], y=.data[[valueCol]], group=.data$plotGroup))+
-      ggplot2::geom_line()+
-      pcv_theme()
-    print(p)
     for(m in mode){
       p<-ggplot2::ggplot(plotDat, ggplot2::aes(x=.data[[m]],y=.data[[valueCol]], group=.data$plotGroup))+
         ggplot2::geom_line()+
