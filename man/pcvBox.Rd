@@ -78,7 +78,7 @@ sv$area_cm2<-sv$area.pixels / pixels_per_cmsq
 sv$height_cm <- sv$height.pixels/42.5
 
 pcvBox(sv[sv$genotype=='MM' & sv$DAS==15, ],
-  x="fertilizer", y="area_cm2", compare="0", showPoints = T)
+  x="fertilizer", y="area_cm2", compare="0", showPoints = TRUE)
 
 ## End(Not run) 
 }

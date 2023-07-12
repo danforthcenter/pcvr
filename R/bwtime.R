@@ -115,6 +115,8 @@ bw.time<-function(df = NULL, mode=NULL, plantingDelay = NULL,
         pcv_theme()
       print(p)
     }
+  } else if(plot & is.null(phenotype)){
+    message("Plotting requires a phenotype for the y axis.")
   }
   return(df)
 }
