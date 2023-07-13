@@ -40,7 +40,7 @@ Read in plantCV json keeping either single value, multi value, or all traits.
 
 ## Not run:
 
-if(F){
+if(FALSE){
 file="path/to/your/json/file.json"
 x<-read.pcv.jsn(file, output="sv")
 y<-read.pcv.jsn(file, output = c("area", "perimeter"))

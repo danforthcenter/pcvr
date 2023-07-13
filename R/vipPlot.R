@@ -5,8 +5,8 @@
 #' @param plsrObject Output from pcv.plsr
 #' @param i An index from the plsrObject to use if the plsrObject contains models for several outcomes.
 #'    Can be a name or a position. Defaults to 1.
-#' @param mean Logical, should the mean be plotted (T)
-#'      or should the components be shown individually (F, the default).
+#' @param mean Logical, should the mean be plotted (TRUE)
+#'      or should the components be shown individually (FALSE, the default).
 #' @param removePattern A pattern to remove to make the wavelength column into a numeric.
 #' 
 #' @import ggplot2

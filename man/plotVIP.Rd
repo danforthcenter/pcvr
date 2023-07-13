@@ -12,8 +12,8 @@ plotVIP(plsrObject, i = 1, mean = FALSE, removePattern = ".*_")
 \item{i}{An index from the plsrObject to use if the plsrObject contains models for several outcomes.
 Can be a name or a position. Defaults to 1.}
 
-\item{mean}{Logical, should the mean be plotted (T)
-or should the components be shown individually (F, the default).}
+\item{mean}{Logical, should the mean be plotted (TRUE)
+or should the components be shown individually (FALSE, the default).}
 
 \item{removePattern}{A pattern to remove to make the wavelength column into a numeric.}
 }
