@@ -41,12 +41,16 @@
 #' @examples 
 #' 
 #' ## Not run:
+#' 
+#' if(FALSE){
+#' 
 #' data(bw_vignette_fit)
 #' brmViolin(model = bw_vignette_fit, params = NULL,
 #'         hyp="num/denom>1.05", compareX = c("0.B73", "50.B73", "100.B73"), againstY = "0.B73",
 #'         group_sep = "[.]", groups_into = c("soil", "genotype"), x="soil", facet="genotype",
 #'         returnData=FALSE)
-#'      
+#'         
+#' }      
 #' ## End(Not run)
 #' 
 #' @return Returns a ggplot showing a brms model's posterior distributions
