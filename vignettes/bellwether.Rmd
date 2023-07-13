@@ -417,10 +417,12 @@ Now we're ready to define the necessary variables in our data and use the `growt
 sv_ag$group<-interaction(sv_ag$fertilizer, sv_ag$genotype)
 ```
 
-The `brms` package is not automatically imported by `pcvr`, so before fitting models we would need to load that package. For details on installing [`brms`](https://github.com/paul-buerkner/brms) and either [`rstan`](https://mc-stan.org/rstan/) or [`cmdstanr`](https://mc-stan.org/cmdstanr/) (with `cmdstanr` being recommended), see those packages linked documentation.
+The `brms` package is not automatically imported by `pcvr`, so before fitting models we would need to load that package. For details on installing [`brms`](https://github.com/paul-buerkner/brms) and either [`rstan`](https://mc-stan.org/rstan/) or [`cmdstanr`](https://mc-stan.org/cmdstanr/) (with `cmdstanr` being recommended), see those packages linked documentation. Note that if you install `pcvr` from github with `dependencies=T` then `cmdstanr` and `brms` will be installed.
 
 ```{r, eval=FALSE}
 library(brms)
+library(cmdstanr)
+cmdstanr::install_cmdstan()
 ```
 
 Here our priors are informed by a general understanding of what we expect to see for a plant on the bellwether system. In general the example priors 
