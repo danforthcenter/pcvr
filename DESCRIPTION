@@ -11,6 +11,7 @@ License: GPL-2
 Encoding: UTF-8
 LazyData: true
 LazyDataCompression: xz
+Additional_repositories: https://mc-stan.org/r-packages/
 RoxygenNote: 7.2.3
 Imports: 
     FactoMineR,
@@ -36,5 +37,6 @@ Suggests:
     brms,
     vroom,
     curl,
+    cmdstanr,
     caret
 VignetteBuilder: knitr
