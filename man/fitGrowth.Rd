@@ -51,8 +51,11 @@ ss<-growthSS(model = "logistic", form=y~time|id/group, sigma="spline",
   df=simdf, priors = list("A"=130, "B"=12, "C"=3))
 lapply(ss,class)
 ss$initfun()
-# fit_test <- fitGrowth(ss, iter = 1000, cores = 2, chains = 2, backend = "cmdstanr",
-#               control = list(adapt_delta = 0.999, max_treedepth = 20)) # optional controls
+
+if(FALSE){
+fit_test <- fitGrowth(ss, iter = 1000, cores = 2, chains = 2, backend = "cmdstanr",
+              control = list(adapt_delta = 0.999, max_treedepth = 20)) # optional controls
+}
 ## End(Not run)
 }
 \keyword{Bayesian,}
