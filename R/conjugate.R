@@ -467,7 +467,7 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
     hde1 <- exp(mu_ls_n)
     hdi1 <- qlnorm(c((1-cred.int.level)/2, (1-((1-cred.int.level)/2))), mu_ls_n, sigma_ls_n)
     #* `Store summary`
-    out$summary<-data.frame(HDE=hde1, HDI_low = hdi1[1], HDI_high = hdi1[2])
+    out$summary<-data.frame(HDE_1=hde1, HDI_1_low = hdi1[1], HDI_1_high = hdi1[2])
     out$posterior$mu_log <- mu_ls_n
     out$posterior$n <- n1_n
     out$posterior$sigma_log <- sigma_ls_n
@@ -648,7 +648,7 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
     hde1 <- exp(mu_ls_n)
     hdi1 <- qlnorm(c((1-cred.int.level)/2, (1-((1-cred.int.level)/2))), mu_ls_n, sigma_ls_n)
     #* `Store summary`
-    out$summary<-data.frame(HDE=hde1, HDI_low = hdi1[1], HDI_high = hdi1[2])
+    out$summary<-data.frame(HDE_1=hde1, HDI_1_low = hdi1[1], HDI_1_high = hdi1[2])
     out$posterior$mu_log <- mu_ls_n
     out$posterior$n <- n1_n
     out$posterior$sigma_log <- sigma_ls_n
@@ -792,7 +792,7 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
     hde1_mean <- m1_n
     hdi1_mean <- m1_n + qt(c((1-cred.int.level)/2, (1-((1-cred.int.level)/2))),v1_n)*sigma_1
     
-    out$summary<-data.frame(HDE=hde1_mean, HDI_low = hdi1_mean[1], HDI_high = hdi1_mean[2])
+    out$summary<-data.frame(HDE_1=hde1_mean, HDI_1_low = hdi1_mean[1], HDI_1_high = hdi1_mean[2])
     out$posterior$mu <- m1_n
     out$posterior$n <- n1_n
     out$posterior$s2 <- sigma_1
@@ -814,7 +814,7 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
       s2_2 = var(s2) # s^2
       
       v2 = priors$n[2] - 1 # prior DF
-      n2_n = priors$n[2] + n1 # total N including prior
+      n2_n = priors$n[2] + n2 # total N including prior
       m2_n = (n2*m2 + priors$n[2]*priors$mu[2])/n2_n # weighted mean of prior and data
       v2_n = v2 + n2 # degrees of freedom including data
       s2_2_n = ((n2-1)*s2_2 + v2*priors$s2[2] + priors$n[2]*n2*(priors$mu[2] - m2)^2/n2_n)/v2_n # pooled variance
@@ -954,7 +954,7 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
   hde1_mean <- m1_n
   hdi1_mean <- m1_n + qt(c((1-cred.int.level)/2, (1-((1-cred.int.level)/2))),v1_n)*sigma_1
   
-  out$summary<-data.frame(HDE=hde1_mean, HDI_low = hdi1_mean[1], HDI_high = hdi1_mean[2])
+  out$summary<-data.frame(HDE_1=hde1_mean, HDI_1_low = hdi1_mean[1], HDI_1_high = hdi1_mean[2])
   out$posterior$mu <- m1_n
   out$posterior$n <- n1_n
   out$posterior$s2 <- sigma_1
@@ -1098,7 +1098,7 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
     hde1_mean <- m1_n
     hdi1_mean <- m1_n + qt(c((1-cred.int.level)/2, (1-((1-cred.int.level)/2))),v1_n)*se1
     
-    out$summary<-data.frame(HDE=hde1_mean, HDI_low = hdi1_mean[1], HDI_high = hdi1_mean[2])
+    out$summary<-data.frame(HDE_1=hde1_mean, HDI_1_low = hdi1_mean[1], HDI_1_high = hdi1_mean[2])
     out$posterior$mu <- m1_n
     out$posterior$n <- n1_n
     out$posterior$s2 <- s2_1_n
@@ -1257,7 +1257,7 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
   hde1_mean <- m1_n
   hdi1_mean <- m1_n + qt(c((1-cred.int.level)/2, (1-((1-cred.int.level)/2))),v1_n)*se1
   
-  out$summary<-data.frame(HDE=hde1_mean, HDI_low = hdi1_mean[1], HDI_high = hdi1_mean[2])
+  out$summary<-data.frame(HDE_1=hde1_mean, HDI_1_low = hdi1_mean[1], HDI_1_high = hdi1_mean[2])
   out$posterior$mu <- m1_n
   out$posterior$n <- n1_n
   out$posterior$s2 <- s2_1_n
@@ -1443,7 +1443,7 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
   }
   
   #* `save summary and parameters`
-  out$summary <- data.frame(HDE=hde1, HDI_low = hdi1[1], HDI_high = hdi1[2])
+  out$summary <- data.frame(HDE_1=hde1, HDI_1_low = hdi1[1], HDI_1_high = hdi1[2])
   out$posterior$a <- a1_prime
   out$posterior$b <- b1_prime
   
@@ -1589,7 +1589,7 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
   }
   
   #* `save summary and parameters`
-  out$summary <- data.frame(HDE=hde1, HDI_low = hdi1[1], HDI_high = hdi1[2])
+  out$summary <- data.frame(HDE_1=hde1, HDI_1_low = hdi1[1], HDI_1_high = hdi1[2])
   out$posterior$a <- a1_prime
   out$posterior$b <- b1_prime
   
@@ -1726,7 +1726,7 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
   }
   
   #* `save summary and parameters`
-  out$summary <- data.frame(HDE=hde1, HDI_low = hdi1[1], HDI_high = hdi1[2])
+  out$summary <- data.frame(HDE_1=hde1, HDI_1_low = hdi1[1], HDI_1_high = hdi1[2])
   out$posterior$a <- a1_prime
   out$posterior$b <- b1_prime
   
@@ -1897,7 +1897,7 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
   }
   
   #* `save summary and parameters`
-  out$summary <- data.frame(HDE=hde1, HDI_low = hdi1[1], HDI_high = hdi1[2])
+  out$summary <- data.frame(HDE_1=hde1, HDI_1_low = hdi1[1], HDI_1_high = hdi1[2])
   out$posterior$r <- priors$r[1]
   out$posterior$a <- a1_prime
   out$posterior$b <- b1_prime
