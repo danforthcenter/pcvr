@@ -119,7 +119,7 @@ plotPrior<-function(priors, type = "density", n=200, t=25){
       ggplot2::guides(color = ggplot2::guide_legend(override.aes = list(linewidth=5)))+
       ggplot2::labs(y="Y", title=paste0(n," curves simulated from prior draws"),
                     color="Prior")
-    
+    model_plot_solo<-model_plot
     xLims <- ggplot2::layer_scales(model_plot)$x$range$range
     yLims <- ggplot2::layer_scales(model_plot)$y$range$range
     
@@ -162,6 +162,9 @@ plotPrior<-function(priors, type = "density", n=200, t=25){
                  patchwork::area(7,1,7,6)) # x margin
       model_plot <- model_plot + x_margin_plot + patchwork::plot_layout(design = design)
       
+    }
+    if(is(model_plot, "patchwork")){
+      densPlots[[length(densPlots)+1]] <- model_plot_solo
     }
     out<-list("simulated"= model_plot, "distributions" = densPlots)
   }
