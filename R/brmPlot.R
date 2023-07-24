@@ -6,6 +6,9 @@
 #' @param groups An optional set of groups to keep in the plot.
 #' Defaults to NULL in which case all groups in the model are plotted.
 #' @param df An optional dataframe to use in plotting observed growth curves on top of the model.
+#' @param timeRange An optional range of times to use. This can be used to view predictions for
+#' future data if the avaiable data has not reached some point (such as asymptotic size),
+#' although prediction using splines outside of the observed range is not necessarily reliable.
 #' @keywords growth-curve, logistic, gompertz, monomolecular, linear, exponential, power-law
 #' @import ggplot2
 #' @import viridis
@@ -32,7 +35,7 @@
 #' 
 #' @export
 
-brmPlot<-function(fit, form, groups = NULL, df=NULL){
+brmPlot<-function(fit, form, groups = NULL, df=NULL, timeRange = NULL){
   fitData<-fit$data
   y=as.character(form)[2]
   x<-as.character(form)[3]
@@ -44,10 +47,11 @@ brmPlot<-function(fit, form, groups = NULL, df=NULL){
   } else {stop("form must specify grouping for observations. See documentation and examples.")}
   probs <- seq(from=99, to=1, by=-2)/100
   avg_pal <- viridis::plasma(n=length(probs))
+  if(is.null(timeRange)){ timeRange <- unique(fitData[[x]]) }
   
-  newData<-data.frame(x=rep(unique(fitData[[x]]), times=length(unique(fitData[[group]]))), 
-                      group = rep(unique(fitData[[group]]), each = length(unique(fitData[[x]]))),
-                      individual = rep(paste0("new_",1:length(unique(fitData[[group]]))), each=length(unique(fitData[[x]]))) )
+  newData<-data.frame(x=rep( timeRange , times=length(unique(fitData[[group]])) ), 
+                      group = rep(unique(fitData[[group]]), each = length( timeRange )),
+                      individual = rep(paste0("new_",1:length(unique(fitData[[group]]))), each=length(timeRange)) )
   colnames(newData)<-c(x, group, individual)
   predictions <- cbind(newData, predict(fit, newData, probs=probs))
   
