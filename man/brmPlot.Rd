@@ -4,7 +4,7 @@
 \alias{brmPlot}
 \title{Function to visualize brms models similar to those made using growthSS outputs.}
 \usage{
-brmPlot(fit, form, groups = NULL, df = NULL)
+brmPlot(fit, form, groups = NULL, df = NULL, timeRange = NULL)
 }
 \arguments{
 \item{fit}{A brmsfit object, similar to those fit with \code{\link{growthSS}} outputs.}
@@ -16,6 +16,10 @@ predictor, and grouping structure of the data as \code{outcome ~ predictor|indiv
 Defaults to NULL in which case all groups in the model are plotted.}
 
 \item{df}{An optional dataframe to use in plotting observed growth curves on top of the model.}
+
+\item{timeRange}{An optional range of times to use. This can be used to view predictions for
+future data if the avaiable data has not reached some point (such as asymptotic size),
+although prediction using splines outside of the observed range is not necessarily reliable.}
 }
 \value{
 Returns a ggplot showing a brms model's credible
