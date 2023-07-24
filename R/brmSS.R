@@ -58,6 +58,22 @@
 #'  control = list(adapt_delta = 0.999, max_treedepth = 20))
 #' }
 #' 
+#' 
+#' # formulas and priors will look different if there is only one group in the data
+#' 
+#' ex<-growthSim("linear", n=20, t=25, params=list("A"=2))
+#' ex_ss <- growthSS(model = "linear", form = y~time|id/group, sigma = "spline",
+#'                 df = ex, priors = list("A" = 1))
+#'                 
+#' ex_ss$prior # no coef level grouping for priors
+#' ex_ss$formula # intercept only model for A
+#' 
+#' ex2<-growthSim("linear", n=20, t=25, params=list("A"=c(2, 2.5)))
+#' ex2_ss <- growthSS(model = "linear", form = y~time|id/group, sigma = "spline",
+#'                    df = ex2, priors = list("A" = 1))
+#' ex2_ss$prior # has coef level grouping for priors
+#' ex2_ss$formula # specifies an A intercept for each group and splines by group for sigma
+#' 
 #' ## End(Not run)              
 #'               
 #' @export
@@ -142,10 +158,11 @@ growthSS<-function(model, form, sigma=NULL, df, priors=NULL){
     out[["formula"]]<-bayesForm
   #* ***** `Make make priors` *****
   if(!is.null(priors)){
+    # priors = c(150, 30, 0.125)
     # priors = list("A"=130, "B"=12, "C"=3)
     # priors = list("A"=c(130, 150), "B"=c(12,11), "C"=c(3,3))
     #* `if priors is a brmsprior`
-    if(any(class(priors)=="brmsprior")){out[["prior"]]<-priors } else{
+    if( any(methods::is(priors, "brmsprior")) ){out[["prior"]]<-priors } else{
     #* `if priors is a numeric vector`
     if(is.numeric(priors)){ # priors = c(130, 12, 3) 
       if(length(priors)==length(pars)){
@@ -153,8 +170,6 @@ growthSS<-function(model, form, sigma=NULL, df, priors=NULL){
         priors<-as.list(priors)
         names(priors)<-pars
       } else {stop(paste0("`priors` is length ", length(priors), " while the specified model requires ", length(pars), " parameters."))}
-      priors<-lapply(1:length(unique(df[[group]])), function(i) priors)
-      names(priors)<-unique(df[[group]])
     }
     #* `if priors is a list`
     # priors = list("A"=c(130, 150), "B"=c(12,11), "C"=c(3,3))
@@ -178,27 +193,39 @@ growthSS<-function(model, form, sigma=NULL, df, priors=NULL){
           for(i in 1:length(priors)){names(priors[[i]])<-unique(df[[group]])}
         }
       } else{ # else is for prior of length 1 for each element, in which case they need to replicated per groups
+        # this should also handle non-grouped formulae
         l<-length(unique(df[[group]]))
         priors<-lapply(priors, rep, length.out=l)
         nms<-unique(df[[group]])
-        for(i in 1:length(priors)){names(priors[[i]])<-nms}
+        if(USEGROUP){
+         for(i in 1:length(priors)){names(priors[[i]])<-nms}
+        }
       }
     }
+      
     }
     if(!any(names(out)=="prior")){
       priorStanStrings<-lapply(pars, function(par) paste0("lognormal(log(", priors[[par]],"), 0.25)") )
       priorStanStrings<-unlist(priorStanStrings)
       parNames<-rep(names(priors), each = length(priors[[1]]))
-      groupNames<-rep(names(priors[[1]]), length.out = length(priorStanStrings))
-      names(priorStanStrings)<-paste(parNames, groupNames, sep="_")
+      if(USEGROUP){
+        groupNames<-rep(names(priors[[1]]), length.out = length(priorStanStrings))
+        names(priorStanStrings)<-paste(parNames, groupNames, sep="_")
+      } else {
+        names(priorStanStrings)<-parNames
+      }
       # priorStanStrings
       #* assemble set_prior statements from these
       prior<-brms::set_prior('student_t(3,0,5)', dpar="sigma")+brms::set_prior('gamma(2,0.1)', class="nu")
       for(nm in names(priorStanStrings)){
         dist = priorStanStrings[[nm]]
         pr = strsplit(nm, "_")[[1]][1]
-        gr = paste0(group, strsplit(nm, "_")[[1]][2])
-        prior<-prior+brms::set_prior(dist, coef = gr, nlpar = pr)
+        if(USEGROUP){
+          gr = paste0(group, strsplit(nm, "_")[[1]][2])
+          prior<-prior+brms::set_prior(dist, coef = gr, nlpar = pr) 
+        } else{
+          prior<-prior+brms::set_prior(dist, nlpar = pr)
+        }
       }
       out[["prior"]]<-prior
     }

@@ -70,6 +70,22 @@ fit_test <- fitGrowth(ss, iter = 1000, cores = 2, chains = 2, backend = "cmdstan
  control = list(adapt_delta = 0.999, max_treedepth = 20))
 }
 
+
+# formulas and priors will look different if there is only one group in the data
+
+ex<-growthSim("linear", n=20, t=25, params=list("A"=2))
+ex_ss <- growthSS(model = "linear", form = y~time|id/group, sigma = "spline",
+                df = ex, priors = list("A" = 1))
+                
+ex_ss$prior # no coef level grouping for priors
+ex_ss$formula # intercept only model for A
+
+ex2<-growthSim("linear", n=20, t=25, params=list("A"=c(2, 2.5)))
+ex2_ss <- growthSS(model = "linear", form = y~time|id/group, sigma = "spline",
+                   df = ex2, priors = list("A" = 1))
+ex2_ss$prior # has coef level grouping for priors
+ex2_ss$formula # specifies an A intercept for each group and splines by group for sigma
+
 ## End(Not run)              
               
 }
