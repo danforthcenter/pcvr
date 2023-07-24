@@ -22,7 +22,9 @@ growthSim(
 
 \item{params}{A list of numeric parameters. A, B, C notation is used in the order that parameters appear in the formula (see examples). Number of groups is inferred from the length of these vectors of parameters.}
 
-\item{noise}{Optionally this can be used to add specific amounts of noise to the input parameters. If NULL (the default) then data is simulated with 10\% random noise like: param + N(0, 0.1*param)}
+\item{noise}{Optionally this can be used to add specific amounts of noise to the input parameters by specifying a list similar to params.
+If NULL (the default) then data is simulated with 10\% random noise like: param + N(0, 0.1*param).
+This exists for fringe cases and should generally be left NULL.}
 }
 \value{
 Returns a dataframe of example growth data following the input parameters.
