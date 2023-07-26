@@ -38,5 +38,6 @@ Suggests:
     vroom,
     curl,
     cmdstanr,
+    rstan,
     caret
 VignetteBuilder: knitr
