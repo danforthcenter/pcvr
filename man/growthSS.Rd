@@ -9,13 +9,33 @@ growthSS(model, form, sigma = NULL, df, priors = NULL)
 \arguments{
 \item{model}{The name of a model as a character string. Supported options are c("logistic", "gompertz", "monomolecular", "exponential", "linear", "power law"). See \code{\link{growthSim}} for examples of each type of growth curve.}
 
-\item{form}{A formula describing the model. The left hand side should only be the outcome variable (phenotype). The right hand side needs at least the x variable (typically time). Grouping is also described in this formula using roughly lme4 style syntax,with formulas like \code{y~time|individual/group} to show that predictors should vary by \code{group} and autocorrelation between \code{individual:group} interactions should be modeled. If group has only one level or is not included then it will be ignored in formulas for growth and variance (this may be the case if you split data before fitting models to be able to run more smaller models each more quickly).}
+\item{form}{A formula describing the model. The left hand side should only be 
+the outcome variable (phenotype). The right hand side needs at least the x variable
+ (typically time). Grouping is also described in this formula using roughly lme4
+ style syntax,with formulas like \code{y~time|individual/group} to show that predictors
+ should vary by \code{group} and autocorrelation between \code{individual:group}
+ interactions should be modeled. If group has only one level or is not included then
+ it will be ignored in formulas for growth and variance (this may be the case if 
+ you split data before fitting models to be able to run more smaller models each more quickly).}
 
 \item{sigma}{A model for heteroskedasticity from c("homo", "linear", "spline").}
 
 \item{df}{A dataframe to use. Must contain all the variables listed in the formula.}
 
-\item{priors}{A named list of means for prior distributions. Currently this function makes lognormal priors for all growth model parameters. This is done because the values are strictly positive and the lognormal distribution is easily interpreted. If this argument is not provided then priors are not returned and a different set of priors will need to be made for the model using \code{brms::set_prior}. This works similarly to the \code{params} argument in \code{growthSim}. Names should correspond to parameter names from the \code{model} argument. A numeric vector can also be used, but specifying names is best practice for clarity. See details.}
+\item{priors}{A named list of means for prior distributions.
+Currently this function makes lognormal priors for all growth model parameters.
+ This is done because the values are strictly positive and the lognormal distribution
+ is easily interpreted. If this argument is not provided then priors are not 
+ returned and a different set of priors will need to be made for the model using
+ \code{brms::set_prior}. This works similarly to the \code{params} argument
+ in \code{growthSim}. Names should correspond to parameter names from the
+ \code{model} argument. A numeric vector can also be used, but specifying
+ names is best practice for clarity. Additionally, due to a limitation in
+ \code{brms} currently lower bounds cannot be set for priors for specific groups.
+ If priors include multiple groups (\code{priors = list(A = c(10,15), ...)}) then
+ you will see warnings after the model is fit about not having specified a lower
+ bound explicitly. Those warnings can safely be ignored and will be addressed if
+ the necessary features are added to \code{brms}. See details for guidance.}
 }
 \value{
 A named list of elements to make it easier to fit common brms models.
@@ -33,9 +53,12 @@ Ease of use brms starter function for 6 growth model parameterizations
 }
 \details{
 Default priors are not provided, but these can serve as starting points for each distribution. 
-You are encouraged to use \code{growthSim} to consider what kind of trendlines result from changes to your prior and for interpretation of each parameter.
-You should not looking back and forth at your data trying to match your observed growth exactly with a prior distribution,
-rather this should be informed by an understanding of the plants you are using and expectations based on previous research. 
+You are encouraged to use \code{growthSim} to consider what kind 
+of trendlines result from changes to your prior and for interpretation of each parameter.
+You should not looking back and forth at your data trying to match your
+ observed growth exactly with a prior distribution,
+rather this should be informed by an understanding of the plants you
+ are using and expectations based on previous research. 
 
 \itemize{
    \item \bold{Logistic}: \code{list(A = 130, B = 12, C = 3)}

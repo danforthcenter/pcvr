@@ -13,6 +13,11 @@
 #' issued but the model will still attempt to fit.
 #' @param backend A backend for brms to use Stan through.
 #'   This defaults to use "cmdstanr".
+#' @param silent Passed to \code{brms::brm} to control verbosity.
+#' This defaults to 0, the most verbose option so that messages and progress are printed. 
+#' With changes to \code{cmdstanr} and \code{brms} this may be removed, but the option
+#' will be available through \code{...}. Note that this is likely to print lots of
+#' messages during warmup iterations as the MCMC gets started.
 #' @param ... Additional arguments passed to \code{brms::brm}.
 #' @keywords Bayesian, brms
 #' @return A \code{brmsfit} object, see \code{?`brmsfit-class`} for details.
@@ -28,20 +33,20 @@
 #' ss$initfun()
 #' 
 #' if(FALSE){
-#' fit_test <- fitGrowth(ss, iter = 1000, cores = 2, chains = 2, backend = "cmdstanr",
+#' fit_test <- fitGrowth(ss, iter = 600, cores = 2, chains = 2, backend = "cmdstanr",
 #'               control = list(adapt_delta = 0.999, max_treedepth = 20)) # optional controls
 #' }
 #' ## End(Not run)
 #' @export
 
-fitGrowth<-function(ss, iter = 2000, cores = getOption("mc.cores",1), chains = 4, prior=NULL, backend = "cmdstanr", ...){
+fitGrowth<-function(ss, iter = 2000, cores = getOption("mc.cores",1), chains = 4, prior=NULL, backend = "cmdstanr", silent=0, ...){
   if(!"prior" %in% names(ss) && is.null(prior)){
     warning("No prior was specified. Flat priors will be used, this is likely to cause problems in model fitting and yield less accurate results.")
   } else if("prior" %in% names(ss)){
       prior <-ss$prior
     }
   fit<-brms::brm(formula = ss$formula, prior = prior, data = ss$df, family=ss$family,
-                 iter = iter, init = ss$initfun, cores = cores, chains = chains, backend=backend, ...)
+                 iter = iter, init = ss$initfun, cores = cores, chains = chains, backend=backend, silent = silent, ...)
   return(fit)
 }
 

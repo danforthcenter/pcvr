@@ -11,6 +11,7 @@ fitGrowth(
   chains = 4,
   prior = NULL,
   backend = "cmdstanr",
+  silent = 0,
   ...
 )
 }
@@ -34,6 +35,12 @@ issued but the model will still attempt to fit.}
 \item{backend}{A backend for brms to use Stan through.
 This defaults to use "cmdstanr".}
 
+\item{silent}{Passed to \code{brms::brm} to control verbosity.
+This defaults to 0, the most verbose option so that messages and progress are printed. 
+With changes to \code{cmdstanr} and \code{brms} this may be removed, but the option
+will be available through \code{...}. Note that this is likely to print lots of
+messages during warmup iterations as the MCMC gets started.}
+
 \item{...}{Additional arguments passed to \code{brms::brm}.}
 }
 \value{
@@ -53,7 +60,7 @@ lapply(ss,class)
 ss$initfun()
 
 if(FALSE){
-fit_test <- fitGrowth(ss, iter = 1000, cores = 2, chains = 2, backend = "cmdstanr",
+fit_test <- fitGrowth(ss, iter = 600, cores = 2, chains = 2, backend = "cmdstanr",
               control = list(adapt_delta = 0.999, max_treedepth = 20)) # optional controls
 }
 ## End(Not run)

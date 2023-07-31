@@ -6,7 +6,9 @@
 #' @param n Number of individuals to simulate over time per each group in params
 #' @param t Max time (assumed to start at T1) to simulate growth to.
 #' @param params A list of numeric parameters. A, B, C notation is used in the order that parameters appear in the formula (see examples). Number of groups is inferred from the length of these vectors of parameters.
-#' @param noise Optionally this can be used to add specific amounts of noise to the input parameters. If NULL (the default) then data is simulated with 10\% random noise like: param + N(0, 0.1*param)
+#' @param noise Optionally this can be used to add specific amounts of noise to the input parameters by specifying a list similar to params.
+#' If NULL (the default) then data is simulated with 10\% random noise like: param + N(0, 0.1*param).
+#' This exists for fringe cases and should generally be left NULL.
 #' 
 #' @keywords growth curve, logistic, gompertz, monomolecular, linear, exponential, power-law
 #' @return Returns a dataframe of example growth data following the input parameters.

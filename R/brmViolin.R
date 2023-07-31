@@ -94,7 +94,7 @@ brmViolin<-function(model, params=NULL,hyp="num/denom>1.05", compareX=NULL, agai
   #* internals
   
   draws<-do.call(cbind, lapply(model, function(mod){ # extract draws for relevant parameters
-    mdf<-as.data.frame(mod)
+    mdf<-as.data.frame(mod[["fit"]])
     colPattern<-paste0("^b_[", paste0(params,collapse="|"),"]")
     mdf<-mdf[ ,grepl(colPattern, colnames(mdf))]
     colnames(mdf)<-sub("^b_", "", colnames(mdf))
