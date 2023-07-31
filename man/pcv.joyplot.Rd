@@ -8,6 +8,7 @@ pcv.joyplot(
   df = NULL,
   index = NULL,
   group = NULL,
+  y = NULL,
   method = NULL,
   compare = NULL,
   priors = NULL,
@@ -31,6 +32,11 @@ If the data is wide then this is a string used to find column names to use from 
 \item{group}{A length 1 or 2 character vector. 
 This is used for faceting the joyplot and identifying groups for testing. 
 If this is length 1 then no faceting is done.}
+
+\item{y}{Optionally a variable to use on the y axis. This is useful when you
+have three variables to display. This argument will change faceting behavior to
+add an additional layer of faceting (single length group will be faceted, 
+length 2 group will be faceted group1 ~ group2).}
 
 \item{method}{A method to use in comparing distributions/means.
 Currently "beta", "gaussian", "emd", and "ks" are supported. 

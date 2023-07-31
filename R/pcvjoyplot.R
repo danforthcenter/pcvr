@@ -9,6 +9,10 @@
 #' @param group A length 1 or 2 character vector. 
 #' This is used for faceting the joyplot and identifying groups for testing. 
 #' If this is length 1 then no faceting is done.
+#' @param y Optionally a variable to use on the y axis. This is useful when you
+#' have three variables to display. This argument will change faceting behavior to
+#' add an additional layer of faceting (single length group will be faceted, 
+#' length 2 group will be faceted group1 ~ group2).
 #' @param method A method to use in comparing distributions/means.
 #'  Currently "beta", "gaussian", "emd", and "ks" are supported. 
 #'  See details for explanations of tests.
@@ -107,9 +111,8 @@
 #' @export
 
 
-pcv.joyplot<-function(df = NULL, index = NULL, group = NULL,
-                      method=NULL,
-                      compare= NULL, priors=NULL,hyp=NULL, support = NULL,
+pcv.joyplot<-function(df = NULL, index = NULL, group = NULL, y = NULL,
+                      method=NULL, compare= NULL, priors=NULL,hyp=NULL, support = NULL,
                       bin="label", freq="value", trait="trait", fillx=TRUE){
   
   #* ***** `troubleshooting test values`
@@ -141,10 +144,19 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL,
   }
   
   if(is.null(group)){group = "dummy"; df$dummy = "dummy"; sub$dummy="dummy"}
-  if(length(group)==1){sub$fill = sub[[group]]; sub$y = sub[[group]]; facet_layer = list()}#ggplot2::facet_wrap(paste0("~",group)) }
-  if(length(group)==2){sub$fill = sub[[group[1] ]]; sub$y = sub[[group[1] ]]; facet_layer=ggplot2::facet_grid(as.formula(paste0("~",group[2])))} # check this change, added group[1] to facet_grid
+  if(!is.null(y)){
+    if(length(group)==1){sub$fill = sub[[group]]; sub$y = sub[[group]]
+    facet_layer=ggplot2::facet_grid(as.formula(paste0("~",group[1]))) }
+    if(length(group)==2){sub$fill = sub[[group[1] ]]; sub$y = sub[[group[1] ]]
+    facet_layer=ggplot2::facet_grid(as.formula(paste0(group[1], "~",group[2]))) }
+  } else { # if y is not provided then one less layer of faceting
+    if(length(group)==1){sub$fill = sub[[group]]; sub$y = sub[[group]]
+    facet_layer=list() }
+    if(length(group)==2){sub$fill = sub[[group[1] ]]; sub$y = sub[[group[1] ]]
+    facet_layer=ggplot2::facet_grid(as.formula(paste0("~",group[2]))) }
+  }
   
-  sub$grouping<-interaction(sub[,c(group)], drop=TRUE)
+  sub$grouping<-interaction(sub[,c(y,group)], drop=TRUE)
   
   # default compare to NULL, but if F then skip all testing 
   if(is.logical(compare) && compare==FALSE){
@@ -156,9 +168,9 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL,
   #* ***** `default joyplot`
   if(is.null(method) | match.arg(method, choices = c("beta", "gaussian", "ks", "mixture", "emd"))=="emd"){
     if(mode=="wide"){
-      o<-wide.dens.default(d=sub, colPattern = index, group_internal=group)
+      o<-wide.dens.default(d=sub, colPattern = index, group_internal=c(y,group))
     } else if(mode=="long"){
-      o<-long.dens.default(d=sub, group_internal=group, bin_internal = bin, freq_internal= freq)
+      o<-long.dens.default(d=sub, group_internal=c(y,group), bin_internal = bin, freq_internal= freq)
     }
     distParams = o[[1]]
     dens_df = o[[2]]
@@ -188,9 +200,9 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL,
     #* ***** `Non parametric joyplot`
     
     if(mode=="wide"){
-      o<-wide.dens.default(d=sub, colPattern = index, group_internal=group)
+      o<-wide.dens.default(d=sub, colPattern = index, group_internal=c(y,group))
     } else if(mode=="long"){
-      o<-long.dens.default(d=sub, group_internal=group, bin_internal= bin, freq_internal= freq)
+      o<-long.dens.default(d=sub, group_internal=c(y,group), bin_internal= bin, freq_internal= freq)
     }
     distParams = o[[1]]
     dens_df = o[[2]]
@@ -209,9 +221,9 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL,
     #* ***** `Beta distribution joyplot`
     
     if(mode=="wide"){
-      o<-wide.dens.beta(d=sub, colPattern = index, group_internal=group, priors)
+      o<-wide.dens.beta(d=sub, colPattern = index, group_internal=c(y,group), priors)
     } else if(mode=="long"){
-      o<-long.dens.beta(d=sub, group_internal=group, bin_internal= bin, freq_internal= freq, priors)
+      o<-long.dens.beta(d=sub, group_internal=c(y,group), bin_internal= bin, freq_internal= freq, priors)
     }
     distParams = o[[1]]
     dens_df = o[[2]]
@@ -250,9 +262,9 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL,
   } else if(match.arg(method, choices = c("beta", "gaussian", "ks"))=="gaussian"){
     #* ***** `Gaussian distribution joyplot`
     if(mode=="wide"){
-      o<-wide.dens.gaussian(d=sub, colPattern = index, group_internal=group, priors)
+      o<-wide.dens.gaussian(d=sub, colPattern = index, group_internal=c(y,group), priors)
     } else if(mode=="long"){
-      o<-long.dens.gaussian(d=sub, group_internal=group, bin_internal= bin, freq_internal= freq, priors)
+      o<-long.dens.gaussian(d=sub, group_internal=c(y,group), bin_internal= bin, freq_internal= freq, priors)
     }
     distParams = o[[1]]
     dens_df = o[[2]]
