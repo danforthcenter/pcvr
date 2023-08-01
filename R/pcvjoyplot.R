@@ -340,7 +340,7 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL, y = NULL,
     facet_layer+
     ggridgeLayer+
     ggplot2::scale_x_continuous(n.breaks=5, labels = ~round(.,1))+
-    ggplot2::labs(x=index, y=group[1])+
+    ggplot2::labs(x=index, y=c(y,group)[1])+
     pcv_theme()+
     ggplot2::theme(legend.position="none")
 
