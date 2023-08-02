@@ -124,7 +124,7 @@ x <- pcv.joyplot(df, index = "index_frequencies_index_ndvi", group=c("genotype",
 wide<-read.pcv(
 "https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv",
    mode="wide", singleValueOnly =TRUE, multiValPattern = "hist", reader="fread")
-wide <- bw.time(wide, mode="DAS",plot=F)
+wide <- bw.time(wide, mode="DAS",plot=FALSE)
 wide$genotype = substr(wide$barcode, 3,5)
 wide$genotype = ifelse(wide$genotype == "002", "B73",
                        ifelse(wide$genotype == "003", "W605S",
@@ -132,7 +132,8 @@ wide$genotype = ifelse(wide$genotype == "002", "B73",
 wide$fertilizer = substr(wide$barcode, 8, 8)
 wide$fertilizer = ifelse(wide$fertilizer == "A", "100",
                          ifelse(wide$fertilizer == "B", "50", "0"))
-p<-pcv.joyplot(wide[wide$DAS > 15,], index = "hue_frequencies", group=c("genotype", "fertilizer"), y ="DAS")
+p<-pcv.joyplot(wide[wide$DAS > 15,], index = "hue_frequencies",
+ group=c("genotype", "fertilizer"), y ="DAS")
 
 # For some color traits it makes sense to show the actual
 # represented color, which can be done easily by adding new fill scales.
