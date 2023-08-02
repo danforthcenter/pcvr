@@ -93,6 +93,7 @@
 #' wide<-read.pcv(
 #' "https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv",
 #'    mode="wide", singleValueOnly =TRUE, multiValPattern = "hist", reader="fread")
+#' wide <- bw.time(wide, mode="DAS",plot=F)
 #' wide$genotype = substr(wide$barcode, 3,5)
 #' wide$genotype = ifelse(wide$genotype == "002", "B73",
 #'                        ifelse(wide$genotype == "003", "W605S",
@@ -100,7 +101,7 @@
 #' wide$fertilizer = substr(wide$barcode, 8, 8)
 #' wide$fertilizer = ifelse(wide$fertilizer == "A", "100",
 #'                          ifelse(wide$fertilizer == "B", "50", "0"))
-#' p<-pcv.joyplot(wide, index = "hue_frequencies", group=c("genotype", "fertilizer"))
+#' p<-pcv.joyplot(wide[wide$DAS > 15,], index = "hue_frequencies", group=c("genotype", "fertilizer"), y ="DAS")
 #' 
 #' # For some color traits it makes sense to show the actual
 #' # represented color, which can be done easily by adding new fill scales.
@@ -127,9 +128,9 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL, y = NULL,
     sub$bin = as.numeric(sub[[bin]])
     sub$freq = as.numeric(sub[[freq]])
     if(all(unlist(lapply(split(sub, interaction(sub[,c(group,y)])), function(d){
-          sum(d[d$trait == index, freq])
+          sum(d[d[[trait]] == index, freq])
           }))<100)){
-      sub$freq = sub$freq * 1000/max(sub[sub$trait == index, freq])
+      sub$freq = sub$freq * 1000/max(sub[sub[[trait]] == index, "freq"])
     }
     
   } else if(mode=="wide"){ # if wide then get column names that contain index string
