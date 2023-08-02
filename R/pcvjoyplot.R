@@ -114,18 +114,6 @@
 pcv.joyplot<-function(df = NULL, index = NULL, group = NULL, y = NULL,
                       method=NULL, compare= NULL, priors=NULL,hyp=NULL, support = NULL,
                       bin="label", freq="value", trait="trait", fillx=TRUE){
-  
-  #* ***** `troubleshooting test values`
-  # df=df; index = "yii_hist_Fv.over.Fm"; group=c("timepoint", "genotype"); method="emd"
-  # compare= NULL; priors=NULL; bin="label"; freq="value"; trait="trait";hyp=NULL; fillx=TRUE    ;index='index_frequencies_index_ari' 
-  #* `wide vs long test values`
-  #* 
-  #* df=hue_wide; index = "hue_frequencies"; group=c("fertilizer", "genotype"); method=NULL
-  #* compare= F; priors=NULL; bin="label"; freq="value"; trait="trait";hyp=NULL; fillx=TRUE 
-  #* 
-  #* df=long; index = "hue_frequencies"; group=c("fertilizer", "genotype"); method="ks"
-  #* compare= NULL; priors=NULL; bin="label"; freq="value"; trait="trait";hyp=NULL; fillx=TRUE 
-  #* 
   #* ***** `general calculated values`
 
   if(!is.null(trait) && trait %in% colnames(df)){traitCol = trait ; mode="long" # if there is a trait column then use long options,
@@ -138,9 +126,19 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL, y = NULL,
     if(length(unique(sub[[trait]]))>1){warning("More than one trait found, consider an `index` argument")}
     sub$bin = as.numeric(sub[[bin]])
     sub$freq = as.numeric(sub[[freq]])
+    if(all(unlist(lapply(split(sub, interaction(sub[,c(group,y)])), function(d){
+          sum(d[d$trait == index, freq])
+          }))<100)){
+      sub$freq = sub$freq * 1000/max(sub[sub$trait == index, freq])
+    }
     
   } else if(mode=="wide"){ # if wide then get column names that contain index string
     sub<-df
+    if(all(unlist(lapply(split(sub, interaction(sub[,c(group,y)])), function(d){
+        rowSums(d[, grepl(index, colnames(d))])
+    }))<100) ){
+      sub[, grepl(index, colnames(sub))] * 1000 / max(rowSums( sub[, grepl(index, colnames(sub))] ))
+    }
   }
   
   if(is.null(group)){group = "dummy"; df$dummy = "dummy"; sub$dummy="dummy"}
