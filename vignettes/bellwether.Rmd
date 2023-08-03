@@ -405,9 +405,6 @@ twoPriors = list("A" = c(100, 130), "B" = c(6, 12), "C" = c(0.5, 0.25))
 plotPrior(twoPriors, "gompertz",n=100)[[1]]
 ```
 
-This 
-
-
 
 ##### Using `growthSS`
 
