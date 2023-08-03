@@ -45,6 +45,12 @@ brmPlot<-function(fit, form, groups = NULL, df=NULL, timeRange = NULL){
     individual = x3[2]
     group = x3[3]
   } else {stop("form must specify grouping for observations. See documentation and examples.")}
+  
+  #* if no group in fitdata then add a dummy group
+  if(!group %in% colnames(fitData)){
+    fitData[[group]] <- "a"
+  }
+  
   probs <- seq(from=99, to=1, by=-2)/100
   avg_pal <- viridis::plasma(n=length(probs))
   if(is.null(timeRange)){ timeRange <- unique(fitData[[x]]) }
@@ -61,8 +67,12 @@ brmPlot<-function(fit, form, groups = NULL, df=NULL, timeRange = NULL){
       df<-df[df[[group]] %in% groups, ]
     }
   }
+  if(!all(fitData[[group]]=="a")){ facetLayer <- ggplot2::facet_wrap(as.formula(paste0("~",group)))
+  } else {facetLayer <- NULL
+    }
+  
   p<-ggplot2::ggplot(predictions, ggplot2::aes(x=.data[[x]], y=.data$Estimate))+
-    ggplot2::facet_wrap(as.formula(paste0("~",group)))+
+    facetLayer +
     lapply(seq(1,49,2),function(i) ggplot2::geom_ribbon(ggplot2::aes(ymin=.data[[paste0("Q",i)]],
                                                                      ymax=.data[[paste0("Q",100-i)]]),
                                                         fill=avg_pal[i],alpha=0.5))+
