@@ -1,0 +1,457 @@
+---
+title: "Longitudinal Growth Modeling Options"
+author: "Josh Sumner, DDPSC Data Science Core Facility"
+subtitle: "pcvr v0.1.0"
+output: 
+  html_document:
+    toc: true
+    number_sections: false
+    code_folding: show
+date: "2023-06-16"
+vignette: >
+  %\VignetteIndexEntry{longitudinalGrowth}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{css}
+.static-code {
+  background-color: white;
+  border: 1px solid lightgray;
+}
+.simulated {
+  background-color: #EEF8FB;
+  border: 1px solid #287C94;
+}
+```
+
+```{r}
+library(pcvr) # devtools::load_all()
+library(data.table) # for fread
+library(ggplot2)
+library(patchwork) # for easy ggplot manipulation/combination
+library(brms)
+```
+
+## Notes
+If I want to add support for other modeling options then this could actually be a good time to do it.
+Possible interesting ones:
+nlme?
+nlqr?
+gam?
+
+
+## paragraph about longitudinal modeling and why it matters
+
+Longitudinal modeling allows users to take full advantage of accurate and non-destructive data collection possible through high throughput image based phenotyping. Using longitudinal data accurately requires some understanding of the statistical challenges associated with it. Statistical complications including changes in variance (heteroskedasticity), non-linearity, and autocorrelation (plant's day to day self similarity) present potential problems in analyses. To address these we recommend using hierarchical models. Often non-linear models present challenges in testing hypotheses but this concern, among others, can be solved by using a Bayesian framework. `pcvr` attempts to lower the barrier to entry for building these models with helper functions for use with `brms`.
+
+## Set up
+
+### Vignette Styles
+
+This vignette is laid out to explain features available in `pcvr` to support heirarchical Bayesian growth modeling. There are some code chunks in this vignette that you are only presented to demonstrate syntax and that you are not meant to run locally if following along. Those are identified by style:
+
+```{r, class.source="static-code", eval=F}
+complicatedFunction("syntax") # do not run this style
+```
+
+```{r}
+1+1 # run this style
+```
+
+```{r, class.source="simulated", eval=T}
+support<-seq(0,1,0.0001) # this style is simulated data
+plot(support, dbeta(support, 5,5), type="l", main="simulated example")
+```
+
+
+## Read In Bellwether Data
+
+For this tutorial we will use a mix of simulated data and Bellwether data. The Bellwether data is from an experiment using four maize genotypes in three levels of NPK fertilizer. Data from that experiment is available on github and can be read into R using `read.pcv`. The simulated data will be generated as needed. For details on the reading/metadata functions used here please see the main bellwether vignette.
+
+```{r}
+sv<-read.pcv("https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv", 
+             mode="wide", singleValueOnly = T, reader="fread")
+
+key<-read.csv("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/smallPhenotyperRun_key.csv")
+
+sv<-merge(sv, key, by="barcode")
+```
+
+Now we add integer time columns using `bw.time`.
+
+```{r}
+sv<-bw.time(sv, plantingDelay = 0, phenotype="area.pixels", cutoff=10, timeCol="timestamp", group=c("barcode", "rotation"), plot=FALSE)
+head(sv)
+dim(sv)
+```
+
+Before combining angled pictures of the same plant per a given time.
+
+```{r}
+phenotypes <- c('area.pixels', 'convex_hull_area.pixels', 'convex_hull_vertices', 'ellipse_angle.degrees', 'ellipse_eccentricity', 'ellipse_major_axis.pixels', 'ellipse_minor_axis.pixels', 'height.pixels', 'hue_circular_mean.degrees', 'hue_circular_std.degrees', 'hue_median.degrees', 'longest_path.pixels', 'perimeter.pixels', 'solidity', 'width.pixels')
+phenoForm<-paste0("cbind(", paste0(phenotypes, collapse=", "), ")")
+groupForm<-"DAS+barcode+genotype+fertilizer"
+form<-as.formula(paste0(phenoForm, "~", groupForm))
+sv_ag_withOutliers<-aggregate(form, data=sv, mean, na.rm=TRUE)
+dim(sv_ag_withOutliers)
+```
+
+And finally removing outliers with `bw.outliers` and converting area to be in $\text{cm}^2$ instead of pixels.
+
+```{r}
+sv_ag<-bw.outliers(df = sv_ag_withOutliers, phenotype="area.pixels", group = c("DAS", "genotype", "fertilizer"), plotgroup = c("barcode"), plot=FALSE)
+dim(sv_ag)
+pixels_per_cmsq <- 42.5^2 
+sv_ag$area_cm2<-sv_ag$area.pixels / pixels_per_cmsq
+sv_ag$group<-interaction(sv_ag$fertilizer, sv_ag$genotype)
+```
+
+## Growth Model Parameterizations
+
+Based on [literature](https://doi.org/10.1111/j.2041-210X.2011.00155.x) and experience there are 6 common growth models that `pcvr` supports. Those are shown here using the `growthSim` function, with two groups simulated for each dataset to show some of the flexibility in the distributions.
+
+```{r,  class.source="simulated", class.output="simulated"}
+simdf<-growthSim("logistic", n=20, t=25, params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))
+l<-ggplot(simdf,aes(time, y, group=interaction(group,id)))+
+  geom_line(aes(color=group))+labs(title="Logistic")+theme_minimal()+theme(legend.position="none")
+
+simdf<-growthSim("gompertz", n=20, t=25, params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(0.2, 0.25)))
+g<-ggplot(simdf,aes(time, y, group=interaction(group,id)))+
+  geom_line(aes(color=group))+labs(title="Gompertz")+theme_minimal()+theme(legend.position="none")
+
+simdf<-growthSim("monomolecular", n=20, t=25, params = list("A"=c(200,160), "B"=c(0.08, 0.1)))
+m<-ggplot(simdf,aes(time, y, group=interaction(group,id)))+
+  geom_line(aes(color=group))+labs(title="Monomolecular")+theme_minimal()+theme(legend.position="none")
+
+simdf<-growthSim("exponential", n=20, t=25, params = list("A"=c(15, 20), "B"=c(0.095, 0.095)))
+e<-ggplot(simdf,aes(time, y, group=interaction(group,id)))+
+  geom_line(aes(color=group))+labs(title="Exponential")+theme_minimal()+theme(legend.position="none")
+
+simdf<-growthSim("linear", n=20, t=25, params = list("A"=c(1.1, 0.95)))
+ln<-ggplot(simdf,aes(time, y, group=interaction(group,id)))+
+  geom_line(aes(color=group))+labs(title="Linear")+theme_minimal()+theme(legend.position="none")
+
+simdf<-growthSim("power law", n=20, t=25, params = list("A"=c(16, 11), "B"=c(0.75, 0.7)))
+pl<-ggplot(simdf,aes(time, y, group=interaction(group,id)))+ geom_line(aes(color=group))+
+  labs(title="Power Law")+theme_minimal()+theme(legend.position="none")
+
+(l+g+m)/(e+ln+pl)
+
+```
+
+Typically at least one of these models will be a good fit to your data.
+Of these options the Gompertz model tends to be the most flexible and best suited to sigmoidal data ("S" shaped). The logistic function can be slightly faster to fit, but at the cost of having less flexibility between the initial speed of growth and the speed approaching the asymptote.
+
+Another consideration when fitting one of these growth models is whether or not more time in the experiment would have led to a very different type of model due to known biological constraints. As an example, here is a plot of the growth data collected on the Bellwether.
+
+```{r}
+ggplot(sv_ag, aes(x=DAS, y=area_cm2, group=barcode, color=group))+
+  geom_line()+
+  theme_minimal()+
+  labs(y=expression("Area"~"(cm"^2~")"),
+       color="Fertilizer\nand Genotype")
+```
+
+Normally in Bellwether data we see larger areas sooner, but for this experiment the plants were germinated on the Bellwether system. Typically Maize would have been planted up to a week before being loaded onto the Bellwether system, meaning we would see the plants growth inflect (slow down) and possibly hit asymptotic size based on soil constraints. We know that maize in small pots will not continue exponential growth for long, so here we may opt to use a gompertz model with the caveat that we will not have a very well informed asymptote parameters. Regardless, we expect that our data would look more like this if allowed to grow for longer. We cannot use these assumptions to interpolate data, but we can use them to set well educated bounds on what is possible for our maize plants in a growth model.
+
+```{r}
+set.seed(345)
+gomp<-growthSim("gompertz", n=20, t=35, params = list("A"=c(200,180, 160), "B"=c(20,22, 18), "C"=c(0.15, 0.2, 0.1)))
+
+ggplot(sv_ag)+
+  geom_line(data= gomp, aes(x=time, y=y, group = interaction(group,id)), color="gray60", linetype=5, linewidth=0.25)+
+  geom_line(aes(x=DAS, y=area_cm2, group=barcode, color=group))+
+  theme_minimal()+
+  labs(y=expression("Area"~"(cm"^2~")"),
+       color="Fertilizer\nand Genotype")
+```
+
+## OUTLINE (TO BE REMOVED)
+
+- Read In Bellwether Data 
+- Talk about growth model parameterizations
+Show helper functions
+talk about sub model parameterizations
+talk about priors (ex of built in options and more complex priors)
+talk about model fitting, troubleshooting, and evaluations (might involve a loo() call).
+Sub point to show the issues with regular models (prove points I mention above)
+Talk about model visualization
+show resources for going beyond these 6 growth models in brms/stan.
+
+
+## Using `growthSS`
+
+`growthSS` is the first `pcvr` helper function for setting up `brms` models. `growthSS` will return a `brmsformula` object, a `brmsprior` object (if priors are specified), an initialization function, a (potentially modified) dataframe for use in fitting the model, the model family (currently this is always student, see [this paper](https://doi.org/10.1037/a0029146) for details), and the `pcvr` formula for use with downstream model visualization functions.
+
+`growthSS` takes five arguments which specify the model to use (of the 6 options above), the columns of your data to use (in a simplified formula), a submodel type, the data to use, and the prior distributions to use. The model and data to use are relatively straightforward, compare a plot of your data against the general shapes of the model parameterizations shown above to pick a model type and pass your dataframe to the `df` argument. The remaining arguments will be explained below.
+
+### `growthSS(..., form, ...)`
+
+The `form` argument of `growthSS` needs to specify the outcome variable, the time variable, an identifier for individuals, and the grouping structure. These are passed as a formula object, using similar syntax to `lme4` and `brms`, such as `outcome ~ time|individual_id/group_id`. Verbally this would be read as "outcome modeled by time accounting for correlation between individual_id's with fixed effects specified per each group_id". Note that this formula will not have to change for different growth models, this is only to specify the structure of your data. Because of that simplification each of these parts of the formula must be a single column in your dataframe. In our example Bellwether data we combine the `genotype` and `fertilizer` columns using `interaction()` into a new column called `group`.
+
+### `growthSS(..., sigma, ...)`
+
+The `sigma` argument controls the sub model of heteroskedasticity. Currently three options are given: "homo", "linear", and "spline".
+
+At a high level we can think about these models as fitting a curve to these lines.
+
+```{r}
+set.seed(345)
+gomp<-growthSim("gompertz", n=20, t=35, params = list("A"=c(200,180, 160), "B"=c(20,22, 18), "C"=c(0.15, 0.2, 0.1)))
+
+
+sigma_df <- aggregate(formula = y ~ group+time, data = gomp, FUN = sd)
+
+ggplot(sigma_df, aes(x=time, y=y, group=group))+
+  geom_line(color = "gray60")+
+  pcv_theme()+
+  labs(y="SD of y", title = "Gompertz Sigma")
+```
+
+The three options implemented in `pcvr` are roughly represented by these curves, ignoring grouping here since the data is already aggregated.
+
+```{r}
+ggplot(sigma_df, aes(x=time, y=y, group=group))+
+  geom_line(color = "gray60")+
+  geom_hline(xintercept = 10, aes(color="Homoskedastic"))+
+  geom_abline(slope = 2, intercept=0, aes(color="Linear"))+
+  geom_smooth(method="gam", aes(color = "Spline"))+
+  guides(color=guide_legend(override.aes = list(linewidth=5)))+
+  pcv_theme()+
+  labs(y="SD of y", title = "Gompertz Sigma")
+```
+
+
+
+
+"homo" will specify a homoskedastic model, that is one with constant variance over time per each group. While this is the default for almost every kind of statistical modeling it is an unrealistic assumption in this setting where we often follow growth from uniformly small seedlings to potentially fully grown plants. We can fit an example model and see the issue with the homoskedastic assumption shown in the model's credible intervals, which are far too wide at the beginning of the experiment and even include some negative values for plant area.
+
+```{r}
+ss <- growthSS(model = "gompertz", form = y~time|id/group, sigma = "homo",
+               df = gomp, priors = list("A"=130, "B"=15, "C"=0.25))
+```
+
+```{r, eval=F}
+fit <- fitGrowth(ss, iter=1000, cores=4, chains=4, silent=0)
+
+brmPlot(fit, form = ss$pcvrForm, df=ss$df)
+```
+
+![homosked_brm.png]()
+
+
+We can relax this assumption and model sigma separately from the main growth trend. To show an example of the options in `pcvr`, here we repeat the example from above using a linear submodel. Note that here we add some extra controls to the model fitting algorithm to help the model fit well with the added complexity at the cost of being slower.
+
+```{r}
+ss <- growthSS(model = "gompertz", form = y~time|id/group, sigma = "linear",
+               df = gomp, priors = list("A"=130, "B"=15, "C"=0.25))
+```
+
+```{r, eval=F}
+fit <- fitGrowth(ss, iter=1000, cores=4, chains=4, silent=0, control = list(adapt_delta = 0.999, max_treedepth = 20))
+
+p1<-brmPlot(fit, form = ss$pcvrForm, df=ss$df)
+p2<-p1+coord_cartesian(ylim = c(0,300))
+p <- p1/p2
+p
+```
+
+![linear_brm.png]()
+
+This model is also a poor fit, but it has a different problem. It accurately models the low variability at the beginning of the experiment, but the linear model is not flexible enough to adapt to the changes in variance even in this simulated data.
+
+Finally we can use the spline sub models.
+
+```{r}
+ss <- growthSS(model = "gompertz", form = y~time|id/group, sigma = "spline",
+               df = gomp, priors = list("A"=130, "B"=15, "C"=0.25))
+```
+
+```{r, eval=F}
+fit <- fitGrowth(ss, iter=2000, cores=4, chains=4, silent=0, control = list(adapt_delta = 0.999, max_treedepth = 20))
+
+brmPlot(fit, form = ss$pcvrForm, df=ss$df)
+```
+
+
+
+
+- mention other formulas, quadratic, exponential, pure GAM, try logistic..? That would be so specialized as to be disgusting but it probably fits really well.
+
+The spline model does a very good job of fitting the data due to the natural flexibility of polynomial functions. Again this added accuracy comes at the cost of taking longer for the model to fit.
+
+
+
+### `growthSS(..., priors, ...)`
+
+
+
+
+
+
+
+
+
+
+#### Model setup 
+
+Coding a multilevel bayesian model can be a difficult and time consuming process. Even with the greatly simplified syntax used by `brms` this can present a barrier to entry for some people who could benefit from using very robust models. To help get around this potential issue for the specific case of measuring growth over time `pcvr` includes several functions to work with `brms`, the first of which is `growthSS`, a self-starter helper function for use with `brms::brm`.
+
+##### submodel options
+
+There are several ways to consider variance over time. By default almost all modeling assumes homoscedasticity, that is constant variance across predictor variables (time here). That assumption is very unrealistic in biological settings since all seeds/seedlings will start from a very low area but will grow differently through the experiment. The `growthSS` function has three options for modeling variance: homo, linear, spline. There are many ways that we could model variance, but these three are implemented for general use. Splines will almost always yield the best fit to your data.
+
+![Different sub model options shown and compared with LOO Information Criterion](subModelComparisons.png)
+
+##### Prior Distributions
+
+An important part of bayesian statistics is setting an appropriate prior. These represent your knowledge about the field and are used along with your collected data to yield results. Priors should generally be weak relative to your data, meaning that if your prior belief is wrong then your experiment can move the posterior distribution away from the prior in a meaningful way.
+
+In `growthSS` priors can be specified as a brmsprior object (in which case it is used as is), a named list (names representing parameters), or a numeric vector, where values will be used to generate lognormal priors with a long right tail. Lognormal priors with long right tails are used because the values for our growth curves are strictly positive and the lognormal distribution is easily interpreted. The tail is a product of the variance, which is assumed to be 0.25 for simplicity and to ensure priors are wide. This means that only a location parameter needs to be provided. If a list is used then each element of the list can be length 1 in which case each group will use the same prior or it can be a vector of the same length as `unique(data$group)` where `group` is your grouping variable from the form argument to `growthSS`. If a vector is used then a warning will be printed to check that the assumed order of groups is correct. The `growthSim` function can be useful in thinking about what a reasonable prior distribution might be, although priors should not be picked by trying to get a great fit by eye to your collected data.
+
+We can check the priors made by `growthSS` with the `plotPrior` function.
+
+```{r}
+priors = list("A" = 130, "B" = 10, "C" = 0.2)
+priorPlots<-plotPrior(priors)
+priorPlots[[1]]/priorPlots[[2]]/priorPlots[[3]]
+```
+
+Looking at the prior distributions this way is useful, but for those still familiarizing with a given growth model the parameter values may not be very intuitive. To help with picking reasonable priors while familiarizing with the meaning of the model parameters the `plotPrior` function can also simulate growth curves by making draws from the specified prior distributions. Here is an example of using `plotPrior` in this way to pick between possible sets of prior distributions for a gompertz model. For asymptotic distributions the prior on "A" is added to the y margin. For distributions with an inflection point the prior on "B" is shown in the x margin. Arbitrary numbers of priors can be compared in this manner, but more than two or three can be cluttered so an iterative process is recommended if you are learning about your growth model.
+
+```{r}
+twoPriors = list("A" = c(100, 130), "B" = c(6, 12), "C" = c(0.5, 0.25))
+plotPrior(twoPriors, "gompertz",n=100)[[1]]
+```
+
+This 
+
+
+
+##### Using `growthSS`
+
+Now we're ready to define the necessary variables in our data and use the `growthSS` function. 
+
+```{r}
+sv_ag$group<-interaction(sv_ag$fertilizer, sv_ag$genotype)
+```
+
+The `brms` package is not automatically imported by `pcvr`, so before fitting models we would need to load that package. For details on installing [`brms`](https://github.com/paul-buerkner/brms) and either [`rstan`](https://mc-stan.org/rstan/) or [`cmdstanr`](https://mc-stan.org/cmdstanr/) (with `cmdstanr` being recommended), see those packages linked documentation. Note that if you install `pcvr` from github with `dependencies=T` then `cmdstanr` and `brms` will be installed.
+
+```{r, eval=FALSE}
+library(brms)
+library(cmdstanr)
+cmdstanr::install_cmdstan()
+```
+
+Here our priors are informed by a general understanding of what we expect to see for a plant on the bellwether system. In general the example priors 
+
+```{r, eval=FALSE}
+ss<-growthSS(model="gompertz", form =  area_cm2~DAS|barcode/group, sigma="spline", df=sv_ag,
+             priors = list("A" = 130, "B" = 10, "C" = 0.5))
+```
+
+Now we have most of our model components in the `ss` object. Since we specified a gompertz model we have three parameters, the asymptote (`A`), the inflection point (`B`), and the growth rate (`C`). For other model options see `?pcvr::growthSim` for details on the parameters.
+
+Before trying to fit the model it is generally a good idea to check one last plot of the data and make sure you have everything defined correctly.
+
+```{r}
+ggplot(sv_ag, aes(x=DAS, y=area_cm2, group=barcode, color=group))+
+  geom_line()+theme_minimal()+
+  labs(y=expression("Area"~"(cm"^2~")"),
+       color="Genotype\nand Soil")
+```
+
+This looks okay, there are no strange jumps in the data or glaring problems.
+
+
+#### Running Models
+
+The `fitGrowth` function is a wrapper around `brms::brm` which automatically uses the output from `growthSS`. Any additional arguments to `brms::brm` can still be specified, a few examples of which are shown here. 
+
+```{r, class.source="static-code", eval=FALSE}
+fit <- fitGrowth(ss, iter = 1000, cores = 2, chains = 2, backend = "cmdstanr",
+               control = list(adapt_delta = 0.999, max_treedepth = 20)) # options to increase performance
+```
+
+```{r, eval=FALSE}
+data(bw_vignette_fit)
+fit<-bw_vignette_fit
+```
+
+
+#### Check Model Fit
+
+We can visualize credible intervals from a `brms` model and compare that to our growth trendlines to get an intuitive understanding of how well the model fit. Note that since this vignette does not load brms these are only a picture of the output from `brmPlot` and `brmViolin`. The code is present to run this locally if you have brms installed and choose to.
+
+```{r, eval=FALSE}
+brmPlot(fit, form = area_cm2~DAS|barcode/group, df = ss$df)+ 
+  labs(y=expression("Area"~"(cm"^2~")"))
+```
+
+![](brmPlot1.png)
+
+In this case our model has 12 groups (3 soil conditions in each of 4 genotypes), so we might want to pull out only a few groups to look at. 
+
+```{r, eval=FALSE}
+brmPlot(fit, form = area_cm2~DAS|barcode/group, df = ss$df, groups = c("0.B73", "50.B73", "100.B73"))+
+  labs(y=expression("Area"~"(cm"^2~")"))
+```
+
+![](brmPlot2.png)
+
+#### Test Hypotheses
+
+Now we probably have some ideas about what we want to test in our data. The `brms::hypothesis` function offers incredible flexibility to test all kinds of hypotheses. For some comparisons `pcvr` has a helper function called `brmViolin` to visualize posterior distributions and the posterior probability of some hypotheses associated with them.
+
+```{r, eval=FALSE}
+brmViolin(model = fit, params = NULL,
+          hyp="num/denom>1.05", compareX = c("0.B73", "50.B73", "100.B73"), againstY = "0.B73",
+          group_sep = "[.]", groups_into = c("soil", "genotype"), x="soil", facet="genotype",
+          returnData=FALSE)
+```
+
+![](brmViolin_vigPlot.png)
+
+This shows that we have a posterior probability greater than 99 percent of an asymptotic size at least 5 percent higher with the 100 type soil when compared against the 0 type soil. Note that this data does not have any plants that reached asymptotic size, so the model uses the incomplete data to estimate where an asymptote would be. In a normal experiment the plants would be more mature but here the asymptote parameter is artificially inflated for the 100 soil treatment group due to their slower growth rate. 
+
+There are a lot of options for how to use this function and even more ways to use `brms::hypothesis`, so this example should not be seen as the only way to compare your models.
+
+#### Comparing Models Over Time
+
+As a final note on `brms`, there is a possiblity of making interesting early stopping rules in a Bayesian framework. Currently this does not have an obvious Bellwether implementation but it should be noted as a benefit of the method. If you have models fit to subsets of your data then the `distPlot` function will show changes in the posterior distribution for some or all of your parameters over time or over another subset variable. Here the growth trend plots are also a legend for the time of each posterior distribution.
+
+```{r, eval=FALSE}
+print(load(url("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/brmsFits.rdata")))
+from3to25<-list(fit_3, fit_5, fit_7, fit_9, fit_11, fit_13, fit_15, fit_17, fit_19, fit_21, fit_23, fit_25)
+
+distributionPlot(fits = from3to25, form = y~time|id/group, params=c("A", "B", "C"), d=simdf)
+```
+
+
+![](distPlot_vigPlot.png)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

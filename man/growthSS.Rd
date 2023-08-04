@@ -47,6 +47,10 @@ distribution (confines initial values to positive and makes correct number
 of initial values for chains and groups).
 \code{df} The data input, possibly with dummy variables added if needed.
 \code{family} The model family, currently this will always be "student".
+\code{pcvrForm} The form argument unchanged. This is returned so that
+it can be used later on in model visualization. Often it may be a good idea
+to save the output of this function with the fit model, so having this can
+be useful later on.
 }
 \description{
 Ease of use brms starter function for 6 growth model parameterizations

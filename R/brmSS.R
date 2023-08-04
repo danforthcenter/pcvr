@@ -57,6 +57,10 @@
 #' of initial values for chains and groups).
 #' \code{df} The data input, possibly with dummy variables added if needed.
 #' \code{family} The model family, currently this will always be "student".
+#' \code{pcvrForm} The form argument unchanged. This is returned so that
+#' it can be used later on in model visualization. Often it may be a good idea
+#' to save the output of this function with the fit model, so having this can
+#' be useful later on.
 #' @examples 
 #' 
 #' ## Not run:
@@ -120,8 +124,8 @@ growthSS<-function(model, form, sigma=NULL, df, priors=NULL){
       x2<-trimws(strsplit(x, "[|]")[[1]])
       x<-x2[1]
       individual = x2[2]
-      group="dummy"
-      df[[group]]<-"dummy"
+      group="group"
+      df[[group]]<-"group"
       USEGROUP=FALSE
     } else {stop("form must specify grouping at least for individual level for observations ( y ~ x|individual ). See documentation and examples.")}
     #* `convert group to character to avoid unexpected factor stuff`
@@ -242,7 +246,7 @@ growthSS<-function(model, form, sigma=NULL, df, priors=NULL){
       }
       # priorStanStrings
       #* assemble set_prior statements from these
-      if(sigma =="homo"){
+      if(sigma =="homo" & !USEGROUP){
         prior<-brms::set_prior('student_t(3,0,5)', dpar="sigma", class="Intercept")+
           brms::set_prior('gamma(2,0.1)', class="nu")
       } else{
@@ -279,6 +283,7 @@ growthSS<-function(model, form, sigma=NULL, df, priors=NULL){
     out[["initfun"]]<-wrapper
     out[["df"]]<-df
     out[["family"]]<-"student"
+    out[["pcvrForm"]]<-form
   return(out)
   }
   
