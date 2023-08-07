@@ -1,6 +1,8 @@
 #' Ease of use brms starter function for 6 growth model parameterizations
 #' 
-#' @param model The name of a model as a character string. Supported options are c("logistic", "gompertz", "monomolecular", "exponential", "linear", "power law"). See \code{\link{growthSim}} for examples of each type of growth curve.
+#' @param model The name of a model as a character string.
+#' Supported options are c("logistic", "gompertz", "monomolecular", "exponential", "linear", "power law", "double logistic", "double gompertz").
+#' See \code{\link{growthSim}} for examples of each type of growth curve.
 #' @param form A formula describing the model. The left hand side should only be 
 #' the outcome variable (phenotype). The right hand side needs at least the x variable
 #'  (typically time). Grouping is also described in this formula using roughly lme4
@@ -9,7 +11,7 @@
 #'  interactions should be modeled. If group has only one level or is not included then
 #'  it will be ignored in formulas for growth and variance (this may be the case if 
 #'  you split data before fitting models to be able to run more smaller models each more quickly).
-#' @param sigma A model for heteroskedasticity from c("homo", "linear", "spline"). 
+#' @param sigma A model for heteroskedasticity from c("homo", "linear", "spline", "logistic", "gompertz"). See details. 
 #' @param df A dataframe to use. Must contain all the variables listed in the formula.
 #' @param priors A named list of means for prior distributions.
 #'  Currently this function makes lognormal priors for all growth model parameters.
@@ -38,6 +40,8 @@
 #'  observed growth exactly with a prior distribution,
 #' rather this should be informed by an understanding of the plants you
 #'  are using and expectations based on previous research. 
+#'  For the "double" models the parameter interpretation is the same
+#'  as for their non-double counterparts except that there are A and A2, etc.
 #' 
 #' \itemize{
 #'    \item \bold{Logistic}: \code{list(A = 130, B = 12, C = 3)}
@@ -47,6 +51,18 @@
 #'     \item \bold{Linear}: \code{list(A = 1)}
 #'     \item \bold{Power Law}: \code{list(A = 13, B = 2)}
 #' }
+#' 
+#' The \code{sigma} argument optionally specifies a sub model to account for heteroskedasticity.
+#' Currently there are five supported sub models described below.
+#' 
+#' \itemize{
+#'    \item \bold{homo}: 
+#'     \item \bold{linear}: 
+#'     \item \bold{spline}: 
+#'     \item \bold{logistic}: 
+#'     \item \bold{gompertz}: 
+#' }
+#' 
 #' 
 #' @return A named list of elements to make it easier to fit common brms models.
 #' \code{formula}: A \code{brms::bf} formula specifying the growth model, autocorrelation, variance submodel,
@@ -107,8 +123,8 @@
 
 growthSS<-function(model, form, sigma=NULL, df, priors=NULL){
   out<-list()
-  sigmas<-c("homo", "linear", "spline")
-  models<-c("logistic", "gompertz", "monomolecular", "exponential", "linear", "power law")
+  sigmas<-c("homo", "linear", "spline", "logistic", "gompertz")
+  models<-c("logistic", "gompertz", "monomolecular", "exponential", "linear", "power law", "double logistic", "double gompertz")
   #* ***** `Make bayesian formula` *****
     #* `parse form argument`
     y=as.character(form)[2]
