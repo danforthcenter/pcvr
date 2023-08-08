@@ -73,14 +73,14 @@ rather this should be informed by an understanding of the plants you
  think stress recovery experiments, not for minor hiccups in plant growth.
 
 \itemize{
-   \item \bold{Logistic}: \code{list(A = 130, B = 12, C = 3)}
-    \item \bold{Gompertz}: \code{list(A = 130, B = 12, C = 1.25)}
-    \item \bold{Double Logistic}: \code{list(A = 130, B = 12, C = 3, A2 = 200, B2 = 25, C2 = 1)}
-    \item \bold{Double Gompertz}: \code{list(A = 130, B = 12, C = 0.25, A2 = 220, B2 = 30, C2 = 0.1)}
-    \item \bold{Monomolecular}: \code{list(A = 130, B = 2)}
-    \item \bold{Exponential}: \code{list(A = 15, B = 0.1)}
-    \item \bold{Linear}: \code{list(A = 1)}
-    \item \bold{Power Law}: \code{list(A = 13, B = 2)}
+   \item \bold{Logistic}: \code{list('A' = 130, 'B' = 12, 'C' = 3)}
+    \item \bold{Gompertz}: \code{list('A' = 130, 'B' = 12, 'C' = 1.25)}
+    \item \bold{Double Logistic}: \code{list('A' = 130, 'B' = 12, 'C' = 3, 'A2' = 200, 'B2' = 25, 'C2' = 1)}
+    \item \bold{Double Gompertz}: \code{list('A' = 130, 'B' = 12, 'C' = 0.25, 'A2' = 220, 'B2' = 30, 'C2' = 0.1)}
+    \item \bold{Monomolecular}: \code{list('A' = 130, 'B' = 2)}
+    \item \bold{Exponential}: \code{list('A' = 15, 'B' = 0.1)}
+    \item \bold{Linear}: \code{list('A' = 1)}
+    \item \bold{Power Law}: \code{list('A' = 13, 'B' = 2)}
 }
 
 
@@ -90,10 +90,10 @@ Currently there are four supported sub models described below.
 
 \itemize{
    \item \bold{homo}: \code{sigma ~ 1}, fitting only a global or per group intercept to sigma.
-    \item \bold{linear}: \code{sigma ~ \beta \cdot time}, modeling sigma with a linear relationship to time
+    \item \bold{linear}: \code{sigma ~ time}, modeling sigma with a linear relationship to time
      and possibly with an interaction term per groups.
     \item \bold{spline}: \code{sigma ~ s(time)}, modeling sigma using a smoothing function through `mgcv::s`, possibly by group.
-    \item \bold{gompertz}: \code{sigma ~ subA \cdot exp(-subB \cdot exp(-subC \cdot x))},
+    \item \bold{gompertz}: \code{sigma ~ subA * exp(-subB * exp(-subC * x))},
      modeling sigma as a gompertz function of time, possibly by group. Note that you
      should specify priors for the parameters in this sub model by adding them into the \code{priors}
      argument, such as \code{list(..., subA = 20, subB = 15, subC = 0.25)}. If you do not specify priors
