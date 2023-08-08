@@ -42,25 +42,41 @@
 #'  are using and expectations based on previous research. 
 #'  For the "double" models the parameter interpretation is the same
 #'  as for their non-double counterparts except that there are A and A2, etc.
+#'  It is strongly recommended to familiarize yourself with the double sigmoid 
+#'  distributions using growthSim before attempting to model one. Additionally,
+#'  those distributions are intended for use with long delays in an experiment,
+#'  think stress recovery experiments, not for minor hiccups in plant growth.
 #' 
 #' \itemize{
 #'    \item \bold{Logistic}: \code{list(A = 130, B = 12, C = 3)}
 #'     \item \bold{Gompertz}: \code{list(A = 130, B = 12, C = 1.25)}
+#'     \item \bold{Double Logistic}: \code{list(A = 130, B = 12, C = 3, A2 = 200, B2 = 25, C2 = 1)}
+#'     \item \bold{Double Gompertz}: \code{list(A = 130, B = 12, C = 0.25, A2 = 220, B2 = 30, C2 = 0.1)}
 #'     \item \bold{Monomolecular}: \code{list(A = 130, B = 2)}
 #'     \item \bold{Exponential}: \code{list(A = 15, B = 0.1)}
 #'     \item \bold{Linear}: \code{list(A = 1)}
 #'     \item \bold{Power Law}: \code{list(A = 13, B = 2)}
 #' }
 #' 
+#' 
+#' 
 #' The \code{sigma} argument optionally specifies a sub model to account for heteroskedasticity.
-#' Currently there are five supported sub models described below.
+#' Currently there are four supported sub models described below.
 #' 
 #' \itemize{
-#'    \item \bold{homo}: 
-#'     \item \bold{linear}: 
-#'     \item \bold{spline}: 
-#'     \item \bold{logistic}: 
-#'     \item \bold{gompertz}: 
+#'    \item \bold{homo}: \code{sigma ~ 1}, fitting only a global or per group intercept to sigma.
+#'     \item \bold{linear}: \code{sigma ~ \beta \cdot time}, modeling sigma with a linear relationship to time
+#'      and possibly with an interaction term per groups.
+#'     \item \bold{spline}: \code{sigma ~ s(time)}, modeling sigma using a smoothing function through `mgcv::s`, possibly by group.
+#'     \item \bold{gompertz}: \code{sigma ~ subA \cdot exp(-subB \cdot exp(-subC \cdot x))},
+#'      modeling sigma as a gompertz function of time, possibly by group. Note that you
+#'      should specify priors for the parameters in this sub model by adding them into the \code{priors}
+#'      argument, such as \code{list(..., subA = 20, subB = 15, subC = 0.25)}. If you do not specify priors
+#'      then default (flat) priors will be used, which is liable to cause fitting problems and less
+#'      accurate results. Looking at your data and making a semi-informed estimate of the total variance at the end
+#'      of the experiment can help set a reasonable prior for subA, while subB and subC can generally be the 
+#'      same as B and C in a gompertz growth model of the same data. These priors will have fat tails so they
+#'      are pretty forgiving.
 #' }
 #' 
 #' 
@@ -123,7 +139,7 @@
 
 growthSS<-function(model, form, sigma=NULL, df, priors=NULL){
   out<-list()
-  sigmas<-c("homo", "linear", "spline", "logistic", "gompertz")
+  sigmas<-c("homo", "linear", "spline", "gompertz")
   models<-c("logistic", "gompertz", "monomolecular", "exponential", "linear", "power law", "double logistic", "double gompertz")
   #* ***** `Make bayesian formula` *****
     #* `parse form argument`
@@ -148,42 +164,56 @@ growthSS<-function(model, form, sigma=NULL, df, priors=NULL){
     df[[group]]<-as.character(df[[group]])
     #* `Make autocorrelation formula`
     corForm<-as.formula(paste0("~arma(~",x,"|", individual,":",group,",1,1)"))
-    #* `Make parameter formula`
-    if(match.arg(model, models) %in% c("logistic", "gompertz")){
-      pars=c("A","B", "C")
-    } else if(match.arg(model, models) %in% c("monomolecular", "exponential", "power law")){
-      pars=c("A","B")
-    } else if(match.arg(model, models) == "linear"){
-      pars="A"
-    }
-    if(USEGROUP){ parForm<-as.formula(paste0( paste(pars,collapse="+"),"~0+",group ))
-      } else { parForm<-as.formula(paste0( paste(pars,collapse="+"),"~1" )) }
-    
+    #* `match args`
+    matched_model <- match.arg(model, models)
+    matched_sigma <- match.arg(sigma, choices=sigmas)
     #* `Make growth formula`
-    if(match.arg(model, models)=="logistic"){
+    if(matched_model=="double logistic"){
+      form_fun<-form_dou_logistic
+    } else if (matched_model=="double gompertz"){
+      form_fun<-form_dou_gompertz
+    } else if(matched_model=="logistic"){
       form_fun<-form_logistic
-    } else if (match.arg(model, models)=="gompertz"){
+    } else if (matched_model=="gompertz"){
       form_fun<-form_gompertz
-    } else if (match.arg(model, models)=="monomolecular"){
+    } else if (matched_model=="monomolecular"){
       form_fun<-form_monomolecular
-    } else if (match.arg(model, models)=="exponential"){
+    } else if (matched_model=="exponential"){
       form_fun<-form_exponential
-    } else if (match.arg(model, models)=="linear"){
+    } else if (matched_model=="linear"){
       form_fun<-form_linear
-    } else if (match.arg(model, models)=="power law"){
+    } else if (matched_model=="power law"){
       form_fun<-form_powerlaw
     }
     growthForm = form_fun(x,y)
+    #* `Make parameter formula`
+    if(matched_model %in% c("double logistic", "double gompertz")){
+      pars=c("A","B", "C", "A2","B2", "C2")
+      }else if(matched_model %in% c("logistic", "gompertz")){
+        pars=c("A","B", "C")
+      } else if(matched_model %in% c("monomolecular", "exponential", "power law")){
+        pars=c("A","B")
+      } else if(matched_model == "linear"){
+        pars="A"
+      }
+    if(matched_sigma == "gompertz"){ # add nl pars for sigma form
+      pars <- c(pars, "subA", "subB", "subC")
+    }
+      if(USEGROUP){ parForm<-as.formula(paste0( paste(pars,collapse="+"),"~0+",group ))
+      } else { parForm<-as.formula(paste0( paste(pars,collapse="+"),"~1" )) }
+      
     #* `Make heteroskedasticity formula`
     if(!is.null(sigma)){
-      sigmaForm<-if(match.arg(sigma, choices=sigmas)=="homo"){
+      sigmaForm<-if(matched_sigma=="homo"){
         if(USEGROUP){ as.formula(paste0("sigma ~ 0+", group))
           } else{ as.formula(paste0("sigma ~ 1")) }
-        } else if (match.arg(sigma, choices=sigmas)=="linear"){
+        } else if (matched_sigma=="linear"){
           if(USEGROUP){
             as.formula(paste0("sigma ~ ", x, "+", x, ":",group))
           } else{ as.formula(paste0("sigma ~ ", x)) }
-          } else if(match.arg(sigma, choices=sigmas)=="spline"){
+        } else if(matched_sigma=="gompertz"){
+          nlf(as.formula(paste0("sigma ~ subA*exp(-subB*exp(-subC*",x,"))")))
+          } else if(matched_sigma=="spline"){
             
         if(length(unique(df[[x]]))<11){
           if(USEGROUP){ as.formula(paste0("sigma ~ s(",x,", by=", group, ", k=",length(unique(df[[x]])),")"))
@@ -260,11 +290,12 @@ growthSS<-function(model, form, sigma=NULL, df, priors=NULL){
       } else {
         names(priorStanStrings)<-parNames
       }
-      # priorStanStrings
-      #* assemble set_prior statements from these
-      if(sigma =="homo" & !USEGROUP){
+      
+      if(matched_sigma =="homo" & !USEGROUP){
         prior<-brms::set_prior('student_t(3,0,5)', dpar="sigma", class="Intercept")+
           brms::set_prior('gamma(2,0.1)', class="nu")
+      } else if(matched_sigma == "gompertz"){
+        prior<-brms::set_prior('gamma(2,0.1)', class="nu")
       } else{
         prior<-brms::set_prior('student_t(3,0,5)', dpar="sigma")+
           brms::set_prior('gamma(2,0.1)', class="nu") 
@@ -308,6 +339,12 @@ form_logistic<-function(x, y){
 }
 form_gompertz<-function(x, y){
   return(as.formula(paste0(y," ~ A*exp(-B*exp(-C*",x,"))")))
+}
+form_dou_logistic<-function(x, y){
+  return(as.formula(paste0(y," ~ A/(1+exp((B-",x,")/C)) + ((A2-A1) /(1+exp((B2-",x,")/C2)))")))
+}
+form_dou_gompertz<-function(x, y){
+  return(as.formula(paste0(y," ~ A * exp(-B * exp(-C*",x,")) + (A2-A1) * exp(-B2 * exp(-C2*(",x,"-B1)))")))
 }
 form_monomolecular<-function(x, y){
   return(as.formula(paste0(y,"~A-A*exp(-B*",x,")")))
