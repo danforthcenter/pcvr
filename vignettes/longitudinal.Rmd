@@ -3,18 +3,18 @@ title: "Longitudinal Growth Modeling Options"
 author: "Josh Sumner, DDPSC Data Science Core Facility"
 subtitle: "pcvr v0.1.0"
 output: 
-  pdf_document:
-    toc: true
-    highlight: default
   html_document:
     toc: true
     number_sections: false
     code_folding: show
+  pdf_document:
+    toc: true
+    highlight: default
 date: "2023-06-16"
 vignette: >
   %\VignetteIndexEntry{longitudinalGrowth}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
 ---
 
 ```{r setup, include=FALSE}
@@ -466,7 +466,7 @@ fit <- fitGrowth(ss, iter = 1000, cores = 2, chains = 2, backend = "cmdstanr",
                control = list(adapt_delta = 0.999, max_treedepth = 20)) # options to increase performance
 ```
 
-```{r}
+```{r, eval = FALSE}
 data(bw_vignette_fit)
 fit<-bw_vignette_fit
 ```
@@ -513,8 +513,17 @@ There are a lot of options for how to use this function and even more ways to us
 
 We can write arbitrarily complex hypotheses about our models and test the posterior probability using `brms::hypothesis`. Here we test if the ratio of Asymptotes for unfertilized plants from B73 over MM is more than 10 percent higher than that ratio in halfway fertilized plants. It would be out of scope to go over all the potentially interesting hypotheses since those will depend on your experimental design and questions, but hopefully this communicates the flexibility in using these models once they are fit.
 
-```{r}
-brms::hypothesis(fit, "(A_group0.B73 / A_group0.MM) > 1.1 * (A_group50.B73 / A_group50.MM)")
+```{r, echo=TRUE, eval=FALSE}
+(hyp<-brms::hypothesis(fit, "(A_group0.B73 / A_group0.MM) > 1.1 * (A_group50.B73 / A_group50.MM)"))
+```
+
+```{r, echo=FALSE, eval=TRUE}
+# dput(hyp)
+structure(list(Hypothesis = "((A_group0.B73/A_group0.MM))-(1.1*(A_group50.B73/A_group50.MM)) > 0", 
+    Estimate = 0.241209320218704, Est.Error = 0.322485870935505, 
+    CI.Lower = -0.287499674054895, CI.Upper = 0.749743868569684, 
+    Evid.Ratio = 3.72813238770686, Post.Prob = 0.7885, Star = ""), row.names = c(NA, 
+-1L), class = "data.frame")
 ```
 
 
