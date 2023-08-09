@@ -3,6 +3,9 @@ title: "Longitudinal Growth Modeling Options"
 author: "Josh Sumner, DDPSC Data Science Core Facility"
 subtitle: "pcvr v0.1.0"
 output: 
+  pdf_document:
+    toc: true
+    highlight: default
   html_document:
     toc: true
     number_sections: false
@@ -15,43 +18,24 @@ vignette: >
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, tidy.opts=list(width.cutoff=60),tidy=TRUE)
 ```
 
-```{css}
-.static-code {
-  background-color: white;
-  border: 1px solid lightgray;
-}
-.simulated {
-  background-color: #EEF8FB;
-  border: 1px solid #287C94;
-}
-```
-
-```{r}
-library(pcvr) # devtools::load_all()
+```{r, message = FALSE}
+devtools::load_all("~/Desktop/stargate/fahlgren_lab/pcvr/")
+#library(pcvr) # devtools::load_all()
 library(data.table) # for fread
 library(ggplot2)
 library(patchwork) # for easy ggplot manipulation/combination
 library(brms)
 ```
 
-## Notes
-If I want to add support for other modeling options then this could actually be a good time to do it.
-Possible interesting ones:
-nlme?
-nlqr?
-gam?
 
-
-## paragraph about longitudinal modeling and why it matters
+## Why Longitudinal Modeling?
 
 Longitudinal modeling allows users to take full advantage of accurate and non-destructive data collection possible through high throughput image based phenotyping. Using longitudinal data accurately requires some understanding of the statistical challenges associated with it. Statistical complications including changes in variance (heteroskedasticity), non-linearity, and autocorrelation (plant's day to day self similarity) present potential problems in analyses. To address these we recommend using hierarchical models. Often non-linear models present challenges in testing hypotheses but this concern, among others, can be solved by using a Bayesian framework. `pcvr` attempts to lower the barrier to entry for building these models with helper functions for use with `brms`.
 
-## Set up
-
-### Installation
+## Setup
 
 The `brms` package is not automatically imported by `pcvr`, so before fitting models we would need to load that package. For details on installing [`brms`](https://github.com/paul-buerkner/brms) and either [`rstan`](https://mc-stan.org/rstan/) or [`cmdstanr`](https://mc-stan.org/cmdstanr/) (with `cmdstanr` being recommended), see those packages linked documentation. Note that if you install `pcvr` from github with `dependencies=T` then `cmdstanr` and `brms` will be installed.
 
@@ -62,33 +46,18 @@ library(cmdstanr)
 cmdstanr::install_cmdstan()
 ```
 
-### Vignette Styles
-
-This vignette is laid out to explain features available in `pcvr` to support heirarchical Bayesian growth modeling. There are some code chunks in this vignette that you are only presented to demonstrate syntax and that you are not meant to run locally if following along. Those are identified by style:
-
-```{r, class.source="static-code", eval=F}
-complicatedFunction("syntax") # do not run this style
-```
-
-```{r}
-1+1 # run this style
-```
-
-```{r, class.source="simulated", eval=T}
-support<-seq(0,1,0.0001) # this style is simulated data
-plot(support, dbeta(support, 5,5), type="l", main="simulated example")
-```
-
 
 ## Read In Bellwether Data
 
 For this tutorial we will use a mix of simulated data and Bellwether data. The Bellwether data is from an experiment using four maize genotypes in three levels of NPK fertilizer. Data from that experiment is available on github and can be read into R using `read.pcv`. The simulated data will be generated as needed. For details on the reading/metadata functions used here please see the main bellwether vignette.
 
 ```{r}
-sv<-read.pcv("https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv", 
+sv<-read.pcv(paste0("https://media.githubusercontent.com/media/",
+                    "joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv"), 
              mode="wide", singleValueOnly = T, reader="fread")
 
-key<-read.csv("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/smallPhenotyperRun_key.csv")
+key<-read.csv(paste0("https://raw.githubusercontent.com/joshqsumner/",
+                     "pcvrTestData/main/smallPhenotyperRun_key.csv"))
 
 sv<-merge(sv, key, by="barcode")
 ```
@@ -97,8 +66,6 @@ Now we add integer time columns using `bw.time`.
 
 ```{r}
 sv<-bw.time(sv, plantingDelay = 0, phenotype="area.pixels", cutoff=10, timeCol="timestamp", group=c("barcode", "rotation"), plot=FALSE)
-head(sv)
-dim(sv)
 ```
 
 Before combining angled pictures of the same plant per a given time.
@@ -109,14 +76,12 @@ phenoForm<-paste0("cbind(", paste0(phenotypes, collapse=", "), ")")
 groupForm<-"DAS+barcode+genotype+fertilizer"
 form<-as.formula(paste0(phenoForm, "~", groupForm))
 sv_ag_withOutliers<-aggregate(form, data=sv, mean, na.rm=TRUE)
-dim(sv_ag_withOutliers)
 ```
 
 And finally removing outliers with `bw.outliers` and converting area to be in $\text{cm}^2$ instead of pixels.
 
 ```{r}
 sv_ag<-bw.outliers(df = sv_ag_withOutliers, phenotype="area.pixels", group = c("DAS", "genotype", "fertilizer"), plotgroup = c("barcode"), plot=FALSE)
-dim(sv_ag)
 pixels_per_cmsq <- 42.5^2 
 sv_ag$area_cm2<-sv_ag$area.pixels / pixels_per_cmsq
 sv_ag$group<-interaction(sv_ag$fertilizer, sv_ag$genotype)
@@ -151,8 +116,8 @@ simdf<-growthSim("power law", n=20, t=25, params = list("A"=c(16, 11), "B"=c(0.7
 pl<-ggplot(simdf,aes(time, y, group=interaction(group,id)))+ geom_line(aes(color=group))+
   labs(title="Power Law")+theme_minimal()+theme(legend.position="none")
 
-(l+g+m)/(e+ln+pl)
-
+patch<-(l+g+m)/(e+ln+pl)
+patch
 ```
 
 Typically at least one of these models will be a good fit to your data.
@@ -215,11 +180,13 @@ The three options implemented in `pcvr` are roughly represented by these curves,
 
 
 ```{r, message = FALSE}
+draw_gomp_sigma <- function(x){ 23*exp(-21*exp(-0.22*x)) }
 ggplot(sigma_df, aes(x=time, y=y))+
   geom_line(aes(group=group), color = "gray60")+
   geom_hline(aes(yintercept = 12, color="Homoskedastic"), linetype=5, key_glyph = draw_key_path)+
   geom_abline(aes(slope = 0.8, intercept=0,color="Linear"), linetype=5, key_glyph = draw_key_path)+
   geom_smooth(method="gam", aes(color = "Spline"), linetype=5, se=F, key_glyph = draw_key_path)+
+  geom_function(fun = draw_gomp_sigma, aes(color="Gompertz"), linetype=5)+
   scale_color_viridis_d(option="plasma", begin = 0.1, end = 0.9)+
   guides(color=guide_legend(override.aes = list(linewidth=1, linetype=1)))+
   pcv_theme()+
@@ -234,7 +201,7 @@ ss <- growthSS(model = "gompertz", form = y~time|id/group, sigma = "homo",
                df = gomp, priors = list("A"=130, "B"=15, "C"=0.25))
 ```
 
-```{r, eval=F}
+```{r, eval=FALSE}
 fit_h <- fitGrowth(ss, iter=1000, cores=4, chains=4, silent=0)
 
 brmPlot(fit_h, form = ss$pcvrForm, df=ss$df)
@@ -250,7 +217,7 @@ ss <- growthSS(model = "gompertz", form = y~time|id/group, sigma = "linear",
                df = gomp, priors = list("A"=130, "B"=15, "C"=0.25))
 ```
 
-```{r, eval=F}
+```{r, eval=FALSE}
 fit_l <- fitGrowth(ss, iter=1000, cores=4, chains=4, silent=0, control = list(adapt_delta = 0.999, max_treedepth = 20))
 
 p1<-brmPlot(fit_l, form = ss$pcvrForm, df=ss$df)
@@ -263,7 +230,7 @@ p
 
 This model is also a poor fit, but it has a different problem. It accurately models the low variability at the beginning of the experiment, but the linear model is not flexible enough to adapt to the changes in variance even in this simulated data.
 
-Finally we can use the spline sub models. The spline model does a very good job of fitting the data due to the natural flexibility of polynomial functions. Again this added accuracy comes at the cost of taking longer for the model to fit.
+We can also use spline sub models. The spline model does a very good job of fitting the data due to the natural flexibility of polynomial functions. Again this added accuracy comes at the cost of taking longer for the model to fit.
 
 
 ```{r}
@@ -271,18 +238,33 @@ ss <- growthSS(model = "gompertz", form = y~time|id/group, sigma = "spline",
                df = gomp, priors = list("A"=130, "B"=15, "C"=0.25))
 ```
 
-```{r, eval=F}
-fit <- fitGrowth(ss, iter=2000, cores=4, chains=4, silent=0, control = list(adapt_delta = 0.999, max_treedepth = 20))
+```{r, eval=FALSE}
+fit_s <- fitGrowth(ss, iter=2000, cores=4, chains=4, silent=0, control = list(adapt_delta = 0.999, max_treedepth = 20))
 
-brmPlot(fit, form = ss$pcvrForm, df=ss$df)
+brmPlot(fit_s, form = ss$pcvrForm, df=ss$df)
 ```
 
 ![Spline sub models allow for taking heteroskedasticity into account without complex formulae](spline_brm.png)
+Finally, we can specify a sigmoid function to model sigma. In `growthSS` the sigmoid option is a gompertz formula, same as the main growth function. While this is much less flexible than splines it tends to describe the variance of a sigmoid growth model quite well and allows for easier hypothesis testing between groups. Additionally, since the spline sub model will fit many basis functions this will generally be **significantly** faster since it only needs to find 3 parameters to complete the sub model, and each can have a mildly informative prior. As a single reference point, the model below fit in about 6 minutes while the spline model above took slightly over an hour to fit. These example models have three groups and the model with a gompertz sub model contains 21 total parameters while the spline sub model version contains 43 total parameters.
+
+When setting priors for the gompertz sub-model it is generally reasonable to expect a similar growth rate and inflection point as in the main model (assuming the main model is gompertz as well).
+
+```{r}
+ss <- growthSS(model = "gompertz", form = y~time|id/group, sigma = "gompertz",
+               df = gomp, priors = list("A"=130, "B"=15, "C"=0.25, "subA"=15, "subB"=15, "subC"=0.25))
+```
+
+```{r, eval=FALSE}
+fit_g <- fitGrowth(ss, iter=2000, cores=4, chains=4, silent=0, control = list(adapt_delta = 0.999, max_treedepth = 20))
+
+brmPlot(fit_g, form = ss$pcvrForm, df=ss$df)
+```
+
+![Using a Gompertz formula for both growth and for increasing variance](gompSubModel.png)
 
 Revisiting our sigma plots you might have realized that there are at least as many possibilities for how to parameterize submodels as there are for the growth models themselves. A few other options are shown here as further examples.
 
 ```{r, message = FALSE}
-
 draw_gomp_sigma <- function(x){ 23*exp(-21*exp(-0.22*x)) }
 draw_logistic_sigma <- function(x){ 20 / (1 + exp( (15-x)/2) ) }
 draw_logistic_exp <- function(x){ 2.5 * exp(0.08 * x) }
@@ -304,7 +286,7 @@ ggplot(sigma_df, aes(x=time, y=y))+
   labs(y="SD of y", title = "Gompertz Sigma", color = "")
 ```
 
-For this data there are several reasonable looking curves. In some cases you might decide to fit a model using a different sub model than those offered in `pcvr`, which may work similarly to this example. Here we parameterize a non-linear formula for sigma. The downside of this is that it is more complicated to write this less flexible model while the upside is that it makes hypothesis testing about the variance more straightforward, make future data prediction more stable, and it has fewer parameters to estimate than a default spline submodel (thus it is significantly faster). 
+For this data there are several reasonable looking curves. In some cases you might decide to fit a model using a different sub model than those offered in `pcvr`. To give an example of how you can do that here is a manual version of the same model with a gompertz sub model available from `growthSS` that we used above. 
 
 ```{r, eval = FALSE}
 prior1 <- prior(gamma(2,0.1), class="nu", lb=0.001)+
@@ -315,40 +297,33 @@ prior1 <- prior(gamma(2,0.1), class="nu", lb=0.001)+
   prior(lognormal(log(20), .25), nlpar = "subB", lb = 0) + 
   prior(lognormal(log(1.2), .25), nlpar = "subC", lb = 0)
 
+form_b <- bf(y ~ A*exp(-B*exp(-C*time)), 
+           nlf(sigma ~ subA*exp(-subB*exp(-subC*time))),
+           A+B+C+AA+BB+CC ~ 0+group, 
+           autocor = ~arma(~time|sample:group,1,1),
+           nl = TRUE ) 
 
-form_b <- bf(y ~ A*exp(-B*exp(-C*time)),
-           nlf(sigma ~ subA*exp(-subB*exp(-subC*time))), # nlf() is used to add additional non-linear formulas
-           A+B+C+AA+BB+CC ~ 0+group, # no intercepts, everything modeled by groups
-           autocor = ~arma(~time|sample:group,1,1), nl = TRUE )
-
-
-fit_gomp_gompSubModel <- brm(form_b,
-                        family = student, prior = prior1, data = gomp,
-                        iter = 1000, cores = 4, chains = 4, backend = "cmdstanr", silent = 0,
-                        control = list(adapt_delta = 0.999,max_treedepth = 20),
-                        init = 0 ) # 200 seconds vs 4800 seconds for spline sub model
-brmPlot(fit_gomp_gompSubModel, form = y~time|id/group, df = gomp)
+fit_g2 <- brm(form_b, family = student, prior = prior1, data = gomp,
+             iter = 1000, cores = 4, chains = 4, backend = "cmdstanr", silent = 0,
+             control = list(adapt_delta = 0.999,max_treedepth = 20),
+             init = 0 ) # chain initialization at 0 for simplicity
+brmPlot(fit_g2, form = y~time|id/group, df = gomp)
 ```
 
 
-![Using a Gompertz formula for both growth and for increasing variance](gompSubModel.png)
+We can compare models using Leave-One-Out Information Criterion (LOO IC).
 
 ```{r, eval = FALSE}
-print(load("splineFit.rdata"))
-print(load("gompSubModel.rdata"))
-print(load("homoSubModel.rdata"))
-print(load("linearSubModel.rdata"))
-# loo IC comparison
-loo_spline <- add_criterion(fit, "loo")
+loo_spline <- add_criterion(fit_s, "loo")
 loo_homo <- add_criterion(fit_h, "loo")
 loo_linear <- add_criterion(fit_l, "loo")
-loo_gomp <- add_criterion(fit_gomp_gompSubModel, "loo")
+loo_gomp <- add_criterion(fit_g, "loo")
 
 h<-loo_homo$criteria$loo$estimates[3,1]
 s<-loo_spline$criteria$loo$estimates[3,1]
 l<-loo_linear$criteria$loo$estimates[3,1]
 g<-loo_gomp$criteria$loo$estimates[3,1]
-#loo(fit, fit_gomp_gompSubModel, fit_h)
+
 loodf<-data.frame(loo = c(h,s,l,g), model = c("Homosked", "Spline", "Linear", "Gompertz"))
 loodf$model <- factor(loodf$model, levels=unique(loodf$model[order(loodf$loo)]), ordered=TRUE)
 
@@ -359,10 +334,11 @@ ggplot(loodf,
   labs(y = "LOO Information Criteria", x = "Sub Model of Sigma")+
   theme_minimal()+
   theme(legend.position = "none")
-ggsave("pcvr_submodel_loo.png", bg="#ffffff", width = 8, height = 6, dpi = 300)
 ```
 
-![LOO Information Criterion can be used to compare these models, with lower values indicating a better model fit](pcvr_submodel_loo.png)
+![LOO Information Criterion can be used to compare these models, with lower values indicating a better model fit](pcvr_submodel_loo.png){h!}
+
+The spline sub-model tends to have the best LOO IC, but comparing credible intervals while taking speed and interpretability into account may change which model is the best option for your situation. For this particular data the gompertz submodel does seem to perform very well despite the LOO IC difference from using splines.
 
 #### A note on GAMs
 
@@ -398,17 +374,16 @@ strongPrior <- prior(student_t(3,0,5), dpar="sigma", class="b") +
   prior(gamma(2,0.1), class="nu", lb=0.001)+
   prior(normal(10, .05),nlpar = "A", lb = 0)
 
-ss <- growthSS(model = "linear", form = y~time|id/group, sigma = "spline",
+ss <- growthSS(model = "linear", form = y~time|id/group, sigma = "homo",
                df = ln, priors = strongPrior)
 
 fit <- fitGrowth(ss, iter=1000, cores=2, chains=2, silent=0)
 
 brmPlot(fit, form = ss$pcvrForm, df=ss$df)+
  coord_cartesian(ylim = c(0,100))
-#ggsave("strongPrior.png", bg="#ffffff", width = 9, height = 6, dpi = 300)
 ```
 
-![Credible intervals from strong priors](strongPrior.png)
+![Credible intervals from strong priors](strongPrior.png){h!}
 
 Setting a prior as narrow as `N(10, 0.05)` intuitively does feel too strong, as though we are so sure already that we can't expect to learn much more, but another way that a prior can be too strong is in providing too much unrealistic information. Specifically the flat prior can also be thought of as too strong given that it will weigh all numbers equally, which is almost never a reasonable assumption. In our growth model examples there should be no probability given to negative growth rates when plants start from seed. Even if the flat prior is constricted to be positive there is no parameterization where a parameter value in the thousands or millions makes sense as being biologically plausible.
 
@@ -425,18 +400,18 @@ weakPrior <- prior(student_t(3,0,5), dpar="sigma", class="b") +
   prior(gamma(2,0.1), class="nu", lb=0.001)+
   prior(lognormal(log(10), 0.25), nlpar = "A", lb = 0)
 
-ss <- growthSS(model = "linear", form = y~time|id/group, sigma = "spline",
+ss <- growthSS(model = "linear", form = y~time|id/group, sigma = "homo",
                df = ln, priors = weakPrior)
 
 fit <- fitGrowth(ss, iter=1000, cores=2, chains=2, silent=0)
 
 brmPlot(fit, form = ss$pcvrForm, df=ss$df)+
- coord_cartesian(ylim = c(0,100)) # ggsave("weakPrior.png", bg="#ffffff", width = 9, height = 6, dpi = 300)
+ coord_cartesian(ylim = c(0,100))
 ```
 
-![Using weak priors our mean lines make sense](weakPrior.png)
+![Using weak priors our mean lines make sense](weakPrior.png){h!}
 
-As you can see the weak priors moved to meet our data and now we have useful posterior distributions.
+As you can see the weak priors moved to meet our data and now we have usable posterior distributions. The variance is large but that is natural with 5 reps per condition when looking at 99% credible intervals.
 
 #### Priors in `growthSS`
 
@@ -457,7 +432,7 @@ twoPriors = list("A" = c(100, 130), "B" = c(6, 12), "C" = c(0.5, 0.25))
 plotPrior(twoPriors, "gompertz",n=100)[[1]]
 ```
 
-### Using `fitGrowth`
+## Using `fitGrowth`
 
 The output from `growthSS` can be passed to `fitGrowth` which calls `brms::brm` and to fit the growth model.
 
@@ -482,7 +457,7 @@ ggplot(sv_ag, aes(x=DAS, y=area_cm2, group=barcode, color=group))+
 This looks okay, there are no strange jumps in the data or glaring problems.
 
 
-#### Running Models
+### Running Models
 
 The `fitGrowth` function is a wrapper around `brms::brm` which automatically uses the output from `growthSS`. Any additional arguments to `brms::brm` can still be specified, a few examples of which are shown here. 
 
@@ -491,13 +466,13 @@ fit <- fitGrowth(ss, iter = 1000, cores = 2, chains = 2, backend = "cmdstanr",
                control = list(adapt_delta = 0.999, max_treedepth = 20)) # options to increase performance
 ```
 
-```{r, eval=FALSE}
+```{r}
 data(bw_vignette_fit)
 fit<-bw_vignette_fit
 ```
 
 
-#### Check Model Fit
+### Check Model Fit
 
 We can visualize credible intervals from a `brms` model and compare that to our growth trendlines to get an intuitive understanding of how well the model fit. Note that since this vignette does not load brms these are only a picture of the output from `brmPlot` and `brmViolin`. The code is present to run this locally if you have brms installed and choose to.
 
@@ -506,7 +481,7 @@ brmPlot(fit, form = area_cm2~DAS|barcode/group, df = ss$df)+
   labs(y=expression("Area"~"(cm"^2~")"))
 ```
 
-![](brmPlot1.png)
+![](brmPlot1.png){h!}
 
 In this case our model has 12 groups (3 soil conditions in each of 4 genotypes), so we might want to pull out only a few groups to look at. 
 
@@ -515,9 +490,9 @@ brmPlot(fit, form = area_cm2~DAS|barcode/group, df = ss$df, groups = c("0.B73", 
   labs(y=expression("Area"~"(cm"^2~")"))
 ```
 
-![](brmPlot2.png)
+![Subset of groups shown](brmPlot2.png){h!}
 
-#### Test Hypotheses
+## Test Hypotheses
 
 Now we probably have some ideas about what we want to test in our data. The `brms::hypothesis` function offers incredible flexibility to test all kinds of hypotheses. For some comparisons `pcvr` has a helper function called `brmViolin` to visualize posterior distributions and the posterior probability of some hypotheses associated with them.
 
@@ -528,13 +503,13 @@ brmViolin(model = fit, params = NULL,
           returnData=FALSE)
 ```
 
-![](brmViolin_vigPlot.png)
+![](brmViolin_vigPlot.png){h!}
 
 This shows that we have a posterior probability greater than 99 percent of an asymptotic size at least 5 percent higher with the 100 type soil when compared against the 0 type soil. Note that this data does not have any plants that reached asymptotic size, so the model uses the incomplete data to estimate where an asymptote would be. In a normal experiment the plants would be more mature but here the asymptote parameter is artificially inflated for the 100 soil treatment group due to their slower growth rate. 
 
 There are a lot of options for how to use this function and even more ways to use `brms::hypothesis`.
 
-#### `brms::hypothesis`
+### `brms::hypothesis`
 
 We can write arbitrarily complex hypotheses about our models and test the posterior probability using `brms::hypothesis`. Here we test if the ratio of Asymptotes for unfertilized plants from B73 over MM is more than 10 percent higher than that ratio in halfway fertilized plants. It would be out of scope to go over all the potentially interesting hypotheses since those will depend on your experimental design and questions, but hopefully this communicates the flexibility in using these models once they are fit.
 
@@ -543,10 +518,7 @@ brms::hypothesis(fit, "(A_group0.B73 / A_group0.MM) > 1.1 * (A_group50.B73 / A_g
 ```
 
 
-
-
-
-#### Comparing Models Over Time
+## Comparing Models Over Time
 
 As a final note on `brms`, there is a possiblity of making interesting early stopping rules in a Bayesian framework. Currently this does not have an obvious Bellwether implementation but it should be noted as a benefit of the method. If you have models fit to subsets of your data then the `distPlot` function will show changes in the posterior distribution for some or all of your parameters over time or over another subset variable. Here the growth trend plots are also a legend for the time of each posterior distribution.
 
@@ -558,185 +530,82 @@ distributionPlot(fits = from3to25, form = y~time|id/group, params=c("A", "B", "C
 ```
 
 
-![](distPlot_vigPlot.png)
+![](distPlot_vigPlot.png){h!}
 
+## Recovery Experiments
 
+Previously we looked at the 6 standard growth models supported by `growthSS` and `growthSim`.
 
-
-
-
-
-0.5*( M1/(1+exp(-k1(x-a))) + M2/(1+exp(-k2(x-b))))
-
-Where M1 and M2 are the asymptotics (the plateaus), a and b are the x values for the centers of the slopes and k1 and k2 are connected to the steepness of the curves.
-
-## Double sigmoid (logistic)
-
-```{r}
-set.seed(345)
-ds <- growthSim("logistic", n=20, t=35, params = list("A"=200, "B" = 13, "C" = 3))
-ggplot(ds,aes(time, y, group=interaction(group,id)))+ 
-  geom_line(aes(color=group))+labs(title="Logistic")
-ds2 <- growthSim("logistic", n=20, t=35, params = list("A"=200, "B" = 13, "C" = 3))
-
-res<-list()
-for(group in unique(ds2$group)){
-  sub<- ds2[ds2$group == group,]
-  for(id in unique(sub$id)){
-    ind <- sub[sub$id == id, ]
-    plateau <- ds[ds$group ==group & ds$id == id & ds$time == 35, ]
-    ind$time <- ind$time + plateau$time
-    ind$y <- ind$y+plateau$y
-    res[[paste0(group,id)]]<-ind
-  }
-}
-ds2<-do.call(rbind, res)
-rownames(ds2)<-NULL
-ds <- rbind(ds, ds2)
-
-ggplot(ds,aes(time, y, group=interaction(group,id)))+ 
-  geom_line(aes(color=group))+labs(title="Double Sigmoid (logistic)")
-
-prior_ds <- prior(gamma(2,0.1), class="nu", lb=0.001)+
-  prior(lognormal(log(130), .25),nlpar = "A1", lb = 0) +
-  prior(lognormal(log(12), .25), nlpar = "B1", lb = 0) + 
-  prior(lognormal(log(1.2), .25), nlpar = "C1", lb = 0)+
-  prior(lognormal(log(300), .25),nlpar = "A2", lb = 0) +
-  prior(lognormal(log(30), .25), nlpar = "B2", lb = 0) + 
-  prior(lognormal(log(1.2), .25), nlpar = "C2", lb = 0)
-
-form_b <- bf(y ~ A1/(1+exp((B1-time)/C1)) + ((A2-A1) /(1+exp((B2-time)/C2))) ,
-           sigma ~ 1,
-           A1+B1+C1+A2+B2+C2 ~ 1, 
-           autocor = ~arma(~time|sample:group,1,1), nl = TRUE)
-
-fit_ds <- brm(form_b, family = student, prior = prior_ds, data = ds,
-                        iter = 600, cores = 4, chains = 4, backend = "cmdstanr", silent = 0,
-                        init = 0)
-
-probs <- seq(from=99, to=1, by=-2)/100
-avg_pal <- viridis::plasma(n=length(probs))
-df_test <- data.frame("treatment"="a",time=1:70,sample="new1")
-df_pred <- predict(fit_ds,df_test,probs=probs)
-test <- cbind(df_test,df_pred)
-
-ggplot(test,aes(time,Estimate))+
-  lapply(seq(1,49,2),function(i) geom_ribbon(aes_string(ymin=paste("Q",i,sep = ""),ymax=paste("Q",100-i,sep = "")),fill=avg_pal[i],alpha=0.5))+
-  geom_line(data=ds,aes(time,y,group=id),color="gray20")+
-  ylab(~~Area~(cm^2))+
-  xlab("Time")+
-  theme_light()+
-  theme(axis.ticks.length=unit(0.2,"cm"))+
-  theme(strip.background=element_rect(fill="gray50",color="gray20"),
-        strip.text.x=element_text(size=14,color="white"),
-        strip.text.y=element_text(size=14,color="white"))+
-  theme(axis.title= element_text(size = 18))+
-  theme(axis.text = element_text(size = 14))+
-  theme(legend.position='top')
-
+```{r, echo=F}
+patch
 ```
 
-## Double sigmoid (gompertz)
+There are two additional growth models supported by `growthSS` and `growthSim` for use with specialized situations where growth is interrupted for some reason, such as with a stress treatment and a recovery period. It is strongly recommended that you familiarize with double sigmoid curves by using `growthSim` before using these model formulae.
 
 ```{r}
-#* simulate double sigmoid data
-set.seed(345)
-ds <- growthSim("gompertz", n=20, t=35, params = list("A"=200, "B" = 20, "C" = 0.2))
-ds2 <- growthSim("gompertz", n=20, t=50, params = list("A"=100, "B" = 13, "C" = 0.1))
+simdf<-growthSim("double logistic", n=20, t=70,
+                 params = list("A"=c(70,50), "B"=c(20, 15), "C"=c(3, 3),
+                               "A2"=c(160,210), "B2"=c(45, 45), "C2"=c(4,4)))
 
-res<-list()
-for(group in unique(ds2$group)){
-  sub<- ds2[ds2$group == group,]
-  for(id in unique(sub$id)){
-    ind <- sub[sub$id == id, ]
-    plateau <- ds[ds$group ==group & ds$id == id & ds$time == max(ds$time), ]
-    ind$time <- ind$time + plateau$time
-    ind$y <- ind$y+plateau$y
-    res[[paste0(group,id)]]<-ind
-  }
-}
-ds2<-do.call(rbind, res)
-rownames(ds2)<-NULL
-ds <- rbind(ds, ds2)
-
-ggplot(ds,aes(time, y, group=interaction(group,id)))+ 
-  geom_line(aes(color=group))+labs(title="Double Sigmoid (gompertz)")
-
-prior_ds_1 <- prior(gamma(2,0.1), class="nu", lb=0.001)+
-  prior(lognormal(log(130), .25),nlpar = "A1", lb = 0) +
-  prior(lognormal(log(12), .25), nlpar = "B1", lb = 0) +
-  prior(lognormal(log(1), .25), nlpar = "C1", lb = 0)+
-  prior(lognormal(log(300), .25),nlpar = "A2", lb = 0) +
-  prior(lognormal(log(50), .25), nlpar = "B2", lb = 0) +
-  prior(lognormal(log(1), .25), nlpar = "C2", lb = 0)
-
-prior_ds_2 <- prior(gamma(2,0.1), class="nu", lb=0.001)+
-  prior(lognormal(log(130), .25),nlpar = "A1", lb = 0) +
-  prior(lognormal(log(12), .25), nlpar = "B1", lb = 0) +
-  prior(lognormal(log(1), .25), nlpar = "C1", lb = 0)+
-  prior(lognormal(log(300), .25),nlpar = "A2", lb = 0) +
-  prior(lognormal(log(150), .25), nlpar = "B2", lb = 0) +
-  prior(lognormal(log(1), .25), nlpar = "C2", lb = 0)
-
-# y ~ A1 * exp(-B1 * exp(-C1*x)) + (A2-A1) * exp(-B2 * exp(-C2*x))
-# adding -B1 into the final growth segment is helpful for having interpretable
-# B2, but it probably slows things down a lot.
-form_b_1 <- bf(y ~ A1 * exp(-B1 * exp(-C1*time)) + (A2-A1) * exp(-B2 * exp(-C2*(time-B1))),
-           sigma ~ 1,
-           A1+B1+C1+A2+B2+C2 ~ 1,
-           autocor = ~arma(~time|sample:group,1,1), nl = TRUE)
-
-form_b_2 <- bf(y ~ A1 * exp(-B1 * exp(-C1*time)) + (A2-A1) * exp(-B2 * exp(-C2*(time))),
-           sigma ~ 1,
-           A1+B1+C1+A2+B2+C2 ~ 1,
-           autocor = ~arma(~time|sample:group,1,1), nl = TRUE)
-
-
-fit_ds_1 <- brm(form_b_1, family = student, prior = prior_ds_1, data = ds,
-                        iter = 600, cores = 4, chains = 4, backend = "cmdstanr", silent = 0,
-                        init = 0)
-
-fit_ds_2 <- brm(form_b_2, family = student, prior = prior_ds_1, data = ds,
-                        iter = 600, cores = 4, chains = 4, backend = "cmdstanr", silent = 0,
-                        init = 0)
-
-fit_ds
-head(ds)
-
-
-probs <- seq(from=99, to=1, by=-2)/100
-avg_pal <- viridis::plasma(n=length(probs))
-df_test <- data.frame("treatment"="a",time=1:max(ds$time),sample="new1")
-df_pred <- predict(fit_ds_2,df_test,probs=probs)
-test <- cbind(df_test,df_pred)
-
-ggplot(test,aes(time,Estimate))+
-  lapply(seq(1,49,2),function(i) geom_ribbon(aes_string(ymin=paste("Q",i,sep = ""),ymax=paste("Q",100-i,sep = "")),fill=avg_pal[i],alpha=0.5))+
-  geom_line(data=ds,aes(time,y,group=id),color="gray20")+
-  ylab(~~Area~(cm^2))+
-  xlab("Time")+
-  theme_light()+
-  theme(axis.ticks.length=unit(0.2,"cm"))+
-  theme(strip.background=element_rect(fill="gray50",color="gray20"),
-        strip.text.x=element_text(size=14,color="white"),
-        strip.text.y=element_text(size=14,color="white"))+
-  theme(axis.title= element_text(size = 18))+
-  theme(axis.text = element_text(size = 14))+
-  theme(legend.position='top')
-
-
-A1 = 150
-A2 = 400
-B1 = 13
-B2 = 50
-C1 = 0.2
-C2 = 0.1
-x<-1:100
-y <- A1 * exp(-B1 * exp(-C1*x)) + (A2-A1) * exp(-B2 * exp(-C2*(x-B1)))
-plot(x,y,type="l")
+ggplot(simdf,aes(time, y, group=interaction(group,id)))+
+ geom_line(aes(color=group))+labs(title="Double Logistic")+
+  pcv_theme()
 ```
 
 
+```{r}
+simdf<-growthSim("double gompertz", n=20, t=70,
+                 params = list("A"=c(70,50), "B"=c(8, 8), "C"=c(0.2, 0.2),
+                               "A2"=c(160,210), "B2"=c(35, 40), "C2"=c(0.1, 0.1)))
+
+ggplot(simdf,aes(time, y, group=interaction(group,id)))+
+ geom_line(aes(color=group))+labs(title="Double Gompertz")+
+  pcv_theme()
+```
+
+To fit these models we take the same approach of using `growthSS` and `fitGrowth`.
+
+```{r,eval=FALSE}
+ss <- growthSS("double gompertz", y ~ time|id/group, sigma = "homo", df = simdf,
+               priors = list('A' = 100, 'B' = 12, 'C' = 0.25,
+                             'A2' = 200, 'B2' = 30, 'C2' = 0.1))
+
+fit <- fitGrowth(ss, 1000, cores = 4, chains=4, silent=0)
+
+brmPlot(fit, form = ss$pcvrForm, df = simdf) # 200 seconds
+```
+
+![](doubleGompertz_homo.png){h!}
+
+```{r, eval = FALSE}
+ss <- growthSS("double gompertz", y ~ time|id/group, sigma = "gompertz", df = simdf,
+               priors = list('A' = 100, 'B' = 12, 'C' = 0.25,
+                             'A2' = 200, 'B2' = 30, 'C2' = 0.1,
+                             'subA' = 200, 'subB' = 30, 'subC' = 0.1))
+
+fit <- fitGrowth(ss, 1000, cores = 4, chains=4, silent=0)
+
+brmPlot(fit, form = ss$pcvrForm, df = simdf) # 440 seconds
+```
+
+![](doubleGompertz_gompertz.png){h!}
+
+```{r, eval = FALSE}
+ss <- growthSS("double gompertz", y ~ time|id/group, sigma = "spline", df = simdf,
+               priors = list('A' = 100, 'B' = 12, 'C' = 0.25,
+                             'A2' = 200, 'B2' = 30, 'C2' = 0.1))
+
+fit <- fitGrowth(ss, 1000, cores = 4, chains=4, silent=0)
+
+brmPlot(fit, form = ss$pcvrForm, df = simdf) # 1280 seconds
+```
+
+![](doubleGompertz_spline.png){h!}
+
+
+## Other Resources
+
+The supported models in `pcvr` are meant to lower the barrier to entry for complex models using `brms` and `Stan`. While there are lots of options using these growth models there are many many more options using `brms` directly and still more is possible programming directly in `Stan`. If you take an interest in developing more and more nuanced models then please see the [`brms` documentation](https://paul-buerkner.github.io/brms/), [`Stan` documentation](https://mc-stan.org/users/documentation/), or [stan forums](https://discourse.mc-stan.org/). For models that you think may have broader appeal for high throughput plant phenotyping please raise an issue on [github](https://github.com/danforthcenter/pcvr) and help the DDPSC data science team understand what the desired model is/where existing options fall short for your needs.
 
 
 
