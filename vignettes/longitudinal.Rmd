@@ -167,7 +167,7 @@ set.seed(345)
 gomp<-growthSim("gompertz", n=20, t=35, params = list("A"=c(200,180, 160), "B"=c(20,22, 18), "C"=c(0.15, 0.2, 0.1)))
 
 
-sigma_df <- aggregate(formula = y ~ group+time, data = gomp, FUN = sd)
+sigma_df <- aggregate(y ~ group+time, data = gomp, FUN = sd)
 
 ggplot(sigma_df, aes(x=time, y=y, group=group))+
   geom_line(color = "gray60")+
