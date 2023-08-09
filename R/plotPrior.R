@@ -71,6 +71,7 @@ plotPrior<-function(priors, type = "density", n=200, t=25){
     
     x_margin_plot = NULL
     y_margin_plot = NULL
+    z_margin_plot = NULL
     
     if(type=="logistic"){
       
@@ -79,6 +80,7 @@ plotPrior<-function(priors, type = "density", n=200, t=25){
         x<-growthSim(model = "logistic", n = 1, t = t, params = iter_params); x$id = paste0("id_",i);x } )) # simulate data using prior draw
       x_margin_plot = densPlots[["B"]] 
       y_margin_plot = densPlots[["A"]] 
+      z_margin_plot = densPlots[["C"]] 
       
       } else if(type=="gompertz"){
         
@@ -86,7 +88,8 @@ plotPrior<-function(priors, type = "density", n=200, t=25){
         iter_params <- .prior_sampler(priors)
         x<-growthSim(model = "gompertz", n = 1, t = t, params = iter_params); x$id = paste0("id_",i);x } ))
       x_margin_plot = densPlots[["B"]]
-      y_margin_plot = densPlots[["A"]] 
+      y_margin_plot = densPlots[["A"]]
+      z_margin_plot = densPlots[["C"]] 
       
       } else if(type=="monomolecular"){
         
@@ -118,7 +121,8 @@ plotPrior<-function(priors, type = "density", n=200, t=25){
       ggplot2::theme_minimal()+
       ggplot2::guides(color = ggplot2::guide_legend(override.aes = list(linewidth=5)))+
       ggplot2::labs(y="Y", title=paste0(n," curves simulated from prior draws"),
-                    color="Prior")
+                    color="Prior")+
+      ggplot2::theme(legend.position=c(0.9,0.9))
     model_plot_solo<-model_plot
     xLims <- ggplot2::layer_scales(model_plot)$x$range$range
     yLims <- ggplot2::layer_scales(model_plot)$y$range$range
@@ -143,12 +147,22 @@ plotPrior<-function(priors, type = "density", n=200, t=25){
         ggplot2::coord_cartesian(xlim=xLims)
     }
     
-    if(!is.null(x_margin_plot) & !is.null(y_margin_plot)){
+    if(!is.null(z_margin_plot)){
+      z_margin_plot <- z_margin_plot + 
+        ggplot2::labs(x="Growth Rate Prior")+
+        ggplot2::theme(plot.title = ggplot2::element_blank(), panel.grid = ggplot2::element_blank(),
+                       axis.text.y = ggplot2::element_blank(),axis.title.y = ggplot2::element_blank(),
+                       legend.position = "none" )+
+        ggplot2::scale_x_continuous(n.breaks=3)
+    }
+    
+    if(!is.null(x_margin_plot) & !is.null(y_margin_plot) & !is.null(z_margin_plot)){
       
       design = c(patchwork::area(1,1,6,6), # model plot
                  patchwork::area(7,1,7,6), # x margin
-                 patchwork::area(1,7,6,7)) # y margin
-      model_plot <- model_plot + x_margin_plot + y_margin_plot + patchwork::plot_layout(design = design)
+                 patchwork::area(1,7,6,7), # y margin
+                 patchwork::area(7,7,7,7)) # "z" margin
+      model_plot <- model_plot + x_margin_plot + y_margin_plot + z_margin_plot + patchwork::plot_layout(design = design)
       
     } else if(!is.null(y_margin_plot) & is.null(x_margin_plot)){
 
