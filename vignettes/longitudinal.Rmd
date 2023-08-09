@@ -3,14 +3,14 @@ title: "Longitudinal Growth Modeling Options"
 author: "Josh Sumner, DDPSC Data Science Core Facility"
 subtitle: "pcvr v0.1.0"
 output: 
+  pdf_document:
+    toc: true
+    highlight: default
   html_document:
     toc: true
     number_sections: false
     code_folding: show
-  pdf_document:
-    toc: true
-    highlight: default
-date: "2023-06-16"
+date: "2023-08-09"
 vignette: >
   %\VignetteIndexEntry{longitudinalGrowth}
   %\VignetteEncoding{UTF-8}
@@ -150,7 +150,7 @@ ggplot(sv_ag)+
 
 `growthSS` is the first `pcvr` helper function for setting up `brms` models. `growthSS` will return a `brmsformula` object, a `brmsprior` object (if priors are specified), an initialization function, a (potentially modified) dataframe for use in fitting the model, the model family (currently this is always student, see [this paper](https://doi.org/10.1037/a0029146) for details), and the `pcvr` formula for use with downstream model visualization functions.
 
-`growthSS` takes five arguments which specify the model to use (of the 6 options above), the columns of your data to use (in a simplified formula), a submodel type, the data to use, and the prior distributions to use. The model and data to use are relatively straightforward, compare a plot of your data against the general shapes of the model parameterizations shown above to pick a model type and pass your dataframe to the `df` argument. The remaining arguments will be explained below.
+`growthSS` takes five arguments which specify the model to use (generally one of the 6 options above), the columns of your data to use (in a simplified formula), a submodel type, the data to use, and the prior distributions to use. The model and data to use are relatively straightforward, compare a plot of your data against the general shapes of the model parameterizations shown above to pick a model type and pass your dataframe to the `df` argument. The remaining arguments will be explained below.
 
 ### `growthSS(..., form, ...)`
 
@@ -158,7 +158,7 @@ The `form` argument of `growthSS` needs to specify the outcome variable, the tim
 
 ### `growthSS(..., sigma, ...)`
 
-The `sigma` argument controls the sub model of heteroskedasticity. Currently three options are given: "homo", "linear", and "spline".
+The `sigma` argument controls the sub model of heteroskedasticity. Currently four options are given: "homo", "linear", "gompertz", and "spline".
 
 At a high level we can think about these models as fitting a curve to these lines.
 
@@ -175,7 +175,7 @@ ggplot(sigma_df, aes(x=time, y=y, group=group))+
   labs(y="SD of y", title = "Gompertz Sigma")
 ```
 
-The three options implemented in `pcvr` are roughly represented by these curves, ignoring grouping here since the data is already aggregated. 
+The four options implemented in `pcvr` are roughly represented by these curves, ignoring grouping here since the data is already aggregated. 
 
 
 ```{r, message = FALSE}
@@ -244,7 +244,7 @@ brmPlot(fit_s, form = ss$pcvrForm, df=ss$df)
 ```
 
 ![Spline sub models allow for taking heteroskedasticity into account without complex formulae](spline_brm.png)
-Finally, we can specify a sigmoid function to model sigma. In `growthSS` the sigmoid option is a gompertz formula, same as the main growth function. While this is much less flexible than splines it tends to describe the variance of a sigmoid growth model quite well and allows for easier hypothesis testing between groups. Additionally, since the spline sub model will fit many basis functions this will generally be **significantly** faster since it only needs to find 3 parameters to complete the sub model, and each can have a mildly informative prior. As a single reference point, the model below fit in about 6 minutes while the spline model above took slightly over an hour to fit. These example models have three groups and the model with a gompertz sub model contains 21 total parameters while the spline sub model version contains 43 total parameters.
+Finally, we can specify a sigmoid function to model sigma. In `growthSS` the sigmoid option is a gompertz formula, same as the main growth function. While this is much less flexible than splines it tends to describe the variance of a sigmoid growth model quite well and allows for easier hypothesis testing between groups. A fringe benefit can also be the predictability of the gompertz formula in extrapolating future data. Splines can have unexpected behavior when trying to predict timepoints outside of your initial data, but the gompertz formula is more predictable. Additionally, since the spline sub model will fit many basis functions this will generally be **significantly** faster since it only needs to find 3 parameters to complete the sub model, and each can have a mildly informative prior. As a single reference point, the model below fit in about 6 minutes while the spline model above took slightly over an hour to fit. These example models have three groups and the model with a gompertz sub model contains 21 total parameters while the spline sub model version contains 43 total parameters.
 
 When setting priors for the gompertz sub-model it is generally reasonable to expect a similar growth rate and inflection point as in the main model (assuming the main model is gompertz as well).
 
@@ -285,7 +285,7 @@ ggplot(sigma_df, aes(x=time, y=y))+
   labs(y="SD of y", title = "Gompertz Sigma", color = "")
 ```
 
-For this data there are several reasonable looking curves. In some cases you might decide to fit a model using a different sub model than those offered in `pcvr`. To give an example of how you can do that here is a manual version of the same model with a gompertz sub model available from `growthSS` that we used above. 
+For this data there are several reasonable looking curves. In some cases you might decide to fit a model using a different sub model than those offered in `pcvr`. To give an example of how you can do that here is a manual version of the model  above that used a gompertz sub model available from `growthSS`. The key here is the `nlf` function in the formula to specify a second non-linear formula for sigma.
 
 ```{r, eval = FALSE}
 prior1 <- prior(gamma(2,0.1), class="nu", lb=0.001)+
@@ -298,7 +298,7 @@ prior1 <- prior(gamma(2,0.1), class="nu", lb=0.001)+
 
 form_b <- bf(y ~ A*exp(-B*exp(-C*time)), 
            nlf(sigma ~ subA*exp(-subB*exp(-subC*time))),
-           A+B+C+AA+BB+CC ~ 0+group, 
+           A+B+C+subA+subB+subC ~ 0+group, 
            autocor = ~arma(~time|sample:group,1,1),
            nl = TRUE ) 
 
@@ -310,7 +310,7 @@ brmPlot(fit_g2, form = y~time|id/group, df = gomp)
 ```
 
 
-We can compare models using Leave-One-Out Information Criterion (LOO IC).
+When considering several sub models (or growth models) we can compare models using Leave-One-Out Information Criterion (LOO IC).
 
 ```{r, eval = FALSE}
 loo_spline <- add_criterion(fit_s, "loo")
@@ -341,7 +341,7 @@ The spline sub-model tends to have the best LOO IC, but comparing credible inter
 
 #### A note on GAMs
 
-The spline submodels are an easy, if computationally heavy, way to skip complex parameterizations in submodels so it is natural to consider using them in place of the main growth formula as well. A linear model where the linear terms are expressed as smooths (splines) is a General Additive Model (GAM). GAMs are possible in `brms` but have several drawbacks for our common purposes. First, GAMs do not have the easily interpreted parameters that the aforementioned growth models use, so testing hypotheses and interpreting model output can be more difficult. Second, the GAM still has to deal with heteroskedasticity and that will either require a second set of splines or a parameterized submodel. It would be a very strange scenario where you are confident in parameterizing the variance but unable to parameterize the overall trend, so we would be forced to use two sets of splines and slow down the models even more while eliminating the easy model interpretation which makes Bayesian methods so attractive. In short these models are **strongly discouraged** for common plantCV applications.
+The spline submodels are an easy, if computationally heavy, way to skip complex parameterizations in submodels so it is natural to consider using them in place of the main growth formula as well. A linear model where the linear terms are expressed as smooths (splines) is a General Additive Model (GAM). GAMs are possible in `brms` but have several drawbacks for our common purposes. First, GAMs do not have the easily interpreted parameters that the aforementioned growth models use, so testing hypotheses and interpreting model output can be more difficult. Second, the GAM still has to deal with heteroskedasticity and that will either require a second set of splines or a parameterized submodel. It would be a very strange scenario where you are confident in parameterizing the variance but unable to parameterize the overall trend, so we would be forced to use two sets of splines and slow down the models even more while eliminating the easy model interpretation which makes Bayesian methods so attractive. In short these models are **strongly discouraged** for common plantCV applications, but are possible in `brms`.
 
 ```{r, eval = FALSE}
 fit_gam <- brm( bf(y ~ s(time, by = group),
