@@ -5,8 +5,8 @@
 \title{Growth data simulating function}
 \usage{
 growthSim(
-  model = c("logistic", "gompertz", "monomolecular", "exponential", "linear",
-    "power law"),
+  model = c("logistic", "gompertz", "double logistic", "double gompertz",
+    "monomolecular", "exponential", "linear", "power law"),
   n = 20,
   t = 25,
   params = list(),
@@ -14,15 +14,19 @@ growthSim(
 )
 }
 \arguments{
-\item{model}{One of "logistic", "gompertz", "monomolecular", "exponential", "linear", or "power law"}
+\item{model}{One of "logistic", "gompertz", "monomolecular", "exponential",
+"linear", "power law", "double logistic", or "double gompertz".}
 
 \item{n}{Number of individuals to simulate over time per each group in params}
 
 \item{t}{Max time (assumed to start at T1) to simulate growth to.}
 
-\item{params}{A list of numeric parameters. A, B, C notation is used in the order that parameters appear in the formula (see examples). Number of groups is inferred from the length of these vectors of parameters.}
+\item{params}{A list of numeric parameters. A, B, C notation is used in the order that parameters appear in the formula (see examples).
+Number of groups is inferred from the length of these vectors of parameters. In the case of the "double" models there are also 
+A2, B2, and C2 terms.}
 
-\item{noise}{Optionally this can be used to add specific amounts of noise to the input parameters by specifying a list similar to params.
+\item{noise}{Optionally this can be used to add specific amounts of
+noise to the input parameters by specifying a list similar to params.
 If NULL (the default) then data is simulated with 10\% random noise like: param + N(0, 0.1*param).
 This exists for fringe cases and should generally be left NULL.}
 }
@@ -30,7 +34,8 @@ This exists for fringe cases and should generally be left NULL.}
 Returns a dataframe of example growth data following the input parameters.
 }
 \description{
-growthSim can be used to help pick reasonable parameters for common growth models to use in prior distributions or to simulate data for example models/plots.
+growthSim can be used to help pick reasonable parameters for common
+ growth models to use in prior distributions or to simulate data for example models/plots.
 }
 \details{
 The \code{params} argument requires some understanding of how each growth model is parameterized.
@@ -40,6 +45,14 @@ The \code{params} argument requires some understanding of how each growth model 
     Where A is the asymptote, B is the inflection point, C is the growth rate. 
     \item \bold{Gompertz}: `A * exp(-B * exp(-C*x))` 
     Where A is the asymptote, B is the inflection point, C is the growth rate. 
+    \item \bold{Double Logistic}: `A / (1+exp((B-x)/C)) + ((A2-A) /(1+exp((B-x)/C)))`
+    Where A is the asymptote, B is the inflection point, C is the growth rate,
+    A2 is the second asymptote, B2 is the second inflection point, and C2 is the second 
+    growth rate.
+    \item \bold{Double Gompertz}: `A * exp(-B * exp(-C*x)) + ((A2-A) * exp(-B2 * exp(-C2*(x-B))))`
+    Where A is the asymptote, B is the inflection point, C is the growth rate,
+    A2 is the second asymptote, B2 is the second inflection point, and C2 is the second 
+    growth rate.
     \item \bold{Monomolecular}: `A-A * exp(-B * x)`
     Where A is the asymptote and B is the growth rate. 
     \item \bold{Exponential}: `A * exp(B * x)` 
@@ -66,6 +79,18 @@ simdf<-growthSim("gompertz", n=20, t=25,
 params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(0.2, 0.25)))
 ggplot(simdf,aes(time, y, group=interaction(group,id)))+
  geom_line(aes(color=group))+labs(title="Gompertz")
+ 
+simdf<-growthSim("double logistic", n=20, t=70,
+params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5),
+ "A2"=c(400,300), "B2"=c(35, 40), "C2"=c(3.25, 2.75)))
+ggplot(simdf, aes(time, y, group=interaction(group,id)))+
+ geom_line(aes(color=group))+labs(title="Double Logistic")
+ 
+simdf<-growthSim("double gompertz", n=20, t=100,
+params = list("A"=c(180,140), "B"=c(13, 11), "C"=c(0.2, 0.2),
+ "A2"=c(400,300), "B2"=c(50,50), "C2"=c(0.1, 0.1)))
+ggplot(simdf,aes(time, y, group=interaction(group,id)))+
+ geom_line(aes(color=group))+labs(title="Double Gompertz")
 
 simdf<-growthSim("monomolecular", n=20, t=25,
 params = list("A"=c(200,160), "B"=c(0.08, 0.1)))

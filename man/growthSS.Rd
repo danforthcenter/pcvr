@@ -7,7 +7,9 @@
 growthSS(model, form, sigma = NULL, df, priors = NULL)
 }
 \arguments{
-\item{model}{The name of a model as a character string. Supported options are c("logistic", "gompertz", "monomolecular", "exponential", "linear", "power law"). See \code{\link{growthSim}} for examples of each type of growth curve.}
+\item{model}{The name of a model as a character string.
+Supported options are c("logistic", "gompertz", "monomolecular", "exponential", "linear", "power law", "double logistic", "double gompertz").
+See \code{\link{growthSim}} for examples of each type of growth curve.}
 
 \item{form}{A formula describing the model. The left hand side should only be 
 the outcome variable (phenotype). The right hand side needs at least the x variable
@@ -18,7 +20,7 @@ the outcome variable (phenotype). The right hand side needs at least the x varia
  it will be ignored in formulas for growth and variance (this may be the case if 
  you split data before fitting models to be able to run more smaller models each more quickly).}
 
-\item{sigma}{A model for heteroskedasticity from c("homo", "linear", "spline").}
+\item{sigma}{A model for heteroskedasticity from c("homo", "linear", "spline", "logistic", "gompertz"). See details.}
 
 \item{df}{A dataframe to use. Must contain all the variables listed in the formula.}
 
@@ -47,6 +49,10 @@ distribution (confines initial values to positive and makes correct number
 of initial values for chains and groups).
 \code{df} The data input, possibly with dummy variables added if needed.
 \code{family} The model family, currently this will always be "student".
+\code{pcvrForm} The form argument unchanged. This is returned so that
+it can be used later on in model visualization. Often it may be a good idea
+to save the output of this function with the fit model, so having this can
+be useful later on.
 }
 \description{
 Ease of use brms starter function for 6 growth model parameterizations
@@ -59,14 +65,43 @@ You should not looking back and forth at your data trying to match your
  observed growth exactly with a prior distribution,
 rather this should be informed by an understanding of the plants you
  are using and expectations based on previous research. 
+ For the "double" models the parameter interpretation is the same
+ as for their non-double counterparts except that there are A and A2, etc.
+ It is strongly recommended to familiarize yourself with the double sigmoid 
+ distributions using growthSim before attempting to model one. Additionally,
+ those distributions are intended for use with long delays in an experiment,
+ think stress recovery experiments, not for minor hiccups in plant growth.
 
 \itemize{
-   \item \bold{Logistic}: \code{list(A = 130, B = 12, C = 3)}
-    \item \bold{Gompertz}: \code{list(A = 130, B = 12, C = 1.25)}
-    \item \bold{Monomolecular}: \code{list(A = 130, B = 2)}
-    \item \bold{Exponential}: \code{list(A = 15, B = 0.1)}
-    \item \bold{Linear}: \code{list(A = 1)}
-    \item \bold{Power Law}: \code{list(A = 13, B = 2)}
+   \item \bold{Logistic}: \code{list('A' = 130, 'B' = 12, 'C' = 3)}
+    \item \bold{Gompertz}: \code{list('A' = 130, 'B' = 12, 'C' = 1.25)}
+    \item \bold{Double Logistic}: \code{list('A' = 130, 'B' = 12, 'C' = 3, 'A2' = 200, 'B2' = 25, 'C2' = 1)}
+    \item \bold{Double Gompertz}: \code{list('A' = 130, 'B' = 12, 'C' = 0.25, 'A2' = 220, 'B2' = 30, 'C2' = 0.1)}
+    \item \bold{Monomolecular}: \code{list('A' = 130, 'B' = 2)}
+    \item \bold{Exponential}: \code{list('A' = 15, 'B' = 0.1)}
+    \item \bold{Linear}: \code{list('A' = 1)}
+    \item \bold{Power Law}: \code{list('A' = 13, 'B' = 2)}
+}
+
+
+
+The \code{sigma} argument optionally specifies a sub model to account for heteroskedasticity.
+Currently there are four supported sub models described below.
+
+\itemize{
+   \item \bold{homo}: \code{sigma ~ 1}, fitting only a global or per group intercept to sigma.
+    \item \bold{linear}: \code{sigma ~ time}, modeling sigma with a linear relationship to time
+     and possibly with an interaction term per groups.
+    \item \bold{spline}: \code{sigma ~ s(time)}, modeling sigma using a smoothing function through `mgcv::s`, possibly by group.
+    \item \bold{gompertz}: \code{sigma ~ subA * exp(-subB * exp(-subC * x))},
+     modeling sigma as a gompertz function of time, possibly by group. Note that you
+     should specify priors for the parameters in this sub model by adding them into the \code{priors}
+     argument, such as \code{list(..., subA = 20, subB = 15, subC = 0.25)}. If you do not specify priors
+     then default (flat) priors will be used, which is liable to cause fitting problems and less
+     accurate results. Looking at your data and making a semi-informed estimate of the total variance at the end
+     of the experiment can help set a reasonable prior for subA, while subB and subC can generally be the 
+     same as B and C in a gompertz growth model of the same data. These priors will have fat tails so they
+     are pretty forgiving.
 }
 }
 \examples{
