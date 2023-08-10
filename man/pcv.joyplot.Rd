@@ -11,9 +11,6 @@ pcv.joyplot(
   y = NULL,
   method = NULL,
   compare = NULL,
-  priors = NULL,
-  hyp = NULL,
-  support = NULL,
   bin = "label",
   freq = "value",
   trait = "trait",
@@ -39,8 +36,10 @@ add an additional layer of faceting (single length group will be faceted,
 length 2 group will be faceted group1 ~ group2).}
 
 \item{method}{A method to use in comparing distributions/means.
-Currently "beta", "gaussian", "emd", and "ks" are supported. 
-See details for explanations of tests.}
+Currently only "ks" is supported, where density is approximated from the 
+histogram columns and  KS test is used between those densities. For other
+options in comparing multi-value traits see \code{\link{conjugate}} or
+\code{\link{pcv.emd}}.}
 
 \item{compare}{Groups to compare. By default this is set to FALSE, 
 which corresponds to no testing. Other values of compare are passed to 
@@ -49,16 +48,6 @@ In short, NULL will run all pairwise T tests, a single value of the X axis
 variable will compare that level to all other levels of the X variable, 
 alternatively this can be a list as used by ggpubr: list(c("level1", "level2"),
  c("level1", "level3"))}
-
-\item{priors}{Parameters for prior distributions if using method = "beta" or "gaussian".
-If left NULL then wide weak priors are used. This can be set as a single set of 
-parameters or with unique values for each group in `compare`, but it is 
-advised to use the default priors.}
-
-\item{hyp}{Hypothesis to test for beta and gaussian methods,
-one of "unequal", "greater", "lesser". Defaults to "unequal" if left NULL.}
-
-\item{support}{Support range if statistical comparisons are done. Similar to those used in \code{conjugate}.}
 
 \item{bin}{Column containing histogram (multi value trait) bins. Defaults to "label".}
 
@@ -79,30 +68,12 @@ Make Joyplots for multi value trait plantCV data and optionally compare distribu
 }
 \details{
 The method argument is used for statistical testing of groups.
-There are currently four options, "beta", "gaussian", "ks", and "emd".
+There there is only a "ks" option, with other methods in place for 
+multi-value trait analysis available in \code{conjugate} and \code{pcv.emd}.
 \itemize{
- \item{"beta": }{The beta method is for use with bounded data (0,1) and creates a
-  posterior beta distribution using the histogram counts and bins and 
-  priors (which default to beta(0.5,0.5)). 
-  The posterior distributions are compared across the groups in `compare`
-   and a posterior probability is returned for each which corresponds to P[hyp]. }
- \item{"gaussian": }{The gaussian method is for use with multi value traits 
- that are not bounded 0-1 and are roughly gaussian. Like the beta method 
- this assumes weak priors and uses the histogram data to make a posterior 
- distribution (here a T distribution). Here there will be two posterior
-  probabilities returned for each comparison, one compares the distribution
-   of means only and is roughly analogous to a T test, the other compares 
-   the entire posterior distributions and is more similar to a Z test. 
-   The posterior probability still takes the form P[hyp].
-    Note that currently these consider pixels as reps, 
-    so it is easy to have very small biological changes at very high posterior probability.}
- \item{"ks": }{The ks method performs a ks test on the PDF of each histogram 
- over a set support range. This returns a P value corresponding to a 
- standard KS test that distributions are the same. For this method `hyp` is ignored.}
- \item{"emd": }{The emd method returns earth mover's distance for compared 
- histograms. This is done via the emdist package and can be very slow. 
- This is included because it is canonical but in the case where EMD is
-  desired it may be worth implementing it directly.}
+ \item{"ks": }{The ks method performs a ks test on the PDF of each histogram.
+ This returns a P value corresponding to a 
+ standard KS test that distributions are the same.}
 }
 }
 \examples{
@@ -116,10 +87,6 @@ wide_beta <- read.pcv(
 x <- pcv.joyplot(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"))
 # pcv.joyplot(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"),
 #   method="ks")
-# pcv.joyplot(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"),
-#   method="beta")
-# pcv.joyplot(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"),
-#   method="gaussian")
 
 wide<-read.pcv(
 "https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv",
