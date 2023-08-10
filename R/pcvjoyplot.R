@@ -147,7 +147,7 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL, y = NULL,
     distParams = o[[1]]
     dens_df = o[[2]]
     
-  if(match.arg(method, choices = c("beta", "gaussian", "ks", "mixture", "emd"))=="ks"){
+  if(match.arg(method, choices = c("ks"))=="ks"){
     #* ***** `default joyplot with KS tests`
     if(mode=="wide"){
       o<-.wide.dens.default(d=sub, colPattern = index, group_internal=c(y,group))
