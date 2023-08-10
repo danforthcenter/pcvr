@@ -61,10 +61,6 @@
 #' x <- pcv.joyplot(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"))
 #' # pcv.joyplot(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"),
 #' #   method="ks")
-#' # pcv.joyplot(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"),
-#' #   method="beta")
-#' # pcv.joyplot(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"),
-#' #   method="gaussian")
 #' 
 #' wide<-read.pcv(
 #' "https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv",
@@ -90,7 +86,7 @@
 
 
 pcv.joyplot<-function(df = NULL, index = NULL, group = NULL, y = NULL,
-                      method=NULL, compare= NULL, priors=NULL,
+                      method=NULL, compare= NULL,
                       bin="label", freq="value", trait="trait", fillx=TRUE){
   #* ***** `general calculated values`
 
@@ -141,10 +137,8 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL, y = NULL,
     doStats=FALSE
   } else if(is.null(compare)){compareTests<-fixCompare(compare,sub,"grouping", TRUE) ; doStats=TRUE
   }else{compareTests=fixCompare(compare,sub,"grouping"); doStats=TRUE}
-  if(is.null(hyp)){hyp<-"unequal"}
   
   #* ***** `default joyplot`
-  if(is.null(method) ){
     if(mode=="wide"){
       o<-.wide.dens.default(d=sub, colPattern = index, group_internal=c(y,group))
     } else if(mode=="long"){
@@ -153,7 +147,7 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL, y = NULL,
     distParams = o[[1]]
     dens_df = o[[2]]
     
-  } else if(match.arg(method, choices = c("beta", "gaussian", "ks", "mixture", "emd"))=="ks"){
+  if(match.arg(method, choices = c("beta", "gaussian", "ks", "mixture", "emd"))=="ks"){
     #* ***** `default joyplot with KS tests`
     if(mode=="wide"){
       o<-.wide.dens.default(d=sub, colPattern = index, group_internal=c(y,group))

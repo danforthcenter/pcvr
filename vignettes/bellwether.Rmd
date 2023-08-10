@@ -550,19 +550,19 @@ hue_wide<-aggregate(form, data=hue_wide, mean, na.rm=TRUE)
 
 Joyplots are a common way to look at lots of distributions. Here we check the hue histograms as joyplots using the 18th day and add a new fill for the hue colorspace.
 
-
 ```{r, message=FALSE}
 p<-pcv.joyplot(hue_wide[hue_wide$DAS==18,], index = "hue_frequencies", group=c("fertilizer", "genotype"), method=NULL,
                trait=NULL,compare=NULL)
 p+scale_fill_gradientn(colors = scales::hue_pal(l=65)(360))+scale_y_discrete(limits=c("0", "50", "100"))
 ```
 
-We can also subset the data and change the group argument to look at very specific comparisons.
+We can also specify a y argument to show multiple days across several variables.
 
 ```{r, message=FALSE}
-p<-pcv.joyplot(hue_wide[hue_wide$fertilizer==0 & hue_wide$DAS %in% c(7,12,18),], index = "hue_frequencies", group=c("DAS", "genotype"),
+p<-pcv.joyplot(hue_wide[hue_wide$DAS %in% c(5,10,15),], index = "hue_frequencies", group=c("fertilizer", "genotype"),
+               y="DAS", method=NULL,
                trait=NULL,compare=NULL)
-p+scale_fill_gradientn(colors = scales::hue_pal(l=65)(360))+scale_y_discrete(limits=c("7", "12", "18"))
+p+scale_fill_gradientn(colors = scales::hue_pal(l=65)(360))+scale_y_discrete(limits=c("5", "10", "15"))
 ```
 
 As mentioned previously the `conjugate` function can be used with wide multi-value data. To use multi value data the samples should be data frames or matrices representing color histograms. Here we compare our color histograms assuming a lognormal distribution and find that they are very similar in this parameterization.
