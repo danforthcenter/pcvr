@@ -6,6 +6,9 @@
 #' @param group  Grouping variables to find outliers as a character vector.
 #' This is typically time  and design variables (DAS, genotype, treatment, etc).
 #' These are used as predictors for `phenotype` in a generalized linear model.
+#' @param cutoff Cutoff for something being an "outlier" expressed as a multiplier
+#'  on the mean of Cooks Distance for this data. This defaults to 3 which tends to be
+#'  a good value.
 #' @param plotgroup Grouping variables for drawing plots if plot=TRUE.
 #' Typically this is an identifier for images of a plant
 #' over time and defaults to c('barcode',"rotation").
@@ -70,6 +73,7 @@ bw.outliers<-function(df = NULL,
                       phenotype,
                       naTo0 =FALSE,
                       group = c(),
+                      cutoff = 3,
                       plotgroup=c('barcode',"rotation"),
                       plot=TRUE,  wide =TRUE, x=NULL, traitCol="trait", valueCol="value", idCol=NULL){
   # df = svl; phenotype="area"; naTo0 = F; group = c("DAS", "genotype", "fertilizer"); plotgroup=c("barcode","rotation"); plot=FALSE
@@ -85,7 +89,7 @@ bw.outliers<-function(df = NULL,
     if(outlierMethod=="cooks"){
       cooksd <- cooks.distance(glm(data=df, as.formula(outlierForm)))
       # summary(cooksd)
-      outlierCutoff<-3*mean(cooksd, na.rm=TRUE)
+      outlierCutoff<-cutoff*mean(cooksd, na.rm=TRUE)
       cooksd[is.na(cooksd)] <- outlierCutoff - 0.1 # keeping NAs by assigning a value below cutoff.
       cooksd_df<-data.frame("outlier" = cooksd)
       df<-cbind(df, cooksd_df) 

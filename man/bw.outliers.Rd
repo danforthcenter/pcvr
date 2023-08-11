@@ -9,6 +9,7 @@ bw.outliers(
   phenotype,
   naTo0 = FALSE,
   group = c(),
+  cutoff = 3,
   plotgroup = c("barcode", "rotation"),
   plot = TRUE,
   wide = TRUE,
@@ -28,6 +29,10 @@ bw.outliers(
 \item{group}{Grouping variables to find outliers as a character vector.
 This is typically time  and design variables (DAS, genotype, treatment, etc).
 These are used as predictors for `phenotype` in a generalized linear model.}
+
+\item{cutoff}{Cutoff for something being an "outlier" expressed as a multiplier
+on the mean of Cooks Distance for this data. This defaults to 3 which tends to be
+a good value.}
 
 \item{plotgroup}{Grouping variables for drawing plots if plot=TRUE.
 Typically this is an identifier for images of a plant
