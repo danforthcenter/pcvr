@@ -212,7 +212,7 @@ growthSS<-function(model, form, sigma=NULL, df, priors=NULL){
             as.formula(paste0("sigma ~ ", x, "+", x, ":",group))
           } else{ as.formula(paste0("sigma ~ ", x)) }
         } else if(matched_sigma=="gompertz"){
-          nlf(as.formula(paste0("sigma ~ subA*exp(-subB*exp(-subC*",x,"))")))
+          brms::nlf(as.formula(paste0("sigma ~ subA*exp(-subB*exp(-subC*",x,"))")))
           } else if(matched_sigma=="spline"){
             
         if(length(unique(df[[x]]))<11){
