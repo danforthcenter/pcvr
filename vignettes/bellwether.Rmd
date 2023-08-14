@@ -536,7 +536,7 @@ hue_wide$genotype = ifelse(hue_wide$genotype == "002", "B73",
 hue_wide$fertilizer = substr(hue_wide$barcode, 8, 8)
 hue_wide$fertilizer = ifelse(hue_wide$fertilizer == "A", "100",
                      ifelse(hue_wide$fertilizer == "B", "50", "0"))
-hue_wide<-bw.time(hue_wide,timeCol="timestamp", group="barcode")
+hue_wide<-bw.time(hue_wide,timeCol="timestamp", group="barcode", plot = FALSE)
 
 phenotypes <- colnames(hue_wide)[19:225]
 phenoForm<-paste0("cbind(", paste0(phenotypes, collapse=", "), ")")
@@ -551,8 +551,8 @@ hue_wide<-aggregate(form, data=hue_wide, mean, na.rm=TRUE)
 Joyplots are a common way to look at lots of distributions. Here we check the hue histograms as joyplots using the 18th day and add a new fill for the hue colorspace.
 
 ```{r, message=FALSE}
-p<-pcv.joyplot(hue_wide[hue_wide$DAS==18,], index = "hue_frequencies", group=c("fertilizer", "genotype"), method=NULL,
-               trait=NULL,compare=NULL)
+p<-pcv.joyplot(hue_wide[hue_wide$DAS==18,], index = "hue_frequencies",
+               group=c("fertilizer", "genotype"), method=NULL, compare=NULL)
 p+scale_fill_gradientn(colors = scales::hue_pal(l=65)(360))+scale_y_discrete(limits=c("0", "50", "100"))
 ```
 
@@ -560,8 +560,7 @@ We can also specify a y argument to show multiple days across several variables.
 
 ```{r, message=FALSE}
 p<-pcv.joyplot(hue_wide[hue_wide$DAS %in% c(5,10,15),], index = "hue_frequencies", group=c("fertilizer", "genotype"),
-               y="DAS", method=NULL,
-               trait=NULL,compare=NULL)
+               y="DAS", method=NULL, compare=NULL, id = NULL)
 p+scale_fill_gradientn(colors = scales::hue_pal(l=65)(360))+scale_y_discrete(limits=c("5", "10", "15"))
 ```
 

@@ -142,7 +142,7 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL, y = NULL, id = NULL
     if(length(group)==2){sub$y = sub[[group[1] ]]
     facet_layer=ggplot2::facet_grid(as.formula(paste0("~",group[2]))) }
   }
-  
+  sub$y<-as.character(sub$y)
   sub$grouping<-interaction(sub[,c(y,group)], drop=TRUE)
   
   # default compare to NULL, but if F then skip all testing 
@@ -151,7 +151,7 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL, y = NULL, id = NULL
   } else if(is.null(compare)){compareTests<-fixCompare(compare,sub,"grouping", TRUE) ; doStats=TRUE
   }else{compareTests=fixCompare(compare,sub,"grouping"); doStats=TRUE}
   
-  if(match.arg(method, choices = c("ks"))=="ks"){
+  if(!is.null(method) && match.arg(method, choices = c("ks")) ){
     #* ***** `Run KS tests`
     ksVectors <- .makeKSdata(d = sub)
 
@@ -173,7 +173,7 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL, y = NULL, id = NULL
     sub$id <- sub[[id]]
     gg <-  ggplot2::ggplot(sub, ggplot2::aes(alpha = 0.5, group = interaction(id, y, grouping)))
   }
-    
+
   #if(fillx){dens_df$group = interaction(dens_df[,group])}
   ggridgeLayer<-if(fillx){
     x<-NULL # to make R CMD check happy with stat(x)
