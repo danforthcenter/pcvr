@@ -167,7 +167,7 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL, y = NULL, id = NULL
   } 
   #* `if ID is null then aggregate, else draw with ID`
   if(is.null(id)){
-    sub <- stats::aggregate(formula = freq ~ ., data=sub, FUN=mean, na.rm=T)
+    sub <- stats::aggregate(freq ~ . , data=sub, FUN=mean, na.rm=T)
     gg <- ggplot2::ggplot(sub)
   } else{
     sub$id <- sub[[id]]
