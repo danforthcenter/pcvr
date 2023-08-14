@@ -100,21 +100,21 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL, y = NULL,
     if(length(unique(sub[[trait]]))>1){warning("More than one trait found, consider an `index` argument")}
     sub$bin = as.numeric(sub[[bin]])
     sub$freq = as.numeric(sub[[freq]])
-    if(all(as.matrix(sub[sub[[trait]] == index, freq])<2)){
-      sub$freq = sub$freq * 1000/max(sub[sub[[trait]] == index, "freq"])
-      if(!is.null(method)){
-        warning("Data is being rescaled so that the max count is 1000 for plotting, this can change statistical results")
-      }
-    }
+    # if(all(as.matrix(sub[sub[[trait]] == index, freq])<2)){
+    #   sub$freq = sub$freq * 1000/max(sub[sub[[trait]] == index, "freq"])
+    #   if(!is.null(method)){
+    #     warning("Data is being rescaled so that the max count is 1000 for plotting, this can change statistical results")
+    #   }
+    # }
     
   } else if(mode=="wide"){ # if wide then get column names that contain index string
     sub<-df
-    if(all(as.matrix(sub[, grepl(index, colnames(sub))])<2)){
-      sub[, grepl(index, colnames(sub))]<-sub[, grepl(index, colnames(sub))] * 1000 / max(rowSums( sub[, grepl(index, colnames(sub))] ))
-      if(!is.null(method)){
-        warning("Data is being rescaled so that the max count is 1000 for plotting, this can change statistical results")
-      }
-    }
+    # if(all(as.matrix(sub[, grepl(index, colnames(sub))])<2)){
+    #   sub[, grepl(index, colnames(sub))]<-sub[, grepl(index, colnames(sub))] * 1000 / max(rowSums( sub[, grepl(index, colnames(sub))] ))
+    #   if(!is.null(method)){
+    #     warning("Data is being rescaled so that the max count is 1000 for plotting, this can change statistical results")
+    #   }
+    # }
   }
   
   if(is.null(group)){group = "dummy"; df$dummy = "dummy"; sub$dummy="dummy"}
@@ -216,10 +216,10 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL, y = NULL,
   datsp=split(d, d$grouping, drop=TRUE)
   bw<-min(diff(sort(as.numeric(unique(d$bin )))))*0.75
   distParams<-lapply(datsp, function(D){
-    X1 <- as.numeric(D[rep(rownames(D), round(D[[freq_internal]])), bin_internal])
-    dens <- density(d$bin, weights = d$freq/sum(d$freq),
-                    from = min(d$bin,na.rm=TRUE),
-                    to = max(d$bin,na.rm=TRUE),
+    #X1 <- as.numeric(D[rep(rownames(D), round(D[[freq_internal]])), bin_internal])
+    dens <- density(D$bin, weights = D$freq/sum(D$freq),
+                    from = min(D$bin,na.rm=TRUE),
+                    to = max(D$bin,na.rm=TRUE),
                     n = 2^10)
     return(dens)
   })
