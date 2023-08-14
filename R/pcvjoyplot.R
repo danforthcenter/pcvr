@@ -151,7 +151,7 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL, y = NULL, id = NULL
   } else if(is.null(compare)){compareTests<-fixCompare(compare,sub,"grouping", TRUE) ; doStats=TRUE
   }else{compareTests=fixCompare(compare,sub,"grouping"); doStats=TRUE}
   
-  if(!is.null(method) && match.arg(method, choices = c("ks")) ){
+  if(!is.null(method) && match.arg(method, choices = c("ks"))=="ks" ){
     #* ***** `Run KS tests`
     ksVectors <- .makeKSdata(d = sub)
 
