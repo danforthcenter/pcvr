@@ -13,6 +13,9 @@
 #' have three variables to display. This argument will change faceting behavior to
 #' add an additional layer of faceting (single length group will be faceted, 
 #' length 2 group will be faceted group1 ~ group2).
+#' @param id Optionally a variable to show the outline of different replicates.
+#' Note that ggridges::geom_density_ridges_gradient does not support transparency,
+#' so if fillx is TRUE then only the outer line will show individual IDs.
 #' @param method A method to use in comparing distributions/means.
 #'  Currently only "ks" is supported, where density is approximated from the 
 #'  histogram columns and  KS test is used between those densities. For other
@@ -35,6 +38,7 @@
 #' @keywords bayesian, ggplot, multi value trait, pcv.hists
 #' @import ggplot2
 #' @import ggridges
+#' @import data.table
 #' @importFrom stats setNames density aggregate as.formula ks.test
 #' 
 #' @details 
@@ -46,7 +50,6 @@
 #'  This returns a P value corresponding to a 
 #'  standard KS test that distributions are the same.}
 #' }
-
 #' 
 #' @return Returns either a ggplot object or a list containing a ggplot and a dataframe of statistical comparisons (if compare is not FALSE).
 #' 
@@ -85,7 +88,7 @@
 #' @export
 
 
-pcv.joyplot<-function(df = NULL, index = NULL, group = NULL, y = NULL,
+pcv.joyplot<-function(df = NULL, index = NULL, group = NULL, y = NULL, id = NULL,
                       method=NULL, compare= NULL,
                       bin="label", freq="value", trait="trait", fillx=TRUE){
   #* ***** `general calculated values`
@@ -100,6 +103,7 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL, y = NULL,
     if(length(unique(sub[[trait]]))>1){warning("More than one trait found, consider an `index` argument")}
     sub$bin = as.numeric(sub[[bin]])
     sub$freq = as.numeric(sub[[freq]])
+    sub <- sub[, c(group, y, id, "bin", "freq", trait)]
     # if(all(as.matrix(sub[sub[[trait]] == index, freq])<2)){
     #   sub$freq = sub$freq * 1000/max(sub[sub[[trait]] == index, "freq"])
     #   if(!is.null(method)){
@@ -108,7 +112,16 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL, y = NULL,
     # }
     
   } else if(mode=="wide"){ # if wide then get column names that contain index string
-    sub<-df
+    #* subset data to only have index columns
+    #* turn the data longer
+    sub_wide<-data.table::as.data.table(df[, which(colnames(df)%in%c(group, y, id) | grepl(index, colnames(df)) ) ])
+    sub <- as.data.frame(data.table::melt(sub_wide, id.vars = c(group, y, id), variable.name = trait, value.name = freq))
+    sub[[bin]] <- sub(index,"",sub[[trait]])
+    sub$bin <- as.numeric(regmatches(sub[[bin]], regexpr("[0-9].*", sub[[bin]]) ))
+    sub[[trait]] <- index
+    sub$freq = as.numeric(sub[[freq]])
+    sub <- sub[, c(group, y, id, "bin", "freq", trait)]
+    
     # if(all(as.matrix(sub[, grepl(index, colnames(sub))])<2)){
     #   sub[, grepl(index, colnames(sub))]<-sub[, grepl(index, colnames(sub))] * 1000 / max(rowSums( sub[, grepl(index, colnames(sub))] ))
     #   if(!is.null(method)){
@@ -119,17 +132,17 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL, y = NULL,
   
   if(is.null(group)){group = "dummy"; df$dummy = "dummy"; sub$dummy="dummy"}
   if(!is.null(y)){
-    if(length(group)==1){sub$fill = sub[[group]]; sub$y = sub[[group]]
+    if(length(group)==1){sub$y = sub[[y]]
     facet_layer=ggplot2::facet_grid(as.formula(paste0("~",group[1]))) }
-    if(length(group)==2){sub$fill = sub[[group[1] ]]; sub$y = sub[[group[1] ]]
+    if(length(group)==2){sub$y = sub[[y ]]
     facet_layer=ggplot2::facet_grid(as.formula(paste0(group[1], "~",group[2]))) }
   } else { # if y is not provided then one less layer of faceting
-    if(length(group)==1){sub$fill = sub[[group]]; sub$y = sub[[group]]
+    if(length(group)==1){sub$y = sub[[group]]
     facet_layer=list() }
-    if(length(group)==2){sub$fill = sub[[group[1] ]]; sub$y = sub[[group[1] ]]
+    if(length(group)==2){sub$y = sub[[group[1] ]]
     facet_layer=ggplot2::facet_grid(as.formula(paste0("~",group[2]))) }
   }
-  
+  sub$y<-as.character(sub$y)
   sub$grouping<-interaction(sub[,c(y,group)], drop=TRUE)
   
   # default compare to NULL, but if F then skip all testing 
@@ -138,54 +151,49 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL, y = NULL,
   } else if(is.null(compare)){compareTests<-fixCompare(compare,sub,"grouping", TRUE) ; doStats=TRUE
   }else{compareTests=fixCompare(compare,sub,"grouping"); doStats=TRUE}
   
-  #* ***** `default joyplot`
-    if(mode=="wide"){
-      o<-.wide.dens.default(d=sub, colPattern = index, group_internal=c(y,group))
-    } else if(mode=="long"){
-      o<-.long.dens.default(d=sub, group_internal=c(y,group), bin_internal = bin, freq_internal= freq)
-    }
-    distParams = o[[1]]
-    dens_df = o[[2]]
-    
-  if(match.arg(method, choices = c("ks"))=="ks"){
-    #* ***** `default joyplot with KS tests`
-    if(mode=="wide"){
-      o<-.wide.dens.default(d=sub, colPattern = index, group_internal=c(y,group))
-    } else if(mode=="long"){
-      o<-.long.dens.default(d=sub, group_internal=c(y,group), bin_internal= bin, freq_internal= freq)
-    }
-    distParams = o[[1]]
-    dens_df = o[[2]]
-    
+  if(!is.null(method) && match.arg(method, choices = c("ks")) ){
+    #* ***** `Run KS tests`
+    ksVectors <- .makeKSdata(d = sub)
+
     if(doStats){
       outStats<-do.call(rbind, lapply(compareTests, function(comp){
         g1<-as.character(comp[1])
         g2<-as.character(comp[2])
-        ks<-suppressWarnings(ks.test(distParams[[g1]]$y, distParams[[g2]]$y)) # 0.06 with el, 2e-16 with el_r
+        ks<-suppressWarnings(ks.test(ksVectors[[g1]], ksVectors[[g2]])) 
         ret<-data.frame(group1 = g1, group2 = g2, p = ks$p.value, method="ks", null = "same distribution")
         return(ret)
       }))
     }
   } 
-  if(fillx){dens_df$group = interaction(dens_df[,group])}
+  #* `if ID is null then aggregate, else draw with ID`
+  if(is.null(id)){
+    sub <- stats::aggregate(freq ~ . , data=sub, FUN=mean, na.rm=T)
+    gg <- ggplot2::ggplot(sub)
+  } else{
+    sub$id <- sub[[id]]
+    gg <-  ggplot2::ggplot(sub, ggplot2::aes(alpha = 0.5, group = interaction(id, y, grouping)))
+  }
+
+  #if(fillx){dens_df$group = interaction(dens_df[,group])}
   ggridgeLayer<-if(fillx){
     x<-NULL # to make R CMD check happy with stat(x)
-    list(suppressMessages(ggridges::geom_density_ridges_gradient(ggplot2::aes(x = .data$xdens, y = .data$y,
-                                                        height = .data$ydens, fill=stat(x)),
+    list(suppressMessages(ggridges::geom_density_ridges_gradient(ggplot2::aes(x = .data$bin, y = .data$y,
+                                                        height = .data$freq, fill=stat(x)),
                                            show.legend=FALSE, stat="identity", rel_min_height = 0.001)),
-         ggplot2::scale_fill_viridis_c(option="plasma",
-                                        limits = c(min(dens_df$xdens[dens_df$ydens>0.001],na.rm=TRUE),
-                                                   max(dens_df$xdens[dens_df$ydens>0.001], na.rm=TRUE)))
+         ggplot2::scale_fill_viridis_c(option="plasma"#,
+                                        #limits = c(min(dens_df$xdens[dens_df$ydens>0.001],na.rm=TRUE),
+                                        #           max(dens_df$xdens[dens_df$ydens>0.001], na.rm=TRUE))
+                                       )
          )
   } else{
-    list(suppressMessages(ggridges::geom_density_ridges2(ggplot2::aes(x = .data$xdens, y = .data$y,
-                                                                      height =.data$ydens, fill = .data$y, color=.data$y),
+    list(suppressMessages(ggridges::geom_density_ridges2(ggplot2::aes(x = .data$bin, y = .data$y,
+                                                                      height =.data$freq, fill = .data$bin, color=.data$bin),
                                    show.legend=FALSE, stat="identity")),
       ggplot2::scale_color_viridis_d(option="viridis"),
       ggplot2::scale_fill_viridis_d(option="viridis")
       )
   }
-  p<-ggplot2::ggplot(dens_df)+
+  p<-gg+
     facet_layer+
     ggridgeLayer+
     ggplot2::scale_x_continuous(n.breaks=5, labels = ~round(.,1))+
@@ -197,92 +205,33 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL, y = NULL,
 }
 
 #' ***********************************************************************************************
-#' *************** `Density for Long Data` ****************************************
+#' *************** `KS test vectors` ****************************************
 #' ***********************************************************************************************
 #' 
 #' @description
 #' Internal function for making density of histogram data and returning it in a standard format for 
-#' use in KS tests and plotting
+#' use in KS tests. Currently picking how many samples to pull from the distribution is arbitrary.
 #' @param d data with some manipulations to make groups consistent passed from pcv.joyplot
-#' @param group_internal grouping passed from pcv.joyplot, c(group, y)
-#' @param bin_internal column name to use for bins
-#' @param freq_internal column name to use for frequencies (counts) in each bin
 #' 
 #' @keywords internal
 #' @noRd
 
-
-.long.dens.default <- function(d = NULL, group_internal=NULL, bin_internal= NULL, freq_internal= NULL){
+.makeKSdata<-function(d = NULL){
   datsp=split(d, d$grouping, drop=TRUE)
-  bw<-min(diff(sort(as.numeric(unique(d$bin )))))*0.75
-  distParams<-lapply(datsp, function(D){
+  #bw<-min(diff(sort(as.numeric(unique(d$bin )))))*0.75
+  ksVectors<-lapply(datsp, function(datsp_iter){
     #X1 <- as.numeric(D[rep(rownames(D), round(D[[freq_internal]])), bin_internal])
-    dens <- density(D$bin, weights = D$freq/sum(D$freq),
-                    from = min(D$bin,na.rm=TRUE),
-                    to = max(D$bin,na.rm=TRUE),
+    dens <- density(datsp_iter$bin, weights = datsp_iter$freq/sum(datsp_iter$freq),
+                    from = min(d$bin,na.rm=TRUE), # min and max of total data
+                    to = max(d$bin,na.rm=TRUE),
                     n = 2^10)
-    return(dens)
+    den_df <- as.data.frame(dens)
+    #* 100 is arbitrary, could use sum of frequencies, but that feels really generous and
+    #* is sensitive to rescaling.
+    set.seed(123)
+    vec <- sample(den_df$x, size = 100, replace=T, prob = den_df$y)
+    return(vec)
   })
-  names(distParams)<-names(datsp)
-  dens_df<-do.call(rbind, lapply(names(distParams), function(nm){
-    dens<-distParams[[nm]]
-    out<-data.frame(xdens= dens$x, ydens=dens$y)
-    out[,(ncol(out)+1):(ncol(out)+length(group_internal))]<-lapply(strsplit(nm, "[.]")[[1]], identity)
-    colnames(out)<-c("xdens", "ydens", group_internal)
-    out$y<-out[[group_internal[1] ]]
-    out
-  }))
-  return(list(distParams, dens_df))
+  return(ksVectors)
 }
-
-#' ***********************************************************************************************
-#' *************** `Density for Wide Data` ****************************************
-#' ***********************************************************************************************
-#' 
-#' @description
-#' Internal function for making density of histogram data and returning it in a standard format for 
-#' use in KS tests and plotting
-#' @param d data with some manipulations to make groups consistent passed from pcv.joyplot
-#' @param colPattern index identifying pattern passed from pcv.joyplot
-#' @param group_internal grouping passed from pcv.joyplot, c(group, y)
-#' 
-#' @keywords internal
-#' @noRd
-
-
-.wide.dens.default<-function(d=NULL, colPattern = NULL, group_internal=NULL){
-  histCols <- colnames(d)[grepl(colPattern, colnames(d))]
-  histCols_bin <- as.numeric(sub(paste0(colPattern, "[.]?"), "", colnames(d)[grepl(colPattern, colnames(d))]))
-  bins_order<-sort(histCols_bin, index.return=TRUE)$ix
-  histCols <- histCols[bins_order]
-  datsp=split(d, d$grouping, drop=TRUE)
-  bw<-min(diff(sort(as.numeric(histCols_bin))))*0.75
-  
-  distParams<-lapply(datsp, function(D){
-    D<-D[,histCols]
-    X1<-rep(histCols_bin[bins_order], as.numeric(round(colSums(D))) ) 
-    weights <- colSums(D)/sum(colSums(D))
-    
-    dens<-density(x = histCols_bin[bins_order],
-                  weights = weights,
-                  from = min(histCols_bin,na.rm=TRUE),
-                  to = max(histCols_bin,na.rm=TRUE),
-                  n = 2^10)
-    return(dens)
-  })
-  
-  names(distParams)<-names(datsp)
-  dens_df<-do.call(rbind, lapply(names(distParams), function(nm){
-    dens<-distParams[[nm]]
-    out<-data.frame(xdens= dens$x, ydens=dens$y)
-    out[,(ncol(out)+1):(ncol(out)+length(group_internal))]<-lapply(strsplit(nm, "[.]")[[1]], identity)
-    colnames(out)<-c("xdens", "ydens", group_internal)
-    out$y<-out[[group_internal[1] ]]
-    out
-  }))
-  return(list(distParams, dens_df))
-}
-
-
-
 

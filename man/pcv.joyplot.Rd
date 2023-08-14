@@ -9,6 +9,7 @@ pcv.joyplot(
   index = NULL,
   group = NULL,
   y = NULL,
+  id = NULL,
   method = NULL,
   compare = NULL,
   bin = "label",
@@ -34,6 +35,10 @@ If this is length 1 then no faceting is done.}
 have three variables to display. This argument will change faceting behavior to
 add an additional layer of faceting (single length group will be faceted, 
 length 2 group will be faceted group1 ~ group2).}
+
+\item{id}{Optionally a variable to show the outline of different replicates.
+Note that ggridges::geom_density_ridges_gradient does not support transparency,
+so if fillx is TRUE then only the outer line will show individual IDs.}
 
 \item{method}{A method to use in comparing distributions/means.
 Currently only "ks" is supported, where density is approximated from the 
