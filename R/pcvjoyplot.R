@@ -218,18 +218,17 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL, y = NULL, id = NULL
 
 .makeKSdata<-function(d = NULL){
   datsp=split(d, d$grouping, drop=TRUE)
-  #bw<-min(diff(sort(as.numeric(unique(d$bin )))))*0.75
   ksVectors<-lapply(datsp, function(datsp_iter){
-    #X1 <- as.numeric(D[rep(rownames(D), round(D[[freq_internal]])), bin_internal])
     dens <- density(datsp_iter$bin, weights = datsp_iter$freq/sum(datsp_iter$freq),
                     from = min(d$bin,na.rm=TRUE), # min and max of total data
                     to = max(d$bin,na.rm=TRUE),
                     n = 2^10)
     den_df <- as.data.frame(dens)
-    #* 100 is arbitrary, could use sum of frequencies, but that feels really generous and
-    #* is sensitive to rescaling.
     set.seed(123)
-    vec <- sample(den_df$x, size = 100, replace=T, prob = den_df$y)
+    # n_bins <- length(unique(datsp_iter$bin))
+    # n_photos <- nrow(datsp_iter) / n_bins 
+    # n <- n_bins * n_photos # should always equal nrow(datsp_iter)
+    vec <- sample(den_df$x, size = nrow(datsp_iter), replace=T, prob = den_df$y)
     return(vec)
   })
   return(ksVectors)
