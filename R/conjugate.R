@@ -1969,10 +1969,180 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
 }
 
 
+#' ***********************************************************************************************
+#' *************** `Dirichlet (multi value)` *******************************************************
+#' ***********************************************************************************************
 
+#' @description
+#' 
+#' The dirichlet distribution is the conjugate prior for a multinomial distribution and can be used to 
+#' describe an image histogram without turning the data from discrete to continuous. 
+#' This is agnostic to the appearance of the "curve" shown by the histogram at the expense of not providing 
+#' HDE and HDI values.
+#' 
+#' @param s1 A data.frame or matrix of multi value traits. The column names should include a number representing the "bin".
+#' @param s2 An optional second sample of the same form as s2.
+#' @examples
+#' 
+#' 1+1
+#' 
+#' @keywords internal
+#' @noRd
 
-
-
+.conj_diri_mv_1<-function(s1 = NULL, s2= NULL,
+                         priors=NULL,
+                         plot=FALSE, rope_range = NULL, rope_ci = 0.89, rope_hdi = 0.95,
+                         cred.int.level = 0.89, hypothesis="equal"){
+  out <-list()
+  
+  if(is.null(priors)){
+    priors <- list(alpha1 = rep(1, ncol(s1)), # alpha vector priors
+                   alpha2 = rep(1, ncol(s1)),
+                   prec1_a = 0.5, # gamma priors on precision
+                   prec1_b = 0.5,
+                   prec2_a = 0.5,
+                   prec2_b = 0.5)
+  }
+  
+  if(!is.null(s1)){
+    alpha1_prime <- priors$alpha1 + colSums(s1) # updating prior with sum of samples in each bin
+    
+    precision1 <- sum(alpha1_prime) # reparameterize alpha1 to mean and precision
+    mean1 <- alpha1_prime / precision1
+    
+    prec1_prime_a <- priors$prec1_a + sum(colSums(s1)) # A updates as A' = A + sum(obs)
+    prec1_prime_b <- priors$prec1_b + nrow(s1) # B updates as B' = B + n(obs)
+    
+    out$summary <- data.frame('HDE_1' = NA, 'HDI_1_low' = NA, 'HDI_1_high' = NA)
+    
+    out$posterior$mean1 = mean1
+    out$posterior$precision1 = precision1
+    out$posterior$prec1_a <- prec1_prime_a
+    out$posterior$prec1_b <- prec1_prime_b
+    
+    if(plot){
+      out$plot_df <- data.frame("bin" = 1:ncol(s1), "prob"=mean1, "sample"=rep("Sample 1",ncol(s1) ))
+    }
+    
+  } else{stop("s1 is required")}
+  
+  if(!is.null(s2)){
+    if(ncol(s1)!=ncol(s2)){stop("s1 and s2 must have the same number of bins (columns)")}
+    alpha2_prime <- priors$alpha2 + colSums(s2) # updating prior with sum of samples in each bin
+    
+    precision2 <- sum(alpha2_prime) # reparameterize alpha1 to mean and precision
+    mean2 <- alpha2_prime / precision2
+    
+    prec2_prime_a <- priors$prec2_a + sum(colSums(s2)) # A updates as A' = A + sum(obs)
+    prec2_prime_b <- priors$prec2_b + nrow(s2) # B updates as B' = B + n(obs)
+    
+    out$summary <- cbind(out$summary, data.frame('HDE_2' = NA, 'HDI_2_low' = NA, 'HDI_2_high' = NA))
+    
+    out$posterior$mean2 = mean2
+    out$posterior$precision2 = precision2
+    out$posterior$prec2_a <- prec2_prime_a
+    out$posterior$prec2_b <- prec2_prime_b
+    
+    if(plot){
+      out$plot_df <- rbind(out$plot_df, data.frame("bin" = 1:ncol(s2), "prob"=mean2, "sample"=rep("Sample 2",ncol(s2) )))
+    }
+    
+    #* `test hypothesis`
+    post.prob.out <-  .post.prob.from.pdfs(mean1, mean2, hypothesis)
+    post.prob <-post.prob.out$post.prob
+    dirSymbol <-post.prob.out$direction
+    
+    out$summary <- cbind(out$summary, data.frame('hyp' = hypothesis, 'post.prob' = post.prob))
+    out$dirSymbol <- dirSymbol
+  }
+  if(!is.null(rope_range)){
+    if(length(rope_range) == 2){
+      
+      #* `difference of mean vectors`
+      
+      if(!is.null(s2)){
+        mean_diff <- mean1 - mean2
+        direction <- mean1 >= mean2
+      } else {
+        mean_diff <- mean1
+        direction <- rep(TRUE, length(mean1))
+      }
+      
+      abs_mean_diff <- abs(mean_diff)
+      norm_abs_mean_diff <- abs_mean_diff/sum(abs_mean_diff)
+      norm_mean_diff <- ifelse(direction, 1, -1) * norm_abs_mean_diff
+      if(plot){
+        out$rope_df<-data.frame(x=1:length(norm_mean_diff), y=norm_mean_diff) 
+      }
+      #* `draw N times from mean vector`
+      mean1_draws <- extraDistr::rdirichlet(10000, mean1)
+      #* `Define jeffrey prior for beta`
+      betaPrior <- list("a"=0.5, "b"=0.5)
+      #* `for each bin use MoM Beta`
+      mean1_betaDraws <- lapply(1:length(mean1), function(i){
+        draws <- mean1_draws[,i]
+        mu1 <- mean(draws) #' \bar{y}
+        nu1 <- var(draws)/(length(draws)-1) #' \bar{var} the unbiased sample variance
+        alpha1 <- mu1*((mu1*(1-mu1))/(nu1) - 1) # MoM
+        beta1 <- (1-mu1)*((mu1*(1-mu1))/(nu1) - 1) # MoM
+        #* `Add priors in`
+        a1_prime <- betaPrior$a + alpha1
+        b1_prime <- betaPrior$b + beta1
+        #* `return draws from beta params`
+        betaDraws <- rbeta(10000, a1_prime, b1_prime)
+        return(betaDraws)
+      })
+      
+      if(!is.null(s2)){
+        #* `draw N times from mean vector`
+        mean2_draws <- extraDistr::rdirichlet(10000, mean2)
+        #* `for each bin use MoM Beta`
+        mean2_betaDraws <- lapply(1:length(mean2), function(i){
+          draws <- mean2_draws[,i]
+          mu2 <- mean(draws) #' \bar{y}
+          nu2 <- var(draws)/(length(draws)-1) #' \bar{var} the unbiased sample variance
+          alpha2 <- mu2*((mu2*(1-mu2))/(nu2) - 1) # MoM
+          beta2 <- (1-mu2)*((mu2*(1-mu2))/(nu2) - 1) # MoM
+          #* `Add priors in`
+          a2_prime <- betaPrior$a + alpha2
+          b2_prime <- betaPrior$b + beta2
+          #* `return draws from beta params`
+          betaDraws <- rbeta(10000, a2_prime, b2_prime)
+          return(betaDraws)
+        })
+        #* `get posterior as s1_beta_i - s2_beta_i for all i`
+        
+        posterior <- lapply(1:length(mean1), function(i){
+          mean1_betaDraws[[i]] -  mean2_betaDraws[[i]]
+        })
+        
+      } else{
+        posterior = mean1_betaDraws
+      }
+      rope_probs<-lapply(posterior, function(pst){
+        as.numeric(bayestestR::rope(pst, range = rope_range, ci_method = "HDI", ci=rope_ci))
+      })
+      mean_rope_prob = sum(unlist(rope_probs)) / ncol(s1)
+      
+      HDI_rope <- as.data.frame(bayestestR::hdi(as.data.frame(t(do.call(rbind, posterior))), ci = rope_hdi))
+      HDE_rope_pre <- as.data.frame(bayestestR::hdi(as.data.frame(t(do.call(rbind, posterior))), ci = 0.001))
+      HDE_rope <- data.frame("Parameter" = HDE_rope_pre[["Parameter"]],
+                             "HDE" = rowMeans(HDE_rope_pre[,c("CI_low", "CI_high")]))
+      
+      out$dirSymbol <- dirSymbol
+      out$summary = cbind(out$summary, data.frame('HDE_rope' = list(NA), 'HDI_rope' = list(NA),
+                                                  "mean_rope_prob" = mean_rope_prob))
+      out$summary <- data.table::as.data.table(out$summary)
+      out$summary$HDE_rope <- list(HDE_rope)
+      out$summary$HDI_rope <- list(HDI_rope)
+      out$summary <- as.data.frame(out$summary)
+      out$rope_probs <- rope_probs
+    } else{
+      stop("rope must be a vector of length 2")
+    }
+  }
+  return(out)
+}
 
 
 
@@ -1982,7 +2152,7 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
 
 
 #' ***********************************************************************************************
-#' *************** `General Functions` *******************************************************
+#' *************** `Calculate Posterior Probability given PDFs` ***********************************
 #' ***********************************************************************************************
 
 
@@ -2008,6 +2178,23 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
   }
   return(list('post.prob'=post.prob, "direction" = dirSymbol))
 }
+
+#' ***********************************************************************************************
+#' *************** `General Plotting Function` ***********************************
+#' ***********************************************************************************************
+
+
+#' @keywords internal
+#' @noRd
+
+
+#' ***********************************************************************************************
+#' *************** `Dirichlet Plotting Function` ***********************************
+#' ***********************************************************************************************
+
+
+#' @keywords internal
+#' @noRd
 
 
 
