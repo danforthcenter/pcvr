@@ -1984,7 +1984,23 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
 #' @param s2 An optional second sample of the same form as s2.
 #' @examples
 #' 
-#' 1+1
+#' makeMvLn<-function(bins=500,mu_log,sigma_log){
+#' setNames(data.frame(matrix(hist(rlnorm(2000,mu_log, sigma_log),
+#'                                 breaks=seq(1,bins,5), plot=FALSE)$counts, nrow=1)),
+#'                                          paste0("b",seq(1,bins,5))[-1] ) }
+#' set.seed(123) 
+#' mv_ln<-rbind(do.call(rbind,
+#'                       lapply(1:30, function(i){makeMvLn(mu_log=log(130),
+#'                                           sigma_log=log(1.3) )})),
+#'             do.call(rbind, lapply(1:30, function(i){makeMvLn(mu_log=log(100),
+#'                                           sigma_log=log(1.2) )})))
+#' mv_ln$group = rep(c("a", "b"), each = 30)
+#' s1 <- mv_ln[mv_ln$group=="a", 1:99]
+#' s2 <- mv_ln[mv_ln$group=="b", 1:99]                            
+#' out <- .conj_diri_mv_1(s1, s2, priors=NULL, plot=TRUE, rope_range = c(-0.1, 0.1),
+#'       rope_ci = 0.89, rope_hdi = 0.95, cred.int.level = 0.89, hypothesis="equal")
+#' dim(out$summary) # summary is still one row dataframe
+#' dim(out$summary$HDI_rope[[1]]) # with nested dataframes.
 #' 
 #' @keywords internal
 #' @noRd
@@ -2131,12 +2147,12 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
       
       out$dirSymbol <- dirSymbol
       out$summary = cbind(out$summary, data.frame('HDE_rope' = list(NA), 'HDI_rope' = list(NA),
-                                                  "mean_rope_prob" = mean_rope_prob))
+                                                  "rope_probs" = list(NA), "mean_rope_prob" = mean_rope_prob))
       out$summary <- data.table::as.data.table(out$summary)
       out$summary$HDE_rope <- list(HDE_rope)
       out$summary$HDI_rope <- list(HDI_rope)
+      out$summary$rope_probs <- list(rope_probs)
       out$summary <- as.data.frame(out$summary)
-      out$rope_probs <- rope_probs
     } else{
       stop("rope must be a vector of length 2")
     }
