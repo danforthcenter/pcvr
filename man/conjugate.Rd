@@ -7,7 +7,8 @@
 conjugate(
   s1 = NULL,
   s2 = NULL,
-  method = c("t", "gaussian", "beta", "lognormal", "poisson", "negbin", "dirichlet"),
+  method = c("t", "gaussian", "beta", "lognormal", "poisson", "negbin", "dirichlet",
+    "dirichlet2"),
   priors = NULL,
   plot = FALSE,
   rope_range = NULL,
@@ -24,13 +25,18 @@ If a multi value trait is used then column names should include a number represe
 \item{s2}{An optional second sample of the same form as s2.}
 
 \item{method}{The distribution/method to use.
-Currently "t", "gaussian", "beta", "lognormal", "poisson", "negbin" (negative binomial), and "dirichlet"
+Currently "t", "gaussian", "beta", "lognormal", "poisson", "negbin" (negative binomial), "dirichlet", and "dirichlet2"
 are supported. The count distributions (poisson and negative binomial) 
-are only implemented for single value traits. Dirichlet is only implemented with multi value traits and
+are only implemented for single value traits. Dirichlets are only implemented with multi value traits and
 will return the summary component as a data.table with nested data frames for the ROPE HDI/HDE
 if rope_range is specified. For brevity the HDE and HDI of the samples are not returned when
-using the dirichlet method.
-Note that "t" and "gaussian" both use a T distribution with "t" testing for a difference
+using the dirichlet method. The "dirichlet" method does not compute an HDI and only compares how much of the posterior
+distribution (sample 1 - sample 2) is within the ROPE interval. The "dirichlet2" method does make an HDI and run normal 
+ROPE tests per each bin using the alpha vector from each sample to simulate draws from the dirichlet. Bear in mind
+ that dirichlet is sensitive to the total number of counts in the data. If the mean vector
+(alpha_vec ~ mean_vec * precision) were to be used instead of the alpha vector then the distributions
+in each bin would be much wider.
+The "t" and "gaussian" methods both use a T distribution with "t" testing for a difference
  of means and "gaussian" testing for a difference in the distributions (similar to a Z test).}
 
 \item{priors}{Prior distributions described as a list. This varies by method, see details.
@@ -243,7 +249,9 @@ diri_ex_1 <- conjugate(s1, s2, method = "dirichlet", priors=NULL, plot=TRUE,
       rope_range = c(-0.025, 0.025), rope_ci = 0.89, 
       cred.int.level = 0.89, hypothesis="equal")
       
-      
+diri_ex_1 <- conjugate(s1, s2, method = "dirichlet2", priors=NULL, plot=TRUE,
+      rope_range = c(-0.025, 0.025), rope_ci = 0.89, 
+      cred.int.level = 0.89, hypothesis="equal")  
       
 
 
