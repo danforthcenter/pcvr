@@ -8,13 +8,18 @@
 #' If a multi value trait is used then column names should include a number representing the "bin".
 #' @param s2 An optional second sample of the same form as s2.
 #' @param method The distribution/method to use.
-#' Currently "t", "gaussian", "beta", "lognormal", "poisson", "negbin" (negative binomial), and "dirichlet"
+#' Currently "t", "gaussian", "beta", "lognormal", "poisson", "negbin" (negative binomial), "dirichlet", and "dirichlet2"
 #' are supported. The count distributions (poisson and negative binomial) 
-#' are only implemented for single value traits. Dirichlet is only implemented with multi value traits and
+#' are only implemented for single value traits. Dirichlets are only implemented with multi value traits and
 #' will return the summary component as a data.table with nested data frames for the ROPE HDI/HDE
 #' if rope_range is specified. For brevity the HDE and HDI of the samples are not returned when
-#' using the dirichlet method.
-#' Note that "t" and "gaussian" both use a T distribution with "t" testing for a difference
+#' using the dirichlet method. The "dirichlet" method does not compute an HDI and only compares how much of the posterior
+#' distribution (sample 1 - sample 2) is within the ROPE interval. The "dirichlet2" method does make an HDI and run normal 
+#' ROPE tests per each bin using the alpha vector from each sample to simulate draws from the dirichlet. Bear in mind
+#'  that dirichlet is sensitive to the total number of counts in the data. If the mean vector
+#' (alpha_vec ~ mean_vec * precision) were to be used instead of the alpha vector then the distributions
+#' in each bin would be much wider.
+#' The "t" and "gaussian" methods both use a T distribution with "t" testing for a difference
 #'  of means and "gaussian" testing for a difference in the distributions (similar to a Z test).
 #' @param priors Prior distributions described as a list. This varies by method, see details.
 #'  By default this is NULL and weak priors (jeffrey's prior where appropriate) are used.
@@ -211,7 +216,9 @@
 #'       rope_range = c(-0.025, 0.025), rope_ci = 0.89, 
 #'       cred.int.level = 0.89, hypothesis="equal")
 #'       
-#'       
+#' diri_ex_1 <- conjugate(s1, s2, method = "dirichlet2", priors=NULL, plot=TRUE,
+#'       rope_range = c(-0.025, 0.025), rope_ci = 0.89, 
+#'       cred.int.level = 0.89, hypothesis="equal")  
 #'       
 #' 
 #' 
@@ -297,7 +304,7 @@
 #' @keywords bayesian, conjugate, ROPE
 #' @export
 
-conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lognormal", "poisson", "negbin", "dirichlet"),
+conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lognormal", "poisson", "negbin", "dirichlet", "dirichlet2"),
                      priors=NULL, plot=FALSE, rope_range = NULL,
                     rope_ci = 0.89, cred.int.level = 0.89, hypothesis="equal",
                     support=NULL){
@@ -306,7 +313,7 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
   } else if(is.vector(s1)) { vec=TRUE 
   } else{ stop("s1 must be a vector, data.frame, or matrix.") }
   
-  matched_arg<-match.arg(method, choices = c("t", "gaussian", "beta", "lognormal", "poisson", "negbin", "dirichlet"))
+  matched_arg<-match.arg(method, choices = c("t", "gaussian", "beta", "lognormal", "poisson", "negbin", "dirichlet", "dirichlet2"))
   #* `Pick method`
   
   if(matched_arg == "t" & vec){
@@ -341,6 +348,10 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
     
   } else if(matched_arg == "dirichlet" & !vec){
     res<-.conj_diri_mv_1(s1, s2, priors, plot, rope_range, rope_ci, cred.int.level, hypothesis)
+    
+  } else if(matched_arg == "dirichlet2" & !vec){
+    res<-.conj_diri_mv_2(s1, s2, priors, plot, rope_range, rope_ci, cred.int.level, hypothesis)
+    
   } else {
     stop(paste0("Selected distribution and data type are not supported, review methods and check if you are using SV traits",
                 " with an MV only distribution (dirichlet) or MV traits with an SV only distribution (poisson, negbin)"))
@@ -1942,7 +1953,7 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
 
 
 #' ***********************************************************************************************
-#' *************** `Dirichlet (multi value)` *******************************************************
+#' *************** `Dirichlet (multi value) 2` *******************************************************
 #' ***********************************************************************************************
 
 #' @description
@@ -1973,7 +1984,7 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
 #' mv_ln$group = rep(c("a", "b"), each = 30)
 #' s1 <- mv_ln[mv_ln$group=="a", 1:99]
 #' s2 <- mv_ln[mv_ln$group=="b", 1:99]
-#' out <- .conj_diri_mv_1(s1, s2, priors=NULL, plot=TRUE, rope_range = c(-0.1, 0.1),
+#' out <- .conj_diri_mv_2(s1, s2, priors=NULL, plot=TRUE, rope_range = c(-0.1, 0.1),
 #'       rope_ci = 0.89, cred.int.level = 0.89, hypothesis="equal")
 #' dim(out$summary) # summary is still one row dataframe
 #' # post.prob 0.542
@@ -1993,7 +2004,7 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
 #' @keywords internal
 #' @noRd
 
-.conj_diri_mv_1<-function(s1 = NULL, s2= NULL,
+.conj_diri_mv_2<-function(s1 = NULL, s2= NULL,
                          priors=NULL,
                          plot=FALSE, rope_range = NULL, rope_ci = 0.89,
                          cred.int.level = 0.89, hypothesis="equal"){
@@ -2052,7 +2063,7 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
     }
     
     #* `test hypothesis`
-    post.prob.out <-  .post.prob.from.pdfs(mean1, mean2, hypothesis)
+    post.prob.out <-  .post.prob.from.pdfs(mean1, mean2, hypothesis) 
     post.prob <-post.prob.out$post.prob
     dirSymbol <-post.prob.out$direction
     
@@ -2077,11 +2088,11 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
       norm_mean_diff <- ifelse(direction, 1, -1) * norm_abs_mean_diff
       
       #* `draw N times from mean vector 1`
-      mean1_draws <- extraDistr::rdirichlet(10000, mean1)
+      mean1_draws <- extraDistr::rdirichlet(10000, mean1*ncol(s1)) # swapped means and alphas
       
       if(!is.null(s2)){
         #* `draw N times from mean vector 2`
-        mean2_draws <- extraDistr::rdirichlet(10000, mean2)
+        mean2_draws <- extraDistr::rdirichlet(10000, mean2*ncol(s1)) # swapped means and alphas
         posterior <- mean1_draws - mean2_draws
       } else{
         posterior = mean1_draws
@@ -2118,6 +2129,163 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
   }
   return(out)
 }
+
+
+#' ***********************************************************************************************
+#' *************** `Dirichlet (multi value) 1` *******************************************************
+#' ***********************************************************************************************
+
+#' @description
+#' 
+#' The dirichlet distribution is the conjugate prior for a multinomial distribution and can be used to 
+#' describe an image histogram without turning the data from discrete to continuous. 
+#' This is agnostic to the appearance of the "curve" shown by the histogram at the expense of not providing 
+#' single HDE and HDI values. HDE and HDI for the dirichlet are vectors of length n = n_bins.
+#' Note that by default the HDE and HDI for each sample are not returned. Those can be estimated as shown in examples.
+#' 
+#' Note that this returns a data table for convenience in printing the list columns if rope_range is specified.
+#' 
+#' 
+#' @param s1 A data.frame or matrix of multi value traits. The column names should include a number representing the "bin".
+#' @param s2 An optional second sample of the same form as s2.
+#' @examples
+#' 
+#' makeMvLn<-function(bins=500,mu_log,sigma_log){
+#' setNames(data.frame(matrix(hist(rlnorm(2000,mu_log, sigma_log),
+#'                                 breaks=seq(1,bins,5), plot=FALSE)$counts, nrow=1)),
+#'                                          paste0("b",seq(1,bins,5))[-1] ) }
+#' set.seed(123) 
+#' mv_ln<-rbind(do.call(rbind,
+#'                       lapply(1:30, function(i){makeMvLn(mu_log=log(130),
+#'                                           sigma_log=log(1.3) )})),
+#'             do.call(rbind, lapply(1:30, function(i){makeMvLn(mu_log=log(100),
+#'                                           sigma_log=log(1.2) )})))
+#' mv_ln$group = rep(c("a", "b"), each = 30)
+#' s1 <- mv_ln[mv_ln$group=="a", 1:99]
+#' s2 <- mv_ln[mv_ln$group=="b", 1:99]
+#' out <- .conj_diri_mv_1(s1, s2, priors=NULL, plot=TRUE, rope_range = c(-0.1, 0.1),
+#'       rope_ci = 0.89, cred.int.level = 0.89, hypothesis="equal")
+#' dim(out$summary) # summary is still one row dataframe
+#' # post.prob 0.542
+#' # mean_rope_prob = 1
+#' dim(out$summary$HDI_rope[[1]]) # with nested dataframes.
+#' 
+#' # Calculating HDI and HDE for samples
+#' 
+#' if(FALSE){
+#' 
+#'   HDI <- as.data.frame(bayestestR::hdi(as.data.frame(extraDistr::rdirichlet(10000, alpha_vector)), ci = cred.int.level))
+#'   HDE_pre <- as.data.frame(bayestestR::hdi(as.data.frame(extraDistr::rdirichlet(10000, alhpa_vector)), ci = 0.001))
+#'   HDE <- data.frame("Parameter" = HDE_pre[["Parameter"]],
+#'                        "HDE" = rowMeans(HDE_pre[,c("CI_low", "CI_high")]))
+#' }
+#' 
+#' @keywords internal
+#' @noRd
+
+.conj_diri_mv_1<-function(s1 = NULL, s2= NULL,
+                          priors=NULL,
+                          plot=FALSE, rope_range = NULL, rope_ci = 0.89,
+                          cred.int.level = 0.89, hypothesis="equal"){
+  out <-list()
+  
+  if(is.null(priors)){
+    priors <- list(alpha1 = rep(1, ncol(s1)), # alpha vector priors
+                   alpha2 = rep(1, ncol(s1)),
+                   prec1_a = 0.5, # gamma priors on precision
+                   prec1_b = 0.5,
+                   prec2_a = 0.5,
+                   prec2_b = 0.5)
+  }
+  
+  if(!is.null(s1)){
+    alpha1_prime <- priors$alpha1 + colSums(s1) # updating prior with sum of samples in each bin
+    
+    precision1 <- sum(alpha1_prime) # reparameterize alpha1 to mean and precision
+    mean1 <- alpha1_prime / precision1
+    
+    prec1_prime_a <- priors$prec1_a + sum(colSums(s1)) # A updates as A' = A + sum(obs)
+    prec1_prime_b <- priors$prec1_b + nrow(s1) # B updates as B' = B + n(obs)
+    
+    out$summary <- data.frame('HDE_1' = NA, 'HDI_1_low' = NA, 'HDI_1_high' = NA)
+    
+    out$posterior$mean1 = mean1
+    out$posterior$precision1 = precision1
+    out$posterior$prec1_a <- prec1_prime_a
+    out$posterior$prec1_b <- prec1_prime_b
+    
+    if(plot){
+      out$plot_df <- data.frame("bin" = 1:ncol(s1), "prob"=mean1, "sample"=rep("Sample 1",ncol(s1) ))
+    }
+    
+  } else{stop("s1 is required")}
+  
+  if(!is.null(s2)){
+    if(ncol(s1)!=ncol(s2)){stop("s1 and s2 must have the same number of bins (columns)")}
+    alpha2_prime <- priors$alpha2 + colSums(s2) # updating prior with sum of samples in each bin
+    
+    precision2 <- sum(alpha2_prime) # reparameterize alpha1 to mean and precision
+    mean2 <- alpha2_prime / precision2
+    
+    prec2_prime_a <- priors$prec2_a + sum(colSums(s2)) # A updates as A' = A + sum(obs)
+    prec2_prime_b <- priors$prec2_b + nrow(s2) # B updates as B' = B + n(obs)
+    
+    out$summary <- cbind(out$summary, data.frame('HDE_2' = NA, 'HDI_2_low' = NA, 'HDI_2_high' = NA))
+    
+    out$posterior$mean2 = mean2
+    out$posterior$precision2 = precision2
+    out$posterior$prec2_a <- prec2_prime_a
+    out$posterior$prec2_b <- prec2_prime_b
+    
+    if(plot){
+      out$plot_df <- rbind(out$plot_df, data.frame("bin" = 1:ncol(s2), "prob"=mean2, "sample"=rep("Sample 2",ncol(s2) )))
+    }
+    
+    #* `test hypothesis`
+    post.prob.out <-  .post.prob.from.pdfs(mean1, mean2, hypothesis) 
+    post.prob <-post.prob.out$post.prob
+    dirSymbol <-post.prob.out$direction
+    
+    out$summary <- cbind(out$summary, data.frame('hyp' = hypothesis, 'post.prob' = post.prob))
+    out$dirSymbol <- dirSymbol
+  }
+  if(!is.null(rope_range)){
+    if(length(rope_range) == 2){
+      
+      #* `difference of mean vectors`
+      
+      if(!is.null(s2)){
+        mean_diff <- mean1 - mean2
+        direction <- mean1 >= mean2
+      } else {
+        mean_diff <- mean1
+        direction <- rep(TRUE, length(mean1))
+      }
+      
+      abs_mean_diff <- abs(mean_diff)
+      norm_abs_mean_diff <- abs_mean_diff/sum(abs_mean_diff)
+      norm_mean_diff <- ifelse(direction, 1, -1) * norm_abs_mean_diff
+      
+      rope.prob <- sum(apply(cbind(norm_abs_mean_diff, max(rope_range)), MARGIN=1, function(i) min(i)), na.rm=T)
+      
+      if(plot){
+        out$rope_df <- data.frame(bin = 1:length(norm_mean_diff), CI = "1")
+        out$rope_df$CI_low <- unlist(lapply(1:length(norm_mean_diff), function(i){min(norm_mean_diff[[i]], 0)}))
+        out$rope_df$CI_high <- unlist(lapply(1:length(norm_mean_diff), function(i){max(norm_mean_diff[[i]], 0)}))
+      }
+      
+      out$summary = cbind(out$summary, data.frame('HDE_rope' = NA, "HDI_rope" = NA,
+                                                  "rope_probs" = NA, "mean_rope_prob" = rope.prob))
+      out$summary <- data.table::as.data.table(out$summary)
+      #out$summary <- as.data.frame(out$summary)
+    } else{
+      stop("rope must be a vector of length 2")
+    }
+  }
+  return(out)
+}
+
+
 
 
 #' ***********************************************************************************************
@@ -2227,7 +2395,7 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
 #' @noRd
 
 .conj_diri_plot <- function(res, s2, rope_range, rope_ci){
-  
+  # If I make two dirichlet options then having two modes for this function would be good.
   
   p <- ggplot2::ggplot(res$plot_df, ggplot2::aes(x=.data$bin, y=.data$prob))+
     ggplot2::geom_col(data=res$plot_df[res$plot_df$sample == "Sample 1",], fill="red", alpha=0.5, position="identity")+
@@ -2253,13 +2421,6 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
   }
   
   if(length(rope_range) == 2){
-    if(!is.null(s2)){
-      p <- p +
-        ggplot2::labs(subtitle = paste0("P[p1",res$dirSymbol,"p2] = ",post.prob.text, "\n",
-                                        rope_ci,"% HDI in [", rope_range[1],", ",rope_range[2], "]: ",
-                                        round(res$summary$mean_rope_prob, 2) ))
-      res<-res[-which(names(res)=="dirSymbol")]
-    }
     
     xLims <- ggplot2::layer_scales(p)$x$range$range
     
@@ -2271,6 +2432,10 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
     rdf <- res$rope_df
     cis<-rev(unique(rdf$CI))
     virPal <- viridis::plasma(length(cis), direction=-1)
+    if(length(virPal)==1){
+      virPal = "gray40"
+      mode = '1'
+    }
     
     rope_plot <- ggplot2::ggplot(rdf, ggplot2::aes(xmin=bin-rect_width, xmax = bin+rect_width,
                                               ymin=CI_low, ymax=CI_high ))+
@@ -2294,7 +2459,27 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
       ggplot2::scale_x_continuous(limits = xLims)+
       ggplot2::scale_fill_manual(values = virPal)
     
+    if(mode == "1"){
+      rope_plot <- rope_plot +
+        ggplot2::theme(legend.position = "none")
+    }
   
+    if(!is.null(s2)){
+      
+      if(mode == "1"){
+        p <- p +
+          ggplot2::labs(subtitle = paste0("P[p1",res$dirSymbol,"p2] = ",post.prob.text, "\n",
+                                          "Posterior in [", rope_range[1],", ",rope_range[2], "]: ",
+                                          round(res$summary$mean_rope_prob, 2) ))
+      } else{
+        p <- p +
+          ggplot2::labs(subtitle = paste0("P[p1",res$dirSymbol,"p2] = ",post.prob.text, "\n",
+                                          rope_ci,"% HDI in [", rope_range[1],", ",rope_range[2], "]: ",
+                                          round(res$summary$mean_rope_prob, 2) ))
+      }
+      res<-res[-which(names(res)=="dirSymbol")]
+    }
+    
     layout<-c(patchwork::area(1,1,3,6),
               patchwork::area(4,1,4,6))
     
