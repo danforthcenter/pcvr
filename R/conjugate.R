@@ -216,7 +216,7 @@
 #'       rope_range = c(-0.025, 0.025), rope_ci = 0.89, 
 #'       cred.int.level = 0.89, hypothesis="equal")
 #'       
-#' diri_ex_1 <- conjugate(s1, s2, method = "dirichlet2", priors=NULL, plot=TRUE,
+#' diri_ex_2 <- conjugate(s1, s2, method = "dirichlet2", priors=NULL, plot=TRUE,
 #'       rope_range = c(-0.025, 0.025), rope_ci = 0.89, 
 #'       cred.int.level = 0.89, hypothesis="equal")  
 #'       
@@ -2432,9 +2432,10 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
     rdf <- res$rope_df
     cis<-rev(unique(rdf$CI))
     virPal <- viridis::plasma(length(cis), direction=-1)
+    mode = "2"
     if(length(virPal)==1){
       virPal = "gray40"
-      mode = '1'
+      mode = "1"
     }
     
     rope_plot <- ggplot2::ggplot(rdf, ggplot2::aes(xmin=.data$bin-rect_width, xmax = .data$bin+rect_width,

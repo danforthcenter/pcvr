@@ -249,7 +249,7 @@ diri_ex_1 <- conjugate(s1, s2, method = "dirichlet", priors=NULL, plot=TRUE,
       rope_range = c(-0.025, 0.025), rope_ci = 0.89, 
       cred.int.level = 0.89, hypothesis="equal")
       
-diri_ex_1 <- conjugate(s1, s2, method = "dirichlet2", priors=NULL, plot=TRUE,
+diri_ex_2 <- conjugate(s1, s2, method = "dirichlet2", priors=NULL, plot=TRUE,
       rope_range = c(-0.025, 0.025), rope_ci = 0.89, 
       cred.int.level = 0.89, hypothesis="equal")  
       
