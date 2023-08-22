@@ -1,9 +1,9 @@
 #' Read in plantCV csv output in wide or long format
 #' 
 #' @param filepath Path to csv file of plantCV output.
-#' @param mode One of "wide" or "long", partial string matching is supported.
-#'    This controls whether data is \strong{returned} in long or wide format.
-#' @param singleValueOnly Logical, should only single value traits be returned?
+#' @param mode NULL (the default) or one of "wide" or "long", partial string matching is supported.
+#'    This controls whether data is \strong{returned} in long or wide format. If left NULL then
+#'    the output format will be the same as the input format.
 #' @param traitCol Column with phenotype names, defaults to "trait".
 #'   This should generally not need to be changed from the default. This, 
 #'   labelCol, and valueCol are used to determine if data are in long format in their
@@ -15,11 +15,6 @@
 #' (ellipseCenter.x vs ellipseCenter.y, bins of histograms, etc)
 #' @param valueCol Column with phenotype values, defaults to "value".
 #'   This should generally not need to be changed from the default.
-#' @param multiValPattern If `singleValueOnly`=TRUE then this is used to identify multi value traits.
-#'   By default this is "hist|frequencies".
-#'   If this argument has length of 1 then it is taken as either a single phenotype
-#'   or a regex pattern to find values of `trait` that are multi-value phenotypes.
-#'   Alternatively this can be a vector of phenotype names to remove (see examples).
 #' @param reader The function to use to read in data,
 #'   defaults to NULL in which case `data.table::fread` is used if filters are in place
 #'   and `read.csv` is used otherwise.
@@ -62,16 +57,28 @@
 #' 
 #' if(FALSE){
 #' file = "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest1.csv"
-#' df1<-read.pcv(file, "wide", TRUE, multiValPattern = "hist|frequencies")
-#' df1b<-read.pcv(file, "wide", TRUE, multiValPattern = c("index_frequencies_index_ari",
-#' "index_frequencies_index_ci_rededge", "index_frequencies_index_ndvi", "npq_hist_NPQ",
-#' "yii_hist_Fq'/Fm'", "yii_hist_Fv/Fm"))
-#' identical(df1, df1b)
-#' df2<-read.pcv(file, "long", TRUE)
-#' dim(df2)
+#' 
+#' w2w <- read.pcv("pcvrTestData/pcv4-single-value-traits.csv",
+#'                mode = "wide", reader="fread")
+#' dim(w2w)
+#' 
+#' w2l <- read.pcv("pcvrTestData/pcv4-single-value-traits.csv",
+#'                 mode = "long", reader="fread")
+#' dim(w2l)
+#' 
+#' l2w <- read.pcv("pcvrTestData/pcv4-multi-value-traits.csv",
+#'                 mode = "wide", reader="fread")
+#' dim(l2w)
+#' 
+#' l2l <- read.pcv("pcvrTestData/pcv4-multi-value-traits.csv",
+#'                 mode = "long", reader="fread")
+#' dim(l2l)
+#' 
+#' 
 #' # Note only data stored on a Unix style system can be subset before reading in.
 #' # For DDPSC employees there are larger datasets on stargate that
 #' # better show the benefit of subsetting before reading data in.
+#' 
 #' fileBig="/shares/mgehan_share/llima/Maize_Project_2022/nir_maize_first_exp_results.csv"
 #' # library(vroom)
 #' start<-Sys.time()
@@ -94,14 +101,15 @@
 #' # There may be situations where you want to use wide mv traits which can read in easily:
 #' x4<-read.pcv(fileBig, reader="fread",
 #'   filters = list("trait in blue_frequencies"),
-#'   mode="wide", singleValueOnly=FALSE)
+#'   mode="wide")
 #' }
 #' ## End(Not run) 
 #' 
 #' @export
-read.pcv<-function(filepath, mode="wide", singleValueOnly=TRUE,
+
+read.pcv<-function(filepath, mode=NULL, 
                    traitCol="trait", labelCol="label", valueCol="value",
-                   multiValPattern = "hist|frequencies", reader=NULL, filters=NULL, awk=NULL, ...){
+                   reader=NULL, filters=NULL, awk=NULL, ...){
   if(is.null(filters) & is.null(awk)){
     if(is.null(reader)){reader="read.csv"}
     if(reader!="fread"){
@@ -114,30 +122,25 @@ read.pcv<-function(filepath, mode="wide", singleValueOnly=TRUE,
     if(nrow(df1)<1){ stop(paste0("0 Rows returned using awk statement:\n", awkHelper(filepath, filters),
                                  "\nMost common issues are misspellings or not including a column name and affector." )) }
     }
-  if(!is.null(filters)){
-    if(singleValueOnly & any(unlist(lapply(filters, function(filt) any(grepl(multiValPattern,strsplit(filt, " ")[[1]][-c(1:2)] )))))){
-      warning("Your filters specify a value that would be filtered by multiValPattern since singleValueOnly=TRUE, proceeding with singleValueOnly=FALSE. Consider changing multiValPattern or singleValueOnly argument.")
-      }
-  }
   #* `check original data format`
   
   if(all(c(traitCol, valueCol, labelCol) %in% colnames(df1))){
-    originalMode = "long"
     startsLong = TRUE
-  } else{
-    originalMode = "wide"
-    startsLong = FALSE }
-  #* check if mode and original mode are the same
-  #* if they are the same then do some set of things and return easily
-  #* if they are not the same then other stuff?
+  } else if(!any(c(traitCol, valueCol, labelCol) %in% colnames(df1))){
+    startsLong = FALSE } else{
+      found <- c('traitCol', 'valueCol', 'labelCol')[which(c(traitCol, valueCol, labelCol) %in% colnames(df1))]
+      warning(paste0( paste(found, collapse = ", "), " found in column names of data but either all or none of traitCol, valueCol, and labelCol are expected."))
+    }
   
-  #* `filter out multi value traits if singleValueOnly==TRUE and the data is long`
-  if(singleValueOnly & startsLong ){
-    if(length(multiValPattern)==1){ df1<-df1[!grepl(multiValPattern, df1[[traitCol]]), ]
-    } else { df1<-df1[!df1[[traitCol]] %in% multiValPattern, ] }
+  if(is.null(mode)){
+    if(startsLong){outputMode = "long"
+    } else {outputMode = "wide"}
+  } else {
+    outputMode <- match.arg(mode, c("wide","long"))
   }
+  #* `if data is long and mode is wide`
   
-  if(match.arg(mode, c("wide","long"))=="wide" ){
+  if(outputMode=="wide" & startsLong ){
     long<-df1
     if(substr(colnames(long)[1],1,1)=="X" & length(unique(long[[1]]))==nrow(long)){long<-long[,-1]}
     long<-long[!is.na(long[[valueCol]]),]
@@ -161,14 +164,33 @@ read.pcv<-function(filepath, mode="wide", singleValueOnly=TRUE,
     }
     out<-wide
     
-  } else{out<-df1
-  if(!is.null(traitCol)){
-    if(traitCol %in% colnames(out)){
-      out[[traitCol]]<-gsub("/", ".over.", out[[traitCol]])
-      out[[traitCol]]<-gsub("\\'", "", out[[traitCol]]) 
+    #* `if data is long and mode is long`
+  } else if(outputMode=="long" & startsLong ){
+    out<-df1
+    if(!is.null(traitCol)){
+      if(traitCol %in% colnames(out)){
+        out[[traitCol]]<-gsub("/", ".over.", out[[traitCol]])
+        out[[traitCol]]<-gsub("\\'", "", out[[traitCol]]) 
+      }
     }
+    #* `if data is wide and mode is wide (single value traits only)`
+  } else if(outputMode=="wide" & !startsLong){
+    out<-df1
+    #* `if data is wide and mode is long (single value traits only)`
+  } else if(outputMode=="long" & !startsLong){
+    #* ***** `find phenotype columns as section of numerics at end of data`
+    sequence <- seq(ncol(df1), 1, -1) 
+    numeric_cols <- as.numeric(which(unlist(lapply(df1, is.numeric))))
+    pheno_position_in_seq<-which(unlist(lapply(1:length(numeric_cols), function(i){
+      sequence[i] == rev(numeric_cols)[i]
+    })))
+    pheno_cols <- rev(sequence[pheno_position_in_seq])
+    #* ***** `melt data`
+    #* note this will warn about numeric vs integer so I am suppressing that since it should always be fine to do that.
+    out <- suppressWarnings(as.data.frame(data.table::melt(data.table::as.data.table(df1), measure.vars = pheno_cols),
+                          variable.name = traitCol, value.name = valueCol))
   }
-  }
+  
   colnames(out)<-gsub("/", ".over.", colnames(out))
   colnames(out)<-gsub("\\'", "", colnames(out))
   return(out)
