@@ -358,10 +358,10 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
   }
 
   #* `Make plot`
-  if(matched_arg != "dirichlet" & plot){
-    res <- .conj_general_plot(res, s2, rope_range, support, rope_ci)
-  } else if (matched_arg == "dirichlet" & plot){
+  if(grepl("dirichlet", matched_arg) & plot){
     res <- .conj_diri_plot(res, s2, rope_range, rope_ci)
+  } else {
+    res <- .conj_general_plot(res, s2, rope_range, support, rope_ci)
   }
   
   return(res)
@@ -2437,8 +2437,8 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
       mode = '1'
     }
     
-    rope_plot <- ggplot2::ggplot(rdf, ggplot2::aes(xmin=bin-rect_width, xmax = bin+rect_width,
-                                              ymin=CI_low, ymax=CI_high ))+
+    rope_plot <- ggplot2::ggplot(rdf, ggplot2::aes(xmin=.data$bin-rect_width, xmax = .data$bin+rect_width,
+                                              ymin=.data$CI_low, ymax=.data$CI_high ))+
       lapply(1:length(cis), function(i){
         ggplot2::geom_rect(data = rdf[rdf$CI == cis[[i]], ], ggplot2::aes(fill = as.character(cis[[i]]) ))
       })+
