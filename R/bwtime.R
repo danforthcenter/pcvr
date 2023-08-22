@@ -32,8 +32,8 @@
 #' ## Not run:
 #' 
 #' sv<-read.pcv(
-#' "https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv",
-#'  mode="wide", singleValueOnly =TRUE, reader="fread")
+#' "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv",
+#'  mode="wide", reader="fread")
 #' sv$genotype = substr(sv$barcode, 3,5)
 #' sv$genotype = ifelse(sv$genotype == "002", "B73",
 #'                      ifelse(sv$genotype == "003", "W605S",
@@ -46,8 +46,8 @@
 #' 
 #' 
 #' svl<-read.pcv(
-#' "https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv",
-#'  mode="long", singleValueOnly =TRUE, reader="fread")
+#' "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv",
+#'  mode="long", reader="fread")
 #' svl$genotype = substr(svl$barcode, 3,5)
 #' svl$genotype = ifelse(svl$genotype == "002", "B73",
 #'                      ifelse(svl$genotype == "003", "W605S",

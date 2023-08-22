@@ -86,16 +86,16 @@ multi-value trait analysis available in \code{conjugate} and \code{pcv.emd}.
 ## Not run: 
 
 df <- read.pcv(
-  "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest2.csv", "long", FALSE)
+  "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest2.csv", "long")
 wide_beta <- read.pcv(
-  "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest2.csv", "wide", FALSE)
+  "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest2.csv", "wide")
 x <- pcv.joyplot(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"))
 # pcv.joyplot(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"),
 #   method="ks")
 
 wide<-read.pcv(
-"https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv",
-   mode="wide", singleValueOnly =TRUE, multiValPattern = "hist", reader="fread")
+"https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/pcv4-multi-value-traits.csv",
+   mode="wide")
 wide <- bw.time(wide, mode="DAS",plot=FALSE)
 wide$genotype = substr(wide$barcode, 3,5)
 wide$genotype = ifelse(wide$genotype == "002", "B73",

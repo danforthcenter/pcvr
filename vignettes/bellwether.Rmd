@@ -74,12 +74,13 @@ plot(support, dbeta(support, 5,5), type="l", main="simulated example")
 
 ### `read.pcv`
 
-Bellwether data can be very large so this vignette will use a small bellwether dataset that is already subset to remove most multi-value traits (most color histograms). That data is available on [github](https://github.com/joshqsumner/pcvrTestData/blob/main/smallPhenotyperRun.csv).
+Bellwether data can be very large so this vignette will use a small bellwether dataset that is already subset to remove most multi-value traits (most color histograms). Both the [single value data](https://github.com/joshqsumner/pcvrTestData/blob/main/) and [multi value data](https://github.com/joshqsumner/pcvrTestData/blob/main/) are available on github. For single value traits being read into wide format there is not a compelling reason to use `read.pcv` in place directly calling `fread` or `read.csv`. The benefits of `read.pcv` are only shown if you need to filter data outside of R or if you want to use your data in a different format than it is stored in (wide going to long and vice versa).
 
-The single value traits can be read in and converted to wide format with `read.pcv`, here using `data.table::fread` for speed.
+The single value traits can be read in with `read.pcv`, here using `data.table::fread` for speed.
 
 ```{r}
-sv<-read.pcv("https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv", mode="wide", singleValueOnly = T, reader="fread")
+sv<-read.pcv("https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv",
+             reader="fread")
 
 if(T){ # we can parse barcodes for the metadata that we need
   sv$genotype = substr(sv$barcode, 3,5)
@@ -95,6 +96,7 @@ if(T){ # we can parse barcodes for the metadata that we need
 }
 ```
 
+### Very large datasets
 
 Sometimes large plantCV output may be too large to be read into memory for R. In that case `read.pcv` has a `filter` argument which will filter rows using awk through linux/unix outside of R. That feature would work as shown below to read only single value traits into memory. This can take a few minutes but allows the entirely workflow to be documented in one R file. 
 
@@ -103,6 +105,29 @@ Sometimes large plantCV output may be too large to be read into memory for R. In
 example<-read.pcv("prohibitivelyLargeFile.csv",
    filters = list("trait in area, convex_hull_area, solidity, perimeter, width, height, longest_path, convex_hull_vertices, ellipse_major_axis, ellipse_minor_axis, ellipse_angle, ellipse_eccentricity, hue_circular_mean, hue_circular_std, hue_median", "sample in default"))
 ```
+
+### `read.pcv.4.x`
+
+Before the release of PlantCV version 4 there were several widely used branches of PlantCV that output results as a single long format csv file. The original goal of `read.pcv` was to make it easier to work with those files. Now that the default output has changed the `read.pcv` function has been somewhat simplified but it can still be used for these "PlantCV 4.x" legacy style data.
+
+```{r, class.source="static-code", eval=F}
+sv<-read.pcv("https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv", mode="wide",
+             reader="fread")
+
+if(T){ # we can parse barcodes for the metadata that we need
+  sv$genotype = substr(sv$barcode, 3,5)
+  sv$genotype = ifelse(sv$genotype == "002", "B73",
+                       ifelse(sv$genotype == "003", "W605S",
+                              ifelse(sv$genotype == "004", "MM", "Mo17")))
+  sv$fertilizer = substr(sv$barcode, 8, 8)
+  sv$fertilizer = ifelse(sv$fertilizer == "A", "100",
+                       ifelse(sv$fertilizer == "B", "50", "0"))
+} else { # or we might use a key file and join it to our data
+  key<-read.csv("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/smallPhenotyperRun_key.csv")
+  sv<-merge(sv, key, by="barcode")
+}
+```
+
 
 ### `read.pcv.3`
 
@@ -528,7 +553,8 @@ ggplot(sv_ag[sv_ag$DAS==18,], aes(x = fertilizer, y=hue_circular_mean.degrees, f
 
 
 ```{r}
-hue_wide<-read.pcv("https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv", mode="wide", singleValueOnly = T, multiValPattern = "hist", reader="fread")
+hue_wide<-read.pcv("https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/pcv4-multi-value-traits.csv",
+                   mode="wide", reader="fread")
 hue_wide$genotype = substr(hue_wide$barcode, 3,5)
 hue_wide$genotype = ifelse(hue_wide$genotype == "002", "B73",
                      ifelse(hue_wide$genotype == "003", "W605S",

@@ -230,9 +230,8 @@ negbin_sv_ex <- conjugate(s1 = rnbinom(20, 10, 0.5), s2= rnbinom(20, 10, 0.25), 
 ## Not run:
 library(data.table)
 wide<-read.pcv(
- paste0("https://media.githubusercontent.com/media/joshqsumner/",
- "pcvrTestData/main/smallPhenotyperRun.csv"),
- mode="wide", singleValueOnly =TRUE, multiValPattern = "hist", reader="fread")
+ paste0("https://raw.githubusercontent.com/joshqsumner/",
+ "pcvrTestData/main/pcv4-single-value-traits.csv"), reader="fread")
 wide$genotype = substr(wide$barcode, 3,5)
 wide$genotype = ifelse(wide$genotype == "002", "B73",
                        ifelse(wide$genotype == "003", "W605S",

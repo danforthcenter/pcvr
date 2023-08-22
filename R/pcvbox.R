@@ -32,8 +32,8 @@
 #' ## Not run: 
 #' 
 #' sv<-read.pcv(
-#' "https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv",
-#'  mode="wide", singleValueOnly =TRUE, reader="fread")
+#' "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv",
+#'  reader="fread")
 #' sv$genotype = substr(sv$barcode, 3,5)
 #' sv$genotype = ifelse(sv$genotype == "002", "B73",
 #'               ifelse(sv$genotype == "003", "W605S",
@@ -42,12 +42,12 @@
 #' sv$fertilizer = ifelse(sv$fertilizer == "A", "100",
 #'               ifelse(sv$fertilizer == "B", "50", "0"))
 #'               
-#' sv<-bw.time(sv, plantingDelay = 0, phenotype="area.pixels", cutoff=10,
+#' sv<-bw.time(sv, plantingDelay = 0, phenotype="area", cutoff=10,
 #'  timeCol="timestamp", group=c("barcode", "rotation"), plot=TRUE)
 #'  
 #' pixels_per_cmsq <- 42.5^2   # pixel per cm^2
-#' sv$area_cm2<-sv$area.pixels / pixels_per_cmsq
-#' sv$height_cm <- sv$height.pixels/42.5
+#' sv$area_cm2<-sv$area / pixels_per_cmsq
+#' sv$height_cm <- sv$height/42.5
 #' 
 #' pcvBox(sv[sv$genotype=='MM' & sv$DAS==15, ],
 #'   x="fertilizer", y="area_cm2", compare="0", showPoints = TRUE)

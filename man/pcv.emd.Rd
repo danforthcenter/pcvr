@@ -88,16 +88,14 @@ x<-pcv.emd(df=test, cols="V", reorder="Mu",
    plot=FALSE, parallel = 1)
 head(x)
 
-file = "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest1.csv"
-df1<-read.pcv(file, "wide", TRUE, multiValPattern = c("index_frequencies_index_ari",
- "index_frequencies_index_ci_rededge", "npq_hist_NPQ", "yii_hist_Fq'/Fm'", "yii_hist_Fv/Fm"))
+file = "https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/pcv4-multi-value-traits.csv"
+df1<-read.pcv(file, "wide")
  
-colnames(df1)<-sub("index_frequencies_index_ndvi.", "ndvi_", colnames(df1))
-
-w<-pcv.emd(df1, cols="ndvi_", reorder=c("treatment", "genotype"), 
+w<-pcv.emd(df1, cols="hue_frequencies", reorder=c("treatment", "genotype"), 
   mat =FALSE, plot=TRUE, parallel = 1)
-# df_long<-read.pcv(file, "long", FALSE)
-# l<-pcv.emd(df = df_long, cols="index_frequencies_index_ndvi",
+  
+# df_long<-read.pcv(file, "long")
+# l<-pcv.emd(df = df_long, cols="hue_frequencies",
 #    reorder=c("treatment", "genotype"),
 #    mat =FALSE, plot=TRUE, longTrait="trait", id="image", value="value")
 # l$plot + theme(axis.text = element_blank())
