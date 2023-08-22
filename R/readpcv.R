@@ -2,18 +2,20 @@
 #' 
 #' @param filepath Path to csv file of plantCV output.
 #' @param mode One of "wide" or "long", partial string matching is supported.
-#'    This controls whether data is returned in long or wide format.
+#'    This controls whether data is \strong{returned} in long or wide format.
 #' @param singleValueOnly Logical, should only single value traits be returned?
 #' @param traitCol Column with phenotype names, defaults to "trait".
-#'   This should generally not need to be changed from the default.
+#'   This should generally not need to be changed from the default. This, 
+#'   labelCol, and valueCol are used to determine if data are in long format in their
+#'   raw state (the csv file itself).
 #' @param labelCol Column with phenotype labels (units), defaults to "label".
 #'   This should generally not need to be changed from the default.
 #'   This is used with `traitCol` when `mode`="wide" to identify
 #'   unique traits since some may be ambiguous
-#' (ellipseCenter.x vs ellipseCenter.y, etc)
+#' (ellipseCenter.x vs ellipseCenter.y, bins of histograms, etc)
 #' @param valueCol Column with phenotype values, defaults to "value".
 #'   This should generally not need to be changed from the default.
-#' @param multiValPattern If `singleValueOnly`=TRUERUE then this is used to identify multi value traits.
+#' @param multiValPattern If `singleValueOnly`=TRUE then this is used to identify multi value traits.
 #'   By default this is "hist|frequencies".
 #'   If this argument has length of 1 then it is taken as either a single phenotype
 #'   or a regex pattern to find values of `trait` that are multi-value phenotypes.
@@ -36,8 +38,20 @@
 #' @param awk As an alternative to `filters` a direct call to awk can be supplied here,
 #'   in which case that call will be used through pipe().
 #' @param ... Other arguments passed to the reader function.
-#'   In the case of 'vroom' and 'fread' there are several defaults provided already
+#'   In the cases of 'vroom' and 'fread' there are several defaults provided already
 #'   which can be overwritten with these extra arguments.
+#'   
+#' @details
+#' In plantCV version 4 the single value traits are returned in wide format from \code{json2csv}
+#' and the multi value traits are returned in long format. When data is read in using read.pcv 
+#' the traitCol, valueCol, and labelCol arguments are checked to determine if the data is in long 
+#' format. This is done to keep compatibility with interim versions of plantcv output where all outputs
+#' were in a single long format file. 
+#' 
+#' With the current implementation and plantcv output you can read wide or long format files into
+#' wide or long format in R. Keep in mind that the 'mode' argument controls the format that will be returned in R,
+#' not the format that the data saved as in your csv file.
+#'   
 #' @keywords read.csv, pcv, wide, long
 #' @return Returns a data.frame in wide or long format.
 #' @importFrom stats as.formula
@@ -97,17 +111,32 @@ read.pcv<-function(filepath, mode="wide", singleValueOnly=TRUE,
   } else{
     if(is.null(reader)){reader="fread"}
     df1<-pcv.sub.read(inputFile=filepath, filters=filters, reader = reader, awk=awk, ...)  
-    if(nrow(df1)<1){ stop(paste0("0 Rows returned using awk statement:\n", awkHelper(filepath, filters), "\nMost common issues are misspellings or not including a column name and affector." )) }
+    if(nrow(df1)<1){ stop(paste0("0 Rows returned using awk statement:\n", awkHelper(filepath, filters),
+                                 "\nMost common issues are misspellings or not including a column name and affector." )) }
     }
   if(!is.null(filters)){
     if(singleValueOnly & any(unlist(lapply(filters, function(filt) any(grepl(multiValPattern,strsplit(filt, " ")[[1]][-c(1:2)] )))))){
       warning("Your filters specify a value that would be filtered by multiValPattern since singleValueOnly=TRUE, proceeding with singleValueOnly=FALSE. Consider changing multiValPattern or singleValueOnly argument.")
       }
   }
-  if(singleValueOnly & traitCol %in% colnames(df1)){
+  #* `check original data format`
+  
+  if(all(c(traitCol, valueCol, labelCol) %in% colnames(df1))){
+    originalMode = "long"
+    startsLong = TRUE
+  } else{
+    originalMode = "wide"
+    startsLong = FALSE }
+  #* check if mode and original mode are the same
+  #* if they are the same then do some set of things and return easily
+  #* if they are not the same then other stuff?
+  
+  #* `filter out multi value traits if singleValueOnly==TRUE and the data is long`
+  if(singleValueOnly & startsLong ){
     if(length(multiValPattern)==1){ df1<-df1[!grepl(multiValPattern, df1[[traitCol]]), ]
     } else { df1<-df1[!df1[[traitCol]] %in% multiValPattern, ] }
-    }
+  }
+  
   if(match.arg(mode, c("wide","long"))=="wide" ){
     long<-df1
     if(substr(colnames(long)[1],1,1)=="X" & length(unique(long[[1]]))==nrow(long)){long<-long[,-1]}
