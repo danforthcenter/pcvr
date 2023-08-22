@@ -83,22 +83,19 @@ not the format that the data saved as in your csv file.
 ## Not run: 
 
 if(FALSE){
-file = "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest1.csv"
+mv = "https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/pcv4-multi-value-traits.csv"
+sv = "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv"
 
-w2w <- read.pcv("pcvrTestData/pcv4-single-value-traits.csv",
-               mode = "wide", reader="fread")
+w2w <- read.pcv(sv, mode = "wide", reader="fread")
 dim(w2w)
 
-w2l <- read.pcv("pcvrTestData/pcv4-single-value-traits.csv",
-                mode = "long", reader="fread")
+w2l <- read.pcv(sv, mode = "long", reader="fread")
 dim(w2l)
 
-l2w <- read.pcv("pcvrTestData/pcv4-multi-value-traits.csv",
-                mode = "wide", reader="fread")
+l2w <- read.pcv(mv, mode = "wide", reader="fread")
 dim(l2w)
 
-l2l <- read.pcv("pcvrTestData/pcv4-multi-value-traits.csv",
-                mode = "long", reader="fread")
+l2l <- read.pcv(mv, mode = "long", reader="fread")
 dim(l2l)
 
 

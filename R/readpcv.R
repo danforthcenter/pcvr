@@ -56,22 +56,19 @@
 #' ## Not run: 
 #' 
 #' if(FALSE){
-#' file = "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest1.csv"
+#' mv = "https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/pcv4-multi-value-traits.csv"
+#' sv = "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv"
 #' 
-#' w2w <- read.pcv("pcvrTestData/pcv4-single-value-traits.csv",
-#'                mode = "wide", reader="fread")
+#' w2w <- read.pcv(sv, mode = "wide", reader="fread")
 #' dim(w2w)
 #' 
-#' w2l <- read.pcv("pcvrTestData/pcv4-single-value-traits.csv",
-#'                 mode = "long", reader="fread")
+#' w2l <- read.pcv(sv, mode = "long", reader="fread")
 #' dim(w2l)
 #' 
-#' l2w <- read.pcv("pcvrTestData/pcv4-multi-value-traits.csv",
-#'                 mode = "wide", reader="fread")
+#' l2w <- read.pcv(mv, mode = "wide", reader="fread")
 #' dim(l2w)
 #' 
-#' l2l <- read.pcv("pcvrTestData/pcv4-multi-value-traits.csv",
-#'                 mode = "long", reader="fread")
+#' l2l <- read.pcv(mv, mode = "long", reader="fread")
 #' dim(l2l)
 #' 
 #' 
@@ -187,8 +184,8 @@ read.pcv<-function(filepath, mode=NULL,
     pheno_cols <- rev(sequence[pheno_position_in_seq])
     #* ***** `melt data`
     #* note this will warn about numeric vs integer so I am suppressing that since it should always be fine to do that.
-    out <- suppressWarnings(as.data.frame(data.table::melt(data.table::as.data.table(df1), measure.vars = pheno_cols),
-                          variable.name = traitCol, value.name = valueCol))
+    out <- suppressWarnings(as.data.frame(data.table::melt(data.table::as.data.table(df1), measure.vars = pheno_cols,
+                          variable.name = traitCol, value.name = valueCol)))
   }
   
   colnames(out)<-gsub("/", ".over.", colnames(out))
