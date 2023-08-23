@@ -126,8 +126,9 @@ read.pcv<-function(filepath, mode=NULL,
   } else if(!any(c(traitCol, valueCol, labelCol) %in% colnames(df1))){
     startsLong = FALSE } else{
       found <- c('traitCol', 'valueCol', 'labelCol')[which(c(traitCol, valueCol, labelCol) %in% colnames(df1))]
-      warning(paste0( paste(found, collapse = ", "), " found in column names of data but either all or none of traitCol, valueCol, and labelCol are expected."))
-    }
+      warning(paste0( paste(found, collapse = ", "), " found in column names of data but either all or none of traitCol, valueCol, and labelCol are expected. Data will be returned as is."))
+      startsLong = FALSE; mode ="wide" # wide to wide has no changes
+      }
   
   if(is.null(mode)){
     if(startsLong){outputMode = "long"
