@@ -48,6 +48,7 @@ cmdstanr::install_cmdstan()
 For this tutorial we will use a mix of simulated data and Bellwether data. The Bellwether data is from an experiment using four maize genotypes in three levels of NPK fertilizer. Data from that experiment is available on github and can be read into R using `read.pcv`. The simulated data will be generated as needed. For details on the reading/metadata functions used here please see the main bellwether vignette.
 
 ```{r}
+
 sv<-read.pcv(paste0("https://raw.githubusercontent.com/joshqsumner/",
                     "pcvrTestData/main/pcv4-single-value-traits.csv"), 
              reader="fread")

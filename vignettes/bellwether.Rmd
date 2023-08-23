@@ -79,7 +79,7 @@ Bellwether data can be very large so this vignette will use a small bellwether d
 The single value traits can be read in with `read.pcv`, here using `data.table::fread` for speed.
 
 ```{r}
-sv<-read.pcv("https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv",
+sv<-read.pcv("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv",
              reader="fread")
 
 if(T){ # we can parse barcodes for the metadata that we need
