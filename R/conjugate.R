@@ -1248,7 +1248,7 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
   
   #* `Define support if it is missing`
   if(is.null(support)){
-    support<-seq(min(bins_order), max(bins_order), length.out=10000)
+    support<-seq(from = min(bins_order), to = max(bins_order), length.out=10000)
   }
   
   #* `Turn s1 matrix into a vector`

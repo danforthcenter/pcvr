@@ -230,8 +230,9 @@ negbin_sv_ex <- conjugate(s1 = rnbinom(20, 10, 0.5), s2= rnbinom(20, 10, 0.25), 
 ## Not run:
 library(data.table)
 wide<-read.pcv(
- paste0("https://raw.githubusercontent.com/joshqsumner/",
- "pcvrTestData/main/pcv4-single-value-traits.csv"), reader="fread")
+ paste0("https://media.githubusercontent.com/media/joshqsumner/",
+ "pcvrTestData/main/pcv4-multi-value-traits.csv"), reader="fread", mode = "wide")
+ 
 wide$genotype = substr(wide$barcode, 3,5)
 wide$genotype = ifelse(wide$genotype == "002", "B73",
                        ifelse(wide$genotype == "003", "W605S",
@@ -262,11 +263,25 @@ hue_res_ln <- conjugate(s1 = mo17_sample, s2= B73_sample, method="lognormal",
 # checking plots of your data (see ?pcv.joyplot for mv traits)
 # will be useful.
 
-pixels_per_cmsq <- 42.5^2   # pixel per cm^2
-wide$area_cm2<-wide$area.pixels / pixels_per_cmsq
+sv<-read.pcv(
+ paste0("https://raw.githubusercontent.com/joshqsumner/",
+ "pcvrTestData/main/pcv4-single-value-traits.csv"), reader="fread", mode = "wide")
+ 
+sv$genotype = substr(sv$barcode, 3,5)
+sv$genotype = ifelse(sv$genotype == "002", "B73",
+                       ifelse(sv$genotype == "003", "W605S",
+                              ifelse(sv$genotype == "004", "MM", "Mo17")))
+sv$fertilizer = substr(sv$barcode, 8, 8)
+sv$fertilizer = ifelse(sv$fertilizer == "A", "100",
+                         ifelse(sv$fertilizer == "B", "50", "0"))
+                         
+sv<-bw.time(sv,timeCol="timestamp", group="barcode")
 
-mo17_area <- wide[wide$genotype=="Mo17" & wide$DAS > 18 & wide$fertilizer == 50, "area_cm2"]
-B73_area <- wide[wide$genotype=="B73" & wide$DAS > 18 & wide$fertilizer == 50, "area_cm2"]
+pixels_per_cmsq <- 42.5^2   # pixel per cm^2
+sv$area_cm2<-sv$area / pixels_per_cmsq
+
+mo17_area <- sv[wide$genotype=="Mo17" & wide$DAS > 18 & wide$fertilizer == 50, "area_cm2"]
+B73_area <- sv[wide$genotype=="B73" & wide$DAS > 18 & wide$fertilizer == 50, "area_cm2"]
 
 area_res_t <- conjugate(s1 = mo17_area, s2= B73_area, method="t",
               priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ),
