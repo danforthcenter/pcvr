@@ -69,10 +69,10 @@
 #' df1$fertilizer = substr(df1$barcode, 8, 8)
 #' df1$fertilizer = ifelse(df1$fertilizer == "A", "100",
 #'                        ifelse(df1$fertilizer == "B", "50", "0"))
-#' 
+#' if(FALSE){
 #' w<-pcv.emd(df1, cols="hue_frequencies", reorder=c("fertilizer", "genotype"), 
 #'   mat =FALSE, plot=TRUE, parallel = 1)
-#'   
+#'   }
 #' # df_long<-read.pcv(file, "long")
 #' # l<-pcv.emd(df = df_long, cols="hue_frequencies",
 #' #    reorder=c("fertilizer", "genotype"),
