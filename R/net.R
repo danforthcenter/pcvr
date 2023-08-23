@@ -29,7 +29,7 @@
 #' @examples 
 #' 
 #' ## Not run:
-#' 
+#' if(FALSE){
 #' file = "https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/pcv4-multi-value-traits.csv"
 #' df1<-read.pcv(file, "wide")
 #' 
@@ -41,10 +41,10 @@
 #' df1$fertilizer = ifelse(df1$fertilizer == "A", "100",
 #'               ifelse(df1$fertilizer == "B", "50", "0"))
 #'               
-#' emd_df<-pcv.emd(df1, cols="hue_frequencies", reorder=c("treatment", "genotype"), mat =FALSE,
+#' emd_df<-pcv.emd(df1, cols="hue_frequencies", reorder=c("fertilizer", "genotype"), mat =FALSE,
 #'    plot=FALSE, parallel = 1)
-#' net<-pcv.net(emd_df, meta = c("treatment", "genotype"))
-#' 
+#' net<-pcv.net(emd_df, meta = c("fertilizer", "genotype"))
+#' }
 #' ## End(Not run)
 #' 
 #' @return Returns a list containing three elements:
