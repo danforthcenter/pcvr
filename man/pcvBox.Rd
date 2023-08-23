@@ -7,7 +7,7 @@
 pcvBox(
   df = df,
   x = "treatment",
-  y = "area.pixels",
+  y = "area",
   fill = NULL,
   compare = FALSE,
   trait = "trait",

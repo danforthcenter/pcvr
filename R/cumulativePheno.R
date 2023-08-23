@@ -36,22 +36,18 @@
 #' sv$fertilizer = ifelse(sv$fertilizer == "A", "100",
 #'               ifelse(sv$fertilizer == "B", "50", "0"))
 #'               
-#' sv<-bw.time(sv, plantingDelay = 0, phenotype="area.pixels", cutoff=10,
+#' sv<-bw.time(sv, plantingDelay = 0, phenotype="area", cutoff=10,
 #'  timeCol="timestamp", group=c("barcode", "rotation"), plot=TRUE)
-#' sv<-bw.outliers(sv, phenotype="area.pixels", group = c("DAS", "genotype", "fertilizer"),
+#' sv<-bw.outliers(sv, phenotype="area", group = c("DAS", "genotype", "fertilizer"),
 #'  plotgroup = c("barcode", "rotation"))
-#' phenotypes <- c('area.pixels', 'convex_hull_area.pixels', 'convex_hull_vertices',
-#'  'ellipse_angle.degrees', 'ellipse_eccentricity', 'ellipse_major_axis.pixels',
-#'   'ellipse_minor_axis.pixels', 'height.pixels', 'hue_circular_mean.degrees',
-#'    'hue_circular_std.degrees', 'hue_median.degrees', 'longest_path.pixels',
-#'     'perimeter.pixels', 'solidity', 'width.pixels')
+#' phenotypes <- colnames(sv)[19:35]
 #' phenoForm<-paste0("cbind(", paste0(phenotypes, collapse=", "), ")")
 #' groupForm<-"DAS+DAP+barcode+genotype+fertilizer"
 #' form<-as.formula(paste0(phenoForm, "~", groupForm))
 #' sv<-aggregate(form, data=sv, mean, na.rm=TRUE)
 #' pixels_per_cmsq <- 42.5^2   # pixel per cm^2
-#' sv$area_cm2<-sv$area.pixels / pixels_per_cmsq
-#' sv$height_cm <- sv$height.pixels/42.5
+#' sv$area_cm2<-sv$area / pixels_per_cmsq
+#' sv$height_cm <- sv$height/42.5
 #' df = sv
 #' phenotypes = c("area_cm2", "height_cm")
 #' group = c("barcode")

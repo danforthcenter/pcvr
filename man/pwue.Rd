@@ -4,7 +4,7 @@
 \alias{pwue}
 \title{Calculate pseudo water use efficiency from phenotype and watering data}
 \usage{
-pwue(df, w, pheno = "area.pixels", time = "DAS", id = "barcode")
+pwue(df, w, pheno = "area", time = "DAS", id = "barcode")
 }
 \arguments{
 \item{df}{Dataframe containing wide single-value phenotype data.
@@ -12,7 +12,7 @@ This should already be aggregated to one row per plant per day (angles/rotations
 
 \item{w}{Watering data as returned from bw.water.}
 
-\item{pheno}{Phenotype column name, defaults to "area.pixels"}
+\item{pheno}{Phenotype column name, defaults to "area"}
 
 \item{time}{Variable(s) that identify a plant on a given day.
 Defaults to \code{c("barcode", "DAS")}.}
@@ -47,7 +47,7 @@ sv$fertilizer = substr(sv$barcode, 8, 8)
 sv$fertilizer = ifelse(sv$fertilizer == "A", "100",
            ifelse(sv$fertilizer == "B", "50", "0"))
 sv<-bw.time(sv, plantingDelay = 0,
-      phenotype="area.pixels", cutoff=10, timeCol="timestamp",
+      phenotype="area", cutoff=10, timeCol="timestamp",
       group=c("barcode", "rotation"), plot=TRUE)
 phenotypes <- colnames(sv)[19:35]
 phenoForm<-paste0("cbind(", paste0(phenotypes, collapse=", "), ")")

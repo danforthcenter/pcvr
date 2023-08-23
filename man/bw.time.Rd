@@ -75,7 +75,7 @@ sv$genotype = ifelse(sv$genotype == "002", "B73",
 sv$fertilizer = substr(sv$barcode, 8, 8)
 sv$fertilizer = ifelse(sv$fertilizer == "A", "100",
                    ifelse(sv$fertilizer == "B", "50", "0"))
-sv<-bw.time(sv, plantingDelay = 0, phenotype="area.pixels", cutoff=10,
+sv<-bw.time(sv, plantingDelay = 0, phenotype="area", cutoff=10,
  timeCol="timestamp", group=c("barcode", "rotation"), plot=FALSE)
 
 
