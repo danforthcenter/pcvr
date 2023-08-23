@@ -29,8 +29,9 @@
 #' ## Not run:
 #' 
 #' hue_wide<-read.pcv(
-#'   "https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv",
-#'    mode="wide", singleValueOnly =TRUE, multiValPattern = "hist", reader="fread")
+#'   paste0("https://media.githubusercontent.com/media/joshqsumner/",
+#'   "pcvrTestData/main/pcv4-multi-value-traits.csv"),
+#'    mode="wide", reader="fread")
 #' hue_wide$genotype = substr(hue_wide$barcode, 3,5)
 #' hue_wide$genotype = ifelse(hue_wide$genotype == "002", "B73",
 #'                            ifelse(hue_wide$genotype == "003", "W605S",

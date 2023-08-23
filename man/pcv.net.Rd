@@ -49,15 +49,22 @@ Easy igraph use with pcv.emd output
 \examples{
 
 ## Not run:
+if(FALSE){
+file = "https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/pcv4-multi-value-traits.csv"
+df1<-read.pcv(file, "wide")
 
-file = "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest1.csv"
-df1<-read.pcv(file, "wide", TRUE, multiValPattern = c("index_frequencies_index_ari",
-"index_frequencies_index_ci_rededge", "npq_hist_NPQ", "yii_hist_Fq'/Fm'", "yii_hist_Fv/Fm"))
-colnames(df1)<-sub("index_frequencies_index_ndvi.", "ndvi_", colnames(df1))
-emd_df<-pcv.emd(df1, cols="ndvi_", reorder=c("treatment", "genotype"), mat =FALSE,
+df1$genotype = substr(df1$barcode, 3,5)
+df1$genotype = ifelse(df1$genotype == "002", "B73",
+              ifelse(df1$genotype == "003", "W605S",
+              ifelse(df1$genotype == "004", "MM", "Mo17")))
+df1$fertilizer = substr(df1$barcode, 8, 8)
+df1$fertilizer = ifelse(df1$fertilizer == "A", "100",
+              ifelse(df1$fertilizer == "B", "50", "0"))
+              
+emd_df<-pcv.emd(df1, cols="hue_frequencies", reorder=c("fertilizer", "genotype"), mat =FALSE,
    plot=FALSE, parallel = 1)
-net<-pcv.net(emd_df, meta = c("treatment", "genotype"))
-
+net<-pcv.net(emd_df, meta = c("fertilizer", "genotype"))
+}
 ## End(Not run)
 
 }

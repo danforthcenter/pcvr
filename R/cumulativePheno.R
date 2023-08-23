@@ -6,8 +6,7 @@
 #'  some treatment vs control. For certain routes in analysing the data this requires
 #'   considering phenotypes as relative differences compared to a control.
 #' 
-#' @param df Dataframe to use, this is expected to be in wide format
-#' although in the future long may also be supported.
+#' @param df Dataframe to use, this can be in long or wide format.
 #' @param phenotypes A character vector of column names for the phenotypes
 #' that should be compared against control.
 #' @param group A character vector of column names that identify groups in the data.
@@ -27,8 +26,8 @@
 #' ## Not run:
 #' 
 #' sv<-read.pcv(
-#' "https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv",
-#'  mode="wide", singleValueOnly =TRUE, reader="fread")
+#' "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv",
+#'  reader="fread")
 #' sv$genotype = substr(sv$barcode, 3,5)
 #' sv$genotype = ifelse(sv$genotype == "002", "B73",
 #'               ifelse(sv$genotype == "003", "W605S",
@@ -37,22 +36,18 @@
 #' sv$fertilizer = ifelse(sv$fertilizer == "A", "100",
 #'               ifelse(sv$fertilizer == "B", "50", "0"))
 #'               
-#' sv<-bw.time(sv, plantingDelay = 0, phenotype="area.pixels", cutoff=10,
+#' sv<-bw.time(sv, plantingDelay = 0, phenotype="area", cutoff=10,
 #'  timeCol="timestamp", group=c("barcode", "rotation"), plot=TRUE)
-#' sv<-bw.outliers(sv, phenotype="area.pixels", group = c("DAS", "genotype", "fertilizer"),
+#' sv<-bw.outliers(sv, phenotype="area", group = c("DAS", "genotype", "fertilizer"),
 #'  plotgroup = c("barcode", "rotation"))
-#' phenotypes <- c('area.pixels', 'convex_hull_area.pixels', 'convex_hull_vertices',
-#'  'ellipse_angle.degrees', 'ellipse_eccentricity', 'ellipse_major_axis.pixels',
-#'   'ellipse_minor_axis.pixels', 'height.pixels', 'hue_circular_mean.degrees',
-#'    'hue_circular_std.degrees', 'hue_median.degrees', 'longest_path.pixels',
-#'     'perimeter.pixels', 'solidity', 'width.pixels')
+#' phenotypes <- colnames(sv)[19:35]
 #' phenoForm<-paste0("cbind(", paste0(phenotypes, collapse=", "), ")")
 #' groupForm<-"DAS+DAP+barcode+genotype+fertilizer"
 #' form<-as.formula(paste0(phenoForm, "~", groupForm))
 #' sv<-aggregate(form, data=sv, mean, na.rm=TRUE)
 #' pixels_per_cmsq <- 42.5^2   # pixel per cm^2
-#' sv$area_cm2<-sv$area.pixels / pixels_per_cmsq
-#' sv$height_cm <- sv$height.pixels/42.5
+#' sv$area_cm2<-sv$area / pixels_per_cmsq
+#' sv$height_cm <- sv$height/42.5
 #' df = sv
 #' phenotypes = c("area_cm2", "height_cm")
 #' group = c("barcode")
@@ -61,8 +56,8 @@
 #' 
 #' 
 #' sv_l<-read.pcv(
-#' "https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv",
-#'  mode="long", singleValueOnly =TRUE, reader="fread")
+#' "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv",
+#'  mode="long", reader="fread")
 #' sv_l$genotype = substr(sv_l$barcode, 3,5)
 #' sv_l$genotype = ifelse(sv_l$genotype == "002", "B73",
 #'               ifelse(sv_l$genotype == "003", "W605S",
@@ -85,7 +80,7 @@ cumulativePheno<-function(df, phenotypes=NULL, group="barcode", timeCol="DAS", w
     df$GROUP = as.character(interaction(df[, group]))
     group="GROUP"}
   
-  if(!wide){ # note this is untested so far
+  if(!wide){
     dat_sp<-split(df, df[[group]])
     out<-do.call(rbind, lapply(split(df, df[[group]]), function(d){
       newRows<-do.call(rbind, lapply(phenotypes, function(pheno){

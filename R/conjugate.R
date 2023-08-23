@@ -197,8 +197,8 @@
 #' library(data.table)
 #' wide<-read.pcv(
 #'  paste0("https://media.githubusercontent.com/media/joshqsumner/",
-#'  "pcvrTestData/main/smallPhenotyperRun.csv"),
-#'  mode="wide", singleValueOnly =TRUE, multiValPattern = "hist", reader="fread")
+#'  "pcvrTestData/main/pcv4-multi-value-traits.csv"), reader="fread", mode = "wide")
+#'  
 #' wide$genotype = substr(wide$barcode, 3,5)
 #' wide$genotype = ifelse(wide$genotype == "002", "B73",
 #'                        ifelse(wide$genotype == "003", "W605S",
@@ -229,11 +229,25 @@
 #' # checking plots of your data (see ?pcv.joyplot for mv traits)
 #' # will be useful.
 #' 
-#' pixels_per_cmsq <- 42.5^2   # pixel per cm^2
-#' wide$area_cm2<-wide$area.pixels / pixels_per_cmsq
+#' sv<-read.pcv(
+#'  paste0("https://raw.githubusercontent.com/joshqsumner/",
+#'  "pcvrTestData/main/pcv4-single-value-traits.csv"), reader="fread", mode = "wide")
+#'  
+#' sv$genotype = substr(sv$barcode, 3,5)
+#' sv$genotype = ifelse(sv$genotype == "002", "B73",
+#'                        ifelse(sv$genotype == "003", "W605S",
+#'                               ifelse(sv$genotype == "004", "MM", "Mo17")))
+#' sv$fertilizer = substr(sv$barcode, 8, 8)
+#' sv$fertilizer = ifelse(sv$fertilizer == "A", "100",
+#'                          ifelse(sv$fertilizer == "B", "50", "0"))
+#'                          
+#' sv<-bw.time(sv,timeCol="timestamp", group="barcode")
 #' 
-#' mo17_area <- wide[wide$genotype=="Mo17" & wide$DAS > 18 & wide$fertilizer == 50, "area_cm2"]
-#' B73_area <- wide[wide$genotype=="B73" & wide$DAS > 18 & wide$fertilizer == 50, "area_cm2"]
+#' pixels_per_cmsq <- 42.5^2   # pixel per cm^2
+#' sv$area_cm2<-sv$area / pixels_per_cmsq
+#' 
+#' mo17_area <- sv[wide$genotype=="Mo17" & wide$DAS > 18 & wide$fertilizer == 50, "area_cm2"]
+#' B73_area <- sv[wide$genotype=="B73" & wide$DAS > 18 & wide$fertilizer == 50, "area_cm2"]
 #' 
 #' area_res_t <- conjugate(s1 = mo17_area, s2= B73_area, method="t",
 #'               priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ),
@@ -1234,7 +1248,7 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
   
   #* `Define support if it is missing`
   if(is.null(support)){
-    support<-seq(min(bins_order), max(bins_order), length.out=10000)
+    support<-seq(from = min(bins_order), to = max(bins_order), length.out=10000)
   }
   
   #* `Turn s1 matrix into a vector`

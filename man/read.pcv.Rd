@@ -6,12 +6,10 @@
 \usage{
 read.pcv(
   filepath,
-  mode = "wide",
-  singleValueOnly = TRUE,
+  mode = NULL,
   traitCol = "trait",
   labelCol = "label",
   valueCol = "value",
-  multiValPattern = "hist|frequencies",
   reader = NULL,
   filters = NULL,
   awk = NULL,
@@ -21,28 +19,23 @@ read.pcv(
 \arguments{
 \item{filepath}{Path to csv file of plantCV output.}
 
-\item{mode}{One of "wide" or "long", partial string matching is supported.
-This controls whether data is returned in long or wide format.}
-
-\item{singleValueOnly}{Logical, should only single value traits be returned?}
+\item{mode}{NULL (the default) or one of "wide" or "long", partial string matching is supported.
+This controls whether data is \strong{returned} in long or wide format. If left NULL then
+the output format will be the same as the input format.}
 
 \item{traitCol}{Column with phenotype names, defaults to "trait".
-This should generally not need to be changed from the default.}
+This should generally not need to be changed from the default. This, 
+labelCol, and valueCol are used to determine if data are in long format in their
+raw state (the csv file itself).}
 
 \item{labelCol}{Column with phenotype labels (units), defaults to "label".
   This should generally not need to be changed from the default.
   This is used with `traitCol` when `mode`="wide" to identify
   unique traits since some may be ambiguous
-(ellipseCenter.x vs ellipseCenter.y, etc)}
+(ellipseCenter.x vs ellipseCenter.y, bins of histograms, etc)}
 
 \item{valueCol}{Column with phenotype values, defaults to "value".
 This should generally not need to be changed from the default.}
-
-\item{multiValPattern}{If `singleValueOnly`=TRUERUE then this is used to identify multi value traits.
-By default this is "hist|frequencies".
-If this argument has length of 1 then it is taken as either a single phenotype
-or a regex pattern to find values of `trait` that are multi-value phenotypes.
-Alternatively this can be a vector of phenotype names to remove (see examples).}
 
 \item{reader}{The function to use to read in data,
 defaults to NULL in which case `data.table::fread` is used if filters are in place
@@ -65,7 +58,7 @@ This functionality will not work on a windows system.}
 in which case that call will be used through pipe().}
 
 \item{...}{Other arguments passed to the reader function.
-In the case of 'vroom' and 'fread' there are several defaults provided already
+In the cases of 'vroom' and 'fread' there are several defaults provided already
 which can be overwritten with these extra arguments.}
 }
 \value{
@@ -74,22 +67,42 @@ Returns a data.frame in wide or long format.
 \description{
 Read in plantCV csv output in wide or long format
 }
+\details{
+In plantCV version 4 the single value traits are returned in wide format from \code{json2csv}
+and the multi value traits are returned in long format. When data is read in using read.pcv 
+the traitCol, valueCol, and labelCol arguments are checked to determine if the data is in long 
+format. This is done to keep compatibility with interim versions of plantcv output where all outputs
+were in a single long format file. 
+
+With the current implementation and plantcv output you can read wide or long format files into
+wide or long format in R. Keep in mind that the 'mode' argument controls the format that will be returned in R,
+not the format that the data saved as in your csv file.
+}
 \examples{
 
 ## Not run: 
 
 if(FALSE){
-file = "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest1.csv"
-df1<-read.pcv(file, "wide", TRUE, multiValPattern = "hist|frequencies")
-df1b<-read.pcv(file, "wide", TRUE, multiValPattern = c("index_frequencies_index_ari",
-"index_frequencies_index_ci_rededge", "index_frequencies_index_ndvi", "npq_hist_NPQ",
-"yii_hist_Fq'/Fm'", "yii_hist_Fv/Fm"))
-identical(df1, df1b)
-df2<-read.pcv(file, "long", TRUE)
-dim(df2)
+mv = "https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/pcv4-multi-value-traits.csv"
+sv = "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv"
+
+w2w <- read.pcv(sv, mode = "wide", reader="fread")
+dim(w2w)
+
+w2l <- read.pcv(sv, mode = "long", reader="fread")
+dim(w2l)
+
+l2w <- read.pcv(mv, mode = "wide", reader="fread")
+dim(l2w)
+
+l2l <- read.pcv(mv, mode = "long", reader="fread")
+dim(l2l)
+
+
 # Note only data stored on a Unix style system can be subset before reading in.
 # For DDPSC employees there are larger datasets on stargate that
 # better show the benefit of subsetting before reading data in.
+
 fileBig="/shares/mgehan_share/llima/Maize_Project_2022/nir_maize_first_exp_results.csv"
 # library(vroom)
 start<-Sys.time()
@@ -112,7 +125,7 @@ dim(x3c)
 # There may be situations where you want to use wide mv traits which can read in easily:
 x4<-read.pcv(fileBig, reader="fread",
   filters = list("trait in blue_frequencies"),
-  mode="wide", singleValueOnly=FALSE)
+  mode="wide")
 }
 ## End(Not run) 
 

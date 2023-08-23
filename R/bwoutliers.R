@@ -30,8 +30,8 @@
 #' ## Not run:
 #' 
 #' sv<-read.pcv(
-#' "https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv",
-#'  mode="wide", singleValueOnly =TRUE, reader="fread")
+#' "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv",
+#'  reader="fread")
 #' sv$genotype = substr(sv$barcode, 3,5)
 #' sv$genotype = ifelse(sv$genotype == "002", "B73",
 #'                      ifelse(sv$genotype == "003", "W605S",
@@ -39,16 +39,16 @@
 #' sv$fertilizer = substr(sv$barcode, 8, 8)
 #' sv$fertilizer = ifelse(sv$fertilizer == "A", "100",
 #'                    ifelse(sv$fertilizer == "B", "50", "0"))
-#' sv<-bw.time(sv, plantingDelay = 0, phenotype="area.pixels", cutoff=10, timeCol="timestamp",
+#' sv<-bw.time(sv, plantingDelay = 0, phenotype="area", cutoff=10, timeCol="timestamp",
 #'  group=c("barcode", "rotation"), plot=FALSE)
-#' sv<-bw.outliers(df = sv, phenotype="area.pixels", naTo0 =FALSE, 
+#' sv<-bw.outliers(df = sv, phenotype="area", naTo0 =FALSE, 
 #'  group = c("DAS", "genotype", "fertilizer"),
 #'  plotgroup=c('barcode',"rotation"), plot=TRUE)
 #' 
 #' 
 #' svl<-read.pcv(
-#' "https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv",
-#'  mode="long", singleValueOnly =TRUE, reader="fread")
+#' "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv",
+#'  mode="long", reader="fread")
 #' svl$genotype = substr(svl$barcode, 3,5)
 #' svl$genotype = ifelse(svl$genotype == "002", "B73",
 #'                      ifelse(svl$genotype == "003", "W605S",

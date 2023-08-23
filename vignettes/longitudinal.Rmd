@@ -48,9 +48,10 @@ cmdstanr::install_cmdstan()
 For this tutorial we will use a mix of simulated data and Bellwether data. The Bellwether data is from an experiment using four maize genotypes in three levels of NPK fertilizer. Data from that experiment is available on github and can be read into R using `read.pcv`. The simulated data will be generated as needed. For details on the reading/metadata functions used here please see the main bellwether vignette.
 
 ```{r}
-sv<-read.pcv(paste0("https://media.githubusercontent.com/media/",
-                    "joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv"), 
-             mode="wide", singleValueOnly = T, reader="fread")
+
+sv<-read.pcv(paste0("https://raw.githubusercontent.com/joshqsumner/",
+                    "pcvrTestData/main/pcv4-single-value-traits.csv"), 
+             reader="fread")
 
 key<-read.csv(paste0("https://raw.githubusercontent.com/joshqsumner/",
                      "pcvrTestData/main/smallPhenotyperRun_key.csv"))
@@ -61,13 +62,13 @@ sv<-merge(sv, key, by="barcode")
 Now we add integer time columns using `bw.time`.
 
 ```{r}
-sv<-bw.time(sv, plantingDelay = 0, phenotype="area.pixels", cutoff=10, timeCol="timestamp", group=c("barcode", "rotation"), plot=FALSE)
+sv<-bw.time(sv, plantingDelay = 0, phenotype="area", cutoff=10, timeCol="timestamp", group=c("barcode", "rotation"), plot=FALSE)
 ```
 
 Before combining angled pictures of the same plant per a given time.
 
 ```{r}
-phenotypes <- c('area.pixels', 'convex_hull_area.pixels', 'convex_hull_vertices', 'ellipse_angle.degrees', 'ellipse_eccentricity', 'ellipse_major_axis.pixels', 'ellipse_minor_axis.pixels', 'height.pixels', 'hue_circular_mean.degrees', 'hue_circular_std.degrees', 'hue_median.degrees', 'longest_path.pixels', 'perimeter.pixels', 'solidity', 'width.pixels')
+phenotypes <- colnames(sv)[19:35]
 phenoForm<-paste0("cbind(", paste0(phenotypes, collapse=", "), ")")
 groupForm<-"DAS+barcode+genotype+fertilizer"
 form<-as.formula(paste0(phenoForm, "~", groupForm))
@@ -77,9 +78,9 @@ sv_ag_withOutliers<-aggregate(form, data=sv, mean, na.rm=TRUE)
 And finally removing outliers with `bw.outliers` and converting area to be in $\text{cm}^2$ instead of pixels.
 
 ```{r}
-sv_ag<-bw.outliers(df = sv_ag_withOutliers, phenotype="area.pixels", group = c("DAS", "genotype", "fertilizer"), plotgroup = c("barcode"), plot=FALSE)
+sv_ag<-bw.outliers(df = sv_ag_withOutliers, phenotype="area", group = c("DAS", "genotype", "fertilizer"), plotgroup = c("barcode"), plot=FALSE)
 pixels_per_cmsq <- 42.5^2 
-sv_ag$area_cm2<-sv_ag$area.pixels / pixels_per_cmsq
+sv_ag$area_cm2<-sv_ag$area / pixels_per_cmsq
 sv_ag$group<-interaction(sv_ag$fertilizer, sv_ag$genotype)
 ```
 

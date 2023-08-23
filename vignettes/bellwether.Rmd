@@ -30,7 +30,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r}
-library(pcvr) # devtools::load_all()
+library(pcvr) #devtools::load_all()
 library(data.table) # for fread
 library(ggplot2)
 library(patchwork) # for easy ggplot manipulation/combination
@@ -74,12 +74,13 @@ plot(support, dbeta(support, 5,5), type="l", main="simulated example")
 
 ### `read.pcv`
 
-Bellwether data can be very large so this vignette will use a small bellwether dataset that is already subset to remove most multi-value traits (most color histograms). That data is available on [github](https://github.com/joshqsumner/pcvrTestData/blob/main/smallPhenotyperRun.csv).
+Bellwether data can be very large so this vignette will use a small bellwether dataset that is already subset to remove most multi-value traits (most color histograms). Both the [single value data](https://github.com/joshqsumner/pcvrTestData/blob/main/) and [multi value data](https://github.com/joshqsumner/pcvrTestData/blob/main/) are available on github. For single value traits being read into wide format there is not a compelling reason to use `read.pcv` in place directly calling `fread` or `read.csv`. The benefits of `read.pcv` are only shown if you need to filter data outside of R or if you want to use your data in a different format than it is stored in (wide going to long and vice versa).
 
-The single value traits can be read in and converted to wide format with `read.pcv`, here using `data.table::fread` for speed.
+The single value traits can be read in with `read.pcv`, here using `data.table::fread` for speed.
 
 ```{r}
-sv<-read.pcv("https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv", mode="wide", singleValueOnly = T, reader="fread")
+sv<-read.pcv("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv",
+             reader="fread")
 
 if(T){ # we can parse barcodes for the metadata that we need
   sv$genotype = substr(sv$barcode, 3,5)
@@ -95,6 +96,7 @@ if(T){ # we can parse barcodes for the metadata that we need
 }
 ```
 
+### Very large datasets
 
 Sometimes large plantCV output may be too large to be read into memory for R. In that case `read.pcv` has a `filter` argument which will filter rows using awk through linux/unix outside of R. That feature would work as shown below to read only single value traits into memory. This can take a few minutes but allows the entirely workflow to be documented in one R file. 
 
@@ -103,6 +105,29 @@ Sometimes large plantCV output may be too large to be read into memory for R. In
 example<-read.pcv("prohibitivelyLargeFile.csv",
    filters = list("trait in area, convex_hull_area, solidity, perimeter, width, height, longest_path, convex_hull_vertices, ellipse_major_axis, ellipse_minor_axis, ellipse_angle, ellipse_eccentricity, hue_circular_mean, hue_circular_std, hue_median", "sample in default"))
 ```
+
+### `read.pcv.4.x`
+
+Before the release of PlantCV version 4 there were several widely used branches of PlantCV that output results as a single long format csv file. The original goal of `read.pcv` was to make it easier to work with those files. Now that the default output has changed the `read.pcv` function has been somewhat simplified but it can still be used for these "PlantCV 4.x" legacy style data.
+
+```{r, class.source="static-code", eval=F}
+sv<-read.pcv("https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv", mode="wide",
+             reader="fread")
+
+if(T){ # we can parse barcodes for the metadata that we need
+  sv$genotype = substr(sv$barcode, 3,5)
+  sv$genotype = ifelse(sv$genotype == "002", "B73",
+                       ifelse(sv$genotype == "003", "W605S",
+                              ifelse(sv$genotype == "004", "MM", "Mo17")))
+  sv$fertilizer = substr(sv$barcode, 8, 8)
+  sv$fertilizer = ifelse(sv$fertilizer == "A", "100",
+                       ifelse(sv$fertilizer == "B", "50", "0"))
+} else { # or we might use a key file and join it to our data
+  key<-read.csv("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/smallPhenotyperRun_key.csv")
+  sv<-merge(sv, key, by="barcode")
+}
+```
+
 
 ### `read.pcv.3`
 
@@ -131,7 +156,7 @@ colnames(bw_all)
 Often we want to convert our timestamp data from the lemnatech into either days after start (DAS), days after planting (DAP), or days after emergence (DAE). By default the `bw.time` function will add columns called DAS, DAP, and DAE to your data. Days after emergence requires using a phenotype and a value to classify emergence. Here an area greater than 10 pixels is considered an emerged plant. In this example with a planting delay of 0 DAP and DAE will be the same, but both are still created for the purpose of the example.
 
 ```{r}
-sv<-bw.time(sv, plantingDelay = 0, phenotype="area.pixels", cutoff=10, timeCol="timestamp", group=c("barcode", "rotation"), plot=TRUE)
+sv<-bw.time(sv, plantingDelay = 0, phenotype="area", cutoff=10, timeCol="timestamp", group=c("barcode", "rotation"), plot=TRUE)
 head(sv)
 dim(sv)
 ```
@@ -141,7 +166,7 @@ Note that in these plots, and particularly clearly in the DAE plot, there are lo
 We can combine images taken at different angles of the same plant on a given day with `aggregate`, where we will also remove some columns we aren't using. In this case we use the mean of observations, but some people prefer a sum. Either way is fine. Here we also remove the DAE and DAP columns since we will not be using them. 
 
 ```{r}
-phenotypes <- c('area.pixels', 'convex_hull_area.pixels', 'convex_hull_vertices', 'ellipse_angle.degrees', 'ellipse_eccentricity', 'ellipse_major_axis.pixels', 'ellipse_minor_axis.pixels', 'height.pixels', 'hue_circular_mean.degrees', 'hue_circular_std.degrees', 'hue_median.degrees', 'longest_path.pixels', 'perimeter.pixels', 'solidity', 'width.pixels')
+phenotypes <- colnames(sv)[c(19:35, 43:45)]
 phenoForm<-paste0("cbind(", paste0(phenotypes, collapse=", "), ")")
 groupForm<-"DAS+barcode+genotype+fertilizer"
 form<-as.formula(paste0(phenoForm, "~", groupForm))
@@ -153,7 +178,7 @@ dim(sv_ag_withOutliers)
 The `bw.outliers` function can be used to remove outliers relative to a phenotype using cook's distance. Here just over 4 percent of data are removed as outliers. The plot shows removed data points in red.
 
 ```{r}
-sv_ag<-bw.outliers(df = sv_ag_withOutliers, phenotype="area.pixels", group = c("DAS", "genotype", "fertilizer"), plotgroup = c("barcode"))
+sv_ag<-bw.outliers(df = sv_ag_withOutliers, phenotype="area", group = c("DAS", "genotype", "fertilizer"), plotgroup = c("barcode"))
 dim(sv_ag)
 ```
 
@@ -185,7 +210,7 @@ A common use for watering data is to look at water use efficiency (WUE). Here we
 
 
 ```{r}
-test<-pwue(sv_ag, water, "area.pixels", "DAS", c("barcode"))
+test<-pwue(sv_ag, water, "area", "DAS", c("barcode"))
 
 ggplot(test, aes(x=DAS, y=pWUE, color=genotype, group=barcode))+
   geom_line()+
@@ -204,7 +229,12 @@ Now that our data is read in and has undergone some basic quality control we wan
 
 ```{r}
 frem(sv_ag, des=c("genotype", "fertilizer"),
-     phenotypes=c('area.pixels', 'convex_hull_area.pixels', 'convex_hull_vertices', 'ellipse_angle.degrees', 'ellipse_eccentricity', 'ellipse_major_axis.pixels', 'ellipse_minor_axis.pixels', 'height.pixels', 'hue_circular_mean.degrees', 'hue_circular_std.degrees', 'hue_median.degrees', 'longest_path.pixels', 'perimeter.pixels', 'solidity', 'width.pixels'),
+     phenotypes=c("area", "area_above_reference", "area_below_reference", "color_chip_size", 
+                  "convex_hull_area", "convex_hull_vertices", "ellipse_angle", 
+                  "ellipse_eccentricity", "ellipse_major_axis", "ellipse_minor_axis", 
+                  "height", "height_above_reference", "height_below_reference", 
+                  "horizontal_reference_position", "hue_circular_mean", "hue_circular_std", 
+                  "hue_median", "perimeter", "solidity", "width"),
      timeCol="DAS", cor=TRUE, returnData=F, combine=F, markSingular=TRUE, time=NULL)
 ```
 
@@ -212,7 +242,12 @@ Here we look at how much variance in each phenotype was explained over the cours
 
 ```{r}
 frem(sv_ag, des=c("genotype", "fertilizer"),
-     phenotypes=c('area.pixels', 'convex_hull_area.pixels', 'convex_hull_vertices', 'ellipse_angle.degrees', 'ellipse_eccentricity', 'ellipse_major_axis.pixels', 'ellipse_minor_axis.pixels', 'height.pixels', 'hue_circular_mean.degrees', 'hue_circular_std.degrees', 'hue_median.degrees', 'longest_path.pixels', 'perimeter.pixels', 'solidity', 'width.pixels'),
+     phenotypes=c("area", "area_above_reference", "area_below_reference", "color_chip_size", 
+                  "convex_hull_area", "convex_hull_vertices", "ellipse_angle", 
+                  "ellipse_eccentricity", "ellipse_major_axis", "ellipse_minor_axis", 
+                  "height", "height_above_reference", "height_below_reference", 
+                  "horizontal_reference_position", "hue_circular_mean", "hue_circular_std", 
+                  "hue_median", "perimeter", "solidity", "width"),
      timeCol="DAS", cor=F, returnData=F, combine=F, markSingular=F, time="all")
 ```
 
@@ -224,8 +259,8 @@ Most analysis focus on single value traits, that is phenotypes where one image r
 
 ```{r}
 pixels_per_cmsq <- 42.5^2   # pixel per cm^2
-sv_ag$area_cm2<-sv_ag$area.pixels / pixels_per_cmsq
-sv_ag$height_cm <- sv_ag$height.pixels/42.5
+sv_ag$area_cm2<-sv_ag$area / pixels_per_cmsq
+sv_ag$height_cm <- sv_ag$height/42.5
 ```
 
 
@@ -514,7 +549,7 @@ distributionPlot(fits = from3to25, form = y~time|id/group, params=c("A", "B", "C
 Working with multi value traits leads to different statistical challenges than the single value traits. Generally reading the data in as wide format makes for a significantly smaller object in memory terms since there are not lots of duplicated metadata (identifiers for each row when every image has hundreds of rows potentially). Note that for many questions even about color it is not necessary to use the entire color histograms. Make sure that you have a good reason to use the complete color data before going down this particular path for too long. As an example, a very simple comparison of the circular mean of Hue here will show our treatment effect in this data. 
 
 ```{r}
-ggplot(sv_ag[sv_ag$DAS==18,], aes(x = fertilizer, y=hue_circular_mean.degrees, fill = fertilizer))+
+ggplot(sv_ag[sv_ag$DAS==18,], aes(x = fertilizer, y=hue_circular_mean, fill = fertilizer))+
   geom_boxplot(outlier.shape=NA)+
   geom_jitter(width=0.05, size=0.5)+
   scale_fill_manual(values = c(viridis::viridis(3,1,0.1)), breaks = c('0','50','100'))+
@@ -528,7 +563,8 @@ ggplot(sv_ag[sv_ag$DAS==18,], aes(x = fertilizer, y=hue_circular_mean.degrees, f
 
 
 ```{r}
-hue_wide<-read.pcv("https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/smallPhenotyperRun.csv", mode="wide", singleValueOnly = T, multiValPattern = "hist", reader="fread")
+hue_wide<-read.pcv("https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/pcv4-multi-value-traits.csv",
+                   mode="wide", reader="fread")
 hue_wide$genotype = substr(hue_wide$barcode, 3,5)
 hue_wide$genotype = ifelse(hue_wide$genotype == "002", "B73",
                      ifelse(hue_wide$genotype == "003", "W605S",
@@ -538,7 +574,7 @@ hue_wide$fertilizer = ifelse(hue_wide$fertilizer == "A", "100",
                      ifelse(hue_wide$fertilizer == "B", "50", "0"))
 hue_wide<-bw.time(hue_wide,timeCol="timestamp", group="barcode", plot = FALSE)
 
-phenotypes <- colnames(hue_wide)[19:225]
+phenotypes <- colnames(hue_wide)[grepl("hue_frequencies", colnames(hue_wide))]
 phenoForm<-paste0("cbind(", paste0(phenotypes, collapse=", "), ")")
 groupForm<-"DAS+barcode+genotype+fertilizer"
 form<-as.formula(paste0(phenoForm, "~", groupForm))
@@ -695,10 +731,10 @@ EMD can get very heavy with large datasets. For a recent lemnatech dataset using
 Starting with our complete hue data we have `r nrow(hue_wide)` image histograms. The `mv_ag` function will take a group argument and randomly pick members of that group to have their histograms combined. Note that histograms are scaled to sum to 1 before they are sampled. Here we return one example with 2 histograms kept per group and one example where groups are summarized into 1 histogram. If there are equal or fewer images as the `n_per_group` argument then no aggregation is done for that group but data are rescaled.
 
 ```{r}
-hue_ag1<-mv_ag(df=hue_wide, group = c("DAS", "genotype", "fertilizer"),  n_per_group=2, keep=c("area.pixels", "height.pixels"))
+hue_ag1<-mv_ag(df=hue_wide, group = c("DAS", "genotype", "fertilizer"),  n_per_group=2)
 dim(hue_ag1)
 
-hue_ag2<-mv_ag(hue_wide, group = c("DAS", "genotype", "fertilizer"),  n_per_group=1, keep=c("area.pixels", "height.pixels"))
+hue_ag2<-mv_ag(hue_wide, group = c("DAS", "genotype", "fertilizer"),  n_per_group=1)
 dim(hue_ag2)
 ```
 
