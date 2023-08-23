@@ -30,7 +30,8 @@
 #' 
 #' ## Not run:
 #' if(FALSE){
-#' file = "https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/pcv4-multi-value-traits.csv"
+#' file = paste0("https://media.githubusercontent.com/media/joshqsumner/",
+#'               "pcvrTestData/main/pcv4-multi-value-traits.csv")
 #' df1<-read.pcv(file, "wide")
 #' 
 #' df1$genotype = substr(df1$barcode, 3,5)

@@ -66,7 +66,8 @@
 #' #   method="ks")
 #' 
 #' wide<-read.pcv(
-#' "https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/pcv4-multi-value-traits.csv",
+#'   paste0("https://media.githubusercontent.com/media/joshqsumner/",
+#'         "pcvrTestData/main/pcv4-multi-value-traits.csv"),
 #'    mode="wide")
 #' wide <- bw.time(wide, mode="DAS",plot=FALSE)
 #' wide$genotype = substr(wide$barcode, 3,5)
