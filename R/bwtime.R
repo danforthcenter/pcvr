@@ -22,6 +22,11 @@
 #' This should generally not need to be changed from the default.
 #' @param valueCol Column with phenotype values, defaults to "value".
 #' This should generally not need to be changed from the default.
+#' @param index Optionally a time to use as the beginning of the experiment. This 
+#' may be useful if you have multiple datasets or you are adding data from bw.water
+#' and plants were watered before being imaged or if you want to index days off of
+#' midnight. This defaults to NULL but will take any value coercible to POSIXct by
+#' \code{as.POSIXct(... , tz="UTC")} such as "2020-01-01 18:30:00"
 #' @keywords Bellwether, ggplot
 #' @import ggplot2
 #' @return The input dataframe with new integer columns for different ways
@@ -62,14 +67,19 @@
 #'
 bw.time<-function(df = NULL, mode=NULL, plantingDelay = NULL,
                   phenotype=NULL, cutoff=1, timeCol="timestamp",
-                  group="Barcodes", plot=TRUE, wide=TRUE, format="%Y-%m-%d %H:%M:%S", traitCol="trait", valueCol="value"){
+                  group="Barcodes", plot=TRUE, wide=TRUE, format="%Y-%m-%d %H:%M:%S",
+                  traitCol="trait", valueCol="value", index = NULL){
   if(is.null(mode) || !mode %in% c("DAS", "DAP", "DAE")){ mode=c("DAP", "DAE") }
   if(is.null(plantingDelay) & "DAP" %in% mode){mode<-mode[-which(mode=="DAP")]}
   if(is.null(phenotype) & "DAE" %in% mode){mode<-mode[-which(mode=="DAE")]}
   
   if(!is.integer(df[[timeCol]])){
     df[[timeCol]]<-as.POSIXct(strptime(df[[timeCol]],format = format))
-    beg <- min(df[[timeCol]], na.rm=TRUE)
+    if(is.null(index)){
+      beg <- min(df[[timeCol]], na.rm=TRUE)
+    } else {
+      beg <- as.POSIXct(index, tz = "UTC")
+    }
     df$DAS <- floor(as.numeric((df[[timeCol]] - beg)/60/60/24))
     timeCol="DAS"
   }
