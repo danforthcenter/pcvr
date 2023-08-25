@@ -83,8 +83,10 @@ not the format that the data saved as in your csv file.
 ## Not run: 
 
 if(FALSE){
-mv = "https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/pcv4-multi-value-traits.csv"
-sv = "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv"
+mv = paste0("https://media.githubusercontent.com/media/joshqsumner/",
+            "pcvrTestData/main/pcv4-multi-value-traits.csv")
+sv = paste0("https://raw.githubusercontent.com/joshqsumner/",
+            "pcvrTestData/main/pcv4-single-value-traits.csv")
 
 w2w <- read.pcv(sv, mode = "wide", reader="fread")
 dim(w2w)

@@ -57,9 +57,9 @@ sv$fertilizer = substr(sv$barcode, 8, 8)
 sv$fertilizer = ifelse(sv$fertilizer == "A", "100",
               ifelse(sv$fertilizer == "B", "50", "0"))
               
-sv<-bw.time(sv, plantingDelay = 0, phenotype="area", cutoff=10,
+sv<-bw.time(sv, plantingDelay = 0, phenotype="area_pixels", cutoff=10,
  timeCol="timestamp", group=c("barcode", "rotation"), plot=TRUE)
-sv<-bw.outliers(sv, phenotype="area", group = c("DAS", "genotype", "fertilizer"),
+sv<-bw.outliers(sv, phenotype="area_pixels", group = c("DAS", "genotype", "fertilizer"),
  plotgroup = c("barcode", "rotation"))
 phenotypes <- colnames(sv)[19:35]
 phenoForm<-paste0("cbind(", paste0(phenotypes, collapse=", "), ")")
@@ -67,7 +67,7 @@ groupForm<-"DAS+DAP+barcode+genotype+fertilizer"
 form<-as.formula(paste0(phenoForm, "~", groupForm))
 sv<-aggregate(form, data=sv, mean, na.rm=TRUE)
 pixels_per_cmsq <- 42.5^2   # pixel per cm^2
-sv$area_cm2<-sv$area / pixels_per_cmsq
+sv$area_cm2<-sv$area_pixels / pixels_per_cmsq
 sv$height_cm <- sv$height/42.5
 df = sv
 phenotypes = c("area_cm2", "height_cm")
@@ -86,9 +86,9 @@ sv_l$genotype = ifelse(sv_l$genotype == "002", "B73",
 sv_l$fertilizer = substr(sv_l$barcode, 8, 8)
 sv_l$fertilizer = ifelse(sv_l$fertilizer == "A", "100",
               ifelse(sv_l$fertilizer == "B", "50", "0"))
-sv_l<-bw.time(sv_l, plantingDelay = 0, phenotype="area", cutoff=10, 
+sv_l<-bw.time(sv_l, plantingDelay = 0, phenotype="area_pixels", cutoff=10, 
 timeCol="timestamp", group=c("barcode", "rotation"), wide=FALSE)
-sv_l<-cumulativePheno(sv_l, phenotypes=c("area", "height"),
+sv_l<-cumulativePheno(sv_l, phenotypes=c("area_pixels", "height"),
  group=c("barcode", "rotation"), timeCol="DAS", wide=FALSE)
 
 ## End(Not run)

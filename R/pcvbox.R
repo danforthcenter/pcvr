@@ -42,11 +42,11 @@
 #' sv$fertilizer = ifelse(sv$fertilizer == "A", "100",
 #'               ifelse(sv$fertilizer == "B", "50", "0"))
 #'               
-#' sv<-bw.time(sv, plantingDelay = 0, phenotype="area", cutoff=10,
+#' sv<-bw.time(sv, plantingDelay = 0, phenotype="area_pixels", cutoff=10,
 #'  timeCol="timestamp", group=c("barcode", "rotation"), plot=TRUE)
 #'  
 #' pixels_per_cmsq <- 42.5^2   # pixel per cm^2
-#' sv$area_cm2<-sv$area / pixels_per_cmsq
+#' sv$area_cm2<-sv$area_pixels / pixels_per_cmsq
 #' sv$height_cm <- sv$height/42.5
 #' 
 #' pcvBox(sv[sv$genotype=='MM' & sv$DAS==15, ],
@@ -54,7 +54,7 @@
 #' 
 #' ## End(Not run) 
 
-pcvBox<-function(df=df,x='treatment' , y='area', fill = NULL, compare=FALSE, trait="trait", value="value",method="t.test", showPoints=FALSE, ...){
+pcvBox<-function(df=df,x='treatment' , y='area_pixels', fill = NULL, compare=FALSE, trait="trait", value="value",method="t.test", showPoints=FALSE, ...){
   if(! (y %in% colnames(df)) && all(c(trait, value) %in% colnames(df))){
     df<-df[df[[trait]]==y,]
     ylab = y
