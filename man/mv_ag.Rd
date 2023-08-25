@@ -11,11 +11,16 @@ mv_ag(
   n_per_group = 1,
   outRows = NULL,
   keep = NULL,
-  parallel = getOption("mc.cores", 1)
+  parallel = getOption("mc.cores", 1),
+  traitCol = "trait",
+  labelCol = "label",
+  valueCol = "value",
+  id = "image"
 )
 }
 \arguments{
-\item{df}{A dataframe with multi value traits in wide format.}
+\item{df}{A dataframe with multi value traits. This can be in wide or long format,
+data is assumed to be long if traitCol, valueCol, and labelCol are present.}
 
 \item{group}{Vector of column names for variables which uniquely identify groups
 in the data to summarize data over. Typically this would be the design variables
@@ -35,6 +40,15 @@ a mix of single and multi value traits in your data.}
 
 \item{parallel}{Optionally the groups can be run in parallel with this number of cores,
 defaults to 1 if the "mc.cores" option is not set globally.}
+
+\item{traitCol}{Column with phenotype names, defaults to "trait".}
+
+\item{labelCol}{Column with phenotype labels (units), defaults to "label".}
+
+\item{valueCol}{Column with phenotype values, defaults to "value".}
+
+\item{id}{Column that uniquely identifies images if the data is in long format. 
+This is ignored when data is in wide format.}
 }
 \value{
 Returns a dataframe summarized by the specified groups over the multi-value traits.
@@ -54,6 +68,7 @@ hue_wide<-read.pcv(paste0(
 "https://media.githubusercontent.com/media/joshqsumner/",
 "pcvrTestData/main/pcv4-multi-value-traits.csv"),
  mode="wide", reader="fread")
+ 
 hue_wide$genotype = substr(hue_wide$barcode, 3,5)
 hue_wide$genotype = ifelse(hue_wide$genotype == "002", "B73",
                            ifelse(hue_wide$genotype == "003", "W605S",
@@ -74,6 +89,24 @@ dim(hue_ag1)
 hue_ag2<-mv_ag(hue_wide, group = c("DAS", "genotype", "fertilizer"),
  n_per_group=1)
 dim(hue_ag2)
+
+hue_long<-read.pcv(paste0(
+"https://media.githubusercontent.com/media/joshqsumner/",
+"pcvrTestData/main/pcv4-multi-value-traits.csv"),
+ reader="fread")
+hue_long$genotype = substr(hue_long$barcode, 3,5)
+hue_long$genotype = ifelse(hue_long$genotype == "002", "B73",
+                           ifelse(hue_long$genotype == "003", "W605S",
+                                  ifelse(hue_long$genotype == "004", "MM", "Mo17")))
+hue_long$fertilizer = substr(hue_long$barcode, 8, 8)
+hue_long$fertilizer = ifelse(hue_long$fertilizer == "A", "100",
+                             ifelse(hue_long$fertilizer == "B", "50", "0"))
+hue_long<-bw.time(hue_long,timeCol="timestamp", group="barcode")
+dim(hue_long)
+hue_ag3 <- mv_ag(hue_long, group = c("DAS", "genotype", "fertilizer"),
+  mvCols = "hue", n_per_group = 2)
+dim(hue_ag3)
+head(hue_ag3)
 
 ## End(Not run)
 
