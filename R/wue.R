@@ -66,45 +66,112 @@
 #' 
 #' @export
 
-pwue<-function(df, w, pheno="area_pixels", time="DAS", id="barcode"){
-  #* `format watering data`
-  w<-w[, !grepl("^timestamp$|^local_time$",colnames(w))]
-  w$snapshot_sorter <- as.numeric(sub("snapshot", "", w$snapshot))
-  #w<-data.table::setorderv(w, cols = c(id,time, 'snapshot_sorter')) # arrange plants by time
-  w<-w[!w$weight_before<0,] # remove errors
-  #* `format phenotype data`
-  df<-df[, !grepl("^timestamp$|^local_time$",colnames(df))]
-  #* `join datasets`
-  x<-data.table::as.data.table(merge(df, w, by=intersect(colnames(df), colnames(w)), all.x=TRUE))
-  x<-data.table::setorderv(x, cols = c(id,time, "snapshot_sorter")) # x can have duplicate pheno rows if w has >1 watering per day.
-  #* `calculate delta values and pwue`
-  x_deltas<-data.table::rbindlist(lapply(split(x, by=id), function(d){
-    d<-data.table::setorderv(d, cols = c(time))
-      # could lead the weight before or lag the weight after
-    #* `water transpired/lost`
-    d$water_used_between_waterings <- d$weight_after - data.table::shift(d$weight_before, n=1, type="lead")
-    #* `sum if there are multiple waterings per day`
-    if( any(duplicated(d[[time]])) ){
-      d<-data.table::rbindlist(lapply(unique(d[[time]]), function(tm){
-        sub<-d[d[[time]]==tm, ]
-        sub<-data.table::setorderv(sub, cols = c("snapshot_sorter"))
-        out<-sub[1,]
-        if(all(is.na(sub$water_used_between_waterings))){
-          out$water_used_between_waterings <- NA
-        } else{
-          out$water_used_between_waterings <- sum(sub$water_used_between_waterings, na.rm=TRUE) 
-        }
-        out[[pheno]] <- mean(sub[[pheno]], na.rm=TRUE)
-        out
-      }))
-    }
-    #* `calculate delta phenotype`
-    d[[paste0("delta_",pheno)]] <- pmax(d[[pheno]] - data.table::shift(d[[pheno]], n=1, type="lag"), 0, na.rm=FALSE)
-    #* `calculate pseudo-WUE`
-    d$pWUE <- d[[paste0("delta_",pheno)]] / d$water_used_between_waterings
-    d
+pwue<-function(df, w, pheno="area_pixels", time="timestamp", id="barcode", offset = 0, waterCol="water_amount"){
+  # - steps:
+  #   - check pheno and water data for a timestamp column (arg)
+  # - if both exist then convert to numeric starting from min OR index, else prompt error
+  # - reorder pheno and watering data by snapshot and new time
+  # - per ids (unique plants):
+  #   - subset water and pheno data
+  # - arrange by time (redundant but fast?)
+  # - per imaging time in pheno data:
+  #   - filter watering data for interval between imaging time and previous imaging time
+  # - sum total water added to pot from filtered watering data
+  # - get diff of pheno_[time] and pheno_[prev time]
+  # - return data with new pheno_diff, water_added, and pwue (pheno_diff/water_added) columns.
+  if(length(time)==2){
+    time1 = time[1]
+    time2 = time[2]
+  } else{
+    time1 <- time2 <- time
+  }
+  
+  if( !time1 %in% colnames(df) | !time2 %in% colnames(w) ){
+    stop(paste0(paste0(time, collapse=", "), " must be in colnames of df and w"))
+  }
+  
+  w<-data.table::setorderv(data.table::as.data.table(w), cols = c(id,time2))
+  df<-data.table::setorderv(data.table::as.data.table(df), cols = c(id,time1))
+  
+  ids <- intersect(unique(w[[id]]), unique(df[[id]]))
+  
+  do.call(rbind, lapply(ids, function(iter_id){
+    
+    w_i <- w[w[[id]]==iter_id, ]
+    df_i <- df[df[[id]]==iter_id, ]
+    
+    w_i <- data.table::setorderv(w_i, cols = c(time2))
+    df_i <- data.table::setorderv(df_i, cols = c(time1))
+    
+    imaging_times <- unique(df_i[[time]])
+    
+    do.call(rbind, lapply(1:length(imaging_times), function(t_i){
+      
+      start <- ifelse(t_i==1, NA, imaging_times[t_i-1] )
+      end <- imaging_times[t_i] - offset # think about how this offset would work for selecting phenos
+      
+      w_i_t <- w_i[w_i[[time]]>start & w_i[[time]]<end, ]
+      total_water_i <- sum(w_i_t[[waterCol]]) # need to review water data, this might have to be
+      # diff of weights before and after
+      pheno_diff <- df_i[df_i[[time1]] == imaging_times[t_i], pheno] -  df_i[df_i[[time1]]==start, pheno]
+      
+      return(data.frame(total_water_i = total_water_i,
+                        pheno_diff= pheno_diff,
+                        start = start,
+                        end - imaging_times[t_i],
+                        end_offset = end ))
+      
+      
+    }))
+    
   }))
-  data.table::setDF(x_deltas)
-  return(x_deltas)
+  
+  
 }
+
+
+
+# pwue<-function(df, w, pheno="area_pixels", time="DAS", id="barcode"){
+#   #* `format watering data`
+#   w<-w[, !grepl("^timestamp$|^local_time$",colnames(w))]
+#   w$snapshot_sorter <- as.numeric(sub("snapshot", "", w$snapshot))
+#   #w<-data.table::setorderv(w, cols = c(id,time, 'snapshot_sorter')) # arrange plants by time
+#   w<-w[!w$weight_before<0,] # remove errors
+#   #* `format phenotype data`
+#   df<-df[, !grepl("^timestamp$|^local_time$",colnames(df))]
+#   #* `join datasets`
+#   x<-data.table::as.data.table(merge(df, w, by=intersect(colnames(df), colnames(w)), all.x=TRUE))
+#   x<-data.table::setorderv(x, cols = c(id,time, "snapshot_sorter")) # x can have duplicate pheno rows if w has >1 watering per day.
+#   #* `calculate delta values and pwue`
+#   x_deltas<-data.table::rbindlist(lapply(split(x, by=id), function(d){
+#     d<-data.table::setorderv(d, cols = c(time))
+#       # could lead the weight before or lag the weight after
+#     #* `water transpired/lost`
+#     d$water_used_between_waterings <- d$weight_after - data.table::shift(d$weight_before, n=1, type="lead")
+#     #* `sum if there are multiple waterings per day`
+#     if( any(duplicated(d[[time]])) ){
+#       
+#       d<-data.table::rbindlist(lapply(unique(d[[time]]), function(tm){
+#         sub<-d[d[[time]]==tm, ]
+#         sub<-data.table::setorderv(sub, cols = c("snapshot_sorter"))
+#         out<-sub[1,]
+#         if(all(is.na(sub$water_used_between_waterings))){
+#           out$water_used_between_waterings <- NA
+#         } else{
+#           out$water_used_between_waterings <- sum(sub$water_used_between_waterings, na.rm=TRUE) 
+#         }
+#         out[[pheno]] <- mean(sub[[pheno]], na.rm=TRUE)
+#         out
+#       }))
+#       
+#     }
+#     #* `calculate delta phenotype`
+#     d[[paste0("delta_",pheno)]] <- pmax(d[[pheno]] - data.table::shift(d[[pheno]], n=1, type="lag"), 0, na.rm=FALSE)
+#     #* `calculate pseudo-WUE`
+#     d$pWUE <- d[[paste0("delta_",pheno)]] / d$water_used_between_waterings
+#     d
+#   }))
+#   data.table::setDF(x_deltas)
+#   return(x_deltas)
+# }
 
