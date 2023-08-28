@@ -4,7 +4,7 @@
 \alias{pwue}
 \title{Calculate pseudo water use efficiency from phenotype and watering data}
 \usage{
-pwue(df, w, pheno = "area", time = "DAS", id = "barcode")
+pwue(df, w, pheno = "area_pixels", time = "DAS", id = "barcode")
 }
 \arguments{
 \item{df}{Dataframe containing wide single-value phenotype data.
@@ -12,7 +12,7 @@ This should already be aggregated to one row per plant per day (angles/rotations
 
 \item{w}{Watering data as returned from bw.water.}
 
-\item{pheno}{Phenotype column name, defaults to "area"}
+\item{pheno}{Phenotype column name, defaults to "area_pixels"}
 
 \item{time}{Variable(s) that identify a plant on a given day.
 Defaults to \code{c("barcode", "DAS")}.}
@@ -27,7 +27,7 @@ A data frame containing the bellwether watering data joined
 \description{
 Water use efficiency (WUE) is the change in biomass per unit of water metabolized.
 Using image based phenotypes and watering data we can calculate pseudo-WUE (pwue) over time.
-Here area is used as a proxy for biomass and transpiration is approximated using watering data.
+Here area_pixels is used as a proxy for biomass and transpiration is approximated using watering data.
 The equation is then \eqn{\frac{P_{t} - P_{t-1}}{W_{t_{end-1}}-W_{t_{start}} }}{P_[t] - P_[t-1] / W_[t_(end-1)]-W_[t_start]},
 where P is the phenotype and W is the weight before watering.
 }
@@ -47,19 +47,19 @@ sv$fertilizer = substr(sv$barcode, 8, 8)
 sv$fertilizer = ifelse(sv$fertilizer == "A", "100",
            ifelse(sv$fertilizer == "B", "50", "0"))
 sv<-bw.time(sv, plantingDelay = 0,
-      phenotype="area", cutoff=10, timeCol="timestamp",
+      phenotype="area_pixels", cutoff=10, timeCol="timestamp",
       group=c("barcode", "rotation"), plot=TRUE)
 phenotypes <- colnames(sv)[19:35]
 phenoForm<-paste0("cbind(", paste0(phenotypes, collapse=", "), ")")
 groupForm<-"DAS+DAP+barcode+genotype+fertilizer"
 sv<-aggregate(as.formula(paste0(phenoForm, "~", groupForm)), data=sv, mean, na.rm=TRUE)
-sv<-bw.outliers(sv, phenotype="area",
+sv<-bw.outliers(sv, phenotype="area_pixels",
       group = c("DAS", "genotype", "fertilizer"), plotgroup = c("barcode"))
 water<-bw.water("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/metadata.json")
 
 df<-sv
 w<-water
-pheno="area"
+pheno="area_pixels"
 id =c("barcode")
 time="DAS"
 

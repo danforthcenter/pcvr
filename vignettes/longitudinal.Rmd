@@ -62,7 +62,7 @@ sv<-merge(sv, key, by="barcode")
 Now we add integer time columns using `bw.time`.
 
 ```{r}
-sv<-bw.time(sv, plantingDelay = 0, phenotype="area", cutoff=10, timeCol="timestamp", group=c("barcode", "rotation"), plot=FALSE)
+sv<-bw.time(sv, plantingDelay = 0, phenotype="area_pixels", cutoff=10, timeCol="timestamp", group=c("barcode", "rotation"), plot=FALSE)
 ```
 
 Before combining angled pictures of the same plant per a given time.
@@ -78,9 +78,9 @@ sv_ag_withOutliers<-aggregate(form, data=sv, mean, na.rm=TRUE)
 And finally removing outliers with `bw.outliers` and converting area to be in $\text{cm}^2$ instead of pixels.
 
 ```{r}
-sv_ag<-bw.outliers(df = sv_ag_withOutliers, phenotype="area", group = c("DAS", "genotype", "fertilizer"), plotgroup = c("barcode"), plot=FALSE)
+sv_ag<-bw.outliers(df = sv_ag_withOutliers, phenotype="area_pixels", group = c("DAS", "genotype", "fertilizer"), plotgroup = c("barcode"), plot=FALSE)
 pixels_per_cmsq <- 42.5^2 
-sv_ag$area_cm2<-sv_ag$area / pixels_per_cmsq
+sv_ag$area_cm2<-sv_ag$area_pixels / pixels_per_cmsq
 sv_ag$group<-interaction(sv_ag$fertilizer, sv_ag$genotype)
 ```
 
