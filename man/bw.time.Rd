@@ -16,7 +16,8 @@ bw.time(
   wide = TRUE,
   format = "\%Y-\%m-\%d \%H:\%M:\%S",
   traitCol = "trait",
-  valueCol = "value"
+  valueCol = "value",
+  index = NULL
 )
 }
 \arguments{
@@ -53,6 +54,12 @@ This should generally not need to be changed from the default.}
 
 \item{valueCol}{Column with phenotype values, defaults to "value".
 This should generally not need to be changed from the default.}
+
+\item{index}{Optionally a time to use as the beginning of the experiment. This 
+may be useful if you have multiple datasets or you are adding data from bw.water
+and plants were watered before being imaged or if you want to index days off of
+midnight. This defaults to NULL but will take any value coercible to POSIXct by
+\code{as.POSIXct(... , tz="UTC")} such as "2020-01-01 18:30:00"}
 }
 \value{
 The input dataframe with new integer columns for different ways
