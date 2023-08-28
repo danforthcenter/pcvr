@@ -90,7 +90,7 @@ mv_ag<-function(df, group, mvCols="frequencies", n_per_group=1, outRows=NULL, ke
     long = TRUE
   } else if(!any(c(traitCol, valueCol, labelCol) %in% colnames(df))){
     long = FALSE } else{
-      found <- c('traitCol', 'valueCol', 'labelCol')[which(c(traitCol, valueCol, labelCol) %in% colnames(df1))]
+      found <- c('traitCol', 'valueCol', 'labelCol')[which(c(traitCol, valueCol, labelCol) %in% colnames(df))]
       stop(paste0( paste(found, collapse = ", "), " found in column names of data but either all or none of traitCol, valueCol, and labelCol are expected."))
     }
   
