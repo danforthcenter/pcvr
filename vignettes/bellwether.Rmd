@@ -103,7 +103,7 @@ Sometimes large plantCV output may be too large to be read into memory for R. In
 
 ```{r, class.source="static-code", eval=F}
 example<-read.pcv("prohibitivelyLargeFile.csv",
-   filters = list("trait in area, convex_hull_area, solidity, perimeter, width, height, longest_path, convex_hull_vertices, ellipse_major_axis, ellipse_minor_axis, ellipse_angle, ellipse_eccentricity, hue_circular_mean, hue_circular_std, hue_median", "sample in default"))
+   filters = list("trait in area_pixels, area_above_reference_pixels, area_below_reference_pixels, color_chip_size_median, convex_hull_area_pixels, convex_hull_vertices_none, ellipse_angle_degrees", "sample in default"))
 ```
 
 ### `read.pcv.4.x`
@@ -156,7 +156,7 @@ colnames(bw_all)
 Often we want to convert our timestamp data from the lemnatech into either days after start (DAS), days after planting (DAP), or days after emergence (DAE). By default the `bw.time` function will add columns called DAS, DAP, and DAE to your data. Days after emergence requires using a phenotype and a value to classify emergence. Here an area greater than 10 pixels is considered an emerged plant. In this example with a planting delay of 0 DAP and DAE will be the same, but both are still created for the purpose of the example.
 
 ```{r}
-sv<-bw.time(sv, plantingDelay = 0, phenotype="area", cutoff=10, timeCol="timestamp", group=c("barcode", "rotation"), plot=TRUE)
+sv<-bw.time(sv, plantingDelay = 0, phenotype="area_pixels", cutoff=10, timeCol="timestamp", group=c("barcode", "rotation"), plot=TRUE)
 head(sv)
 dim(sv)
 ```
@@ -178,7 +178,7 @@ dim(sv_ag_withOutliers)
 The `bw.outliers` function can be used to remove outliers relative to a phenotype using cook's distance. Here just over 4 percent of data are removed as outliers. The plot shows removed data points in red.
 
 ```{r}
-sv_ag<-bw.outliers(df = sv_ag_withOutliers, phenotype="area", group = c("DAS", "genotype", "fertilizer"), plotgroup = c("barcode"))
+sv_ag<-bw.outliers(df = sv_ag_withOutliers, phenotype="area_pixels", group = c("DAS", "genotype", "fertilizer"), plotgroup = c("barcode"))
 dim(sv_ag)
 ```
 
@@ -210,7 +210,7 @@ A common use for watering data is to look at water use efficiency (WUE). Here we
 
 
 ```{r}
-test<-pwue(sv_ag, water, "area", "DAS", c("barcode"))
+test<-pwue(sv_ag, water, "area_pixels", "DAS", c("barcode"))
 
 ggplot(test, aes(x=DAS, y=pWUE, color=genotype, group=barcode))+
   geom_line()+
@@ -229,12 +229,12 @@ Now that our data is read in and has undergone some basic quality control we wan
 
 ```{r}
 frem(sv_ag, des=c("genotype", "fertilizer"),
-     phenotypes=c("area", "area_above_reference", "area_below_reference", "color_chip_size", 
-                  "convex_hull_area", "convex_hull_vertices", "ellipse_angle", 
-                  "ellipse_eccentricity", "ellipse_major_axis", "ellipse_minor_axis", 
-                  "height", "height_above_reference", "height_below_reference", 
-                  "horizontal_reference_position", "hue_circular_mean", "hue_circular_std", 
-                  "hue_median", "perimeter", "solidity", "width"),
+     phenotypes=c("area_pixels", "area_above_reference_pixels", "area_below_reference_pixels", 
+                  "convex_hull_area_pixels", "convex_hull_vertices_none", "ellipse_angle_degrees", 
+                  "ellipse_eccentricity_none", "ellipse_major_axis_pixels", "ellipse_minor_axis_pixels", 
+                  "height_pixels", "height_above_reference_pixels", "height_below_reference_pixels", 
+                  "horizontal_reference_position_none", "hue_circular_mean_degrees", "hue_circular_std_degrees", 
+                  "hue_median_degrees", "perimeter_pixels", "solidity_none", "width_pixels"),
      timeCol="DAS", cor=TRUE, returnData=F, combine=F, markSingular=TRUE, time=NULL)
 ```
 
@@ -242,12 +242,13 @@ Here we look at how much variance in each phenotype was explained over the cours
 
 ```{r}
 frem(sv_ag, des=c("genotype", "fertilizer"),
-     phenotypes=c("area", "area_above_reference", "area_below_reference", "color_chip_size", 
-                  "convex_hull_area", "convex_hull_vertices", "ellipse_angle", 
-                  "ellipse_eccentricity", "ellipse_major_axis", "ellipse_minor_axis", 
-                  "height", "height_above_reference", "height_below_reference", 
-                  "horizontal_reference_position", "hue_circular_mean", "hue_circular_std", 
-                  "hue_median", "perimeter", "solidity", "width"),
+     phenotypes=c("area_pixels", "area_above_reference_pixels", "area_below_reference_pixels", 
+                  "convex_hull_area_pixels", "convex_hull_vertices_none", "ellipse_angle_degrees", 
+                  "ellipse_eccentricity_none", "ellipse_major_axis_pixels",
+                  "ellipse_minor_axis_pixels", 
+                  "height_pixels", "height_above_reference_pixels", "height_below_reference_pixels", 
+                  "horizontal_reference_position_none", "hue_circular_mean_degrees", "hue_circular_std_degrees", 
+                  "hue_median_degrees", "perimeter_pixels", "solidity_none", "width_pixels"),
      timeCol="DAS", cor=F, returnData=F, combine=F, markSingular=F, time="all")
 ```
 
@@ -259,8 +260,8 @@ Most analysis focus on single value traits, that is phenotypes where one image r
 
 ```{r}
 pixels_per_cmsq <- 42.5^2   # pixel per cm^2
-sv_ag$area_cm2<-sv_ag$area / pixels_per_cmsq
-sv_ag$height_cm <- sv_ag$height/42.5
+sv_ag$area_cm2<-sv_ag$area_pixels / pixels_per_cmsq
+sv_ag$height_cm <- sv_ag$height_pixels/42.5
 ```
 
 
@@ -549,7 +550,7 @@ distributionPlot(fits = from3to25, form = y~time|id/group, params=c("A", "B", "C
 Working with multi value traits leads to different statistical challenges than the single value traits. Generally reading the data in as wide format makes for a significantly smaller object in memory terms since there are not lots of duplicated metadata (identifiers for each row when every image has hundreds of rows potentially). Note that for many questions even about color it is not necessary to use the entire color histograms. Make sure that you have a good reason to use the complete color data before going down this particular path for too long. As an example, a very simple comparison of the circular mean of Hue here will show our treatment effect in this data. 
 
 ```{r}
-ggplot(sv_ag[sv_ag$DAS==18,], aes(x = fertilizer, y=hue_circular_mean, fill = fertilizer))+
+ggplot(sv_ag[sv_ag$DAS==18,], aes(x = fertilizer, y=hue_circular_mean_degrees, fill = fertilizer))+
   geom_boxplot(outlier.shape=NA)+
   geom_jitter(width=0.05, size=0.5)+
   scale_fill_manual(values = c(viridis::viridis(3,1,0.1)), breaks = c('0','50','100'))+

@@ -307,7 +307,7 @@ sv$fertilizer = ifelse(sv$fertilizer == "A", "100",
 sv<-bw.time(sv,timeCol="timestamp", group="barcode")
 
 pixels_per_cmsq <- 42.5^2   # pixel per cm^2
-sv$area_cm2<-sv$area / pixels_per_cmsq
+sv$area_cm2<-sv$area_pixels / pixels_per_cmsq
 
 mo17_area <- sv[wide$genotype=="Mo17" & wide$DAS > 18 & wide$fertilizer == 50, "area_cm2"]
 B73_area <- sv[wide$genotype=="B73" & wide$DAS > 18 & wide$fertilizer == 50, "area_cm2"]

@@ -39,9 +39,9 @@
 #' sv$fertilizer = substr(sv$barcode, 8, 8)
 #' sv$fertilizer = ifelse(sv$fertilizer == "A", "100",
 #'                    ifelse(sv$fertilizer == "B", "50", "0"))
-#' sv<-bw.time(sv, plantingDelay = 0, phenotype="area", cutoff=10, timeCol="timestamp",
+#' sv<-bw.time(sv, plantingDelay = 0, phenotype="area_pixels", cutoff=10, timeCol="timestamp",
 #'  group=c("barcode", "rotation"), plot=FALSE)
-#' sv<-bw.outliers(df = sv, phenotype="area", naTo0 =FALSE, 
+#' sv<-bw.outliers(df = sv, phenotype="area_pixels", naTo0 =FALSE, 
 #'  group = c("DAS", "genotype", "fertilizer"),
 #'  plotgroup=c('barcode',"rotation"), plot=TRUE)
 #' 
@@ -56,10 +56,10 @@
 #' svl$fertilizer = substr(svl$barcode, 8, 8)
 #' svl$fertilizer = ifelse(svl$fertilizer == "A", "100",
 #'                    ifelse(svl$fertilizer == "B", "50", "0"))
-#' svl<-bw.time(svl, plantingDelay = 0, phenotype="area", cutoff=10, timeCol="timestamp",
+#' svl<-bw.time(svl, plantingDelay = 0, phenotype="area_pixels", cutoff=10, timeCol="timestamp",
 #'  group=c("barcode", "rotation"), plot=FALSE,wide=FALSE)
 #' 
-#' svl<-bw.outliers(df = svl, phenotype="area", naTo0 =FALSE,
+#' svl<-bw.outliers(df = svl, phenotype="area_pixels", naTo0 =FALSE,
 #'   group = c("DAS", "genotype", "fertilizer"),
 #'   plotgroup=c('barcode',"rotation"), plot=TRUE, wide=FALSE)
 #' 
@@ -76,7 +76,7 @@ bw.outliers<-function(df = NULL,
                       cutoff = 3,
                       plotgroup=c('barcode',"rotation"),
                       plot=TRUE,  wide =TRUE, x=NULL, traitCol="trait", valueCol="value", idCol=NULL){
-  # df = svl; phenotype="area"; naTo0 = F; group = c("DAS", "genotype", "fertilizer"); plotgroup=c("barcode","rotation"); plot=FALSE
+  # df = svl; phenotype="area_pixels"; naTo0 = F; group = c("DAS", "genotype", "fertilizer"); plotgroup=c("barcode","rotation"); plot=FALSE
   # wide = F ; traitCol="trait"; valueCol="value"; idCol=c("barcode","rotation")
   if(is.null(idCol)){idCol = plotgroup}
   outlierMethod = "cooks"
