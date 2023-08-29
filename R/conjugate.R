@@ -1117,7 +1117,7 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
       s2_2 = var(s2) # s^2
       
       v2 = priors$n[2] - 1 # prior DF
-      n2_n = priors$n[2] + n1 # total N including prior
+      n2_n = priors$n[2] + n2 # total N including prior
       m2_n = (n2*m2 + priors$n[2]*priors$mu[2])/n2_n # weighted mean of prior and data
       v2_n = v2 + n2 # degrees of freedom including data
       s2_2_n = ((n2-1)*s2_2 + v2*priors$s2[2] + priors$n[2]*n2*(priors$mu[2] - m2)^2/n2_n)/v2_n # pooled variance
