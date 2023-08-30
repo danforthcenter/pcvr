@@ -39,8 +39,26 @@ test_that("reading sv github data as wide works", {
    expect_equal(dim(sv), c(2844, 50))
    
    #* check cumulativePheno
-   #* check pcvBox?
+   csv <- cumulativePheno(sv, phenotypes = c("area_pixels", "height_pixels", "width_pixels"),
+                          group = c("barcode", "rotation"))
+   expect_equal(dim(csv), c(2844, 54))
+   expect_equal(sum(csv$height_pixels_csum), 10634085)
+   #* check pcvBox makes a ggplot
+   sv_box <- pcvBox(sv[sv$DAS==15, ], x="fertilizer", y="area_pixels", compare="0", showPoints = T)
+   expect_s3_class(sv_box, "ggplot")
    #* check growthSS (R CMD might throw a fit about brms and my SUGGESTS vs DEPENDS)
+   sv$group <- interaction(sv$fertilizer, sv$genotype)
+   sv$area_cm2 <- sv$area_pixels / (42.5^2)
+   ss <- growthSS(model="gompertz", form =  area_pixels~DAS|barcode/group, sigma="spline", df=sv,
+                  priors = list("A" = 130, "B" = 10, "C" = 0.5))
+   expect_type(ss, "list")
+   
+   expect_s3_class(ss[["formula"]], "brmsformula")
+   expect_s3_class(ss[["prior"]], "brmsprior")
+   expect_type(ss[["initfun"]], "closure")
+   expect_s3_class(ss[["df"]], "data.frame")
+   expect_type(ss[["family"]], "character")
+   expect_s3_class(ss[["pcvrForm"]], "formula")
    
    
    
