@@ -41,7 +41,7 @@
 #'                    ifelse(sv$fertilizer == "B", "50", "0"))
 #' sv<-bw.time(sv, plantingDelay = 0, phenotype="area_pixels", cutoff=10, timeCol="timestamp",
 #'  group=c("barcode", "rotation"), plot=FALSE)
-#' sv<-bw.outliers(df = sv, phenotype="area_pixels", naTo0 =FALSE, 
+#' sv_1<-bw.outliers(df = sv, phenotype="area_pixels", naTo0 =FALSE, 
 #'  group = c("DAS", "genotype", "fertilizer"),
 #'  plotgroup=c('barcode',"rotation"), plot=TRUE)
 #' 
@@ -76,8 +76,8 @@ bw.outliers<-function(df = NULL,
                       cutoff = 3,
                       plotgroup=c('barcode',"rotation"),
                       plot=TRUE,  wide =TRUE, x=NULL, traitCol="trait", valueCol="value", idCol=NULL){
-  # df = svl; phenotype="area_pixels"; naTo0 = F; group = c("DAS", "genotype", "fertilizer"); plotgroup=c("barcode","rotation"); plot=FALSE
-  # wide = F ; traitCol="trait"; valueCol="value"; idCol=c("barcode","rotation")
+  # df = sv; phenotype="area_pixels"; naTo0 = F; group = c("DAS", "genotype", "fertilizer"); plotgroup=c("barcode","rotation"); plot=TRUE
+  # wide = TRUE ; traitCol="trait"; valueCol="value"; idCol=c("barcode","rotation")
   if(is.null(idCol)){idCol = plotgroup}
   outlierMethod = "cooks"
   if(wide){
@@ -120,10 +120,16 @@ bw.outliers<-function(df = NULL,
     rmdf_plotData<-df[df$outlier >= outlierCutoff, ]
     if(is.null(x)){x = group[1]}
     p<-ggplot2::ggplot()+
-      ggplot2::geom_line(data=rmdf_plotData, ggplot2::aes(x=.data[[x]], y=.data[[phenotype]], group=.data[["grouping"]]), linewidth=0.15, color="red")+
       ggplot2::geom_line(data=out_plotData, ggplot2::aes(x=.data[[x]], y=.data[[phenotype]], group=.data[["grouping"]]),linewidth=0.25 )+
       ggplot2::labs(title=pctRm)+
       pcv_theme()
+    
+    yLims <- ggplot2::layer_scales(p)$y$range$range
+    
+    p <- p +
+      ggplot2::geom_line(data=rmdf_plotData, ggplot2::aes(x=.data[[x]], y=.data[[phenotype]], group=.data[["grouping"]]), linewidth=0.15, color="red")+
+      ggplot2::coord_cartesian(ylim = yLims)
+    
     print(p)
   } else if(plot & !wide){
     plotdf<-df[df[[traitCol]]==phenotype,]
@@ -132,12 +138,17 @@ bw.outliers<-function(df = NULL,
     rmdf_plotData<-plotdf[plotdf$outlier >= outlierCutoff, ]
     if(is.null(x)){x = group[1]}
     p<-ggplot2::ggplot()+
-      ggplot2::geom_line(data=rmdf_plotData, ggplot2::aes(x=.data[[x]], y=.data[[valueCol]], group=.data[["grouping"]]), linewidth=0.15, color="red")+
       ggplot2::geom_line(data=out_plotData, ggplot2::aes(x=.data[[x]], y=.data[[valueCol]], group=.data[["grouping"]]),linewidth=0.25 )+
       ggplot2::labs(title=pctRm)+
       pcv_theme()
-    print(p)
     
+    yLims <- ggplot2::layer_scales(p)$y$range$range
+    
+    p <- p +
+      ggplot2::geom_line(data=rmdf_plotData, ggplot2::aes(x=.data[[x]], y=.data[[valueCol]], group=.data[["grouping"]]), linewidth=0.15, color="red")+
+      ggplot2::coord_cartesian(ylim = yLims)
+    
+    print(p)
   }
   return(out)
 }
