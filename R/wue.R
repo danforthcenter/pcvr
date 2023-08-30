@@ -39,7 +39,7 @@
 #'       group=c("barcode", "rotation"), plot=TRUE)
 #' phenotypes <- colnames(sv)[19:35]
 #' phenoForm<-paste0("cbind(", paste0(phenotypes, collapse=", "), ")")
-#' groupForm<-"DAS+DAP+barcode+genotype+fertilizer"
+#' groupForm<-"DAS+DAP+barcode+genotype+fertilizer+timestamp"
 #' sv<-aggregate(as.formula(paste0(phenoForm, "~", groupForm)), data=sv, mean, na.rm=TRUE)
 #' sv<-bw.outliers(sv, phenotype="area_pixels",
 #'       group = c("DAS", "genotype", "fertilizer"), plotgroup = c("barcode"))
@@ -48,54 +48,41 @@
 #' df<-sv
 #' w<-water
 #' pheno="area_pixels"
+#' time="timestamp"
 #' id =c("barcode")
-#' time="DAS"
+#' offset = 0
+#' waterCol="water_amount"
 #' 
-#' x<-pwue(df, w, pheno, time, id)
+#' x<-pwue(df, w, pheno, time, id, offset, waterCol)
 #' library(ggplot2)
-#' ggplot(x, aes(x=DAS, y=pWUE, group = barcode))+
+#' ggplot(x, aes(x=timestamp, y=pWUE, group = barcode))+
 #'   geom_line()+
 #'   theme_minimal()
 #'  
-#' head(x[which(x$pWUE< -100),])
-#' head(x[x$pWUE < -100,]) # note the counter-intuitive handling of NAs in the index column.
-#' # Either use data.table or wrap conditions in which().
-#' 
 #' ## End(Not run)
 #' 
 #' 
 #' @export
 
-pwue<-function(df, w, pheno="area_pixels", time="timestamp", id="barcode", offset = 0, waterCol="water_amount"){
-  # - steps:
-  #   - check pheno and water data for a timestamp column (arg)
-  # - if both exist then convert to numeric starting from min OR index, else prompt error
-  # - reorder pheno and watering data by snapshot and new time
-  # - per ids (unique plants):
-  #   - subset water and pheno data
-  # - arrange by time (redundant but fast?)
-  # - per imaging time in pheno data:
-  #   - filter watering data for interval between imaging time and previous imaging time
-  # - sum total water added to pot from filtered watering data
-  # - get diff of pheno_[time] and pheno_[prev time]
-  # - return data with new pheno_diff, water_added, and pwue (pheno_diff/water_added) columns.
+pwue<-function(df, w, pheno="area_pixels", time="timestamp", id="barcode",
+               offset = 0, waterCol="water_amount"){
+  
   if(length(time)==2){
     time1 = time[1]
     time2 = time[2]
   } else{
     time1 <- time2 <- time
   }
-  
   if( !time1 %in% colnames(df) | !time2 %in% colnames(w) ){
     stop(paste0(paste0(time, collapse=", "), " must be in colnames of df and w"))
   }
-  
   w<-data.table::setorderv(data.table::as.data.table(w), cols = c(id,time2))
+  w <- w[w[[waterCol]]>0, ]
   df<-data.table::setorderv(data.table::as.data.table(df), cols = c(id,time1))
   
   ids <- intersect(unique(w[[id]]), unique(df[[id]]))
   
-  do.call(rbind, lapply(ids, function(iter_id){
+  out <- do.call(rbind, lapply(ids, function(iter_id){
     
     w_i <- w[w[[id]]==iter_id, ]
     df_i <- df[df[[id]]==iter_id, ]
@@ -103,30 +90,37 @@ pwue<-function(df, w, pheno="area_pixels", time="timestamp", id="barcode", offse
     w_i <- data.table::setorderv(w_i, cols = c(time2))
     df_i <- data.table::setorderv(df_i, cols = c(time1))
     
-    imaging_times <- unique(df_i[[time]])
+    imaging_times <- unique(df_i[[time1]])
     
-    do.call(rbind, lapply(1:length(imaging_times), function(t_i){
+    wue_i <- do.call(rbind, lapply(1:length(imaging_times), function(t_i){
       
-      start <- ifelse(t_i==1, NA, imaging_times[t_i-1] )
-      end <- imaging_times[t_i] - offset # think about how this offset would work for selecting phenos
+      start <- if(t_i==1){NA} else {imaging_times[(t_i-1)] }
+      end <- imaging_times[t_i] - offset 
       
+      if(!is.na(start)){
       w_i_t <- w_i[w_i[[time]]>start & w_i[[time]]<end, ]
-      total_water_i <- sum(w_i_t[[waterCol]]) # need to review water data, this might have to be
-      # diff of weights before and after
-      pheno_diff <- df_i[df_i[[time1]] == imaging_times[t_i], pheno] -  df_i[df_i[[time1]]==start, pheno]
+      total_water_i <- max(c(sum(w_i_t[[waterCol]]), 1))
+      pheno_diff <- max(c(as.numeric( df_i[df_i[[time1]] == imaging_times[t_i], get(pheno)] -
+                                 df_i[df_i[[time1]]==start, get(pheno)] ), 0))
+      }else{
+        total_water_i = NA ; pheno_diff = NA
+        start <- imaging_times[t_i] - offset 
+      }
       
-      return(data.frame(total_water_i = total_water_i,
+      row <- data.frame(total_water = total_water_i,
                         pheno_diff= pheno_diff,
                         start = start,
-                        end - imaging_times[t_i],
-                        end_offset = end ))
-      
-      
+                        end = imaging_times[t_i])
+      row$pWUE <- row$pheno_diff / row$total_water
+      if(offset != 0){row$end_offset = end}
+      return(row)
     }))
     
+    iter_out <- cbind(df_i, wue_i)
+    return(iter_out)
+    
   }))
-  
-  
+  return(out)
 }
 
 
