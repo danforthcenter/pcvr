@@ -4,7 +4,15 @@
 \alias{pwue}
 \title{Calculate pseudo water use efficiency from phenotype and watering data}
 \usage{
-pwue(df, w, pheno = "area_pixels", time = "DAS", id = "barcode")
+pwue(
+  df,
+  w,
+  pheno = "area_pixels",
+  time = "timestamp",
+  id = "barcode",
+  offset = 0,
+  waterCol = "water_amount"
+)
 }
 \arguments{
 \item{df}{Dataframe containing wide single-value phenotype data.
@@ -18,6 +26,12 @@ This should already be aggregated to one row per plant per day (angles/rotations
 Defaults to \code{c("barcode", "DAS")}.}
 
 \item{id}{Variable(s) that identify a plant over time. Defaults to \code{"barcode"}.}
+
+\item{offset}{Optionally you can specify how long before imaging a watering should not be taken into account. 
+This defaults to 0, meaning that if a plant were watered directly before being imaged then that water would
+be counted towards WUE between the current image and the prior one. This argument is taken to be in seconds.}
+
+\item{waterCol}{Column containing watering amounts in \code{w}. This defaults to "watering_amount".}
 }
 \value{
 A data frame containing the bellwether watering data joined
@@ -51,7 +65,7 @@ sv<-bw.time(sv, plantingDelay = 0,
       group=c("barcode", "rotation"), plot=TRUE)
 phenotypes <- colnames(sv)[19:35]
 phenoForm<-paste0("cbind(", paste0(phenotypes, collapse=", "), ")")
-groupForm<-"DAS+DAP+barcode+genotype+fertilizer"
+groupForm<-"DAS+DAP+barcode+genotype+fertilizer+timestamp"
 sv<-aggregate(as.formula(paste0(phenoForm, "~", groupForm)), data=sv, mean, na.rm=TRUE)
 sv<-bw.outliers(sv, phenotype="area_pixels",
       group = c("DAS", "genotype", "fertilizer"), plotgroup = c("barcode"))
@@ -60,19 +74,17 @@ water<-bw.water("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main
 df<-sv
 w<-water
 pheno="area_pixels"
+time="timestamp"
 id =c("barcode")
-time="DAS"
+offset = 0
+waterCol="water_amount"
 
-x<-pwue(df, w, pheno, time, id)
+x<-pwue(df, w, pheno, time, id, offset, waterCol)
 library(ggplot2)
-ggplot(x, aes(x=DAS, y=pWUE, group = barcode))+
+ggplot(x, aes(x=timestamp, y=pWUE, group = barcode))+
   geom_line()+
   theme_minimal()
  
-head(x[which(x$pWUE< -100),])
-head(x[x$pWUE < -100,]) # note the counter-intuitive handling of NAs in the index column.
-# Either use data.table or wrap conditions in which().
-
 ## End(Not run)
 
 

@@ -14,6 +14,10 @@
 #' @param time Variable(s) that identify a plant on a given day.
 #'     Defaults to \code{c("barcode", "DAS")}.
 #' @param id Variable(s) that identify a plant over time. Defaults to \code{"barcode"}.
+#' @param offset Optionally you can specify how long before imaging a watering should not be taken into account. 
+#' This defaults to 0, meaning that if a plant were watered directly before being imaged then that water would
+#' be counted towards WUE between the current image and the prior one. This argument is taken to be in seconds.
+#' @param waterCol Column containing watering amounts in \code{w}. This defaults to "watering_amount".
 #' @keywords read.csv, pcv, wide, long
 #' @import jsonlite
 #' @return A data frame containing the bellwether watering data joined
