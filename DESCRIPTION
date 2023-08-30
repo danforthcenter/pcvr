@@ -39,5 +39,7 @@ Suggests:
     curl,
     cmdstanr,
     rstan,
-    caret
+    caret,
+    testthat (>= 3.0.0)
 VignetteBuilder: knitr
+Config/testthat/edition: 3
