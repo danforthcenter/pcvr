@@ -60,7 +60,7 @@ test_that("reading sv github data as wide works", {
    expect_type(ss[["family"]], "character")
    expect_s3_class(ss[["pcvrForm"]], "formula")
    
-   
+   #* pending
    
   })
 
