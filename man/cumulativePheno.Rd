@@ -9,7 +9,6 @@ cumulativePheno(
   phenotypes = NULL,
   group = "barcode",
   timeCol = "DAS",
-  wide = TRUE,
   traitCol = "trait",
   valueCol = "value"
 )
@@ -26,10 +25,10 @@ of the group that identifies a control within the greater hierarchy.}
 
 \item{timeCol}{Column name to use for time data.}
 
-\item{wide}{Logical, is the data wide format? Defaults to TRUE.}
-
 \item{traitCol}{Column with phenotype names, defaults to "trait". 
-This should generally not need to be changed from the default.}
+This should generally not need to be changed from the default.
+   If this and valueCol are present in colnames(df) then the data
+   is assumed to be in long format.}
 
 \item{valueCol}{Column with phenotype values, defaults to "value".
 This should generally not need to be changed from the default.}

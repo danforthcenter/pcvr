@@ -10,13 +10,12 @@ relativeTolerance(
   grouping = NULL,
   control = NULL,
   controlGroup = NULL,
-  wide = TRUE,
   traitCol = "trait",
   valueCol = "value"
 )
 }
 \arguments{
-\item{df}{Dataframe to use, by default this is expected to be wide.}
+\item{df}{Dataframe to use, this can be in long or wide format.}
 
 \item{phenotypes}{A character vector of column names for the phenotypes
 that should be compared against control.}
@@ -31,10 +30,10 @@ If left NULL (the default) then this will be taken as the first string in the gr
 
 \item{controlGroup}{The level of the control variable to compare groups against.}
 
-\item{wide}{Logical, is the input data in wide format? Defaults to TRUE.}
-
 \item{traitCol}{Column with phenotype names, defaults to "trait".
-This should generally not need to be changed from the default.}
+This should generally not need to be changed from the default.
+If this and valueCol are present in colnames(df) then the data
+is assumed to be in long format.}
 
 \item{valueCol}{Column with phenotype values, defaults to "value".
 This should generally not need to be changed from the default.}
@@ -83,7 +82,6 @@ phenotypes = c("area_cm2", "height_cm")
 grouping = c("fertilizer", "genotype", "DAS")
 controlGroup = "100" 
 control = "fertilizer"
-wide=TRUE
 
 rt <-relativeTolerance(df, phenotypes, grouping, control, controlGroup)
 head(rt)

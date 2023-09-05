@@ -12,7 +12,7 @@ pcv.emd(
   mat = FALSE,
   plot = TRUE,
   parallel = getOption("mc.cores", 1),
-  longTrait = NULL,
+  trait = "trait",
   id = "image",
   value = "value",
   raiseError = TRUE
@@ -25,7 +25,7 @@ pcv.emd(
 Single strings will be used to regex a pattern in column names (see examples).
  A vector of names, positions, or booleans will also work.
  For long data this is taken as a regex pattern (or full name)
- to use in filtering the longTrait column.}
+ to use in filtering the trait column.}
 
 \item{reorder}{Should data be reordered to put similar rows together in the resulting plot?
 This takes a vector of column names of length 1 or more (see examples).}
@@ -45,9 +45,9 @@ for a dataframe this uses ggplot.}
 
 \item{parallel}{Number of cores to use. Defaults to 1 unless the "mc.cores" option is set.}
 
-\item{longTrait}{Defaults to NULL, in which case the data is assumed to be in long format.
-If this is a character string then it is taken as a column name of long data
-and the other arguments will assume data is long.}
+\item{trait}{Column name for long data to identify traits. This defaults to "trait". If this and value are 
+in the column names of the data then it is assumed to be in long format, otherwise it is assumed to be in 
+wide format.}
 
 \item{id}{A vector of column names that uniquely identifies observations if the
 data is in long format. Defaults to "image".}
@@ -106,7 +106,7 @@ w<-pcv.emd(df1, cols="hue_frequencies", reorder=c("fertilizer", "genotype"),
 # df_long<-read.pcv(file, "long")
 # l<-pcv.emd(df = df_long, cols="hue_frequencies",
 #    reorder=c("fertilizer", "genotype"),
-#    mat =FALSE, plot=TRUE, longTrait="trait", id="image", value="value")
+#    mat =FALSE, plot=TRUE, trait="trait", id="image", value="value")
 # l$plot + theme(axis.text = element_blank())
 
 # Note on computational complexity

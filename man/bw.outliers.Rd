@@ -12,7 +12,6 @@ bw.outliers(
   cutoff = 3,
   plotgroup = c("barcode", "rotation"),
   plot = TRUE,
-  wide = TRUE,
   x = NULL,
   traitCol = "trait",
   valueCol = "value",
@@ -40,13 +39,13 @@ over time and defaults to c('barcode',"rotation").}
 
 \item{plot}{Logical, if TRUE then a list is returned with a ggplot and a dataframe.}
 
-\item{wide}{Logical, is the data in wide format? Defaults to TRUE.}
-
 \item{x}{Optional specification for x axis variable if plot is true.
 If left NULL (the default) then the first element of `group` is used.}
 
 \item{traitCol}{Column with phenotype names, defaults to "trait".
-This should generally not need to be changed from the default.}
+This should generally not need to be changed from the default.
+   If this and valueCol are present in colnames(df) then the data
+   is assumed to be in long format.}
 
 \item{valueCol}{Column with phenotype values, defaults to "value".
 This should generally not need to be changed from the default.}

@@ -13,7 +13,6 @@ bw.time(
   timeCol = "timestamp",
   group = "Barcodes",
   plot = TRUE,
-  wide = TRUE,
   format = "\%Y-\%m-\%d \%H:\%M:\%S",
   traitCol = "trait",
   valueCol = "value",
@@ -44,13 +43,13 @@ although often "angle" or "rotation" should be added.}
 
 \item{plot}{Logical, should plots of the new time variables be printed?}
 
-\item{wide}{Logical, is data in wide format? Defaults to TRUE.}
-
 \item{format}{An R POSIXct format, defaults to lemnatech standard format.
 This is only used if timeCol is not an integer.}
 
 \item{traitCol}{Column with phenotype names, defaults to "trait".
-This should generally not need to be changed from the default.}
+This should generally not need to be changed from the default.
+   If this and valueCol are present in colnames(df) then the data
+   is assumed to be in long format.}
 
 \item{valueCol}{Column with phenotype values, defaults to "value".
 This should generally not need to be changed from the default.}
