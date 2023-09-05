@@ -5,7 +5,7 @@
 #'   phenotypes as relative differences compared to a control. Note that the \code{conjugate} 
 #'   function can also be useful in considering the relative tolerance to stress between groups.
 #' 
-#' @param df Dataframe to use, by default this is expected to be wide.
+#' @param df Dataframe to use, this can be in long or wide format.
 #' @param phenotypes A character vector of column names for the phenotypes
 #'     that should be compared against control.
 #' @param grouping A character vector of column names that identify groups in the data.
@@ -15,9 +15,10 @@
 #' @param control A column name for the variable to be used to select the control observations.
 #'     If left NULL (the default) then this will be taken as the first string in the group argument.
 #' @param controlGroup The level of the control variable to compare groups against.
-#' @param wide Logical, is the input data in wide format? Defaults to TRUE.
 #' @param traitCol Column with phenotype names, defaults to "trait".
 #'    This should generally not need to be changed from the default.
+#'    If this and valueCol are present in colnames(df) then the data
+#'    is assumed to be in long format.
 #' @param valueCol Column with phenotype values, defaults to "value".
 #'    This should generally not need to be changed from the default.
 #' @return A dataframe with relative tolerance columns added.
@@ -58,7 +59,6 @@
 #' grouping = c("fertilizer", "genotype", "DAS")
 #' controlGroup = "100" 
 #' control = "fertilizer"
-#' wide=TRUE
 #' 
 #' rt <-relativeTolerance(df, phenotypes, grouping, control, controlGroup)
 #' head(rt)
@@ -69,7 +69,10 @@
 #' @export
 #' 
 relativeTolerance<-function(df, phenotypes=NULL, grouping=NULL, control=NULL,
-                            controlGroup = NULL, wide=TRUE, traitCol="trait", valueCol="value"){
+                            controlGroup = NULL, traitCol="trait", valueCol="value"){
+  if(all(c(traitCol, valueCol) %in% colnames(df))){
+    wide=FALSE
+  } else{ wide = TRUE}
   if(is.null(grouping)){grouping=control}
   if(is.null(control)){control=grouping[1]}
   if(is.null(controlGroup)){controlGroup = unique(df[[control]])[1]}

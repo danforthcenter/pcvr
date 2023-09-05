@@ -15,11 +15,12 @@
 #' This defaults to "Barcodes". These taken together should identify a unique plant across time,
 #' although often "angle" or "rotation" should be added.
 #' @param plot Logical, should plots of the new time variables be printed?
-#' @param wide Logical, is data in wide format? Defaults to TRUE.
 #' @param format An R POSIXct format, defaults to lemnatech standard format.
 #' This is only used if timeCol is not an integer.
 #' @param traitCol Column with phenotype names, defaults to "trait".
 #' This should generally not need to be changed from the default.
+#'    If this and valueCol are present in colnames(df) then the data
+#'    is assumed to be in long format.
 #' @param valueCol Column with phenotype values, defaults to "value".
 #' This should generally not need to be changed from the default.
 #' @param index Optionally a time to use as the beginning of the experiment. This 
@@ -67,8 +68,13 @@
 #'
 bw.time<-function(df = NULL, mode=NULL, plantingDelay = NULL,
                   phenotype=NULL, cutoff=1, timeCol="timestamp",
-                  group="Barcodes", plot=TRUE, wide=TRUE, format="%Y-%m-%d %H:%M:%S",
+                  group="Barcodes", plot=TRUE, format="%Y-%m-%d %H:%M:%S",
                   traitCol="trait", valueCol="value", index = NULL){
+  
+  if(all(c(traitCol, valueCol) %in% colnames(df))){
+    wide=FALSE
+  } else{ wide = TRUE}
+  
   if(is.null(mode) || !mode %in% c("DAS", "DAP", "DAE")){ mode=c("DAP", "DAE") }
   if(is.null(plantingDelay) & "DAP" %in% mode){mode<-mode[-which(mode=="DAP")]}
   if(is.null(phenotype) & "DAE" %in% mode){mode<-mode[-which(mode=="DAE")]}

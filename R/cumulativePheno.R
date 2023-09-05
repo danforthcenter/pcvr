@@ -13,9 +13,10 @@
 #' Defaults to "barcode". These groups will be calibrated separately, with the exception
 #' of the group that identifies a control within the greater hierarchy.
 #' @param timeCol Column name to use for time data.
-#' @param wide Logical, is the data wide format? Defaults to TRUE.
 #' @param traitCol Column with phenotype names, defaults to "trait". 
 #' This should generally not need to be changed from the default.
+#'    If this and valueCol are present in colnames(df) then the data
+#'    is assumed to be in long format.
 #' @param valueCol Column with phenotype values, defaults to "value".
 #'  This should generally not need to be changed from the default.
 #' @return A dataframe with cumulative sum columns added for specified phenotypes
@@ -74,7 +75,11 @@
 #' 
 #' @export
 #' 
-cumulativePheno<-function(df, phenotypes=NULL, group="barcode", timeCol="DAS", wide=TRUE, traitCol="trait", valueCol="value"){
+cumulativePheno<-function(df, phenotypes=NULL, group="barcode", timeCol="DAS", traitCol="trait", valueCol="value"){
+  
+  if(all(c(traitCol, valueCol) %in% colnames(df))){
+    wide=FALSE
+  } else{ wide = TRUE}
   
   if(length(group)>1){
     df$GROUP = as.character(interaction(df[, group]))
