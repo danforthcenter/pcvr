@@ -29,6 +29,7 @@
 #' @examples 
 #' 
 #' ## Not run:
+#' \donttest{
 #' if(FALSE){
 #' file = paste0("https://media.githubusercontent.com/media/joshqsumner/",
 #'               "pcvrTestData/main/pcv4-multi-value-traits.csv")
@@ -45,6 +46,7 @@
 #' emd_df<-pcv.emd(df1, cols="hue_frequencies", reorder=c("fertilizer", "genotype"), mat =FALSE,
 #'    plot=FALSE, parallel = 1)
 #' net<-pcv.net(emd_df, meta = c("fertilizer", "genotype"))
+#' }
 #' }
 #' ## End(Not run)
 #' 

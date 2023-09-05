@@ -70,7 +70,7 @@ Time conversion and plotting for bellwether data
 \examples{
 
 ## Not run:
-
+\donttest{
 sv<-read.pcv(
 "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv",
  mode="wide", reader="fread")
@@ -97,7 +97,7 @@ svl$fertilizer = ifelse(svl$fertilizer == "A", "100",
                    ifelse(svl$fertilizer == "B", "50", "0"))
 svl<-bw.time(svl, plantingDelay = 0, phenotype="area_pixels", cutoff=10, timeCol="timestamp",
  group=c("barcode", "rotation"), plot=FALSE,wide=FALSE)
-
+}
 ## End(Not run)
 
 }

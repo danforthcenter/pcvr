@@ -44,7 +44,7 @@ Often in bellwether experiments we are curious about the effect of
 \examples{
 
 ## Not run:
-
+\donttest{
 sv<-read.pcv(
 "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv",
  reader="fread")
@@ -89,7 +89,7 @@ sv_l<-bw.time(sv_l, plantingDelay = 0, phenotype="area_pixels", cutoff=10,
 timeCol="timestamp", group=c("barcode", "rotation"), wide=FALSE)
 sv_l<-cumulativePheno(sv_l, phenotypes=c("area_pixels", "height_pixels"),
  group=c("barcode", "rotation"), timeCol="DAS", wide=FALSE)
-
+}
 ## End(Not run)
 
 }

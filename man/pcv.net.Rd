@@ -49,6 +49,7 @@ Easy igraph use with pcv.emd output
 \examples{
 
 ## Not run:
+\donttest{
 if(FALSE){
 file = paste0("https://media.githubusercontent.com/media/joshqsumner/",
               "pcvrTestData/main/pcv4-multi-value-traits.csv")
@@ -65,6 +66,7 @@ df1$fertilizer = ifelse(df1$fertilizer == "A", "100",
 emd_df<-pcv.emd(df1, cols="hue_frequencies", reorder=c("fertilizer", "genotype"), mat =FALSE,
    plot=FALSE, parallel = 1)
 net<-pcv.net(emd_df, meta = c("fertilizer", "genotype"))
+}
 }
 ## End(Not run)
 
