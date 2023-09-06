@@ -91,14 +91,14 @@
 #' # lognormal mv
 #' ln_mv_ex <- conjugate(s1 = mv_ln[1:30,], s2= mv_ln[31:60,], method = "lognormal",
 #'                    priors = list( mu_log=c(log(10),log(10)),n=c(1,1),sigma_log=c(log(3),log(3)) ),
-#'                    plot=TRUE, rope_range = c(-40,40), rope_ci = 0.89,
+#'                    plot=FALSE, rope_range = c(-40,40), rope_ci = 0.89,
 #'                    cred.int.level = 0.89, hypothesis="equal", support=NULL)
 #' 
 #' # lognormal sv
 #' ln_sv_ex <- conjugate(s1=rlnorm(100, log(130), log(1.3)), s2= rlnorm(100, log(100), log(1.6)),
 #'  method = "lognormal",
 #'                    priors = list( mu_log=c(log(10),log(10)),n=c(1,1),sigma_log=c(log(3),log(3)) ),
-#'                    plot=TRUE, rope_range = NULL, rope_ci = 0.89, 
+#'                    plot=FALSE, rope_range = NULL, rope_ci = 0.89, 
 #'                    cred.int.level = 0.89, hypothesis="equal", support=NULL)
 #' 
 #' # Z test mv example
@@ -113,14 +113,14 @@
 #'                 
 #' gauss_mv_ex <- conjugate(s1=mv_gauss[1:30,], s2= mv_gauss[31:60,], method = "gaussian",
 #'                   priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ),
-#'                   plot=TRUE, rope_range = c(-25, 25), rope_ci = 0.89,
+#'                   plot=FALSE, rope_range = c(-25, 25), rope_ci = 0.89,
 #'                   cred.int.level = 0.89, hypothesis="equal", support=NULL)
 #'                   
 #' # Z test sv example
 #' set.seed(123)
 #' gauss_sv_ex_bad <- conjugate(s1=rnorm(15, 50,10), s2= rnorm(15, 60,12), method = "gaussian",
 #'                   priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ),
-#'                   plot=TRUE, rope_range = c(-10, 10), rope_ci = 0.89, 
+#'                   plot=FALSE, rope_range = c(-10, 10), rope_ci = 0.89, 
 #'                   cred.int.level = 0.89, hypothesis="equal", support=NULL)
 #'                   
 #' # Here the plot clearly shows we have a problem with the default support, so we specify one
@@ -129,7 +129,7 @@
 #' 
 #' gauss_sv_ex <- conjugate(s1=rnorm(15, 50,10), s2= rnorm(15, 60,12), method = "gaussian",
 #'                   priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ),
-#'                   plot=TRUE, rope_range = c(-10, 10), rope_ci = 0.89, 
+#'                   plot=FALSE, rope_range = c(-10, 10), rope_ci = 0.89, 
 #'                   cred.int.level = 0.89, hypothesis="equal", support=seq(-20,120, 0.01))
 #' # Note that the ROPE probability is somewhat unstable here since the distribution of differences
 #' # is much wider than the ROPE interval.
@@ -146,7 +146,7 @@
 #'
 #' gaussianMeans_mv_ex <- conjugate(s1=mv_gauss[1:30,], s2= mv_gauss[31:60,], method="t",
 #'                         priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ),
-#'                         plot=TRUE, rope_range = c(-5,5), rope_ci = 0.89, 
+#'                         plot=FALSE, rope_range = c(-5,5), rope_ci = 0.89, 
 #'                         cred.int.level = 0.89, hypothesis="equal", support=NULL)
 #'                         
 #'                         
@@ -154,7 +154,7 @@
 #' 
 #' gaussianMeans_sv_ex <- conjugate(s1=rnorm(10, 50,10), s2= rnorm(10, 60,12), method="t",
 #'                         priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ),
-#'                         plot=TRUE, rope_range = c(-5,8), rope_ci = 0.89, 
+#'                         plot=FALSE, rope_range = c(-5,8), rope_ci = 0.89, 
 #'                         cred.int.level = 0.89, hypothesis="equal", support=NULL)
 #' 
 #' 
@@ -172,21 +172,21 @@
 #' 
 #' beta_mv_ex <- conjugate(s1 = mv_beta[1:30,], s2= mv_beta[31:60,], method="beta",
 #'               priors = list(a=c(0.5,0.5),b=c(0.5,0.5)),
-#'               plot=TRUE, rope_range = c(-0.1, 0.1), rope_ci = 0.89, 
+#'               plot=FALSE, rope_range = c(-0.1, 0.1), rope_ci = 0.89, 
 #'               cred.int.level = 0.89, hypothesis="equal")
 #' 
 #' # beta sv example
 #' 
 #' beta_sv_ex <- conjugate(s1 = rbeta(20, 5, 5), s2= rbeta(20, 8, 5), method="beta",
 #'               priors = list(a=c(0.5,0.5),b=c(0.5,0.5)),
-#'               plot=TRUE, rope_range = c(-0.1, 0.1), rope_ci = 0.89, 
+#'               plot=FALSE, rope_range = c(-0.1, 0.1), rope_ci = 0.89, 
 #'               cred.int.level = 0.89, hypothesis="equal")
 #'
 #' # poisson sv example
 #' 
 #' poisson_sv_ex <- conjugate(s1 = rpois(20, 10), s2= rpois(20, 8), method="poisson",
 #'               priors = list(a=c(0.5,0.5),b=c(0.5,0.5)),
-#'               plot=TRUE, rope_range = c(-1, 1), rope_ci = 0.89, 
+#'               plot=FALSE, rope_range = c(-1, 1), rope_ci = 0.89, 
 #'               cred.int.level = 0.89, hypothesis="equal")
 #' 
 #' # negative binomial sv example
@@ -195,7 +195,7 @@
 #' 
 #' negbin_sv_ex <- conjugate(s1 = rnbinom(20, 10, 0.5), s2= rnbinom(20, 10, 0.25), method="negbin",
 #'               priors = list(r = c(10, 10), a=c(0.5,0.5),b=c(0.5,0.5)),
-#'               plot=TRUE, rope_range = c(-1, 1), rope_ci = 0.89, 
+#'               plot=FALSE, rope_range = c(-1, 1), rope_ci = 0.89, 
 #'               cred.int.level = 0.89, hypothesis="equal")
 #' 
 #' # Dirichlet mv example
@@ -212,11 +212,11 @@
 #'                                           sigma_log=log(1.2) )})))
 #' s1 <- mv_ln[1:30, ]
 #' s2 <- mv_ln[31:60, ]
-#' diri_ex_1 <- conjugate(s1, s2, method = "dirichlet", priors=NULL, plot=TRUE,
+#' diri_ex_1 <- conjugate(s1, s2, method = "dirichlet", priors=NULL, plot=FALSE,
 #'       rope_range = c(-0.025, 0.025), rope_ci = 0.89, 
 #'       cred.int.level = 0.89, hypothesis="equal")
 #'       
-#' diri_ex_2 <- conjugate(s1, s2, method = "dirichlet2", priors=NULL, plot=TRUE,
+#' diri_ex_2 <- conjugate(s1, s2, method = "dirichlet2", priors=NULL, plot=FALSE,
 #'       rope_range = c(-0.025, 0.025), rope_ci = 0.89, 
 #'       cred.int.level = 0.89, hypothesis="equal")  
 #'       
@@ -224,6 +224,7 @@
 #' 
 #' # Example usage with plantCV data
 #' ## Not run:
+#' if(FALSE){
 #' library(data.table)
 #' wide<-read.pcv(
 #'  paste0("https://media.githubusercontent.com/media/joshqsumner/",
@@ -283,7 +284,7 @@
 #'               priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ),
 #'               plot=TRUE, rope_range = c(-5,5), rope_ci = 0.89, 
 #'               cred.int.level = 0.89, hypothesis="equal")
-#' 
+#' }
 #' ## End(Not run)
 #' 
 #' # Plots of prior distributions
@@ -374,8 +375,10 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lo
   #* `Make plot`
   if(grepl("dirichlet", matched_arg) & plot){
     res <- .conj_diri_plot(res, s2, rope_range, rope_ci)
-  } else {
+  } else if (plot){
     res <- .conj_general_plot(res, s2, rope_range, support, rope_ci)
+  } else{
+    res <- res[-which(names(res)=="dirSymbol")]
   }
   
   return(res)
