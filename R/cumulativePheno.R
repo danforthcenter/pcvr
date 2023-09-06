@@ -67,9 +67,9 @@
 #' sv_l$fertilizer = ifelse(sv_l$fertilizer == "A", "100",
 #'               ifelse(sv_l$fertilizer == "B", "50", "0"))
 #' sv_l<-bw.time(sv_l, plantingDelay = 0, phenotype="area_pixels", cutoff=10, 
-#' timeCol="timestamp", group=c("barcode", "rotation"), wide=FALSE)
+#' timeCol="timestamp", group=c("barcode", "rotation"))
 #' sv_l<-cumulativePheno(sv_l, phenotypes=c("area_pixels", "height_pixels"),
-#'  group=c("barcode", "rotation"), timeCol="DAS", wide=FALSE)
+#'  group=c("barcode", "rotation"), timeCol="DAS"
 #' }
 #' ## End(Not run)
 #' 

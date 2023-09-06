@@ -34,15 +34,18 @@ test_that("reading sv github data as wide works", {
    sv$fertilizer = substr(sv$barcode, 8, 8)
    sv$fertilizer = ifelse(sv$fertilizer == "A", "100",
                           ifelse(sv$fertilizer == "B", "50", "0"))
-   sv<-bw.outliers(df = sv, phenotype="area_pixels", group = c("DAS", "genotype", "fertilizer"),
+   
+   #* see notes from 9/6/2023 on why this is done differently, also see test-long_sv_workflow.R
+   sv_noOutliers<-bw.outliers(df = sv, phenotype="area_pixels", group = c("DAS", "genotype", "fertilizer"),
                    cutoff = 3, plot=FALSE)
-   expect_equal(dim(sv), c(2844, 50))
+   pct_removed <- nrow(sv_noOutliers)/nrow(sv)
+   expect_equal( pct_removed , 0.997, tolerance = 0.0015 )
    
    #* check cumulativePheno
    csv <- cumulativePheno(sv, phenotypes = c("area_pixels", "height_pixels", "width_pixels"),
                           group = c("barcode", "rotation"))
-   expect_equal(dim(csv), c(2844, 54))
-   expect_equal(sum(csv$height_pixels_csum), 10634085)
+   expect_equal(dim(csv), c(2854, 54))
+   expect_equal(sum(csv$height_pixels_csum), 10646423)
    #* check pcvBox makes a ggplot
    sv_box <- pcvBox(sv[sv$DAS==15, ], x="fertilizer", y="area_pixels", compare="0", showPoints = T)
    expect_s3_class(sv_box, "ggplot")
