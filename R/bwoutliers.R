@@ -78,7 +78,7 @@ bw.outliers<-function(df = NULL,
                       plotgroup=c('barcode',"rotation"),
                       plot=TRUE, x=NULL, traitCol="trait", valueCol="value", idCol=NULL){
   # df = svl; phenotype="area_pixels"; naTo0 = F; group = c("DAS", "genotype", "fertilizer"); plotgroup=c("barcode","rotation"); plot=FALSE
-  # wide = F ; traitCol="trait"; valueCol="value"; idCol=c("barcode","rotation")
+  # traitCol="trait"; valueCol="value"; idCol=c("barcode","rotation")
   if(all(c(traitCol, valueCol) %in% colnames(df))){
     wide=FALSE
   } else{ wide = TRUE}

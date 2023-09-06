@@ -20,7 +20,7 @@ bw.time(
 )
 }
 \arguments{
-\item{df}{Data frame to use, this can be in wide or long format as specified by the wide argument.}
+\item{df}{Data frame to use, this can be in wide or long format.}
 
 \item{mode}{One of "DAS", "DAP" or "DAE" (Days After Planting and Days After Emergence).
 Defaults to NULL in which case all columns are added.
@@ -96,7 +96,7 @@ svl$fertilizer = substr(svl$barcode, 8, 8)
 svl$fertilizer = ifelse(svl$fertilizer == "A", "100",
                    ifelse(svl$fertilizer == "B", "50", "0"))
 svl<-bw.time(svl, plantingDelay = 0, phenotype="area_pixels", cutoff=10, timeCol="timestamp",
- group=c("barcode", "rotation"), plot=FALSE,wide=FALSE)
+ group=c("barcode", "rotation"), plot=FALSE)
 }
 ## End(Not run)
 

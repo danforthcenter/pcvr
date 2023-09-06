@@ -1,6 +1,6 @@
 #' Time conversion and plotting for bellwether data
 #' 
-#' @param df Data frame to use, this can be in wide or long format as specified by the wide argument.
+#' @param df Data frame to use, this can be in wide or long format.
 #' @param mode One of "DAS", "DAP" or "DAE" (Days After Planting and Days After Emergence).
 #' Defaults to NULL in which case all columns are added.
 #' Note that if timeCol is not an integer then DAS is always returned.
@@ -62,7 +62,7 @@
 #' svl$fertilizer = ifelse(svl$fertilizer == "A", "100",
 #'                    ifelse(svl$fertilizer == "B", "50", "0"))
 #' svl<-bw.time(svl, plantingDelay = 0, phenotype="area_pixels", cutoff=10, timeCol="timestamp",
-#'  group=c("barcode", "rotation"), plot=FALSE,wide=FALSE)
+#'  group=c("barcode", "rotation"), plot=FALSE)
 #' }
 #' ## End(Not run)
 #'

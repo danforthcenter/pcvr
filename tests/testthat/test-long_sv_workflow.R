@@ -17,6 +17,9 @@ test_that("reading sv github data as long works", {
   expect_equal(head(sv$DAP), 11:16)
   expect_equal(head(sv$DAE), 0:5)
 
+  expect_true(all(sapply(sv, function(c) sum(is.na(c)))==0))
+  
+  
   #* check bw.outliers
   sv$genotype = substr(sv$barcode, 3,5)
   sv$genotype = ifelse(sv$genotype == "002", "B73",
