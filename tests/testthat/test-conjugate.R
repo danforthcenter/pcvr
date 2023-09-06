@@ -5,6 +5,7 @@ test_that("conjugate single value T conjugate works", {
   s2 = c(84.7860854952772, 53.38097452501, 52.352235256613, 49.2369049504088, 
          72.7625716991815, 62.6982283802374, 61.2347595388326, 45.298878516913, 
          39.6312400911458, 66.9134811003628) # dput(rnorm(10, 60,12))
+  set.seed(123)
   out <- conjugate(s1=s1, s2=s2, method="t",
                           priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ),
                           plot=FALSE, rope_range = c(-8,8), rope_ci = 0.89,
@@ -12,7 +13,7 @@ test_that("conjugate single value T conjugate works", {
   
   expect_equal(out$summary$post.prob, 0.7260736, tolerance = 1e-6)
   
-  expect_equal(out$summary$rope_prob, 0.6, tolerance = 0.025)
+  expect_equal(out$summary$rope_prob, 0.6110549, tolerance = 1e-6)
   
   expect_equal(names(out), c("summary", "posterior") )
 })
@@ -34,7 +35,7 @@ test_that("conjugate multi value T conjugate works", {
   
   expect_equal(out$summary$post.prob, 0.03881883, tolerance = 1e-6)
   
-  expect_equal(out$summary$rope_prob, 0.015, tolerance = 0.02)
+  expect_equal(out$summary$rope_prob, 0.002359285, tolerance = 1e-6)
   
   expect_equal(names(out), c("summary", "posterior") )
 })
@@ -47,7 +48,7 @@ test_that("conjugate single value gaussian conjugate works", {
          44.0772327229333, 56.169510174076, 71.1378538738675, 55.7547954794673, 
          52.4202653287144, 63.3091644583334, 49.263640809148, 63.2460598779059, 
          60.3804997092304, 25.1210401427447, 42.6563192857856) # dput(rnorm(15, 60,12))
-  
+  set.seed(123)
   out <- conjugate(s1=s1, s2= s2, method = "gaussian",
                     priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ),
                     plot=FALSE, rope_range = c(-10, 10), rope_ci = 0.89,
@@ -56,7 +57,7 @@ test_that("conjugate single value gaussian conjugate works", {
   
   expect_equal(out$summary$post.prob, 0.9106556, tolerance = 1e-6)
   
-  expect_equal(out$summary$rope_prob, 0.3123245, tolerance = 0.025)
+  expect_equal(out$summary$rope_prob, 0.3123245, tolerance = 1e-6)
   
   expect_equal(names(out), c("summary", "posterior") )
 })
@@ -78,7 +79,7 @@ test_that("conjugate multi value gaussian conjugate works", {
 
   expect_equal(out$summary$post.prob, 0.7179459, tolerance = 1e-6)
   
-  expect_equal(out$summary$rope_prob, 0.195, tolerance = 0.015)
+  expect_equal(out$summary$rope_prob, 0.1951466, tolerance = 0.015)
   
   expect_equal(names(out), c("summary", "posterior") )
 })
@@ -96,6 +97,7 @@ test_that("conjugate single value beta conjugate works", {
           0.523204344509775, 0.736962689122744, 0.607863983829372, 0.703483180709229, 
           0.418954761865872, 0.556556033829364, 0.617343726804053, 0.522669623038004
   ) # dput(rbeta(20, 8, 5))
+  set.seed(123)
   out <- conjugate(s1 = s1, s2= s2, method="beta",
                 priors = list(a=c(0.5,0.5),b=c(0.5,0.5)),
                 plot=FALSE, rope_range = c(-0.1, 0.1), rope_ci = 0.89,
@@ -103,7 +105,7 @@ test_that("conjugate single value beta conjugate works", {
   
   expect_equal(out$summary$post.prob, 0.02229257, tolerance = 1e-6)
   
-  expect_equal(out$summary$rope_prob, 0.125, tolerance = 0.025)
+  expect_equal(out$summary$rope_prob, 0.1351534, tolerance = 1e-6)
   
   expect_equal(names(out), c("summary", "posterior") )
   
