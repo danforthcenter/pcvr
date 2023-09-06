@@ -69,7 +69,7 @@
 #' sv_l<-bw.time(sv_l, plantingDelay = 0, phenotype="area_pixels", cutoff=10, 
 #' timeCol="timestamp", group=c("barcode", "rotation"))
 #' sv_l<-cumulativePheno(sv_l, phenotypes=c("area_pixels", "height_pixels"),
-#'  group=c("barcode", "rotation"), timeCol="DAS"
+#'  group=c("barcode", "rotation"), timeCol="DAS")
 #' }
 #' ## End(Not run)
 #' 
