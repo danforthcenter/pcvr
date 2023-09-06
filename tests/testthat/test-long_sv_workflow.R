@@ -25,6 +25,23 @@ test_that("reading sv github data as long works", {
   sv$fertilizer = substr(sv$barcode, 8, 8)
   sv$fertilizer = ifelse(sv$fertilizer == "A", "100",
                          ifelse(sv$fertilizer == "B", "50", "0"))
+  
+  #* component test
+  subdf <- sv[complete.cases( sv[sv[["trait"]]=="area_pixels", c("value", "trait", "DAS", "genotype", "fertilizer")] ) & sv[["trait"]]=="area_pixels" , ]
+  cooksd <- cooks.distance(glm(data=subdf, as.numeric(value) ~ as.factor(DAS):as.factor(genotype):as.factor(fertilizer)))
+  
+  expect_equal(quantile(cooksd, seq(0,1, 0.1), na.rm=TRUE), c(`0%` = 5.52344863051265e-34, `10%` = 4.18408115603277e-08, 
+                                                             `20%` = 2.04530194702589e-07, `30%` = 6.06184338605635e-07, `40%` = 1.49581206806256e-06, 
+                                                             `50%` = 3.45942904424853e-06, `60%` = 7.15936760830706e-06, `70%` = 1.44450407789928e-05, 
+                                                             `80%` = 3.12378355203182e-05, `90%` = 8.31906611451925e-05, `100%` = 2.45717262428721
+  ))
+  expect_equal(sum(is.na(cooksd)), 7)
+  
+  expect_equal(head(cooksd), c(`1` = 1.25816970417831e-07, `2` = 8.69123109207279e-07, `3` = 6.52481789994869e-07, 
+                               `4` = 1.69313226500173e-07, `5` = 6.1543502355451e-07, `6` = 9.13091057791556e-09))
+  
+  #* full outliers test
+  
   sv<-bw.outliers(df = sv, phenotype="area_pixels", group = c("DAS", "genotype", "fertilizer"),
                   cutoff = 3, plot=FALSE)
   expect_equal(dim(sv), c(76788, 25))
