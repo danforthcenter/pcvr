@@ -76,10 +76,7 @@ des=c("genotype", "fertilizer")
 phenotypes = colnames(wide)[19:33]
 timeCol = "DAS"
 
-frem(wide, des, phenotypes, timeCol, TRUE, FALSE, FALSE, TRUE, "all")
-frem(wide, des, phenotypes, timeCol, TRUE, FALSE, FALSE, TRUE, "all")
-frem(wide, des, phenotypes, timeCol, TRUE, FALSE, FALSE, TRUE, NULL)
-frem(wide, des, phenotypes, timeCol, TRUE, FALSE, FALSE, TRUE, 1)
+frem(wide, des, phenotypes, timeCol, time = "all")
 
 ## End(Not run)
 

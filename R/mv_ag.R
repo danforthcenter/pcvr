@@ -33,6 +33,20 @@
 #' 
 #' ## Not run:
 #' 
+#' makeMvData<-function(bins=180,mu,sigma){
+#'     setNames(data.frame(matrix(hist(rnorm(2000,mu, sigma),
+#'     breaks=seq(1,bins,1), plot=FALSE)$counts, nrow=1)),
+#'     paste0("b",1:(bins-1) )) }
+#' set.seed(123)
+#' mv<-rbind(do.call(rbind, lapply(1:30, function(i){makeMvData(bins=180, mu=50, sigma=10 )})),
+#'                 do.call(rbind, lapply(1:30, function(i){makeMvData(bins=180, mu=60, sigma=12 )})))
+#' mv$group <-rep(c("a", "b"), each=30)
+#' dim(mv)
+#' mv_aggregated <- mv_ag(mv, group='group', n_per_group=5, mvCols="b")
+#' dim(mv_aggregated)
+#' 
+#' 
+#' if(FALSE){
 #' hue_wide<-read.pcv(paste0(
 #' "https://media.githubusercontent.com/media/joshqsumner/",
 #' "pcvrTestData/main/pcv4-multi-value-traits.csv"),
@@ -76,6 +90,7 @@
 #'   mvCols = "hue", n_per_group = 2)
 #' dim(hue_ag3)
 #' head(hue_ag3)
+#' }
 #' 
 #' ## End(Not run)
 #' 

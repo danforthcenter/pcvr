@@ -88,6 +88,7 @@ x<-pcv.emd(df=test, cols="V", reorder="Mu",
    plot=FALSE, parallel = 1)
 head(x)
 
+if(FALSE){
 file = paste0("https://media.githubusercontent.com/media/joshqsumner/",
               "pcvrTestData/main/pcv4-multi-value-traits.csv")
 df1<-read.pcv(file, "wide")
@@ -99,7 +100,7 @@ df1$genotype = ifelse(df1$genotype == "002", "B73",
 df1$fertilizer = substr(df1$barcode, 8, 8)
 df1$fertilizer = ifelse(df1$fertilizer == "A", "100",
                        ifelse(df1$fertilizer == "B", "50", "0"))
-if(FALSE){
+
 w<-pcv.emd(df1, cols="hue_frequencies", reorder=c("fertilizer", "genotype"), 
   mat =FALSE, plot=TRUE, parallel = 1)
   }
