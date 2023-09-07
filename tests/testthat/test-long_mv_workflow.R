@@ -25,6 +25,12 @@ test_that("reading mv github data as long works", {
                  group=c("fertilizer", "genotype"), method=NULL, compare=NULL)
   expect_s3_class(joyplot, "ggplot")
   
+  #* test mv_ag
+  mv_ag1 <- mv_ag(mv, group = c("DAS", "genotype", "fertilizer"),
+    mvCols = "hue", n_per_group = 2)
+  
+  expect_equal(dim(mv_ag1), c(42480, 6))
+  
   #* test EMD
   images<- unique(mv$image)[1:10]
   emd<-pcv.emd(df = mv[mv$image %in% images, ], cols="hue_frequencies", reorder=c("fertilizer", "genotype"),
