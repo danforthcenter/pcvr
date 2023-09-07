@@ -74,12 +74,11 @@ in a wide dataframe of multi value traits. The is expected to be used with outpu
 ## Not run:
 
 makeHist<-function(mu, sd){hist(rnorm(10000,mu,sd), breaks=seq(1,100,1), plot=FALSE)$counts}
-test<-as.data.frame(do.call(rbind, lapply(seq(30,54,3), function(d) {
-    x<-as.data.frame(do.call(rbind, lapply(1:10, function(i) makeHist(mu=d, sd=5))))
+test<-as.data.frame(do.call(rbind, lapply(seq(30,54,6), function(d) {
+    x<-as.data.frame(do.call(rbind, lapply(1:5, function(i) makeHist(mu=d, sd=5))))
     x$Mu = round(d,-1)
     x})))
 test<-test[sample(rownames(test), nrow(test), replace=FALSE),]
-# reorder randomly for similarity to real data
 test$meta1<-rep(LETTERS[1:3], length.out = nrow(test))
 test$meta2<-rep(LETTERS[4:5], length.out = nrow(test))
 
@@ -103,12 +102,7 @@ df1$fertilizer = ifelse(df1$fertilizer == "A", "100",
 
 w<-pcv.emd(df1, cols="hue_frequencies", reorder=c("fertilizer", "genotype"), 
   mat =FALSE, plot=TRUE, parallel = 1)
-  }
-# df_long<-read.pcv(file, "long")
-# l<-pcv.emd(df = df_long, cols="hue_frequencies",
-#    reorder=c("fertilizer", "genotype"),
-#    mat =FALSE, plot=TRUE, trait="trait", id="image", value="value")
-# l$plot + theme(axis.text = element_blank())
+  
 
 # Note on computational complexity
 # This scales as O^2, see the plot below for some idea
@@ -121,7 +115,7 @@ xlab="N Input Images", ylab="time (seconds)") # benchmarked test data
 lines(x=1:150, y = emdTime(1:150)) # exponential function
 
 plot(x=1:1000, y=emdTime(1:1000), type="l", xlab="N Input Images", ylab="time (seconds)")
-
+}
 ## End(Not run)
 
 }
