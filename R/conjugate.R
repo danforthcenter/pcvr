@@ -319,7 +319,9 @@
 #' @keywords bayesian, conjugate, ROPE
 #' @export
 
-conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta", "lognormal", "poisson", "negbin", "dirichlet", "dirichlet2"),
+conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta",
+                                                    "lognormal", "poisson", "negbin",
+                                                    "dirichlet", "dirichlet2"),
                      priors=NULL, plot=FALSE, rope_range = NULL,
                     rope_ci = 0.89, cred.int.level = 0.89, hypothesis="equal",
                     support=NULL){
