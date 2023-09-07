@@ -87,12 +87,10 @@ multi-value trait analysis available in \code{conjugate} and \code{pcv.emd}.
 
 df <- read.pcv(
   "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest2.csv", "long")
-wide_beta <- read.pcv(
-  "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest2.csv", "wide")
+  
 x <- pcv.joyplot(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"))
-# pcv.joyplot(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"),
-#   method="ks")
 
+if (FALSE){
 wide<-read.pcv(
   paste0("https://media.githubusercontent.com/media/joshqsumner/",
         "pcvrTestData/main/pcv4-multi-value-traits.csv"),
@@ -111,7 +109,7 @@ p<-pcv.joyplot(wide[wide$DAS > 15,], index = "hue_frequencies",
 # For some color traits it makes sense to show the actual
 # represented color, which can be done easily by adding new fill scales.
 p+ggplot2::scale_fill_gradientn(colors = scales::hue_pal(l=65)(360))
-
+}
 ## End(Not run)
 
 }

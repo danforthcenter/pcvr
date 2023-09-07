@@ -70,6 +70,8 @@ Read in plantCV csv from bellwether phenotyper style experiments analyzed with p
 
 ## Not run:
 
+if(FALSE){
+
 bw<-read.pcv.3(
   file="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv3Phenos.csv",
   metaCol=NULL)
@@ -83,7 +85,8 @@ bw<-read.pcv.3(
   designFile="https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv3Design.csv",
   metaCol="meta",metaForm="vis_view_angle_zoom_horizontal_gain_exposure_v_new_n_rep",
   joinSnapshot="id",conversions = list(area=13.2*3.7/46856))
-   
+  
+   }
 ## End(Not run)
    
 }

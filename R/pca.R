@@ -28,6 +28,7 @@
 #' 
 #' ## Not run:
 #' 
+#' if(FALSE){
 #' hue_wide<-read.pcv(
 #'   paste0("https://media.githubusercontent.com/media/joshqsumner/",
 #'   "pcvrTestData/main/pcv4-multi-value-traits.csv"),
@@ -44,6 +45,7 @@
 #' hue_wide$geno_fertilizer<-interaction(hue_wide$fertilizer, hue_wide$genotype)
 #' 
 #' pcadf(hue_wide, cols = "hue_frequencies", color = "geno_fertilizer", returnData=FALSE)
+#' }
 #' 
 #' ## End(Not run)
 #' 

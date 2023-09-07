@@ -3,7 +3,8 @@
 #' @param priors A named list of means for prior distributions.
 #' This takes the same input as the prior argument of \code{\link{growthSS}}.
 #' @param type Either "density", the default, or a model name from \code{growthSS}
-#' model options ("logistic", "gompertz", "monomolecular", "exponential", "linear", "power law").
+#' model options ("logistic", "gompertz", "monomolecular", "exponential",
+#' "linear", "power law", "double logistic", or "double gompertz").
 #' If this is a model type then n draws from the prior will be simulated as growth
 #' trendlines and densities will be plotted on margins.
 #' @param n Numeric, if type is a model then how many draws from the prior should be simulated?
@@ -24,16 +25,6 @@
 #' 
 #' plotPrior(priors, "gompertz")[[1]]
 #' 
-#' plotPrior(list("A" = c(100, 150), "B" = c(6, 12), "C" = c(3, 2.5)), "logistic")[[1]]
-#' 
-#' plotPrior(list("A" = c(120, 150), "B" = c(0.1, 0.08)), "monomolecular")[[1]]
-#'
-#' plotPrior(list("A" = c(9, 5), "B" = c(0.05, 0.07)), "exponential")[[1]]
-#'
-#' plotPrior(list("A" = c(1.25, 1)), "linear")[[1]]
-#'
-#' plotPrior(list("A" = c(20, 15), "B" = c(0.7, 0.7)), "power law")[[1]]
-#'
 #' ## End(Not run:)
 #'
 #' @export
@@ -113,6 +104,16 @@ plotPrior<-function(priors, type = "density", n=200, t=25){
         iter_params <- .prior_sampler(priors)
         x<-growthSim(model = "power law", n = 1, t = t, params = iter_params); x$id = paste0("id_",i);x } ))
     
+      } else if(type=="double gompertz"){
+        simdf <- do.call(rbind, lapply(1:n,  function(i) {
+          iter_params <- .prior_sampler(priors)
+          x<-growthSim(model = "double gompertz", n = 1, t = t, params = iter_params); x$id = paste0("id_",i);x } ))
+        
+      } else if(type=="double logistic"){
+        simdf <- do.call(rbind, lapply(1:n,  function(i) {
+          iter_params <- .prior_sampler(priors)
+          x<-growthSim(model = "double logistic", n = 1, t = t, params = iter_params); x$id = paste0("id_",i);x } ))
+        
       }
     
     model_plot<-ggplot2::ggplot(simdf,

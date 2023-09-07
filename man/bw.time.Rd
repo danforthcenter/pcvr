@@ -13,7 +13,6 @@ bw.time(
   timeCol = "timestamp",
   group = "Barcodes",
   plot = TRUE,
-  wide = TRUE,
   format = "\%Y-\%m-\%d \%H:\%M:\%S",
   traitCol = "trait",
   valueCol = "value",
@@ -21,7 +20,7 @@ bw.time(
 )
 }
 \arguments{
-\item{df}{Data frame to use, this can be in wide or long format as specified by the wide argument.}
+\item{df}{Data frame to use, this can be in wide or long format.}
 
 \item{mode}{One of "DAS", "DAP" or "DAE" (Days After Planting and Days After Emergence).
 Defaults to NULL in which case all columns are added.
@@ -44,13 +43,13 @@ although often "angle" or "rotation" should be added.}
 
 \item{plot}{Logical, should plots of the new time variables be printed?}
 
-\item{wide}{Logical, is data in wide format? Defaults to TRUE.}
-
 \item{format}{An R POSIXct format, defaults to lemnatech standard format.
 This is only used if timeCol is not an integer.}
 
 \item{traitCol}{Column with phenotype names, defaults to "trait".
-This should generally not need to be changed from the default.}
+This should generally not need to be changed from the default.
+   If this and valueCol are present in colnames(df) then the data
+   is assumed to be in long format.}
 
 \item{valueCol}{Column with phenotype values, defaults to "value".
 This should generally not need to be changed from the default.}
@@ -71,7 +70,7 @@ Time conversion and plotting for bellwether data
 \examples{
 
 ## Not run:
-
+\donttest{
 sv<-read.pcv(
 "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv",
  mode="wide", reader="fread")
@@ -97,8 +96,8 @@ svl$fertilizer = substr(svl$barcode, 8, 8)
 svl$fertilizer = ifelse(svl$fertilizer == "A", "100",
                    ifelse(svl$fertilizer == "B", "50", "0"))
 svl<-bw.time(svl, plantingDelay = 0, phenotype="area_pixels", cutoff=10, timeCol="timestamp",
- group=c("barcode", "rotation"), plot=FALSE,wide=FALSE)
-
+ group=c("barcode", "rotation"), plot=FALSE)
+}
 ## End(Not run)
 
 }

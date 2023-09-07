@@ -13,11 +13,12 @@
 #' Typically this is an identifier for images of a plant
 #' over time and defaults to c('barcode',"rotation").
 #' @param plot Logical, if TRUE then a list is returned with a ggplot and a dataframe.
-#' @param wide Logical, is the data in wide format? Defaults to TRUE.
 #' @param x Optional specification for x axis variable if plot is true.
 #' If left NULL (the default) then the first element of `group` is used.
 #' @param traitCol Column with phenotype names, defaults to "trait".
 #' This should generally not need to be changed from the default.
+#'    If this and valueCol are present in colnames(df) then the data
+#'    is assumed to be in long format.
 #' @param valueCol Column with phenotype values, defaults to "value".
 #' This should generally not need to be changed from the default.
 #' @param idCol Column(s) that identify individuals over time.
@@ -28,7 +29,7 @@
 #' @examples 
 #' 
 #' ## Not run:
-#' 
+#' \donttest{
 #' sv<-read.pcv(
 #' "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv",
 #'  reader="fread")
@@ -57,12 +58,12 @@
 #' svl$fertilizer = ifelse(svl$fertilizer == "A", "100",
 #'                    ifelse(svl$fertilizer == "B", "50", "0"))
 #' svl<-bw.time(svl, plantingDelay = 0, phenotype="area_pixels", cutoff=10, timeCol="timestamp",
-#'  group=c("barcode", "rotation"), plot=FALSE,wide=FALSE)
+#'  group=c("barcode", "rotation"), plot=FALSE)
 #' 
 #' svl<-bw.outliers(df = svl, phenotype="area_pixels", naTo0 =FALSE,
 #'   group = c("DAS", "genotype", "fertilizer"),
-#'   plotgroup=c('barcode',"rotation"), plot=TRUE, wide=FALSE)
-#' 
+#'   plotgroup=c('barcode',"rotation"), plot=TRUE)
+#' }
 #' ## End(Not run)
 #' 
 #' @return The input dataframe with outliers removed.
@@ -75,9 +76,13 @@ bw.outliers<-function(df = NULL,
                       group = c(),
                       cutoff = 3,
                       plotgroup=c('barcode',"rotation"),
-                      plot=TRUE,  wide =TRUE, x=NULL, traitCol="trait", valueCol="value", idCol=NULL){
+                      plot=TRUE, x=NULL, traitCol="trait", valueCol="value", idCol=NULL){
   # df = svl; phenotype="area_pixels"; naTo0 = F; group = c("DAS", "genotype", "fertilizer"); plotgroup=c("barcode","rotation"); plot=FALSE
-  # wide = F ; traitCol="trait"; valueCol="value"; idCol=c("barcode","rotation")
+  # traitCol="trait"; valueCol="value"; idCol=c("barcode","rotation")
+  if(all(c(traitCol, valueCol) %in% colnames(df))){
+    wide=FALSE
+  } else{ wide = TRUE}
+  
   if(is.null(idCol)){idCol = plotgroup}
   outlierMethod = "cooks"
   if(wide){
@@ -107,13 +112,18 @@ bw.outliers<-function(df = NULL,
       cooksd[is.na(cooksd)] <- outlierCutoff - 0.1 # keeping NAs by assigning a value below cutoff.
       cooksd_df<-data.frame("outlier" = cooksd)
       subdf<-cbind(subdf, cooksd_df)
+      subdf<-subdf[, c(group, idCol, "outlier")]
+      subdf<-subdf[!duplicated(subdf[,c(group, idCol)]),] # if there are multiple images per day this will change data.
       pctRm<-paste0(100*(1-round(nrow(subdf[subdf$outlier < outlierCutoff, ]) / nrow(subdf), 5)),
                     "% removed as outliers using Cook's Distance")
-      ids<-unique(interaction(subdf[,c(idCol)]))
+      #* take IDs using plotgroup and label all phenotype rows
       df<-merge(df, subdf, all.x = TRUE)
     }
+    
+    
+    
   }
-  out<-df[df$outlier < outlierCutoff, -which(colnames(df)=="outlier")]
+  out<-df[which(df$outlier < outlierCutoff), -which(colnames(df)=="outlier")]
   if(plot & wide){
     df$grouping<-interaction(df[,plotgroup])
     out_plotData<-df[df$outlier < outlierCutoff, ]

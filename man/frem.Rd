@@ -58,6 +58,7 @@ df, des, phenotypes, timeCol, cor, returnData, combine, markSingular, time
 
 ## Not run:
 
+
 library(data.table)
 wide<-read.pcv(
  paste0("https://raw.githubusercontent.com/joshqsumner/",
@@ -70,16 +71,14 @@ wide$genotype = ifelse(wide$genotype == "002", "B73",
 wide$fertilizer = substr(wide$barcode, 8, 8)
 wide$fertilizer = ifelse(wide$fertilizer == "A", "100",
                          ifelse(wide$fertilizer == "B", "50", "0"))
-wide<-bw.time(wide,timeCol="timestamp", group="barcode")
+wide<-bw.time(wide,timeCol="timestamp", group="barcode", plot=FALSE)
 
 des=c("genotype", "fertilizer")
-phenotypes = colnames(wide)[19:33]
+phenotypes = colnames(wide)[20] # could be 20:25 or more
 timeCol = "DAS"
 
-frem(wide, des, phenotypes, timeCol, TRUE, FALSE, FALSE, TRUE, "all")
-frem(wide, des, phenotypes, timeCol, TRUE, FALSE, FALSE, TRUE, "all")
-frem(wide, des, phenotypes, timeCol, TRUE, FALSE, FALSE, TRUE, NULL)
-frem(wide, des, phenotypes, timeCol, TRUE, FALSE, FALSE, TRUE, 1)
+frem(wide, des, phenotypes, cor=FALSE, timeCol, time = "all")
+
 
 ## End(Not run)
 

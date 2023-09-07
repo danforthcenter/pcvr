@@ -9,7 +9,6 @@ cumulativePheno(
   phenotypes = NULL,
   group = "barcode",
   timeCol = "DAS",
-  wide = TRUE,
   traitCol = "trait",
   valueCol = "value"
 )
@@ -26,10 +25,10 @@ of the group that identifies a control within the greater hierarchy.}
 
 \item{timeCol}{Column name to use for time data.}
 
-\item{wide}{Logical, is the data wide format? Defaults to TRUE.}
-
 \item{traitCol}{Column with phenotype names, defaults to "trait". 
-This should generally not need to be changed from the default.}
+This should generally not need to be changed from the default.
+   If this and valueCol are present in colnames(df) then the data
+   is assumed to be in long format.}
 
 \item{valueCol}{Column with phenotype values, defaults to "value".
 This should generally not need to be changed from the default.}
@@ -45,7 +44,7 @@ Often in bellwether experiments we are curious about the effect of
 \examples{
 
 ## Not run:
-
+\donttest{
 sv<-read.pcv(
 "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv",
  reader="fread")
@@ -87,10 +86,10 @@ sv_l$fertilizer = substr(sv_l$barcode, 8, 8)
 sv_l$fertilizer = ifelse(sv_l$fertilizer == "A", "100",
               ifelse(sv_l$fertilizer == "B", "50", "0"))
 sv_l<-bw.time(sv_l, plantingDelay = 0, phenotype="area_pixels", cutoff=10, 
-timeCol="timestamp", group=c("barcode", "rotation"), wide=FALSE)
+timeCol="timestamp", group=c("barcode", "rotation"))
 sv_l<-cumulativePheno(sv_l, phenotypes=c("area_pixels", "height_pixels"),
- group=c("barcode", "rotation"), timeCol="DAS", wide=FALSE)
-
+ group=c("barcode", "rotation"), timeCol="DAS")
+}
 ## End(Not run)
 
 }

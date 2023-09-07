@@ -40,7 +40,11 @@ jobs:
         run: |
           writeLines('options(repos = c(INLA = "https://mc-stan.org/r-packages/", getOption(\"repos\")))', file("~/.Rprofile", "ab"))
         shell: Rscript {0}
-
+        
+      - name: Create and populate check.Renviron file
+        run: |
+          echo R_CHECK_DONTTEST_EXAMPLES=false >> ~/check.Renviron
+        shell: bash
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:

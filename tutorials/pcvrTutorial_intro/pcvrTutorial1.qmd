@@ -319,7 +319,7 @@ The interpretation is much simpler, posterior probability is the probability tha
 In a Bayesian context we flip "random" and "fixed" elements.
 
 |             | Fixed                                   | Random                                  | Interpretation                                                                                                                                                             |
-|------------------|------------------|------------------|------------------|
+|-------------|-----------------------------------------|-----------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Frequentist | [True Effect]{style="color:goldenrod;"} | [Data]{style="color:purple;"}           | If the [True Effect is 0]{style="color:goldenrod;"} then there is an $\alpha\cdot100$% chance of [estimating an effect]{style="color:purple;"} of this size or more.       |
 | Bayesian    | [Data]{style="color:purple;"}           | [True Effect]{style="color:goldenrod;"} | Given the [estimated effect from our data]{style="color:purple;"} there is a P probability of the [True Effect]{style="color:goldenrod;"} being a difference of at least X |
 
