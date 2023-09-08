@@ -1,7 +1,8 @@
 #' Remove outliers from bellwether data using cook's distance
 #' 
 #' @param df Data frame to use. Can be in long or wide format.
-#' @param phenotype Column to use to classify outliers.
+#' @param phenotype Column to use to classify outliers. If this is length > 1 then
+#' it is taken as the multi-value traits to use. See examples.
 #' @param naTo0 Logical, should NA values to changed to 0.
 #' @param group  Grouping variables to find outliers as a character vector.
 #' This is typically time  and design variables (DAS, genotype, treatment, etc).
@@ -29,7 +30,7 @@
 #' @examples 
 #' 
 #' ## Not run:
-#' \donttest{
+#' 
 #' sv<-read.pcv(
 #' "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv",
 #'  reader="fread")
@@ -46,7 +47,7 @@
 #'  group = c("DAS", "genotype", "fertilizer"),
 #'  plotgroup=c('barcode',"rotation"), plot=TRUE)
 #' 
-#' 
+#' if(FALSE){
 #' svl<-read.pcv(
 #' "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv",
 #'  mode="long", reader="fread")
@@ -63,7 +64,12 @@
 #' svl<-bw.outliers(df = svl, phenotype="area_pixels", naTo0 =FALSE,
 #'   group = c("DAS", "genotype", "fertilizer"),
 #'   plotgroup=c('barcode',"rotation"), plot=TRUE)
+#'   
+#'   
+#'   
+#'   
 #' }
+#' 
 #' ## End(Not run)
 #' 
 #' @return The input dataframe with outliers removed.
@@ -82,47 +88,42 @@ bw.outliers<-function(df = NULL,
   if(all(c(traitCol, valueCol) %in% colnames(df))){
     wide=FALSE
   } else{ wide = TRUE}
+  if(is.null(phenotype)){stop("A phenotype must be provided")}
+  
+  if(length(phenotype)>1){
+    mv = TRUE
+  } else { mv = FALSE }
+  
   
   if(is.null(idCol)){idCol = plotgroup}
   outlierMethod = "cooks"
-  if(wide){
-    if(naTo0){
-      df[[phenotype]][is.na(df[[phenotype]])]<-0
-    }
-    df<-df[complete.cases(df[,c(phenotype,group)]), ]
-    outlierForm<-paste("as.numeric(",phenotype,")~", paste(paste0("as.factor(",group,")"),collapse=":"))
-    if(outlierMethod=="cooks"){
-      cooksd <- cooks.distance(glm(data=df, as.formula(outlierForm)))
-      # summary(cooksd)
-      outlierCutoff<-cutoff*mean(cooksd, na.rm=TRUE)
-      cooksd[is.na(cooksd)] <- outlierCutoff - 0.1 # keeping NAs by assigning a value below cutoff.
-      cooksd_df<-data.frame("outlier" = cooksd)
-      df<-cbind(df, cooksd_df) 
-      pctRm<-paste0(100*(1-round(nrow(df[df$outlier < outlierCutoff, ]) / nrow(df), 5)), "% removed as outliers using Cook's Distance")
-    }
-  } else{ # long data version
-    if(naTo0){
-      df[df[[traitCol]]==phenotype, valueCol][is.na(df[df[[traitCol]]==phenotype, valueCol])]<-0
-    }
-    subdf<-df[complete.cases( df[df[[traitCol]]==phenotype, c(valueCol, traitCol, group)] ) & df[[traitCol]]==phenotype , ]
-    outlierForm<-paste("as.numeric(",valueCol,")~", paste(paste0("as.factor(",group,")"),collapse=":"))
-    if(outlierMethod=="cooks"){
-      cooksd <- cooks.distance(glm(data=subdf, as.formula(outlierForm)))
-      outlierCutoff<-3*mean(cooksd, na.rm=TRUE)
-      cooksd[is.na(cooksd)] <- outlierCutoff - 0.1 # keeping NAs by assigning a value below cutoff.
-      cooksd_df<-data.frame("outlier" = cooksd)
-      subdf<-cbind(subdf, cooksd_df)
-      subdf<-subdf[, c(group, idCol, "outlier")]
-      subdf<-subdf[!duplicated(subdf[,c(group, idCol)]),] # if there are multiple images per day this will change data.
-      pctRm<-paste0(100*(1-round(nrow(subdf[subdf$outlier < outlierCutoff, ]) / nrow(subdf), 5)),
-                    "% removed as outliers using Cook's Distance")
-      #* take IDs using plotgroup and label all phenotype rows
-      df<-merge(df, subdf, all.x = TRUE)
-    }
+  
+  
+  if(wide & !mv){ # wide data single value
+    res<-.wide_sv_cooks_bw.outliers(df, naTo0, phenotype, group, outlierCutoff)
+    df <- res[["data"]]
+    pctRm <- res[["pctRm"]]
     
+  } else if (!wide & !mv){ # long data single value
+    res<-.long_sv_cooks_bw.outliers(df, naTo0, phenotype, group, outlierCutoff)
+    df <- res[["data"]]
+    pctRm <- res[["pctRm"]]
     
+  } else if(wide & mv){ # wide multi value data
+    res<-.wide_mv_cooks_bw.outliers(df, naTo0, phenotype, group, outlierCutoff)
+    df <- res[["data"]]
+    pctRm <- res[["pctRm"]]
+    
+  } else if(!wide & mv){ # long multi value data
+    # res<-.long_mv_cooks_bw.outliers(df, naTo0, phenotype, group, outlierCutoff)
+    # df <- res[["data"]]
+    # pctRm <- res[["pctRm"]]
     
   }
+  
+  
+  
+  
   out<-df[which(df$outlier < outlierCutoff), -which(colnames(df)=="outlier")]
   if(plot & wide){
     df$grouping<-interaction(df[,plotgroup])
@@ -150,4 +151,76 @@ bw.outliers<-function(df = NULL,
     
   }
   return(out)
+}
+
+
+#' ***********************************************************************************************
+#' *************** `wide SV cooks distance` ****************************************
+#' ***********************************************************************************************
+#' @description
+#' Internal function for outlier detection in wide SV data.
+#' 
+#' @keywords internal
+#' @noRd
+
+.wide_sv_cooks_bw.outliers <- function(df, naTo0, phenotype, group, outlierCutoff){
+  if(naTo0){
+    df[[phenotype]][is.na(df[[phenotype]])]<-0
+  }
+  df<-df[complete.cases(df[,c(phenotype,group)]), ]
+  outlierForm<-paste("as.numeric(",phenotype,")~", paste(paste0("as.factor(",group,")"),collapse=":"))
+    cooksd <- cooks.distance(glm(data=df, as.formula(outlierForm)))
+    # summary(cooksd)
+    outlierCutoff<-cutoff*mean(cooksd, na.rm=TRUE)
+    cooksd[is.na(cooksd)] <- outlierCutoff - 0.1 # keeping NAs by assigning a value below cutoff.
+    cooksd_df<-data.frame("outlier" = cooksd)
+    df<-cbind(df, cooksd_df) 
+    pctRm<-paste0(100*(1-round(nrow(df[df$outlier < outlierCutoff, ]) / nrow(df), 5)), "% removed as outliers using Cook's Distance")
+    return(list('data'=df, 'pctRm'=pctRm))
+}
+
+#' ***********************************************************************************************
+#' *************** `long SV cooks distance` ****************************************
+#' ***********************************************************************************************
+#' @description
+#' Internal function for outlier detection in wide SV data.
+#' 
+#' @keywords internal
+#' @noRd
+
+.long_sv_cooks_bw.outliers <- function(df, naTo0, phenotype, group, outlierCutoff){
+  if(naTo0){
+    df[df[[traitCol]]==phenotype, valueCol][is.na(df[df[[traitCol]]==phenotype, valueCol])]<-0
+  }
+  subdf<-df[complete.cases( df[df[[traitCol]]==phenotype, c(valueCol, traitCol, group)] ) & df[[traitCol]]==phenotype , ]
+  outlierForm<-paste("as.numeric(",valueCol,")~", paste(paste0("as.factor(",group,")"),collapse=":"))
+    cooksd <- cooks.distance(glm(data=subdf, as.formula(outlierForm)))
+    outlierCutoff<-3*mean(cooksd, na.rm=TRUE)
+    cooksd[is.na(cooksd)] <- outlierCutoff - 0.1 # keeping NAs by assigning a value below cutoff.
+    cooksd_df<-data.frame("outlier" = cooksd)
+    subdf<-cbind(subdf, cooksd_df)
+    subdf<-subdf[, c(group, idCol, "outlier")]
+    subdf<-subdf[!duplicated(subdf[,c(group, idCol)]),] # if there are multiple images per day this will change data.
+    pctRm<-paste0(100*(1-round(nrow(subdf[subdf$outlier < outlierCutoff, ]) / nrow(subdf), 5)),
+                  "% removed as outliers using Cook's Distance")
+    #* take IDs using plotgroup and label all phenotype rows
+    df<-merge(df, subdf, all.x = TRUE)
+  return(list('data'=df, 'pctRm'=pctRm))
+}
+
+#' ***********************************************************************************************
+#' *************** `wide MV cooks distance` ****************************************
+#' ***********************************************************************************************
+#' @description
+#' Internal function for outlier detection in wide MV data.
+#' 
+#' @keywords internal
+#' @noRd
+#' 
+#' steps: 
+#' take wide data, fit pca, get first few pcs (arg?), 
+#' run cooksd on first few pcs
+
+.wide_mv_cooks_bw.outliers <- function(df, naTo0, phenotype, group, outlierCutoff){
+  
 }
