@@ -38,7 +38,7 @@ Suggests:
     vroom,
     curl,
     cmdstanr,
-    rstan (<= 2.25.0),
+    rstan,
     caret,
     testthat (>= 3.0.0)
 VignetteBuilder: knitr
