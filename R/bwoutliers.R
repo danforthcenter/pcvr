@@ -31,7 +31,7 @@
 #' @keywords Bellwether, ggplot, outliers
 #' @import ggplot2
 #' @import data.table
-#' @importFrom stats complete.cases cooks.distance glm as.formula
+#' @importFrom stats complete.cases cooks.distance glm as.formula lm
 #' @examples 
 #' 
 #' ## Not run:
@@ -122,7 +122,8 @@ bw.outliers<-function(df = NULL,
   } else{ wide = TRUE}
   if(is.null(phenotype)){stop("A phenotype must be provided")}
   
-  if( (wide & length(phenotype)>1) | (!wide && length(unique(interaction(df[df[[traitCol]]==phenotype, c(traitCol, labelCol)])))>1 ) ){
+  if( (wide & length(phenotype)>1) | (!wide && length(unique(interaction(df[df[[traitCol]]==phenotype, 
+                                                                            colnames(df) %in% c(traitCol, labelCol)])))>1 ) ){
     mv = TRUE
   } else { mv = FALSE }
   
@@ -137,7 +138,7 @@ bw.outliers<-function(df = NULL,
     pctRm <- res[["pctRm"]]
     
   } else if (!wide & !mv){ # long data single value
-    res<-.long_sv_cooks_bw.outliers(df, naTo0, phenotype, group, cutoff)
+    res<-.long_sv_cooks_bw.outliers(df, naTo0, phenotype, group, cutoff, traitCol, valueCol, labelCol, idCol)
     df <- res[["data"]]
     pctRm <- res[["pctRm"]]
     
@@ -262,7 +263,7 @@ bw.outliers<-function(df = NULL,
 #' @keywords internal
 #' @noRd
 
-.long_sv_cooks_bw.outliers <- function(df, naTo0, phenotype, group, cutoff, traitCol, valueCol, labelCol){
+.long_sv_cooks_bw.outliers <- function(df, naTo0, phenotype, group, cutoff, traitCol, valueCol, labelCol, idCol){
   if(naTo0){
     df[df[[traitCol]]==phenotype, valueCol][is.na(df[df[[traitCol]]==phenotype, valueCol])]<-0
   }
