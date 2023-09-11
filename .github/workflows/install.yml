@@ -46,6 +46,7 @@ jobs:
       - name: Create and populate check.Renviron file
         run: |
           echo R_CHECK_DONTTEST_EXAMPLES=false >> ~/check.Renviron
+          echo R_LIBS=/usr/lib/R/site-library >> ~/check.Renviron
         shell: bash
 
       - uses: r-lib/actions/setup-r-dependencies@v2
