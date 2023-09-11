@@ -15,6 +15,18 @@ test_that("reading mv github data as long works", {
   expect_equal(dim(mv), c(2854, 201))
   expect_equal(colnames(mv)[201], "DAS")
   
+  # test bw.outliers
+  
+  phenotypes = which(grepl("hue_freq", colnames(mv)))
+
+  mv_noOutliers <- bw.outliers(df = mv, phenotype = phenotypes, naTo0 = FALSE, plot=FALSE,
+      group = c("DAS", "genotype", "fertilizer"), cutoff = 3, plotgroup=c("barcode", "rotation"))
+  
+  pct_removed <- nrow(mv_noOutliers)/nrow(mv)
+  expect_equal( pct_removed , 0.93, tolerance = 0.015 )
+  
+  expect_s3_class(joyplot, "ggplot")
+  
   #* test joyplot
   joyplot<-pcv.joyplot(mv[mv$DAS==18,], index = "hue_frequencies",
                        group=c("fertilizer", "genotype"), method=NULL, compare=NULL)
