@@ -10,7 +10,7 @@
 #' @param cutoff Cutoff for something being an "outlier" expressed as a multiplier
 #'  on the mean of Cooks Distance for this data. This defaults to 3 which tends to be
 #'  a good value.
-#'  @param outlierMethod Method to be used in detecting outliers.
+#' @param outlierMethod Method to be used in detecting outliers.
 #'  Currently "cooks" and "mahalanobis" distances are supported, with "mahalanobis" only
 #'  being supported for multi-value traits.
 #' @param plotgroup Grouping variables for drawing plots if plot=TRUE.
@@ -34,7 +34,7 @@
 #' @keywords Bellwether, ggplot, outliers
 #' @import ggplot2
 #' @import data.table
-#' @importFrom stats complete.cases cooks.distance glm as.formula lm
+#' @importFrom stats complete.cases cooks.distance glm as.formula lm mahalanobis cov
 #' @examples 
 #' 
 #' ## Not run:
@@ -52,7 +52,7 @@
 #' sv<-bw.time(sv, plantingDelay = 0, phenotype="area_pixels", cutoff=10, timeCol="timestamp",
 #'  group=c("barcode", "rotation"), plot=FALSE)
 #' sv<-bw.outliers(df = sv, phenotype="area_pixels", naTo0 =FALSE, 
-#'  group = c("DAS", "genotype", "fertilizer"),
+#'  group = c("DAS", "genotype", "fertilizer"),outlierMethod = "cooks",
 #'  plotgroup=c('barcode',"rotation"), plot=TRUE)
 #' 
 #' if(FALSE){
@@ -86,7 +86,7 @@
 #' 
 #' phenotypes = which(grepl("hue_freq", colnames(mvw)))
 #' 
-#' mvw2 <- bw.outliers(df = mvw, phenotype = phenotypes, naTo0 = FALSE,
+#' mvw2 <- bw.outliers(df = mvw, phenotype = phenotypes, naTo0 = FALSE, outlierMethod = "cooks",
 #'     group = c("DAS", "genotype", "fertilizer"), cutoff = 3, plotgroup=c("barcode", "rotation"))
 #' 
 #' 
@@ -101,7 +101,7 @@
 #'                        ifelse(mvl$fertilizer == "B", "50", "0"))
 #' mvl<-bw.time(mvl,timeCol="timestamp", group="barcode", plot = FALSE)
 #' 
-#' mvl2 <- bw.outliers(df = mvl, phenotype = "hue_frequencies", naTo0 = FALSE,
+#' mvl2 <- bw.outliers(df = mvl, phenotype = "hue_frequencies", naTo0 = FALSE, outlierMethod = "cooks",
 #'     group = c("DAS", "genotype", "fertilizer"), cutoff = 3, plotgroup=c("barcode", "rotation"))
 #' }
 #' 
@@ -151,7 +151,7 @@ bw.outliers<-function(df = NULL,
     if(outlierMethod=="cooks"){
       res<-.wide_mv_cooks_bw.outliers(df, naTo0, phenotype, group, cutoff, ncp)
     } else if(outlierMethod == "mahalanobis"){
-      res<-.wide_mv_mahalanobis_bw.outliers(df, naTo0, phenotype, group, cutoff, ncp)
+      res<-.wide_mv_mahalanobis_bw.outliers(df, naTo0, phenotype, group, cutoff)
     }
     df <- res[["data"]]
     pctRm <- res[["pctRm"]]
@@ -406,8 +406,8 @@ bw.outliers<-function(df = NULL,
   phenos_df <- df[, phenotype]
   phenos_df <- phenos_df[, colSums(phenos_df)>1]
   mahala_center <- colMeans(phenos_df, na.rm=T)
-  mahala_cov <- cov(phenos_df)
-  m <- mahalanobis(phenos_df, mahala_center, mahala_cov)
+  mahala_cov <- stats::cov(phenos_df)
+  m <- stats::mahalanobis(phenos_df, mahala_center, mahala_cov)
   
   df$mahal <- m
   group_inter <- unique(as.character(interaction(df[,group])))
