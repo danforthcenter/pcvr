@@ -28,6 +28,11 @@ test_that("reading mv github data as long works", {
   pct_removed <- nrow(mv_noOutliers)/nrow(mv)
   expect_equal( pct_removed , 0.93, tolerance = 0.015 )
   
+  mv_noOutliers <- bw.outliers(df = mv, phenotype = "hue_frequencies", naTo0 = FALSE, plot=FALSE, outlierMethod="mahalanobis",
+                               group = c("DAS", "genotype", "fertilizer"), cutoff = 3, plotgroup=c("barcode", "rotation"))
+  
+  pct_removed <- nrow(mv_noOutliers)/nrow(mv)
+  expect_equal( pct_removed , 0.945, tolerance = 0.015 )
   
   #* test joyplot
   joyplot<-pcv.joyplot(mv[mv$DAS==18,], index = "hue_frequencies",
