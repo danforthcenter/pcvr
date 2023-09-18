@@ -10,6 +10,7 @@ bw.outliers(
   naTo0 = FALSE,
   group = c(),
   cutoff = 3,
+  outlierMethod = "cooks",
   plotgroup = c("barcode", "rotation"),
   plot = TRUE,
   x = NULL,
@@ -35,6 +36,10 @@ These are used as predictors for `phenotype` in a generalized linear model.}
 \item{cutoff}{Cutoff for something being an "outlier" expressed as a multiplier
 on the mean of Cooks Distance for this data. This defaults to 3 which tends to be
 a good value.}
+
+\item{outlierMethod}{Method to be used in detecting outliers.
+Currently "cooks" and "mahalanobis" distances are supported, with "mahalanobis" only
+being supported for multi-value traits.}
 
 \item{plotgroup}{Grouping variables for drawing plots if plot=TRUE.
 Typically this is an identifier for images of a plant
@@ -85,7 +90,7 @@ sv$fertilizer = ifelse(sv$fertilizer == "A", "100",
 sv<-bw.time(sv, plantingDelay = 0, phenotype="area_pixels", cutoff=10, timeCol="timestamp",
  group=c("barcode", "rotation"), plot=FALSE)
 sv<-bw.outliers(df = sv, phenotype="area_pixels", naTo0 =FALSE, 
- group = c("DAS", "genotype", "fertilizer"),
+ group = c("DAS", "genotype", "fertilizer"),outlierMethod = "cooks",
  plotgroup=c('barcode',"rotation"), plot=TRUE)
 
 if(FALSE){
@@ -119,7 +124,7 @@ mvw<-bw.time(mvw,timeCol="timestamp", group="barcode", plot = FALSE)
 
 phenotypes = which(grepl("hue_freq", colnames(mvw)))
 
-mvw2 <- bw.outliers(df = mvw, phenotype = phenotypes, naTo0 = FALSE,
+mvw2 <- bw.outliers(df = mvw, phenotype = phenotypes, naTo0 = FALSE, outlierMethod = "cooks",
     group = c("DAS", "genotype", "fertilizer"), cutoff = 3, plotgroup=c("barcode", "rotation"))
 
 
@@ -134,7 +139,7 @@ mvl$fertilizer = ifelse(mvl$fertilizer == "A", "100",
                        ifelse(mvl$fertilizer == "B", "50", "0"))
 mvl<-bw.time(mvl,timeCol="timestamp", group="barcode", plot = FALSE)
 
-mvl2 <- bw.outliers(df = mvl, phenotype = "hue_frequencies", naTo0 = FALSE,
+mvl2 <- bw.outliers(df = mvl, phenotype = "hue_frequencies", naTo0 = FALSE, outlierMethod = "cooks",
     group = c("DAS", "genotype", "fertilizer"), cutoff = 3, plotgroup=c("barcode", "rotation"))
 }
 

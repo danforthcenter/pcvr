@@ -10,6 +10,9 @@
 #' @param cutoff Cutoff for something being an "outlier" expressed as a multiplier
 #'  on the mean of Cooks Distance for this data. This defaults to 3 which tends to be
 #'  a good value.
+#' @param outlierMethod Method to be used in detecting outliers.
+#'  Currently "cooks" and "mahalanobis" distances are supported, with "mahalanobis" only
+#'  being supported for multi-value traits.
 #' @param plotgroup Grouping variables for drawing plots if plot=TRUE.
 #' Typically this is an identifier for images of a plant
 #' over time and defaults to c('barcode',"rotation").
@@ -31,7 +34,7 @@
 #' @keywords Bellwether, ggplot, outliers
 #' @import ggplot2
 #' @import data.table
-#' @importFrom stats complete.cases cooks.distance glm as.formula lm
+#' @importFrom stats complete.cases cooks.distance glm as.formula lm mahalanobis cov
 #' @examples 
 #' 
 #' ## Not run:
@@ -49,7 +52,7 @@
 #' sv<-bw.time(sv, plantingDelay = 0, phenotype="area_pixels", cutoff=10, timeCol="timestamp",
 #'  group=c("barcode", "rotation"), plot=FALSE)
 #' sv<-bw.outliers(df = sv, phenotype="area_pixels", naTo0 =FALSE, 
-#'  group = c("DAS", "genotype", "fertilizer"),
+#'  group = c("DAS", "genotype", "fertilizer"),outlierMethod = "cooks",
 #'  plotgroup=c('barcode',"rotation"), plot=TRUE)
 #' 
 #' if(FALSE){
@@ -83,7 +86,7 @@
 #' 
 #' phenotypes = which(grepl("hue_freq", colnames(mvw)))
 #' 
-#' mvw2 <- bw.outliers(df = mvw, phenotype = phenotypes, naTo0 = FALSE,
+#' mvw2 <- bw.outliers(df = mvw, phenotype = phenotypes, naTo0 = FALSE, outlierMethod = "cooks",
 #'     group = c("DAS", "genotype", "fertilizer"), cutoff = 3, plotgroup=c("barcode", "rotation"))
 #' 
 #' 
@@ -98,7 +101,7 @@
 #'                        ifelse(mvl$fertilizer == "B", "50", "0"))
 #' mvl<-bw.time(mvl,timeCol="timestamp", group="barcode", plot = FALSE)
 #' 
-#' mvl2 <- bw.outliers(df = mvl, phenotype = "hue_frequencies", naTo0 = FALSE,
+#' mvl2 <- bw.outliers(df = mvl, phenotype = "hue_frequencies", naTo0 = FALSE, outlierMethod = "cooks",
 #'     group = c("DAS", "genotype", "fertilizer"), cutoff = 3, plotgroup=c("barcode", "rotation"))
 #' }
 #' 
@@ -113,6 +116,7 @@ bw.outliers<-function(df = NULL,
                       naTo0 =FALSE,
                       group = c(),
                       cutoff = 3,
+                      outlierMethod = "cooks",
                       plotgroup=c('barcode',"rotation"),
                       plot=TRUE, x=NULL, traitCol="trait", valueCol="value", labelCol="label", idCol=NULL, ncp = NULL){
   # df = svl; phenotype="area_pixels"; naTo0 = F; group = c("DAS", "genotype", "fertilizer"); plotgroup=c("barcode","rotation"); plot=FALSE
@@ -129,26 +133,35 @@ bw.outliers<-function(df = NULL,
   
   
   if(is.null(idCol)){idCol = plotgroup}
-  outlierMethod = "cooks"
   
   
   if(wide & !mv){ # wide data single value
+    if(outlierMethod=="mahalanobis"){warning("Mahalanobis distance is only implemented with MV traits, using cooks")}
     res<-.wide_sv_cooks_bw.outliers(df, naTo0, phenotype, group, cutoff)
     df <- res[["data"]]
     pctRm <- res[["pctRm"]]
     
   } else if (!wide & !mv){ # long data single value
+    if(outlierMethod=="mahalanobis"){warning("Mahalanobis distance is only implemented with MV traits, using cooks")}
     res<-.long_sv_cooks_bw.outliers(df, naTo0, phenotype, group, cutoff, traitCol, valueCol, labelCol, idCol)
     df <- res[["data"]]
     pctRm <- res[["pctRm"]]
     
   } else if(wide & mv){ # wide multi value data
-    res<-.wide_mv_cooks_bw.outliers(df, naTo0, phenotype, group, cutoff, ncp)
+    if(outlierMethod=="cooks"){
+      res<-.wide_mv_cooks_bw.outliers(df, naTo0, phenotype, group, cutoff, ncp)
+    } else if(outlierMethod == "mahalanobis"){
+      res<-.wide_mv_mahalanobis_bw.outliers(df, naTo0, phenotype, group, cutoff)
+    }
     df <- res[["data"]]
     pctRm <- res[["pctRm"]]
     
   } else if(!wide & mv){ # long multi value data
-    res<-.long_mv_cooks_bw.outliers(df, naTo0, phenotype, group, cutoff, ncp, traitCol, valueCol, labelCol, idCol)
+    if(outlierMethod=="cooks"){
+       res<-.long_mv_cooks_bw.outliers(df, naTo0, phenotype, group, cutoff, ncp, traitCol, valueCol, labelCol, idCol)
+    } else if(outlierMethod == "mahalanobis"){
+       res<-.long_mv_mahalanobis_bw.outliers(df, naTo0, phenotype, group, cutoff, traitCol, valueCol, labelCol, idCol)
+    }
     df <- res[["data"]]
     pctRm <- res[["pctRm"]]
     
@@ -364,7 +377,7 @@ bw.outliers<-function(df = NULL,
   phenotypew <- which(grepl(phenotype, colnames(dfw)))
   #* call .wide method on dfw
   wide_res <- .wide_mv_cooks_bw.outliers(dfw, naTo0, phenotypew, group, cutoff, ncp)
-  pctRm <- wide_res[["wide_res"]]
+  pctRm <- wide_res[["pctRm"]]
   sub_df <- wide_res[["data"]]
   #* label long data based on .wide output
   kept <- unique(as.character(interaction(sub_df[!sub_df$outlier, c(group, idCol)])))
@@ -374,8 +387,67 @@ bw.outliers<-function(df = NULL,
   return(list('data'=df, 'pctRm'=pctRm))
 }
 
+#' ***********************************************************************************************
+#' *************** `wide MV mahalanobis distance` ****************************************
+#' ***********************************************************************************************
+#' @description
+#' Internal function for outlier detection in wide MV data.
+#' 
+#' @keywords internal
+#' @noRd
 
 
+.wide_mv_mahalanobis_bw.outliers <- function(df, naTo0, phenotype, group, cutoff){
+  
+  if(naTo0){
+    df[,phenotype][is.na(df[,phenotype])]<-0
+  }
+  
+  phenos_df <- df[, phenotype]
+  phenos_df <- phenos_df[, colSums(phenos_df)>1]
+  mahala_center <- colMeans(phenos_df, na.rm=T)
+  mahala_cov <- stats::cov(phenos_df)
+  m <- stats::mahalanobis(phenos_df, mahala_center, mahala_cov)
+  
+  df$mahal <- m
+  group_inter <- unique(as.character(interaction(df[,group])))
+  
+  df_out <- do.call(rbind, lapply(group_inter, function(grp){
+    subMeta <- df[interaction(df[,group]) == grp, ]
+    #sum(subMeta$mahal > cutoff*mean(subMeta$mahal, na.rm=TRUE))
+    subMeta$outlier <- ifelse(subMeta$mahal > cutoff*mean(subMeta$mahal, na.rm=TRUE), TRUE, FALSE)
+    subMeta
+  }))
+  
+  pctRm<-paste0(100*(round(nrow(df_out[df_out$outlier, ]) / nrow(df_out), 5)),
+                "% removed as outliers using Mahalanobis distance.")
+  
+  return(list('data'=df_out, 'pctRm'=pctRm))
+}
 
+#' ***********************************************************************************************
+#' *************** `long MV mahalanobis distance` ****************************************
+#' ***********************************************************************************************
+#' @description
+#' Internal function for outlier detection in long MV data.
+#' 
+#' @keywords internal
+#' @noRd
 
-
+.long_mv_mahalanobis_bw.outliers <- function(df, naTo0, phenotype, group, cutoff, traitCol, valueCol, labelCol, idCol){
+  #* widen data
+  dcast_form <- as.formula(paste0("... ~ ", traitCol, "+", labelCol))
+  dfw <- as.data.frame(data.table::dcast(data.table::as.data.table(df[df[[traitCol]]==phenotype,]),
+                                         dcast_form,  value.var = valueCol, sep="."))
+  phenotypew <- which(grepl(phenotype, colnames(dfw)))
+  #* call .wide method on dfw
+  wide_res <- .wide_mv_mahalanobis_bw.outliers(dfw, naTo0, phenotypew, group, cutoff)
+  pctRm <- wide_res[["pctRm"]]
+  sub_df <- wide_res[["data"]]
+  #* label long data based on .wide output
+  kept <- unique(as.character(interaction(sub_df[!sub_df$outlier, c(group, idCol)])))
+  df_ids <- as.character(interaction(df[,c(group, idCol)]))
+  df$outlier <- !df_ids %in% kept
+  
+  return(list('data'=df, 'pctRm'=pctRm))
+}
