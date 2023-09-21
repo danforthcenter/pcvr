@@ -7,4 +7,5 @@
 *.#*
 *.csv
 inst/doc
-*.html
+tutorials/*.html
+vignettes/*.html
