@@ -69,8 +69,8 @@ gam_diff <- function(model, newdata=NULL, g1, g2, byVar=NULL, smoothVar=NULL, ci
   xp <- stats::predict(model, newdata = newdata, type = 'lpmatrix')
   c1 <- grepl(g1, colnames(xp))
   c2 <- grepl(g2, colnames(xp))
-  r1 <- newdata[[byVar]] == g1
-  r2 <- newdata[[byVar]] == g2
+  r1 <- xp[[byVar]] == g1
+  r2 <- xp[[byVar]] == g2
   ## difference rows of xp for data from comparison
   X <- xp[r1, ] - xp[r2, ]
   ## zero out cols of X related to splines for other lochs
