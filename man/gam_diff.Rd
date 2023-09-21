@@ -40,6 +40,8 @@ and c(0.9, 0.95) would return Q_0.025, Q_0.05, Q_0.95, and Q_0.975 columns. Defa
 Defaults to TRUE.}
 
 \item{plot}{Logical, should a plot of the difference be returned? Defaults to TRUE.}
+
+\item{patch}{Logical, should plots be assembled by patchwork (TRUE, the default) or returned individually (FALSE)?}
 }
 \description{
 Note that using GAMs will be less useful than fitting parameterized models as supported by \code{growthSS} and \code{fitGrowth}
@@ -60,9 +62,8 @@ support <- expand.grid(time = seq(min(ex$time), max(ex$time), length = 400),
 out<-gam_diff(model=m, newdata=support, g1="a", g2="b", byVar = "group", smoothVar="time", plot=TRUE, patch=TRUE)
 dim(out$data)
 out$plot
-
 }
-\keyword{GAM}
+\keyword{gam,}
 \keyword{growth,}
 \keyword{mgcv,}
-\keyword{spline,}
+\keyword{spline}

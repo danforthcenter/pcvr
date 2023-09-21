@@ -17,8 +17,9 @@
 #' @param unconditional Logical, should unconditional variance-covariance be used in calculating standard errors.
 #' Defaults to TRUE.
 #' @param plot Logical, should a plot of the difference be returned? Defaults to TRUE.
+#' @param patch Logical, should plots be assembled by patchwork (TRUE, the default) or returned individually (FALSE)?
 #' 
-#' @keywords growth, mgcv, spline, GAM
+#' @keywords gam, growth, mgcv, spline
 #' @importFrom mgcv gam s
 #' @importFrom stats vcov predict df.residual qt
 #' @importFrom viridis viridis
@@ -39,7 +40,7 @@
 #' out<-gam_diff(model=m, newdata=support, g1="a", g2="b", byVar = "group", smoothVar="time", plot=TRUE, patch=TRUE)
 #' dim(out$data)
 #' out$plot
-#' 
+#' @export
 
 gam_diff <- function(model, newdata=NULL, g1, g2, byVar=NULL, smoothVar=NULL, cis = seq(0.05, 0.95, 0.05),
                         unconditional = TRUE, plot=TRUE, patch=TRUE) {
