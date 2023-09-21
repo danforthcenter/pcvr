@@ -30,6 +30,7 @@ Imports:
     parallel,
     bayestestR,
     viridis,
+    mgcv,
     scales
 Suggests: 
     knitr,
