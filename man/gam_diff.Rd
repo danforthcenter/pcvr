@@ -59,7 +59,8 @@ m <- mgcv::gam(y ~ group + s(time, by =factor(group)), data=ex)
 support <- expand.grid(time = seq(min(ex$time), max(ex$time), length = 400),
                        group = factor(unique(ex$group)))
                        
-out<-gam_diff(model=m, newdata=support, g1="a", g2="b", byVar = "group", smoothVar="time", plot=TRUE, patch=TRUE)
+out<-gam_diff(model=m, newdata=support, g1="a", g2="b", 
+              byVar = "group", smoothVar="time", plot=TRUE, patch=TRUE)
 dim(out$data)
 out$plot
 }
