@@ -29,6 +29,8 @@
 #'   you will see warnings after the model is fit about not having specified a lower
 #'   bound explicitly. Those warnings can safely be ignored and will be addressed if
 #'   the necessary features are added to \code{brms}. See details for guidance.
+#' @param type Type of model to fit, options are "brms", "nlrq", and "nls".
+#' @param tau A vector of quantiles to fit for nlrq models.
 #' @keywords Bayesian, brms
 #' 
 #' @importFrom stats as.formula rgamma
@@ -82,7 +84,10 @@
 #' }
 #' 
 #' 
-#' @return A named list of elements to make it easier to fit common brms models.
+#' @return A named list of elements to make it easier to fit non linear growth models with several R packages.
+#' 
+#' For \code{brms} models the output contains:
+#' 
 #' \code{formula}: A \code{brms::bf} formula specifying the growth model, autocorrelation, variance submodel,
 #' and models for each variable in the growth model.
 #' \code{prior}: A brmsprior/data.frame object.
@@ -95,6 +100,17 @@
 #' it can be used later on in model visualization. Often it may be a good idea
 #' to save the output of this function with the fit model, so having this can
 #' be useful later on.
+#' 
+#' For \code{quantreg::nlrq} models the output contains:
+#' 
+#' \code{formula}: An \code{nls} style formula specifying the growth model with groups if specified.
+#' \code{taus}: The quantiles to be fit
+#' \code{start}: The starting values, typically these will be generated from the growth model and your data in a similar way as shown in \code{stats::selfStart} models.
+#' \code{df} The input data for the model.
+#' \code{pcvrForm} The form argument unchanged.
+#' 
+#' For \code{nls} models the output is the same as for \code{quantreg::nlrq} models but without \code{taus} returned.
+#' 
 #' @examples 
 #' 
 #' ## Not run:
@@ -132,14 +148,15 @@
 #'               
 #' @export
 
-growthSS<-function(model, form, sigma=NULL, df, start=NULL, type="brms"){
-  type_matched = match.arg(type, choices = c("brms"))
+growthSS<-function(model, form, sigma=NULL, df, start=NULL, type="brms", tau = 0.5){
+  type_matched = match.arg(type, choices = c("brms", "nlrq", "nls"))
   if(type_matched=="brms"){
     res <- .brmSS(model, form, sigma, df, priors = start)
+  } else if(type_matched %in% c("nlrq", "nls")){
+    res <- .nlrqSS(model, form, tau, df, start, type=type)
   } else if(FALSE){
     
   }
-  
   res$type = type
   return(res)
 }
