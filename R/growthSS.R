@@ -11,7 +11,11 @@
 #'  interactions should be modeled. If group has only one level or is not included then
 #'  it will be ignored in formulas for growth and variance (this may be the case if 
 #'  you split data before fitting models to be able to run more smaller models each more quickly).
-#' @param sigma A model for heteroskedasticity from c("homo", "linear", "spline", "logistic", "gompertz"). See details. 
+#' @param sigma A model for heteroskedasticity. 
+#' When type="brms" this is turned into a formula and the supported options are
+#' c("homo", "linear", "spline", "logistic", "gompertz"). When type ="nlme" the options are more
+#' limited to c("none", "power", "exp"), corresponding to using \code{nlme::varIdent}, \code{nlme::varPower},
+#' or \code{nlme::varExp} respectively. 
 #' @param df A dataframe to use. Must contain all the variables listed in the formula.
 #' @param start An optional named list of starting values OR means for prior distributions.
 #' If this is not provided then starting values are picked with \code{stats::selfStart}.
@@ -65,7 +69,7 @@
 #' 
 #' 
 #' The \code{sigma} argument optionally specifies a sub model to account for heteroskedasticity.
-#' Currently there are four supported sub models described below.
+#' Currently there are four supported brms sub models described below.
 #' 
 #' \itemize{
 #'    \item \bold{homo}: \code{sigma ~ 1}, fitting only a global or per group intercept to sigma.
@@ -81,6 +85,15 @@
 #'      of the experiment can help set a reasonable prior for subA, while subB and subC can generally be the 
 #'      same as B and C in a gompertz growth model of the same data. These priors will have fat tails so they
 #'      are pretty forgiving.
+#' }
+#' 
+#' There are also three supported submodel options for nlme models, but a \code{varFunc} object can also be supplied,
+#' see \code{?nlme::varClasses}.
+#' 
+#' \itemize{
+#'    \item \bold{homo}: \code{varIdent(1|group)}, which models a constant variance separately for each group. 
+#'     \item \bold{power}: \code{varPower(x|group)}, which models variance as a power of x per group.
+#'     \item \bold{exp}: \code{varExp(x|group)}, which models variance as an exponent of x per group.
 #' }
 #' 
 #' 
@@ -110,6 +123,13 @@
 #' \code{pcvrForm} The form argument unchanged.
 #' 
 #' For \code{nls} models the output is the same as for \code{quantreg::nlrq} models but without \code{taus} returned.
+#' 
+#' For \code{nlme::nlme} models the output contains:
+#' 
+#' \code{formula}: An list of \code{nlme} style formulas specifying the model, fixed and random effects, random effect grouping, and variance model (weights).
+#' \code{start}: The starting values, typically these will be generated from the growth model and your data in a similar way as shown in \code{stats::selfStart} models.
+#' \code{df} The input data for the model.
+#' \code{pcvrForm} The form argument unchanged.
 #' 
 #' @examples 
 #' 
@@ -149,14 +169,14 @@
 #' @export
 
 growthSS<-function(model, form, sigma=NULL, df, start=NULL, type="brms", tau = 0.5){
-  type_matched = match.arg(type, choices = c("brms", "nlrq", "nls"))
+  type_matched = match.arg(type, choices = c("brms", "nlrq", "nls", "nlme"))
   if(type_matched=="brms"){
     res <- .brmSS(model, form, sigma, df, priors = start)
   } else if(type_matched %in% c("nlrq", "nls")){
     res <- .nlrqSS(model, form, tau, df, start, type=type)
-  } else if(FALSE){
-    
-  }
+  } else if(type_matched=="nlme"){
+    res <- .nlmeSS(model, form, sigma, df, start)
+  } else{stop("Type must match one of brms, nlrq, nls, or nlme")}
   res$type = type
   return(res)
 }

@@ -68,10 +68,10 @@
   
   if(is.null(start)){
     if(matched_model=="double logistic"){
-      warning("Double Sigmoid models are not supported as self-starting models, you will need to add starting parameters")
+      warning("Double Sigmoid models are not supported as self-starting models, you will need to add starting parameters. Note for these models type='brms' is recommended.")
       startingValues<-NULL
       } else if (matched_model=="double gompertz"){
-      warning("Double Sigmoid models are not supported as self-starting models, you will need to add starting parameters")
+      warning("Double Sigmoid models are not supported as self-starting models, you will need to add starting parameters. Note for these models type='brms' is recommended.")
       startingValues<-NULL
     } else if(matched_model=="logistic"){
       startingValues <- .initLogistic(df, x, y)
