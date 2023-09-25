@@ -43,6 +43,9 @@
     # leave x as is, in this parameterization this means no term[group] syntax
     USEGROUP=FALSE
   }
+  if(USEGROUP){
+    df[[group]]<-factor(df[[group]])
+  }
   #* `assemble growth formula`
   matched_model <- match.arg(model, models)
   if(matched_model=="double logistic"){

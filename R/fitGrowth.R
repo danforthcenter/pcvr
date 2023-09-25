@@ -86,13 +86,16 @@ fitGrowthBrm <- function(ss, iter = 2000, cores = getOption("mc.cores",1), chain
 #' @export
 
 fitGrowthNlme <- function(ss, ...){
-  fit<-nlme::nlme(model = ss[["formula"]][["model"]], 
-                  data = ss[["df"]],
-                  fixed = ss[["formula"]][["fixed"]],
-                  random = ss[["formula"]][["random"]],
-                  groups = ss[["formula"]][["groups"]],
-                  weights = ss[["formula"]][["weights"]],
-                  start = ss[["start"]], ...)
+  fit<-do.call(nlme,
+               args = list(
+                 model = ss[["formula"]][["model"]], 
+                 data = quote(ss[["df"]]),
+                 fixed = ss[["formula"]][["fixed"]],
+                 random = ss[["formula"]][["random"]],
+                 groups = ss[["formula"]][["groups"]],
+                 weights = ss[["formula"]][["weights"]],
+                 start = ss[["start"]], ...
+               ) )
   return(fit)
 }
 
