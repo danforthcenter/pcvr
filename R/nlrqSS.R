@@ -258,7 +258,7 @@
   return(nf)
 }
 
-.nlrq_form_dou_monomolecular<-function(x, y, USEGROUP, group){
+.nlrq_form_monomolecular<-function(x, y, USEGROUP, group){
   if(USEGROUP){
     nf <- as.formula(paste0(y,"~A[",group,"]-A[",group,"]*exp(-B[",group,"]*",x,")"))
     } else{
@@ -267,7 +267,7 @@
   return(nf)
 }
 
-.nlrq_form_dou_exponential<-function(x, y, USEGROUP, group){
+.nlrq_form_exponential<-function(x, y, USEGROUP, group){
   if(USEGROUP){
     nf <- as.formula(paste0(y," ~ A[",group,"]*exp(B[",group,"]*",x, ")"))
   } else{
@@ -276,7 +276,7 @@
   return(nf)
 }
 
-.nlrq_form_dou_linear<-function(x, y, USEGROUP, group){
+.nlrq_form_linear<-function(x, y, USEGROUP, group){
   if(USEGROUP){
     nf <- as.formula(paste0(y," ~ A[",group,"]*",x))
   } else{
@@ -285,7 +285,7 @@
   return(nf)
 }
 
-.nlrq_form_dou_powerlaw<-function(x, y, USEGROUP, group){
+.nlrq_form_powerlaw<-function(x, y, USEGROUP, group){
   if(USEGROUP){
     nf <- as.formula(paste0(y," ~ A[",group,"]*",x,"^B[",group,"]"))
   } else{

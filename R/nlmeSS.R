@@ -57,7 +57,7 @@
 #' dim(ss$df)
 #' ss[c("formula", "taus", "start", "pcvrForm")]
 #' 
-#' @importFrom nlme varPower varIdent varExp nlme
+#' @importFrom nlme varPower varIdent varExp nlme nlme.formula
 #' @importFrom stats as.formula
 #' @importFrom methods is
 #' 
@@ -271,7 +271,7 @@ return(out)
     return(formulas)
 }
 
-.nlme_form_dou_monomolecular<-function(x, y, group, matched_sigma){
+.nlme_form_monomolecular<-function(x, y, group, matched_sigma){
   model_form <- as.formula(paste0(y,"~A-A*exp(-B*",x,")"))
   #* `random effects formula`
   random_form <- A + B ~ 1
@@ -290,7 +290,7 @@ return(out)
   return(formulas)
 }
 
-.nlme_form_dou_exponential<-function(x, y, group, matched_sigma){
+.nlme_form_exponential<-function(x, y, group, matched_sigma){
   model_form <- as.formula(paste0(y," ~ A*exp(B*",x, ")"))
   #* `random effects formula`
   random_form <- A + B ~ 1
@@ -309,7 +309,7 @@ return(out)
   return(formulas)
 }
 
-.nlme_form_dou_linear<-function(x, y, group, matched_sigma){
+.nlme_form_linear<-function(x, y, group, matched_sigma){
   model_form <- as.formula(paste0(y," ~ A*",x))
   #* `random effects formula`
   random_form <- A ~ 1
@@ -327,7 +327,7 @@ return(out)
   return(formulas)
 }
 
-.nlme_form_dou_powerlaw<-function(x, y, group, matched_sigma){
+.nlme_form_powerlaw<-function(x, y, group, matched_sigma){
   model_form <- as.formula(paste0(y," ~ A*",x,"^B"))
   #* `random effects formula`
   random_form <- A + B ~ 1
