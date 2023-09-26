@@ -36,16 +36,18 @@
 #' 
 #' @export
 
-growthPlot<-function(fit, form, groups = NULL, df = NULL, timeRange = NULL){
+growthPlot<-function(fit, form, groups = NULL, df = NULL, timeRange = NULL, boot = 100){
+  
   if(methods::is(fit, "brmsfit")){
-    plot<-brmPlot(fit=fit, form=form, groups = groups, df = df, timeRange = timeRange)
+    plot <- brmPlot(fit=fit, form=form, groups = groups, df = df, timeRange = timeRange)
   } else if(methods::is(fit, "nls")){
-    plot<-nlsPlot(fit=fit, form=form, groups = groups, df = df, timeRange = timeRange)
+    plot <- nlsPlot(fit=fit, form=form, groups = groups, df = df, timeRange = timeRange)
   } else if(methods::is(fit, "nlme")){
-    
+    plot <- nlmePlot(fit, form = form, groups = groups, df = df, timeRange = timeRange, boot=boot)
   } else if(methods::is(fit, "nlrqModel") | is.list(fit) ){
-    plot<-nlrqPlot(fit=fit, form=form, groups = groups, df = df, timeRange = timeRange)
+    plot <- nlrqPlot(fit=fit, form=form, groups = groups, df = df, timeRange = timeRange)
   }
+  
   return(plot)
 }
 

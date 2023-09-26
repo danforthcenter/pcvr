@@ -1,8 +1,7 @@
 #' Function to visualize common \link{stats::nls} growth models.
 #' 
 #' Models fit using \link{growthSS} inputs by \link{fitGrowth} (and similar models made through other means)
-#'  can be visualized easily using this function.
-#' 
+#'  can be visualized easily using this function. This will generally be called by \code{growthPlot}.
 #' 
 #' @param fit A model fit returned by \code{fitGrowth} with type="nls".
 #' @param form A formula similar to that in \code{growthSS} inputs (or the \code{pcvrForm} part of the output) specifying the outcome,
@@ -10,7 +9,8 @@
 #' If the individual and group are specified then the observed growth lines are plotted.
 #' @param groups An optional set of groups to keep in the plot.
 #' Defaults to NULL in which case all groups in the model are plotted.
-#' @param df An optional dataframe to use in plotting observed growth curves on top of the model.
+#' @param df A dataframe to use in plotting observed growth curves on top of the model.
+#' This must be supplied for nls models.
 #' @param timeRange An optional range of times to use. This can be used to view predictions for
 #' future data if the avaiable data has not reached some point (such as asymptotic size).
 #' @keywords growth-curve, logistic, gompertz, monomolecular, linear, exponential, power-law
@@ -42,7 +42,7 @@
 #' 
 #' @export
 
-nlsPlot<-function(fit, form, groups = NULL, df = NULL, timeRange = NULL){
+nlsPlot<-function(fit, form, df = NULL, groups = NULL, timeRange = NULL){
   #fit = fit_outer; form = ss$pcvrForm; groups = NULL; df = ss$df; timeRange = NULL
   #* `get needed information from formula`
   x <-as.character(form)[3]

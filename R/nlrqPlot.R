@@ -1,16 +1,15 @@
 #' Function to visualize common \link{quantreg::nlrq} growth models.
 #' 
 #' Models fit using \link{growthSS} inputs by \link{fitGrowth} (and similar models made through other means)
-#'  can be visualized easily using this function.
-#' 
+#'  can be visualized easily using this function. This will generally be called by \code{growthPlot}.
 #' 
 #' @param fit A model fit, or list of model fits, returned by \code{fitGrowth} with type="nlrq".
 #' @param form A formula similar to that in \code{growthSS} inputs (or the \code{pcvrForm} part of the output) specifying the outcome,
 #' predictor, and grouping structure of the data as \code{outcome ~ predictor|individual/group}. 
 #' If the individual and group are specified then the observed growth lines are plotted.
+#' @param df A dataframe to use in plotting observed growth curves on top of the model. This must be supplied for nlrq models.
 #' @param groups An optional set of groups to keep in the plot.
 #' Defaults to NULL in which case all groups in the model are plotted.
-#' @param df An optional dataframe to use in plotting observed growth curves on top of the model.
 #' @param timeRange An optional range of times to use. This can be used to view predictions for
 #' future data if the avaiable data has not reached some point (such as asymptotic size).
 #' @keywords growth-curve, logistic, gompertz, monomolecular, linear, exponential, power-law
@@ -44,7 +43,7 @@
 #' 
 #' @export
 
-nlrqPlot<-function(fit, form, groups = NULL, df = NULL, timeRange = NULL){
+nlrqPlot<-function(fit, form, df = NULL, groups = NULL, timeRange = NULL){
   #fit = fits; form = ss$pcvrForm; groups = NULL; df = ss$df; timeRange = NULL
   #* `get needed information from formula`
   x <-as.character(form)[3]
@@ -72,10 +71,11 @@ nlrqPlot<-function(fit, form, groups = NULL, df = NULL, timeRange = NULL){
     new_data <- df
   }
   #* `standardize fit class`
-  if(!is.list(fit)){
+  if(methods::is(fit, "nlrq")){
     fit <- list(fit)
-    names(fit)<-fits[[1]]$m$tau()
+    names(fit)<-fit[[1]]$m$tau()
   }
+  #return(names(fit))
   #* `add predictions and record taus`
   taus <- as.numeric(unlist(lapply(fit, function(f){f$m$tau()})))
   
@@ -86,6 +86,7 @@ nlrqPlot<-function(fit, form, groups = NULL, df = NULL, timeRange = NULL){
   predCols <-colnames(preds)
   keep <- which(!duplicated(preds))
   plotdf <- cbind(df[keep,], preds[keep,])
+  colnames(plotdf) <- c(colnames(df), colnames(preds))
   #* `define colors`
   virPal_p1<-viridis::plasma(ceiling(length(predCols)/2), direction=1, end=1)
   virPal_p2<-viridis::plasma(floor(length(predCols)/2), direction=1, end=1)
