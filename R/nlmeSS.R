@@ -57,7 +57,7 @@
 #' dim(ss$df)
 #' ss[c("formula", "taus", "start", "pcvrForm")]
 #' 
-#' @importFrom nlme varPower varIdent varExp nlme nlme.formula
+#' @importFrom nlme varPower varIdent varExp nlme nlme.formula corAR1
 #' @importFrom stats as.formula
 #' @importFrom methods is
 #' 
@@ -93,10 +93,13 @@ if(grepl("\\|", x) & grepl("\\/",x)){
   group="group"
   df[[group]]<-"group"
   USEGROUP=FALSE
-} else {stop("form must specify grouping at least for individual level for observations ( y ~ x|individual ). See documentation and examples.")}
+} else {stop("form must specify grouping. See documentation and examples.")}
 
 #* `make group a factor for nlme`
 df[[group]]<-as.factor(df[[group]])
+#* `make an interaction variable for autocorrelation`
+df[[paste0(group, individual)]]<-interaction(df[[group]], df[[individual]])
+intVar <- paste0(group, individual)
 
 #* `assemble growth formula with FE, RE, Groups, and Weights`
 matched_model <- match.arg(model, models)
@@ -122,7 +125,7 @@ if(matched_model=="double logistic"){
 } else if (matched_model=="power law"){
   form_fun<-.nlme_form_powerlaw
 }
-growthForm_list = form_fun(x,y, group, matched_sigma)
+growthForm_list = form_fun(x,y, group, individual, intVar, matched_sigma)
 
 #* `Make starting values`
 if(is.null(start)){
@@ -184,7 +187,7 @@ return(out)
 
 #* `Define growth formulas`
 
-.nlme_form_logistic<-function(x, y, group, matched_sigma){
+.nlme_form_logistic<-function(x, y, group, individual, intVar, matched_sigma){
   #* `main growth formula`
   model_form <- as.formula(paste0(y," ~ A/(1+exp((B-",x,")/C))"))
   #* `random effects formula`
@@ -196,16 +199,19 @@ return(out)
     stats::as.formula(paste0("C ~ 0 + ", group))
     )
   #* `groups formula`
-  groups_form = stats::as.formula(paste0("~", group))
+  groups_form = stats::as.formula(paste0("~", intVar))
   #* `variance formula`
   weights_form <- .nlme_sigma_form(matched_sigma, x, group)
+  #* `correlation formula`
+  correlation_form <- nlme::corAR1(0.8, form = as.formula(paste0("~ 1 |",intVar)))
+  
   formulas <- list("model"=model_form, "random"=random_form,
                    "fixed"=fixed_form, "groups"=groups_form,
-                   "weights" = weights_form)
+                   "weights" = weights_form, "cor_form" = correlation_form)
   return(formulas)
 }
 
-.nlme_form_gompertz<-function(x, y, group, matched_sigma){
+.nlme_form_gompertz<-function(x, y, group, individual, intVar, matched_sigma){
   model_form <- as.formula(paste0(y," ~ A*exp(-B*exp(-C*",x,"))"))
   #* `random effects formula`
   random_form <- A + B + C ~ 1
@@ -216,16 +222,19 @@ return(out)
     stats::as.formula(paste0("C ~ 0 + ", group))
   )
   #* `groups formula`
-  groups_form = stats::as.formula(paste0("~", group))
+  groups_form = stats::as.formula(paste0("~", intVar))
   #* `variance formula`
   weights_form <- .nlme_sigma_form(matched_sigma, x, group)
+  #* `correlation formula`
+  correlation_form <- nlme::corAR1(0.8, form = as.formula(paste0("~ 1 |",intVar)))
+  
   formulas <- list("model"=model_form, "random"=random_form,
                    "fixed"=fixed_form, "groups"=groups_form,
-                   "weights" = weights_form)
+                   "weights" = weights_form, "cor_form" = correlation_form)
   return(formulas)
 }
 
-.nlme_form_dou_logistic<-function(x, y, group, matched_sigma){
+.nlme_form_dou_logistic<-function(x, y, group, individual, intVar, matched_sigma){
   model_form <- as.formula(paste0(y," ~ A/(1+exp((B-",x,")/C)) + ((A2-A) /(1+exp((B2-",x,")/C2)))"))
   #* `random effects formula`
   random_form <- A + B + C + A2 + B2 + C2 ~ 1
@@ -239,16 +248,19 @@ return(out)
     stats::as.formula(paste0("C2 ~ 0 + ", group))
   )
   #* `groups formula`
-  groups_form = stats::as.formula(paste0("~", group))
+  groups_form = stats::as.formula(paste0("~", intVar))
   #* `variance formula`
   weights_form <- .nlme_sigma_form(matched_sigma, x, group)
+  #* `correlation formula`
+  correlation_form <- nlme::corAR1(0.8, form = as.formula(paste0("~ 1 |",intVar)))
+  
   formulas <- list("model"=model_form, "random"=random_form,
                    "fixed"=fixed_form, "groups"=groups_form,
-                   "weights" = weights_form)
+                   "weights" = weights_form, "cor_form" = correlation_form)
   return(formulas)
 }
 
-.nlme_form_dou_gompertz<-function(x, y, group, matched_sigma){
+.nlme_form_dou_gompertz<-function(x, y, group, individual, intVar, matched_sigma){
     model_form <- as.formula(paste0(y," ~ A * exp(-B * exp(-C*",x,")) + (A2-A) * exp(-B2 * exp(-C2*(",x,"-B)))"))
     #* `random effects formula`
     random_form <- A + B + C + A2 + B2 + C2 ~ 1
@@ -262,16 +274,19 @@ return(out)
       stats::as.formula(paste0("C2 ~ 0 + ", group))
     )
     #* `groups formula`
-    groups_form = stats::as.formula(paste0("~", group))
+    groups_form = stats::as.formula(paste0("~", intVar))
     #* `variance formula`
     weights_form <- .nlme_sigma_form(matched_sigma, x, group)
+    #* `correlation formula`
+    correlation_form <- nlme::corAR1(0.8, form = as.formula(paste0("~ 1 |",intVar)))
+    
     formulas <- list("model"=model_form, "random"=random_form,
                      "fixed"=fixed_form, "groups"=groups_form,
-                     "weights" = weights_form)
+                     "weights" = weights_form, "cor_form" = correlation_form)
     return(formulas)
 }
 
-.nlme_form_monomolecular<-function(x, y, group, matched_sigma){
+.nlme_form_monomolecular<-function(x, y, group, individual, intVar, matched_sigma){
   model_form <- as.formula(paste0(y,"~A-A*exp(-B*",x,")"))
   #* `random effects formula`
   random_form <- A + B ~ 1
@@ -281,16 +296,19 @@ return(out)
     stats::as.formula(paste0("B ~ 0 + ", group))
   )
   #* `groups formula`
-  groups_form = stats::as.formula(paste0("~", group))
+  groups_form = stats::as.formula(paste0("~", intVar))
   #* `variance formula`
   weights_form <- .nlme_sigma_form(matched_sigma, x, group)
+  #* `correlation formula`
+  correlation_form <- nlme::corAR1(0.8, form = as.formula(paste0("~ 1 |",intVar)))
+  
   formulas <- list("model"=model_form, "random"=random_form,
                    "fixed"=fixed_form, "groups"=groups_form,
-                   "weights" = weights_form)
+                   "weights" = weights_form, "cor_form" = correlation_form)
   return(formulas)
 }
 
-.nlme_form_exponential<-function(x, y, group, matched_sigma){
+.nlme_form_exponential<-function(x, y, group, individual, intVar, matched_sigma){
   model_form <- as.formula(paste0(y," ~ A*exp(B*",x, ")"))
   #* `random effects formula`
   random_form <- A + B ~ 1
@@ -300,16 +318,19 @@ return(out)
     stats::as.formula(paste0("B ~ 0 + ", group))
   )
   #* `groups formula`
-  groups_form = stats::as.formula(paste0("~", group))
+  groups_form = stats::as.formula(paste0("~", intVar))
   #* `variance formula`
   weights_form <- .nlme_sigma_form(matched_sigma, x, group)
+  #* `correlation formula`
+  correlation_form <- nlme::corAR1(0.8, form = as.formula(paste0("~ 1 |",intVar)))
+  
   formulas <- list("model"=model_form, "random"=random_form,
                    "fixed"=fixed_form, "groups"=groups_form,
-                   "weights" = weights_form)
+                   "weights" = weights_form, "cor_form" = correlation_form)
   return(formulas)
 }
 
-.nlme_form_linear<-function(x, y, group, matched_sigma){
+.nlme_form_linear<-function(x, y, group, individual, intVar, matched_sigma){
   model_form <- as.formula(paste0(y," ~ A*",x))
   #* `random effects formula`
   random_form <- A ~ 1
@@ -318,16 +339,19 @@ return(out)
     stats::as.formula(paste0("A ~ 0 + ", group))
   )
   #* `groups formula`
-  groups_form = stats::as.formula(paste0("~", group))
+  groups_form = stats::as.formula(paste0("~", intVar))
   #* `variance formula`
   weights_form <- .nlme_sigma_form(matched_sigma, x, group)
+  #* `correlation formula`
+  correlation_form <- nlme::corAR1(0.8, form = as.formula(paste0("~ 1 |",intVar)))
+  
   formulas <- list("model"=model_form, "random"=random_form,
                    "fixed"=fixed_form, "groups"=groups_form,
-                   "weights" = weights_form)
+                   "weights" = weights_form, "cor_form" = correlation_form)
   return(formulas)
 }
 
-.nlme_form_powerlaw<-function(x, y, group, matched_sigma){
+.nlme_form_powerlaw<-function(x, y, group, individual, intVar, matched_sigma){
   model_form <- as.formula(paste0(y," ~ A*",x,"^B"))
   #* `random effects formula`
   random_form <- A + B ~ 1
@@ -337,12 +361,15 @@ return(out)
     stats::as.formula(paste0("B ~ 0 + ", group))
   )
   #* `groups formula`
-  groups_form = stats::as.formula(paste0("~", group))
+  groups_form = stats::as.formula(paste0("~", intVar))
   #* `variance formula`
   weights_form <- .nlme_sigma_form(matched_sigma, x, group)
+  #* `correlation formula`
+  correlation_form <- nlme::corAR1(0.8, form = as.formula(paste0("~ 1 |",intVar)))
+  
   formulas <- list("model"=model_form, "random"=random_form,
                    "fixed"=fixed_form, "groups"=groups_form,
-                   "weights" = weights_form)
+                   "weights" = weights_form, "cor_form" = correlation_form)
   return(formulas)
 }
 

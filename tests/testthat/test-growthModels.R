@@ -44,7 +44,7 @@ test_that("Test Logistic nlme modeling", {
                c(184.201800401145, 184.201800401145, 12.0514357556166, 12.0514357556166, 
                  3.34892124655795, 3.34892124655795) )
   
-  fit <- fitGrowth(ss)
+  fit <- suppressWarnings(fitGrowth(ss))
   expect_s3_class(fit, "nlme")
   
   p <- suppressWarnings(growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df, boot = 3))

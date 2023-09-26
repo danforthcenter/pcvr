@@ -63,22 +63,23 @@ nlmePlot<-function(fit, form, df = NULL, groups = NULL, timeRange = NULL, boot=1
   if(!is.null(groups)){
     df <- df[df[[groups]] %in% groups, ]
   }
+  intVar <- paste0(group, individual)
   #* `make new data if timerange is not NULL`
   if(!is.null(timeRange)){
-    new_data = do.call(rbind, lapply(unique(df[[group]]), function(g){
-      stats::setNames(data.frame(g, timeRange), c(group, x))
+    new_data = do.call(rbind, lapply(unique(df[[intVar]]), function(g){
+      stats::setNames(data.frame(g, timeRange), c(intVar, x))
     }))
   } else{
     new_data <- df
   }
   #* `Generate bootstrap predictions`
   yvals <- lapply(1:boot, function(i) {try(.predfun(stats::update(fit,
-                                                                  data=.nlmePlotResample(fit, df, group, y)), new_data),
+                                                                  data=.nlmePlotResample(fit, df, intVar, y)), new_data),
                                            silent=TRUE )} )
   yvals_mat <- do.call(cbind, yvals[which(unlist(lapply(yvals, is.numeric)))])
   
   while(ncol(yvals_mat) < boot){
-    new<-try(.predfun(stats::update(fit, data=.nlmePlotResample(fit, df, group, y)), new_data), silent=TRUE)
+    new<-try(.predfun(stats::update(fit, data=.nlmePlotResample(fit, df, intVar, y)), new_data), silent=TRUE)
     if(is.numeric(new)){
       yvals_mat <- cbind(yvals_mat, new)
     }
