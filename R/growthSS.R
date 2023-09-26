@@ -11,11 +11,12 @@
 #'  interactions should be modeled. If group has only one level or is not included then
 #'  it will be ignored in formulas for growth and variance (this may be the case if 
 #'  you split data before fitting models to be able to run more smaller models each more quickly).
-#' @param sigma A model for heteroskedasticity. 
+#' @param sigma A model for heteroskedasticity. This argument is only used with "brms" and "nlme" models.
 #' When type="brms" this is turned into a formula and the supported options are
-#' c("homo", "linear", "spline", "logistic", "gompertz"). When type ="nlme" the options are more
-#' limited to c("none", "power", "exp"), corresponding to using \code{nlme::varIdent}, \code{nlme::varPower},
-#' or \code{nlme::varExp} respectively. 
+#' c("homo", "linear", "spline", "logistic", "gompertz"), if left NULL then "spline" will be used.
+#'  When type ="nlme" the options are more limited to c("none", "power", "exp"),
+#'   corresponding to using \code{nlme::varIdent}, \code{nlme::varPower},
+#' or \code{nlme::varExp} respectively where "power" is the default.
 #' @param df A dataframe to use. Must contain all the variables listed in the formula.
 #' @param start An optional named list of starting values OR means for prior distributions.
 #' If this is not provided then starting values are picked with \code{stats::selfStart}.
@@ -171,10 +172,12 @@
 growthSS<-function(model, form, sigma=NULL, df, start=NULL, type="brms", tau = 0.5){
   type_matched = match.arg(type, choices = c("brms", "nlrq", "nls", "nlme"))
   if(type_matched=="brms"){
+    if(is.null(sigma)){sigma="spline"}
     res <- .brmSS(model, form, sigma, df, priors = start)
   } else if(type_matched %in% c("nlrq", "nls")){
     res <- .nlrqSS(model, form, tau, df, start, type=type)
   } else if(type_matched=="nlme"){
+    if(is.null(sigma)){sigma="power"}
     res <- .nlmeSS(model, form, sigma, df, start)
   } else{stop("Type must match one of brms, nlrq, nls, or nlme")}
   res$type = type

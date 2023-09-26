@@ -20,11 +20,12 @@ the outcome variable (phenotype). The right hand side needs at least the x varia
  it will be ignored in formulas for growth and variance (this may be the case if 
  you split data before fitting models to be able to run more smaller models each more quickly).}
 
-\item{sigma}{A model for heteroskedasticity. 
+\item{sigma}{A model for heteroskedasticity. This argument is only used with "brms" and "nlme" models.
 When type="brms" this is turned into a formula and the supported options are
-c("homo", "linear", "spline", "logistic", "gompertz"). When type ="nlme" the options are more
-limited to c("none", "power", "exp"), corresponding to using \code{nlme::varIdent}, \code{nlme::varPower},
-or \code{nlme::varExp} respectively.}
+c("homo", "linear", "spline", "logistic", "gompertz"), if left NULL then "spline" will be used.
+ When type ="nlme" the options are more limited to c("none", "power", "exp"),
+  corresponding to using \code{nlme::varIdent}, \code{nlme::varPower},
+or \code{nlme::varExp} respectively where "power" is the default.}
 
 \item{df}{A dataframe to use. Must contain all the variables listed in the formula.}
 

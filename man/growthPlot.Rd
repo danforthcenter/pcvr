@@ -15,7 +15,7 @@ predictor, and grouping structure of the data as \code{outcome ~ predictor|indiv
 \item{groups}{An optional set of groups to keep in the plot.
 Defaults to NULL in which case all groups in the model are plotted.}
 
-\item{df}{An optional dataframe to use in plotting observed growth curves on top of the model.}
+\item{df}{A dataframe to use in plotting observed growth curves on top of the model and for making predictions.}
 
 \item{timeRange}{An optional range of times to use. This can be used to view predictions for
 future data if the avaiable data has not reached some point (such as asymptotic size).}

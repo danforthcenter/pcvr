@@ -92,6 +92,10 @@ nlmePlot<-function(fit, form, df = NULL, groups = NULL, timeRange = NULL, boot=1
   
   plot <- ggplot2::ggplot(preds, ggplot2::aes(x=.data[[x]]))+
     ggplot2::facet_wrap(paste0("~", group)) +
+    ggplot2::geom_line(data=df, ggplot2::aes(x=.data[[x]], y=.data[[y]],
+                                             group = interaction(.data[[individual]],
+                                                                 .data[[group]]) ),
+                       linewidth=0.25, color="gray40")+
     lapply(seq(1,49,2)/100,function(i) ggplot2::geom_ribbon(ggplot2::aes(ymin=.data[[paste0("Q_",i)]],
                                                                          ymax=.data[[paste0("Q_",1-i)]]),
                                                             fill=avg_pal[i*100],alpha=0.5))+
