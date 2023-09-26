@@ -18,6 +18,6 @@ An \code{nlrqModel} object if tau is length of 1 or a list of such models for mu
   see \code{?quantreg::nlrq} or \code{?nls::nlsModel} for details.
 }
 \description{
-This will generally be called from \code{fitGrowth}.
+Helper function generally called from \link{fitGrowth}.
 }
 \keyword{nls}

@@ -15,6 +15,6 @@ fitGrowthNls(ss, ...)
 An \code{nls} object, see \code{?nls} for details.
 }
 \description{
-This will generally be called from \code{fitGrowth}.
+Helper function generally called from \link{fitGrowth}.
 }
 \keyword{nls}

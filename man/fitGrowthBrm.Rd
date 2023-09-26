@@ -47,7 +47,7 @@ messages during warmup iterations as the MCMC gets started.}
 A \code{brmsfit} object, see \code{?`brmsfit-class`} for details.
 }
 \description{
-This will generally be called from \code{fitGrowth}.
+Helper function generally called from \link{fitGrowth}.
 }
 \keyword{Bayesian,}
 \keyword{brms}

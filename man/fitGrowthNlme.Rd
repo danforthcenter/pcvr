@@ -15,6 +15,6 @@ fitGrowthNlme(ss, ...)
 An \code{nlme} object, see \code{?nlme} for details.
 }
 \description{
-This will generally be called from \code{fitGrowth}.
+Helper function generally called from \link{fitGrowth}.
 }
 \keyword{nlme}
