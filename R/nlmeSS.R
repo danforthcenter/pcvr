@@ -7,6 +7,7 @@
 #' @param sigma One of "none", "power", or "exp", which will correspond to varIdent, varPower, or varExp respectively.
 #' This is also meant to take a varFunc object, but that is untested.
 #' @param df a dataframe to use to make the model.
+#' @param pars optional parameters to vary by group as fixed effects.
 #' @param start Starting values. These are optional unless model is a double sigmoid.
 #' For any other model these will be estimated from the data if left NULL.
 #' 
@@ -65,7 +66,7 @@
 #' @noRd
 
 
-.nlmeSS <- function(model, form, sigma, df, start=NULL){
+.nlmeSS <- function(model, form, sigma, df, pars = NULL, start=NULL){
 #* `general steps`
 #* ***** `Define choices and make empty output list`
 out<-list()
@@ -109,23 +110,31 @@ if(is.character(sigma)){
   } else{ matched_sigma = sigma}
 
 if(matched_model=="double logistic"){
+  if(is.null(pars)){ pars = c("A", "B", "C", "A2", "B2", "C2") }
   form_fun<-.nlme_form_dou_logistic
 } else if (matched_model=="double gompertz"){
+  if(is.null(pars)){ pars = c("A", "B", "C", "A2", "B2", "C2") }
   form_fun<-.nlme_form_dou_gompertz
 } else if(matched_model=="logistic"){
+  if(is.null(pars)){ pars = c("A", "B", "C") }
   form_fun<-.nlme_form_logistic
 } else if (matched_model=="gompertz"){
+  if(is.null(pars)){ pars = c("A", "B", "C") }
   form_fun<-.nlme_form_gompertz
 } else if (matched_model=="monomolecular"){
+  if(is.null(pars)){ pars = c("A", "B") }
   form_fun<-.nlme_form_monomolecular
 } else if (matched_model=="exponential"){
+  if(is.null(pars)){ pars = c("A", "B") }
   form_fun<-.nlme_form_exponential
 } else if (matched_model=="linear"){
+  if(is.null(pars)){ pars = c("A") }
   form_fun<-.nlme_form_linear
 } else if (matched_model=="power law"){
+  if(is.null(pars)){ pars = c("A", "B") }
   form_fun<-.nlme_form_powerlaw
 }
-growthForm_list = form_fun(x,y, group, individual, intVar, matched_sigma)
+growthForm_list = form_fun(x,y, group, individual, intVar, matched_sigma, pars)
 
 #* `Make starting values`
 if(is.null(start)){
@@ -148,7 +157,12 @@ if(is.null(start)){
   } else if (matched_model=="power law"){
     startingValues <- .initPowerLaw(df,x,y)
   }
-  startingValuesList <- rep(startingValues, each=length(unique(df[[group]])))
+  startingValuesList <- unlist(lapply(names(startingValues), function(nm){
+    val<-startingValues[nm]
+    if(nm %in% pars){
+      rep(val, length(unique(df[[group]])) ) # if this is one of pars then make starting value per group
+    } else{ val }# else return one starting value
+  }))
 } else{
   startingValuesList <- start
 }
@@ -187,17 +201,20 @@ return(out)
 
 #* `Define growth formulas`
 
-.nlme_form_logistic<-function(x, y, group, individual, intVar, matched_sigma){
+.nlme_form_logistic<-function(x, y, group, individual, intVar, matched_sigma, pars){
   #* `main growth formula`
   model_form <- as.formula(paste0(y," ~ A/(1+exp((B-",x,")/C))"))
   #* `random effects formula`
   random_form <- A + B + C ~ 1
   #* `fixed effects formula`
-  fixed_form = list(
-    stats::as.formula(paste0("A ~ 0 + ", group)),
-    stats::as.formula(paste0("B ~ 0 + ", group)),
-    stats::as.formula(paste0("C ~ 0 + ", group))
-    )
+  total_pars <- c("A", "B", "C")
+  fixed_form <- lapply(total_pars, function(par){
+    if(par %in% pars){
+      stats::as.formula(paste0(par," ~ 0 + ", group))
+    } else{
+      stats::as.formula(paste0(par," ~ 1"))
+    }
+  })
   #* `groups formula`
   groups_form = stats::as.formula(paste0("~", intVar))
   #* `variance formula`
@@ -211,16 +228,19 @@ return(out)
   return(formulas)
 }
 
-.nlme_form_gompertz<-function(x, y, group, individual, intVar, matched_sigma){
+.nlme_form_gompertz<-function(x, y, group, individual, intVar, matched_sigma, pars){
   model_form <- as.formula(paste0(y," ~ A*exp(-B*exp(-C*",x,"))"))
   #* `random effects formula`
   random_form <- A + B + C ~ 1
   #* `fixed effects formula`
-  fixed_form = list(
-    stats::as.formula(paste0("A ~ 0 + ", group)),
-    stats::as.formula(paste0("B ~ 0 + ", group)),
-    stats::as.formula(paste0("C ~ 0 + ", group))
-  )
+  total_pars <- c("A", "B", "C")
+  fixed_form <- lapply(total_pars, function(par){
+    if(par %in% pars){
+      stats::as.formula(paste0(par," ~ 0 + ", group))
+    } else{
+      stats::as.formula(paste0(par," ~ 1"))
+    }
+  })
   #* `groups formula`
   groups_form = stats::as.formula(paste0("~", intVar))
   #* `variance formula`
@@ -234,19 +254,19 @@ return(out)
   return(formulas)
 }
 
-.nlme_form_dou_logistic<-function(x, y, group, individual, intVar, matched_sigma){
+.nlme_form_dou_logistic<-function(x, y, group, individual, intVar, matched_sigma, pars){
   model_form <- as.formula(paste0(y," ~ A/(1+exp((B-",x,")/C)) + ((A2-A) /(1+exp((B2-",x,")/C2)))"))
   #* `random effects formula`
   random_form <- A + B + C + A2 + B2 + C2 ~ 1
   #* `fixed effects formula`
-  fixed_form = list(
-    stats::as.formula(paste0("A ~ 0 + ", group)),
-    stats::as.formula(paste0("B ~ 0 + ", group)),
-    stats::as.formula(paste0("C ~ 0 + ", group)),
-    stats::as.formula(paste0("A2 ~ 0 + ", group)),
-    stats::as.formula(paste0("B2 ~ 0 + ", group)),
-    stats::as.formula(paste0("C2 ~ 0 + ", group))
-  )
+  total_pars <- c("A", "B", "C", "A2", "B2", "C2")
+  fixed_form <- lapply(total_pars, function(par){
+    if(par %in% pars){
+      stats::as.formula(paste0(par," ~ 0 + ", group))
+    } else{
+      stats::as.formula(paste0(par," ~ 1"))
+    }
+  })
   #* `groups formula`
   groups_form = stats::as.formula(paste0("~", intVar))
   #* `variance formula`
@@ -260,19 +280,19 @@ return(out)
   return(formulas)
 }
 
-.nlme_form_dou_gompertz<-function(x, y, group, individual, intVar, matched_sigma){
+.nlme_form_dou_gompertz<-function(x, y, group, individual, intVar, matched_sigma, pars){
     model_form <- as.formula(paste0(y," ~ A * exp(-B * exp(-C*",x,")) + (A2-A) * exp(-B2 * exp(-C2*(",x,"-B)))"))
     #* `random effects formula`
     random_form <- A + B + C + A2 + B2 + C2 ~ 1
     #* `fixed effects formula`
-    fixed_form = list(
-      stats::as.formula(paste0("A ~ 0 + ", group)),
-      stats::as.formula(paste0("B ~ 0 + ", group)),
-      stats::as.formula(paste0("C ~ 0 + ", group)),
-      stats::as.formula(paste0("A2 ~ 0 + ", group)),
-      stats::as.formula(paste0("B2 ~ 0 + ", group)),
-      stats::as.formula(paste0("C2 ~ 0 + ", group))
-    )
+    total_pars <- c("A", "B", "C", "A2", "B2", "C2")
+    fixed_form <- lapply(total_pars, function(par){
+      if(par %in% pars){
+        stats::as.formula(paste0(par," ~ 0 + ", group))
+      } else{
+        stats::as.formula(paste0(par," ~ 1"))
+      }
+    })
     #* `groups formula`
     groups_form = stats::as.formula(paste0("~", intVar))
     #* `variance formula`
@@ -286,15 +306,19 @@ return(out)
     return(formulas)
 }
 
-.nlme_form_monomolecular<-function(x, y, group, individual, intVar, matched_sigma){
+.nlme_form_monomolecular<-function(x, y, group, individual, intVar, matched_sigma, pars){
   model_form <- as.formula(paste0(y,"~A-A*exp(-B*",x,")"))
   #* `random effects formula`
   random_form <- A + B ~ 1
   #* `fixed effects formula`
-  fixed_form = list(
-    stats::as.formula(paste0("A ~ 0 + ", group)),
-    stats::as.formula(paste0("B ~ 0 + ", group))
-  )
+  total_pars <- c("A", "B")
+  fixed_form <- lapply(total_pars, function(par){
+    if(par %in% pars){
+      stats::as.formula(paste0(par," ~ 0 + ", group))
+    } else{
+      stats::as.formula(paste0(par," ~ 1"))
+    }
+  })
   #* `groups formula`
   groups_form = stats::as.formula(paste0("~", intVar))
   #* `variance formula`
@@ -308,15 +332,19 @@ return(out)
   return(formulas)
 }
 
-.nlme_form_exponential<-function(x, y, group, individual, intVar, matched_sigma){
+.nlme_form_exponential<-function(x, y, group, individual, intVar, matched_sigma, pars){
   model_form <- as.formula(paste0(y," ~ A*exp(B*",x, ")"))
   #* `random effects formula`
   random_form <- A + B ~ 1
   #* `fixed effects formula`
-  fixed_form = list(
-    stats::as.formula(paste0("A ~ 0 + ", group)),
-    stats::as.formula(paste0("B ~ 0 + ", group))
-  )
+  total_pars <- c("A", "B")
+  fixed_form <- lapply(total_pars, function(par){
+    if(par %in% pars){
+      stats::as.formula(paste0(par," ~ 0 + ", group))
+    } else{
+      stats::as.formula(paste0(par," ~ 1"))
+    }
+  })
   #* `groups formula`
   groups_form = stats::as.formula(paste0("~", intVar))
   #* `variance formula`
@@ -330,14 +358,19 @@ return(out)
   return(formulas)
 }
 
-.nlme_form_linear<-function(x, y, group, individual, intVar, matched_sigma){
+.nlme_form_linear<-function(x, y, group, individual, intVar, matched_sigma, pars){
   model_form <- as.formula(paste0(y," ~ A*",x))
   #* `random effects formula`
   random_form <- A ~ 1
   #* `fixed effects formula`
-  fixed_form = list(
-    stats::as.formula(paste0("A ~ 0 + ", group))
-  )
+  total_pars <- c("A")
+  fixed_form <- lapply(total_pars, function(par){
+    if(par %in% pars){
+      stats::as.formula(paste0(par," ~ 0 + ", group))
+    } else{
+      stats::as.formula(paste0(par," ~ 1"))
+    }
+  })
   #* `groups formula`
   groups_form = stats::as.formula(paste0("~", intVar))
   #* `variance formula`
@@ -351,15 +384,19 @@ return(out)
   return(formulas)
 }
 
-.nlme_form_powerlaw<-function(x, y, group, individual, intVar, matched_sigma){
+.nlme_form_powerlaw<-function(x, y, group, individual, intVar, matched_sigma, pars){
   model_form <- as.formula(paste0(y," ~ A*",x,"^B"))
   #* `random effects formula`
   random_form <- A + B ~ 1
   #* `fixed effects formula`
-  fixed_form = list(
-    stats::as.formula(paste0("A ~ 0 + ", group)),
-    stats::as.formula(paste0("B ~ 0 + ", group))
-  )
+  total_pars <- c("A", "B")
+  fixed_form <- lapply(total_pars, function(par){
+    if(par %in% pars){
+      stats::as.formula(paste0(par," ~ 0 + ", group))
+    } else{
+      stats::as.formula(paste0(par," ~ 1"))
+    }
+  })
   #* `groups formula`
   groups_form = stats::as.formula(paste0("~", intVar))
   #* `variance formula`

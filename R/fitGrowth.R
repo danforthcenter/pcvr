@@ -13,7 +13,7 @@
 #' simdf<-growthSim("logistic", n=20, t=25,
 #'    params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))
 #' ss<-growthSS(model = "logistic", form=y~time|id/group, sigma="spline",
-#'   df=simdf, priors = list("A"=130, "B"=12, "C"=3))
+#'   df=simdf, priors = list("A"=130, "B"=12, "C"=3), type="brms")
 #' lapply(ss,class)
 #' ss$initfun()
 #' 
@@ -157,14 +157,27 @@ fitGrowthNlrq <- function(ss, cores = getOption("mc.cores",1), ...){
   
   if(length(ss[["taus"]])>1){
   fits <- parallel::mclapply(ss[["taus"]], function(tau){
-    fit<-quantreg::nlrq(formula = ss[["formula"]],
-                        data = ss[["df"]],
-                        tau = tau,
-                        start = ss[["start"]], ...)
+    
+    fit <- do.call("nlrq", args = list(
+      formula = ss[["formula"]],
+      data = quote(ss[["df"]]),
+      tau = tau,
+      start = ss[["start"]], ...
+    ))
+    # fit<-quantreg::nlrq(formula = ss[["formula"]],
+    #                     data = ss[["df"]],
+    #                     tau = tau,
+    #                     start = ss[["start"]], ...)
     return(fit)
   }, mc.cores=cores)
   names(fits) <- ss[["taus"]]
   } else{
+    fit <- do.call("nlrq", args = list(
+      formula = ss[["formula"]],
+      data = quote(ss[["df"]]),
+      tau = ss[["tau"]],
+      start = ss[["start"]], ...
+    ))
     fits<-quantreg::nlrq(formula = ss[["formula"]],
                         data = ss[["df"]],
                         tau = ss[["taus"]],

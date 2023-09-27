@@ -25,7 +25,7 @@ Ease of use wrapper function for fitting various growth models specified by \cod
 simdf<-growthSim("logistic", n=20, t=25,
    params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))
 ss<-growthSS(model = "logistic", form=y~time|id/group, sigma="spline",
-  df=simdf, priors = list("A"=130, "B"=12, "C"=3))
+  df=simdf, priors = list("A"=130, "B"=12, "C"=3), type="brms")
 lapply(ss,class)
 ss$initfun()
 

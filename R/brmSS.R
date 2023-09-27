@@ -155,6 +155,10 @@
     }
     growthForm = form_fun(x,y)
     #* `Make parameter formula`
+    #* could add a pars argument then set up parForm from those.
+    #* I think that would change how priors would have to work
+    #* and that seems like more trouble than it is worth right 
+    #* now at least.
     if(matched_model %in% c("double logistic", "double gompertz")){
       pars=c("A","B", "C", "A2","B2", "C2")
       }else if(matched_model %in% c("logistic", "gompertz")){

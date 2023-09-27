@@ -18,6 +18,8 @@
 #'   corresponding to using \code{nlme::varIdent}, \code{nlme::varPower},
 #' or \code{nlme::varExp} respectively where "power" is the default.
 #' @param df A dataframe to use. Must contain all the variables listed in the formula.
+#' @param pars Optionally specify which parameters should change by group. Not this is model
+#' dependent and is not implemented for brms models due to their more flexible hypothesis testing.
 #' @param start An optional named list of starting values OR means for prior distributions.
 #' If this is not provided then starting values are picked with \code{stats::selfStart}.
 #'  When type = "brms" these must be provided and are treated as the means of
@@ -169,18 +171,19 @@
 #'               
 #' @export
 
-growthSS<-function(model, form, sigma=NULL, df, start=NULL, type="brms", tau = 0.5){
+growthSS<-function(model, form, sigma=NULL, df, start=NULL, pars=NULL, type="brms", tau = 0.5){
   type_matched = match.arg(type, choices = c("brms", "nlrq", "nls", "nlme"))
   if(type_matched=="brms"){
     if(is.null(sigma)){sigma="spline"}
-    res <- .brmSS(model, form, sigma, df, priors = start)
+    res <- .brmSS(model=model, form=form, sigma=sigma, df=df, priors = start)
   } else if(type_matched %in% c("nlrq", "nls")){
-    res <- .nlrqSS(model, form, tau, df, start, type=type)
+    res <- .nlrqSS(model=model, form=form, tau=tau, df=df, start=start, pars=pars, type=type)
   } else if(type_matched=="nlme"){
     if(is.null(sigma)){sigma="power"}
-    res <- .nlmeSS(model, form, sigma, df, start)
+    res <- .nlmeSS(model=model, form=form, sigma=sigma, df=df, pars=pars, start=start)
   } else{stop("Type must match one of brms, nlrq, nls, or nlme")}
   res$type = type
+  res$call = match.call()
   return(res)
 }
 

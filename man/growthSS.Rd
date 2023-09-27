@@ -4,7 +4,16 @@
 \alias{growthSS}
 \title{Ease of use growth model helper function for 6 model parameterizations}
 \usage{
-growthSS(model, form, sigma = NULL, df, start = NULL, type = "brms", tau = 0.5)
+growthSS(
+  model,
+  form,
+  sigma = NULL,
+  df,
+  start = NULL,
+  pars = NULL,
+  type = "brms",
+  tau = 0.5
+)
 }
 \arguments{
 \item{model}{The name of a model as a character string.
@@ -45,6 +54,9 @@ If this is not provided then starting values are picked with \code{stats::selfSt
   you will see warnings after the model is fit about not having specified a lower
   bound explicitly. Those warnings can safely be ignored and will be addressed if
   the necessary features are added to \code{brms}. See details for guidance.}
+
+\item{pars}{Optionally specify which parameters should change by group. Not this is model
+dependent and is not implemented for brms models due to their more flexible hypothesis testing.}
 
 \item{type}{Type of model to fit, options are "brms", "nlrq", and "nls".}
 

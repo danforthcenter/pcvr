@@ -540,7 +540,11 @@ p_nlme
 
 ## Hypothesis Testing
 
-Hypothesis testing for frequentist non-linear growth models can be difficult. `pcvr` currently does not have specialized hypothesis testing functions for these models, but `car` and `nlraa` both support some testing.
+Hypothesis testing for frequentist non-linear growth models can be somewhat limited.
+
+Broadly, testing is implemented by comparing models against nested null models using `testGrowth`.
+
+## `testGrowth`
 
 ## Limitations
 
