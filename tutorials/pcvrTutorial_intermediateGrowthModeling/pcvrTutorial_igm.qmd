@@ -27,8 +27,7 @@ editor: visual
 -   `growthSS`
 -   `fitGrowth`
 -   `growthPlot`
--   Hypothesis testing
--   Limitations
+-   `testGrowth`
 -   Resources
 
 ## `pcvr` Goals
@@ -47,7 +46,7 @@ Pre-work was to install R, Rstudio, and `pcvr` with dependencies.
 ```{r}
 #| echo: false
 #| eval: true
-if(!all(c("pcvr", "brms", "cmdstanr") %in% installed.packages())){
+if(!"pcvr" %in% installed.packages()){
   if(!"devtools" %in% installed.packages()){
    install.packages("devtools") 
   }
@@ -57,11 +56,10 @@ if(!all(c("pcvr", "brms", "cmdstanr") %in% installed.packages())){
 
 ```{r}
 #| echo: true
-library(pcvr) # or devtools::load_all() if you are editing
-library(brms) # for bayesian models
-library(data.table) # for fread
-library(ggplot2) # for plotting
-library(patchwork) # to arrange ggplots
+#library(pcvr) # or devtools::load_all() if you are editing
+devtools::load_all("~/Desktop/stargate/fahlgren_lab/pcvr/")
+library(ggplot2)
+library(patchwork)
 ```
 
 ## Why Longitudinal Modeling?
@@ -544,9 +542,30 @@ Hypothesis testing for frequentist non-linear growth models can be somewhat limi
 
 Broadly, testing is implemented by comparing models against nested null models using `testGrowth`.
 
-## `testGrowth`
+## `testGrowth` - nls
 
-## Limitations
+```{r}
+#| echo: true
+#| eval: true
+testGrowth(nls_ss, nls_fit, test_pars = "A")
+```
+
+## `testGrowth` - nlme
+
+```{r}
+#| echo: true
+#| eval: true
+testGrowth(nlme_ss, nlme_fit, test_pars = "A")
+```
+
+## `testGrowth` - nlrq
+
+```{r}
+#| echo: true
+#| eval: true
+testGrowth(nlrq_ss, nlrq_fit, test_pars = "A")
+```
+
 
 ## Resources
 

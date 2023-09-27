@@ -46,6 +46,7 @@ nlsPlot<-function(fit, form, df = NULL, groups = NULL, timeRange = NULL){
   #fit = fit_outer; form = ss$pcvrForm; groups = NULL; df = ss$df; timeRange = NULL
   #* `get needed information from formula`
   x <-as.character(form)[3]
+  y <-as.character(form)[2]
   if(grepl("\\|", x) & grepl("\\/",x)){
     x3<-trimws(strsplit(x, "[|]|[/]")[[1]])
     x<-x3[1]

@@ -47,6 +47,7 @@ nlrqPlot<-function(fit, form, df = NULL, groups = NULL, timeRange = NULL){
   #fit = fits; form = ss$pcvrForm; groups = NULL; df = ss$df; timeRange = NULL
   #* `get needed information from formula`
   x <-as.character(form)[3]
+  y <-as.character(form)[2]
   if(grepl("\\|", x) & grepl("\\/",x)){
     x3<-trimws(strsplit(x, "[|]|[/]")[[1]])
     x<-x3[1]
@@ -89,7 +90,7 @@ nlrqPlot<-function(fit, form, df = NULL, groups = NULL, timeRange = NULL){
   colnames(plotdf) <- c(colnames(df), colnames(preds))
   #* `define colors`
   virPal_p1<-viridis::plasma(ceiling(length(predCols)/2), direction=1, end=1)
-  virPal_p2<-viridis::plasma(floor(length(predCols)/2), direction=1, end=1)
+  virPal_p2<-viridis::plasma(floor(length(predCols)/2), direction=-1, end=1)
   virPal<-c(virPal_p1,virPal_p2)#; scales::show_col(virPal)
   #* `layer for individual lines if formula was complete`
   if(!is.null(individual)){
