@@ -1,4 +1,4 @@
-#' Function to visualize common \link{quantreg::nlrq} growth models.
+#' Function to visualize common \code{quantreg::nlrq} growth models.
 #' 
 #' Models fit using \link{growthSS} inputs by \link{fitGrowth} (and similar models made through other means)
 #'  can be visualized easily using this function. This will generally be called by \code{growthPlot}.

@@ -2,7 +2,7 @@
 % Please edit documentation in R/nlsPlot.R
 \name{nlsPlot}
 \alias{nlsPlot}
-\title{Function to visualize common \link{stats::nls} growth models.}
+\title{Function to visualize common \code{stats::nls} growth models.}
 \usage{
 nlsPlot(fit, form, df = NULL, groups = NULL, timeRange = NULL)
 }

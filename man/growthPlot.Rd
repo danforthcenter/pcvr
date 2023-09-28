@@ -19,6 +19,8 @@ Defaults to NULL in which case all groups in the model are plotted.}
 
 \item{timeRange}{An optional range of times to use. This can be used to view predictions for
 future data if the avaiable data has not reached some point (such as asymptotic size).}
+
+\item{boot}{number of bootstrap iterations to run.}
 }
 \value{
 Returns a ggplot showing a brms model's credible

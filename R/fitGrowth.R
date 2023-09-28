@@ -13,7 +13,7 @@
 #' simdf<-growthSim("logistic", n=20, t=25,
 #'    params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))
 #' ss<-growthSS(model = "logistic", form=y~time|id/group, sigma="spline",
-#'   df=simdf, priors = list("A"=130, "B"=12, "C"=3), type="brms")
+#'   df=simdf, start = list("A"=130, "B"=12, "C"=3), type="brms")
 #' lapply(ss,class)
 #' ss$initfun()
 #' 
@@ -26,7 +26,7 @@
 
 fitGrowth<-function(ss, ...){
   if(ss$type=="brms"){
-    fit <- fitGrowthBrms(ss, ...)
+    fit <- fitGrowthBrm(ss, ...)
   } else if(ss$type=="nlme"){
     fit <- fitGrowthNlme(ss, ...)
   } else if(ss$type =="nls"){

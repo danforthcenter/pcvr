@@ -12,6 +12,7 @@
 #' @param df A dataframe to use in plotting observed growth curves on top of the model and for making predictions.
 #' @param timeRange An optional range of times to use. This can be used to view predictions for
 #' future data if the avaiable data has not reached some point (such as asymptotic size).
+#' @param boot number of bootstrap iterations to run.
 #' @keywords growth-curve, logistic, gompertz, monomolecular, linear, exponential, power-law
 #' @importFrom methods is
 #' @examples 

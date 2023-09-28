@@ -2,7 +2,7 @@
 % Please edit documentation in R/nlmePlot.R
 \name{nlmePlot}
 \alias{nlmePlot}
-\title{Function to visualize common \link{nlme::nlme} growth models.}
+\title{Function to visualize common \code{nlme::nlme} growth models.}
 \usage{
 nlmePlot(fit, form, df = NULL, groups = NULL, timeRange = NULL, boot = 1000)
 }
@@ -20,6 +20,8 @@ Defaults to NULL in which case all groups in the model are plotted.}
 
 \item{timeRange}{An optional range of times to use. This can be used to view predictions for
 future data if the avaiable data has not reached some point (such as asymptotic size).}
+
+\item{boot}{number of bootstrap iterations to run.}
 }
 \value{
 Returns a ggplot showing a brms model's credible

@@ -1,4 +1,4 @@
-#' Function to visualize common \link{nlme::nlme} growth models.
+#' Function to visualize common \code{nlme::nlme} growth models.
 #' 
 #' Models fit using \link{growthSS} inputs by \link{fitGrowth} (and similar models made through other means)
 #'  can be visualized easily using this function. This will generally be called by \code{growthPlot}.
@@ -12,6 +12,7 @@
 #' Defaults to NULL in which case all groups in the model are plotted.
 #' @param timeRange An optional range of times to use. This can be used to view predictions for
 #' future data if the avaiable data has not reached some point (such as asymptotic size).
+#' @param boot number of bootstrap iterations to run.
 #' @keywords growth-curve, logistic, gompertz, monomolecular, linear, exponential, power-law
 #' @importFrom methods is
 #' @import ggplot2

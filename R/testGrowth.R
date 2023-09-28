@@ -6,6 +6,7 @@
 #' vary by group in your original model and that you want to test against a null model where they
 #' do not vary by group.
 #' @keywords hypothesis, nlme, nls, nlrq
+#' @importFrom stats getCall logLik pchisq anova
 #' 
 #' @details
 #' For nls and nlme models an anova is run and returned as part of a list along with the null model.
@@ -126,14 +127,14 @@ return(res)
   rval <- matrix(rep(NA, 5 * 2), ncol = 5)
   colnames(rval) <- c("#Df", "LogLik", "Df", "Chisq", "Pr(>Chisq)")
   rownames(rval) <- 1:2
-  logL <- lapply(nested_models, logLik)
+  logL <- lapply(nested_models, stats::logLik)
   rval[,1] <- as.numeric(sapply(logL, function(x) attr(x, "df")))  
   rval[,2] <- sapply(logL, as.numeric)
   rval[2:nModels, 3] <- rval[2:nModels, 1] - rval[1:(nModels-1), 1]
   rval[2:nModels, 4] <- 2 * abs(rval[2:nModels, 2] - rval[1:(nModels-1), 2])
-  rval[,5] <- pchisq(rval[,4], round(abs(rval[,3])), lower.tail = FALSE)
+  rval[,5] <- stats::pchisq(rval[,4], round(abs(rval[,3])), lower.tail = FALSE)
   
-  variables <- lapply(nested_models, function(x){deparse(as.list(getCall(x))$formula)})
+  variables <- lapply(nested_models, function(x){deparse(as.list(stats::getCall(x))$formula)})
   header <- paste("Model ", format(1:nModels),": ", variables, sep="", collapse="\n")
   out<-structure(as.data.frame(rval), heading = header,
                  class = c("anova", "data.frame"))

@@ -2,7 +2,7 @@
 % Please edit documentation in R/nlrqPlot.R
 \name{nlrqPlot}
 \alias{nlrqPlot}
-\title{Function to visualize common \link{quantreg::nlrq} growth models.}
+\title{Function to visualize common \code{quantreg::nlrq} growth models.}
 \usage{
 nlrqPlot(fit, form, df = NULL, groups = NULL, timeRange = NULL)
 }

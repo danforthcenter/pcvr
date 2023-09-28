@@ -142,7 +142,7 @@
 #' params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))
 #' ss<-growthSS(model = "logistic", form=y~time|id/group,
 #'              sigma="spline", df=simdf,
-#'              priors = list("A"=130, "B"=12, "C"=3), type="brms")
+#'              start = list("A"=130, "B"=12, "C"=3), type="brms")
 #' lapply(ss,class)
 #' ss$initfun()
 #' 
@@ -156,14 +156,14 @@
 #' 
 #' ex<-growthSim("linear", n=20, t=25, params=list("A"=2))
 #' ex_ss <- growthSS(model = "linear", form = y~time|id/group, sigma = "spline",
-#'                 df = ex, priors = list("A" = 1))
+#'                 df = ex, start = list("A" = 1), type="brms")
 #'                 
 #' ex_ss$prior # no coef level grouping for priors
 #' ex_ss$formula # intercept only model for A
 #' 
 #' ex2<-growthSim("linear", n=20, t=25, params=list("A"=c(2, 2.5)))
 #' ex2_ss <- growthSS(model = "linear", form = y~time|id/group, sigma = "spline",
-#'                    df = ex2, priors = list("A" = 1))
+#'                    df = ex2, start = list("A" = 1), type="brms")
 #' ex2_ss$prior # has coef level grouping for priors
 #' ex2_ss$formula # specifies an A intercept for each group and splines by group for sigma
 #' 

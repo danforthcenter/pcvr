@@ -1,4 +1,4 @@
-#' Function to visualize common \link{stats::nls} growth models.
+#' Function to visualize common \code{stats::nls} growth models.
 #' 
 #' Models fit using \link{growthSS} inputs by \link{fitGrowth} (and similar models made through other means)
 #'  can be visualized easily using this function. This will generally be called by \code{growthPlot}.
