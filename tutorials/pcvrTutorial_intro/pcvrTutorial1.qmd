@@ -691,11 +691,9 @@ summary(fit_test)
 
 ## Plotting with `growthPlot`
 
-```{r}
-#| eval: false
-#| echo: true
-growthPlot(fit=fit_test, form=ss$pcvrForm)
-```
+Any of the 4 types of growth models can be plotted using `growthPlot`.
+
+![](patched_growthPlots.png)
 
 
 ## Testing with `testGrowth`
