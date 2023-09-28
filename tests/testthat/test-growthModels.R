@@ -19,13 +19,14 @@ test_that("Test Logistic nls modeling", {
   fit <- fitGrowth(ss)
   expect_s3_class(fit, "nls")
   
-  p <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
-  expect_s3_class(p, "ggplot")
+  nls_p <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)+
+    ggplot2::labs(title="nls")
+  expect_s3_class(nls_p, "ggplot")
 })
 
 test_that("Test Logistic nlrq modeling", {
   ss<-suppressMessages(growthSS(model = "logistic", form=y~time|id/group,
-               df=logistic_df, type = "nlrq"))
+               df=logistic_df, type = "nlrq", tau = 0.5)) # seq(0.02, 0.99, 0.02)
   expect_equal(as.numeric(unlist(ss$start)),
                c(184.201800401145, 184.201800401145, 12.0514357556166, 12.0514357556166, 
                  3.34892124655795, 3.34892124655795) )
@@ -33,8 +34,9 @@ test_that("Test Logistic nlrq modeling", {
   fit <- fitGrowth(ss)
   expect_s3_class(fit, "nlrq")
   
-  p <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
-  expect_s3_class(p, "ggplot")
+  nlrq_p <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)+
+    ggplot2::labs(title="nlrq")
+  expect_s3_class(nlrq_p, "ggplot")
 })
 
 test_that("Test Logistic nlme modeling", {
@@ -47,8 +49,10 @@ test_that("Test Logistic nlme modeling", {
   fit <- suppressWarnings(fitGrowth(ss))
   expect_s3_class(fit, "nlme")
   
-  p <- suppressWarnings(growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df, boot = 3))
-  expect_s3_class(p, "ggplot")
+  nlme_p <- suppressWarnings(growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df, boot = 3))
+  nlme_p<-nlme_p+
+    ggplot2::labs(title="nlme")
+  expect_s3_class(nlme_p, "ggplot")
 })
 
 test_that("Test Logistic brms model setup", {
