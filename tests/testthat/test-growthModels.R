@@ -10,8 +10,8 @@ logistic_df<-growthSim("logistic", n=20, t=25,
    params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))
 
 test_that("Test Logistic nls modeling", {
-  ss<-growthSS(model = "logistic", form=y~time|id/group, 
-               df=logistic_df, type = "nls")
+  ss<-suppressMessages(growthSS(model = "logistic", form=y~time|id/group, 
+               df=logistic_df, type = "nls"))
   expect_equal(as.numeric(unlist(ss$start)),
                c(184.201800401145, 184.201800401145, 12.0514357556166, 12.0514357556166, 
                                    3.34892124655795, 3.34892124655795) )
@@ -24,8 +24,8 @@ test_that("Test Logistic nls modeling", {
 })
 
 test_that("Test Logistic nlrq modeling", {
-  ss<-growthSS(model = "logistic", form=y~time|id/group,
-               df=logistic_df, type = "nlrq")
+  ss<-suppressMessages(growthSS(model = "logistic", form=y~time|id/group,
+               df=logistic_df, type = "nlrq"))
   expect_equal(as.numeric(unlist(ss$start)),
                c(184.201800401145, 184.201800401145, 12.0514357556166, 12.0514357556166, 
                  3.34892124655795, 3.34892124655795) )
@@ -69,8 +69,8 @@ mono_df<-growthSim("monomolecular", n=20, t=25,
                  params = list("A"=c(200,160), "B"=c(0.08, 0.1)))
 
 test_that("Test monomolecular nls modeling", {
-  ss<-growthSS(model = "monomolecular", form=y~time|id/group, 
-               df=mono_df, type = "nls")
+  ss<-suppressMessages(growthSS(model = "monomolecular", form=y~time|id/group, 
+               df=mono_df, type = "nls"))
   expect_equal(as.numeric(unlist(ss$start)),
                c(58.0855457770439, 58.0855457770439, 0.0457652584520121, 0.0457652584520121) )
   
@@ -82,8 +82,8 @@ test_that("Test monomolecular nls modeling", {
 })
 
 test_that("Test monomolecular nlrq modeling", {
-  ss<-growthSS(model = "monomolecular", form=y~time|id/group,
-               df=mono_df, type = "nlrq")
+  ss<-suppressMessages(growthSS(model = "monomolecular", form=y~time|id/group,
+               df=mono_df, type = "nlrq"))
   expect_equal(as.numeric(unlist(ss$start)),
                c(58.0855457770439, 58.0855457770439, 0.0457652584520121, 0.0457652584520121) )
   

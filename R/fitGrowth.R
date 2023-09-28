@@ -172,16 +172,12 @@ fitGrowthNlrq <- function(ss, cores = getOption("mc.cores",1), ...){
   }, mc.cores=cores)
   names(fits) <- ss[["taus"]]
   } else{
-    fit <- do.call("nlrq", args = list(
+    fits <- do.call("nlrq", args = list(
       formula = ss[["formula"]],
       data = quote(ss[["df"]]),
-      tau = ss[["tau"]],
+      tau = ss[["taus"]],
       start = ss[["start"]], ...
     ))
-    fits<-quantreg::nlrq(formula = ss[["formula"]],
-                        data = ss[["df"]],
-                        tau = ss[["taus"]],
-                        start = ss[["start"]], ...)
   }
   return(fits)
 }
