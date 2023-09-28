@@ -195,7 +195,7 @@ ggplot(sigma_df, aes(x=time, y=y))+
 
 ```{r}
 ss <- growthSS(model = "gompertz", form = y~time|id/group, sigma = "homo",
-               df = gomp, priors = list("A"=130, "B"=15, "C"=0.25))
+               df = gomp, start = list("A"=130, "B"=15, "C"=0.25))
 ```
 
 ```{r, eval=FALSE}
@@ -211,7 +211,7 @@ We can relax this assumption and model sigma separately from the main growth tre
 
 ```{r}
 ss <- growthSS(model = "gompertz", form = y~time|id/group, sigma = "linear",
-               df = gomp, priors = list("A"=130, "B"=15, "C"=0.25))
+               df = gomp, start = list("A"=130, "B"=15, "C"=0.25))
 ```
 
 ```{r, eval=FALSE}
@@ -232,7 +232,7 @@ We can also use spline sub models. The spline model does a very good job of fitt
 
 ```{r}
 ss <- growthSS(model = "gompertz", form = y~time|id/group, sigma = "spline",
-               df = gomp, priors = list("A"=130, "B"=15, "C"=0.25))
+               df = gomp, start = list("A"=130, "B"=15, "C"=0.25))
 ```
 
 ```{r, eval=FALSE}
@@ -354,7 +354,7 @@ fit_gam <- brm( bf(y ~ s(time, by = group),
 ```
 
 
-### `growthSS(..., priors, ...)`
+### `growthSS(..., start, ...)`
 
 Setting appropriate prior distributions is an important part and often criticized part of Bayesian statistics. Prior distributions are often talked about in the language of "prior beliefs", which can be somewhat misleading. Instead it can be helpful to think of prior distributions as hard-headed prior evidence.
 
