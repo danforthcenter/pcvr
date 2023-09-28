@@ -248,7 +248,8 @@ When setting priors for the gompertz sub-model it is generally reasonable to exp
 
 ```{r}
 ss <- growthSS(model = "gompertz", form = y~time|id/group, sigma = "gompertz",
-               df = gomp, priors = list("A"=130, "B"=15, "C"=0.25, "subA"=15, "subB"=15, "subC"=0.25))
+               df = gomp, start = list("A"=130, "B"=15, "C"=0.25, "subA"=15, "subB"=15, "subC"=0.25),
+               type="brms")
 ```
 
 ```{r, eval=FALSE}
@@ -573,7 +574,7 @@ To fit these models we take the same approach of using `growthSS` and `fitGrowth
 
 ```{r,eval=FALSE}
 ss <- growthSS("double gompertz", y ~ time|id/group, sigma = "homo", df = simdf,
-               priors = list('A' = 100, 'B' = 12, 'C' = 0.25,
+               start = list('A' = 100, 'B' = 12, 'C' = 0.25,
                              'A2' = 200, 'B2' = 30, 'C2' = 0.1))
 
 fit <- fitGrowth(ss, 1000, cores = 4, chains=4, silent=0)
@@ -585,7 +586,7 @@ brmPlot(fit, form = ss$pcvrForm, df = simdf) # 200 seconds
 
 ```{r, eval = FALSE}
 ss <- growthSS("double gompertz", y ~ time|id/group, sigma = "gompertz", df = simdf,
-               priors = list('A' = 100, 'B' = 12, 'C' = 0.25,
+               start = list('A' = 100, 'B' = 12, 'C' = 0.25,
                              'A2' = 200, 'B2' = 30, 'C2' = 0.1,
                              'subA' = 200, 'subB' = 30, 'subC' = 0.1))
 
@@ -598,7 +599,7 @@ brmPlot(fit, form = ss$pcvrForm, df = simdf) # 440 seconds
 
 ```{r, eval = FALSE}
 ss <- growthSS("double gompertz", y ~ time|id/group, sigma = "spline", df = simdf,
-               priors = list('A' = 100, 'B' = 12, 'C' = 0.25,
+               start = list('A' = 100, 'B' = 12, 'C' = 0.25,
                              'A2' = 200, 'B2' = 30, 'C2' = 0.1))
 
 fit <- fitGrowth(ss, 1000, cores = 4, chains=4, silent=0)

@@ -188,10 +188,10 @@ Four model building options are supported through the `type` argument of growthS
 Non-linear least squares regression.
 
 | Longitudinal Trait | nls |
-|--------------------|------|
-| Non-linearity      | ✅   |
-| Autocorrelation    | ❌   |
-| Heteroskedasticity | ❌   |
+|--------------------|-----|
+| Non-linearity      | ✅  |
+| Autocorrelation    | ❌  |
+| Heteroskedasticity | ❌  |
 
 ## type = "nlrq" {.smaller}
 
@@ -223,7 +223,7 @@ Non-linear Mixed Effect Models
 | Non-linearity      | ✅   |
 | Autocorrelation    | ✅   |
 | Heteroskedasticity | ✅   |
-|Being a headache | ✅ |
+| Being a headache   | ✅   |
 
 ## type = "brms" {.smaller}
 
@@ -234,7 +234,6 @@ Bayesian hierarchical Models
 | Non-linearity      | ✅   |
 | Autocorrelation    | ✅   |
 | Heteroskedasticity | ✅   |
-
 
 ## Supported Growth Models {.smaller}
 
@@ -441,7 +440,6 @@ p<-ggplot(sigma_df, aes(x=time, y=y, group=group))+
 
 nlme varFunc objects can also be passed to the sigma argument in growthSS, see `?nlme::varClasses` for details.
 
-
 ## `growthSS` - start {.smaller}
 
 One of the useful features in growthSS is that you do not need to specify starting values for the supported non-linear models (double sigmoid options notwithstanding).
@@ -498,12 +496,11 @@ nlme_fit <- fitGrowth(nlme_ss)
 
 Additional arguments can be passed to `fitGrowth` and are used as follows:
 
-| type | ... | 
-|---|---|
-| nls | passed to stats::nls |
+| type | ...                                                |
+|------|----------------------------------------------------|
+| nls  | passed to stats::nls                               |
 | nlrq | cores to run in parallel, passed to quantreg::nlrq |
-| nlme | passed to nlme::nlmeControl |
-
+| nlme | passed to nlme::nlmeControl                        |
 
 ## `growthPlot`
 
@@ -521,20 +518,17 @@ p_nlme <- growthPlot(nlme_fit, form = nlme_ss$pcvrForm, df=nlme_ss$df)
 p_nls
 ```
 
-
 ## `growthPlot` - nlrq
 
 ```{r}
 p_nlrq
 ```
 
-
 ## `growthPlot` - nlme
 
 ```{r}
 p_nlme
 ```
-
 
 ## Hypothesis Testing
 
@@ -565,7 +559,6 @@ testGrowth(nlme_ss, nlme_fit, test_pars = "A")
 #| eval: true
 testGrowth(nlrq_ss, nlrq_fit, test_pars = "A")
 ```
-
 
 ## Resources
 
