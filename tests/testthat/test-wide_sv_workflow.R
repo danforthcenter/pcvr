@@ -53,7 +53,7 @@ test_that("reading sv github data as wide works", {
    sv$group <- interaction(sv$fertilizer, sv$genotype)
    sv$area_cm2 <- sv$area_pixels / (42.5^2)
    ss <- growthSS(model="gompertz", form =  area_pixels~DAS|barcode/group, sigma="spline", df=sv,
-                  priors = list("A" = 130, "B" = 10, "C" = 0.5))
+                  start = list("A" = 130, "B" = 10, "C" = 0.5))
    expect_type(ss, "list")
    
    expect_s3_class(ss[["formula"]], "brmsformula")

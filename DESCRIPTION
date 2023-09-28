@@ -31,6 +31,8 @@ Imports:
     bayestestR,
     viridis,
     mgcv,
+    quantreg,
+    nlme,
     scales
 Suggests: 
     knitr,

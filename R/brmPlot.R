@@ -1,11 +1,14 @@
 #' Function to visualize brms models similar to those made using growthSS outputs.
 #' 
+#' Models fit using \link{growthSS} inputs by \link{fitGrowth} (and similar models made through other means)
+#'  can be visualized easily using this function. This will generally be called by \code{growthPlot}.
+#' 
 #' @param fit A brmsfit object, similar to those fit with \code{\link{growthSS}} outputs.
 #' @param form A formula similar to that in \code{growthSS} inputs specifying the outcome,
 #' predictor, and grouping structure of the data as \code{outcome ~ predictor|individual/group}.
+#' @param df An optional dataframe to use in plotting observed growth curves on top of the model.
 #' @param groups An optional set of groups to keep in the plot.
 #' Defaults to NULL in which case all groups in the model are plotted.
-#' @param df An optional dataframe to use in plotting observed growth curves on top of the model.
 #' @param timeRange An optional range of times to use. This can be used to view predictions for
 #' future data if the avaiable data has not reached some point (such as asymptotic size),
 #' although prediction using splines outside of the observed range is not necessarily reliable.
@@ -35,7 +38,7 @@
 #' 
 #' @export
 
-brmPlot<-function(fit, form, groups = NULL, df=NULL, timeRange = NULL){
+brmPlot<-function(fit, form, df=NULL, groups = NULL, timeRange = NULL){
   fitData<-fit$data
   y=as.character(form)[2]
   x<-as.character(form)[3]

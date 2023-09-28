@@ -372,7 +372,7 @@ pcvBox(cp[cp$DAS==19, ], x="fertilizer", y="area_cm2_csum", showPoints = T)+
 
 ### Longitudinal Modeling
 
-Longitudinal modeling is the most comprehensive way to use the single value traits from a bellwether experiment. Longitudinal modeling can also be complicated compared to single timepoint analyses. Statistical complications including changes in variance, non-linearity, and autocorrelation present potential problems in analyses. To address these we recommend using hierarchical models. `pcvr` attempts to lower the barrier to entry for these models with helper functions for use with `brms`.
+Longitudinal modeling is the most comprehensive way to use the single value traits from a bellwether experiment. Longitudinal modeling can also be complicated compared to single timepoint analyses. Statistical complications including changes in variance, non-linearity, and autocorrelation present potential problems in analyses. To address these we recommend using hierarchical models. `pcvr` attempts to lower the barrier to entry for these models with helper functions for use with `brms`, `nlme`, `nlrq`, and `nls`. Here we focus only on `brms` models, but there are [tutorials](https://github.com/danforthcenter/pcvr/tree/main/tutorials) that cover more options.
 
 #### Growth Model Forms
 
@@ -462,7 +462,7 @@ Here our priors are informed by a general understanding of what we expect to see
 
 ```{r, eval=FALSE}
 ss<-growthSS(model="gompertz", form =  area_cm2~DAS|barcode/group, sigma="spline", df=sv_ag,
-             priors = list("A" = 130, "B" = 10, "C" = 0.5))
+             start = list("A" = 130, "B" = 10, "C" = 0.5), type = "brms")
 ```
 
 Now we have most of our model components in the `ss` object. Since we specified a gompertz model we have three parameters, the asymptote (`A`), the inflection point (`B`), and the growth rate (`C`). For other model options see `?pcvr::growthSim` for details on the parameters.
