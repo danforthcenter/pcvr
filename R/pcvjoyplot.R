@@ -44,15 +44,6 @@
 #' @import data.table
 #' @importFrom stats setNames density aggregate as.formula ks.test
 #' 
-#' @details 
-#' The method argument is used for statistical testing of groups.
-#' There there is only a "ks" option, with other methods in place for 
-#' multi-value trait analysis available in \code{conjugate} and \code{pcv.emd}.
-#' \itemize{
-#'  \item{"ks": }{The ks method performs a ks test on the PDF of each histogram.
-#'  This returns a P value corresponding to a 
-#'  standard KS test that distributions are the same.}
-#' }
 #' 
 #' @return Returns either a ggplot object or a list containing a ggplot and a dataframe of statistical comparisons (if compare is not FALSE).
 #' 
@@ -63,7 +54,7 @@
 #' df <- read.pcv(
 #'   "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest2.csv", "long")
 #'   
-#' x <- pcv.joyplot(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"))
+#' x <- pcv.joyplot(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"), method="pdf")
 #' 
 #' if (FALSE){
 #' wide<-read.pcv(
@@ -257,7 +248,7 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL, y = NULL, id = NULL
   datsp=split(d, d$grouping, drop=TRUE)
   pdfs<-lapply(datsp, function(datsp_iter){
     ag_df <- stats::aggregate(freq ~ bin+grouping, data=datsp_iter, mean)
-    dens <- density(ag_df$bin,
+    dens <- stats::density(ag_df$bin,
                     weights = (ag_df$freq+ 1/nrow(ag_df))/sum((ag_df$freq+ 1/nrow(ag_df))), # weighting + flat prior
                     from = min(d$bin,na.rm=TRUE), # min and max of total data
                     to = max(d$bin,na.rm=TRUE),

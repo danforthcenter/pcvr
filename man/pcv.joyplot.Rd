@@ -11,6 +11,7 @@ pcv.joyplot(
   y = NULL,
   id = NULL,
   method = NULL,
+  hypothesis = "unequal",
   compare = NULL,
   bin = "label",
   freq = "value",
@@ -41,10 +42,14 @@ Note that ggridges::geom_density_ridges_gradient does not support transparency,
 so if fillx is TRUE then only the outer line will show individual IDs.}
 
 \item{method}{A method to use in comparing distributions/means.
-Currently only "ks" is supported, where density is approximated from the 
-histogram columns and  KS test is used between those densities. For other
+Currently "ks" and "pdf" are supported, where density is approximated from the 
+histogram columns and  KS test is used between samples from those densities per each photo.
+For the "pdf" method a flat prior is added to the data and the distributions are compared 
+depending on the hypothesis provided. For other
 options in comparing multi-value traits see \code{\link{conjugate}} or
 \code{\link{pcv.emd}}.}
+
+\item{hypothesis}{A hypothesis for the "pdf" method, must be either unequal, equal, lesser, or greater.}
 
 \item{compare}{Groups to compare. By default this is set to FALSE, 
 which corresponds to no testing. Other values of compare are passed to 
@@ -71,16 +76,6 @@ Returns either a ggplot object or a list containing a ggplot and a dataframe of 
 \description{
 Make Joyplots for multi value trait plantCV data and optionally compare distributions
 }
-\details{
-The method argument is used for statistical testing of groups.
-There there is only a "ks" option, with other methods in place for 
-multi-value trait analysis available in \code{conjugate} and \code{pcv.emd}.
-\itemize{
- \item{"ks": }{The ks method performs a ks test on the PDF of each histogram.
- This returns a P value corresponding to a 
- standard KS test that distributions are the same.}
-}
-}
 \examples{
 
 ## Not run: 
@@ -88,7 +83,7 @@ multi-value trait analysis available in \code{conjugate} and \code{pcv.emd}.
 df <- read.pcv(
   "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest2.csv", "long")
   
-x <- pcv.joyplot(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"))
+x <- pcv.joyplot(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"), method="pdf")
 
 if (FALSE){
 wide<-read.pcv(
