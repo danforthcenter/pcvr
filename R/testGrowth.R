@@ -114,6 +114,7 @@ modsList <- lapply(ss$taus, function(tau) list(fit[[paste0(tau)]], nullMods[[pas
 res <- lapply(modsList, function(modsPair){
   .nlrq_pseudoLRT(modsPair)
 })
+names(res)<-ss$taus
 return(res)
 }
 

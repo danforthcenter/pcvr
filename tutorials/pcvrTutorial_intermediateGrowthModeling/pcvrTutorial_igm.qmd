@@ -308,9 +308,9 @@ patchD <- dl + dg + plot_layout(guides="collect") & theme(legend.position="botto
 patchD
 ```
 
-## Supported Growth Models 3 {.smaller}
+## A note on GAMs {.smaller}
 
-There is also limited support for [generalized additive models]() in `pcvr`
+There is also limited support for [generalized additive models](https://en.wikipedia.org/wiki/Generalized_additive_model) in `pcvr`
 
 ```{r}
 #| echo: false
@@ -328,19 +328,60 @@ wiggles <- data.frame(x=c(x,x2), y = c(y,y2))
 #| eval: true
 ggplot(wiggles, aes(x,y))+
   geom_point()+
-  geom_smooth(method="gam",formula = y ~ s(x, bs = "cs",k=5), aes(color="5"), se=F)+
-  geom_smooth(method="gam",formula = y ~ s(x, bs = "cs",k=10), aes(color="10"), se=F)+
+  geom_smooth(method="gam",formula = y ~ s(x, bs = "cs",k=50), aes(color="50"), se=F)+
   geom_smooth(method="gam",formula = y ~ s(x, bs = "cs",k=15), aes(color="15"), se=F)+
-  scale_color_viridis_d(option="viridis", begin=0.1, end = 0.9)+
+  geom_smooth(method="gam",formula = y ~ s(x, bs = "cs",k=10), aes(color="10"), se=F)+
+  geom_smooth(method="gam",formula = y ~ s(x, bs = "cs",k=5), aes(color="5"), se=F)+
+  scale_color_viridis_d(option="viridis",limits = c("5", "10", "15", "50"))+
   labs(color="Knots")+
   pcv_theme()
 ```
+
+## GAMs
+
+```{r}
+#| echo: false
+#| eval: true
+simdf<-growthSim("logistic", n=20, t=25,
+                 params = list("A"=c(200,160),
+                               "B"=c(13, 11),
+                               "C"=c(3, 3.5)))
+```
+
+```{r}
+#| echo: true
+#| eval: true
+m <- mgcv::gam(y ~ group + s(time, by =factor(group)), data=simdf)
+start<-min(simdf$time); end <-max(simdf$time)
+support <- expand.grid(time = seq(start, end, length = 400),
+                       group = factor(unique(simdf$group)))
+
+out<-gam_diff(model=m, newdata=support, g1="a", g2="b",
+              byVar = "group", smoothVar="time", plot=T, patch=F)
+```
+
+## `gam_diff` predictions
+
+```{r}
+out$plot$plot_preds +
+  geom_line(data=simdf, aes(x=time, y=y, color=factor(group, levels=c("b","a")), group=paste0(group,id)), linewidth=0.1, show.legend = FALSE)
+```
+
+## `gam_diff` differences
+
+```{r}
+gam_diff(model=m, newdata=support, g1="a", g2="b",
+              byVar = "group", smoothVar="time", plot=TRUE, patch=TRUE)$plot
+```
+
+
+
 
 
 
 ## `growthSS`
 
-Any of the models shown above can be specified easily using `growthSS`.
+Any of the 8 parameterized models shown can be specified easily using `growthSS`.
 
 ## `growthSS` - form
 
@@ -357,31 +398,27 @@ Here we would use `y~time|id/group`
 ```{r}
 #| echo: true
 #| eval: true
-simdf<-growthSim("logistic", n=20, t=25,
-                 params = list("A"=c(200,160),
-                               "B"=c(13, 11),
-                               "C"=c(3, 3.5)))
 head(simdf)
 ```
 
 ## `growthSS` - form 3
 
-Generally it makes sense to visually check that your formula covers your experimental design.
-
-Note that it is fine for id to be duplicated between groups, but not within groups
+We can check that the grouping in our formula is correct with a plot.
 
 ```{r}
-#| code-line-numbers: "2,4"
-ggplot(simdf,aes(time, y,
-                 group=paste(group,id)))+ # group on id
-  geom_line(aes(color=group))+ # color by group
-  labs(title="Testing Formula")+
-  theme_minimal()
+#| echo: true
+#| code-line-numbers: "1,2"
+ggplot(simdf,aes(x=time, y=y,
+                 group=paste(group,id)))+ 
+  geom_line(aes(color=group))+ 
+  labs(title="Testing Formula",
+       subtitle = "y ~ time | id/group")+
+  pcv_theme()
 ```
 
 ## `growthSS` - sigma {.smaller}
 
-"nlme" and "brms" models accept a `sigma` argument. Here we will only look at nlme models as brms models are the subject of the Advanced Growth Modeling tutorial.
+"nlme" and "brms" models accept a `sigma` argument. Here we will only look at nlme models as brms models are the subject of the [Advanced Growth Modeling tutorial](https://github.com/danforthcenter/pcvr/tree/main/tutorials/pcvrTutorial_advancedGrowthModeling).
 
 ## `growthSS` - sigma {.smaller}
 
@@ -405,19 +442,20 @@ There are lots of ways to model a trend like that we see for sigma.
 `pcvr` offers three options through `growthSS` for nlme models.
 
 ```{r}
-draw_gomp_sigma <- function(x){ 23*exp(-21*exp(-0.22*x)) } # edit to show varPower vs varIdent vs varExp
+draw_power_sigma <- function(x){ 12+(x*0.75)^(2*0.26)} # difficult to recapitulate from nlme
+draw_exp_sigma <- function(x){ 12+exp(2*x*0.75*0.05)}
 
 ggplot(sigma_df, aes(x=time, y=y))+
   geom_line(aes(group=group), color = "gray60")+
-  geom_hline(aes(yintercept = 12, color="Homoskedastic"), linetype=5, key_glyph = draw_key_path)+
-  geom_abline(aes(slope = 0.8, intercept=0,color="Linear"), linetype=5, key_glyph = draw_key_path)+
-  geom_smooth(method="gam", aes(color = "Spline"), linetype=5, se=F, key_glyph = draw_key_path)+
-  geom_function(fun = draw_gomp_sigma, aes(color="Gompertz"), linetype=5)+
+  geom_hline(aes(yintercept = 15, color="Homoskedastic"), linetype=5, key_glyph = draw_key_path)+
+  geom_function(fun = draw_power_sigma, aes(color="Power"), linetype=5)+
+  geom_function(fun = draw_exp_sigma, aes(color="Exp"), linetype=5)+
   scale_color_viridis_d(option="plasma", begin = 0.1, end = 0.9)+
   guides(color=guide_legend(override.aes = list(linewidth=1, linetype=1)))+
   pcv_theme()+
   theme(legend.position="bottom")+
-  labs(y="SD of y", title = "growthSS sigma options", color = "")
+  labs(y="SD of y", title = "growthSS nlme sigma options", color = "",
+       subtitle = "note: variance fits here are rough approximations")
 ```
 
 ## `growthSS` - "none" sigma {.smaller}
@@ -425,8 +463,6 @@ ggplot(sigma_df, aes(x=time, y=y))+
 Variance can be modeled as homoskedastic by group.
 
 ```{r}
-#| output-location: slide
-# show varIdent
 ggplot(sigma_df, aes(x=time, y=y, group=group))+
   geom_hline(aes(yintercept = 13.8, color="Homoskedastic"), linetype=5, key_glyph = draw_key_path)+
   geom_line(aes(color = group))+
@@ -441,9 +477,8 @@ ggplot(sigma_df, aes(x=time, y=y, group=group))+
 Variance can be modeled using a power of the x term.
 
 ```{r}
-# show varPower
-p<-ggplot(sigma_df, aes(x=time, y=y, group=group))+
-  geom_smooth(aes(group="linear", color="Linear"), linetype=5,method="lm", se=F, formula=y ~ x)+
+ggplot(sigma_df, aes(x=time, y=y, group=group))+
+  geom_function(fun = draw_power_sigma, aes(color="Power"), linetype=5)+
   geom_line(aes(color = group))+
   scale_color_manual(values = c(scales::hue_pal()(2), "gray40"))+
   pcv_theme()+
@@ -456,9 +491,8 @@ p<-ggplot(sigma_df, aes(x=time, y=y, group=group))+
 Variance can be modeled using a exponent of the x term.
 
 ```{r}
-# show varPower
-p<-ggplot(sigma_df, aes(x=time, y=y, group=group))+
-  geom_smooth(aes(group="linear", color="Linear"), linetype=5,method="lm", se=F, formula=y ~ x)+
+ggplot(sigma_df, aes(x=time, y=y, group=group))+
+  geom_function(fun = draw_exp_sigma, aes(color="Exp"), linetype=5)+
   geom_line(aes(color = group))+
   scale_color_manual(values = c(scales::hue_pal()(2), "gray40"))+
   pcv_theme()+
@@ -468,7 +502,9 @@ p<-ggplot(sigma_df, aes(x=time, y=y, group=group))+
 
 ## `growthSS` - varFunc Options {.smaller}
 
-nlme varFunc objects can also be passed to the sigma argument in growthSS, see `?nlme::varClasses` for details.
+nlme varFunc objects can also be passed to the sigma argument in growthSS.
+
+See `?nlme::varClasses` for details.
 
 ## `growthSS` - start {.smaller}
 
@@ -485,6 +521,7 @@ Finally, with mode="nlrq" the tau argument takes one or more quantiles to fit a 
 #| eval: true
 nls_ss <- growthSS(model="logistic", form =  y~time|id/group,
                    df=simdf, type = "nls")
+lapply(nls_ss, class)
 ```
 
 ## `growthSS` - nlrq {.smaller}
@@ -495,6 +532,7 @@ nls_ss <- growthSS(model="logistic", form =  y~time|id/group,
 nlrq_ss <- growthSS(model="logistic", form =  y~time|id/group,
                     df=simdf, type = "nlrq",
                     tau = seq(0.01, 0.99, 0.04))
+lapply(nls_ss, class)
 ```
 
 ## `growthSS` - nlme {.smaller}
@@ -504,6 +542,8 @@ nlrq_ss <- growthSS(model="logistic", form =  y~time|id/group,
 #| eval: true
 nlme_ss <- growthSS(model="logistic", form =  y~time|id/group,
                     df=simdf, sigma = "power", type = "nlme")
+names(nlme_ss)
+names(nlme_ss$formula)
 ```
 
 ## `fitGrowth`
@@ -571,7 +611,7 @@ Broadly, testing is implemented by comparing models against nested null models u
 ```{r}
 #| echo: true
 #| eval: true
-testGrowth(nls_ss, nls_fit, test_pars = "A")
+testGrowth(nls_ss, nls_fit, test_pars = "A")$anova
 ```
 
 ## `testGrowth` - nlme
@@ -579,15 +619,17 @@ testGrowth(nls_ss, nls_fit, test_pars = "A")
 ```{r}
 #| echo: true
 #| eval: true
-testGrowth(nlme_ss, nlme_fit, test_pars = "A")
+testGrowth(nlme_ss, nlme_fit, test_pars = "A")$anova
 ```
 
 ## `testGrowth` - nlrq
 
+Here we only print out the comparison for the model of the 49th percentile, but all taus are returned.
+
 ```{r}
 #| echo: true
 #| eval: true
-testGrowth(nlrq_ss, nlrq_fit, test_pars = "A")
+testGrowth(nlrq_ss, nlrq_fit, test_pars = "A")[[13]]
 ```
 
 ## Resources
