@@ -12,7 +12,7 @@ pcv.emd(
   mat = FALSE,
   plot = TRUE,
   parallel = getOption("mc.cores", 1),
-  longTrait = NULL,
+  trait = "trait",
   id = "image",
   value = "value",
   raiseError = TRUE
@@ -25,7 +25,7 @@ pcv.emd(
 Single strings will be used to regex a pattern in column names (see examples).
  A vector of names, positions, or booleans will also work.
  For long data this is taken as a regex pattern (or full name)
- to use in filtering the longTrait column.}
+ to use in filtering the trait column.}
 
 \item{reorder}{Should data be reordered to put similar rows together in the resulting plot?
 This takes a vector of column names of length 1 or more (see examples).}
@@ -45,9 +45,9 @@ for a dataframe this uses ggplot.}
 
 \item{parallel}{Number of cores to use. Defaults to 1 unless the "mc.cores" option is set.}
 
-\item{longTrait}{Defaults to NULL, in which case the data is assumed to be in long format.
-If this is a character string then it is taken as a column name of long data
-and the other arguments will assume data is long.}
+\item{trait}{Column name for long data to identify traits. This defaults to "trait". If this and value are 
+in the column names of the data then it is assumed to be in long format, otherwise it is assumed to be in 
+wide format.}
 
 \item{id}{A vector of column names that uniquely identifies observations if the
 data is in long format. Defaults to "image".}
@@ -74,12 +74,11 @@ in a wide dataframe of multi value traits. The is expected to be used with outpu
 ## Not run:
 
 makeHist<-function(mu, sd){hist(rnorm(10000,mu,sd), breaks=seq(1,100,1), plot=FALSE)$counts}
-test<-as.data.frame(do.call(rbind, lapply(seq(30,54,3), function(d) {
-    x<-as.data.frame(do.call(rbind, lapply(1:10, function(i) makeHist(mu=d, sd=5))))
+test<-as.data.frame(do.call(rbind, lapply(seq(30,54,6), function(d) {
+    x<-as.data.frame(do.call(rbind, lapply(1:5, function(i) makeHist(mu=d, sd=5))))
     x$Mu = round(d,-1)
     x})))
 test<-test[sample(rownames(test), nrow(test), replace=FALSE),]
-# reorder randomly for similarity to real data
 test$meta1<-rep(LETTERS[1:3], length.out = nrow(test))
 test$meta2<-rep(LETTERS[4:5], length.out = nrow(test))
 
@@ -88,6 +87,7 @@ x<-pcv.emd(df=test, cols="V", reorder="Mu",
    plot=FALSE, parallel = 1)
 head(x)
 
+if(FALSE){
 file = paste0("https://media.githubusercontent.com/media/joshqsumner/",
               "pcvrTestData/main/pcv4-multi-value-traits.csv")
 df1<-read.pcv(file, "wide")
@@ -99,15 +99,10 @@ df1$genotype = ifelse(df1$genotype == "002", "B73",
 df1$fertilizer = substr(df1$barcode, 8, 8)
 df1$fertilizer = ifelse(df1$fertilizer == "A", "100",
                        ifelse(df1$fertilizer == "B", "50", "0"))
-if(FALSE){
+
 w<-pcv.emd(df1, cols="hue_frequencies", reorder=c("fertilizer", "genotype"), 
   mat =FALSE, plot=TRUE, parallel = 1)
-  }
-# df_long<-read.pcv(file, "long")
-# l<-pcv.emd(df = df_long, cols="hue_frequencies",
-#    reorder=c("fertilizer", "genotype"),
-#    mat =FALSE, plot=TRUE, longTrait="trait", id="image", value="value")
-# l$plot + theme(axis.text = element_blank())
+  
 
 # Note on computational complexity
 # This scales as O^2, see the plot below for some idea
@@ -120,7 +115,7 @@ xlab="N Input Images", ylab="time (seconds)") # benchmarked test data
 lines(x=1:150, y = emdTime(1:150)) # exponential function
 
 plot(x=1:1000, y=emdTime(1:1000), type="l", xlab="N Input Images", ylab="time (seconds)")
-
+}
 ## End(Not run)
 
 }

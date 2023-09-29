@@ -10,19 +10,22 @@ bw.outliers(
   naTo0 = FALSE,
   group = c(),
   cutoff = 3,
+  outlierMethod = "cooks",
   plotgroup = c("barcode", "rotation"),
   plot = TRUE,
-  wide = TRUE,
   x = NULL,
   traitCol = "trait",
   valueCol = "value",
-  idCol = NULL
+  labelCol = "label",
+  idCol = NULL,
+  ncp = NULL
 )
 }
 \arguments{
 \item{df}{Data frame to use. Can be in long or wide format.}
 
-\item{phenotype}{Column to use to classify outliers.}
+\item{phenotype}{Column to use to classify outliers. If this is length > 1 then
+it is taken as the multi-value traits to use. See examples.}
 
 \item{naTo0}{Logical, should NA values to changed to 0.}
 
@@ -34,25 +37,35 @@ These are used as predictors for `phenotype` in a generalized linear model.}
 on the mean of Cooks Distance for this data. This defaults to 3 which tends to be
 a good value.}
 
+\item{outlierMethod}{Method to be used in detecting outliers.
+Currently "cooks" and "mahalanobis" distances are supported, with "mahalanobis" only
+being supported for multi-value traits.}
+
 \item{plotgroup}{Grouping variables for drawing plots if plot=TRUE.
 Typically this is an identifier for images of a plant
 over time and defaults to c('barcode',"rotation").}
 
 \item{plot}{Logical, if TRUE then a list is returned with a ggplot and a dataframe.}
 
-\item{wide}{Logical, is the data in wide format? Defaults to TRUE.}
-
 \item{x}{Optional specification for x axis variable if plot is true.
 If left NULL (the default) then the first element of `group` is used.}
 
 \item{traitCol}{Column with phenotype names, defaults to "trait".
-This should generally not need to be changed from the default.}
+This should generally not need to be changed from the default.
+   If this and valueCol are present in colnames(df) then the data
+   is assumed to be in long format.}
 
 \item{valueCol}{Column with phenotype values, defaults to "value".
 This should generally not need to be changed from the default.}
 
+\item{labelCol}{Column with phenotype labels for long data, defaults to "label".
+This should generally not need to be changed from the default.}
+
 \item{idCol}{Column(s) that identify individuals over time.
 Defaults to plotGroup.}
+
+\item{ncp}{Optionally specify the number of principle components to be used for MV data outlier detection with cooks distance.
+If left NULL (the default) then 3 will be used.}
 }
 \value{
 The input dataframe with outliers removed.
@@ -78,9 +91,11 @@ sv<-bw.time(sv, plantingDelay = 0, phenotype="area_pixels", cutoff=10, timeCol="
  group=c("barcode", "rotation"), plot=FALSE)
 sv_1<-bw.outliers(df = sv, phenotype="area_pixels", naTo0 =FALSE, 
  group = c("DAS", "genotype", "fertilizer"),
+sv<-bw.outliers(df = sv, phenotype="area_pixels", naTo0 =FALSE, 
+ group = c("DAS", "genotype", "fertilizer"),outlierMethod = "cooks",
  plotgroup=c('barcode',"rotation"), plot=TRUE)
 
-
+if(FALSE){
 svl<-read.pcv(
 "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv",
  mode="long", reader="fread")
@@ -92,14 +107,47 @@ svl$fertilizer = substr(svl$barcode, 8, 8)
 svl$fertilizer = ifelse(svl$fertilizer == "A", "100",
                    ifelse(svl$fertilizer == "B", "50", "0"))
 svl<-bw.time(svl, plantingDelay = 0, phenotype="area_pixels", cutoff=10, timeCol="timestamp",
- group=c("barcode", "rotation"), plot=FALSE,wide=FALSE)
+ group=c("barcode", "rotation"), plot=FALSE)
 
 svl<-bw.outliers(df = svl, phenotype="area_pixels", naTo0 =FALSE,
   group = c("DAS", "genotype", "fertilizer"),
-  plotgroup=c('barcode',"rotation"), plot=TRUE, wide=FALSE)
+  plotgroup=c('barcode',"rotation"), plot=TRUE)
+  
+mvw<-read.pcv(paste0("https://media.githubusercontent.com/media/joshqsumner/",
+  "pcvrTestData/main/pcv4-multi-value-traits.csv"), mode="wide")
+ mvw$genotype = substr(mvw$barcode, 3,5)
+mvw$genotype = ifelse(mvw$genotype == "002", "B73",
+                     ifelse(mvw$genotype == "003", "W605S",
+                            ifelse(mvw$genotype == "004", "MM", "Mo17")))
+mvw$fertilizer = substr(mvw$barcode, 8, 8)
+mvw$fertilizer = ifelse(mvw$fertilizer == "A", "100",
+                       ifelse(mvw$fertilizer == "B", "50", "0"))
+mvw<-bw.time(mvw,timeCol="timestamp", group="barcode", plot = FALSE)
+
+phenotypes = which(grepl("hue_freq", colnames(mvw)))
+
+mvw2 <- bw.outliers(df = mvw, phenotype = phenotypes, naTo0 = FALSE, outlierMethod = "cooks",
+    group = c("DAS", "genotype", "fertilizer"), cutoff = 3, plotgroup=c("barcode", "rotation"))
+
+
+mvl<-read.pcv(paste0("https://media.githubusercontent.com/media/joshqsumner/",
+  "pcvrTestData/main/pcv4-multi-value-traits.csv"), mode="long")
+ mvl$genotype = substr(mvl$barcode, 3,5)
+mvl$genotype = ifelse(mvl$genotype == "002", "B73",
+                     ifelse(mvl$genotype == "003", "W605S",
+                            ifelse(mvl$genotype == "004", "MM", "Mo17")))
+mvl$fertilizer = substr(mvl$barcode, 8, 8)
+mvl$fertilizer = ifelse(mvl$fertilizer == "A", "100",
+                       ifelse(mvl$fertilizer == "B", "50", "0"))
+mvl<-bw.time(mvl,timeCol="timestamp", group="barcode", plot = FALSE)
+
+mvl2 <- bw.outliers(df = mvl, phenotype = "hue_frequencies", naTo0 = FALSE, outlierMethod = "cooks",
+    group = c("DAS", "genotype", "fertilizer"), cutoff = 3, plotgroup=c("barcode", "rotation"))
+}
 
 ## End(Not run)
 
 }
 \keyword{Bellwether,}
-\keyword{ggplot}
+\keyword{ggplot,}
+\keyword{outliers}

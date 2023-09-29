@@ -11,7 +11,8 @@ plotPrior(priors, type = "density", n = 200, t = 25)
 This takes the same input as the prior argument of \code{\link{growthSS}}.}
 
 \item{type}{Either "density", the default, or a model name from \code{growthSS}
-model options ("logistic", "gompertz", "monomolecular", "exponential", "linear", "power law").
+model options ("logistic", "gompertz", "monomolecular", "exponential",
+"linear", "power law", "double logistic", or "double gompertz").
 If this is a model type then n draws from the prior will be simulated as growth
 trendlines and densities will be plotted on margins.}
 
@@ -35,16 +36,6 @@ priors = list("A" = c(100, 130), "B" = c(10, 8), "C" = c(0.2, 0.1))
 plotPrior(priors)
 
 plotPrior(priors, "gompertz")[[1]]
-
-plotPrior(list("A" = c(100, 150), "B" = c(6, 12), "C" = c(3, 2.5)), "logistic")[[1]]
-
-plotPrior(list("A" = c(120, 150), "B" = c(0.1, 0.08)), "monomolecular")[[1]]
-
-plotPrior(list("A" = c(9, 5), "B" = c(0.05, 0.07)), "exponential")[[1]]
-
-plotPrior(list("A" = c(1.25, 1)), "linear")[[1]]
-
-plotPrior(list("A" = c(20, 15), "B" = c(0.7, 0.7)), "power law")[[1]]
 
 ## End(Not run:)
 

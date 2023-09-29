@@ -17,10 +17,13 @@
 #' Note that ggridges::geom_density_ridges_gradient does not support transparency,
 #' so if fillx is TRUE then only the outer line will show individual IDs.
 #' @param method A method to use in comparing distributions/means.
-#'  Currently only "ks" is supported, where density is approximated from the 
-#'  histogram columns and  KS test is used between those densities. For other
+#'  Currently "ks" and "pdf" are supported, where density is approximated from the 
+#'  histogram columns and  KS test is used between samples from those densities per each photo.
+#'  For the "pdf" method a flat prior is added to the data and the distributions are compared 
+#'  depending on the hypothesis provided. For other
 #'  options in comparing multi-value traits see \code{\link{conjugate}} or
 #'  \code{\link{pcv.emd}}.
+#' @param hypothesis A hypothesis for the "pdf" method, must be either unequal, equal, lesser, or greater.
 #' @param compare Groups to compare. By default this is set to FALSE, 
 #' which corresponds to no testing. Other values of compare are passed to 
 #' fixCompare to make t.test comparisons using ggpubr. 
@@ -41,15 +44,6 @@
 #' @import data.table
 #' @importFrom stats setNames density aggregate as.formula ks.test
 #' 
-#' @details 
-#' The method argument is used for statistical testing of groups.
-#' There there is only a "ks" option, with other methods in place for 
-#' multi-value trait analysis available in \code{conjugate} and \code{pcv.emd}.
-#' \itemize{
-#'  \item{"ks": }{The ks method performs a ks test on the PDF of each histogram.
-#'  This returns a P value corresponding to a 
-#'  standard KS test that distributions are the same.}
-#' }
 #' 
 #' @return Returns either a ggplot object or a list containing a ggplot and a dataframe of statistical comparisons (if compare is not FALSE).
 #' 
@@ -59,12 +53,10 @@
 #' 
 #' df <- read.pcv(
 #'   "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest2.csv", "long")
-#' wide_beta <- read.pcv(
-#'   "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest2.csv", "wide")
-#' x <- pcv.joyplot(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"))
-#' # pcv.joyplot(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"),
-#' #   method="ks")
+#'   
+#' x <- pcv.joyplot(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"), method="pdf")
 #' 
+#' if (FALSE){
 #' wide<-read.pcv(
 #'   paste0("https://media.githubusercontent.com/media/joshqsumner/",
 #'         "pcvrTestData/main/pcv4-multi-value-traits.csv"),
@@ -83,14 +75,14 @@
 #' # For some color traits it makes sense to show the actual
 #' # represented color, which can be done easily by adding new fill scales.
 #' p+ggplot2::scale_fill_gradientn(colors = scales::hue_pal(l=65)(360))
-#' 
+#' }
 #' ## End(Not run)
 #' 
 #' @export
 
 
 pcv.joyplot<-function(df = NULL, index = NULL, group = NULL, y = NULL, id = NULL,
-                      method=NULL, compare= NULL,
+                      method=NULL, hypothesis = "unequal", compare= NULL,
                       bin="label", freq="value", trait="trait", fillx=TRUE){
   #* ***** `general calculated values`
 
@@ -152,7 +144,8 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL, y = NULL, id = NULL
   } else if(is.null(compare)){compareTests<-fixCompare(compare,sub,"grouping", TRUE) ; doStats=TRUE
   }else{compareTests=fixCompare(compare,sub,"grouping"); doStats=TRUE}
   
-  if(!is.null(method) && match.arg(method, choices = c("ks"))=="ks" ){
+  if(!is.null(method) && match.arg(method, choices = c("ks", "pdf"))=="ks" ){
+    
     #* ***** `Run KS tests`
     ksVectors <- .makeKSdata(d = sub)
 
@@ -161,11 +154,26 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL, y = NULL, id = NULL
         g1<-as.character(comp[1])
         g2<-as.character(comp[2])
         ks<-suppressWarnings(ks.test(ksVectors[[g1]], ksVectors[[g2]])) 
-        ret<-data.frame(group1 = g1, group2 = g2, p = ks$p.value, method="ks", null = "same distribution")
+        ret<-data.frame(group1 = g1, group2 = g2, p = ks$p.value, method="ks", hypothesis = "same distribution")
         return(ret)
       }))
     }
-  } 
+  } else if(!is.null(method) && match.arg(method, choices = c("ks", "pdf"))=="pdf" ){
+  #* ***** `Run PDF comparisons`
+  
+    pdfs <- .makePDFs(d = sub)
+    if(doStats){
+      outStats<-do.call(rbind, lapply(compareTests, function(comp){
+        g1<-as.character(comp[1])
+        g2<-as.character(comp[2])
+        prob <- .post.prob.from.pdfs(pdfs[[g1]]$pdf, pdfs[[g2]]$pdf, hypothesis)
+        ret<-data.frame(group1 = g1, group2 = g2, p = prob$post.prob, method="pdf", hypothesis = hypothesis)
+        return(ret)
+      }))
+    }
+  }
+  
+  
   #* `if ID is null then aggregate, else draw with ID`
   if(is.null(id)){
     sub <- stats::aggregate(freq ~ . , data=sub, FUN=mean, na.rm=T)
@@ -226,12 +234,30 @@ pcv.joyplot<-function(df = NULL, index = NULL, group = NULL, y = NULL, id = NULL
                     n = 2^10)
     den_df <- as.data.frame(dens)
     set.seed(123)
-    # n_bins <- length(unique(datsp_iter$bin))
-    # n_photos <- nrow(datsp_iter) / n_bins 
+    n_bins <- length(unique(datsp_iter$bin))
+    n_photos <- nrow(datsp_iter) / n_bins 
     # n <- n_bins * n_photos # should always equal nrow(datsp_iter)
-    vec <- sample(den_df$x, size = nrow(datsp_iter), replace=T, prob = den_df$y)
+    vec <- sample(den_df$x, size = n_photos, replace=T, prob = den_df$y)
     return(vec)
   })
   return(ksVectors)
 }
+
+# d = sub
+.makePDFs <- function(d=NULL){
+  datsp=split(d, d$grouping, drop=TRUE)
+  pdfs<-lapply(datsp, function(datsp_iter){
+    ag_df <- stats::aggregate(freq ~ bin+grouping, data=datsp_iter, mean)
+    dens <- stats::density(ag_df$bin,
+                    weights = (ag_df$freq+ 1/nrow(ag_df))/sum((ag_df$freq+ 1/nrow(ag_df))), # weighting + flat prior
+                    from = min(d$bin,na.rm=TRUE), # min and max of total data
+                    to = max(d$bin,na.rm=TRUE),
+                    n = 2^10)
+    dens_df <- data.frame(support = dens$x, dens = dens$y)
+    dens_df$pdf <- dens_df$dens/sum(dens_df$dens)
+    return(dens_df)
+  })
+  return(pdfs)
+}
+
 

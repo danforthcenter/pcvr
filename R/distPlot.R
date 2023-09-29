@@ -23,7 +23,7 @@
 #' @examples 
 #' 
 #' ## Not run:
-#' 
+#' if(FALSE){
 #' print(load(url("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/brmsFits.rdata")))
 #' library(brms)
 #' library(ggplot2)
@@ -41,7 +41,7 @@
 #'     fit_13, fit_15, fit_17, fit_19, fit_21, fit_23, fit_25)
 #' distributionPlot(fits = from3to25, form = y~time|id/group,
 #'      params=params, d=d, priors=priors)
-#' 
+#' }
 #' ## End(Not run)
 
 

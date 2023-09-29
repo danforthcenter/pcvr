@@ -30,7 +30,7 @@
 #' @examples 
 #' 
 #' ## Not run: 
-#' 
+#' \donttest{
 #' sv<-read.pcv(
 #' "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv",
 #'  reader="fread")
@@ -51,7 +51,7 @@
 #' 
 #' pcvBox(sv[sv$genotype=='MM' & sv$DAS==15, ],
 #'   x="fertilizer", y="area_cm2", compare="0", showPoints = TRUE)
-#' 
+#' }
 #' ## End(Not run) 
 
 pcvBox<-function(df=df,x='treatment' , y='area_pixels', fill = NULL, compare=FALSE, trait="trait", value="value",method="t.test", showPoints=FALSE, ...){

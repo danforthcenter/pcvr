@@ -4,7 +4,7 @@
 \alias{brmPlot}
 \title{Function to visualize brms models similar to those made using growthSS outputs.}
 \usage{
-brmPlot(fit, form, groups = NULL, df = NULL, timeRange = NULL)
+brmPlot(fit, form, df = NULL, groups = NULL, timeRange = NULL)
 }
 \arguments{
 \item{fit}{A brmsfit object, similar to those fit with \code{\link{growthSS}} outputs.}
@@ -12,10 +12,10 @@ brmPlot(fit, form, groups = NULL, df = NULL, timeRange = NULL)
 \item{form}{A formula similar to that in \code{growthSS} inputs specifying the outcome,
 predictor, and grouping structure of the data as \code{outcome ~ predictor|individual/group}.}
 
+\item{df}{An optional dataframe to use in plotting observed growth curves on top of the model.}
+
 \item{groups}{An optional set of groups to keep in the plot.
 Defaults to NULL in which case all groups in the model are plotted.}
-
-\item{df}{An optional dataframe to use in plotting observed growth curves on top of the model.}
 
 \item{timeRange}{An optional range of times to use. This can be used to view predictions for
 future data if the avaiable data has not reached some point (such as asymptotic size),
@@ -26,7 +26,8 @@ Returns a ggplot showing a brms model's credible
 intervals and optionally the individual growth lines.
 }
 \description{
-Function to visualize brms models similar to those made using growthSS outputs.
+Models fit using \link{growthSS} inputs by \link{fitGrowth} (and similar models made through other means)
+ can be visualized easily using this function. This will generally be called by \code{growthPlot}.
 }
 \examples{
 

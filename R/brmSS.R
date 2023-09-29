@@ -95,8 +95,6 @@
 #' be useful later on.
 #' @examples 
 #' 
-#' ## Not run:
-#' 
 #' simdf<-growthSim("logistic", n=20, t=25,
 #' params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))
 #' ss<-growthSS(model = "logistic", form=y~time|id/group,
@@ -104,40 +102,10 @@
 #' lapply(ss,class)
 #' ss$initfun()
 #' 
-#' if(FALSE){
-#' fit_test <- brm( # main components of the model
-#'          ss$formula, prior = ss$prior, data = ss$df, family = ss$family,
-#'          # parameters controling chain number, chain length, parallelization and starting values
-#'          iter = 1000, cores = 2, chains = 2, init = ss$initfun, 
-#'          # options to increase performance
-#'         control = list(adapt_delta = 0.999, max_treedepth = 20), backend = "cmdstanr")
-#' # or 
-#' 
-#' fit_test <- fitGrowth(ss, iter = 1000, cores = 2, chains = 2, backend = "cmdstanr",
-#'  control = list(adapt_delta = 0.999, max_treedepth = 20))
-#' }
-#' 
-#' 
-#' # formulas and priors will look different if there is only one group in the data
-#' 
-#' ex<-growthSim("linear", n=20, t=25, params=list("A"=2))
-#' ex_ss <- growthSS(model = "linear", form = y~time|id/group, sigma = "spline",
-#'                 df = ex, priors = list("A" = 1))
-#'                 
-#' ex_ss$prior # no coef level grouping for priors
-#' ex_ss$formula # intercept only model for A
-#' 
-#' ex2<-growthSim("linear", n=20, t=25, params=list("A"=c(2, 2.5)))
-#' ex2_ss <- growthSS(model = "linear", form = y~time|id/group, sigma = "spline",
-#'                    df = ex2, priors = list("A" = 1))
-#' ex2_ss$prior # has coef level grouping for priors
-#' ex2_ss$formula # specifies an A intercept for each group and splines by group for sigma
-#' 
-#' ## End(Not run)              
-#'               
-#' @export
+#' @keywords internal
+#' @noRd
 
-growthSS<-function(model, form, sigma=NULL, df, priors=NULL){
+.brmSS<-function(model, form, sigma=NULL, df, priors=NULL){
   out<-list()
   sigmas<-c("homo", "linear", "spline", "gompertz")
   models<-c("logistic", "gompertz", "monomolecular", "exponential", "linear", "power law", "double logistic", "double gompertz")
@@ -169,24 +137,28 @@ growthSS<-function(model, form, sigma=NULL, df, priors=NULL){
     matched_sigma <- match.arg(sigma, choices=sigmas)
     #* `Make growth formula`
     if(matched_model=="double logistic"){
-      form_fun<-form_dou_logistic
+      form_fun<-.brms_form_dou_logistic
     } else if (matched_model=="double gompertz"){
-      form_fun<-form_dou_gompertz
+      form_fun<-.brms_form_dou_gompertz
     } else if(matched_model=="logistic"){
-      form_fun<-form_logistic
+      form_fun<-.brms_form_logistic
     } else if (matched_model=="gompertz"){
-      form_fun<-form_gompertz
+      form_fun<-.brms_form_gompertz
     } else if (matched_model=="monomolecular"){
-      form_fun<-form_monomolecular
+      form_fun<-.brms_form_monomolecular
     } else if (matched_model=="exponential"){
-      form_fun<-form_exponential
+      form_fun<-.brms_form_exponential
     } else if (matched_model=="linear"){
-      form_fun<-form_linear
+      form_fun<-.brms_form_linear
     } else if (matched_model=="power law"){
-      form_fun<-form_powerlaw
+      form_fun<-.brms_form_powerlaw
     }
     growthForm = form_fun(x,y)
     #* `Make parameter formula`
+    #* could add a pars argument then set up parForm from those.
+    #* I think that would change how priors would have to work
+    #* and that seems like more trouble than it is worth right 
+    #* now at least.
     if(matched_model %in% c("double logistic", "double gompertz")){
       pars=c("A","B", "C", "A2","B2", "C2")
       }else if(matched_model %in% c("logistic", "gompertz")){
@@ -335,28 +307,28 @@ growthSS<-function(model, form, sigma=NULL, df, priors=NULL){
   return(out)
   }
   
-form_logistic<-function(x, y){
+.brms_form_logistic<-function(x, y){
   return(as.formula(paste0(y," ~ A/(1+exp((B-",x,")/C))")))
 }
-form_gompertz<-function(x, y){
+.brms_form_gompertz<-function(x, y){
   return(as.formula(paste0(y," ~ A*exp(-B*exp(-C*",x,"))")))
 }
-form_dou_logistic<-function(x, y){
+.brms_form_dou_logistic<-function(x, y){
   return(as.formula(paste0(y," ~ A/(1+exp((B-",x,")/C)) + ((A2-A) /(1+exp((B2-",x,")/C2)))")))
 }
-form_dou_gompertz<-function(x, y){
+.brms_form_dou_gompertz<-function(x, y){
   return(as.formula(paste0(y," ~ A * exp(-B * exp(-C*",x,")) + (A2-A) * exp(-B2 * exp(-C2*(",x,"-B)))")))
 }
-form_monomolecular<-function(x, y){
+.brms_form_monomolecular<-function(x, y){
   return(as.formula(paste0(y,"~A-A*exp(-B*",x,")")))
 }
-form_exponential<-function(x, y){
+.brms_form_exponential<-function(x, y){
   return(as.formula(paste0(y," ~ A*exp(B*",x, ")")))
 }
-form_linear<-function(x, y){
+.brms_form_linear<-function(x, y){
   return(as.formula(paste0(y," ~ A*",x)))
 }
-form_powerlaw<-function(x, y){
+.brms_form_powerlaw<-function(x, y){
   return(as.formula(paste0(y," ~ A*",x,"^B")))
 }
 

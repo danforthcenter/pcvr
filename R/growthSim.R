@@ -77,7 +77,7 @@
 #'     Where A is the asymptote, B is the inflection point, C is the growth rate. 
 #'     \item \bold{Gompertz}: `A * exp(-B * exp(-C*x))` 
 #'     Where A is the asymptote, B is the inflection point, C is the growth rate. 
-#'     \item \bold{Double Logistic}: `A / (1+exp((B-x)/C)) + ((A2-A) /(1+exp((B-x)/C)))`
+#'     \item \bold{Double Logistic}: `A / (1+exp((B-x)/C)) + ((A2-A) /(1+exp((B2-x)/C2)))`
 #'     Where A is the asymptote, B is the inflection point, C is the growth rate,
 #'     A2 is the second asymptote, B2 is the second inflection point, and C2 is the second 
 #'     growth rate.

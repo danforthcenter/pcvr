@@ -58,7 +58,7 @@ Boxplot for plantCV data in wide format (each phenotype as a column)
 \examples{
 
 ## Not run: 
-
+\donttest{
 sv<-read.pcv(
 "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv",
  reader="fread")
@@ -79,7 +79,7 @@ sv$height_cm <- sv$height_pixels/42.5
 
 pcvBox(sv[sv$genotype=='MM' & sv$DAS==15, ],
   x="fertilizer", y="area_cm2", compare="0", showPoints = TRUE)
-
+}
 ## End(Not run) 
 }
 \keyword{Bellwether,}
