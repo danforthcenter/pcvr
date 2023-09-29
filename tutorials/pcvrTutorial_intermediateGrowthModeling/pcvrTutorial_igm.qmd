@@ -568,9 +568,9 @@ Additional arguments can be passed to `fitGrowth` and are used as follows:
 
 | type | ...                                                |
 |------|----------------------------------------------------|
-| nls  | passed to stats::nls                               |
-| nlrq | cores to run in parallel, passed to quantreg::nlrq |
-| nlme | passed to nlme::nlmeControl                        |
+| nls  | passed to `stats::nls `                              |
+| nlrq | cores to run in parallel, passed to `quantreg::nlrq` |
+| nlme | passed to `nlme::nlmeControl`                        |
 
 ## `growthPlot`
 
