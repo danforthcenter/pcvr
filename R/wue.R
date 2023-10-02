@@ -79,13 +79,13 @@ pwue<-function(df, w, pheno="area_pixels", time="timestamp", id="barcode",
   w<-data.table::setorderv(data.table::as.data.table(w), cols = c(id,time2))
   w <- w[w[[waterCol]]>0, ]
   df<-data.table::setorderv(data.table::as.data.table(df), cols = c(id,time1))
-  ids <- intersect(unique(w[[id]]), unique(df[[id]]))
+  ids <- intersect(unique(w[,get(id)]), unique(df[,get(id)]))
   matched_method = match.arg(method, choices = c("rate", "abs"))
   
   if(matched_method == "abs"){
-    out <- .absWUE(ids, w, df, offset, time1, time2, pheno)
+    out <- .absWUE(ids, w, df, offset, time1, time2, pheno, id, waterCol)
   } else if (matched_method=="rate"){
-    out <- .rateWUE(ids, w, df, offset, time1, time2, pheno)
+    out <- .rateWUE(ids, w, df, offset, time1, time2, pheno, id, waterCol)
   }
   return(as.data.frame(out))
 }
@@ -94,10 +94,11 @@ pwue<-function(df, w, pheno="area_pixels", time="timestamp", id="barcode",
 #' @keywords internal
 #' @noRd
 
-.rateWUE <- function(ids, w, df, offset, time1, time2, pheno){
+.rateWUE <- function(ids, w, df, offset, time1, time2, pheno, id, waterCol){
   out <- do.call(rbind, lapply(ids, function(iter_id){ # per id...
-    w_i <- w[w[[id]]==iter_id, ]
-    df_i <- df[df[[id]]==iter_id, ]
+    print(iter_id)
+    w_i <- w[w[,get(id)]==iter_id, ]
+    df_i <- df[df[,get(id)]==iter_id, ]
     #* reorder watering and pheno data
     w_i <- data.table::setorderv(w_i, cols = c(time2))
     df_i <- data.table::setorderv(df_i, cols = c(time1))
@@ -107,13 +108,13 @@ pwue<-function(df, w, pheno="area_pixels", time="timestamp", id="barcode",
     w_i[[waterCol]] <- as.numeric(ifelse(w_i[[time2]] < imaging_times[1], 0, w_i[[waterCol]]))
     #* per imaging time
     wue_i <- do.call(rbind, lapply(1:length(imaging_times), function(t_i){
-      start <- if(t_i==1){NA} else {imaging_times[(t_i-1)] - offset }
-      start_nonOffset <- if(t_i==1){NA} else {imaging_times[(t_i-1)] }
+      start <- if(t_i==1){NA} else { imaging_times[(t_i-1)] - offset }
+      start_nonOffset <- if(t_i==1){NA} else { imaging_times[(t_i-1)] }
       end <- imaging_times[t_i] - offset 
       end_nonOffset <- imaging_times[t_i]
-
+      print(t_i)
       if(!is.na(start)){
-        w_i_t <- w_i[w_i[[time]]>start & w_i[[time]]<end, ]
+        w_i_t <- w_i[w_i[[time2]]>start & w_i[[time2]]<end, ]
         total_water_i <- max(c(sum(w_i_t[[waterCol]]), 1))
         pheno_diff <- max(c(as.numeric( df_i[df_i[[time1]] == end_nonOffset, get(pheno)] -
                                           df_i[df_i[[time1]]==start_nonOffset, get(pheno)] ), 0))
@@ -127,6 +128,7 @@ pwue<-function(df, w, pheno="area_pixels", time="timestamp", id="barcode",
                         offset = offset)
       row$pWUE <- row$pheno_diff / row$total_water
       return(row)
+      
     }))
     iter_out <- cbind(df_i, wue_i)
     return(iter_out)
@@ -138,7 +140,7 @@ pwue<-function(df, w, pheno="area_pixels", time="timestamp", id="barcode",
 #' @noRd
 
 
-.absWUE <- function(ids, w, df, offset, time1, time2, pheno){
+.absWUE <- function(ids, w, df, offset, time1, time2, pheno, id, waterCol){
   out <- do.call(rbind, lapply(ids, function(iter_id){ # per id...
     w_i <- w[w[[id]]==iter_id, ]
     df_i <- df[df[[id]]==iter_id, ]
@@ -157,7 +159,7 @@ pwue<-function(df, w, pheno="area_pixels", time="timestamp", id="barcode",
       end_nonOffset <- imaging_times[t_i]
       
       if(!is.na(start)){
-        w_i_t <- w_i[w_i[[time]]>start & w_i[[time]]<end, ]
+        w_i_t <- w_i[w_i[[time2]]>start & w_i[[time2]]<end, ]
         total_water_i <- max(c(sum(w_i_t[[waterCol]]), 1))
         pheno_iter <- max(df_i[df_i[[time1]] == end_nonOffset, get(pheno)], na.rm=TRUE)
         
