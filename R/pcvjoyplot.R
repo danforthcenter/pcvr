@@ -54,7 +54,8 @@
 #' df <- read.pcv(
 #'   "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest2.csv", "long")
 #'   
-#' x <- pcv.joyplot(df, index = "index_frequencies_index_ndvi", group=c("genotype", "timepoint"), method="pdf")
+#' x <- pcv.joyplot(df, index = "index_frequencies_index_ndvi",
+#'     group=c("genotype", "timepoint"), method="pdf")
 #' 
 #' if (FALSE){
 #' wide<-read.pcv(

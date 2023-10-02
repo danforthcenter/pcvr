@@ -84,7 +84,7 @@ pwue<-function(df, w, pheno="area_pixels", time="timestamp", id="barcode",
   
   if(matched_method == "abs"){
     out <- .absWUE(ids, w, df, offset, time1, time2, pheno, id, waterCol)
-  } else if (matched_method=="rate"){
+  } else if(matched_method=="rate"){
     out <- .rateWUE(ids, w, df, offset, time1, time2, pheno, id, waterCol)
   }
   return(as.data.frame(out))
