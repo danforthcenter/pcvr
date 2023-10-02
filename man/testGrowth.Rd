@@ -13,7 +13,9 @@ testGrowth(ss, fit, test_pars = "A")
 
 \item{test_pars}{A vector of parameters to test in the model. These should be parameters which
 vary by group in your original model and that you want to test against a null model where they
-do not vary by group.}
+do not vary by group. Alternatively for nlrq models this can be a comparison of model terms
+written as \code{"group_X|tau|par > group_Y|tau|par"}, which uses a fat tailed T distribution to make 
+comparisons on the means of each quantile estimate.}
 }
 \value{
 A list containing an anova object comparing non-linear growth models and the null model.
@@ -33,9 +35,9 @@ set.seed(123)
 simdf<-growthSim("logistic", n=20, t=25,
    params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))
 ss<-suppressMessages(growthSS(model = "logistic", form=y~time|id/group,
-  df=simdf, type="nls"))
+  df=simdf, type="nlrq"))
 fit <- fitGrowth(ss)
-testGrowth(ss, fit, "A")$anova
+testGrowth(ss, fit, "A")
 
 ## End(Not run)
 }
