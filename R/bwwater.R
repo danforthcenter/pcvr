@@ -25,17 +25,16 @@ bw.water<-function(file = NULL, envKey="environment"){
   env<-type.convert(env, as.is=TRUE)
   if("timestamp" %in% colnames(env)){
     tryCatch({
-      time <-as.POSIXct(env$timestamp, tryFormats = c("%Y-%m-%d %H:%M:%OS",
+      env$timestamp <-as.POSIXct(env$timestamp, tryFormats = c("%Y-%m-%d %H:%M:%OS",
                                                       "%Y-%m-%dT%H:%M:%OS",
                                                       "%Y/%m/%d %H:%M:%OS",
                                                       "%Y-%m-%d %H:%M",
                                                       "%Y/%m/%d %H:%M",
                                                       "%Y-%m-%d",
                                                       "%Y/%m/%d"), tz="UTC")
-      begin<-min(time,na.rm=TRUE)
+      begin<-min(env$timestamp,na.rm=TRUE)
       message(paste0("Using the first watering time, ", begin, ", as beginning of experiment to assign DAS"))
-      DAS<-as.numeric((time-begin)/24/60/60)
-      env$DAS<-DAS
+      env$DAS<-as.numeric((env$timestamp-begin)/24/60/60)
     }, error = function(err){}, warning=function(warn){})
   }
   return(env)
