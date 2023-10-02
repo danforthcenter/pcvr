@@ -168,7 +168,7 @@ We can combine images taken at different angles of the same plant on a given day
 ```{r}
 phenotypes <- colnames(sv)[c(19:35, 43:45)]
 phenoForm<-paste0("cbind(", paste0(phenotypes, collapse=", "), ")")
-groupForm<-"DAS+barcode+genotype+fertilizer"
+groupForm<-"DAS+timestamp+barcode+genotype+fertilizer"
 form<-as.formula(paste0(phenoForm, "~", groupForm))
 sv_ag_withOutliers<-aggregate(form, data=sv, mean, na.rm=TRUE)
 dim(sv_ag_withOutliers)
@@ -210,7 +210,7 @@ A common use for watering data is to look at water use efficiency (WUE). Here we
 
 
 ```{r}
-test<-pwue(sv_ag, water, "area_pixels", "DAS", c("barcode"))
+test<-pwue(df = sv_ag, w=water, pheno="area_pixels", time="timestamp", id="barcode")
 
 ggplot(test, aes(x=DAS, y=pWUE, color=genotype, group=barcode))+
   geom_line()+
