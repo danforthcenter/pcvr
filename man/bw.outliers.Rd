@@ -89,9 +89,10 @@ sv$fertilizer = ifelse(sv$fertilizer == "A", "100",
                    ifelse(sv$fertilizer == "B", "50", "0"))
 sv<-bw.time(sv, plantingDelay = 0, phenotype="area_pixels", cutoff=10, timeCol="timestamp",
  group=c("barcode", "rotation"), plot=FALSE)
+
 sv<-bw.outliers(df = sv, phenotype="area_pixels", naTo0 =FALSE, 
  group = c("DAS", "genotype", "fertilizer"),outlierMethod = "cooks",
- plotgroup=c('barcode',"rotation"), plot=TRUE)
+ plotgroup=c("barcode","rotation"), plot=TRUE)
 
 if(FALSE){
 svl<-read.pcv(

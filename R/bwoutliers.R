@@ -51,9 +51,10 @@
 #'                    ifelse(sv$fertilizer == "B", "50", "0"))
 #' sv<-bw.time(sv, plantingDelay = 0, phenotype="area_pixels", cutoff=10, timeCol="timestamp",
 #'  group=c("barcode", "rotation"), plot=FALSE)
+#' 
 #' sv<-bw.outliers(df = sv, phenotype="area_pixels", naTo0 =FALSE, 
 #'  group = c("DAS", "genotype", "fertilizer"),outlierMethod = "cooks",
-#'  plotgroup=c('barcode',"rotation"), plot=TRUE)
+#'  plotgroup=c("barcode","rotation"), plot=TRUE)
 #' 
 #' if(FALSE){
 #' svl<-read.pcv(
@@ -176,10 +177,16 @@ bw.outliers<-function(df = NULL,
     rmdf_plotData<-df[df$outlier, ]
     if(is.null(x)){x = group[1]}
     p<-ggplot2::ggplot()+
-      ggplot2::geom_line(data=rmdf_plotData, ggplot2::aes(x=.data[[x]], y=.data[[phenotype]], group=.data[["grouping"]]), linewidth=0.15, color="red")+
       ggplot2::geom_line(data=out_plotData, ggplot2::aes(x=.data[[x]], y=.data[[phenotype]], group=.data[["grouping"]]),linewidth=0.25 )+
       ggplot2::labs(title=pctRm)+
       pcv_theme()
+    
+    yLims <- ggplot2::layer_scales(p)$y$range$range
+    
+    p <- p +
+      ggplot2::geom_line(data=rmdf_plotData, ggplot2::aes(x=.data[[x]], y=.data[[phenotype]], group=.data[["grouping"]]), linewidth=0.15, color="red")+
+      ggplot2::coord_cartesian(ylim = yLims)
+    
     print(p)
   } else if(plot & !wide & !mv){
     plotdf<-df[df[[traitCol]]==phenotype,]
@@ -188,11 +195,9 @@ bw.outliers<-function(df = NULL,
     rmdf_plotData<-plotdf[plotdf$outlier, ]
     if(is.null(x)){x = group[1]}
     p<-ggplot2::ggplot()+
-      ggplot2::geom_line(data=rmdf_plotData, ggplot2::aes(x=.data[[x]], y=.data[[valueCol]], group=.data[["grouping"]]), linewidth=0.15, color="red")+
       ggplot2::geom_line(data=out_plotData, ggplot2::aes(x=.data[[x]], y=.data[[valueCol]], group=.data[["grouping"]]),linewidth=0.25 )+
       ggplot2::labs(title=pctRm)+
       pcv_theme()
-    print(p)
     
   } else if(plot & wide & mv){
     #* lengthen data, make bar plot?
