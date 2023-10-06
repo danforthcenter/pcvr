@@ -132,9 +132,7 @@ bw.outliers<-function(df = NULL,
     mv = TRUE
   } else { mv = FALSE }
   
-  
   if(is.null(idCol)){idCol = plotgroup}
-  
   
   if(wide & !mv){ # wide data single value
     if(outlierMethod=="mahalanobis"){warning("Mahalanobis distance is only implemented with MV traits, using cooks")}
@@ -177,6 +175,7 @@ bw.outliers<-function(df = NULL,
     rmdf_plotData<-df[df$outlier, ]
     if(is.null(x)){x = group[1]}
     p<-ggplot2::ggplot()+
+      ggplot2::facet_wrap(stats::as.formula(paste0("~", paste(group[-1], collapse="+"))))+
       ggplot2::geom_line(data=out_plotData, ggplot2::aes(x=.data[[x]], y=.data[[phenotype]], group=.data[["grouping"]]),linewidth=0.25 )+
       ggplot2::labs(title=pctRm)+
       pcv_theme()
@@ -195,6 +194,7 @@ bw.outliers<-function(df = NULL,
     rmdf_plotData<-plotdf[plotdf$outlier, ]
     if(is.null(x)){x = group[1]}
     p<-ggplot2::ggplot()+
+      ggplot2::facet_wrap(stats::as.formula(paste0("~", paste(group[-1], collapse="+"))))+
       ggplot2::geom_line(data=out_plotData, ggplot2::aes(x=.data[[x]], y=.data[[valueCol]], group=.data[["grouping"]]),linewidth=0.25 )+
       ggplot2::labs(title=pctRm)+
       pcv_theme()
@@ -214,6 +214,7 @@ bw.outliers<-function(df = NULL,
     if(is.null(x)){x = group[1]}
     
     p<-ggplot2::ggplot()+
+      ggplot2::facet_wrap(stats::as.formula(paste0("~", paste(group[-1], collapse="+"))))+
       ggplot2::geom_col(data = rmdf_plotData, ggplot2::aes(x = .data[['bin']], y=.data[[valueCol]] ), position="identity",
                         fill="red", alpha=0.25)+
       ggplot2::geom_col(data = out_plotData, ggplot2::aes(x = .data[['bin']], y=.data[[valueCol]] ), position="identity",
@@ -230,6 +231,7 @@ bw.outliers<-function(df = NULL,
     rmdf_plotData<-plotdf[plotdf$outlier, ]
     
     p<-ggplot2::ggplot()+
+      ggplot2::facet_wrap(stats::as.formula(paste0("~", paste(group[-1], collapse="+"))))+
       ggplot2::geom_col(data = rmdf_plotData, ggplot2::aes(x = .data[[traitCol]], y=.data[[valueCol]] ), position="identity",
                         fill="red", alpha=0.25)+
       ggplot2::geom_col(data = out_plotData, ggplot2::aes(x = .data[[traitCol]], y=.data[[valueCol]] ), position="identity",
@@ -238,9 +240,7 @@ bw.outliers<-function(df = NULL,
       pcv_theme()
     print(p)
   }
-  
-  
-  
+
   return(out)
 }
 
