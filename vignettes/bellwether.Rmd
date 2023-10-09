@@ -81,20 +81,43 @@ The single value traits can be read in with `read.pcv`, here using `data.table::
 ```{r}
 sv<-read.pcv("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv",
              reader="fread")
-
-if(T){ # we can parse barcodes for the metadata that we need
-  sv$genotype = substr(sv$barcode, 3,5)
-  sv$genotype = ifelse(sv$genotype == "002", "B73",
-                       ifelse(sv$genotype == "003", "W605S",
-                              ifelse(sv$genotype == "004", "MM", "Mo17")))
-  sv$fertilizer = substr(sv$barcode, 8, 8)
-  sv$fertilizer = ifelse(sv$fertilizer == "A", "100",
-                       ifelse(sv$fertilizer == "B", "50", "0"))
-} else { # or we might use a key file and join it to our data
-  key<-read.csv("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/smallPhenotyperRun_key.csv")
-  sv<-merge(sv, key, by="barcode")
-}
 ```
+
+You will generally want to join some metadata to your phenotypes or parse metadata from your barcodes. Metadata key files will generally look and be used like this:
+
+```{r}
+key<-read.csv("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/smallPhenotyperRun_key.csv")
+head(key)
+sv<-merge(sv, key, by="barcode")
+table(sv$genotype, sv$fertilizer)
+
+```
+
+If we did not have a key file then we would parse our barcodes doing something like this:
+
+```{r}
+  genotype = substr(sv$barcode, 3,5)
+  genotype = ifelse(genotype == "002", "B73",
+                       ifelse(genotype == "003", "W605S",
+                              ifelse(genotype == "004", "MM", "Mo17")))
+  fertilizer = substr(sv$barcode, 8, 8)
+  fertilizer = ifelse(fertilizer == "A", 100,
+                       ifelse(fertilizer == "B", 50, 0))
+  table(genotype, fertilizer)
+```
+
+Here we'll also convert some of the phenotypes from pixel units to meaningful units. Here we know that the chips on our color card are 1.2cm on each side, so we can use the following conversion. You can convert these phenotypes to whatever units you like, but you need to know the size of the color card chips in some real unit and color correct in plantCV so that the color chip measurements are returned.
+
+```{r}
+chipSize_px <- mean(c(sv$median_color_chip_height_median, sv$median_color_chip_width_median)) # ~52
+
+px_per_cm <- chipSize_px/1.2 # ~ 43.5
+pixels_per_cmsq <- px_per_cm^2 # ~ 1890
+
+sv$area_cm2<-sv$area_pixels / pixels_per_cmsq
+sv$height_cm <- sv$height_pixels/px_per_cm
+```
+
 
 ### Very large datasets
 
@@ -157,16 +180,22 @@ Often we want to convert our timestamp data from the lemnatech into either days 
 
 ```{r}
 sv<-bw.time(sv, plantingDelay = 0, phenotype="area_pixels", cutoff=10, timeCol="timestamp", group=c("barcode", "rotation"), plot=TRUE)
-head(sv)
 dim(sv)
 ```
 
 Note that in these plots, and particularly clearly in the DAE plot, there are lots of plants which show a vertical line on their last day, indicating that our grouping might be incorrect. For this data that is due to the imaging schedule changing and getting 2 separate images at each rotation on the last day.
 
+Before moving on we'll also check the grouping in our data. Here we see that we have lots of plants with more than one image per day.
+
+```{r}
+checkGroups(sv, c("DAS", "barcode", "rotation", "genotype", "fertilizer"))
+```
+
+
 We can combine images taken at different angles of the same plant on a given day with `aggregate`, where we will also remove some columns we aren't using. In this case we use the mean of observations, but some people prefer a sum. Either way is fine. Here we also remove the DAE and DAP columns since we will not be using them. 
 
 ```{r}
-phenotypes <- colnames(sv)[c(19:35, 43:45)]
+phenotypes <- colnames(sv)[c(19:35, 43:45, 48:49)]
 phenoForm<-paste0("cbind(", paste0(phenotypes, collapse=", "), ")")
 groupForm<-"DAS+timestamp+barcode+genotype+fertilizer"
 form<-as.formula(paste0(phenoForm, "~", groupForm))
@@ -175,12 +204,19 @@ dim(sv_ag_withOutliers)
 ```
 
 
-The `bw.outliers` function can be used to remove outliers relative to a phenotype using cook's distance. Here just over 4 percent of data are removed as outliers. The plot shows removed data points in red.
+The `bw.outliers` function can be used to remove outliers relative to a phenotype using cook's distance. Here due to the experimental design having these plants germinate on the machine around 1 percent of data are removed as outliers. The plot shows removed data points in red, although here that is hard to see.
 
 ```{r}
 sv_ag<-bw.outliers(df = sv_ag_withOutliers, phenotype="area_pixels", group = c("DAS", "genotype", "fertilizer"), plotgroup = c("barcode"))
 dim(sv_ag)
 ```
+
+It is also useful to check our grouping assumptions again, here we see that there are some plants with multiple images from a single day.
+
+```{r}
+checkGroups(sv_ag, c("DAS", "barcode", "genotype", "fertilizer"))
+```
+
 
 #### Watering Data
 
@@ -256,13 +292,7 @@ This informs our next steps. Hue and size based phenotypes are well explained by
 
 ## Single Value Traits
 
-Most analysis focus on single value traits, that is phenotypes where one image returns on numeric value such as area or height. These can be compared longitudinally or with respect to individual days. To make this analysis more intuitive we often want to convert our pixel phenotypes into more comprehensible units. Note that we do not recommend using a PCA of the single value traits to look for differences in your treatment groups, these traits are interpretable on their own and are interdependent enough that a PCA is not appropriate.
-
-```{r}
-pixels_per_cmsq <- 42.5^2   # pixel per cm^2
-sv_ag$area_cm2<-sv_ag$area_pixels / pixels_per_cmsq
-sv_ag$height_cm <- sv_ag$height_pixels/42.5
-```
+Most analysis focus on single value traits, that is phenotypes where one image returns on numeric value such as area or height. These can be compared longitudinally or with respect to individual days. Note that we do not recommend using a PCA of the single value traits to look for differences in your treatment groups, these traits are interpretable on their own and are interdependent enough that a PCA is not appropriate.
 
 
 ### Growth Trendlines
@@ -316,9 +346,11 @@ rt<-relativeTolerance(sv_ag, phenotypes = c("area_cm2", "height_cm"),
                       grouping = c("fertilizer", "genotype", "DAS"), control = "fertilizer", controlGroup="100")
 
 
-ggplot(rt[rt$phenotype == "area_cm2", ],
+ggplot(rt[rt$phenotype == "area_cm2" & rt$DAS %in% c(10:12), ],
        aes(x=DAS, y=mu_rel, fill = interaction(fertilizer, genotype)) )+
   geom_col(position="dodge")+
+  geom_errorbar(aes(ymin = mu_rel-1.96*se_rel, ymax = mu_rel+1.96*se_rel),
+                position=position_dodge(width=0.9), width=0.3)+
   pcv_theme()+
   labs(y="Relative Tolerance", fill="Fertilizer\nand Genotype")
 ```
@@ -550,7 +582,8 @@ distributionPlot(fits = from3to25, form = y~time|id/group, params=c("A", "B", "C
 Working with multi value traits leads to different statistical challenges than the single value traits. Generally reading the data in as wide format makes for a significantly smaller object in memory terms since there are not lots of duplicated metadata (identifiers for each row when every image has hundreds of rows potentially). Note that for many questions even about color it is not necessary to use the entire color histograms. Make sure that you have a good reason to use the complete color data before going down this particular path for too long. As an example, a very simple comparison of the circular mean of Hue here will show our treatment effect in this data. 
 
 ```{r}
-ggplot(sv_ag[sv_ag$DAS==18,], aes(x = fertilizer, y=hue_circular_mean_degrees, fill = fertilizer))+
+ggplot(sv_ag[sv_ag$DAS==18,], aes(x = fertilizer, y=hue_circular_mean_degrees,
+                                  fill = as.character(fertilizer)))+
   geom_boxplot(outlier.shape=NA)+
   geom_jitter(width=0.05, size=0.5)+
   scale_fill_manual(values = c(viridis::viridis(3,1,0.1)), breaks = c('0','50','100'))+

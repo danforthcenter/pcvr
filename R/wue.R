@@ -96,7 +96,7 @@ pwue<-function(df, w, pheno="area_pixels", time="timestamp", id="barcode",
 
 .rateWUE <- function(ids, w, df, offset, time1, time2, pheno, id, waterCol){
   out <- do.call(rbind, lapply(ids, function(iter_id){ # per id...
-    print(iter_id)
+    #print(iter_id)
     w_i <- w[w[,get(id)]==iter_id, ]
     df_i <- df[df[,get(id)]==iter_id, ]
     #* reorder watering and pheno data
@@ -112,7 +112,6 @@ pwue<-function(df, w, pheno="area_pixels", time="timestamp", id="barcode",
       start_nonOffset <- if(t_i==1){NA} else { imaging_times[(t_i-1)] }
       end <- imaging_times[t_i] - offset 
       end_nonOffset <- imaging_times[t_i]
-      print(t_i)
       if(!is.na(start)){
         w_i_t <- w_i[w_i[[time2]]>start & w_i[[time2]]<end, ]
         total_water_i <- max(c(sum(w_i_t[[waterCol]]), 1))
