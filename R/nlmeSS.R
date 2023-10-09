@@ -55,11 +55,16 @@
 #' 
 #' ss<-.nlmeSS(model = "logistic", form=y~time|id/group,
 #'   sigma="power", df=simdf, start=NULL)
+#' 
+#' ss<-.nlmeSS(model = "gam", form=y~time|id/group,
+#'   sigma="power", df=simdf, start=NULL)
+#'
 #' dim(ss$df)
 #' ss[c("formula", "taus", "start", "pcvrForm")]
 #' 
+#' @import lmeSplines
 #' @importFrom nlme varPower varIdent varExp nlme nlme.formula corAR1
-#' @importFrom stats as.formula
+#' @importFrom stats as.formula setNames
 #' @importFrom methods is
 #' 
 #' @keywords internal
@@ -72,7 +77,7 @@
 out<-list()
 models<-c("logistic", "gompertz", "monomolecular",
           "exponential", "linear", "power law",
-          "double logistic", "double gompertz")
+          "double logistic", "double gompertz", "gam")
 sigmas = c("none", "power", "exp")
 #* check if sigma is class "varFunc", if it is then return it as is?
 
@@ -133,6 +138,11 @@ if(matched_model=="double logistic"){
 } else if (matched_model=="power law"){
   if(is.null(pars)){ pars = c("A", "B") }
   form_fun<-.nlme_form_powerlaw
+} else if (matched_model=="gam"){
+  df$splines <- lmeSplines::smspline(as.formula(paste0("~ ", x)), data=df)
+  form_fun<-.nlme_form_gam
+  start <- 0
+  pars = df # there are no pars, this is just to pass df to pdIdent for the splines
 }
 growthForm_list = form_fun(x,y, group, individual, intVar, matched_sigma, pars)
 
@@ -409,5 +419,26 @@ return(out)
                    "weights" = weights_form, "cor_form" = correlation_form)
   return(formulas)
 }
+
+
+
+.nlme_form_gam <- function(x, y, group, individual, intVar, matched_sigma, pars){
+  model_form <- as.formula(paste0(y," ~", x, "*", group)) 
+  #* `random effects formula`
+  random_form <- stats::setNames(list(pdIdent(~splines - 1, data = pars) ), group)
+  #* `variance formula`
+  weights_form <- .nlme_sigma_form(matched_sigma, x, group)
+  #* `correlation formula`
+  #* nlme insists that correlation and RE formulas use the same grouping, 
+  #* so i will not be able to account for individual autocorrelation in the GAM option
+  correlation_form <- nlme::corAR1(0.8, form = as.formula(paste0("~ 1 |",group)))
+  
+  formulas <- list("model"=model_form, "random"=random_form,
+                   "weights" = weights_form, "cor_form" = correlation_form)
+  return(formulas)
+}
+
+
+
 
 

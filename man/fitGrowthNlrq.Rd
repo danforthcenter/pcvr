@@ -11,7 +11,7 @@ fitGrowthNlrq(ss, cores = getOption("mc.cores", 1), ...)
 
 \item{cores}{Optionally specify how many cores to run in parallel if ss$taus is >1L. Defaults to 1 if mc.cores option is not set globally.}
 
-\item{...}{Additional arguments passed to \code{nlme::nlme}.}
+\item{...}{Additional arguments passed to \code{quantreg::nlrq}.}
 }
 \value{
 An \code{nlrqModel} object if tau is length of 1 or a list of such models for multiple taus,

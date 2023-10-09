@@ -36,7 +36,8 @@
 #'   you will see warnings after the model is fit about not having specified a lower
 #'   bound explicitly. Those warnings can safely be ignored and will be addressed if
 #'   the necessary features are added to \code{brms}. See details for guidance.
-#' @param type Type of model to fit, options are "brms", "nlrq", and "nls".
+#' @param type Type of model to fit, options are "brms", "nlrq", "nlme", "nls", and "mgcv".
+#' Note that the "mgcv" option only supports "gam" models.
 #' @param tau A vector of quantiles to fit for nlrq models.
 #' @keywords Bayesian, brms
 #' 
@@ -134,6 +135,8 @@
 #' \code{df} The input data for the model.
 #' \code{pcvrForm} The form argument unchanged.
 #' 
+#' For all models the type and model are also returned for simplicity downstream.
+#'
 #' @examples 
 #' 
 #' ## Not run:
@@ -172,7 +175,10 @@
 #' @export
 
 growthSS<-function(model, form, sigma=NULL, df, start=NULL, pars=NULL, type="brms", tau = 0.5){
-  type_matched = match.arg(type, choices = c("brms", "nlrq", "nls", "nlme"))
+  type_matched = match.arg(type, choices = c("brms", "nlrq", "nls", "nlme", "mgcv"))
+  model = match.arg(model, choices = c("logistic", "gompertz", "monomolecular",
+                                       "exponential", "linear", "power law",
+                                       "double logistic", "double gompertz", "gam"))
   if(type_matched=="brms"){
     if(is.null(sigma)){sigma="spline"}
     res <- .brmSS(model=model, form=form, sigma=sigma, df=df, priors = start)
@@ -181,8 +187,11 @@ growthSS<-function(model, form, sigma=NULL, df, start=NULL, pars=NULL, type="brm
   } else if(type_matched=="nlme"){
     if(is.null(sigma)){sigma="power"}
     res <- .nlmeSS(model=model, form=form, sigma=sigma, df=df, pars=pars, start=start)
-  } else{stop("Type must match one of brms, nlrq, nls, or nlme")}
+  } else if(type_matched=="mgcv"){
+    res <- .mgcvSS(model=model, form=form, df=df)
+  }else{stop("Type must match one of brms, nlrq, nls, nlme, or mgcv")}
   res$type = type
+  res$model = model
   res$call = match.call()
   return(res)
 }

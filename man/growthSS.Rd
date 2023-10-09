@@ -58,7 +58,8 @@ If this is not provided then starting values are picked with \code{stats::selfSt
 \item{pars}{Optionally specify which parameters should change by group. Not this is model
 dependent and is not implemented for brms models due to their more flexible hypothesis testing.}
 
-\item{type}{Type of model to fit, options are "brms", "nlrq", and "nls".}
+\item{type}{Type of model to fit, options are "brms", "nlrq", "nlme", "nls", and "mgcv".
+Note that the "mgcv" option only supports "gam" models.}
 
 \item{tau}{A vector of quantiles to fit for nlrq models.}
 }
@@ -96,6 +97,8 @@ For \code{nlme::nlme} models the output contains:
 \code{start}: The starting values, typically these will be generated from the growth model and your data in a similar way as shown in \code{stats::selfStart} models.
 \code{df} The input data for the model.
 \code{pcvrForm} The form argument unchanged.
+
+For all models the type and model are also returned for simplicity downstream.
 }
 \description{
 Ease of use growth model helper function for 6 model parameterizations

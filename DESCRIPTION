@@ -33,6 +33,7 @@ Imports:
     mgcv,
     quantreg,
     nlme,
+    splines,
     scales
 Suggests: 
     knitr,
@@ -43,6 +44,7 @@ Suggests:
     cmdstanr,
     rstan,
     caret,
+    lmeSplines,
     testthat (>= 3.0.0)
 VignetteBuilder: knitr
 Config/testthat/edition: 3
