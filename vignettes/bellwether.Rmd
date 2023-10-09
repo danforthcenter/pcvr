@@ -346,9 +346,11 @@ rt<-relativeTolerance(sv_ag, phenotypes = c("area_cm2", "height_cm"),
                       grouping = c("fertilizer", "genotype", "DAS"), control = "fertilizer", controlGroup="100")
 
 
-ggplot(rt[rt$phenotype == "area_cm2", ],
+ggplot(rt[rt$phenotype == "area_cm2" & rt$DAS %in% c(10:12), ],
        aes(x=DAS, y=mu_rel, fill = interaction(fertilizer, genotype)) )+
   geom_col(position="dodge")+
+  geom_errorbar(aes(ymin = mu_rel-1.96*se_rel, ymax = mu_rel+1.96*se_rel),
+                position=position_dodge(width=0.9), width=0.3)+
   pcv_theme()+
   labs(y="Relative Tolerance", fill="Fertilizer\nand Genotype")
 ```
