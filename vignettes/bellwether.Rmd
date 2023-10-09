@@ -582,7 +582,8 @@ distributionPlot(fits = from3to25, form = y~time|id/group, params=c("A", "B", "C
 Working with multi value traits leads to different statistical challenges than the single value traits. Generally reading the data in as wide format makes for a significantly smaller object in memory terms since there are not lots of duplicated metadata (identifiers for each row when every image has hundreds of rows potentially). Note that for many questions even about color it is not necessary to use the entire color histograms. Make sure that you have a good reason to use the complete color data before going down this particular path for too long. As an example, a very simple comparison of the circular mean of Hue here will show our treatment effect in this data. 
 
 ```{r}
-ggplot(sv_ag[sv_ag$DAS==18,], aes(x = fertilizer, y=hue_circular_mean_degrees, fill = fertilizer))+
+ggplot(sv_ag[sv_ag$DAS==18,], aes(x = fertilizer, y=hue_circular_mean_degrees,
+                                  fill = as.character(fertilizer)))+
   geom_boxplot(outlier.shape=NA)+
   geom_jitter(width=0.05, size=0.5)+
   scale_fill_manual(values = c(viridis::viridis(3,1,0.1)), breaks = c('0','50','100'))+
