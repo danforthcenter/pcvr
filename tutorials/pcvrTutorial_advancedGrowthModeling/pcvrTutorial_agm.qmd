@@ -263,6 +263,36 @@ patchD <- dl + dg + plot_layout(guides="collect") & theme(legend.position="botto
 patchD
 ```
 
+## Supported Growth Models 3 {.smaller}
+
+Generalized Additive Models ([GAMs](https://en.wikipedia.org/wiki/Generalized_additive_model)) are supported but discouraged due to poor interpretability.
+
+```{r}
+#| echo: false
+#| eval: true
+x<-seq(0,20,0.1)
+y<-10*sin(x) + rnorm(length(x), 0,2)
+x2<-seq(20, 40, 0.1)
+y2<-10+(2*sin(x2))+ rnorm(length(x), 0,0.5)
+# plot(c(x,x2),c(y,y2),type="l")
+wiggles <- data.frame(x=c(x,x2), y = c(y,y2))
+```
+
+```{r}
+#| echo: false
+#| eval: true
+ggplot(wiggles, aes(x,y))+
+  geom_point()+
+  geom_smooth(method="gam",formula = y ~ s(x, bs = "cs",k=50), aes(color="50"), se=F)+
+  geom_smooth(method="gam",formula = y ~ s(x, bs = "cs",k=15), aes(color="15"), se=F)+
+  geom_smooth(method="gam",formula = y ~ s(x, bs = "cs",k=10), aes(color="10"), se=F)+
+  geom_smooth(method="gam",formula = y ~ s(x, bs = "cs",k=5), aes(color="5"), se=F)+
+  scale_color_viridis_d(option="viridis",limits = c("5", "10", "15", "50"))+
+  labs(color="Knots")+
+  pcv_theme()
+```
+
+
 ## `growthSS`
 
 Any of the models shown above can be specified easily using `growthSS`.

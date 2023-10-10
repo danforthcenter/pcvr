@@ -56,8 +56,7 @@ if(!"pcvr" %in% installed.packages()){
 
 ```{r}
 #| echo: true
-#library(pcvr) # or devtools::load_all() if you are editing
-devtools::load_all("~/Desktop/stargate/fahlgren_lab/pcvr/")
+library(pcvr) # or devtools::load_all() if you are editing
 library(ggplot2)
 library(patchwork)
 ```
@@ -181,9 +180,9 @@ Other than `mgcv` all model builders can fit 9 types of growth models.
 
 ## Supported Model Builders 2 {.smaller}
 
-| "nls"        | "nlrq"           | "nlme"       |"mgcv"        |"brms"       |
-|--------------|------------------|--------------|--------------|--------------|
-| `stats::nls` | `quantreg::nlrq` | `nlme::nlme` | `mgcv::gam`  |`brms::brms` |
+| "nls"        | "nlrq"           | "nlme"       | "mgcv"      | "brms"       |
+|--------------|------------------|--------------|-------------|--------------|
+| `stats::nls` | `quantreg::nlrq` | `nlme::nlme` | `mgcv::gam` | `brms::brms` |
 
 ## type = "nls" {.smaller}
 
@@ -232,12 +231,11 @@ Non-linear Mixed Effect Models
 General Additive Models Only
 
 | Longitudinal Trait | gam |
-|--------------------|------|
-| Non-linearity      | ✅   |
+|--------------------|-----|
+| Non-linearity      | ✅  |
 | Autocorrelation    | ❌  |
 | Heteroskedasticity | ❌  |
-| Unparameterized   | ✅   |
-
+| Unparameterized    | ✅  |
 
 ## type = "brms" {.smaller}
 
@@ -591,7 +589,7 @@ Additional arguments can be passed to `fitGrowth` and are used as follows:
 | nls  | passed to `stats::nls`                               |
 | nlrq | cores to run in parallel, passed to `quantreg::nlrq` |
 | nlme | passed to `nlme::nlmeControl`                        |
-| mgcv | passed to `mgcv::gam`                        |
+| mgcv | passed to `mgcv::gam`                                |
 
 ## `growthPlot`
 
@@ -627,7 +625,6 @@ p_nlme
 ```{r}
 p_mgcv
 ```
-
 
 ## Hypothesis Testing
 
@@ -673,9 +670,9 @@ testGrowth(mgcv_ss, mgcv_fit)$anova
 
 ## Final Considerations
 
-- Pick model builders and parameterizations based on your needs
-- Use GAMs sparingly, they present interpretability problems compared to the parameterized models.
-- Consider the biology behind your observed data while picking a growth model.
+-   Pick model builders and parameterizations based on your needs
+-   Use GAMs sparingly, they present interpretability problems compared to the parameterized models.
+-   Consider the biology behind your observed data while picking a growth model.
 
 ## Resources
 
