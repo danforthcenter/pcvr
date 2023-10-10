@@ -9,18 +9,21 @@
 #' 
 #' ss<-.nlrqSS(model = "logistic", form=y~time|id/group,
 #'   tau=0.5, df=simdf, start=NULL)
+#'   
+#' ss<-.nlrqSS(model = "gam", form=y~time|id/group, df=simdf, start=NULL, tau=0.5)
+#'   
 #' dim(ss$df)
 #' ss[c("formula", "taus", "start", "pcvrForm")]
-#' 
+#' @importFrom splines bs
 #' @keywords internal
 #' @noRd
 
-.nlrqSS<-function(model, form, tau, df, pars=NULL, start=NULL, type="nlrq"){
+.nlrqSS<-function(model, form, tau=0.5, df, pars=NULL, start=NULL, type="nlrq"){
   #* ***** `Define choices and make empty output list`
   out<-list()
   models<-c("logistic", "gompertz", "monomolecular",
             "exponential", "linear", "power law",
-            "double logistic", "double gompertz")
+            "double logistic", "double gompertz", "gam")
   #* ***** `Make nlrq formula` *****
   #* `parse form argument`
   y=as.character(form)[2]
@@ -72,6 +75,9 @@
   } else if (matched_model=="power law"){
     if(is.null(pars)){ pars = c("A", "B") }
     form_fun<-.nlrq_form_powerlaw
+  } else if(matched_model=="gam"){
+    form_fun<-.nlrq_form_gam
+    start <- 0
   }
   growthForm = form_fun(x,y, USEGROUP, group, pars)
   
@@ -396,6 +402,15 @@
     nf<-as.formula(str_nf)
   } else{
     nf <- as.formula(paste0(y," ~ A*",x,"^B"))
+  }
+  return(nf)
+}
+
+.nlrq_form_gam<-function(x, y, USEGROUP, group, pars){
+  if(USEGROUP){
+    nf<-as.formula(paste0(y, " ~ bs(",x,")*",group))
+  } else{
+    nf <- as.formula(paste0(y, " ~ bs(",x,")"))
   }
   return(nf)
 }

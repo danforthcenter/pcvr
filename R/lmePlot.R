@@ -1,4 +1,4 @@
-#' Function to visualize common \code{nlme::nlme} growth models.
+#' Function to visualize \code{nlme::lme} general additive growth models.
 #' 
 #' Models fit using \link{growthSS} inputs by \link{fitGrowth} (and similar models made through other means)
 #'  can be visualized easily using this function. This will generally be called by \code{growthPlot}.
@@ -17,7 +17,7 @@
 #' @importFrom methods is
 #' @import ggplot2
 #' @importFrom stats predict update residuals
-#' @importFrom nlme nlme nlme.formula
+#' @importFrom nlme lme lme.formula
 #' @examples 
 #' 
 #' ## Not run:
@@ -27,25 +27,25 @@
 #' simdf<-growthSim("logistic", n=20, t=25,
 #' params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))
 #' 
-#' ss<-growthSS(model = "logistic", form=y~time|id/group,
+#' ss<-growthSS(model = "gam", form=y~time|id/group,
 #'  df=simdf, sigma="power", start=NULL, type="nlme")
 #' dim(ss$df)
 #' 
 #' fit<-fitGrowth(ss)
 #' 
-#' nlmePlot(fit, form = ss$pcvrForm, groups = NULL, df = ss$df, timeRange = NULL, boot=10)
+#' lmePlot(fit, form = ss$pcvrForm, groups = NULL, df = ss$df, timeRange = NULL, boot=5)
 #' 
 #' }
 #' 
 #' ## End(Not run)
 #' 
-#' @return Returns a ggplot showing an nlme model's credible
+#' @return Returns a ggplot showing an lme general additive model's credible
 #' intervals and optionally the individual growth lines.
 #' 
 #' @export
 #' 
 
-nlmePlot<-function(fit, form, df = NULL, groups = NULL, timeRange = NULL, boot=10){
+lmePlot<-function(fit, form, df = NULL, groups = NULL, timeRange = NULL, boot=10){
   #* `get needed information from formula`
   x <-as.character(form)[3]
   y <-as.character(form)[2]
@@ -75,18 +75,18 @@ nlmePlot<-function(fit, form, df = NULL, groups = NULL, timeRange = NULL, boot=1
   }
   #* `Generate bootstrap predictions`
   yvals <- lapply(1:boot, function(i) {try(.predfun(stats::update(fit,
-                                                                  data=.nlmePlotResample(fit, df, intVar, y)), new_data),
+                                                                  data=.lmePlotResample(fit, df, intVar, y)), new_data),
                                            silent=TRUE )} )
   yvals_mat <- do.call(cbind, yvals[which(unlist(lapply(yvals, is.numeric)))])
   
   while(ncol(yvals_mat) < boot){
-    new<-try(.predfun(stats::update(fit, data=.nlmePlotResample(fit, df, intVar, y)), new_data), silent=TRUE)
+    new<-try(.predfun(stats::update(fit, data=.lmePlotResample(fit, df, intVar, y)), new_data), silent=TRUE)
     if(is.numeric(new)){
       yvals_mat <- cbind(yvals_mat, new)
     }
   }
   #* `get CIs from boostrap preds`
-  predMat<-.nlmePlotCIs(yvals_mat, seq(from=99, to=1, by=-2)/100 )
+  predMat<-.lmePlotCIs(yvals_mat, seq(from=99, to=1, by=-2)/100 )
   preds <- cbind(new_data, predMat)
   #* `plot CIs`
   avg_pal <- viridis::plasma(n=ncol(predMat))
@@ -108,7 +108,7 @@ nlmePlot<-function(fit, form, df = NULL, groups = NULL, timeRange = NULL, boot=1
 #' convenience function for pulling CIs
 #' @keywords internal
 #' @noRd
-.nlmePlotCIs <- function(y, quantiles = c(0.025, 0.975), prefix="Q_") {
+.lmePlotCIs <- function(y, quantiles = c(0.025, 0.975), prefix="Q_") {
   r1 <- t(apply(y,1,quantile, quantiles))
   setNames(as.data.frame(r1),paste0(prefix,quantiles))
 }
@@ -116,7 +116,7 @@ nlmePlot<-function(fit, form, df = NULL, groups = NULL, timeRange = NULL, boot=1
 #' Resampling function for bootstrapping CIs
 #' @keywords internal
 #' @noRd
-.nlmePlotResample <- function(fitted,data,idvar="group", y="y") {
+.lmePlotResample <- function(fitted,data,idvar="group", y="y") {
   pp <- stats::predict(fitted,levels=1)
   rr <- stats::residuals(fitted)
   dd <- data.frame(data, pred=pp, res=rr)
@@ -124,14 +124,14 @@ nlmePlot<-function(fit, form, df = NULL, groups = NULL, timeRange = NULL, boot=1
   iv <- levels(data[[idvar]])
   bsamp1 <- sample(iv, size=length(iv),replace=TRUE)
   res <- do.call(rbind, lapply(bsamp1,
-                   function(x) {
-                     ## within groups, sample *residuals* with replacement
-                     ddb <- dd[dd[[idvar]]==x,]
-                     ## bootstrapped response = pred + bootstrapped residual
-                     ddb[[y]] <- ddb$pred +
-                       sample(ddb$res,size=nrow(ddb),replace=TRUE)
-                     return(ddb)
-                   }))
+                               function(x) {
+                                 ## within groups, sample *residuals* with replacement
+                                 ddb <- dd[dd[[idvar]]==x,]
+                                 ## bootstrapped response = pred + bootstrapped residual
+                                 ddb[[y]] <- ddb$pred +
+                                   sample(ddb$res,size=nrow(ddb),replace=TRUE)
+                                 return(ddb)
+                               }))
   return(res)
 }
 
@@ -139,6 +139,5 @@ nlmePlot<-function(fit, form, df = NULL, groups = NULL, timeRange = NULL, boot=1
 #' @keywords internal
 #' @noRd
 .predfun <- function(fm, new_data) {
-  stats::predict(fm,newdata=new_data,level=0)
+  stats::predict(fm,newdata=new_data,level=1)
 }
-

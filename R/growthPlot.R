@@ -41,13 +41,20 @@ growthPlot<-function(fit, form, groups = NULL, df = NULL, timeRange = NULL, boot
   
   if(methods::is(fit, "brmsfit")){
     plot <- brmPlot(fit=fit, form=form, groups = groups, df = df, timeRange = timeRange)
-  } else if(methods::is(fit, "nls")){
+  } else if(methods::is(fit, "nls") | methods::is(fit, "gam") | methods::is(fit, "lm") ){
     plot <- nlsPlot(fit=fit, form=form, groups = groups, df = df, timeRange = timeRange)
+  } else if(methods::is(fit, "lme")){
+    plot <- lmePlot(fit, form = form, groups = groups, df = df, timeRange = timeRange, boot=boot)
   } else if(methods::is(fit, "nlme")){
     plot <- nlmePlot(fit, form = form, groups = groups, df = df, timeRange = timeRange, boot=boot)
-  } else if(methods::is(fit, "nlrqModel") | is.list(fit) ){
+  } else if(methods::is(fit, "nlrq") | is.list(fit) && methods::is(fit[[1]], "nlrq") ){
     plot <- nlrqPlot(fit=fit, form=form, groups = groups, df = df, timeRange = timeRange)
+  } else if(methods::is(fit, "rq") | is.list(fit) && methods::is(fit[[1]], "rq") ){
+    plot <- rqPlot(fit=fit, form=form, groups = groups, df = df, timeRange = timeRange)
+  } else{
+    stop("Only implemented for brms, nls, nlme, and nlrq models from fitGrowth currently.")
   }
+  #* needs gam options
   
   return(plot)
 }

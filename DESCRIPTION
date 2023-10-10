@@ -33,6 +33,8 @@ Imports:
     mgcv,
     quantreg,
     nlme,
+    splines,
+    lmeSplines,
     scales
 Suggests: 
     knitr,

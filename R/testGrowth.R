@@ -6,9 +6,11 @@
 #' vary by group in your original model and that you want to test against a null model where they
 #' do not vary by group. Alternatively for nlrq models this can be a comparison of model terms
 #' written as \code{"group_X|tau|par > group_Y|tau|par"}, which uses a fat tailed T distribution to make 
-#' comparisons on the means of each quantile estimate.
+#' comparisons on the means of each quantile estimate. For GAMs these tests compare the model with
+#' splines either by group or interacting with group to a model that ignores the grouping in the data.
 #' @keywords hypothesis, nlme, nls, nlrq
-#' @importFrom stats getCall logLik pchisq anova
+#' @importFrom stats getCall logLik pchisq anova as.formula setNames
+#' @importFrom nlme pdIdent corAR1
 #' @importFrom extraDistr qlst dlst
 #' 
 #' @details
@@ -34,8 +36,21 @@
 #' @export
 
 testGrowth<-function(ss, fit, test_pars = "A"){
-  if(ss$type %in% c("nls", "nlme")){
-    res <- .nlAnovaTest(ss, fit, test_pars = test_pars)
+  if(ss$model=="gam"){
+    #* do gam things
+    if(ss$type == "nls"){
+      res <- .lmGamTest(ss, fit)
+    } else if(ss$type == "nlrq"){
+      res <- .rqGamTest(ss, fit)
+    } else if(ss$type == "nlme"){
+      res <- .lmeGamTest(ss, fit)
+    } else if(ss$type == "mgcv"){
+      res <- .mgcvGamTest(ss, fit)
+    } else if(ss$type=="brms"){
+      stop("For brms model tests use brms::hypothesis")
+    } 
+  } else if(ss$type %in% c("nls", "nlme")){
+    res <- .nlsTest(ss, fit, test_pars = test_pars)
   } else if(ss$type == "nlrq"){
     if(any(test_pars %in% c("A", "B", "C")) ){
       res <- .nlrqTest(ss, fit, test_pars = test_pars) 
@@ -49,6 +64,154 @@ testGrowth<-function(ss, fit, test_pars = "A"){
   return(res)
 }
 
+
+#' mgcv gam testing function
+#' @examples
+#' if(FALSE){
+#' set.seed(123)
+#' logistic_df<-growthSim("logistic", n=20, t=25,
+#'                   params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))
+#' ss<-growthSS(model = "gam", form=y~time|id/group, 
+#'           df=logistic_df, type = "mgcv")
+#' fit <- fitGrowth(ss)
+#' .mgcvGamTest(ss, fit)$anova
+#' }
+#' @keywords internal
+#' @noRd
+
+.mgcvGamTest <- function(ss, fit){
+  #* `Get x variable`
+  RHS <- as.character(ss$formula)[3]
+  x <- sub(",", "", sub("s\\(", "", regmatches(RHS, regexpr("s\\(.*,", RHS))))
+  ssNew <- ss
+  #* ***** `Make Null formula`
+  ssNew$formula <- stats::as.formula(paste0("y ~ s(",x,")"))
+  #* `rerun fitGrowth with new formula`
+  nullMod <- fitGrowth(ssNew)
+  #* `compare models and return values`
+  anv <- stats::anova(nullMod,fit, test="F")
+  out <- list("anova" = anv, "nullMod"=nullMod)
+  return(out)
+}
+
+
+
+#' lme gam testing function
+#' @examples
+#' if(FALSE){
+#' set.seed(123)
+#' logistic_df<-growthSim("logistic", n=20, t=25,
+#'                   params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))
+#' ss<-growthSS(model = "gam", form=y~time|id/group, 
+#'           df=logistic_df, type = "nlme", sigma="power")
+#' fit <- fitGrowth(ss)
+#' .lmeGamTest(ss, fit)$anova
+#' }
+#' @keywords internal
+#' @noRd
+
+.lmeGamTest <- function(ss, fit){
+  #* `Get x variable`
+  x<- trimws(sub("\\*.*","",as.character(ss$formula$model)[3]))
+  ssNew <- ss
+  #* ***** `Make Null formulas`
+  newdf <- ss$df
+  newdf$dummy <- "A"
+  model_form <- ss$formula$model # fixed effects should be constant for likelihood testing
+  # stats::as.formula(paste0(sub("\\*", "+", ss$formula$model)[c(2,1,3)], collapse=""))
+  #* random effects formula
+  random_form <- stats::setNames(list(nlme::pdIdent(~splines - 1, data = newdf) ), "dummy")
+  #* variance formula
+  weights_form <- .nlme_sigma_form(as.list(ss$call)$sigma, x, "dummy")
+  #* correlation formula
+  correlation_form <- nlme::corAR1(0.8, form = stats::as.formula(paste0("~ 1 | dummy")))
+  #* add all to newSS as list
+  ssNew$formula <- list("model"=model_form, "random"=random_form,
+                   "weights" = weights_form, "cor_form" = correlation_form)
+  ssNew$df <- newdf
+  #* `rerun fitGrowth with new formula`
+  nullMod <- fitGrowth(ssNew)
+  #* `compare models and return values`
+  anv <- stats::anova(nullMod,fit)
+  out <- list("anova" = anv, "nullMod"=nullMod)
+  return(out)
+}
+
+
+#' rq gam testing function for multiple taus
+#' @examples
+#' if(FALSE){
+#' set.seed(123)
+#' logistic_df<-growthSim("logistic", n=20, t=25,
+#'                   params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))
+#' ss<-growthSS(model = "gam", form=y~time|id/group, 
+#'           df=logistic_df, type = "nlrq", tau=c(0.25, 0.5, 0.75))
+#' fit <- fitGrowth(ss, cores=3)
+#' .rqGamTest(ss, fit)$'0.25'$anova
+#' .rqGamTest(ss, fit[[1]])$anova
+#' }
+#' @keywords internal
+#' @noRd
+
+.rqGamTest <- function(ss, fit){
+  if(methods::is(fit, "rq")){
+    tau <- as.character(fit$tau)
+    fit <- stats::setNames(list(fit), tau)
+  }
+  taus <- names(fit)
+  res <- lapply(taus, function(tau){
+    f <- fit[[tau]]
+    #* `remove grouping from ss$formula`
+    rhs <- as.character(ss$formula)[3]
+    newRhs <- trimws(sub("\\*.*", "", rhs))
+    newFormula <- stats::as.formula( paste0(as.character(ss$formula)[2], "~", newRhs) )
+    #* `Make new SS object`
+    ssNew <- ss
+    ssNew$formula <- newFormula
+    ssNew$taus <- as.numeric(tau)
+    #* `rerun fitGrowth with new formula`
+    nullMod <- fitGrowth(ssNew)
+    #* `compare models and return values`
+    anv <- stats::anova(nullMod,f)
+    out <- list("anova" = anv, "nullMod"=nullMod)
+    return(out)
+  })
+  names(res) <- taus
+  if(length(res)==1){ res <- res[[1]] }
+  return(res)
+}
+
+
+
+#' lm gam testing function
+#' @examples
+#' if(FALSE){
+#' set.seed(123)
+#' logistic_df<-growthSim("logistic", n=20, t=25,
+#'                   params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))
+#' ss<-growthSS(model = "gam", form=y~time|id/group, 
+#'           df=logistic_df, type = "nls")
+#' fit <- fitGrowth(ss)
+#' .lmGamTest(ss, fit)$anova
+#' }
+#' @keywords internal
+#' @noRd
+
+.lmGamTest <- function(ss, fit){
+  #* `remove grouping from ss$formula`
+  rhs <- as.character(ss$formula)[3]
+  newRhs <- trimws(sub("\\*.*", "", rhs))
+  newFormula <- stats::as.formula( paste0(as.character(ss$formula)[2], "~", newRhs) )
+  #* `Make new SS object`
+  ssNew <- ss
+  ssNew$formula <- newFormula
+  #* `rerun fitGrowth with new formula`
+  nullMod <- fitGrowth(ssNew)
+  #* `compare models and return values`
+  anv <- stats::anova(nullMod,fit)
+  out <- list("anova" = anv, "nullMod"=nullMod)
+  return(out)
+}
 
 
 #' nls and nlme testing function
@@ -65,7 +228,7 @@ testGrowth<-function(ss, fit, test_pars = "A"){
 #' @keywords internal
 #' @noRd
 
-.nlAnovaTest <- function(ss, fit, test_pars = "A"){
+.nlsTest <- function(ss, fit, test_pars = "A"){
   #* `Get parameters to vary in comparison model`
   xForm <- as.character(ss$formula)[3]
   rMatches <- gregexpr(".2?\\[", xForm)

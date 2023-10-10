@@ -120,3 +120,66 @@ test_that("Test monomolecular brms model setup", {
   expect_s3_class(ss$formula, "brmsformula")
 })
 
+#* ************************************************************
+#* *************** `general additive growth modeling` *************** 
+#* ************************************************************
+
+set.seed(123)
+gomp_df<-growthSim("gompertz", n=20, t=25,
+                       params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(0.2, 0.25)))
+
+
+test_that("Test nls gam modeling", {
+  ss<-suppressMessages(growthSS(model = "gam", form=y~time|id/group, 
+                                df=gomp_df, type = "nls"))
+  expect_equal(as.character(ss$formula), as.character(y ~ bs(time) * group) )
+  
+  fit <- fitGrowth(ss)
+  expect_s3_class(fit, "lm")
+  
+  p <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
+  expect_s3_class(p, "ggplot")
+})
+
+test_that("Test nlrq gam modeling", {
+  ss<-suppressMessages(growthSS(model = "gam", form=y~time|id/group,
+                                df=gomp_df, type = "nlrq"))
+  expect_equal(as.character(ss$formula), as.character(y ~ bs(time) * group) )
+  
+  fit <- fitGrowth(ss)
+  expect_s3_class(fit, "rq")
+  
+  p <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
+  expect_s3_class(p, "ggplot")
+})
+
+test_that("Test nlme gam", {
+  ss<-growthSS(model = "gam", form=y~time|id/group, sigma="power",
+               df=gomp_df, type = "nlme")
+  expect_equal(as.character(ss$formula$model), as.character(y ~ time * group))
+  
+  fit <- suppressWarnings(fitGrowth(ss))
+  expect_s3_class(fit, "lme")
+  
+  p <- suppressWarnings(growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df, boot = 3))
+  expect_s3_class(p, "ggplot")
+})
+
+test_that("Test mgcv gam", {
+  ss<-suppressMessages(growthSS(model = "gam", form=y~time|id/group, df=gomp_df, type = "mgcv"))
+  expect_equal(as.character(ss$formula), as.character(y ~ 0+group+s(time, by = group) ) )
+  
+  fit <- suppressWarnings(fitGrowth(ss))
+  expect_s3_class(fit, "gam")
+  
+  p <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
+  expect_s3_class(p, "ggplot")
+})
+
+
+test_that("Test gam brms model setup", {
+  ss<-growthSS(model = "gam", form=y~time|id/group, sigma="homo",
+               df=gomp_df, type = "brms")
+  
+  expect_s3_class(ss$formula, "brmsformula")
+})

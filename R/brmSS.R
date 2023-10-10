@@ -1,7 +1,7 @@
 #' Ease of use brms starter function for 6 growth model parameterizations
 #' 
 #' @param model The name of a model as a character string.
-#' Supported options are c("logistic", "gompertz", "monomolecular", "exponential", "linear", "power law", "double logistic", "double gompertz").
+#' Supported options are c("logistic", "gompertz", "monomolecular", "exponential", "linear", "power law", "double logistic", "double gompertz", "gam").
 #' See \code{\link{growthSim}} for examples of each type of growth curve.
 #' @param form A formula describing the model. The left hand side should only be 
 #' the outcome variable (phenotype). The right hand side needs at least the x variable
@@ -26,7 +26,9 @@
 #'   If priors include multiple groups (\code{priors = list(A = c(10,15), ...)}) then
 #'   you will see warnings after the model is fit about not having specified a lower
 #'   bound explicitly. Those warnings can safely be ignored and will be addressed if
-#'   the necessary features are added to \code{brms}. See details for guidance.
+#'   the necessary features are added to \code{brms}. For GAMs priors are not created by
+#'   this function but can still be provided as a \code{brmsprior} object.
+#'   See details for guidance.
 #' @keywords Bayesian, brms
 #' 
 #' @importFrom stats as.formula rgamma
@@ -86,7 +88,7 @@
 #' \code{prior}: A brmsprior/data.frame object.
 #' \code{initfun}: A function to randomly initialize chains using a random draw from a gamma
 #' distribution (confines initial values to positive and makes correct number
-#' of initial values for chains and groups).
+#' of initial values for chains and groups). For "gam" models this initializes all chains at 0.
 #' \code{df} The data input, possibly with dummy variables added if needed.
 #' \code{family} The model family, currently this will always be "student".
 #' \code{pcvrForm} The form argument unchanged. This is returned so that
@@ -97,10 +99,11 @@
 #' 
 #' simdf<-growthSim("logistic", n=20, t=25,
 #' params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))
-#' ss<-growthSS(model = "logistic", form=y~time|id/group,
+#' ss<-.brmSS(model = "logistic", form=y~time|id/group,
 #' sigma="spline", df=simdf, priors = list("A"=130, "B"=12, "C"=3))
 #' lapply(ss,class)
 #' ss$initfun()
+#' 
 #' 
 #' @keywords internal
 #' @noRd
@@ -108,7 +111,7 @@
 .brmSS<-function(model, form, sigma=NULL, df, priors=NULL){
   out<-list()
   sigmas<-c("homo", "linear", "spline", "gompertz")
-  models<-c("logistic", "gompertz", "monomolecular", "exponential", "linear", "power law", "double logistic", "double gompertz")
+  models<-c("logistic", "gompertz", "monomolecular", "exponential", "linear", "power law", "double logistic", "double gompertz", "gam")
   #* ***** `Make bayesian formula` *****
     #* `parse form argument`
     y=as.character(form)[2]
@@ -152,8 +155,10 @@
       form_fun<-.brms_form_linear
     } else if (matched_model=="power law"){
       form_fun<-.brms_form_powerlaw
+    } else if (matched_model=="gam"){
+      form_fun<-.brms_form_gam
     }
-    growthForm = form_fun(x,y)
+    growthForm = form_fun(x,y, group) # group only used in gam model
     #* `Make parameter formula`
     #* could add a pars argument then set up parForm from those.
     #* I think that would change how priors would have to work
@@ -167,13 +172,16 @@
         pars=c("A","B")
       } else if(matched_model == "linear"){
         pars="A"
+      } else if(matched_model == "gam"){
+        pars <- NULL
       }
     if(matched_sigma == "gompertz"){ # add nl pars for sigma form
       pars <- c(pars, "subA", "subB", "subC")
     }
+    if(!is.null(pars)){
       if(USEGROUP){ parForm<-as.formula(paste0( paste(pars,collapse="+"),"~0+",group ))
       } else { parForm<-as.formula(paste0( paste(pars,collapse="+"),"~1" )) }
-      
+    } else {parForm=NULL} 
     #* `Make heteroskedasticity formula`
     if(!is.null(sigma)){
       sigmaForm<-if(matched_sigma=="homo"){
@@ -196,9 +204,17 @@
         }
       } 
       #* `Combining for brms formula`
-      bayesForm<-brms::bf(formula = growthForm, sigmaForm, parForm, autocor = corForm, nl=TRUE)
+      if(!is.null(parForm)){
+        bayesForm<-brms::bf(formula = growthForm, sigmaForm, parForm, autocor = corForm, nl=TRUE)
+      } else{
+        bayesForm<-brms::bf(formula = growthForm, sigmaForm, autocor = corForm)
+      }
     }else{
-      bayesForm<-brms::bf(formula = growthForm,parForm,autocor = corForm,nl=TRUE)
+      if(!is.null(parForm)){
+        bayesForm<-brms::bf(formula = growthForm, parForm, autocor = corForm, nl=TRUE)
+      } else{
+        bayesForm<-brms::bf(formula = growthForm, autocor = corForm)
+      }
     }
     out[["formula"]]<-bayesForm
   #* ***** `Make priors` *****
@@ -292,6 +308,7 @@
   }
     
   #* ***** `Make initializer function` *****
+    if(!is.null(pars)){
     initFun<-function(pars="?", nPerChain=1){
       init<-lapply(pars, function(i) array(rgamma(nPerChain,1)))
       names(init)<-paste0("b_",pars)
@@ -300,6 +317,10 @@
     formals(initFun)$pars<-pars
     formals(initFun)$nPerChain<-length(unique(df[[group]]))
     wrapper<-function(){initFun()}
+    } else{
+      wrapper = 0
+    }
+    
     out[["initfun"]]<-wrapper
     out[["df"]]<-df
     out[["family"]]<-"student"
@@ -307,31 +328,33 @@
   return(out)
   }
   
-.brms_form_logistic<-function(x, y){
-  return(as.formula(paste0(y," ~ A/(1+exp((B-",x,")/C))")))
+.brms_form_logistic<-function(x, y, group){
+  return(stats::as.formula(paste0(y," ~ A/(1+exp((B-",x,")/C))")))
 }
-.brms_form_gompertz<-function(x, y){
-  return(as.formula(paste0(y," ~ A*exp(-B*exp(-C*",x,"))")))
+.brms_form_gompertz<-function(x, y, group){
+  return(stats::as.formula(paste0(y," ~ A*exp(-B*exp(-C*",x,"))")))
 }
-.brms_form_dou_logistic<-function(x, y){
-  return(as.formula(paste0(y," ~ A/(1+exp((B-",x,")/C)) + ((A2-A) /(1+exp((B2-",x,")/C2)))")))
+.brms_form_dou_logistic<-function(x, y, group){
+  return(stats::as.formula(paste0(y," ~ A/(1+exp((B-",x,")/C)) + ((A2-A) /(1+exp((B2-",x,")/C2)))")))
 }
-.brms_form_dou_gompertz<-function(x, y){
-  return(as.formula(paste0(y," ~ A * exp(-B * exp(-C*",x,")) + (A2-A) * exp(-B2 * exp(-C2*(",x,"-B)))")))
+.brms_form_dou_gompertz<-function(x, y, group){
+  return(stats::as.formula(paste0(y," ~ A * exp(-B * exp(-C*",x,")) + (A2-A) * exp(-B2 * exp(-C2*(",x,"-B)))")))
 }
-.brms_form_monomolecular<-function(x, y){
-  return(as.formula(paste0(y,"~A-A*exp(-B*",x,")")))
+.brms_form_monomolecular<-function(x, y, group){
+  return(stats::as.formula(paste0(y,"~A-A*exp(-B*",x,")")))
 }
-.brms_form_exponential<-function(x, y){
-  return(as.formula(paste0(y," ~ A*exp(B*",x, ")")))
+.brms_form_exponential<-function(x, y, group){
+  return(stats::as.formula(paste0(y," ~ A*exp(B*",x, ")")))
 }
-.brms_form_linear<-function(x, y){
-  return(as.formula(paste0(y," ~ A*",x)))
+.brms_form_linear<-function(x, y, group){
+  return(stats::as.formula(paste0(y," ~ A*",x)))
 }
-.brms_form_powerlaw<-function(x, y){
-  return(as.formula(paste0(y," ~ A*",x,"^B")))
+.brms_form_powerlaw<-function(x, y, group){
+  return(stats::as.formula(paste0(y," ~ A*",x,"^B")))
 }
-
+.brms_form_gam<-function(x, y, group){
+  return(stats::as.formula(paste0(y," ~ s(",x,", by=",group, ")")))
+}
 
 
 

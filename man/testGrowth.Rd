@@ -15,7 +15,8 @@ testGrowth(ss, fit, test_pars = "A")
 vary by group in your original model and that you want to test against a null model where they
 do not vary by group. Alternatively for nlrq models this can be a comparison of model terms
 written as \code{"group_X|tau|par > group_Y|tau|par"}, which uses a fat tailed T distribution to make 
-comparisons on the means of each quantile estimate.}
+comparisons on the means of each quantile estimate. For GAMs these tests compare the model with
+splines either by group or interacting with group to a model that ignores the grouping in the data.}
 }
 \value{
 A list containing an anova object comparing non-linear growth models and the null model.
