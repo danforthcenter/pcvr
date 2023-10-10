@@ -173,15 +173,17 @@ hetPatch
 
 ## Supported Model Builders {.smaller}
 
-Four model building options are supported through the `type` argument of growthSS:
+Five model building options are supported through the `type` argument of growthSS:
 
-`nls`, `nlrq`, `nlme`, and `brms`
+`nls`, `nlrq`, `nlme`, `mgcv`, and `brms`
+
+Other than `mgcv` all model builders can fit 9 types of growth models.
 
 ## Supported Model Builders 2 {.smaller}
 
-| type     | "nls"        | "nlrq"           | "nlme"       |"mgcv"        |"brms"       |
-|----------|--------------|------------------|--------------|--------------|--------------|
-| Function | `stats::nls` | `quantreg::nlrq` | `nlme::nlme` | `mgcv::gam`  |`brms::brms` |
+| "nls"        | "nlrq"           | "nlme"       |"mgcv"        |"brms"       |
+|--------------|------------------|--------------|--------------|--------------|
+| `stats::nls` | `quantreg::nlrq` | `nlme::nlme` | `mgcv::gam`  |`brms::brms` |
 
 ## type = "nls" {.smaller}
 
@@ -204,7 +206,7 @@ Non-linear least squares regression.
 | Sensitive to outliers              | Robust to outliers               |
 | Computationally cheap              | Computationally more expensive   |
 
-## type = "nlrq" 2 {.smaller}
+## type = "nlrq" {.smaller}
 
 Non-linear quantile regression.
 
@@ -322,7 +324,7 @@ patchD
 
 ## Supported Growth Models 3 {.smaller}
 
-Generalized Additive Models [GAMs](https://en.wikipedia.org/wiki/Generalized_additive_model) are also supported.
+Generalized Additive Models ([GAMs](https://en.wikipedia.org/wiki/Generalized_additive_model)) are also supported.
 
 ```{r}
 #| echo: false
@@ -620,7 +622,7 @@ p_nlrq
 p_nlme
 ```
 
-## `growthPlot` - nlme
+## `growthPlot` - mgcv
 
 ```{r}
 p_mgcv
@@ -669,6 +671,11 @@ Due to GAMs nature we cannot test parameters individually.
 testGrowth(mgcv_ss, mgcv_fit)$anova
 ```
 
+## Final Considerations
+
+- Pick model builders and parameterizations based on your needs
+- Use GAMs sparingly, they present interpretability problems compared to the parameterized models.
+- Consider the biology behind your observed data while picking a growth model.
 
 ## Resources
 
