@@ -63,7 +63,7 @@
 #' ss[c("formula", "taus", "start", "pcvrForm")]
 #' 
 #' @import lmeSplines
-#' @importFrom nlme varPower varIdent varExp nlme nlme.formula corAR1
+#' @importFrom nlme varPower varIdent varExp nlme nlme.formula corAR1 pdIdent
 #' @importFrom stats as.formula setNames
 #' @importFrom methods is
 #' 
@@ -425,13 +425,13 @@ return(out)
 .nlme_form_gam <- function(x, y, group, individual, intVar, matched_sigma, pars){
   model_form <- as.formula(paste0(y," ~", x, "*", group)) 
   #* `random effects formula`
-  random_form <- stats::setNames(list(pdIdent(~splines - 1, data = pars) ), group)
+  random_form <- stats::setNames(list(nlme::pdIdent(~splines - 1, data = pars) ), group)
   #* `variance formula`
   weights_form <- .nlme_sigma_form(matched_sigma, x, group)
   #* `correlation formula`
   #* nlme insists that correlation and RE formulas use the same grouping, 
   #* so i will not be able to account for individual autocorrelation in the GAM option
-  correlation_form <- nlme::corAR1(0.8, form = as.formula(paste0("~ 1 |",group)))
+  correlation_form <- nlme::corAR1(0.8, form = stats::as.formula(paste0("~ 1 |",group)))
   
   formulas <- list("model"=model_form, "random"=random_form,
                    "weights" = weights_form, "cor_form" = correlation_form)

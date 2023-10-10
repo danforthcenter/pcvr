@@ -231,7 +231,7 @@ fitGrowthNlrq <- function(ss, cores = getOption("mc.cores",1), ...){
 #' @importFrom quantreg rq
 #' @export
 
-fitGrowthNlrq_gam <- function(ss, ...){
+fitGrowthNlrq_gam <- function(ss, cores = getOption("mc.cores",1), ...){
   if(length(ss[["taus"]])>1){
     fits <- parallel::mclapply(ss[["taus"]], function(tau){
       fit <- do.call("rq", args = list(
