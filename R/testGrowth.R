@@ -44,6 +44,8 @@ testGrowth<-function(ss, fit, test_pars = "A"){
       res <- .rqGamTest(ss, fit)
     } else if(ss$type == "nlme"){
       res <- .lmeGamTest(ss, fit)
+    } else if(ss$type == "mgcv"){
+      res <- .mgcvGamTest(ss, fit)
     } else if(ss$type=="brms"){
       stop("For brms model tests use brms::hypothesis")
     } 
@@ -61,6 +63,37 @@ testGrowth<-function(ss, fit, test_pars = "A"){
   
   return(res)
 }
+
+
+#' mgcv gam testing function
+#' @examples
+#' if(FALSE){
+#' set.seed(123)
+#' logistic_df<-growthSim("logistic", n=20, t=25,
+#'                   params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))
+#' ss<-growthSS(model = "gam", form=y~time|id/group, 
+#'           df=logistic_df, type = "mgcv")
+#' fit <- fitGrowth(ss)
+#' .mgcvGamTest(ss, fit)$anova
+#' }
+#' @keywords internal
+#' @noRd
+
+.mgcvGamTest <- function(ss, fit){
+  #* `Get x variable`
+  RHS <- as.character(ss$formula)[3]
+  x <- sub(",", "", sub("s\\(", "", regmatches(RHS, regexpr("s\\(.*,", RHS))))
+  ssNew <- ss
+  #* ***** `Make Null formula`
+  ssNew$formula <- stats::as.formula(paste0("y ~ s(",x,")"))
+  #* `rerun fitGrowth with new formula`
+  nullMod <- fitGrowth(ssNew)
+  #* `compare models and return values`
+  anv <- stats::anova(nullMod,fit, test="F")
+  out <- list("anova" = anv, "nullMod"=nullMod)
+  return(out)
+}
+
 
 
 #' lme gam testing function

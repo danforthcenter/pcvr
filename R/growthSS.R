@@ -1,8 +1,9 @@
 #' Ease of use growth model helper function for 6 model parameterizations
 #' 
 #' @param model The name of a model as a character string.
-#' Supported options are c("logistic", "gompertz", "monomolecular", "exponential", "linear", "power law", "double logistic", "double gompertz").
-#' See \code{\link{growthSim}} for examples of each type of growth curve.
+#' Supported options are c("logistic", "gompertz", "monomolecular", "exponential", "linear", "power law",
+#'  "double logistic", "double gompertz", "gam").
+#' See \code{\link{growthSim}} for examples of each type of growth curve ("gam" is not supported in \code{growthSim}).
 #' @param form A formula describing the model. The left hand side should only be 
 #' the outcome variable (phenotype). The right hand side needs at least the x variable
 #'  (typically time). Grouping is also described in this formula using roughly lme4

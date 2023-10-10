@@ -47,7 +47,7 @@ growthPlot<-function(fit, form, groups = NULL, df = NULL, timeRange = NULL, boot
     plot <- lmePlot(fit, form = form, groups = groups, df = df, timeRange = timeRange, boot=boot)
   } else if(methods::is(fit, "nlme")){
     plot <- nlmePlot(fit, form = form, groups = groups, df = df, timeRange = timeRange, boot=boot)
-  } else if(methods::is(fit, "nlrqModel") | is.list(fit) && methods::is(fit[[1]], "nlrqModel") ){
+  } else if(methods::is(fit, "nlrq") | is.list(fit) && methods::is(fit[[1]], "nlrq") ){
     plot <- nlrqPlot(fit=fit, form=form, groups = groups, df = df, timeRange = timeRange)
   } else if(methods::is(fit, "rq") | is.list(fit) && methods::is(fit[[1]], "rq") ){
     plot <- rqPlot(fit=fit, form=form, groups = groups, df = df, timeRange = timeRange)
