@@ -136,45 +136,53 @@
     #* `Make autocorrelation formula`
     corForm<-as.formula(paste0("~arma(~",x,"|", individual,":",group,",1,1)"))
     #* `match args`
-    matched_model <- match.arg(model, models)
+    if(!grepl("\\+", model)){
+      matched_model <- match.arg(model, models)
+    }
     matched_sigma <- match.arg(sigma, choices=sigmas)
     #* `Make growth formula`
-    if(matched_model=="double logistic"){
-      form_fun<-.brms_form_dou_logistic
-    } else if (matched_model=="double gompertz"){
-      form_fun<-.brms_form_dou_gompertz
-    } else if(matched_model=="logistic"){
-      form_fun<-.brms_form_logistic
-    } else if (matched_model=="gompertz"){
-      form_fun<-.brms_form_gompertz
-    } else if (matched_model=="monomolecular"){
-      form_fun<-.brms_form_monomolecular
-    } else if (matched_model=="exponential"){
-      form_fun<-.brms_form_exponential
-    } else if (matched_model=="linear"){
-      form_fun<-.brms_form_linear
-    } else if (matched_model=="power law"){
-      form_fun<-.brms_form_powerlaw
-    } else if (matched_model=="gam"){
-      form_fun<-.brms_form_gam
+    if(grepl("\\+", model)){
+      
+      chngptHelpers <- list()
+      growthForm <- chngptHelpers$formula
+      pars <- chngptHelpers$params
+      
+    } else{
+        if(matched_model=="double logistic"){
+          form_fun<-.brms_form_dou_logistic
+          pars=c("A","B", "C", "A2","B2", "C2")
+        } else if (matched_model=="double gompertz"){
+          form_fun<-.brms_form_dou_gompertz
+          pars=c("A","B", "C", "A2","B2", "C2")
+        } else if(matched_model=="logistic"){
+          form_fun<-.brms_form_logistic
+          pars=c("A","B", "C")
+        } else if (matched_model=="gompertz"){
+          form_fun<-.brms_form_gompertz
+          pars=c("A","B", "C")
+        } else if (matched_model=="monomolecular"){
+          form_fun<-.brms_form_monomolecular
+          pars=c("A","B")
+        } else if (matched_model=="exponential"){
+          form_fun<-.brms_form_exponential
+          pars=c("A","B")
+        } else if (matched_model=="linear"){
+          form_fun<-.brms_form_linear
+          pars=c("A")
+        } else if (matched_model=="power law"){
+          form_fun<-.brms_form_powerlaw
+          pars=c("A","B")
+        } else if (matched_model=="gam"){
+          form_fun<-.brms_form_gam
+          pars <- NULL
+        }
+        growthForm = form_fun(x,y, group) # group only used in gam model
     }
-    growthForm = form_fun(x,y, group) # group only used in gam model
     #* `Make parameter formula`
     #* could add a pars argument then set up parForm from those.
     #* I think that would change how priors would have to work
     #* and that seems like more trouble than it is worth right 
     #* now at least.
-    if(matched_model %in% c("double logistic", "double gompertz")){
-      pars=c("A","B", "C", "A2","B2", "C2")
-      }else if(matched_model %in% c("logistic", "gompertz")){
-        pars=c("A","B", "C")
-      } else if(matched_model %in% c("monomolecular", "exponential", "power law")){
-        pars=c("A","B")
-      } else if(matched_model == "linear"){
-        pars="A"
-      } else if(matched_model == "gam"){
-        pars <- NULL
-      }
     if(matched_sigma == "gompertz"){ # add nl pars for sigma form
       pars <- c(pars, "subA", "subB", "subC")
     }
