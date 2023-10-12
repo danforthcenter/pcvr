@@ -143,9 +143,9 @@
     #* `Make growth formula`
     if(grepl("\\+", model)){
       
-      chngptHelpers <- list()
-      growthForm <- chngptHelpers$formula
-      pars <- chngptHelpers$params
+      chngptHelper_list <- .brmsChangePointHelper(model, x, y, group)
+      growthForm <- chngptHelper_list$growthForm
+      pars <- chngptHelper_list$pars
       
     } else{
         if(matched_model=="double logistic"){
