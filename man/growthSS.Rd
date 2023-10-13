@@ -53,12 +53,13 @@ If this is not provided then starting values are picked with \code{stats::selfSt
   This is done because the values are strictly positive and the lognormal distribution
   is easily interpreted. If this argument is not provided then priors are not 
   returned and a different set of priors will need to be made for the model using
-  \code{brms::set_prior}. This works similarly to the \code{params} argument
+  \code{brms::set_prior}. When specifying starting values/prior means 
+  think of this as being similar to the \code{params} argument
   in \code{growthSim}. Names should correspond to parameter names from the
   \code{model} argument. A numeric vector can also be used, but specifying
   names is best practice for clarity. Additionally, due to a limitation in
   \code{brms} currently lower bounds cannot be set for priors for specific groups.
-  If priors include multiple groups (\code{priors = list(A = c(10,15), ...)}) then
+  If priors include multiple groups (\code{start = list(A = c(10,15), ...)}) then
   you will see warnings after the model is fit about not having specified a lower
   bound explicitly. Those warnings can safely be ignored and will be addressed if
   the necessary features are added to \code{brms}. See details for guidance.}
@@ -140,7 +141,7 @@ rather this should be informed by an understanding of the plants you
 
 
 The \code{sigma} argument optionally specifies a sub model to account for heteroskedasticity.
-Currently there are four supported brms sub models described below.
+Currently there are four supported \code{brms} sub models described below.
 
 \itemize{
    \item \bold{homo}: \code{sigma ~ 1}, fitting only a global or per group intercept to sigma.
@@ -158,7 +159,7 @@ Currently there are four supported brms sub models described below.
      are pretty forgiving.
 }
 
-There are also three supported submodel options for nlme models, but a \code{varFunc} object can also be supplied,
+There are also three supported submodel options for \code{nlme} models, but a \code{varFunc} object can also be supplied,
 see \code{?nlme::varClasses}.
 
 \itemize{

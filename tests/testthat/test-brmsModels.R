@@ -202,12 +202,12 @@ if(FALSE){
   
   test_that("linear + linear + linear brms model pipeline", {
     set.seed(123)
-    simdf<-growthSim("linear + linear + linear", n=25, t=25,
-                     params = list("linear1A"=c(15, 12), "changePoint1"=c(8, 6), "linear2A"=c(3, 5), 
-                                   "changePoint2"=c(15, 19), "linear3A"=c(10, 8)))
+    simdf<-growthSim("linear + linear + linear", n=25, t=50,
+                     params = list("linear1A"=c(10, 12), "changePoint1"=c(8, 6), "linear2A"=c(1, 2), 
+                                   "changePoint2"=c(25, 30), "linear3A"=c(20, 24)))
     
     ss<-growthSS(model = "linear + linear + linear", form=y~time|id/group, sigma="spline",
-                 list("linear1A"=10, "changePoint1"=5, "linear2A"=2, "changePoint2"=12, "linear3A"=5 ),
+                 list("linear1A"=10, "changePoint1"=5, "linear2A"=2, "changePoint2"=15, "linear3A"=5 ),
                  df=simdf, type = "brms")
     expect_equal(ss$prior$nlpar, c("","","linear1A","changePoint1", "linear2A","changePoint2", "linear3A"))
     
@@ -215,6 +215,7 @@ if(FALSE){
     expect_s3_class(fit, "brmsfit")
     
     plot <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
+    # plot<-plot+coord_cartesian(xlim = c(0,50), ylim = c(0,500))
     ggsave("/home/josh/Desktop/stargate/fahlgren_lab/labMeetings/linearPlusLinearPlusLinear_fitGrowth.png", plot, width=10, height=6, dpi=300, bg="#ffffff")
     expect_s3_class(plot, "ggplot")
   })

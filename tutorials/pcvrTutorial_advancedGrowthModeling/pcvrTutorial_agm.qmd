@@ -292,6 +292,13 @@ ggplot(wiggles, aes(x,y))+
   pcv_theme()
 ```
 
+## Supported Growth Models 4 {.smaller}
+
+Segmented growth models are also supported using "model1 + model2" syntax in both `growthSim` and `growthSS`.
+
+. . . 
+
+For now we will focus on single models but there will be examples of segmented models later on.
 
 ## `growthSS`
 
@@ -680,11 +687,104 @@ data(bw_vignette_fit)
 brms::hypothesis(bw_vignette_fit, "(A_group0.B73 / A_group0.MM) > 1.1 * (A_group50.B73 / A_group50.MM)")$hyp
 ```
 
+## Threshold models
+
+Segmented Models are specified using "model1 + model2" syntax.
+
+Currently only two phases are recommended. While more will work there are issues with model identifiability.
+
+## Threshold models 2
+
+```{r}
+#| eval: false
+#| echo: true
+#| code-line-numbers: "1,3"
+simdf<-growthSim(model = "linear + linear", 
+                 n=20, t=25,
+                 params = list("linear1A"=c(15, 12), "changePoint1"=c(8, 6), "linear2A"=c(3, 5) ))
+
+ss<-growthSS(model = "linear + linear", form=y~time|id/group, sigma="spline",
+             start = list("linear1A"=10, "changePoint1"=5, "linear2A"=2 ),
+             df=simdf, type = "brms")
+
+fit <- fitGrowth(ss, backend="cmdstanr", iter=500, chains=1, cores=1)
+growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
+```
+
+## Threshold models 2
+
+![](linearPlusLinear_fitGrowth.png)
+
+## Threshold models 3
+
+```{r}
+#| eval: false
+#| echo: true
+simdf<-growthSim("linear + logistic", n=20, t=25,
+                     params = list("linear1A"=c(15, 12), "changePoint1"=c(8, 6),
+                                   "logistic2A"=c(100, 150), "logistic2B"=c(10, 8),
+                                   "logistic2C"=c(3, 2.5) ))
+
+ss<-growthSS(model = "linear + logistic", form=y~time|id/group, sigma="spline",
+             list("linear1A"=10, "changePoint1"=5, 
+                  "logistic2A"=100, "logistic2B"=10, "logistic2C"=3),
+             df=simdf, type = "brms")
+    
+fit <- fitGrowth(ss, backend="cmdstanr", iter=500, chains=1, cores=1)
+growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
+```
+
+
+## Threshold models 3
+
+![](linearPlusLogistic_fitGrowth.png)
+
+## Threshold models 4
+
+```{r}
+#| eval: false
+#| echo: true
+ss<-growthSS(model = "linear + gam", form=y~time|id/group, sigma="homo",
+             list("linear1A"=10, "changePoint1"=5),
+             df=simdf, type = "brms")
+
+fit <- fitGrowth(ss, backend="cmdstanr", iter=500, chains=1, cores=1)
+growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
+```
+
+
+## Threshold models 4
+
+![](linearPlusGAM_fitGrowth.png)
+
+## Threshold models 5
+
+```{r}
+simdf<-growthSim("linear + linear + linear", n=25, t=25,
+                     params = list("linear1A"=c(15, 12), "changePoint1"=c(8, 6), "linear2A"=c(3, 5), 
+                                   "changePoint2"=c(15, 19), "linear3A"=c(10, 8)))
+    
+ss<-growthSS(model = "linear + linear + linear", form=y~time|id/group, sigma="spline",
+             list("linear1A"=10, "changePoint1"=5,
+                  "linear2A"=2, "changePoint2"=12,
+                  "linear3A"=5 ),
+             df=simdf, type = "brms")
+
+fit <- fitGrowth(ss, backend="cmdstanr", iter=500, chains=1, cores=1)
+
+plot <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
+```
+
+
+## Threshold models 5
+
+![](linearPlusLinearPlusLinear_fitGrowth.png)
+
 ## Using `brms` directly
 
 These functions are all to help use common growth models more easily.
 
-The choices in `pcvr` are a tiny subset of what is possible with `brms`, which itself is more limited than `Stan`.
+The choices in `pcvr` are a small subset of what is possible with `brms`, which itself is more limited than `Stan`.
 
 ## Using `brms` directly
 
