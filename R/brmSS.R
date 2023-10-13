@@ -141,6 +141,7 @@
     }
     matched_sigma <- match.arg(sigma, choices=sigmas)
     #* `Make growth formula`
+    spline_pars = NULL
     if(grepl("\\+", model)){
       
       chngptHelper_list <- .brmsChangePointHelper(model, x, y, group)
@@ -149,7 +150,7 @@
       if("splineDummy" %in% pars){
         spline_pars <- "splineDummy"
         pars <- pars[-which(pars=="splineDummy")]
-      } else {spline_pars = NULL}
+      }
       
     } else{
         if(matched_model=="double logistic"){
