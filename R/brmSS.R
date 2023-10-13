@@ -146,6 +146,10 @@
       chngptHelper_list <- .brmsChangePointHelper(model, x, y, group)
       growthForm <- chngptHelper_list$growthForm
       pars <- chngptHelper_list$pars
+      if("splineDummy" %in% pars){
+        spline_pars <- "splineDummy"
+        pars <- pars[-which(pars=="splineDummy")]
+      } else {spline_pars = NULL}
       
     } else{
         if(matched_model=="double logistic"){
@@ -190,6 +194,11 @@
       if(USEGROUP){ parForm<-as.formula(paste0( paste(pars,collapse="+"),"~0+",group ))
       } else { parForm<-as.formula(paste0( paste(pars,collapse="+"),"~1" )) }
     } else {parForm=NULL} 
+    
+    if(!is.null(spline_pars)){
+      splineParForm <- as.formula(paste0(spline_pars, " ~ s(", x, ", by=",group, ")"))
+    }
+    
     #* `Make heteroskedasticity formula`
     if(!is.null(sigma)){
       sigmaForm<-if(matched_sigma=="homo"){
@@ -212,14 +221,19 @@
         }
       } 
       #* `Combining for brms formula`
+      #* might be better to do this with do.call, these are getting cumbersome.
       if(!is.null(parForm)){
-        bayesForm<-brms::bf(formula = growthForm, sigmaForm, parForm, autocor = corForm, nl=TRUE)
+        if(!is.null(spline_pars)){
+          bayesForm<-brms::bf(formula = growthForm, sigmaForm, parForm, splineParForm, autocor = corForm, nl=TRUE)
+        } else{bayesForm<-brms::bf(formula = growthForm, sigmaForm, parForm, autocor = corForm, nl=TRUE)}
       } else{
         bayesForm<-brms::bf(formula = growthForm, sigmaForm, autocor = corForm)
       }
     }else{
       if(!is.null(parForm)){
-        bayesForm<-brms::bf(formula = growthForm, parForm, autocor = corForm, nl=TRUE)
+        if(!is.null(spline_pars)){
+          bayesForm<-brms::bf(formula = growthForm, parForm, splineParForm, autocor = corForm, nl=TRUE)
+        }else{bayesForm<-brms::bf(formula = growthForm, parForm, autocor = corForm, nl=TRUE)}
       } else{
         bayesForm<-brms::bf(formula = growthForm, autocor = corForm)
       }

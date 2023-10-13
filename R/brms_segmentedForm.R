@@ -365,11 +365,11 @@
   if(position==1){
     stop("GAMs are not supported as the first function of a multi-part formula")
   } else{
-    form <- paste0("s(",  x, ", by = ",group,")")
+    form <- paste0("splineDummy") # splineDummy ~ s(time, by=group)
     cp <- paste0("inv_logit((", x,"-", paste0("changePoint", 1:(position-1), collapse = "-"), ") * 5)")
     cpInt <- NA
   }
-  pars <- c(paste0("changePoint", position))
+  pars <- c("splineDummy",paste0("changePoint", position))
   return(list("form" = form,
               "cp" = cp,
               "cpInt" = cpInt,

@@ -184,9 +184,6 @@
 
 growthSS<-function(model, form, sigma=NULL, df, start=NULL, pars=NULL, type="brms", tau = 0.5){
   type_matched = match.arg(type, choices = c("brms", "nlrq", "nls", "nlme", "mgcv"))
-  model = match.arg(model, choices = c("logistic", "gompertz", "monomolecular",
-                                       "exponential", "linear", "power law",
-                                       "double logistic", "double gompertz", "gam"))
   if(type_matched=="brms"){
     if(is.null(sigma)){sigma="spline"}
     res <- .brmSS(model=model, form=form, sigma=sigma, df=df, priors = start)
