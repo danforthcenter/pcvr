@@ -7,7 +7,7 @@ output:
     toc: true
     number_sections: false
     code_folding: show
-date: "2023-06-16"
+date: "2023-10-16"
 vignette: >
   %\VignetteIndexEntry{pcvr}
   %\VignetteEngine{knitr::rmarkdown}
@@ -263,7 +263,7 @@ ggplot(test, aes(x=DAS, y=pWUE, color=genotype, group=barcode))+
 
 Now that our data is read in and has undergone some basic quality control we want to know which phenotypes are best explained by our design variables. The `frem` function partitions variance using a fully random effects model (frem). Here we provide our dataframe, the design variables, the phenotypes, and the column representing time. By default `frem` will use the last timepoint, but this is controlled with the `time` argument. For this first example we mark the singular model fits (`markSingular=TRUE`) to indicate places where `lme4::lmer` had some convergence issues. Generally these issues are minor and do not cause problems for interpreting these models, but you can pass additional arguments to `lme4::lmer` through additional arguments if desired.
 
-```{r}
+```{r, warning = FALSE, message = FALSE}
 frem(sv_ag, des=c("genotype", "fertilizer"),
      phenotypes=c("area_pixels", "area_above_reference_pixels", "area_below_reference_pixels", 
                   "convex_hull_area_pixels", "convex_hull_vertices_none", "ellipse_angle_degrees", 
@@ -276,7 +276,7 @@ frem(sv_ag, des=c("genotype", "fertilizer"),
 
 Here we look at how much variance in each phenotype was explained over the course of the experiment. We could also specify a set of times (`time = c(10:14)` for example) if we are most interested in a particular timeframe.
 
-```{r}
+```{r, warning = FALSE, message = FALSE}
 frem(sv_ag, des=c("genotype", "fertilizer"),
      phenotypes=c("area_pixels", "area_above_reference_pixels", "area_below_reference_pixels", 
                   "convex_hull_area_pixels", "convex_hull_vertices_none", "ellipse_angle_degrees", 
