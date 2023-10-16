@@ -136,45 +136,58 @@
     #* `Make autocorrelation formula`
     corForm<-as.formula(paste0("~arma(~",x,"|", individual,":",group,",1,1)"))
     #* `match args`
-    matched_model <- match.arg(model, models)
+    if(!grepl("\\+", model)){
+      matched_model <- match.arg(model, models)
+    }
     matched_sigma <- match.arg(sigma, choices=sigmas)
     #* `Make growth formula`
-    if(matched_model=="double logistic"){
-      form_fun<-.brms_form_dou_logistic
-    } else if (matched_model=="double gompertz"){
-      form_fun<-.brms_form_dou_gompertz
-    } else if(matched_model=="logistic"){
-      form_fun<-.brms_form_logistic
-    } else if (matched_model=="gompertz"){
-      form_fun<-.brms_form_gompertz
-    } else if (matched_model=="monomolecular"){
-      form_fun<-.brms_form_monomolecular
-    } else if (matched_model=="exponential"){
-      form_fun<-.brms_form_exponential
-    } else if (matched_model=="linear"){
-      form_fun<-.brms_form_linear
-    } else if (matched_model=="power law"){
-      form_fun<-.brms_form_powerlaw
-    } else if (matched_model=="gam"){
-      form_fun<-.brms_form_gam
+    spline_pars = NULL
+    if(grepl("\\+", model)){
+      
+      chngptHelper_list <- .brmsChangePointHelper(model, x, y, group)
+      growthForm <- chngptHelper_list$growthForm
+      pars <- chngptHelper_list$pars
+      if("splineDummy" %in% pars){
+        spline_pars <- "splineDummy"
+        pars <- pars[-which(pars=="splineDummy")]
+      }
+      
+    } else{
+        if(matched_model=="double logistic"){
+          form_fun<-.brms_form_dou_logistic
+          pars=c("A","B", "C", "A2","B2", "C2")
+        } else if (matched_model=="double gompertz"){
+          form_fun<-.brms_form_dou_gompertz
+          pars=c("A","B", "C", "A2","B2", "C2")
+        } else if(matched_model=="logistic"){
+          form_fun<-.brms_form_logistic
+          pars=c("A","B", "C")
+        } else if (matched_model=="gompertz"){
+          form_fun<-.brms_form_gompertz
+          pars=c("A","B", "C")
+        } else if (matched_model=="monomolecular"){
+          form_fun<-.brms_form_monomolecular
+          pars=c("A","B")
+        } else if (matched_model=="exponential"){
+          form_fun<-.brms_form_exponential
+          pars=c("A","B")
+        } else if (matched_model=="linear"){
+          form_fun<-.brms_form_linear
+          pars=c("A")
+        } else if (matched_model=="power law"){
+          form_fun<-.brms_form_powerlaw
+          pars=c("A","B")
+        } else if (matched_model=="gam"){
+          form_fun<-.brms_form_gam
+          pars <- NULL
+        }
+        growthForm = form_fun(x,y, group) # group only used in gam model
     }
-    growthForm = form_fun(x,y, group) # group only used in gam model
     #* `Make parameter formula`
     #* could add a pars argument then set up parForm from those.
     #* I think that would change how priors would have to work
     #* and that seems like more trouble than it is worth right 
     #* now at least.
-    if(matched_model %in% c("double logistic", "double gompertz")){
-      pars=c("A","B", "C", "A2","B2", "C2")
-      }else if(matched_model %in% c("logistic", "gompertz")){
-        pars=c("A","B", "C")
-      } else if(matched_model %in% c("monomolecular", "exponential", "power law")){
-        pars=c("A","B")
-      } else if(matched_model == "linear"){
-        pars="A"
-      } else if(matched_model == "gam"){
-        pars <- NULL
-      }
     if(matched_sigma == "gompertz"){ # add nl pars for sigma form
       pars <- c(pars, "subA", "subB", "subC")
     }
@@ -182,6 +195,11 @@
       if(USEGROUP){ parForm<-as.formula(paste0( paste(pars,collapse="+"),"~0+",group ))
       } else { parForm<-as.formula(paste0( paste(pars,collapse="+"),"~1" )) }
     } else {parForm=NULL} 
+    
+    if(!is.null(spline_pars)){
+      splineParForm <- as.formula(paste0(spline_pars, " ~ s(", x, ", by=",group, ")"))
+    }
+    
     #* `Make heteroskedasticity formula`
     if(!is.null(sigma)){
       sigmaForm<-if(matched_sigma=="homo"){
@@ -204,14 +222,19 @@
         }
       } 
       #* `Combining for brms formula`
+      #* might be better to do this with do.call, these are getting cumbersome.
       if(!is.null(parForm)){
-        bayesForm<-brms::bf(formula = growthForm, sigmaForm, parForm, autocor = corForm, nl=TRUE)
+        if(!is.null(spline_pars)){
+          bayesForm<-brms::bf(formula = growthForm, sigmaForm, parForm, splineParForm, autocor = corForm, nl=TRUE)
+        } else{bayesForm<-brms::bf(formula = growthForm, sigmaForm, parForm, autocor = corForm, nl=TRUE)}
       } else{
         bayesForm<-brms::bf(formula = growthForm, sigmaForm, autocor = corForm)
       }
     }else{
       if(!is.null(parForm)){
-        bayesForm<-brms::bf(formula = growthForm, parForm, autocor = corForm, nl=TRUE)
+        if(!is.null(spline_pars)){
+          bayesForm<-brms::bf(formula = growthForm, parForm, splineParForm, autocor = corForm, nl=TRUE)
+        }else{bayesForm<-brms::bf(formula = growthForm, parForm, autocor = corForm, nl=TRUE)}
       } else{
         bayesForm<-brms::bf(formula = growthForm, autocor = corForm)
       }

@@ -1,9 +1,16 @@
 #' Ease of use growth model helper function for 6 model parameterizations
 #' 
 #' @param model The name of a model as a character string.
-#' Supported options are c("logistic", "gompertz", "monomolecular", "exponential", "linear", "power law",
+#'  Supported options are c("logistic", "gompertz", "monomolecular", "exponential", "linear", "power law",
 #'  "double logistic", "double gompertz", "gam").
-#' See \code{\link{growthSim}} for examples of each type of growth curve ("gam" is not supported in \code{growthSim}).
+#'  See \code{\link{growthSim}} for examples of each type of single parameterized growth curve ("gam" is not supported in \code{growthSim}).
+#'  With type="brms" you can also specify segmented models by combining model names with a plus sign such as "linear + linear". In a segmented 
+#'  model the names for parameters do not follow the normal "A", "B", "C" notation, instead they are named
+#'  for the type of model, the position in the formula, then for the parameter of that model. There will also be parameters to represent
+#'  the time when growth switches from one model to another called "changepointX". For the "linear + linear" example
+#'  this would yield parameters "linear1A", "changePoint1", and "linear2A". A "linear + gompertz" model would have
+#'  "linear1A", "changePoint1", "gompertz2A",   "gompertz2B", and "gompertz2C" for parameters. Note that double sigmoid models are not
+#'  supported as parts of segmented models and gams can currently only be included as the last part of a segmented model.
 #' @param form A formula describing the model. The left hand side should only be 
 #' the outcome variable (phenotype). The right hand side needs at least the x variable
 #'  (typically time). Grouping is also described in this formula using roughly lme4
@@ -28,12 +35,13 @@
 #'   This is done because the values are strictly positive and the lognormal distribution
 #'   is easily interpreted. If this argument is not provided then priors are not 
 #'   returned and a different set of priors will need to be made for the model using
-#'   \code{brms::set_prior}. This works similarly to the \code{params} argument
+#'   \code{brms::set_prior}. When specifying starting values/prior means 
+#'   think of this as being similar to the \code{params} argument
 #'   in \code{growthSim}. Names should correspond to parameter names from the
 #'   \code{model} argument. A numeric vector can also be used, but specifying
 #'   names is best practice for clarity. Additionally, due to a limitation in
 #'   \code{brms} currently lower bounds cannot be set for priors for specific groups.
-#'   If priors include multiple groups (\code{priors = list(A = c(10,15), ...)}) then
+#'   If priors include multiple groups (\code{start = list(A = c(10,15), ...)}) then
 #'   you will see warnings after the model is fit about not having specified a lower
 #'   bound explicitly. Those warnings can safely be ignored and will be addressed if
 #'   the necessary features are added to \code{brms}. See details for guidance.
@@ -74,7 +82,7 @@
 #' 
 #' 
 #' The \code{sigma} argument optionally specifies a sub model to account for heteroskedasticity.
-#' Currently there are four supported brms sub models described below.
+#' Currently there are four supported \code{brms} sub models described below.
 #' 
 #' \itemize{
 #'    \item \bold{homo}: \code{sigma ~ 1}, fitting only a global or per group intercept to sigma.
@@ -92,7 +100,7 @@
 #'      are pretty forgiving.
 #' }
 #' 
-#' There are also three supported submodel options for nlme models, but a \code{varFunc} object can also be supplied,
+#' There are also three supported submodel options for \code{nlme} models, but a \code{varFunc} object can also be supplied,
 #' see \code{?nlme::varClasses}.
 #' 
 #' \itemize{
@@ -177,9 +185,6 @@
 
 growthSS<-function(model, form, sigma=NULL, df, start=NULL, pars=NULL, type="brms", tau = 0.5){
   type_matched = match.arg(type, choices = c("brms", "nlrq", "nls", "nlme", "mgcv"))
-  model = match.arg(model, choices = c("logistic", "gompertz", "monomolecular",
-                                       "exponential", "linear", "power law",
-                                       "double logistic", "double gompertz", "gam"))
   if(type_matched=="brms"){
     if(is.null(sigma)){sigma="spline"}
     res <- .brmSS(model=model, form=form, sigma=sigma, df=df, priors = start)

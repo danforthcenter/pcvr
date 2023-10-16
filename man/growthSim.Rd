@@ -15,11 +15,14 @@ growthSim(
 }
 \arguments{
 \item{model}{One of "logistic", "gompertz", "monomolecular", "exponential",
-"linear", "power law", "double logistic", or "double gompertz".}
+"linear", "power law", "double logistic", or "double gompertz". Alternatively this can be 
+a pseudo formula to generate data from a segmented growth curve by specifying "model1 + model2",
+see examples and \code{\link{growthSS}}. While "gam" models are supported by \code{growthSS}
+they are not simulated by this function.}
 
 \item{n}{Number of individuals to simulate over time per each group in params}
 
-\item{t}{Max time (assumed to start at T1) to simulate growth to.}
+\item{t}{Max time (assumed to start at 1) to simulate growth to as an integer.}
 
 \item{params}{A list of numeric parameters. A, B, C notation is used in the order that parameters appear in the formula (see examples).
 Number of groups is inferred from the length of these vectors of parameters. In the case of the "double" models there are also 
@@ -112,6 +115,24 @@ simdf<-growthSim("power law", n=20, t=25,
 params = list("A"=c(16, 11), "B"=c(0.75, 0.7)))
 ggplot(simdf,aes(time, y, group=interaction(group,id)))+ 
 geom_line(aes(color=group))+labs(title="Power Law")
+
+# simulating models from segmented growth models
+
+simdf<-growthSim(model = "linear + linear", n=20, t=25,
+params = list("linear1A"=c(16, 11), "linear2A"=c(0.75, 0.7), "changePoint1" = c(11, 14)))
+ggplot(simdf,aes(time, y, group=interaction(group,id)))+ 
+geom_line(aes(color=group))+labs(title="linear + linear")
+
+simdf<-growthSim(model = "linear + linear + logistic", n=20, t=50,
+  params = list("linear1A"=c(16, 11), "linear2A"=c(3, 4), # linear slopes, very intuitive
+   "changePoint1" = c(11, 14), "changePoint2" = c(10, 12),
+   # changepoint1 is standard, changepoint2 happens relative to changepoint 1
+   "logistic3A" = c(200, 210), "logistic3B" = c(20, 25), "logistic3C"=c(3,3)  ))
+   # similar to changepoint2, the asymptote and inflection point are relative to the starting
+   # point of the logistic growth component. This is different than the model output
+   # if you were to fit a curve to this model using `growthSS`.
+ggplot(simdf,aes(time, y, group=interaction(group,id)))+ 
+geom_line(aes(color=group))+ labs(title="linear + linear + logistic")
 
 ## End(Not run)
 
