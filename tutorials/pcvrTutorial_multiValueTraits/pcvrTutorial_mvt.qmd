@@ -1,0 +1,82 @@
+---
+title: "Multi Value Trait Analysis with `pcvr`"
+subtitle: "DDPSC Data Science Core, Ocotober 2023"
+author: Josh Sumner
+format:
+  revealjs:
+    standalone: true
+    self-contained: true
+    theme: [moon, ../quartoSupport/solarizedDark.scss]
+    scrollable: true
+    template-partials: 
+      - title-slide.html
+    title-slide-attributes: 
+      data-background-image: ../quartoSupport/datascience.png
+      data-background-size: 15%
+      data-background-position: 2% 2%
+editor: visual
+---
+
+## Outline {.smaller}
+
+-   `pcvr` Goals
+-   Load Package
+-   Why Longitudinal Modeling?
+-   Supported Model Builders
+-   Supported Curves
+-   `growthSS`
+-   `fitGrowth`
+-   `growthPlot`
+-   `testGrowth`
+-   Resources
+
+## `pcvr` Goals
+
+Currently `pcvr` aims to:
+
+-   Make common tasks easier and consistent
+-   Make select Bayesian statistics easier
+
+There is room for goals to evolve based on feedback and scientific needs.
+
+## Load package {.smaller}
+
+Pre-work was to install R, Rstudio, and `pcvr` with dependencies.
+
+```{r}
+#| echo: false
+#| eval: true
+if(!"pcvr" %in% installed.packages()){
+  if(!"devtools" %in% installed.packages()){
+   install.packages("devtools") 
+  }
+  devtools::install_github("danforthcenter/pcvr", dependencies = TRUE)
+}
+```
+
+```{r}
+#| echo: true
+library(pcvr) # or devtools::load_all() if you are editing
+library(ggplot2)
+library(patchwork)
+```
+
+## What are multi-value traits?
+
+`plantCV` allows for user friendly high throughput image based phenotyping
+
+. . .
+
+Resulting data follows individuals over time, which changes our statistical needs.
+
+## Why use multi-value traits?
+
+
+x
+
+
+## Resources
+
+If you run into a novel situation please reach out and we will try to come up with a solution and add it to `pcvr` if possible.
+
+Good ways to reach out are the help-datascience slack channel and [pcvr github repository](https://github.com/danforthcenter/pcvr).
