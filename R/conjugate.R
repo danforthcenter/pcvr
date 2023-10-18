@@ -2344,11 +2344,11 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta",
     dirSymbol="="
   }else if(hypothesis == "lesser"){
     direction <- pdf1 <= pdf2
-    post.prob <- sum(pdf1 * direction,na.rm=TRUE)
+    post.prob <- 1-sum(pdf1 * direction,na.rm=TRUE) # switch from compliment prob to prob
     dirSymbol="<"
   }else if(hypothesis == "greater"){
     direction <- pdf1 >= pdf2
-    post.prob <- sum(pdf1 * direction,na.rm=TRUE)
+    post.prob <- 1-sum(pdf1 * direction,na.rm=TRUE) # switch from compliment prob to prob
     dirSymbol=">"
   }else{
     stop("hypothesis must be either unequal, equal, lesser, or greater")
