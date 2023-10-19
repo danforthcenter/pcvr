@@ -41,6 +41,7 @@
 #'   labs(x="bin")
 #' 
 #' ## End(Not run)
+#' @export
 
 mvSim <- function(dists = list(rnorm = list(mean = 100, sd = 15)),
                   n_samples=10, counts=1000, max_bin = 180, wide = TRUE){
