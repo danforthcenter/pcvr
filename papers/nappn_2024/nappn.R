@@ -29,7 +29,7 @@ s2= rnorm(20, 60,8)
 gaussianMeans_sv_ex <- conjugate(s1=s1, s2= s2, method="t",
                                  priors = list( mu=c(50, 50),n=c(1,1),s2=c(15,15) ),
                                  plot=TRUE, rope_range = c(-5,5), rope_ci = 0.89, 
-                                 cred.int.level = 0.89, hypothesis="greater", support=NULL)
+                                 cred.int.level = 0.89, hypothesis="lesser", support=NULL)
 
 gaussianMeans_sv_ex$plot
 
