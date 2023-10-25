@@ -18,7 +18,7 @@ if(FALSE){
     expect_s3_class(fit, "brmsfit")
     
     plot <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
-    ggsave("/home/josh/Desktop/stargate/fahlgren_lab/labMeetings/logistic_fitGrowth.png", plot, width=10, height=6, dpi=300, bg="#ffffff")
+    #ggsave("/home/josh/Desktop/stargate/fahlgren_lab/labMeetings/logistic_fitGrowth.png", plot, width=10, height=6, dpi=300, bg="#ffffff")
     expect_s3_class(plot, "ggplot")
     
   })
@@ -29,7 +29,7 @@ if(FALSE){
     simdf<-growthSim("gompertz", n=20, t=25,
                            params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(0.25, 0.25)))
     
-    ss<-growthSS(model = "gompertz", form=y~time|id/group, sigma="homo",
+    ss<-growthSS(model = "gompertz", form=y~time|id/group, sigma="int",
                  list('A' = 130, 'B' = 10, "C" = 1),
                  df=simdf, type = "brms")
     expect_equal(ss$prior$nlpar, c("", "", "A", "B", "C"))
@@ -38,7 +38,7 @@ if(FALSE){
     expect_s3_class(fit, "brmsfit")
     
     plot <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
-    ggsave("/home/josh/Desktop/stargate/fahlgren_lab/labMeetings/gompertz_fitGrowth.png", plot, width=10, height=6, dpi=300, bg="#ffffff")
+    #ggsave("/home/josh/Desktop/stargate/fahlgren_lab/labMeetings/gompertz_fitGrowth.png", plot, width=10, height=6, dpi=300, bg="#ffffff")
     expect_s3_class(plot, "ggplot")
     
   })
@@ -49,7 +49,7 @@ if(FALSE){
     simdf<-growthSim("monomolecular", n=20, t=25,
                            params = list("A"=c(200,160), "B"=c(0.01, 0.08)))
     
-    ss<-growthSS(model = "monomolecular", form=y~time|id/group, sigma="homo",
+    ss<-growthSS(model = "monomolecular", form=y~time|id/group, sigma="int",
                  list('A' = 130, 'B' = 1),
                  df=simdf, type = "brms")
     expect_equal(ss$prior$nlpar, c("", "", "A", "B"))
@@ -58,7 +58,7 @@ if(FALSE){
     expect_s3_class(fit, "brmsfit")
     
     plot <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
-    ggsave("/home/josh/Desktop/stargate/fahlgren_lab/labMeetings/monomolecular_fitGrowth.png", plot, width=10, height=6, dpi=300, bg="#ffffff")
+    #ggsave("/home/josh/Desktop/stargate/fahlgren_lab/labMeetings/monomolecular_fitGrowth.png", plot, width=10, height=6, dpi=300, bg="#ffffff")
     expect_s3_class(plot, "ggplot")
     
   })
@@ -69,7 +69,7 @@ if(FALSE){
     simdf<-growthSim("exponential", n=20, t=25,
                      params = list("A"=c(15, 12), "B"=c(0.1, 0.085)))
     
-    ss<-growthSS(model = "exponential", form=y~time|id/group, sigma="homo",
+    ss<-growthSS(model = "exponential", form=y~time|id/group, sigma="int",
                  list('A' = 10, 'B' = 1),
                  df=simdf, type = "brms")
     expect_equal(ss$prior$nlpar, c("", "", "A", "B"))
@@ -78,7 +78,7 @@ if(FALSE){
     expect_s3_class(fit, "brmsfit")
     
     plot <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
-    ggsave("/home/josh/Desktop/stargate/fahlgren_lab/labMeetings/exponential_fitGrowth.png", plot, width=10, height=6, dpi=300, bg="#ffffff")
+    #ggsave("/home/josh/Desktop/stargate/fahlgren_lab/labMeetings/exponential_fitGrowth.png", plot, width=10, height=6, dpi=300, bg="#ffffff")
     expect_s3_class(plot, "ggplot")
   })
   
@@ -96,7 +96,7 @@ if(FALSE){
     expect_s3_class(fit, "brmsfit")
     
     plot <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
-    ggsave("/home/josh/Desktop/stargate/fahlgren_lab/labMeetings/powerlaw_fitGrowth.png", plot, width=10, height=6, dpi=300, bg="#ffffff")
+    #ggsave("/home/josh/Desktop/stargate/fahlgren_lab/labMeetings/powerlaw_fitGrowth.png", plot, width=10, height=6, dpi=300, bg="#ffffff")
     expect_s3_class(plot, "ggplot")
   })
   
@@ -105,7 +105,7 @@ if(FALSE){
     simdf<-growthSim("linear", n=20, t=25,
                      params = list("A"=c(15, 12)))
     
-    ss<-growthSS(model = "linear", form=y~time|id/group, sigma="homo",
+    ss<-growthSS(model = "linear", form=y~time|id/group, sigma="int",
                  list('A' = 5),
                  df=simdf, type = "brms")
     expect_equal(ss$prior$nlpar, c("", "", "A"))
@@ -114,7 +114,7 @@ if(FALSE){
     expect_s3_class(fit, "brmsfit")
     
     plot <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
-    ggsave("/home/josh/Desktop/stargate/fahlgren_lab/labMeetings/linear_fitGrowth.png", plot, width=10, height=6, dpi=300, bg="#ffffff")
+    #ggsave("/home/josh/Desktop/stargate/fahlgren_lab/labMeetings/linear_fitGrowth.png", plot, width=10, height=6, dpi=300, bg="#ffffff")
     expect_s3_class(plot, "ggplot")
   })
   
@@ -124,14 +124,14 @@ if(FALSE){
     simdf<-growthSim("logistic", n=20, t=25,
                      params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))
     
-    ss<-growthSS(model = "gam", form=y~time|id/group, sigma="homo",
+    ss<-growthSS(model = "gam", form=y~time|id/group, sigma="int",
                  df=simdf, type = "brms")
     
     fit <- suppressWarnings(fitGrowth(ss, backend="cmdstanr", iter=500, chains=1, cores=1))
     expect_s3_class(fit, "brmsfit")
     
     plot <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
-    ggsave("/home/josh/Desktop/stargate/fahlgren_lab/labMeetings/gam_fitGrowth.png", plot, width=10, height=6, dpi=300, bg="#ffffff")
+    #ggsave("/home/josh/Desktop/stargate/fahlgren_lab/labMeetings/gam_fitGrowth.png", plot, width=10, height=6, dpi=300, bg="#ffffff")
     expect_s3_class(plot, "ggplot")
     
   })
@@ -152,7 +152,7 @@ if(FALSE){
     expect_s3_class(fit, "brmsfit")
     
     plot <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
-    ggsave("/home/josh/Desktop/stargate/fahlgren_lab/labMeetings/linearPlusLinear_fitGrowth.png", plot, width=10, height=6, dpi=300, bg="#ffffff")
+    #ggsave("/home/josh/Desktop/stargate/fahlgren_lab/labMeetings/linearPlusLinear_fitGrowth.png", plot, width=10, height=6, dpi=300, bg="#ffffff")
     expect_s3_class(plot, "ggplot")
   })
   
@@ -174,7 +174,7 @@ if(FALSE){
     expect_s3_class(fit, "brmsfit")
     
     plot <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
-    ggsave("/home/josh/Desktop/stargate/fahlgren_lab/labMeetings/linearPlusLogistic_fitGrowth.png", plot, width=10, height=6, dpi=300, bg="#ffffff")
+    #ggsave("/home/josh/Desktop/stargate/fahlgren_lab/labMeetings/linearPlusLogistic_fitGrowth.png", plot, width=10, height=6, dpi=300, bg="#ffffff")
     expect_s3_class(plot, "ggplot")
   })
   
@@ -195,7 +195,7 @@ if(FALSE){
     expect_s3_class(fit, "brmsfit")
     
     plot <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
-    ggsave("/home/josh/Desktop/stargate/fahlgren_lab/labMeetings/linearPlusGAM_fitGrowth.png", plot, width=10, height=6, dpi=300, bg="#ffffff")
+    #ggsave("/home/josh/Desktop/stargate/fahlgren_lab/labMeetings/linearPlusGAM_fitGrowth.png", plot, width=10, height=6, dpi=300, bg="#ffffff")
     expect_s3_class(plot, "ggplot")
   })
   
@@ -216,10 +216,94 @@ if(FALSE){
     
     plot <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
     # plot<-plot+coord_cartesian(xlim = c(0,50), ylim = c(0,500))
-    ggsave("/home/josh/Desktop/stargate/fahlgren_lab/labMeetings/linearPlusLinearPlusLinear_fitGrowth.png", plot, width=10, height=6, dpi=300, bg="#ffffff")
+    #ggsave("/home/josh/Desktop/stargate/fahlgren_lab/labMeetings/linearPlusLinearPlusLinear_fitGrowth.png", plot, width=10, height=6, dpi=300, bg="#ffffff")
     expect_s3_class(plot, "ggplot")
   })
   
+  test_that("Logistic brms logistic sub model pipeline", {
+    
+    set.seed(123)
+    simdf<-growthSim("logistic", n=20, t=25,
+                     params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))
+    
+    ss<-growthSS(model = "logistic", form=y~time|id/group, sigma="logistic",
+                 list('A' = 130, 'B' = 10, "C" = 3, 'subA' = 20, 'subB' = 10, "subC" = 2),
+                 df=simdf, type = "brms")
+    expect_equal(ss$prior$nlpar, c("", "A", "B", "C", "subA", "subB", "subC"))
+    
+    fit <- fitGrowth(ss, backend="cmdstanr", iter=500, chains=1, cores=1) # that's fast
+    expect_s3_class(fit, "brmsfit")
+    
+    plot <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
+    #ggsave("/home/josh/Desktop/stargate/fahlgren_lab/labMeetings/logistic_fitGrowth.png", plot, width=10, height=6, dpi=300, bg="#ffffff")
+    expect_s3_class(plot, "ggplot")
+    
+  })
+  
+  test_that("Logistic brms gompertz sub model pipeline", {
+    
+    set.seed(123)
+    simdf<-growthSim("logistic", n=20, t=25,
+                     params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))
+    
+    ss<-growthSS(model = "logistic", form=y~time|id/group, sigma="gompertz",
+                 list('A' = 130, 'B' = 10, "C" = 3, 'subA' = 20, 'subB' = 10, "subC" = 2),
+                 df=simdf, type = "brms")
+    expect_equal(ss$prior$nlpar, c("", "A", "B", "C", "subA", "subB", "subC"))
+    
+    fit <- fitGrowth(ss, backend="cmdstanr", iter=500, chains=1, cores=1) # that's fast
+    expect_s3_class(fit, "brmsfit")
+    
+    plot <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
+    #ggsave("/home/josh/Desktop/stargate/fahlgren_lab/labMeetings/logistic_fitGrowth.png", plot, width=10, height=6, dpi=300, bg="#ffffff")
+    expect_s3_class(plot, "ggplot")
+    
+  })
+  
+  test_that("Logistic brms monomolecular sub model pipeline", {
+    
+    set.seed(123)
+    simdf<-growthSim("logistic", n=20, t=25,
+                     params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))
+    
+    ss<-growthSS(model = "logistic", form=y~time|id/group, sigma="monomolecular",
+                 list('A' = 130, 'B' = 10, "C" = 3, 'subA' = 5, 'subB' = 0.5),
+                 df=simdf, type = "brms")
+    expect_equal(ss$prior$nlpar, c("", "A", "B", "C", "subA", "subB"))
+    
+    fit <- fitGrowth(ss, backend="cmdstanr", iter=500, chains=1, cores=1) # that's fast
+    expect_s3_class(fit, "brmsfit")
+    
+    plot <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
+    #ggsave("/home/josh/Desktop/stargate/fahlgren_lab/labMeetings/logistic_fitGrowth.png", plot, width=10, height=6, dpi=300, bg="#ffffff")
+    expect_s3_class(plot, "ggplot")
+    
+  })
+  
+  
+  test_that("linear+linear brms model with thresholded homoskedasticity pipeline", {
+    set.seed(123)
+    
+    # want to generate data similar to sigma_changepoints.R method and test:
+    #* two intercept homoskedastic regions
+    #* noise to linear
+    #* noise to complex
+    
+    simdf<-growthSim("linear + linear", n=20, t=25,
+                     params = list("linear1A"=c(15, 12), "changePoint1"=c(8, 6), "linear2A"=c(3, 5)))
+    
+    ss<-growthSS(model = "linear + linear", form=y~time|id/group, sigma="int + int",
+                 list("linear1A"=10, "changePoint1"=5, "linear2A"=2, "subChangepoint1" = 5, "subint1"=5, "subint2" = 5 ),
+                 df=simdf, type = "brms")
+    expect_equal(ss$prior$nlpar, c("","","linear1A","changePoint1", "linear2A"))
+    
+    fit <- fitGrowth(ss, backend="cmdstanr", iter=500, chains=1, cores=1)
+    expect_s3_class(fit, "brmsfit")
+    
+    plot <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
+    #ggsave("/home/josh/Desktop/stargate/fahlgren_lab/labMeetings/linearPlusLinear_fitGrowth.png", plot, width=10, height=6, dpi=300, bg="#ffffff")
+    expect_s3_class(plot, "ggplot")
+  })
   
   
   
