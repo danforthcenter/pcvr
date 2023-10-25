@@ -144,11 +144,13 @@
     }
     #* `Make growth formula`
     nTimes <- min(unlist(lapply(split(df, df[[group]]), function(d){length(unique(d[[x]] ))} ) )) # for spline knots
-
+    sigmaSplineHelperForm <- NULL
+    splineHelperForm <- NULL
     if(grepl("\\+", model)){
-      chngptHelper_list <- .brmsChangePointHelper(model, x, y, group, sigma=FALSE, nTimes = nTimes)
+      chngptHelper_list <- .brmsChangePointHelper(model, x, y, group, sigma=FALSE, nTimes = nTimes, useGroup=USEGROUP)
       growthForm <- chngptHelper_list$growthForm
       pars <- chngptHelper_list$pars
+      splineHelperForm <- chngptHelper_list$splineHelperForm
       
     } else{
         if(matched_model=="double logistic"){
@@ -180,10 +182,11 @@
     if(!is.null(sigma)){
       if(grepl("\\+", sigma)){
         
-        chngptHelper_list <- .brmsChangePointHelper(sigma, x, y, group, sigma = TRUE, nTimes = nTimes) # this will need separate edits
+        chngptHelper_list <- .brmsChangePointHelper(model=sigma, x, y, group, sigma = TRUE, nTimes = nTimes, useGroup=USEGROUP)
         sigmaForm <- chngptHelper_list$growthForm
         pars <- c(pars, chngptHelper_list$pars)
         sigmaPars <- chngptHelper_list$pars
+        sigmaSplineHelperForm <- chngptHelper_list$splineHelperForm
         
       } else{
       
@@ -219,6 +222,7 @@
     }
     #* `Make parameter grouping formulae`
     
+    pars <- pars[!pars%in%c("spline", "subspline")]
     if(!is.null(pars)){
       if(USEGROUP){ parForm<-as.formula(paste0( paste(pars,collapse="+"),"~0+",group ))
       } else { parForm<-as.formula(paste0( paste(pars,collapse="+"),"~1" )) }
@@ -226,7 +230,8 @@
     
     #* `Combine formulas into brms.formula object`
     if(is.null(parForm)){NL = FALSE} else { NL = TRUE}
-    bf_args <- list("formula" = growthForm, sigmaForm, parForm, "autocor" = corForm, "nl"=NL)
+    bf_args <- list("formula" = growthForm, sigmaForm, parForm, sigmaSplineHelperForm, splineHelperForm, "autocor" = corForm, "nl"=NL)
+    bf_args<-bf_args[!unlist(lapply(bf_args, is.null))]
     bayesForm <- do.call(brms::bf, args = bf_args)
     
     out[["formula"]]<-bayesForm
@@ -255,6 +260,11 @@
       if(is.null(names(priors))){
         warning("Assuming that each element in priors is in order: ", paste0(pars, collapse=', '))
         names(priors)<-pars
+      }
+      if(!all(pars %in% names(priors))){
+        stop(paste0("Parameter names and prior names do not match. Priors include ",
+                    paste(setdiff(names(priors), pars), collapse=", "), "... and parameters include ",
+                    paste(setdiff(pars, names(priors)), collapse=", "), "... Please rename the misspecified priors."))
       }
       groupedPriors<-any(unlist(lapply(priors,length))>1) # if any prior has multiple means then groupedPriors is TRUE
       
@@ -295,7 +305,7 @@
       #* here i need to initialize the prior object, but it only needs a "sigma"
       #* prior if sigma does not have a parameterized model
       
-      if(matched_sigma %in% c("homo", "int") & !USEGROUP){
+      if( grepl("int|homo", sigma) & !USEGROUP){
         prior<-brms::set_prior('student_t(3,0,5)', dpar="sigma", class="Intercept")+
           brms::set_prior('gamma(2,0.1)', class="nu")
       } else if(length(sigmaPars)==0){

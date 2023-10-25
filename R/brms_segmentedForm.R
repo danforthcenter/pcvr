@@ -34,7 +34,7 @@
 #' @keywords internal
 #' @noRd
 
-.brmsChangePointHelper <- function(model, x, y, group, sigma=FALSE, nTimes=25){
+.brmsChangePointHelper <- function(model, x, y, group, sigma=FALSE, nTimes=25, useGroup){
 
   component_models <- trimws(strsplit(model, "\\+")[[1]])
   models<-c("logistic", "gompertz", "monomolecular", "exponential", "linear", "power law", "gam", "spline", "int", "homo")
@@ -55,7 +55,7 @@
     } else if (matched_iter_model=="power law"){
       iter <- .powerLawChngptForm(x, i, sigma)
     } else if (matched_iter_model %in% c("gam", "spline")){
-      iter <- .gamChngptForm(x, group, i, sigma, nTimes)
+      iter <- .gamChngptForm(x, i, sigma)
       if(i != length(component_models)){
         stop("gam segments are only supported as the last segment of a multi part model")}
     } else if(matched_iter_model %in% c("int", "homo")){
@@ -78,7 +78,27 @@
   params <- unique(unlist(lapply(formulae, function(f){f$params})))
   params <- params[-length(params)]
   
-  return(list("growthForm"= growthForm, "pars" = params))
+  splineSegments <- which(unlist(lapply(formulae, function(fml){"splineVar"%in%names(fml)})))
+  
+  if(length(splineSegments)>0){
+    if(sigma){prefix <- "sub"} else { prefix <- NULL}
+    if(useGroup){by <- paste0(", by = ", group)
+    } else {by <- "," }
+    if(nTimes < 11){
+      k = paste0(", k = ", nTimes)
+    } else{ k = NULL }
+    splineVars <-c()
+    for (seg in splineSegments){
+      splineVars <- c(splineVars, formulae[[seg]]$splineVar)
+    }
+    lhs <- paste0(splineVars, collapse = "+")
+    rhs <- paste0("s(",x, by, k,")")
+    splineForm <- paste0(lhs, "~", rhs)
+  } else {splineForm <- NULL}
+  
+  
+  
+  return(list("growthForm"= growthForm, "pars" = params, "splineHelperForm" = splineForm))
 }
 
 #* ****************************************
@@ -412,33 +432,30 @@
 #' .gamChngptForm(x="time", 2, nTimes = 20)
 #' .gamChngptForm(x="time", 3, nTimes = 5)
 #'
-#' @return a list with form, cp, and cpInt elements. "form" is the growth formula
+#' @return a list with form, cp, cpInt, and splineForm elements. "form" is the growth formula
 #' for this phase of the model. "cp" is the inv_logit function defining when this
 #' phase should happen. "cpInt" is the value at the end of this growth phase and is 
 #' used in starting the next growth phase from the right y value, for GAMs this is 
 #' undefined and GAMs should only be used at the end of a segmented model.
+#' "splineForm" is to use in making a spline for a predictor.
 #' @noRd
 
-.gamChngptForm <- function(x, group, position=1, sigma = FALSE, nTimes){ # return f, cp, and cpInt
+.gamChngptForm <- function(x, position=1, sigma = FALSE){ # return f, cp, and cpInt
   if(sigma){prefix <- "sub"} else { prefix <- NULL}
-  if(useGroup){by <- paste0(", by = ", group)
-  } else {by <- "," }
-  if(nTimes < 11){
-    k = paste0(", k = ", nTimes)
-  } else{ k = NULL }
   
   if(position==1){
     stop("GAMs are only supported as the last function of a multi-part formula")
   } else{
-    form <- paste0("s(",x, by, k,")")
+    form <- paste0(prefix, "spline") # paste0("s(",x, by, k,")")
     cp <- paste0("inv_logit((", x,"-", paste0(prefix,"changePoint", 1:(position-1), collapse = "-"), ") * 5)")
     cpInt <- NA
   }
-  pars <- c(paste0(prefix,"changePoint", position))
+  pars <- c( paste0(prefix, "spline") , paste0(prefix,"changePoint", position))
   return(list("form" = form,
               "cp" = cp,
               "cpInt" = cpInt,
-              "params" = pars))
+              "params" = pars,
+              "splineVar" = paste0(prefix, "spline") ))
 }
 
 
