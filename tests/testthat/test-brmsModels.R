@@ -1,8 +1,10 @@
 
-if(FALSE){
+if(file.exists("/home/josh/Desktop/")){ # only run locally, don't test for each R-CMD Check
   
   #* there are lots of options and until one obviously breaks I am not going to try to test all of them. 
+  library(testthat)
   library(brms)
+  devtools::load_all("/home/josh/Desktop/stargate/fahlgren_lab/pcvr")
   test_that("Logistic brms model pipeline", {
     
     set.seed(123)
@@ -235,8 +237,7 @@ if(FALSE){
     expect_s3_class(fit, "brmsfit")
     
     plot <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
-    #ggsave("/home/josh/Desktop/stargate/fahlgren_lab/labMeetings/logistic_fitGrowth.png", plot, width=10, height=6, dpi=300, bg="#ffffff")
-    expect_s3_class(plot, "ggplot")
+    ggsave("/home/josh/Desktop/stargate/fahlgren_lab/labMeetings/logistic_logisticSubModel.png", plot, width=10, height=6, dpi=300, bg="#ffffff")    expect_s3_class(plot, "ggplot")
     
   })
   
@@ -255,7 +256,7 @@ if(FALSE){
     expect_s3_class(fit, "brmsfit")
     
     plot <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
-    #ggsave("/home/josh/Desktop/stargate/fahlgren_lab/labMeetings/logistic_fitGrowth.png", plot, width=10, height=6, dpi=300, bg="#ffffff")
+    ggsave("/home/josh/Desktop/stargate/fahlgren_lab/labMeetings/logistic_gompSubModel.png", plot, width=10, height=6, dpi=300, bg="#ffffff")
     expect_s3_class(plot, "ggplot")
     
   })
@@ -275,36 +276,126 @@ if(FALSE){
     expect_s3_class(fit, "brmsfit")
     
     plot <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
-    #ggsave("/home/josh/Desktop/stargate/fahlgren_lab/labMeetings/logistic_fitGrowth.png", plot, width=10, height=6, dpi=300, bg="#ffffff")
+    ggsave("/home/josh/Desktop/stargate/fahlgren_lab/labMeetings/logistic_monoSubModel.png", plot, width=10, height=6, dpi=300, bg="#ffffff")
     expect_s3_class(plot, "ggplot")
     
   })
   
   
-  test_that("linear+linear brms model with thresholded homoskedasticity pipeline", {
+  test_that("int+int homoskedastic model pipeline", {
+    
     set.seed(123)
     
-    # want to generate data similar to sigma_changepoints.R method and test:
-    #* two intercept homoskedastic regions
-    #* noise to linear
-    #* noise to complex
+    noise<-do.call(rbind, lapply(1:30, function(i){
+      chngpt <- rnorm(2, 18, 2)
+      rbind(data.frame(id = paste0("id_",i), time = 1:chngpt[1], group = "a", y = c(runif(chngpt[1]-1, 0, 20), rnorm(1,5,1))),
+            data.frame(id = paste0("id_",i), time = 1:chngpt[2], group = "b", y = c(runif(chngpt[2]-1, 0, 20), rnorm(1,5,1))) )
+    }))
+    noise2<-do.call(rbind, lapply(1:30, function(i){
+      start1 <- max(noise[noise$id == paste0("id_",i) & noise$group=="a", "time"])
+      start2 <- max(noise[noise$id == paste0("id_",i) & noise$group=="b", "time"])
+      
+      rbind(data.frame(id = paste0("id_",i), time = start1:40, group = "a", y = c(runif(length(start1:40), 15, 50))),
+            data.frame(id = paste0("id_",i), time = start2:40, group = "b", y = c(runif(length(start2:40), 15, 50))) )
+    }))
+    simdf <- rbind(noise, noise2)
     
-    simdf<-growthSim("linear + linear", n=20, t=25,
-                     params = list("linear1A"=c(15, 12), "changePoint1"=c(8, 6), "linear2A"=c(3, 5)))
+    # ggplot(simdf, aes(x=time, y=y, color=group, group = interaction(group, id)))+
+    #   geom_line()+
+    #   theme_minimal()
     
-    ss<-growthSS(model = "linear + linear", form=y~time|id/group, sigma="int + int",
-                 list("linear1A"=10, "changePoint1"=5, "linear2A"=2, "subChangepoint1" = 5, "subint1"=5, "subint2" = 5 ),
+    ss<-growthSS(model = "int + int", form=y~time|id/group, sigma="int",
+                 list("int1"=10, "changePoint1"=10, "int2"=20),
                  df=simdf, type = "brms")
-    expect_equal(ss$prior$nlpar, c("","","linear1A","changePoint1", "linear2A"))
+    expect_equal(ss$prior$nlpar, c("","","int1","changePoint1", "int2"))
     
     fit <- fitGrowth(ss, backend="cmdstanr", iter=500, chains=1, cores=1)
     expect_s3_class(fit, "brmsfit")
     
     plot <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
-    #ggsave("/home/josh/Desktop/stargate/fahlgren_lab/labMeetings/linearPlusLinear_fitGrowth.png", plot, width=10, height=6, dpi=300, bg="#ffffff")
+    ggsave("/home/josh/Desktop/stargate/fahlgren_lab/labMeetings/intPlusInt_fitGrowth.png", plot, width=10, height=6, dpi=300, bg="#ffffff")
     expect_s3_class(plot, "ggplot")
   })
   
+  
+  
+  test_that("int+int thresholded homoskedasticity model pipeline", {
+    
+    set.seed(123)
+    
+    noise<-do.call(rbind, lapply(1:30, function(i){
+      chngpt <- rnorm(2, 18, 2)
+      rbind(data.frame(id = paste0("id_",i), time = 1:chngpt[1], group = "a", y = c(runif(chngpt[1]-1, 0, 20), rnorm(1,5,1))),
+            data.frame(id = paste0("id_",i), time = 1:chngpt[2], group = "b", y = c(runif(chngpt[2]-1, 0, 20), rnorm(1,5,1))) )
+    }))
+    noise2<-do.call(rbind, lapply(1:30, function(i){
+      start1 <- max(noise[noise$id == paste0("id_",i) & noise$group=="a", "time"])
+      start2 <- max(noise[noise$id == paste0("id_",i) & noise$group=="b", "time"])
+      
+      rbind(data.frame(id = paste0("id_",i), time = start1:40, group = "a", y = c(runif(length(start1:40), 15, 50))),
+            data.frame(id = paste0("id_",i), time = start2:40, group = "b", y = c(runif(length(start2:40), 15, 50))) )
+    }))
+    simdf <- rbind(noise, noise2)
+    
+    # ggplot(simdf, aes(x=time, y=y, color=group, group = interaction(group, id)))+
+    #   geom_line()+
+    #   theme_minimal()
+    ss<-growthSS(model = "int + int", form=y~time|id/group, sigma="int + int",
+                 list("int1"=10, "changePoint1"=10, "int2"=20, "subint1"=10, "subchangePoint1"=10, "subint2"=10),
+                 df=simdf, type = "brms")
+    expect_equal(ss$prior$nlpar, c("", "int1", "changePoint1", "int2", "subint1", "subchangePoint1", "subint2"))
+    
+    fit <- fitGrowth(ss, backend="cmdstanr", iter=500, chains=1, cores=1)
+    expect_s3_class(fit, "brmsfit")
+    
+    plot <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
+    ggsave("/home/josh/Desktop/stargate/fahlgren_lab/labMeetings/intPlusInt_heteroskedastic_fitGrowth.png", plot, width=10, height=6, dpi=300, bg="#ffffff")
+    expect_s3_class(plot, "ggplot")
+  })
+  
+  
+  
+  
+  test_that("int + linear model with thresholded homoskedasticity pipeline", {
+    
+    set.seed(123)
+    noise<-do.call(rbind, lapply(1:30, function(i){
+      chngpt <- rnorm(2, 18, 2)
+      rbind(data.frame(id = paste0("id_",i), time = 1:chngpt[1], group = "a", y = c(runif(chngpt[1]-1, 0, 20), rnorm(1,5,1))),
+            data.frame(id = paste0("id_",i), time = 1:chngpt[2], group = "b", y = c(runif(chngpt[2]-1, 0, 20), rnorm(1,5,1))) )
+    }))
+    signal<-growthSim("linear", n=30, t=20,
+                      params = list("A"=c(3, 5) ))
+    signal<-do.call(rbind, lapply(unique(paste0(signal$id, signal$group)), function(int){
+      noisesub<-noise[paste0(noise$id, noise$group)==int,]
+      signalSub <- signal[paste0(signal$id, signal$group) == int, ]
+      y_end <- noisesub[noisesub$time == max(noisesub$time), "y"]
+      signalSub$time <- signalSub$time + max(noisesub$time)
+      signalSub$y <- y_end + signalSub$y
+      signalSub
+    }))
+    simdf <- rbind(noise, signal)
+    
+    # ggplot(simdf, aes(x=time, y=y, color=group, group = interaction(group, id)))+
+    #   geom_line()+
+    #   theme_minimal()
+    
+    
+    ss<-growthSS(model = "int + linear", form=y~time|id/group, sigma="int + linear",
+                 list("int1"=10, "changePoint1"=10, "linear2A"=20, "subint1"=10, "subchangePoint1"=10, "sublinear2A"=10),
+                 df=simdf, type = "brms")
+    expect_equal(ss$prior$nlpar, c("", "int1", "changePoint1", "linear2A", "subint1", "subchangePoint1", "sublinear2A"))
+    
+    fit <- fitGrowth(ss, backend="cmdstanr", iter=500, chains=1, cores=1)
+    expect_s3_class(fit, "brmsfit")
+    
+    plot <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df, timeRange = 1:40)
+    ggsave("/home/josh/Desktop/stargate/fahlgren_lab/labMeetings/intPlusLinear_heteroskedasticIntPlusLinear_fitGrowth.png", plot, width=10, height=6, dpi=300, bg="#ffffff")
+    expect_s3_class(plot, "ggplot")
+  })
+  
+  
+
   
   
 }
