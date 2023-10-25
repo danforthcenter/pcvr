@@ -37,7 +37,7 @@
 .brmsChangePointHelper <- function(model, x, y, group, sigma=FALSE, nTimes=25){
 
   component_models <- trimws(strsplit(model, "\\+")[[1]])
-  models<-c("logistic", "gompertz", "monomolecular", "exponential", "linear", "power law", "gam", "spline")
+  models<-c("logistic", "gompertz", "monomolecular", "exponential", "linear", "power law", "gam", "spline", "int", "homo")
   
   formulae <- lapply(1:length(component_models), function(i){
     iter_model <- component_models[i]
@@ -58,6 +58,8 @@
       iter <- .gamChngptForm(x, group, i, sigma, nTimes)
       if(i != length(component_models)){
         stop("gam segments are only supported as the last segment of a multi part model")}
+    } else if(matched_iter_model %in% c("int", "homo")){
+      iter <- .intChngptForm(x, group, i, sigma)
     }
     return(iter)
   })
@@ -345,6 +347,51 @@
               "cpInt" = cpInt,
               "params" = pars))
 }
+
+#* ****************************************
+#* ***** `Intercept Changepoint Phase` *****
+#* ****************************************
+
+#' intercept only changepoint section function
+#' 
+#'
+#' @param x X variable name
+#' @param position Position in growth formula ("1" + "2" + "3"... etc)
+#'
+#' @examples
+#'
+#' .intChngptForm(x="time", 1, nTimes = 20)
+#' .intChngptForm(x="time", 2, nTimes = 20)
+#' .intChngptForm(x="time", 3, nTimes = 5)
+#'
+#' @return a list with form, cp, and cpInt elements. "form" is the growth formula
+#' for this phase of the model. "cp" is the inv_logit function defining when this
+#' phase should happen. "cpInt" is the value at the end of this growth phase and is 
+#' used in starting the next growth phase from the right y value, for GAMs this is 
+#' undefined and GAMs should only be used at the end of a segmented model.
+#' @noRd
+
+.intChngptForm <- function(x, position=1, sigma = FALSE){ # return f, cp, and cpInt 
+  if(sigma){prefix <- "sub"} else { prefix <- NULL}
+  
+  if(position==1){
+    form <- paste0(prefix,"int",position) 
+    cp <- paste0("inv_logit((",prefix,"changePoint1 - ",x,") * 5)")
+    cpInt <- paste0(prefix,"int",position)
+  } else{
+    form <-  paste0(prefix,"int",position) 
+    cp <- paste0("inv_logit((", x,"-", paste0(prefix, "changePoint", 1:(position-1), collapse = "-"), ") * 5)")
+    cpInt <- paste0(prefix,"int",position)
+  }
+  
+  pars <- c(paste0(prefix,"int",position),
+            paste0(prefix, "changePoint", position))
+  return(list("form" = form,
+              "cp" = cp,
+              "cpInt" = cpInt,
+              "params" = pars))
+}
+
 
 
 
