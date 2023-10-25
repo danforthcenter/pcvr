@@ -11,7 +11,7 @@
 #'  interactions should be modeled. If group has only one level or is not included then
 #'  it will be ignored in formulas for growth and variance (this may be the case if 
 #'  you split data before fitting models to be able to run more smaller models each more quickly).
-#' @param sigma A model for heteroskedasticity from c("homo", "linear", "spline", "logistic", "gompertz"). See details. 
+#' @param sigma A model for heteroskedasticity from the same list of options as the model argument.  
 #' @param df A dataframe to use. Must contain all the variables listed in the formula.
 #' @param priors A named list of means for prior distributions.
 #'  Currently this function makes lognormal priors for all growth model parameters.

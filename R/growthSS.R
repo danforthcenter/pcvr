@@ -2,7 +2,8 @@
 #' 
 #' @param model The name of a model as a character string.
 #'  Supported options are c("logistic", "gompertz", "monomolecular", "exponential", "linear", "power law",
-#'  "double logistic", "double gompertz", "gam").
+#'  "double logistic", "double gompertz", "gam", "int"), with "int" representing an intercept only model
+#'  which is only used in brms (and is expected to only be used in threshold models or to model homoskedasticity.)
 #'  See \code{\link{growthSim}} for examples of each type of single parameterized growth curve ("gam" is not supported in \code{growthSim}).
 #'  With type="brms" you can also specify segmented models by combining model names with a plus sign such as "linear + linear". In a segmented 
 #'  model the names for parameters do not follow the normal "A", "B", "C" notation, instead they are named
@@ -11,6 +12,7 @@
 #'  this would yield parameters "linear1A", "changePoint1", and "linear2A". A "linear + gompertz" model would have
 #'  "linear1A", "changePoint1", "gompertz2A",   "gompertz2B", and "gompertz2C" for parameters. Note that double sigmoid models are not
 #'  supported as parts of segmented models and gams can currently only be included as the last part of a segmented model.
+#'  Currently "homo" and "int" are treated the same and "spline" and "gam" are interchangeable, but that will be temporary.
 #' @param form A formula describing the model. The left hand side should only be 
 #' the outcome variable (phenotype). The right hand side needs at least the x variable
 #'  (typically time). Grouping is also described in this formula using roughly lme4
@@ -21,7 +23,8 @@
 #'  you split data before fitting models to be able to run more smaller models each more quickly).
 #' @param sigma A model for heteroskedasticity. This argument is only used with "brms" and "nlme" models.
 #' When type="brms" this is turned into a formula and the supported options are
-#' c("homo", "linear", "spline", "logistic", "gompertz"), if left NULL then "spline" will be used.
+#' the same as the model options (including threshold models), if left NULL then "int" will be used corresponding
+#' to a homoskedastic model.
 #'  When type ="nlme" the options are more limited to c("none", "power", "exp"),
 #'   corresponding to using \code{nlme::varIdent}, \code{nlme::varPower},
 #' or \code{nlme::varExp} respectively where "power" is the default.
@@ -104,7 +107,7 @@
 #' see \code{?nlme::varClasses}.
 #' 
 #' \itemize{
-#'    \item \bold{homo}: \code{varIdent(1|group)}, which models a constant variance separately for each group. 
+#'    \item \bold{none}: \code{varIdent(1|group)}, which models a constant variance separately for each group. 
 #'     \item \bold{power}: \code{varPower(x|group)}, which models variance as a power of x per group.
 #'     \item \bold{exp}: \code{varExp(x|group)}, which models variance as an exponent of x per group.
 #' }

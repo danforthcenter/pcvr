@@ -5,6 +5,7 @@
 #' @param y The y variable from the pcvrForm argument in \code{\link{growthSS}}
 #' @param group The grouping variable from the pcvrForm argument in \code{\link{growthSS}}
 #' @param nTimes a Number of times that are present in the data, only used for making splines have a workable number of knots.
+#' @param useGroup logical, should groups be used?
 #'
 #' @examples
 #' df1<-do.call(rbind, lapply(1:30, function(i){
