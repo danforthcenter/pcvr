@@ -4,6 +4,7 @@
 #' @param x The x variable from the pcvrForm argument in \code{\link{growthSS}}
 #' @param y The y variable from the pcvrForm argument in \code{\link{growthSS}}
 #' @param group The grouping variable from the pcvrForm argument in \code{\link{growthSS}}
+#' @param nTimes a Number of times that are present in the data, only used for making splines have a workable number of knots.
 #'
 #' @examples
 #' df1<-do.call(rbind, lapply(1:30, function(i){
@@ -33,34 +34,36 @@
 #' @keywords internal
 #' @noRd
 
-.brmsChangePointHelper <- function(model, x, y, group){
+.brmsChangePointHelper <- function(model, x, y, group, sigma=FALSE, nTimes=25){
 
   component_models <- trimws(strsplit(model, "\\+")[[1]])
-  models<-c("logistic", "gompertz", "monomolecular", "exponential", "linear", "power law", "gam")
+  models<-c("logistic", "gompertz", "monomolecular", "exponential", "linear", "power law", "gam", "spline")
   
   formulae <- lapply(1:length(component_models), function(i){
     iter_model <- component_models[i]
     matched_iter_model <- match.arg(iter_model, models)
     if(matched_iter_model=="logistic"){
-      iter <- .logisticChngptForm(x, i)
+      iter <- .logisticChngptForm(x, i, sigma)
     } else if (matched_iter_model=="gompertz"){
-      iter <- .gompertzChngptForm(x, i)
+      iter <- .gompertzChngptForm(x, i, sigma)
     } else if (matched_iter_model=="monomolecular"){
-      iter <- .monomolecularChngptForm(x, i)
+      iter <- .monomolecularChngptForm(x, i, sigma)
     } else if (matched_iter_model=="exponential"){
-      iter <- .exponentialChngptForm(x, i)
+      iter <- .exponentialChngptForm(x, i, sigma)
     } else if (matched_iter_model=="linear"){
-      iter <- .linearChngptForm(x, i)
+      iter <- .linearChngptForm(x, i, sigma)
     } else if (matched_iter_model=="power law"){
-      iter <- .powerLawChngptForm(x, i)
-    } else if (matched_iter_model=="gam"){
-      iter <- .gamChngptForm(x, group, i)
+      iter <- .powerLawChngptForm(x, i, sigma)
+    } else if (matched_iter_model %in% c("gam", "spline")){
+      iter <- .gamChngptForm(x, group, i, sigma, nTimes)
       if(i != length(component_models)){
         stop("gam segments are only supported as the last segment of a multi part model")}
     }
     return(iter)
   })
   
+  if(sigma){y = "sigma"}
+
   growthForm <- paste0(y, " ~ ", formulae[[1]]$form, " * ", formulae[[1]]$cp)
   for (i in 2:length(formulae)){
     nextPhase <- paste0("+ (",formulae[[(i-1)]]$cpInt," + ", formulae[[i]]$form ,") * ", formulae[[i]]$cp)
@@ -95,20 +98,21 @@
 #' used in starting the next growth phase from the right y value.
 #' @noRd
 
-.linearChngptForm <- function(x, position=1){ # return f, cp, and cpInt 
+.linearChngptForm <- function(x, position=1, sigma = FALSE){ # return f, cp, and cpInt 
+  if(sigma){prefix <- "sub"} else { prefix <- NULL}
   if(position==1){
-    form <- paste0("linear",position,"A * ", x)
-    cp <- paste0("inv_logit((changePoint1 - ",x,") * 5)")
-    cpInt <- paste0("(linear", position,"A * changePoint1)") # intercept at END of this growth phase
+    form <- paste0(prefix,"linear",position,"A * ", x)
+    cp <- paste0("inv_logit((",prefix,"changePoint1 - ",x,") * 5)")
+    cpInt <- paste0("(",prefix,"linear", position,"A * ",prefix,"changePoint1)") # intercept at END of this growth phase
   } else{
-    form <- paste0("linear", position, "A * (", x,"-", paste0("changePoint", 1:(position-1), collapse = "-"), ")")
-    cp <- paste0("inv_logit((", x,"-", paste0("changePoint", 1:(position-1), collapse = "-"), ") * 5)")
+    form <- paste0(prefix,"linear", position, "A * (", x,"-", paste0(prefix, "changePoint", 1:(position-1), collapse = "-"), ")")
+    cp <- paste0("inv_logit((", x,"-", paste0(prefix, "changePoint", 1:(position-1), collapse = "-"), ") * 5)")
     cpInt <- do.call(paste, list(lapply(1:(position), function(i){
-        paste0("linear", i, "A * (", paste0("changePoint", i:1, collapse="-"),")")
+        paste0(prefix, "linear", i, "A * (", paste0(prefix, "changePoint", i:1, collapse="-"),")")
       }), collapse=" + "))
   }
-  pars <- c(paste0("linear", position, "A"),
-            paste0("changePoint", position))
+  pars <- c(paste0(prefix, "linear", position, "A"),
+            paste0(prefix, "changePoint", position))
   return(list("form" = form,
               "cp" = cp,
               "cpInt" = cpInt,
@@ -138,22 +142,23 @@
 #' 
 #' @noRd
 
-.logisticChngptForm <- function(x, position=1){ # return f, cp, and cpInt 
+.logisticChngptForm <- function(x, position=1, sigma = FALSE){ # return f, cp, and cpInt 
+  if(sigma){prefix <- "sub"} else { prefix <- NULL}
   if(position==1){
-    form <- paste0("logistic",position,"A / (1 + exp( (logistic",position,"B-(",x,"))/logistic",position,"C) )")
-    cp <- paste0("inv_logit((changePoint1 - ",x,") * 5)")
-    cpInt <- paste0("logistic",position,"A / (1 + exp( (logistic",position,"B-(changePoint1))/logistic",position,"C) )") 
+    form <- paste0(prefix,"logistic",position,"A / (1 + exp( (",prefix,"logistic",position,"B-(",x,"))/",prefix,"logistic",position,"C) )")
+    cp <- paste0("inv_logit((",prefix,"changePoint1 - ",x,") * 5)")
+    cpInt <- paste0(prefix,"logistic",position,"A / (1 + exp( (",prefix,"logistic",position,"B-(",prefix,"changePoint1))/",prefix,"logistic",position,"C) )") 
   } else{
-    form <- paste0("logistic",position,"A / (1 + exp( (logistic",position,
-                   "B-(",x,"-",paste0("changePoint", 1:(position-1), collapse = "-"),
-                   "))/logistic",position,"C) )")
-    cp <- paste0("inv_logit((", x,"-", paste0("changePoint", 1:(position-1), collapse = "-"), ") * 5)")
+    form <- paste0(prefix, "logistic",position,"A / (1 + exp( (",prefix,"logistic",position,
+                   "B-(",x,"-",paste0(prefix,"changePoint", 1:(position-1), collapse = "-"),
+                   "))/",prefix,"logistic",position,"C) )")
+    cp <- paste0("inv_logit((", x,"-", paste0(prefix,"changePoint", 1:(position-1), collapse = "-"), ") * 5)")
     cpInt <- do.call(paste, list(lapply(1:(position), function(i){
-      paste0("logistic",position,"A / (1 + exp( (logistic",position,"B-(",paste0("changePoint", i:1, collapse="-"),"))/logistic",position,"C) )")
+      paste0(prefix,"logistic",position,"A / (1 + exp( (",prefix,"logistic",position,"B-(",paste0(prefix,"changePoint", i:1, collapse="-"),"))/",prefix,"logistic",position,"C) )")
     }), collapse=" + "))
   }
-  pars <- c(paste0("logistic", position, c("A", "B", "C")),
-            paste0("changePoint", position))
+  pars <- c(paste0(prefix,"logistic", position, c("A", "B", "C")),
+            paste0(prefix,"changePoint", position))
   return(list("form" = form,
               "cp" = cp,
               "cpInt" = cpInt,
@@ -182,24 +187,25 @@
 #' used in starting the next growth phase from the right y value.
 #' @noRd
 
-.gompertzChngptForm <- function(x, position=1){ # return f, cp, and cpInt 
+.gompertzChngptForm <- function(x, position=1, sigma = FALSE){ # return f, cp, and cpInt 
+  if(sigma){prefix <- "sub"} else { prefix <- NULL}
   if(position==1){
-    form <- paste0("gompertz", position, "A * exp(-gompertz", position, "B * exp(-gompertz", position, "C * ", x, "))" )
-    cp <- paste0("inv_logit((changePoint1 - ",x,") * 5)")
-    cpInt <- paste0("gompertz", position, "A * exp(-gompertz", position, "B * exp(-gompertz", position, "C * changePoint1))" )
+    form <- paste0(prefix,"gompertz", position, "A * exp(-",prefix,"gompertz", position, "B * exp(-",prefix,"gompertz", position, "C * ", x, "))" )
+    cp <- paste0("inv_logit((",prefix,"changePoint1 - ",x,") * 5)")
+    cpInt <- paste0(prefix,"gompertz", position, "A * exp(-",prefix,"gompertz", position, "B * exp(-",prefix,"gompertz", position, "C * ",prefix,"changePoint1))" )
   } else{
-    form <- paste0("gompertz", position, "A * exp(-gompertz", position,
-                   "B * exp(-gompertz", position, "C * (", x," - ",
-                   paste0("changePoint", 1:(position-1), collapse = "-"), ")))" )
+    form <- paste0(prefix,"gompertz", position, "A * exp(-",prefix,"gompertz", position,
+                   "B * exp(-",prefix,"gompertz", position, "C * (", x," - ",
+                   paste0(prefix,"changePoint", 1:(position-1), collapse = "-"), ")))" )
     
-    cp <- paste0("inv_logit((", x,"-", paste0("changePoint", 1:(position-1), collapse = "-"), ") * 5)")
+    cp <- paste0("inv_logit((", x,"-", paste0(prefix, "changePoint", 1:(position-1), collapse = "-"), ") * 5)")
     cpInt <- do.call(paste, list(lapply(1:(position), function(i){
-      paste0("gompertz", position, "A * exp(-gompertz", position, "B * exp(-gompertz", position,
-             "C * (", paste0("changePoint", i:1, collapse="-"), "))" )
+      paste0(prefix, "gompertz", position, "A * exp(-",prefix,"gompertz", position, "B * exp(-",prefix,"gompertz", position,
+             "C * (", paste0(prefix,"changePoint", i:1, collapse="-"), "))" )
     }), collapse=" + "))
   }
-  pars <- c(paste0("gompertz", position, c("A", "B", "C")),
-            paste0("changePoint", position))
+  pars <- c(paste0(prefix,"gompertz", position, c("A", "B", "C")),
+            paste0(prefix, "changePoint", position))
   return(list("form" = form,
               "cp" = cp,
               "cpInt" = cpInt,
@@ -228,23 +234,24 @@
 #' 
 #' @noRd
 
-.monomolecularChngptForm <- function(x, position=1){ # return f, cp, and cpInt 
+.monomolecularChngptForm <- function(x, position=1, sigma = FALSE){ # return f, cp, and cpInt 
+  if(sigma){prefix <- "sub"} else { prefix <- NULL}
   if(position==1){
-    form <- paste0("monomolecular",position,"A-monomolecular",position,"A * exp(-monomolecular",position,"B * ",x,")")
-    cp <- paste0("inv_logit((changePoint1 - ",x,") * 5)")
-    cpInt <-  paste0("monomolecular",position,"A-monomolecular",position,"A * exp(-monomolecular",position,"B * changePoint1)")
+    form <- paste0(prefix, "monomolecular",position,"A-",prefix,"monomolecular",position,"A * exp(-",prefix,"monomolecular",position,"B * ",x,")")
+    cp <- paste0("inv_logit((",prefix,"changePoint1 - ",x,") * 5)")
+    cpInt <-  paste0(prefix,"monomolecular",position,"A-",prefix,"monomolecular",position,"A * exp(-",prefix,"monomolecular",position,"B * ",prefix,"changePoint1)")
   } else{
-    form <- paste0("monomolecular",position,"A-monomolecular",position,"A * exp(-monomolecular",position,"B * ",x,"-",
-                   paste0("changePoint", 1:(position-1), collapse = "-"),")")
+    form <- paste0(prefix,"monomolecular",position,"A-",prefix,"monomolecular",position,"A * exp(-",prefix,"monomolecular",position,"B * ",x,"-",
+                   paste0(prefix,"changePoint", 1:(position-1), collapse = "-"),")")
     
-    cp <- paste0("inv_logit((", x,"-", paste0("changePoint", 1:(position-1), collapse = "-"), ") * 5)")
+    cp <- paste0("inv_logit((", x,"-", paste0(prefix, "changePoint", 1:(position-1), collapse = "-"), ") * 5)")
     cpInt <- do.call(paste, list(lapply(1:(position), function(i){
-      paste0("monomolecular",position,"A-monomolecular",position,"A * exp(-monomolecular",position,"B * ",
-             paste0("changePoint", i:1, collapse="-"),")")
+      paste0(prefix, "monomolecular",position,"A-",prefix,"monomolecular",position,"A * exp(-",prefix,"monomolecular",position,"B * ",
+             paste0(prefix, "changePoint", i:1, collapse="-"),")")
       }), collapse=" + "))
   }
-  pars <- c(paste0("monomolecular", position, c("A", "B")),
-            paste0("changePoint", position))
+  pars <- c(paste0(prefix, "monomolecular", position, c("A", "B")),
+            paste0(prefix, "changePoint", position))
   return(list("form" = form,
               "cp" = cp,
               "cpInt" = cpInt,
@@ -273,22 +280,23 @@
 #' used in starting the next growth phase from the right y value.
 #' @noRd
 
-.exponentialChngptForm <- function(x, position=1){ # return f, cp, and cpInt 
+.exponentialChngptForm <- function(x, position=1, sigma = FALSE){ # return f, cp, and cpInt 
+  if(sigma){prefix <- "sub"} else { prefix <- NULL}
   if(position==1){
-    form <- paste0("exponential",position,"A * exp(exponential", position, "B * ",x,")")
-    cp <- paste0("inv_logit((changePoint1 - ",x,") * 5)")
-    cpInt <-  paste0("exponential",position,"A * exp(exponential", position, "B * changePoint1)")
+    form <- paste0(prefix, "exponential",position,"A * exp(",prefix,"exponential", position, "B * ",x,")")
+    cp <- paste0("inv_logit((",prefix,"changePoint1 - ",x,") * 5)")
+    cpInt <-  paste0(prefix,"exponential",position,"A * exp(",prefix,"exponential", position, "B * ",prefix,"changePoint1)")
   } else{
-    form <- paste0("exponential",position,"A * exp(exponential", position, "B * (",
-                   x, "-", paste0("changePoint", 1:(position-1), collapse = "-"),"))")
-    cp <- paste0("inv_logit((", x,"-", paste0("changePoint", 1:(position-1), collapse = "-"), ") * 5)")
+    form <- paste0(prefix,"exponential",position,"A * exp(",prefix,"exponential", position, "B * (",
+                   x, "-", paste0(prefix, "changePoint", 1:(position-1), collapse = "-"),"))")
+    cp <- paste0("inv_logit((", x,"-", paste0(prefix, "changePoint", 1:(position-1), collapse = "-"), ") * 5)")
     cpInt <- do.call(paste, list(lapply(1:(position), function(i){
-      paste0("exponential",position,"A * exp(exponential", position, "B * (",
-             paste0("changePoint", i:1, collapse="-"),"))")
+      paste0(prefix,"exponential",position,"A * exp(",prefix,"exponential", position, "B * (",
+             paste0(prefix, "changePoint", i:1, collapse="-"),"))")
     }), collapse=" + "))
   }
-  pars <- c(paste0("exponential", position, c("A", "B")),
-            paste0("changePoint", position))
+  pars <- c(paste0(prefix, "exponential", position, c("A", "B")),
+            paste0(prefix, "changePoint", position))
   return(list("form" = form,
               "cp" = cp,
               "cpInt" = cpInt,
@@ -317,20 +325,21 @@
 #' 
 #' @noRd
 
-.powerLawChngptForm <- function(x, position=1){ # return f, cp, and cpInt 
+.powerLawChngptForm <- function(x, position=1, sigma = FALSE){ # return f, cp, and cpInt 
+  if(sigma){prefix <- "sub"} else { prefix <- NULL}
   if(position==1){
-    form <- paste0("powerLaw",position,"A * ", x, "^(powerLaw",position,"B)")
-    cp <- paste0("inv_logit((changePoint1 - ",x,") * 5)")
-    cpInt <-  paste0("powerLaw",position,"A * changePoint1^(powerLaw",position,"B)")
+    form <- paste0(prefix, "powerLaw",position,"A * ", x, "^(",prefix,"powerLaw",position,"B)")
+    cp <- paste0("inv_logit((",prefix,"changePoint1 - ",x,") * 5)")
+    cpInt <-  paste0(prefix, "powerLaw",position,"A * ",prefix,"changePoint1^(",prefix,"powerLaw",position,"B)")
   } else{
-    form <- paste0("powerLaw",position,"A * ",  x, "-", paste0("changePoint", 1:(position-1), collapse = "-"), "^(powerLaw",position,"B)")
-    cp <- paste0("inv_logit((", x,"-", paste0("changePoint", 1:(position-1), collapse = "-"), ") * 5)")
+    form <- paste0(prefix, "powerLaw",position,"A * ",  x, "-", paste0(prefix, "changePoint", 1:(position-1), collapse = "-"), "^(",prefix,"powerLaw",position,"B)")
+    cp <- paste0("inv_logit((", x,"-", paste0(prefix, "changePoint", 1:(position-1), collapse = "-"), ") * 5)")
     cpInt <- do.call(paste, list(lapply(1:(position), function(i){
-      paste0("powerLaw",position,"A * (",paste0("changePoint", i:1, collapse="-"),")^(powerLaw",position,"B)")
+      paste0(prefix, "powerLaw",position,"A * (",paste0(prefix,"changePoint", i:1, collapse="-"),")^(",prefix,"powerLaw",position,"B)")
     }), collapse=" + "))
   }
-  pars <- c(paste0("powerLaw", position, c("A", "B")),
-            paste0("changePoint", position))
+  pars <- c(paste0(prefix,"powerLaw", position, c("A", "B")),
+            paste0(prefix, "changePoint", position))
   return(list("form" = form,
               "cp" = cp,
               "cpInt" = cpInt,
@@ -350,9 +359,9 @@
 #'
 #' @examples
 #'
-#' .gamChngptForm(x="time", 1)
-#' .gamChngptForm(x="time", 2)
-#' .gamChngptForm(x="time", 3)
+#' .gamChngptForm(x="time", 1, nTimes = 20)
+#' .gamChngptForm(x="time", 2, nTimes = 20)
+#' .gamChngptForm(x="time", 3, nTimes = 5)
 #'
 #' @return a list with form, cp, and cpInt elements. "form" is the growth formula
 #' for this phase of the model. "cp" is the inv_logit function defining when this
@@ -361,22 +370,27 @@
 #' undefined and GAMs should only be used at the end of a segmented model.
 #' @noRd
 
-.gamChngptForm <- function(x, group, position=1){ # return f, cp, and cpInt
+.gamChngptForm <- function(x, group, position=1, sigma = FALSE, nTimes){ # return f, cp, and cpInt
+  if(sigma){prefix <- "sub"} else { prefix <- NULL}
+  if(useGroup){by <- paste0(", by = ", group)
+  } else {by <- "," }
+  if(nTimes < 11){
+    k = paste0(", k = ", nTimes)
+  } else{ k = NULL }
+  
   if(position==1){
-    stop("GAMs are not supported as the first function of a multi-part formula")
+    stop("GAMs are only supported as the last function of a multi-part formula")
   } else{
-    form <- paste0("splineDummy") # splineDummy ~ s(time, by=group)
-    cp <- paste0("inv_logit((", x,"-", paste0("changePoint", 1:(position-1), collapse = "-"), ") * 5)")
+    form <- paste0("s(",x, by, k,")")
+    cp <- paste0("inv_logit((", x,"-", paste0(prefix,"changePoint", 1:(position-1), collapse = "-"), ") * 5)")
     cpInt <- NA
   }
-  pars <- c("splineDummy",paste0("changePoint", position))
+  pars <- c(paste0(prefix,"changePoint", position))
   return(list("form" = form,
               "cp" = cp,
               "cpInt" = cpInt,
               "params" = pars))
 }
-
-
 
 
 
