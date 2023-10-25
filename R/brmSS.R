@@ -111,7 +111,7 @@
 .brmSS<-function(model, form, sigma=NULL, df, priors=NULL){
   out<-list()
   # sigmas<-c("homo", "linear", "spline", "gompertz")
-  models<-c("int", "logistic", "gompertz", "monomolecular", "exponential", "linear", "power law", "double logistic", "double gompertz", "gam", "spline")
+  models<-c("int", "logistic", "gompertz", "monomolecular", "exponential", "linear", "power law", "double logistic", "double gompertz", "gam", "spline", "int", "homo")
   #* ***** `Make bayesian formula` *****
     #* `parse form argument`
     y=as.character(form)[2]
@@ -169,11 +169,11 @@
           formRes = .brms_form_powerlaw(x,y, group, sigma = FALSE)
         } else if (matched_model %in% c("gam", "spline")){
           formRes = .brms_form_gam(x,y, group, sigma = FALSE, nTimes = nTimes)
-        } else if (matched_model =="int"){
+        } else if (matched_model %in% c("int", "homo")){
           formRes = .brms_form_int(x,y, group, sigma = FALSE)
         }
       pars <- formRes$pars
-      growthFrom <- formRes$form
+      growthForm <- formRes$form
     }
     
     #* `Make heteroskedasticity formula`
@@ -183,6 +183,7 @@
         chngptHelper_list <- .brmsChangePointHelper(sigma, x, y, group, sigma = TRUE, nTimes = nTimes) # this will need separate edits
         sigmaForm <- chngptHelper_list$growthForm
         pars <- c(pars, chngptHelper_list$pars)
+        sigmaPars <- chngptHelper_list$pars
         
       } else{
       
@@ -204,11 +205,12 @@
         formResSigma = .brms_form_powerlaw(x,y, group, sigma = TRUE)
       } else if (matched_sigma %in% c("gam", "spline")){
         formResSigma = .brms_form_gam(x,y, group, sigma = TRUE, nTimes = nTimes)
-      } else if (matched_sigma =="int"){
+      } else if (matched_sigma %in% c("int", "homo")){
         formResSigma = .brms_form_int(x,y, group, sigma = TRUE)
       }
         sigmaForm <- formResSigma$form
         pars <- c(pars, formResSigma$pars)
+        sigmaPars <- formResSigma$pars
       }
     }else{ # if none is specified then use homoskedastic intercept only sigma model
       formResSigma = .brms_form_int(x,y, group, sigma = TRUE)
@@ -224,7 +226,7 @@
     
     #* `Combine formulas into brms.formula object`
     if(is.null(parForm)){NL = FALSE} else { NL = TRUE}
-    bf_args <- list("formula" = growthForm, sigmaForm, parForm, "autocor" = corForm, "nl"=NL, "family"=student)
+    bf_args <- list("formula" = growthForm, sigmaForm, parForm, "autocor" = corForm, "nl"=NL)
     bayesForm <- do.call(brms::bf, args = bf_args)
     
     out[["formula"]]<-bayesForm
@@ -290,14 +292,17 @@
         names(priorStanStrings)<-parNames
       }
       
-      if(matched_sigma =="homo" & !USEGROUP){
+      #* here i need to initialize the prior object, but it only needs a "sigma"
+      #* prior if sigma does not have a parameterized model
+      
+      if(matched_sigma %in% c("homo", "int") & !USEGROUP){
         prior<-brms::set_prior('student_t(3,0,5)', dpar="sigma", class="Intercept")+
           brms::set_prior('gamma(2,0.1)', class="nu")
-      } else if(matched_sigma == "gompertz"){
-        prior<-brms::set_prior('gamma(2,0.1)', class="nu")
-      } else{
+      } else if(length(sigmaPars)==0){
         prior<-brms::set_prior('student_t(3,0,5)', dpar="sigma")+
-          brms::set_prior('gamma(2,0.1)', class="nu") 
+          brms::set_prior('gamma(2,0.1)', class="nu")
+      } else{
+        prior<-brms::set_prior('gamma(2,0.1)', class="nu")
       }
       
       for(nm in names(priorStanStrings)){
