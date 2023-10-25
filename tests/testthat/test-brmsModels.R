@@ -237,7 +237,8 @@ if(file.exists("/home/josh/Desktop/")){ # only run locally, don't test for each 
     expect_s3_class(fit, "brmsfit")
     
     plot <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
-    ggsave("/home/josh/Desktop/stargate/fahlgren_lab/labMeetings/logistic_logisticSubModel.png", plot, width=10, height=6, dpi=300, bg="#ffffff")    expect_s3_class(plot, "ggplot")
+    ggsave("/home/josh/Desktop/stargate/fahlgren_lab/labMeetings/logistic_logisticSubModel.png", plot, width=10, height=6, dpi=300, bg="#ffffff")
+    expect_s3_class(plot, "ggplot")
     
   })
   
@@ -380,7 +381,6 @@ if(file.exists("/home/josh/Desktop/")){ # only run locally, don't test for each 
     #   geom_line()+
     #   theme_minimal()
     
-    
     ss<-growthSS(model = "int + linear", form=y~time|id/group, sigma="int + linear",
                  list("int1"=10, "changePoint1"=10, "linear2A"=20, "subint1"=10, "subchangePoint1"=10, "sublinear2A"=10),
                  df=simdf, type = "brms")
@@ -395,7 +395,53 @@ if(file.exists("/home/josh/Desktop/")){ # only run locally, don't test for each 
   })
   
   
-
+  test_that("int + Logistic brms int+spline sub model pipeline", {
+    
+    set.seed(123)
+    noise<-do.call(rbind, lapply(1:30, function(i){
+      chngpt <- rnorm(2, 18, 2)
+      rbind(data.frame(id = paste0("id_",i), time = 1:chngpt[1], group = "a", y = c(runif(chngpt[1]-1, 0, 20), rnorm(1,5,1))),
+            data.frame(id = paste0("id_",i), time = 1:chngpt[2], group = "b", y = c(runif(chngpt[2]-1, 0, 20), rnorm(1,5,1))) )
+    }))
+    signal<-growthSim("logistic", n=20, t=30,
+                     params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))
+    signal<-do.call(rbind, lapply(unique(paste0(signal$id, signal$group)), function(int){
+      noisesub<-noise[paste0(noise$id, noise$group)==int,]
+      signalSub <- signal[paste0(signal$id, signal$group) == int, ]
+      y_end <- noisesub[noisesub$time == max(noisesub$time), "y"]
+      signalSub$time <- signalSub$time + max(noisesub$time)
+      signalSub$y <- y_end + signalSub$y
+      signalSub
+    }))
+    simdf <- rbind(noise, signal)
+    simdf<-simdf[simdf$time<45, ]
+    
+    ggplot(simdf, aes(x=time, y=y, color=group, group = interaction(group, id)))+
+      geom_line()+
+      theme_minimal()
+    
+    model = "int+logistic"; form=y~time|id/group; sigma="int + spline";
+    priors = list("int1" = 5, "changePoint1"=10 ,'logistic2A' = 130, 'logistic2B' = 10, "logistic2C" = 3,
+         'subint1' = 5, "subchangePoint1"=15);
+    df=simdf; type = "brms"
+    
+    ss<-growthSS(model = "int+logistic", form=y~time|id/group, sigma="int + spline",
+                 list("int1" = 5, "changePoint1"=10 ,'logistic2A' = 130, 'logistic2B' = 10, "logistic2C" = 3,
+                      'subint1' = 5, "subchangePoint1"=15),
+                 df=simdf, type = "brms")
+    
+    
+    expect_equal(ss$prior$nlpar, c("", "int1", "changePoint1", "logistic2A", "logistic2B", "logistic2C", 
+                                   "subint1", "subchangePoint1"))
+    
+    fit <- fitGrowth(ss, backend="cmdstanr", iter=500, chains=1, cores=1)
+    expect_s3_class(fit, "brmsfit")
+    
+    plot <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
+    ggsave("/home/josh/Desktop/stargate/fahlgren_lab/labMeetings/intPluslogistic_intPlusGAMSubModel.png", plot, width=10, height=6, dpi=300, bg="#ffffff")
+    expect_s3_class(plot, "ggplot")
+    
+  })
   
   
 }
