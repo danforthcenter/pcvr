@@ -59,7 +59,7 @@
       if(i != length(component_models)){
         stop("gam segments are only supported as the last segment of a multi part model")}
     } else if(matched_iter_model %in% c("int", "homo")){
-      iter <- .intChngptForm(x, group, i, sigma)
+      iter <- .intChngptForm(x, i, sigma)
     }
     return(iter)
   })
@@ -72,6 +72,8 @@
     growthForm <- paste0(growthForm, nextPhase)
   }
   growthForm <- stats::as.formula(growthForm)
+  
+  if(sigma){growthForm <- brms::nlf(growthForm)}
   
   params <- unique(unlist(lapply(formulae, function(f){f$params})))
   params <- params[-length(params)]
