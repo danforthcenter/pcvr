@@ -120,6 +120,28 @@ if(file.exists("/home/josh/Desktop/")){ # only run locally, don't test for each 
     expect_s3_class(plot, "ggplot")
   })
   
+  test_that("linear sub model with prior brms model pipeline", {
+    set.seed(123)
+    simdf<-growthSim("linear", n=20, t=25,
+                     params = list("A"=c(15, 12)))
+    
+    model = "linear"; form=y~time|id/group; sigma="linear";
+    priors = list('A' = 5, "subA"=2);
+    df=simdf; type = "brms"
+    
+    ss<-growthSS(model = "linear", form=y~time|id/group, sigma="linear",
+                 list('A' = 5, "subA"=2),
+                 df=simdf, type = "brms")
+    expect_equal(ss$prior$nlpar, c( "", "A", "subA"))
+    
+    fit <- fitGrowth(ss, backend="cmdstanr", iter=500, chains=1, cores=1)
+    expect_s3_class(fit, "brmsfit")
+    
+    plot <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
+    #ggsave("/home/josh/Desktop/stargate/fahlgren_lab/labMeetings/linear_fitGrowth.png", plot, width=10, height=6, dpi=300, bg="#ffffff")
+    expect_s3_class(plot, "ggplot")
+  })
+  
   test_that("GAM brms model pipeline", {
     
     set.seed(123)

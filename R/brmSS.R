@@ -111,7 +111,7 @@
 .brmSS<-function(model, form, sigma=NULL, df, priors=NULL){
   out<-list()
   # sigmas<-c("homo", "linear", "spline", "gompertz")
-  models<-c("int", "logistic", "gompertz", "monomolecular", "exponential", "linear", "power law", "double logistic", "double gompertz", "gam", "spline", "int", "homo")
+  models<-c("int", "logistic", "gompertz", "monomolecular", "exponential", "linear", "power law", "double logistic", "double gompertz", "gam", "spline", "homo")
   #* ***** `Make bayesian formula` *****
     #* `parse form argument`
     y=as.character(form)[2]
