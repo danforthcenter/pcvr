@@ -42,7 +42,9 @@ the outcome variable (phenotype). The right hand side needs at least the x varia
 \item{sigma}{A model for heteroskedasticity. This argument is only used with "brms" and "nlme" models.
 When type="brms" this is turned into a formula and the supported options are
 the same as the model options (including threshold models), if left NULL then "int" will be used corresponding
-to a homoskedastic model.
+to a homoskedastic model. Parameter names are the same as those in the main model but with the "sub" prefix. Additionally,
+if a linear model is used for sigma then it can be modeled with or without a prior, if a prior is specified ("subA") then 
+a non-linear formula is used and the "subA" parameter will be included in the output instead of the default "sigma" term.
  When type ="nlme" the options are more limited to c("none", "power", "exp"),
   corresponding to using \code{nlme::varIdent}, \code{nlme::varPower},
 or \code{nlme::varExp} respectively where "power" is the default.}

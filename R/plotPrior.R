@@ -2,11 +2,11 @@
 #' 
 #' @param priors A named list of means for prior distributions.
 #' This takes the same input as the prior argument of \code{\link{growthSS}}.
-#' @param type Either "density", the default, or a model name from \code{growthSS}
-#' model options ("logistic", "gompertz", "monomolecular", "exponential",
-#' "linear", "power law", "double logistic", or "double gompertz").
+#' @param type Either "density", the default, or a model as would be specified in \code{growthSS}
+#' or \code{growthSim} such as "logistic", "gompertz", "monomolecular", "exponential",
+#' "linear", "power law", "double logistic", or "double gompertz".
 #' If this is a model type then n draws from the prior will be simulated as growth
-#' trendlines and densities will be plotted on margins.
+#' trendlines and densities will be plotted on margins for some distributions.
 #' @param n Numeric, if type is a model then how many draws from the prior should be simulated?
 #' @param t Numeric, time passed to growthSim. Defaults to 25 (the growthSim default).
 #' @keywords Bayesian, brms, prior
@@ -58,63 +58,25 @@ plotPrior<-function(priors, type = "density", n=200, t=25){
     out<-densPlots
   } else{
     
-    type = match.arg(type, c("logistic", "gompertz", "monomolecular", "exponential", "linear", "power law"))
-    
     x_margin_plot = NULL
     y_margin_plot = NULL
     z_margin_plot = NULL
     
+    simdf <- do.call(rbind, lapply(1:n,  function(i) {
+      iter_params <- .prior_sampler(priors)
+      x<-growthSim(model = type, n = 1, t = t, params = iter_params); x$id = paste0("id_",i);x } ))
+    
     if(type=="logistic"){
-      
-      simdf <- do.call(rbind, lapply(1:n,  function(i) {
-        iter_params <- .prior_sampler(priors)
-        x<-growthSim(model = "logistic", n = 1, t = t, params = iter_params); x$id = paste0("id_",i);x } )) # simulate data using prior draw
       x_margin_plot = densPlots[["B"]] 
       y_margin_plot = densPlots[["A"]] 
       z_margin_plot = densPlots[["C"]] 
-      
       } else if(type=="gompertz"){
-        
-      simdf <- do.call(rbind, lapply(1:n, function(i) {
-        iter_params <- .prior_sampler(priors)
-        x<-growthSim(model = "gompertz", n = 1, t = t, params = iter_params); x$id = paste0("id_",i);x } ))
       x_margin_plot = densPlots[["B"]]
       y_margin_plot = densPlots[["A"]]
       z_margin_plot = densPlots[["C"]] 
-      
       } else if(type=="monomolecular"){
-        
-      simdf <- do.call(rbind, lapply(1:n,  function(i) {
-        iter_params <- .prior_sampler(priors)
-        x<-growthSim(model = "monomolecular", n = 1, t = t, params = iter_params); x$id = paste0("id_",i);x } ))
       y_margin_plot = densPlots[["A"]] 
-      
-      } else if(type=="exponential"){
-      simdf <- do.call(rbind, lapply(1:n,  function(i) {
-        iter_params <- .prior_sampler(priors)
-        x<-growthSim(model = "exponential", n = 1, t = t, params = iter_params); x$id = paste0("id_",i);x } ))
-
-      } else if(type=="linear"){
-      simdf <- do.call(rbind, lapply(1:n,  function(i) {
-        iter_params <- .prior_sampler(priors)
-        x<-growthSim(model = "linear", n = 1, t = t, params = iter_params); x$id = paste0("id_",i);x } ))
-
-      } else if(type=="power law"){
-      simdf <- do.call(rbind, lapply(1:n,  function(i) {
-        iter_params <- .prior_sampler(priors)
-        x<-growthSim(model = "power law", n = 1, t = t, params = iter_params); x$id = paste0("id_",i);x } ))
-    
-      } else if(type=="double gompertz"){
-        simdf <- do.call(rbind, lapply(1:n,  function(i) {
-          iter_params <- .prior_sampler(priors)
-          x<-growthSim(model = "double gompertz", n = 1, t = t, params = iter_params); x$id = paste0("id_",i);x } ))
-        
-      } else if(type=="double logistic"){
-        simdf <- do.call(rbind, lapply(1:n,  function(i) {
-          iter_params <- .prior_sampler(priors)
-          x<-growthSim(model = "double logistic", n = 1, t = t, params = iter_params); x$id = paste0("id_",i);x } ))
-        
-      }
+      } 
     
     model_plot<-ggplot2::ggplot(simdf,
                     ggplot2::aes(x= .data$time, y=.data$y,group=interaction(.data$id, .data$group), color=.data$group))+

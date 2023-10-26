@@ -203,7 +203,7 @@
       } else if (matched_sigma=="exponential"){
         formResSigma = .brms_form_exponential(x,y, group, sigma = TRUE)
       } else if (matched_sigma=="linear"){
-        formResSigma = .brms_form_linear(x,y, group, sigma = TRUE)
+        formResSigma = .brms_form_linear(x,y, group, sigma = TRUE, prior=priors)
       } else if (matched_sigma=="power law"){
         formResSigma = .brms_form_powerlaw(x,y, group, sigma = TRUE)
       } else if (matched_sigma %in% c("gam", "spline")){
@@ -462,7 +462,7 @@
   if(sigma){
     if(!is.null(prior) && any(grepl("subA", names(prior))) ){
       #* use non-linear parameterization with subA
-      form <- brms::nlf(stats::as.formula(paste0(y," ~ subA*",x)))
+      form <- brms::nlf(stats::as.formula(paste0("sigma ~ subA*",x)))
       pars <- c("subA")
     } else{
       #* linear parameterization using x directly

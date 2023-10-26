@@ -10,11 +10,11 @@ plotPrior(priors, type = "density", n = 200, t = 25)
 \item{priors}{A named list of means for prior distributions.
 This takes the same input as the prior argument of \code{\link{growthSS}}.}
 
-\item{type}{Either "density", the default, or a model name from \code{growthSS}
-model options ("logistic", "gompertz", "monomolecular", "exponential",
-"linear", "power law", "double logistic", or "double gompertz").
+\item{type}{Either "density", the default, or a model as would be specified in \code{growthSS}
+or \code{growthSim} such as "logistic", "gompertz", "monomolecular", "exponential",
+"linear", "power law", "double logistic", or "double gompertz".
 If this is a model type then n draws from the prior will be simulated as growth
-trendlines and densities will be plotted on margins.}
+trendlines and densities will be plotted on margins for some distributions.}
 
 \item{n}{Numeric, if type is a model then how many draws from the prior should be simulated?}
 
