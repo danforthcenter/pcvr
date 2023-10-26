@@ -27,62 +27,111 @@ library(brms)
 ```
 
 
+
 ## Why Longitudinal Modeling?
 
-Longitudinal modeling allows users to take full advantage of accurate and non-destructive data collection possible through high throughput image based phenotyping. Using longitudinal data accurately requires some understanding of the statistical challenges associated with it. Statistical complications including changes in variance (heteroskedasticity), non-linearity, and autocorrelation (plant's day to day self similarity) present potential problems in analyses. To address these we recommend using hierarchical models. Often non-linear models present challenges in testing hypotheses but this concern, among others, can be solved by using a Bayesian framework. `pcvr` attempts to lower the barrier to entry for building these models with helper functions for use with `brms`.
+Longitudinal modeling allows users to take full advantage of accurate and non-destructive data collection possible through high throughput image based phenotyping. Using longitudinal data accurately requires some understanding of the statistical challenges associated with it. Statistical complications including changes in variance (heteroskedasticity), non-linearity, and autocorrelation (plant's day to day self similarity) present potential problems in analyses. To address this kind of data several functions are provided to make fitting appropriate growth models more straightforward.
 
-## Setup
+## Installation for Advanced Models
 
-The `brms` package is not automatically imported by `pcvr`, so before fitting models we would need to load that package. For details on installing [`brms`](https://github.com/paul-buerkner/brms) and either [`rstan`](https://mc-stan.org/rstan/) or [`cmdstanr`](https://mc-stan.org/cmdstanr/) (with `cmdstanr` being recommended), see those packages linked documentation. Note that if you install `pcvr` from github with `dependencies=T` then `cmdstanr` and `brms` will be installed.
+The `brms` package is not automatically imported by `pcvr`, so before fitting `brms` models we need to load that package. For details on installing [`brms`](https://github.com/paul-buerkner/brms) and either [`rstan`](https://mc-stan.org/rstan/) or [`cmdstanr`](https://mc-stan.org/cmdstanr/) (with `cmdstanr` being recommended), see the linked documentation. Note that if you install `pcvr` from github with `dependencies=T` then `cmdstanr` and `brms` will be installed.
 
-Once `cmdstanr` is installed we also need to set the cmdstan path and link cmdstan to R, which is all done easily by `cmdstanr`:
+Once `cmdstanr` is installed we also need to set the cmdstan path and link cmdstan to R, which is all done easily by `cmdstanr`. For example, packages can be installed and prepped using this code.
 
 ```{r, eval = FALSE}
+if(!"cmdstanr" %in% installed.packages()){
+  install.packages("cmdstanr", repos = c("https://mc-stan.org/r-packages/", getOption("repos")))
+}
+if(!"brms" %in% installed.packages()){
+  install.packages("brms")
+}
+library(brms)
 library(cmdstanr)
 cmdstanr::install_cmdstan()
 ```
 
 
-## Read In Bellwether Data
+## Available Growth Models
 
-For this tutorial we will use a mix of simulated data and Bellwether data. The Bellwether data is from an experiment using four maize genotypes in three levels of NPK fertilizer. Data from that experiment is available on github and can be read into R using `read.pcv`. The simulated data will be generated as needed. For details on the reading/metadata functions used here please see the main bellwether vignette.
+Six main growth models are supported in `pcvr` across each of four available backend functions (`nls`, `nlrq`, `nlme`, and `brms`). The `mgcv` backend can also be used to fit generalized additive models (GAMS) to any of these growth curves as well. In addition to these six main models GAMs, double logistic, and double gompertz models are supported across the four available backends. The parameterizations of these models are explained below.
 
-```{r}
+![](longitudinalPlots/pcvr_longitudinal_patch.png)
 
-sv<-read.pcv(paste0("https://raw.githubusercontent.com/joshqsumner/",
-                    "pcvrTestData/main/pcv4-single-value-traits.csv"), 
-             reader="fread")
+### Logistic
 
-key<-read.csv(paste0("https://raw.githubusercontent.com/joshqsumner/",
-                     "pcvrTestData/main/smallPhenotyperRun_key.csv"))
+The logistic function here is implemented as a 3 parameter sigmoidal growth curve: $A / (1 + e^{(B-x)/C} )$
 
-sv<-merge(sv, key, by="barcode")
-```
+In this model A is the asymptote, B is the inflection point, and C is the growth rate. 
 
-Now we add integer time columns using `bw.time`.
+### Gompertz
 
-```{r}
-sv<-bw.time(sv, plantingDelay = 0, phenotype="area_pixels", cutoff=10, timeCol="timestamp", group=c("barcode", "rotation"), plot=FALSE)
-```
+The gompertz function here is also a 3 parameter sigmoidal growth curve: $A * e^{(-B * e^{(-C*x)})}$
 
-Before combining angled pictures of the same plant per a given time.
+In this model A is the asymptote, B is the inflection point, and C is the growth rate. 
 
-```{r}
-phenotypes <- colnames(sv)[19:35]
-phenoForm<-paste0("cbind(", paste0(phenotypes, collapse=", "), ")")
-groupForm<-"DAS+barcode+genotype+fertilizer"
-form<-as.formula(paste0(phenoForm, "~", groupForm))
-sv_ag_withOutliers<-aggregate(form, data=sv, mean, na.rm=TRUE)
-```
+The gompertz formula is more complex than the logistic formula, which tends to make the model slightly harder to fit in terms of time and computation. The benefit to that extra effort is that the gompertz curve is more flexible than the logistic curve and does not have to stop growing at the same rate as it initially started growing. In the author's experience gompertz growth models have provided the best fit to sigmoidal data, but sometimes the speed and familiarity of the logistic function may be compelling.
 
-And finally removing outliers with `bw.outliers` and converting area to be in $\text{cm}^2$ instead of pixels.
+### Monomolecular
 
-```{r}
-sv_ag<-bw.outliers(df = sv_ag_withOutliers, phenotype="area_pixels", group = c("DAS", "genotype", "fertilizer"), plotgroup = c("barcode"), plot=FALSE)
-pixels_per_cmsq <- 42.5^2 
-sv_ag$area_cm2<-sv_ag$area_pixels / pixels_per_cmsq
-sv_ag$group<-interaction(sv_ag$fertilizer, sv_ag$genotype)
-```
+The monomolecular function here is a 2 parameter asymptotic growth curve: $A-A * e^{(-B * x)}$
+
+Once again, A is the asymptote but now B is the growth rate.
+
+This model has often fit well for height or width phenotypes, but you should make model choices based on your data/expectations.
+
+### Exponential
+
+The exponential function here is a 2 parameter non-asymptotic growth curve bearing strong similarity to the monomolecular formula: $A * e^{(B * x)}$
+
+Here A is a scale parameter and B is the growth rate.
+
+Most plants do not grow indefinitely, although many may grow exponentially through the course of an experiment (think of the first half of a logistic or gompertz curve). In those cases you may wish to use an exponential model or if you are using the `brms` backend then you may wish to rely on some prior information about an asymptote that would eventually be achieved to use a sigmoidal model. 
+
+### Power Law
+
+The power law function here is a 2 parameter non-asymptotic growth curve: $A * x^B$
+
+Here A is a scale parameter and B is the growth rate. The formula becomes linear when B is 1, shows slowing growth over time when 0 < B < 1 and shows growth speed increasing over time (the exponential) when B > 1.
+
+These models can allow for slowing growth over time but without the expectation that growth ever truly stops. 
+
+### Linear
+
+The linear function here is simply: $A * x$
+
+Here A is the growth rate and the intercept is assumed to be 0.
+
+### Double Logistic
+
+The double logistic function here is just two combined logistic functions: $A / (1+e^{((B-x)/C)}) + ((A2-A) /(1+e^{((B2-x)/C2)}))$
+
+Here the parameters have the same interpretation as those in the logistic curve, but for the first and second component separately.
+
+This is intended for use with recover experiments, not for any data with very minor hiccups in the overall trend. Additionally, with the `brms` backend the segmented models allow for a more flexible implementation as `logistic+logistic`, although in that implementation the values for A and B are not relative.
+
+### Double Gompertz
+
+The double logistic function here is just two combined gompertz functions: $A * e^{(-B * e^{(-C*x)})} + ((A2-A) * e^{(-B2 * e^{(-C2*(x-B))})})$
+
+Here the parameters have the same interpretation as those in the gompertz curve, but for the first and second component separately.
+
+All the same points as with the double logistic curve apply here as well.
+
+### GAM
+
+Finally, all backends can fit GAMs. These are unparameterized functions that use a series of splines to fit a variety of trends.
+
+In general these are less useful since they do not give directly interpretable parameters, but their flexibility can be valuable if your data does not fit some more standard model well.
+
+
+
+## Available Growth Models
+
+| "nls"        | "nlrq"           | "nlme"       | "mgcv"      | "brms"       |
+|--------------|------------------|--------------|-------------|--------------|
+| `stats::nls` | `quantreg::nlrq` | `nlme::nlme` | `mgcv::gam` | `brms::brms` |
+
+
 
 ## Growth Model Parameterizations
 
