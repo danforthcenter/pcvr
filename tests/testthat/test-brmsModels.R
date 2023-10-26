@@ -416,14 +416,9 @@ if(file.exists("/home/josh/Desktop/")){ # only run locally, don't test for each 
     simdf <- rbind(noise, signal)
     simdf<-simdf[simdf$time<45, ]
     
-    ggplot(simdf, aes(x=time, y=y, color=group, group = interaction(group, id)))+
-      geom_line()+
-      theme_minimal()
-    
-    model = "int+logistic"; form=y~time|id/group; sigma="int + spline";
-    priors = list("int1" = 5, "changePoint1"=10 ,'logistic2A' = 130, 'logistic2B' = 10, "logistic2C" = 3,
-         'subint1' = 5, "subchangePoint1"=15);
-    df=simdf; type = "brms"
+    # ggplot(simdf, aes(x=time, y=y, color=group, group = interaction(group, id)))+
+    #   geom_line()+
+    #   theme_minimal()
     
     ss<-growthSS(model = "int+logistic", form=y~time|id/group, sigma="int + spline",
                  list("int1" = 5, "changePoint1"=10 ,'logistic2A' = 130, 'logistic2B' = 10, "logistic2C" = 3,
