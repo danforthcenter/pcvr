@@ -4,7 +4,7 @@ if(file.exists("/home/josh/Desktop/")){ # only run locally, don't test for each 
   #* there are lots of options and until one obviously breaks I am not going to try to test all of them. 
   library(testthat)
   library(brms)
-  devtools::load_all("/home/josh/Desktop/stargate/fahlgren_lab/pcvr")
+  # devtools::load_all("/home/josh/Desktop/stargate/fahlgren_lab/pcvr")
   test_that("Logistic brms model pipeline", {
     
     set.seed(123)
