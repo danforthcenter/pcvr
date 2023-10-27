@@ -15,11 +15,12 @@ vignette: >
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, eval=FALSE)#, tidy.opts=list(width.cutoff=60),tidy=TRUE
+knitr::opts_chunk$set(echo = TRUE)#, tidy.opts=list(width.cutoff=60),tidy=TRUE
 ```
 
 ```{r, message = FALSE}
-library(pcvr) 
+#library(pcvr) 
+devtools::load_all()
 library(data.table) # for fread
 library(ggplot2)
 library(patchwork) # for easy ggplot manipulation/combination
@@ -263,7 +264,7 @@ fit_h <- fitGrowth(ss, iter=1000, cores=4, chains=4, silent=0)
 brmPlot(fit_h, form = ss$pcvrForm, df=ss$df)
 ```
 
-![Credible intervals show the unrealistic homoskedasticity assumption](homosked_brm.png)
+![Credible intervals show the unrealistic homoskedasticity assumption](longitudinalPlots/homosked_brm.png)
 
 
 We can relax this assumption and model sigma separately from the main growth trend. To show an example of the options in `pcvr`, here we repeat the example from above using a linear submodel. Note that here we add some extra controls to the model fitting algorithm to help the model fit well with the added complexity at the cost of being slower.
@@ -282,7 +283,7 @@ p <- p1/p2
 p
 ```
 
-![Linear sub models change variance over time, but do not fit this data well](linear_brm.png)
+![Linear sub models change variance over time, but do not fit this data well](longitudinalPlots/linear_brm.png)
 
 This model is also a poor fit, but it has a different problem. It accurately models the low variability at the beginning of the experiment, but the linear model is not flexible enough to adapt to the changes in variance even in this simulated data.
 
@@ -300,7 +301,7 @@ fit_s <- fitGrowth(ss, iter=2000, cores=4, chains=4, silent=0, control = list(ad
 brmPlot(fit_s, form = ss$pcvrForm, df=ss$df)
 ```
 
-![Spline sub models allow for taking heteroskedasticity into account without complex formulae](spline_brm.png)
+![Spline sub models allow for taking heteroskedasticity into account without complex formulae](longitudinalPlots/spline_brm.png)
 Here we try applying a gompertz function to the variance submodel. While this is much less flexible than splines it tends to describe the variance of a sigmoid growth model quite well and allows for easier hypothesis testing between groups. A fringe benefit can also be the predictability of the gompertz formula in extrapolating future data. Splines can have unexpected behavior when trying to predict timepoints outside of your initial data, but the gompertz formula is more predictable. Additionally, since the spline sub model will fit many basis functions this will generally be **significantly** faster since it only needs to find 3 parameters to complete the sub model, and each can have a mildly informative prior. As a single reference point, the model below fit in about 6 minutes while the spline model above took slightly over an hour to fit. These example models have three groups and the model with a gompertz sub model contains 21 total parameters while the spline sub model version contains 43 total parameters.
 
 When setting priors for the gompertz sub-model it is generally reasonable to expect a similar growth rate and inflection point as in the main model (assuming the main model is gompertz as well).
@@ -317,7 +318,7 @@ fit_g <- fitGrowth(ss, iter=2000, cores=4, chains=4, silent=0, control = list(ad
 brmPlot(fit_g, form = ss$pcvrForm, df=ss$df)
 ```
 
-![Using a Gompertz formula for both growth and for increasing variance](gompSubModel.png)
+![Using a Gompertz formula for both growth and for increasing variance](longitudinalPlots/gompSubModel.png)
 
 A few other options are shown here as further examples. There are as many ways to model variance as there are to model growth using the `brms` backend, but other options are more limited.
 
@@ -343,7 +344,7 @@ ggplot(sigma_df, aes(x=time, y=y))+
   labs(y="SD of y", title = "Gompertz Sigma", color = "")
 ```
 
-When considering several sub models (or growth models) we can compare models using Leave-One-Out Information Criterion (LOO IC).
+When considering several sub models (or growth models) we can compare `brms` models using Leave-One-Out Information Criterion (LOO IC). For frequentist models a more familiar metric like BIC or AIC might be used.
 
 ```{r, eval = FALSE}
 loo_spline <- add_criterion(fit_s, "loo")
@@ -368,7 +369,7 @@ ggplot(loodf,
   theme(legend.position = "none")
 ```
 
-![LOO Information Criterion can be used to compare these models, with lower values indicating a better model fit](pcvr_submodel_loo.png){h!}
+![LOO Information Criterion can be used to compare these models, with lower values indicating a better model fit](longitudinalPlots/pcvr_submodel_loo.png)
 
 The spline sub-model tends to have the best LOO IC, but comparing credible intervals while taking speed and interpretability into account may change which model is the best option for your situation. For this particular data the gompertz submodel does seem to perform very well despite the LOO IC difference from using splines.
 
@@ -401,7 +402,7 @@ brmPlot(fit, form = ss$pcvrForm, df=ss$df)+
  coord_cartesian(ylim = c(0,100))
 ```
 
-![Credible intervals from strong priors](strongPrior.png){h!}
+![Credible intervals from strong priors](longitudinalPlots/strongPrior.png)
 
 Setting a prior as narrow as `N(10, 0.05)` intuitively does feel too strong, as though we are so sure already that we can't expect to learn much more, but another way that a prior can be too strong is in providing too much unrealistic information. Specifically the flat prior can also be thought of as too strong given that it will weigh all numbers equally, which is almost never a reasonable assumption. In our growth model examples there should be no probability given to negative growth rates when plants start from seed. Even if the flat prior is constricted to be positive there is no parameterization where a parameter value in the thousands or millions makes sense as being biologically plausible.
 
@@ -427,7 +428,7 @@ brmPlot(fit, form = ss$pcvrForm, df=ss$df)+
  coord_cartesian(ylim = c(0,100))
 ```
 
-![Using weak priors our mean lines make sense](weakPrior.png){h!}
+![Using weak priors our mean lines make sense](longitudinalPlots/weakPrior.png)
 
 As you can see the weak priors moved to meet our data and now we have usable posterior distributions. The variance is large but that is natural with 5 reps per condition when looking at 99% credible intervals.
 
@@ -452,7 +453,7 @@ plotPrior(twoPriors, "gompertz",n=100)[[1]]
 
 #### `growthSS(..., tau, ...)`
 
-For `nlrq` models the "tau" argument determines which quantiles are fit. By default this uses the median (0.5), but can be any quantile or vector of quantiles between 0 and 1.
+For `nlrq` models the "tau" argument determines which quantiles are fit. By default this uses the median (0.5), but can be any quantile or vector of quantiles between 0 and 1. In the next section we fit an nlrq model with many quantiles shown.
 
 ### Using `fitGrowth`
 
@@ -461,6 +462,7 @@ The output from `growthSS` is passed to `fitGrowth` which fits the growth model 
 Here we fit a model using each backend to simulated data.
 
 ```{r}
+set.seed(123)
 simdf<-growthSim("gompertz", n=20, t=25, params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(0.2, 0.25)))
 ```
 
@@ -486,9 +488,9 @@ mgcv_ss <- growthSS(model="gam", form =  y~time|id/group,
 ```
 
 ```{r, eval=FALSE}
-brms_ss<-growthSS(model="gompertz", form =  area_cm2~DAS|barcode/group,
+brms_ss<-growthSS(model="gompertz", form =  y~time|id/group,
              sigma="spline", df=simdf,
-             priors = list("A" = 130, "B" = 10, "C" = 0.5))
+             start = list("A" = 130, "B" = 10, "C" = 0.5))
 ```
 
 Now we have all the essential model components in the `..._ss` objects. Since we specified a gompertz model we have three parameters, the asymptote (`A`), the inflection point (`B`), and the growth rate (`C`). In the `brms` option our sub model uses a GAM and does not add more parameters.
@@ -502,7 +504,7 @@ ggplot(simdf, aes(time, y, group=interaction(group,id)))+
 
 This looks okay, there are no strange jumps in the data or glaring problems, the group and id variables seem to uniquely identify lines so the models should fit well.
 
-Now we use `fitGrowth` to fit our models. Additional arguments can be passed to fitGrowth (see `?fitGrowth` for details), but here we only use those to specify details for the `brms` model and to run the `nlrq` model in parallel.
+Now we use `fitGrowth` to fit our models. Additional arguments can be passed to fitGrowth (see `?fitGrowth` for details), but here we only use those to specify details for the `brms` model and to run the `nlrq` model in parallel. Note that 500 iterations for the `brms` model is only to run a quick example, generally 2000 or more should be used and with more than 1 chain.
 
 ```{r, warning=FALSE, message=FALSE}
 nls_fit <- fitGrowth(nls_ss)
@@ -512,7 +514,7 @@ mgcv_fit <- fitGrowth(mgcv_ss)
 ```
 
 ```{r, eval=FALSE}
-brms_fit <- fitGrowth(brms_ss, iter = 1000, cores = 1, chains = 1, 
+brms_fit <- fitGrowth(brms_ss, iter = 500, cores = 1, chains = 1, 
                control = list(adapt_delta = 0.999, max_treedepth = 20))
 ```
 
@@ -521,7 +523,7 @@ brms_fit <- fitGrowth(brms_ss, iter = 1000, cores = 1, chains = 1,
 
 We can check the model fits using `growthPlot`.
 
-```{r}
+```{r, warning=FALSE, message=FALSE}
 growthPlot(nls_fit, form = nls_ss$pcvrForm, df=nls_ss$df)
 growthPlot(nlrq_fit, form = nlrq_ss$pcvrForm, df=nlrq_ss$df)
 growthPlot(nlme_fit, form = nlme_ss$pcvrForm, df=nlme_ss$df, boot=3)
@@ -533,35 +535,237 @@ growthPlot(brms_fit, form = brms_ss$pcvrForm, df=brms_ss$df)
 ```
 
 
-![](brmPlot1.png){h!}
+![](longitudinalPlots/brmPlot1.png)
 
-### `testGrowth`
+### Hypothesis testing
 
+In linear regression the default null hypothesis ($\beta = 0$) can be useful as each beta past the intercept directly measures the effect of one variable. In non-linear regression we generally have more complicated model parameters and meaningful testing can be a little more difficult. In `pcvr` the `testGrowth` function allows for some hypothesis testing on model parameters for frequentist models. For Bayesian models the `brms::hypothesis` function is recommended due to its extreme versatility.
 
+#### `testGrowth`
+
+`testGrowth` takes the `growthSS` output used to fit a model, the model itself, and a list of parameters to test and performs likelihood ratio tests between the model and versions of itself where the selected parameters do not vary by group. The resulting p-value is broadly testing the null hypothesis that the groups have the same value for that parameter.
+
+Here we see that for our `nls` model is statistically significantly improved by varying asymptote by group.
+
+```{r}
+testGrowth(nls_ss, nls_fit, test_pars = "A")$anova
+```
+
+Likewise for the 49th percentile in our `nlrq` model
+
+```{r}
+testGrowth(nlrq_ss, nlrq_fit, test_pars = "A")[["0.49"]]
+```
+
+And the same is shown in our `nlme` model.
+
+```{r, warning=FALSE, message=FALSE}
+testGrowth(nlme_ss, nlme_fit, test_pars = "A")$anova
+```
+
+We cannot test parameters in the GAM of course but we still see that the grouping improves the model fit.
+
+```{r}
+testGrowth(mgcv_ss, mgcv_fit)$anova
+```
+
+These are relatively basic options for testing hypotheses in non-linear growth models and should serve as a good starting point for frequentist model analysis.
 
 #### `brms::hypothesis`
 
-We can write arbitrarily complex hypotheses about our models and test the posterior probability using `brms::hypothesis`. Here we test if the ratio of Asymptotes for unfertilized plants from B73 over MM is more than 10 percent higher than that ratio in halfway fertilized plants. It would be out of scope to go over all the potentially interesting hypotheses since those will depend on your experimental design and questions, but hopefully this communicates the flexibility in using these models once they are fit.
+With the `brms` backend our options expand dramatically. We can write arbitrarily complex hypotheses about our models and test the posterior probability using `brms::hypothesis`. Here we keep it simple and test that group A has an asymptote 10% larger than group B's asymptote. If we had a more complicated dataset then there is no reason we could not expand this hypothesis instead to something like `((A_genotype1_treatment1/A_genotype1_treatment2))-(1.1*(A_genotype2_treatment1/A_genotype2_treatment2)) > 0` to test relative tolerance to different treatments between genotypes. It would be out of scope to go over all the potentially interesting hypotheses since those will depend on your experimental design and questions, but hopefully this communicates the flexibility in using these models once they are fit. Access to the `brms::hypothesis` function is generally a compelling reason to use the `brms` backend if you have questions beyond "are these groups different?"
 
 ```{r, echo=TRUE, eval=FALSE}
-(hyp<-brms::hypothesis(fit, "(A_group0.B73 / A_group0.MM) > 1.1 * (A_group50.B73 / A_group50.MM)"))
+(hyp<-brms::hypothesis(brms_fit, "(A_groupa) > 1.1 * (A_groupb)"))
 ```
 
 ```{r, echo=FALSE, eval=TRUE}
 # dput(hyp)
-structure(list(Hypothesis = "((A_group0.B73/A_group0.MM))-(1.1*(A_group50.B73/A_group50.MM)) > 0", 
-    Estimate = 0.241209320218704, Est.Error = 0.322485870935505, 
-    CI.Lower = -0.287499674054895, CI.Upper = 0.749743868569684, 
-    Evid.Ratio = 3.72813238770686, Post.Prob = 0.7885, Star = ""), row.names = c(NA, 
+structure(list(Hypothesis = "((A_groupa))-(1.1*(A_groupb)) > 0", 
+    Estimate = 16.7880224, Est.Error = 3.13518501598807, CI.Lower = 12.012705, 
+    CI.Upper = 21.952505, Evid.Ratio = Inf, Post.Prob = 1, Star = "*"), row.names = c(NA, 
 -1L), class = "data.frame")
 ```
 
 ### Threshold Models
 
+As alluded to previously, using the `brms` backend segmented models are possible and can be specified using "model1 + model2" syntax, where the "+" specifies a changepoint where the process shifts from model1 to model2. As many models as you need to combine can be combined in this way, but more than 2 segments is likely to be very slow and can become more difficult to fit well. If you add many segments together then consider editing the `growthSS` output to set stronger priors on any changepoints that are in the same vicinity. Since the changepoints are parameterized they require priors and can be included in any hypothesis tests on the model.
+
+Here we briefly show several threshold model options.
+
+First we look at a "linear + linear" model using a gam submodel. To make the parameters distinct these segmented models have slightly different parameter names. Each section of the model has parameters named for the model and it's parameters, so here we have "linear1A", "changePoint1", and "linear2A". Similar to the standard models, a changepoint model of variance will have "sub" appended to each parameter name.
+
+```{r, echo=TRUE, eval=FALSE}
+simdf<-growthSim(model = "linear + linear", 
+                 n=20, t=25,
+                 params = list("linear1A"=c(15, 12), "changePoint1"=c(8, 6), "linear2A"=c(3, 5) ))
+
+ss<-growthSS(model = "linear + linear", form=y~time|id/group, sigma="spline",
+             start = list("linear1A"=10, "changePoint1"=5, "linear2A"=2 ),
+             df=simdf, type = "brms")
+
+fit <- fitGrowth(ss, backend="cmdstanr", iter=500, chains=1, cores=1)
+growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
+```
+
+![](longitudinalPlots/linearPlusLinear_fitGrowth.png)
+
+Here we look at a "linear + logistic" model using a gam submodel.
+
+```{r, echo=TRUE, eval=FALSE}
+simdf<-growthSim("linear + logistic", n=20, t=25,
+                     params = list("linear1A"=c(15, 12), "changePoint1"=c(8, 6),
+                                   "logistic2A"=c(100, 150), "logistic2B"=c(10, 8),
+                                   "logistic2C"=c(3, 2.5) ))
+
+ss<-growthSS(model = "linear + logistic", form=y~time|id/group, sigma="spline",
+             list("linear1A"=10, "changePoint1"=5, 
+                  "logistic2A"=100, "logistic2B"=10, "logistic2C"=3),
+             df=simdf, type = "brms")
+    
+fit <- fitGrowth(ss, backend="cmdstanr", iter=500, chains=1, cores=1)
+growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
+```
+
+![](longitudinalPlots/linearPlusLogistic_fitGrowth.png)
+
+Here we fit a "linear + gam" model with a homoskedastic sub model.
+
+```{r, eval=FALSE, echo=TRUE}
+ss<-growthSS(model = "linear + gam", form=y~time|id/group, sigma="int",
+             list("linear1A"=10, "changePoint1"=5),
+             df=simdf, type = "brms")
+
+fit <- fitGrowth(ss, backend="cmdstanr", iter=500, chains=1, cores=1)
+growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
+```
+
+![](longitudinalPlots/linearPlusGAM_fitGrowth.png)
+
+Here we fit a three part linear model with a gam to model variance. In this case we only used 500 iterations on one chain but the model still fits reasonably well.
+
+```{r, echo=TRUE, eval=FALSE}
+simdf<-growthSim("linear + linear + linear", n=25, t=50,
+                     params = list("linear1A"=c(10, 12), "changePoint1"=c(8, 6),
+                                   "linear2A"=c(1, 2), "changePoint2"=c(25, 30),"linear3A"=c(20, 24)))
+
+ss<-growthSS(model = "linear + linear + linear", form=y~time|id/group, sigma="spline",
+             list("linear1A"=10, "changePoint1"=5,
+                  "linear2A"=2, "changePoint2"=15,
+                  "linear3A"=5 ), df=simdf, type = "brms")
+
+fit <- fitGrowth(ss, backend="cmdstanr", iter=500, chains=1, cores=1)
+
+plot <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
+```
+
+![](longitudinalPlots/linearPlusLinearPlusLinear_fitGrowth.png)
+
+We can also fit thresholded models to the variance. Here we fit two part intercept only models to both the data and the variance. This is not a growth model exactly, but shows some of the available options well.
+
+```{r, echo=FALSE, eval=FALSE}
+set.seed(123)
+    noise<-do.call(rbind, lapply(1:30, function(i){
+      chngpt <- rnorm(2, 18, 2)
+      rbind(data.frame(id = paste0("id_",i), time = 1:chngpt[1], group = "a", y = c(runif(chngpt[1]-1, 0, 20), rnorm(1,5,1))),
+            data.frame(id = paste0("id_",i), time = 1:chngpt[2], group = "b", y = c(runif(chngpt[2]-1, 0, 20), rnorm(1,5,1))) )
+    }))
+noise2<-do.call(rbind, lapply(1:30, function(i){
+      start1 <- max(noise[noise$id == paste0("id_",i) & noise$group=="a", "time"])
+      start2 <- max(noise[noise$id == paste0("id_",i) & noise$group=="b", "time"])
+      rbind(data.frame(id = paste0("id_",i), time = start1:40, group = "a", y = c(runif(length(start1:40), 15, 50))),
+            data.frame(id = paste0("id_",i), time = start2:40, group = "b", y = c(runif(length(start2:40), 15, 50))) )
+    }))
+simdf <- rbind(noise, noise2)
+```
+
+```{r, echo=TRUE, eval=FALSE}
+ss<-growthSS(model = "int + int", form=y~time|id/group, sigma="int + int",
+             list("int1"=10, "changePoint1"=10, "int2"=20, #main model
+                  "subint1"=10, "subchangePoint1"=10, "subint2"=10), # sub model
+             df=simdf, type = "brms")
+
+fit <- fitGrowth(ss, backend="cmdstanr", iter=500, chains=1, cores=1)
+
+plot <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
+```
+
+![](longitudinalPlots/intPlusInt_heteroskedastic_fitGrowth.png)
+
+Here we fit int + linear models to the overall trend and the variance
+
+```{r, echo=FALSE, eval=FALSE}
+set.seed(123)
+noise<-do.call(rbind, lapply(1:30, function(i){
+      chngpt <- rnorm(2, 18, 2)
+      rbind(data.frame(id = paste0("id_",i), time = 1:chngpt[1], group = "a", y = c(runif(chngpt[1]-1, 0, 20), rnorm(1,5,1))),
+            data.frame(id = paste0("id_",i), time = 1:chngpt[2], group = "b", y = c(runif(chngpt[2]-1, 0, 20), rnorm(1,5,1))) )
+    }))
+signal<-growthSim("linear", n=30, t=20,
+                      params = list("A"=c(3, 5) ))
+signal<-do.call(rbind, lapply(unique(paste0(signal$id, signal$group)), function(int){
+      noisesub<-noise[paste0(noise$id, noise$group)==int,]
+      signalSub <- signal[paste0(signal$id, signal$group) == int, ]
+      y_end <- noisesub[noisesub$time == max(noisesub$time), "y"]
+      signalSub$time <- signalSub$time + max(noisesub$time)
+      signalSub$y <- y_end + signalSub$y
+      signalSub
+    }))
+simdf <- rbind(noise, signal)
+```
+
+
+```{r, echo=TRUE, eval=FALSE}
+ss<-growthSS(model = "int + linear", form=y~time|id/group, sigma="int + linear",
+                 list("int1"=10, "changePoint1"=10, "linear2A"=20,
+                      "subint1"=10, "subchangePoint1"=10, "sublinear2A"=10),
+                 df=simdf, type = "brms")
+fit <- fitGrowth(ss, backend="cmdstanr", iter=500, chains=1, cores=1)
+plot <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df, timeRange = 1:40)
+```
+
+![](longitudinalPlots/intPlusLinear_heteroskedasticIntPlusLinear_fitGrowth.png)
+
+
+Finally we fit a model of "int + logistic" for the main growth trend and "int + gam" for the variance. The benefit here over a pure "gam" model of variance is that we can test the intercept and changepoint parameters of the variance now.
+
+```{r, eval=FALSE, echo=FALSE}
+set.seed(123)
+noise<-do.call(rbind, lapply(1:30, function(i){
+      chngpt <- rnorm(2, 18, 2)
+      rbind(data.frame(id = paste0("id_",i), time = 1:chngpt[1], group = "a", y = c(runif(chngpt[1]-1, 0, 20), rnorm(1,5,1))),
+            data.frame(id = paste0("id_",i), time = 1:chngpt[2], group = "b", y = c(runif(chngpt[2]-1, 0, 20), rnorm(1,5,1))) )
+    }))
+signal<-growthSim("logistic", n=20, t=30,
+                  params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))
+signal<-do.call(rbind, lapply(unique(paste0(signal$id, signal$group)), function(int){
+      noisesub<-noise[paste0(noise$id, noise$group)==int,]
+      signalSub <- signal[paste0(signal$id, signal$group) == int, ]
+      y_end <- noisesub[noisesub$time == max(noisesub$time), "y"]
+      signalSub$time <- signalSub$time + max(noisesub$time)
+      signalSub$y <- y_end + signalSub$y
+      signalSub
+    }))
+simdf <- rbind(noise, signal)
+simdf<-simdf[simdf$time<45, ]
+```
+
+```{r, echo=TRUE, eval=FALSE}
+ss<-growthSS(model = "int+logistic", form=y~time|id/group, sigma="int + spline",
+             list("int1" = 5, "changePoint1"=10 ,
+                  'logistic2A' = 130, 'logistic2B' = 10, "logistic2C" = 3,
+                  'subint1' = 5, "subchangePoint1"=15),
+              df=simdf, type = "brms")
+fit <- fitGrowth(ss, backend="cmdstanr", iter=500, chains=1, cores=1)
+plot <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
+```
+
+![](longitudinalPlots/intPluslogistic_intPlusGAMSubModel.png)
+
 
 ## Comparing Models Over Time
 
-As a final note on `brms`, there is a possiblity of making interesting early stopping rules in a Bayesian framework. Currently this does not have an obvious Bellwether implementation but it should be noted as a benefit of the method. If you have models fit to subsets of your data then the `distPlot` function will show changes in the posterior distribution for some or all of your parameters over time or over another subset variable. Here the growth trend plots are also a legend for the time of each posterior distribution.
+As a final note on `brms` models, there is a possiblity of making interesting early stopping rules in a Bayesian framework. If you have models fit to subsets of your data then the `distPlot` function will show changes in the posterior distribution for some or all of your parameters over time or over another subset variable. Here the growth trend plots are also a legend for the time of each posterior distribution.
 
 ```{r, eval=FALSE}
 print(load(url("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/brmsFits.rdata")))
@@ -571,7 +775,7 @@ distributionPlot(fits = from3to25, form = y~time|id/group, params=c("A", "B", "C
 ```
 
 
-![](distPlot_vigPlot.png){h!}
+![](longitudinalPlots/distPlot_vigPlot.png)
 
 ## Other Resources
 
