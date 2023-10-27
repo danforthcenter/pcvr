@@ -11,7 +11,7 @@
 #'  interactions should be modeled. If group has only one level or is not included then
 #'  it will be ignored in formulas for growth and variance (this may be the case if 
 #'  you split data before fitting models to be able to run more smaller models each more quickly).
-#' @param sigma A model for heteroskedasticity from c("homo", "linear", "spline", "logistic", "gompertz"). See details. 
+#' @param sigma A model for heteroskedasticity from the same list of options as the model argument.  
 #' @param df A dataframe to use. Must contain all the variables listed in the formula.
 #' @param priors A named list of means for prior distributions.
 #'  Currently this function makes lognormal priors for all growth model parameters.
@@ -110,8 +110,8 @@
 
 .brmSS<-function(model, form, sigma=NULL, df, priors=NULL){
   out<-list()
-  sigmas<-c("homo", "linear", "spline", "gompertz")
-  models<-c("logistic", "gompertz", "monomolecular", "exponential", "linear", "power law", "double logistic", "double gompertz", "gam")
+  # sigmas<-c("homo", "linear", "spline", "gompertz")
+  models<-c("int", "logistic", "gompertz", "monomolecular", "exponential", "linear", "power law", "double logistic", "double gompertz", "gam", "spline", "homo")
   #* ***** `Make bayesian formula` *****
     #* `parse form argument`
     y=as.character(form)[2]
@@ -139,106 +139,101 @@
     if(!grepl("\\+", model)){
       matched_model <- match.arg(model, models)
     }
-    matched_sigma <- match.arg(sigma, choices=sigmas)
+    if(!grepl("\\+", sigma)){
+      matched_sigma <- match.arg(sigma, models)
+    }
     #* `Make growth formula`
-    spline_pars = NULL
+    nTimes <- min(unlist(lapply(split(df, df[[group]]), function(d){length(unique(d[[x]] ))} ) )) # for spline knots
+    sigmaSplineHelperForm <- NULL
+    splineHelperForm <- NULL
     if(grepl("\\+", model)){
-      
-      chngptHelper_list <- .brmsChangePointHelper(model, x, y, group)
+      chngptHelper_list <- .brmsChangePointHelper(model, x, y, group, sigma=FALSE, nTimes = nTimes, useGroup=USEGROUP)
       growthForm <- chngptHelper_list$growthForm
       pars <- chngptHelper_list$pars
-      if("splineDummy" %in% pars){
-        spline_pars <- "splineDummy"
-        pars <- pars[-which(pars=="splineDummy")]
-      }
+      splineHelperForm <- chngptHelper_list$splineHelperForm
       
     } else{
         if(matched_model=="double logistic"){
-          form_fun<-.brms_form_dou_logistic
-          pars=c("A","B", "C", "A2","B2", "C2")
+          formRes = .brms_form_dou_logistic(x,y, group, sigma = FALSE)
         } else if (matched_model=="double gompertz"){
-          form_fun<-.brms_form_dou_gompertz
-          pars=c("A","B", "C", "A2","B2", "C2")
+          formRes = .brms_form_dou_gompertz(x,y, group, sigma = FALSE)
         } else if(matched_model=="logistic"){
-          form_fun<-.brms_form_logistic
-          pars=c("A","B", "C")
+          formRes = .brms_form_logistic(x,y, group, sigma = FALSE)
         } else if (matched_model=="gompertz"){
-          form_fun<-.brms_form_gompertz
-          pars=c("A","B", "C")
+          formRes = .brms_form_gompertz(x,y, group, sigma = FALSE)
         } else if (matched_model=="monomolecular"){
-          form_fun<-.brms_form_monomolecular
-          pars=c("A","B")
+          formRes = .brms_form_monomolecular(x,y, group, sigma = FALSE)
         } else if (matched_model=="exponential"){
-          form_fun<-.brms_form_exponential
-          pars=c("A","B")
+          formRes = .brms_form_exponential(x,y, group, sigma = FALSE)
         } else if (matched_model=="linear"){
-          form_fun<-.brms_form_linear
-          pars=c("A")
+          formRes = .brms_form_linear(x,y, group, sigma = FALSE)
         } else if (matched_model=="power law"){
-          form_fun<-.brms_form_powerlaw
-          pars=c("A","B")
-        } else if (matched_model=="gam"){
-          form_fun<-.brms_form_gam
-          pars <- NULL
+          formRes = .brms_form_powerlaw(x,y, group, sigma = FALSE)
+        } else if (matched_model %in% c("gam", "spline")){
+          formRes = .brms_form_gam(x,y, group, sigma = FALSE, nTimes = nTimes)
+        } else if (matched_model %in% c("int", "homo")){
+          formRes = .brms_form_int(x,y, group, sigma = FALSE)
         }
-        growthForm = form_fun(x,y, group) # group only used in gam model
+      pars <- formRes$pars
+      growthForm <- formRes$form
     }
-    #* `Make parameter formula`
-    #* could add a pars argument then set up parForm from those.
-    #* I think that would change how priors would have to work
-    #* and that seems like more trouble than it is worth right 
-    #* now at least.
-    if(matched_sigma == "gompertz"){ # add nl pars for sigma form
-      pars <- c(pars, "subA", "subB", "subC")
+    
+    #* `Make heteroskedasticity formula`
+    if(!is.null(sigma)){
+      if(grepl("\\+", sigma)){
+        
+        chngptHelper_list <- .brmsChangePointHelper(model=sigma, x, y, group, sigma = TRUE, nTimes = nTimes, useGroup=USEGROUP)
+        sigmaForm <- chngptHelper_list$growthForm
+        pars <- c(pars, chngptHelper_list$pars)
+        sigmaPars <- chngptHelper_list$pars
+        sigmaSplineHelperForm <- chngptHelper_list$splineHelperForm
+        
+      } else{
+      
+      if(matched_sigma=="double logistic"){
+        formResSigma = .brms_form_dou_logistic(x,y, group, sigma = TRUE)
+      } else if (matched_sigma=="double gompertz"){
+        formResSigma = .brms_form_dou_gompertz(x,y, group, sigma = TRUE)
+      } else if(matched_sigma=="logistic"){
+        formResSigma = .brms_form_logistic(x,y, group, sigma = TRUE)
+      } else if (matched_sigma=="gompertz"){
+        formResSigma = .brms_form_gompertz(x,y, group, sigma = TRUE)
+      } else if (matched_sigma=="monomolecular"){
+        formResSigma = .brms_form_monomolecular(x,y, group, sigma = TRUE)
+      } else if (matched_sigma=="exponential"){
+        formResSigma = .brms_form_exponential(x,y, group, sigma = TRUE)
+      } else if (matched_sigma=="linear"){
+        formResSigma = .brms_form_linear(x,y, group, sigma = TRUE, prior=priors)
+      } else if (matched_sigma=="power law"){
+        formResSigma = .brms_form_powerlaw(x,y, group, sigma = TRUE)
+      } else if (matched_sigma %in% c("gam", "spline")){
+        formResSigma = .brms_form_gam(x,y, group, sigma = TRUE, nTimes = nTimes)
+      } else if (matched_sigma %in% c("int", "homo")){
+        formResSigma = .brms_form_int(x,y, group, sigma = TRUE)
+      }
+        sigmaForm <- formResSigma$form
+        pars <- c(pars, formResSigma$pars)
+        sigmaPars <- formResSigma$pars
+      }
+    }else{ # if none is specified then use homoskedastic intercept only sigma model
+      formResSigma = .brms_form_int(x,y, group, sigma = TRUE)
+      sigmaForm <- formResSigma$form
+      # pars <- c(pars, formResSigma$pars) # should not change pars ever 
     }
+    #* `Make parameter grouping formulae`
+    
+    pars <- pars[!pars%in%c("spline", "subspline")]
     if(!is.null(pars)){
       if(USEGROUP){ parForm<-as.formula(paste0( paste(pars,collapse="+"),"~0+",group ))
       } else { parForm<-as.formula(paste0( paste(pars,collapse="+"),"~1" )) }
     } else {parForm=NULL} 
     
-    if(!is.null(spline_pars)){
-      splineParForm <- as.formula(paste0(spline_pars, " ~ s(", x, ", by=",group, ")"))
-    }
+    #* `Combine formulas into brms.formula object`
+    if(is.null(parForm)){NL = FALSE} else { NL = TRUE}
+    bf_args <- list("formula" = growthForm, sigmaForm, parForm, sigmaSplineHelperForm, splineHelperForm, "autocor" = corForm, "nl"=NL)
+    bf_args<-bf_args[!unlist(lapply(bf_args, is.null))]
+    bayesForm <- do.call(brms::bf, args = bf_args)
     
-    #* `Make heteroskedasticity formula`
-    if(!is.null(sigma)){
-      sigmaForm<-if(matched_sigma=="homo"){
-        if(USEGROUP){ as.formula(paste0("sigma ~ 0+", group))
-          } else{ as.formula(paste0("sigma ~ 1")) }
-        } else if (matched_sigma=="linear"){
-          if(USEGROUP){
-            as.formula(paste0("sigma ~ ", x, "+", x, ":",group))
-          } else{ as.formula(paste0("sigma ~ ", x)) }
-        } else if(matched_sigma=="gompertz"){
-          brms::nlf(as.formula(paste0("sigma ~ subA*exp(-subB*exp(-subC*",x,"))")))
-          } else if(matched_sigma=="spline"){
-            
-        if(length(unique(df[[x]]))<11){
-          if(USEGROUP){ as.formula(paste0("sigma ~ s(",x,", by=", group, ", k=",length(unique(df[[x]])),")"))
-            }else{ as.formula(paste0("sigma ~ s(",x,", k=",length(unique(df[[x]])),")")) }
-        }else{ 
-          if(USEGROUP){ as.formula(paste0("sigma ~ s(",x,", by=", group, ")"))
-          } else{ as.formula(paste0("sigma ~ s(",x, ")")) }
-        }
-      } 
-      #* `Combining for brms formula`
-      #* might be better to do this with do.call, these are getting cumbersome.
-      if(!is.null(parForm)){
-        if(!is.null(spline_pars)){
-          bayesForm<-brms::bf(formula = growthForm, sigmaForm, parForm, splineParForm, autocor = corForm, nl=TRUE)
-        } else{bayesForm<-brms::bf(formula = growthForm, sigmaForm, parForm, autocor = corForm, nl=TRUE)}
-      } else{
-        bayesForm<-brms::bf(formula = growthForm, sigmaForm, autocor = corForm)
-      }
-    }else{
-      if(!is.null(parForm)){
-        if(!is.null(spline_pars)){
-          bayesForm<-brms::bf(formula = growthForm, parForm, splineParForm, autocor = corForm, nl=TRUE)
-        }else{bayesForm<-brms::bf(formula = growthForm, parForm, autocor = corForm, nl=TRUE)}
-      } else{
-        bayesForm<-brms::bf(formula = growthForm, autocor = corForm)
-      }
-    }
     out[["formula"]]<-bayesForm
   #* ***** `Make priors` *****
   #groupedPriors = TRUE # default this to TRUE in case of brmsprior class
@@ -265,6 +260,11 @@
       if(is.null(names(priors))){
         warning("Assuming that each element in priors is in order: ", paste0(pars, collapse=', '))
         names(priors)<-pars
+      }
+      if(!all(pars %in% names(priors))){
+        stop(paste0("Parameter names and prior names do not match. Priors include ",
+                    paste(setdiff(names(priors), pars), collapse=", "), "... and parameters include ",
+                    paste(setdiff(pars, names(priors)), collapse=", "), "... Please rename the misspecified priors."))
       }
       groupedPriors<-any(unlist(lapply(priors,length))>1) # if any prior has multiple means then groupedPriors is TRUE
       
@@ -302,14 +302,17 @@
         names(priorStanStrings)<-parNames
       }
       
-      if(matched_sigma =="homo" & !USEGROUP){
+      #* here i need to initialize the prior object, but it only needs a "sigma"
+      #* prior if sigma does not have a parameterized model
+      
+      if( grepl("int|homo", sigma) & !USEGROUP){
         prior<-brms::set_prior('student_t(3,0,5)', dpar="sigma", class="Intercept")+
           brms::set_prior('gamma(2,0.1)', class="nu")
-      } else if(matched_sigma == "gompertz"){
-        prior<-brms::set_prior('gamma(2,0.1)', class="nu")
-      } else{
+      } else if(length(sigmaPars)==0){
         prior<-brms::set_prior('student_t(3,0,5)', dpar="sigma")+
-          brms::set_prior('gamma(2,0.1)', class="nu") 
+          brms::set_prior('gamma(2,0.1)', class="nu")
+      } else{
+        prior<-brms::set_prior('gamma(2,0.1)', class="nu")
       }
       
       for(nm in names(priorStanStrings)){
@@ -351,32 +354,182 @@
   return(out)
   }
   
-.brms_form_logistic<-function(x, y, group){
-  return(stats::as.formula(paste0(y," ~ A/(1+exp((B-",x,")/C))")))
+
+
+
+
+#' Helper function for logistic brms formulas
+#' 
+#' @keywords internal
+#' @noRd
+
+.brms_form_logistic<-function(x, y, group, sigma = FALSE){
+  if(sigma){
+    form <- brms::nlf(stats::as.formula(paste0("sigma ~ subA/(1+exp((subB-",x,")/subC))")))
+    pars <- c("subA", "subB", "subC")
+  }else{
+    form <- stats::as.formula(paste0(y," ~ A/(1+exp((B-",x,")/C))"))
+    pars <- c("A", "B", "C")
+  }
+  return(list(form=form, pars=pars))
 }
-.brms_form_gompertz<-function(x, y, group){
-  return(stats::as.formula(paste0(y," ~ A*exp(-B*exp(-C*",x,"))")))
+#' Helper function for brms formulas
+#' 
+#' @keywords internal
+#' @noRd
+
+.brms_form_gompertz<-function(x, y, group, sigma = FALSE){
+  if(sigma){
+    form <- brms::nlf(stats::as.formula(paste0("sigma ~ subA*exp(-subB*exp(-subC*",x,"))")))
+    pars <- c("subA", "subB", "subC")
+  }else{
+    form <-stats::as.formula(paste0(y," ~ A*exp(-B*exp(-C*",x,"))"))
+    pars <- c("A", "B", "C")
+  }
+  return(list(form=form, pars=pars))
 }
-.brms_form_dou_logistic<-function(x, y, group){
-  return(stats::as.formula(paste0(y," ~ A/(1+exp((B-",x,")/C)) + ((A2-A) /(1+exp((B2-",x,")/C2)))")))
+#' Helper function for brms formulas
+#' 
+#' @keywords internal
+#' @noRd
+
+
+.brms_form_dou_logistic<-function(x, y, group, sigma = FALSE){
+  if(sigma){
+    form<-brms::nlf(stats::as.formula(paste0("sigma ~ subA/(1+exp((subB-",x,")/subC)) + ((subA2-subA) /(1+exp((subB2-",x,")/subC2)))")))
+    pars <- c("subA", "subB", "subC","subA2", "subB2", "subC2" )
+  }else{
+    form <- stats::as.formula(paste0(y," ~ A/(1+exp((B-",x,")/C)) + ((A2-A) /(1+exp((B2-",x,")/C2)))"))
+    pars <- c("A", "B", "C","A2", "B2", "C2" )
+  }
+  return(list(form=form, pars=pars))
 }
-.brms_form_dou_gompertz<-function(x, y, group){
-  return(stats::as.formula(paste0(y," ~ A * exp(-B * exp(-C*",x,")) + (A2-A) * exp(-B2 * exp(-C2*(",x,"-B)))")))
+#' Helper function for brms formulas
+#' 
+#' @keywords internal
+#' @noRd
+
+
+.brms_form_dou_gompertz<-function(x, y, group, sigma = FALSE){
+  if(sigma){
+    form <- brms::nlf(stats::as.formula(paste0("sigma ~ subA * exp(-subB * exp(-subC*",x,")) + (subA2-subA) * exp(-subB2 * exp(-subC2*(",x,"-subB)))")))
+    pars <- c("subA", "subB", "subC","subA2", "subB2", "subC2" )
+  }else{
+    form <- stats::as.formula(paste0(y," ~ A * exp(-B * exp(-C*",x,")) + (A2-A) * exp(-B2 * exp(-C2*(",x,"-B)))"))
+    pars <- c("A", "B", "C","A2", "B2", "C2" )
+  }
+  return(list(form=form, pars=pars))
 }
-.brms_form_monomolecular<-function(x, y, group){
-  return(stats::as.formula(paste0(y,"~A-A*exp(-B*",x,")")))
+#' Helper function for brms formulas
+#' 
+#' @keywords internal
+#' @noRd
+
+
+.brms_form_monomolecular<-function(x, y, group, sigma = FALSE){
+  if(sigma){
+    form <- brms::nlf(stats::as.formula(paste0("sigma ~ subA-subA*exp(-subB*",x,")")))
+    pars <- c("subA", "subB")
+  }else{
+    form <- stats::as.formula(paste0(y,"~A-A*exp(-B*",x,")"))
+    pars <- c("A", "B")
+  }
+  return(list(form=form, pars=pars))
 }
-.brms_form_exponential<-function(x, y, group){
-  return(stats::as.formula(paste0(y," ~ A*exp(B*",x, ")")))
+#' Helper function for brms formulas
+#' 
+#' @keywords internal
+#' @noRd
+
+
+.brms_form_exponential<-function(x, y, group, sigma = FALSE){
+  if(sigma){
+    form <- brms::nlf(stats::as.formula(paste0("sigma ~ subA*exp(subB*",x, ")")))
+    pars <- c("A", "B")
+  }else{
+    form <- stats::as.formula(paste0(y," ~ A*exp(B*",x, ")"))
+    pars <- c("A", "B")
+  }
+  return(list(form=form, pars=pars))
 }
-.brms_form_linear<-function(x, y, group){
-  return(stats::as.formula(paste0(y," ~ A*",x)))
+#' Helper function for brms formulas
+#' 
+#' @keywords internal
+#' @noRd
+
+
+.brms_form_linear<-function(x, y, group, sigma = FALSE, prior = NULL){
+  if(sigma){
+    if(!is.null(prior) && any(grepl("subA", names(prior))) ){
+      #* use non-linear parameterization with subA
+      form <- brms::nlf(stats::as.formula(paste0("sigma ~ subA*",x)))
+      pars <- c("subA")
+    } else{
+      #* linear parameterization using x directly
+      form <- as.formula(paste0("sigma ~ ", x, "+", x, ":",group))
+      pars <- c()
+    }
+  }else{
+    form <- stats::as.formula(paste0(y," ~ A*",x))
+    pars <- c("A")
+  }
+  return(list(form=form, pars=pars))
 }
-.brms_form_powerlaw<-function(x, y, group){
-  return(stats::as.formula(paste0(y," ~ A*",x,"^B")))
+#' Helper function for brms formulas
+#' 
+#' @keywords internal
+#' @noRd
+
+
+.brms_form_powerlaw<-function(x, y, group, sigma = FALSE){
+  if(sigma){
+    form <- brms::nlf(stats::as.formula(paste0(y," ~ subA*",x,"^subB")))
+    pars <- c("subA", "subB")
+  }else{
+    form <- stats::as.formula(paste0(y," ~ A*",x,"^B"))
+    pars <- c("A", "B")
+  }
+  return(list(form=form, pars=pars))
 }
-.brms_form_gam<-function(x, y, group){
-  return(stats::as.formula(paste0(y," ~ s(",x,", by=",group, ")")))
+#' Helper function for brms formulas
+#' 
+#' @keywords internal
+#' @noRd
+
+
+.brms_form_gam<-function(x, y, group, sigma = FALSE, nTimes, useGroup = TRUE){
+  if(useGroup){by <- paste0(", by = ", group)
+  } else {by <- "," }
+  if(nTimes < 11){
+    k = paste0(", k = ", nTimes)
+  } else{ k = NULL }
+  
+  if(sigma){
+    form <- stats::as.formula(paste0("sigma ~ s(",x, by, k,")"))
+    pars <- NULL
+  }else{
+    form <- stats::as.formula(paste0(y," ~ s(",x, by, k,")"))
+    pars <- NULL
+  }
+  return(list(form=form, pars=pars))
+}
+#' Helper function for brms formulas
+#' 
+#' @keywords internal
+#' @noRd
+
+
+.brms_form_int<-function(x, y, group, sigma = FALSE, useGroup = TRUE){
+  if(useGroup){rhs <- paste0("0 + ", group)
+    } else {rhs <- paste0("1") }
+  if(sigma){
+    form <- stats::as.formula(paste0("sigma ~ ", rhs)) 
+    pars <- c()
+  }else{
+    form <- stats::as.formula(paste0(y," ~ ", rhs))
+    pars <- c()
+  }
+  return(list(form=form, pars=pars))
 }
 
 

@@ -4,7 +4,7 @@
 #' 
 #' @param model One of the 8 model options in growthSS
 #' @param form A pcvr style form, see growthSS
-#' @param sigma One of "none", "power", or "exp", which will correspond to varIdent, varPower, or varExp respectively.
+#' @param sigma One of "int", "power", or "exp", which will correspond to varIdent, varPower, or varExp respectively.
 #' This is also meant to take a varFunc object, but that is untested.
 #' @param df a dataframe to use to make the model.
 #' @param pars optional parameters to vary by group as fixed effects.
@@ -78,7 +78,7 @@ out<-list()
 models<-c("logistic", "gompertz", "monomolecular",
           "exponential", "linear", "power law",
           "double logistic", "double gompertz", "gam")
-sigmas = c("none", "power", "exp")
+sigmas = c("none", "int", "power", "exp")
 #* check if sigma is class "varFunc", if it is then return it as is?
 
 #* ***** `Make nlme model formula` *****
@@ -198,7 +198,7 @@ return(out)
   #* `variance formula`
   if(methods::is(matched_sigma, "varFun")){
     weights_form = matched_sigma
-  } else if(matched_sigma =="none"){
+  } else if(matched_sigma %in% c("int","none")){
     weights_form = nlme::varIdent(form = stats::as.formula(paste0("~1|", group)))
   } else if(matched_sigma=="power"){
     weights_form = nlme::varPower(form = stats::as.formula(paste0("~",x,"|",group)))
