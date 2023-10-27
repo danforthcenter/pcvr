@@ -19,8 +19,7 @@ knitr::opts_chunk$set(echo = TRUE)#, tidy.opts=list(width.cutoff=60),tidy=TRUE
 ```
 
 ```{r, message = FALSE}
-#library(pcvr) 
-devtools::load_all()
+library(pcvr)
 library(data.table) # for fread
 library(ggplot2)
 library(patchwork) # for easy ggplot manipulation/combination
