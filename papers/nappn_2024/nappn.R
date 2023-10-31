@@ -374,8 +374,6 @@ sim_plot <- ggplot(sim_df_long, aes(x=bin, y=value, fill=group), alpha=0.25)+
   theme(axis.title.y = element_blank())+
   facet_wrap(~group)
 
-
-
 sim_emd<-pcv.emd(df = sim_df, cols="sim_", reorder=c("group"),
                  mat =FALSE, plot=TRUE, parallel = 1, raiseError=TRUE)
 emd_plot <- sim_emd$plot + 
@@ -414,7 +412,9 @@ layout <- c(area(1, 1, 4,6),
             )
 # plot(layout)
 
-patch2 <- sim_plot + emd_plot + net1 + net2 + plot_layout(design = layout)
+patch2 <- sim_plot + emd_plot + net1 + net2 + plot_layout(design = layout)+plot_annotation(tag_levels = 'A')
+
+patch2
 
 ggsave("~/Desktop/stargate/fahlgren_lab/labMeetings/pcvr_emd_ex.png",
        patch2, width= 12, height=14, dpi = 300, bg = "#ffffff")
