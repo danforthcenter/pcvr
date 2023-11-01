@@ -538,28 +538,28 @@ growthPlot(brms_fit, form = brms_ss$pcvrForm, df=brms_ss$df)
 
 ### Hypothesis testing
 
-In linear regression the default null hypothesis ($\beta = 0$) can be useful as each beta past the intercept directly measures the effect of one variable. In non-linear regression we generally have more complicated model parameters and meaningful testing can be a little more difficult. In `pcvr` the `testGrowth` function allows for some hypothesis testing on model parameters for frequentist models. For Bayesian models the `brms::hypothesis` function is recommended due to its extreme versatility.
+In linear regression the default null hypothesis ($\beta = 0$) can be useful as each beta past the intercept directly measures the effect of one variable. In non-linear regression we generally have more complicated model parameters and meaningful testing can be a little more involved, typically requiring contrast statements or nested models. In `pcvr` the `testGrowth` function allows for hypothesis testing on model parameters for frequentist models. For Bayesian models the `brms::hypothesis` function is recommended.
 
 #### `testGrowth`
 
-`testGrowth` takes the `growthSS` output used to fit a model, the model itself, and a list of parameters to test and performs likelihood ratio tests between the model and versions of itself where the selected parameters do not vary by group. The resulting p-value is broadly testing the null hypothesis that the groups have the same value for that parameter.
+`testGrowth` takes three arguments, the `growthSS` output used to fit a model, the model itself, and a list of parameters to test. Broadly, two kinds of tests are supported. First, if the `test` argument is a parameter name or a vector of parameter names then a version of the model is fit with the parameters in `test` not varying by group and the models are compared with an anova. In this case the resulting p-value is broadly testing the null hypothesis that the groups have the same value for that parameter.
 
 Here we see that for our `nls` model is statistically significantly improved by varying asymptote by group.
 
 ```{r}
-testGrowth(nls_ss, nls_fit, test_pars = "A")$anova
+testGrowth(nls_ss, nls_fit, test = "A")$anova
 ```
 
 Likewise for the 49th percentile in our `nlrq` model
 
 ```{r}
-testGrowth(nlrq_ss, nlrq_fit, test_pars = "A")[["0.49"]]
+testGrowth(nlrq_ss, nlrq_fit, test = "A")[["0.49"]]
 ```
 
 And the same is shown in our `nlme` model.
 
 ```{r, warning=FALSE, message=FALSE}
-testGrowth(nlme_ss, nlme_fit, test_pars = "A")$anova
+testGrowth(nlme_ss, nlme_fit, test = "A")$anova
 ```
 
 We cannot test parameters in the GAM of course but we still see that the grouping improves the model fit.
@@ -569,6 +569,25 @@ testGrowth(mgcv_ss, mgcv_fit)$anova
 ```
 
 These are relatively basic options for testing hypotheses in non-linear growth models and should serve as a good starting point for frequentist model analysis.
+
+The second kind of hypothesis test in `testGrowth` is used if the `test` argument is a hypothesis or list of hypotheses similar to those used in `brms::hypothesis` syntax. These can test more complex non-linear hypotheses by using `car::deltaMethod` to calculate standard errors for model parameters. Note that this kind of testing is only supported with `nls` and `nlme` model backends. This is a much more flexible testing option.
+
+Here we test several hypotheses on our `nls` and `nlme` models to show the versatility of this option. In practice you should not use these hypotheses and should be giving some thought to how to express your stated hypothesis in terms of the model parameters.
+
+```{r}
+testGrowth(fit = nls_fit, test = list("A1 - A2 *1.1",
+                                       "(B1+1) - B2",
+                                       "C1 - (C2-0.5)",
+                                      "A1/B1 - (1.1 * A2/B2)"))
+```
+
+```{r}
+testGrowth(fit = nlme_fit, test = list("(A.groupa / A.groupb) - 0.9",
+                                  "1 + (B.groupa - B.groupb)",
+                                  "C.groupa/C.groupb - 1"))
+```
+
+
 
 #### `brms::hypothesis`
 

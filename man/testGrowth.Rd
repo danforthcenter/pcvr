@@ -4,19 +4,25 @@
 \alias{testGrowth}
 \title{Hypothesis testing for frequentist \code{fitGrowth} models.}
 \usage{
-testGrowth(ss, fit, test_pars = "A")
+testGrowth(ss = NULL, fit, test = "A")
 }
 \arguments{
-\item{ss}{A list output from \link{growthSS}.}
+\item{ss}{A list output from \link{growthSS}. This is not required if \code{test} is given
+in \code{brms::hypothesis} style as a written statement.}
 
 \item{fit}{A non-brms model (or list of nlrq models) output from \link{fitGrowth}.}
 
-\item{test_pars}{A vector of parameters to test in the model. These should be parameters which
+\item{test}{A description of the hypothesis to test. This can take two main forms, either the parameter names
+to vary before comparing a nested model ("A", "B", "C") using an anova or a hypothesis test/list of hypothesis tests 
+written as character strings. The latter method is not implemented for \code{nlrq} models.
+If this is a vector of parameters to test in the model then they should be parameters which
 vary by group in your original model and that you want to test against a null model where they
 do not vary by group. Alternatively for nlrq models this can be a comparison of model terms
 written as \code{"group_X|tau|par > group_Y|tau|par"}, which uses a fat tailed T distribution to make 
 comparisons on the means of each quantile estimate. For GAMs these tests compare the model with
-splines either by group or interacting with group to a model that ignores the grouping in the data.}
+splines either by group or interacting with group to a model that ignores the grouping in the data.
+If this is a list of hypothesis tests then they should describe tests similar to "A.group1 - A.group2*1.1" 
+and can be thought of as contrasts.}
 }
 \value{
 A list containing an anova object comparing non-linear growth models and the null model.
