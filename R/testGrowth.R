@@ -1,17 +1,25 @@
 #' Hypothesis testing for frequentist \code{fitGrowth} models.
 #' 
-#' @param ss A list output from \link{growthSS}.
+#' @param ss A list output from \link{growthSS}. This is not required if \code{test} is given
+#' in \code{brms::hypothesis} style as a written statement.
 #' @param fit A non-brms model (or list of nlrq models) output from \link{fitGrowth}.
-#' @param test_pars A vector of parameters to test in the model. These should be parameters which
+#' @param test A description of the hypothesis to test. This can take two main forms, either the parameter names
+#' to vary before comparing a nested model ("A", "B", "C") using an anova or a hypothesis test/list of hypothesis tests 
+#' written as character strings. The latter method is not implemented for \code{nlrq} models.
+#' If this is a vector of parameters to test in the model then they should be parameters which
 #' vary by group in your original model and that you want to test against a null model where they
 #' do not vary by group. Alternatively for nlrq models this can be a comparison of model terms
 #' written as \code{"group_X|tau|par > group_Y|tau|par"}, which uses a fat tailed T distribution to make 
 #' comparisons on the means of each quantile estimate. For GAMs these tests compare the model with
 #' splines either by group or interacting with group to a model that ignores the grouping in the data.
+#' If this is a list of hypothesis tests then they should describe tests similar to "A.group1 - A.group2*1.1" 
+#' and can be thought of as contrasts.
 #' @keywords hypothesis, nlme, nls, nlrq
-#' @importFrom stats getCall logLik pchisq anova as.formula setNames
-#' @importFrom nlme pdIdent corAR1
+#' @importFrom stats getCall logLik pchisq anova as.formula setNames vcov coef
+#' @importFrom nlme pdIdent corAR1 fixef
 #' @importFrom extraDistr qlst dlst
+#' @importFrom methods is
+#' @importFrom car deltaMethod
 #' 
 #' @details
 #' For nls and nlme models an anova is run and returned as part of a list along with the null model.
@@ -35,34 +43,98 @@
 #' ## End(Not run)
 #' @export
 
-testGrowth<-function(ss, fit, test_pars = "A"){
-  if(ss$model=="gam"){
-    #* do gam things
-    if(ss$type == "nls"){
-      res <- .lmGamTest(ss, fit)
+testGrowth<-function(ss=NULL, fit, test = "A"){
+  
+  if(all(unlist(lapply(test, nchar)) <= 2)){
+    method = "anova"
+  } else{method = "contrast"}
+  
+  
+  if(method=="contrast"){
+    
+    if(!is.null(ss)){
+      if(ss$type %in% c("nlrq", "mgcv")){
+        stop("These hypotheses are only implemented for nls and nlme models.")
+      } else if(ss$type=="brms"){
+        stop("For brms model tests use brms::hypothesis")
+      } 
+    }
+    
+    res <- .nlhypothesis(fit, test)
+    
+  } else if(method=="anova"){
+    if(ss$model=="gam"){
+      #* do gam things
+      if(ss$type == "nls"){
+        res <- .lmGamAnova(ss, fit)
+      } else if(ss$type == "nlrq"){
+        res <- .rqGamAnova(ss, fit)
+      } else if(ss$type == "nlme"){
+        res <- .lmeGamAnova(ss, fit)
+      } else if(ss$type == "mgcv"){
+        res <- .mgcvGamAnova(ss, fit)
+      } else if(ss$type=="brms"){
+        stop("For brms model tests use brms::hypothesis")
+      } 
+    } else if(ss$type %in% c("nls", "nlme")){
+      res <- .nlsAnova(ss, fit, test_pars = test)
     } else if(ss$type == "nlrq"){
-      res <- .rqGamTest(ss, fit)
-    } else if(ss$type == "nlme"){
-      res <- .lmeGamTest(ss, fit)
-    } else if(ss$type == "mgcv"){
-      res <- .mgcvGamTest(ss, fit)
+      if(any(test_pars %in% c("A", "B", "C")) ){
+        res <- .nlrqTest(ss, fit, test_pars = test) 
+      } else{
+        res<-.nlrqTest2(ss, fit, test_pars = test)
+      }
     } else if(ss$type=="brms"){
       stop("For brms model tests use brms::hypothesis")
     } 
-  } else if(ss$type %in% c("nls", "nlme")){
-    res <- .nlsTest(ss, fit, test_pars = test_pars)
-  } else if(ss$type == "nlrq"){
-    if(any(test_pars %in% c("A", "B", "C")) ){
-      res <- .nlrqTest(ss, fit, test_pars = test_pars) 
-    } else{
-      res<-.nlrqTest2(ss, fit, test_pars = test_pars)
-    }
-  } else if(ss$type=="brms"){
-    stop("For brms model tests use brms::hypothesis")
-  } 
+  }
   
   return(res)
 }
+
+#' (non)linear hypothesis function for nls and nlrq models
+#' @examples
+#' if(FALSE){
+#' set.seed(123)
+#' logistic_df<-growthSim("logistic", n=20, t=25,
+#'                   params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))
+#' ss<-growthSS(model = "logistic", form=y~time|id/group, 
+#'           df=logistic_df, type = "nls")
+#' fit <- fitGrowth(ss)
+#' .nlhypothesis(fit, test = list("A1 - A2", "B1-B2"))
+#' .nlhypothesis(fit, test = "A1 + 10 - A2 * 1.1")
+#' .nlhypothesis(fit, test = "A1/B1 - A2/B2")
+#' }
+#' @keywords internal
+#' @noRd
+
+.nlhypothesis <- function(fit, test){
+  if(methods::is(fit, "nlme")){
+    coefs <- nlme::fixef(fit)
+  } else if(methods::is(fit, "nls")){
+    coefs <- stats::coef(fit)
+  } else{
+    stop("These hypotheses are only implemented for nls and nlme models.")
+  }
+  dfresid <- summary(fit)$df[2]   
+  vcMat <- stats::vcov(fit)
+  hypotheses <- data.frame(form = unlist(test))
+  colnames(hypotheses) <- c("Form") 
+  val <- do.call(rbind, lapply(1:nrow(hypotheses), function(i){
+    car::deltaMethod(object=coefs, g=as.character(hypotheses$Form[i]), 
+                     vcov.=vcMat, level = 0.95 )
+  }))
+  row.names(val) <- 1:nrow(hypotheses)
+  val <- cbind(hypotheses, val)
+  lenVal <- ncol(val)
+  out <- val[, 1:(lenVal-2)]
+  out$"t-value" <- abs(out$Estimate/out$SE)
+  residual_DF <- ifelse(is.null(dfresid), Inf, dfresid)
+  out$"p-value" <- 2 * pt(out$"t-value", residual_DF, lower.tail = F)
+  if(resDF == Inf) colnames(out)[length(colnames(out)) - 1] <- "Z-value"
+  return(out)
+}
+
 
 
 #' mgcv gam testing function
@@ -74,12 +146,12 @@ testGrowth<-function(ss, fit, test_pars = "A"){
 #' ss<-growthSS(model = "gam", form=y~time|id/group, 
 #'           df=logistic_df, type = "mgcv")
 #' fit <- fitGrowth(ss)
-#' .mgcvGamTest(ss, fit)$anova
+#' .mgcvGamAnova(ss, fit)$anova
 #' }
 #' @keywords internal
 #' @noRd
 
-.mgcvGamTest <- function(ss, fit){
+.mgcvGamAnova <- function(ss, fit){
   #* `Get x variable`
   RHS <- as.character(ss$formula)[3]
   x <- sub(",", "", sub("s\\(", "", regmatches(RHS, regexpr("s\\(.*,", RHS))))
@@ -105,12 +177,12 @@ testGrowth<-function(ss, fit, test_pars = "A"){
 #' ss<-growthSS(model = "gam", form=y~time|id/group, 
 #'           df=logistic_df, type = "nlme", sigma="power")
 #' fit <- fitGrowth(ss)
-#' .lmeGamTest(ss, fit)$anova
+#' .lmeGamAnova(ss, fit)$anova
 #' }
 #' @keywords internal
 #' @noRd
 
-.lmeGamTest <- function(ss, fit){
+.lmeGamAnova <- function(ss, fit){
   #* `Get x variable`
   x<- trimws(sub("\\*.*","",as.character(ss$formula$model)[3]))
   ssNew <- ss
@@ -147,13 +219,13 @@ testGrowth<-function(ss, fit, test_pars = "A"){
 #' ss<-growthSS(model = "gam", form=y~time|id/group, 
 #'           df=logistic_df, type = "nlrq", tau=c(0.25, 0.5, 0.75))
 #' fit <- fitGrowth(ss, cores=3)
-#' .rqGamTest(ss, fit)$'0.25'$anova
-#' .rqGamTest(ss, fit[[1]])$anova
+#' .rqGamAnova(ss, fit)$'0.25'$anova
+#' .rqGamAnova(ss, fit[[1]])$anova
 #' }
 #' @keywords internal
 #' @noRd
 
-.rqGamTest <- function(ss, fit){
+.rqGamAnova <- function(ss, fit){
   if(methods::is(fit, "rq")){
     tau <- as.character(fit$tau)
     fit <- stats::setNames(list(fit), tau)
@@ -192,12 +264,12 @@ testGrowth<-function(ss, fit, test_pars = "A"){
 #' ss<-growthSS(model = "gam", form=y~time|id/group, 
 #'           df=logistic_df, type = "nls")
 #' fit <- fitGrowth(ss)
-#' .lmGamTest(ss, fit)$anova
+#' .lmGamAnova(ss, fit)$anova
 #' }
 #' @keywords internal
 #' @noRd
 
-.lmGamTest <- function(ss, fit){
+.lmGamAnova <- function(ss, fit){
   #* `remove grouping from ss$formula`
   rhs <- as.character(ss$formula)[3]
   newRhs <- trimws(sub("\\*.*", "", rhs))
@@ -223,12 +295,12 @@ testGrowth<-function(ss, fit, test_pars = "A"){
 #' ss<-growthSS(model = "logistic", form=y~time|id/group, 
 #'           df=logistic_df, type = "nls")
 #' fit <- fitGrowth(ss)
-#' .nlsTest(ss, fit, test_pars = "A")$anova
+#' .nlsAnova(ss, fit, test_pars = "A")$anova
 #' }
 #' @keywords internal
 #' @noRd
 
-.nlsTest <- function(ss, fit, test_pars = "A"){
+.nlsAnova <- function(ss, fit, test_pars = "A"){
   #* `Get parameters to vary in comparison model`
   xForm <- as.character(ss$formula)[3]
   rMatches <- gregexpr(".2?\\[", xForm)

@@ -22,6 +22,12 @@ test_that("Test Logistic nls modeling", {
   nls_p <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)+
     ggplot2::labs(title="nls")
   expect_s3_class(nls_p, "ggplot")
+  
+  test_res <- testGrowth(ss, fit, test = "A")$anova
+  expect_s3_class(test_res, "anova")
+  
+  test_res <- testGrowth(ss, fit, test = list("A1 - A2 *1.1", "(B1+1) - B2", "C1 - (C2-0.5)"))
+  expect_equal(dim(test_res), c(3,5))
 })
 
 test_that("Test Logistic nlrq modeling", {
@@ -53,6 +59,14 @@ test_that("Test Logistic nlme modeling", {
   nlme_p<-nlme_p+
     ggplot2::labs(title="nlme")
   expect_s3_class(nlme_p, "ggplot")
+  
+  test_res <- suppressWarnings(testGrowth(ss, fit, test = "A")$anova)
+  expect_s3_class(test_res, "anova.lme")
+  
+  test_res <- testGrowth(fit = fit, test = list("A.groupa - A.groupb *1.1",
+                                                "(B.groupa+1) - B.groupb",
+                                                "C.groupa - (C.groupb-0.5)"))
+  expect_equal(dim(test_res), c(3,5))
 })
 
 test_that("Test Logistic brms model setup", {
