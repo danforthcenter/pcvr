@@ -35,7 +35,8 @@ Imports:
     nlme,
     splines,
     lmeSplines,
-    scales
+    scales,
+    car
 Suggests: 
     knitr,
     rmarkdown,
