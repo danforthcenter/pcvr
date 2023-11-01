@@ -15,7 +15,7 @@
 #' If this is a list of hypothesis tests then they should describe tests similar to "A.group1 - A.group2*1.1" 
 #' and can be thought of as contrasts.
 #' @keywords hypothesis, nlme, nls, nlrq
-#' @importFrom stats getCall logLik pchisq anova as.formula setNames vcov coef
+#' @importFrom stats getCall logLik pchisq anova as.formula setNames vcov coef pt
 #' @importFrom nlme pdIdent corAR1 fixef
 #' @importFrom extraDistr qlst dlst
 #' @importFrom methods is
