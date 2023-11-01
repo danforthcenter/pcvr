@@ -131,7 +131,7 @@ testGrowth<-function(ss=NULL, fit, test = "A"){
   out$"t-value" <- abs(out$Estimate/out$SE)
   residual_DF <- ifelse(is.null(dfresid), Inf, dfresid)
   out$"p-value" <- 2 * pt(out$"t-value", residual_DF, lower.tail = F)
-  if(resDF == Inf) colnames(out)[length(colnames(out)) - 1] <- "Z-value"
+  if(residual_DF == Inf) colnames(out)[length(colnames(out)) - 1] <- "Z-value"
   return(out)
 }
 
