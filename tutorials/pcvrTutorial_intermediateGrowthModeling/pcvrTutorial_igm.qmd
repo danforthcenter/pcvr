@@ -630,14 +630,24 @@ p_mgcv
 
 Hypothesis testing for frequentist non-linear growth models can be somewhat limited.
 
-Broadly, testing is implemented by comparing models against nested null models using `testGrowth`.
+Broadly, testing is implemented for all backends by comparing models against nested null models and for select backends non-linear testing is available using `testGrowth`.
 
 ## `testGrowth` - nls
 
 ```{r}
 #| echo: true
 #| eval: true
-testGrowth(nls_ss, nls_fit, test_pars = "A")$anova
+testGrowth(nls_ss, nls_fit, test = "A")$anova
+```
+
+## `testGrowth` - nls 2
+
+```{r}
+#| echo: true
+#| eval: true
+testGrowth(nls_ss, nls_fit, test = list("A1 - A2",
+                                        "B1 - (B2*1.25)",
+                                        "(C1+1) - C2"))
 ```
 
 ## `testGrowth` - nlrq
@@ -647,7 +657,7 @@ Here we only print out the comparison for the model of the 49th percentile, but 
 ```{r}
 #| echo: true
 #| eval: true
-testGrowth(nlrq_ss, nlrq_fit, test_pars = "A")[[13]]
+testGrowth(nlrq_ss, nlrq_fit, test = "A")[[13]]
 ```
 
 ## `testGrowth` - nlme
@@ -655,8 +665,19 @@ testGrowth(nlrq_ss, nlrq_fit, test_pars = "A")[[13]]
 ```{r}
 #| echo: true
 #| eval: true
-testGrowth(nlme_ss, nlme_fit, test_pars = "A")$anova
+testGrowth(nlme_ss, nlme_fit, test = "A")$anova
 ```
+
+## `testGrowth` - nlme 2
+
+```{r}
+#| echo: true
+#| eval: true
+testGrowth(nls_ss, nlme_fit, test = list("A.groupa - A.groupb",
+                                        "B.groupa - (B.groupb*1.25)",
+                                        "(C.groupa+1) - C.groupa"))
+```
+
 
 ## `testGrowth` - mgcv
 

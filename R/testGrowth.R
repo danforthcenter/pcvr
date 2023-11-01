@@ -79,7 +79,7 @@ testGrowth<-function(ss=NULL, fit, test = "A"){
     } else if(ss$type %in% c("nls", "nlme")){
       res <- .nlsAnova(ss, fit, test_pars = test)
     } else if(ss$type == "nlrq"){
-      if(any(test_pars %in% c("A", "B", "C")) ){
+      if(any(test %in% c("A", "B", "C")) ){
         res <- .nlrqTest(ss, fit, test_pars = test) 
       } else{
         res<-.nlrqTest2(ss, fit, test_pars = test)
