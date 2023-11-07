@@ -5,7 +5,7 @@
 #' For type = "nlme" these are passed to \code{nlme::nlmeControl}, not \code{nlme::nlme}.
 #' Additional arguments are documented in \link{fitGrowthBrm}, \link{fitGrowthNlme}, \link{fitGrowthNls}, and \link{fitGrowthNlrq}.
 #' @keywords Bayesian, brms, nlme, nls, nlrq
-#' @return A \code{brmsfit} object, see \code{?`brmsfit-class`} for details.
+#' @return A fit model from the selected type.
 #' 
 #' @examples 
 #' 
