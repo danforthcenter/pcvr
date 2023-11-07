@@ -4,7 +4,7 @@
 \alias{growthPlot}
 \title{Function to visualize common growth models.}
 \usage{
-growthPlot(fit, form, groups = NULL, df = NULL, timeRange = NULL, boot = 100)
+growthPlot(fit, form, groups = NULL, df = NULL, timeRange = NULL)
 }
 \arguments{
 \item{fit}{A model fit object (or a list of \code{nlrq} models) as returned by \code{fitGrowth}.}
@@ -19,8 +19,6 @@ Defaults to NULL in which case all groups in the model are plotted.}
 
 \item{timeRange}{An optional range of times to use. This can be used to view predictions for
 future data if the avaiable data has not reached some point (such as asymptotic size).}
-
-\item{boot}{number of bootstrap iterations to run.}
 }
 \value{
 Returns a ggplot showing a brms model's credible

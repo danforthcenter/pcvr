@@ -6,13 +6,12 @@
 #' @param fit A model fit returned by \code{fitGrowth} with type="nlme".
 #' @param form A formula similar to that in \code{growthSS} inputs (or the \code{pcvrForm} part of the output) specifying the outcome,
 #' predictor, and grouping structure of the data as \code{outcome ~ predictor|individual/group}
-#' @param df An optional dataframe to use in plotting observed growth curves on top of the model.
+#' @param df A dataframe to use in plotting observed growth curves on top of the model.
 #' This must be supplied for nlme models.
 #' @param groups An optional set of groups to keep in the plot.
 #' Defaults to NULL in which case all groups in the model are plotted.
 #' @param timeRange An optional range of times to use. This can be used to view predictions for
 #' future data if the avaiable data has not reached some point (such as asymptotic size).
-#' @param boot number of bootstrap iterations to run.
 #' @keywords growth-curve, logistic, gompertz, monomolecular, linear, exponential, power-law
 #' @importFrom methods is
 #' @import ggplot2
@@ -33,7 +32,7 @@
 #' 
 #' fit<-fitGrowth(ss)
 #' 
-#' nlmePlot(fit, form = ss$pcvrForm, groups = NULL, df = ss$df, timeRange = NULL, boot=10)
+#' nlmePlot(fit, form = ss$pcvrForm, groups = NULL, df = ss$df, timeRange = NULL)
 #' 
 #' }
 #' 
@@ -45,7 +44,7 @@
 #' @export
 #' 
 
-nlmePlot<-function(fit, form, df = NULL, groups = NULL, timeRange = NULL, boot=10){
+nlmePlot<-function(fit, form, df = NULL, groups = NULL, timeRange = NULL){
   #* `get needed information from formula`
   x <-as.character(form)[3]
   y <-as.character(form)[2]
@@ -73,72 +72,57 @@ nlmePlot<-function(fit, form, df = NULL, groups = NULL, timeRange = NULL, boot=1
   } else{
     new_data <- df
   }
-  #* `Generate bootstrap predictions`
-  yvals <- lapply(1:boot, function(i) {try(.predfun(stats::update(fit,
-                                                                  data=.nlmePlotResample(fit, df, intVar, y)), new_data),
-                                           silent=TRUE )} )
-  yvals_mat <- do.call(cbind, yvals[which(unlist(lapply(yvals, is.numeric)))])
   
-  while(ncol(yvals_mat) < boot){
-    new<-try(.predfun(stats::update(fit, data=.nlmePlotResample(fit, df, intVar, y)), new_data), silent=TRUE)
-    if(is.numeric(new)){
-      yvals_mat <- cbind(yvals_mat, new)
-    }
-  }
-  #* `get CIs from boostrap preds`
-  predMat<-.nlmePlotCIs(yvals_mat, seq(from=99, to=1, by=-2)/100 )
-  preds <- cbind(new_data, predMat)
-  #* `plot CIs`
-  avg_pal <- viridis::plasma(n=ncol(predMat))
+  preds <- simdf
+  preds$trendline <- round(predict(fit),4)
+  preds <- preds[!duplicated(preds$trendline),]
+  preds <- .add_sigma_bounds(preds, fit, x, group)
+
+  #* `plot`
+  pal <- viridis::plasma(2, begin=0.1, end = 0.9)
   
-  plot <- ggplot2::ggplot(preds, ggplot2::aes(x=.data[[x]]))+
+  plot <- ggplot2::ggplot(preds, ggplot2::aes(x=.data[[x]], y = trendline))+
     ggplot2::facet_wrap(paste0("~", group)) +
     ggplot2::geom_line(data=df, ggplot2::aes(x=.data[[x]], y=.data[[y]],
-                                             group = interaction(.data[[individual]],
-                                                                 .data[[group]]) ),
+                                                group = interaction(.data[[individual]],
+                                                                    .data[[group]]) ),
                        linewidth=0.25, color="gray40")+
-    lapply(seq(1,49,2)/100,function(i) ggplot2::geom_ribbon(ggplot2::aes(ymin=.data[[paste0("Q_",i)]],
-                                                                         ymax=.data[[paste0("Q_",1-i)]]),
-                                                            fill=avg_pal[i*100],alpha=0.5))+
+    ggplot2::geom_ribbon(ggplot2::aes(ymin=sigma_ymin, ymax=sigma_ymax), fill=pal[1], alpha=0.5)+
+    ggplot2::geom_line(color=pal[2], linewidth=0.75)+
     ggplot2::labs(x=x, y=y)+
     pcv_theme()
+  
   return(plot)
 }
 
-#' convenience function for pulling CIs
+#' convenience function for calculating sigma upper and lower bounds
 #' @keywords internal
 #' @noRd
-.nlmePlotCIs <- function(y, quantiles = c(0.025, 0.975), prefix="Q_") {
-  r1 <- t(apply(y,1,quantile, quantiles))
-  setNames(as.data.frame(r1),paste0(prefix,quantiles))
-}
-
-#' Resampling function for bootstrapping CIs
-#' @keywords internal
-#' @noRd
-.nlmePlotResample <- function(fitted,data,idvar="group", y="y") {
-  pp <- stats::predict(fitted,levels=1)
-  rr <- stats::residuals(fitted)
-  dd <- data.frame(data, pred=pp, res=rr)
-  ## sample groups with replacement
-  iv <- levels(data[[idvar]])
-  bsamp1 <- sample(iv, size=length(iv),replace=TRUE)
-  res <- do.call(rbind, lapply(bsamp1,
-                   function(x) {
-                     ## within groups, sample *residuals* with replacement
-                     ddb <- dd[dd[[idvar]]==x,]
-                     ## bootstrapped response = pred + bootstrapped residual
-                     ddb[[y]] <- ddb$pred +
-                       sample(ddb$res,size=nrow(ddb),replace=TRUE)
-                     return(ddb)
-                   }))
+.add_sigma_bounds <- function(preds, fit, x, group){
+  
+  res <-do.call(rbind, lapply(unique(preds[[group]]), function(grp){
+    varCoef <- as.numeric(fit$modelStruct$varStruct[grp])
+    
+    sub <- preds[preds[[group]]==grp,]
+    exes <- sub[[x]]
+    
+    if(methods::is(fit$modelStruct$varStruct, "varPower")){
+      out <- exes^(2*varCoef)
+    } else if(methods::is(fit$modelStruct$varStruct, "varExp")){
+      out <- exp(2*varCoef*exes)
+    } else if(methods::is(fit$modelStruct$varStruct, "varIdent")){
+      baseSigma <- nlme_fit$sigma
+      varSummary <- summary(fit$modelStruct$varStruct)
+      coefs <- data.frame(x = 1/unique(attr(varSummary, "weight")), g = unique(attr(varSummary, "groups")))
+      out <- baseSigma * coefs[coefs$g == grp, "x"]
+    } else {stop("Only models fit with power, exp, or no variance model are suppported.")}
+    
+    sub$sigma_ymax <- sub$trendline + 0.5*out
+    sub$sigma_ymin <- sub$trendline - 0.5*out
+    return(sub)
+  }))
+  
   return(res)
 }
 
-#' Prediction function for bootstrapped values
-#' @keywords internal
-#' @noRd
-.predfun <- function(fm, new_data) {
-  stats::predict(fm,newdata=new_data,level=0)
-}
 

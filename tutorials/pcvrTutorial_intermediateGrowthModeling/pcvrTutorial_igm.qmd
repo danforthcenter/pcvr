@@ -598,7 +598,7 @@ Models fit by `fitGrowth` can be visualized using `growthPlot`.
 ```{r}
 p_nls <- growthPlot(nls_fit, form = nls_ss$pcvrForm, df=nls_ss$df)
 p_nlrq <- growthPlot(nlrq_fit, form = nlrq_ss$pcvrForm, df=nlrq_ss$df)
-p_nlme <- growthPlot(nlme_fit, form = nlme_ss$pcvrForm, df=nlme_ss$df, boot=3)
+p_nlme <- growthPlot(nlme_fit, form = nlme_ss$pcvrForm, df=nlme_ss$df)
 p_mgcv <- growthPlot(mgcv_fit, form = mgcv_ss$pcvrForm, df=mgcv_ss$df)
 ```
 

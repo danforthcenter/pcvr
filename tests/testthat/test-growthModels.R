@@ -55,7 +55,7 @@ test_that("Test Logistic nlme modeling", {
   fit <- suppressWarnings(fitGrowth(ss))
   expect_s3_class(fit, "nlme")
   
-  nlme_p <- suppressWarnings(growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df, boot = 3))
+  nlme_p <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
   nlme_p<-nlme_p+
     ggplot2::labs(title="nlme")
   expect_s3_class(nlme_p, "ggplot")
@@ -121,7 +121,7 @@ test_that("Test monomolecular nlme modeling", {
   fit <- suppressWarnings(fitGrowth(ss))
   expect_s3_class(fit, "nlme")
   
-  p <- suppressWarnings(growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df, boot = 3))
+  p <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
   expect_s3_class(p, "ggplot")
 })
 
@@ -175,7 +175,7 @@ test_that("Test nlme gam", {
   fit <- suppressWarnings(fitGrowth(ss))
   expect_s3_class(fit, "lme")
   
-  p <- suppressWarnings(growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df, boot = 3))
+  p <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
   expect_s3_class(p, "ggplot")
 })
 

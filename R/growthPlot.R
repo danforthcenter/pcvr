@@ -12,7 +12,6 @@
 #' @param df A dataframe to use in plotting observed growth curves on top of the model and for making predictions.
 #' @param timeRange An optional range of times to use. This can be used to view predictions for
 #' future data if the avaiable data has not reached some point (such as asymptotic size).
-#' @param boot number of bootstrap iterations to run.
 #' @keywords growth-curve, logistic, gompertz, monomolecular, linear, exponential, power-law
 #' @importFrom methods is
 #' @examples 
@@ -37,22 +36,22 @@
 #' 
 #' @export
 
-growthPlot<-function(fit, form, groups = NULL, df = NULL, timeRange = NULL, boot = 100){
+growthPlot<-function(fit, form, groups = NULL, df = NULL, timeRange = NULL){
   
   if(methods::is(fit, "brmsfit")){
     plot <- brmPlot(fit=fit, form=form, groups = groups, df = df, timeRange = timeRange)
   } else if(methods::is(fit, "nls") | methods::is(fit, "gam") | methods::is(fit, "lm") ){
     plot <- nlsPlot(fit=fit, form=form, groups = groups, df = df, timeRange = timeRange)
   } else if(methods::is(fit, "lme")){
-    plot <- lmePlot(fit, form = form, groups = groups, df = df, timeRange = timeRange, boot=boot)
+    plot <- nlmePlot(fit, form = form, groups = groups, df = df, timeRange = timeRange)
   } else if(methods::is(fit, "nlme")){
-    plot <- nlmePlot(fit, form = form, groups = groups, df = df, timeRange = timeRange, boot=boot)
+    plot <- nlmePlot(fit, form = form, groups = groups, df = df, timeRange = timeRange)
   } else if(methods::is(fit, "nlrq") | is.list(fit) && methods::is(fit[[1]], "nlrq") ){
     plot <- nlrqPlot(fit=fit, form=form, groups = groups, df = df, timeRange = timeRange)
   } else if(methods::is(fit, "rq") | is.list(fit) && methods::is(fit[[1]], "rq") ){
     plot <- rqPlot(fit=fit, form=form, groups = groups, df = df, timeRange = timeRange)
   } else{
-    stop("Only implemented for brms, nls, nlme, and nlrq models from fitGrowth currently.")
+    stop("Only implemented for brms, nls, nlme, mgcv, and nlrq models from fitGrowth currently.")
   }
   #* needs gam options
   
