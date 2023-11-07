@@ -73,8 +73,8 @@ nlmePlot<-function(fit, form, df = NULL, groups = NULL, timeRange = NULL){
     new_data <- df
   }
   
-  preds <- simdf
-  preds$trendline <- round(predict(fit),4)
+  preds <- new_data
+  preds$trendline <- round(predict(fit, preds),4)
   preds <- preds[!duplicated(preds$trendline),]
   preds <- .add_sigma_bounds(preds, fit, x, group)
 
@@ -111,7 +111,7 @@ nlmePlot<-function(fit, form, df = NULL, groups = NULL, timeRange = NULL){
     } else if(methods::is(fit$modelStruct$varStruct, "varExp")){
       out <- exp(2*varCoef*exes)
     } else if(methods::is(fit$modelStruct$varStruct, "varIdent")){
-      baseSigma <- nlme_fit$sigma
+      baseSigma <- fit$sigma
       varSummary <- summary(fit$modelStruct$varStruct)
       coefs <- data.frame(x = 1/unique(attr(varSummary, "weight")), g = unique(attr(varSummary, "groups")))
       out <- baseSigma * coefs[coefs$g == grp, "x"]
