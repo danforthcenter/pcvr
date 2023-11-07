@@ -222,7 +222,7 @@ Non-linear Mixed Effect Models
 | Longitudinal Trait | nlme |
 |--------------------|------|
 | Non-linearity      | ✅   |
-| Autocorrelation    | ✅   |
+| Autocorrelation*    | ✅   |
 | Heteroskedasticity | ✅   |
 | Being a headache   | ✅   |
 
@@ -677,7 +677,6 @@ testGrowth(nls_ss, nlme_fit, test = list("A.groupa - A.groupb",
                                         "B.groupa - (B.groupb*1.25)",
                                         "(C.groupa+1) - C.groupa"))
 ```
-
 
 ## `testGrowth` - mgcv
 
