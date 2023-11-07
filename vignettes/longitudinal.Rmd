@@ -525,7 +525,7 @@ We can check the model fits using `growthPlot`.
 ```{r, warning=FALSE, message=FALSE}
 growthPlot(nls_fit, form = nls_ss$pcvrForm, df=nls_ss$df)
 growthPlot(nlrq_fit, form = nlrq_ss$pcvrForm, df=nlrq_ss$df)
-growthPlot(nlme_fit, form = nlme_ss$pcvrForm, df=nlme_ss$df, boot=3)
+growthPlot(nlme_fit, form = nlme_ss$pcvrForm, df=nlme_ss$df)
 growthPlot(mgcv_fit, form = mgcv_ss$pcvrForm, df=mgcv_ss$df)
 ```
 
