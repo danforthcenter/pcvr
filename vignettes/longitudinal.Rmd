@@ -462,7 +462,7 @@ Here we fit a model using each backend to simulated data.
 
 ```{r}
 set.seed(123)
-simdf<-growthSim("gompertz", n=20, t=25, params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(0.2, 0.25)))
+simdf<-growthSim("logistic", n=20, t=25, params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))
 ```
 
 ```{r}
@@ -487,12 +487,12 @@ mgcv_ss <- growthSS(model="gam", form =  y~time|id/group,
 ```
 
 ```{r, eval=FALSE}
-brms_ss<-growthSS(model="gompertz", form =  y~time|id/group,
+brms_ss<-growthSS(model="logistic", form =  y~time|id/group,
              sigma="spline", df=simdf,
-             start = list("A" = 130, "B" = 10, "C" = 0.5))
+             start = list("A" = 130, "B" = 10, "C" = 1))
 ```
 
-Now we have all the essential model components in the `..._ss` objects. Since we specified a gompertz model we have three parameters, the asymptote (`A`), the inflection point (`B`), and the growth rate (`C`). In the `brms` option our sub model uses a GAM and does not add more parameters.
+Now we have all the essential model components in the `..._ss` objects. Since we specified a logistic model we have three parameters, the asymptote (`A`), the inflection point (`B`), and the growth rate (`C`). In the `brms` option our sub model uses a GAM and does not add more parameters. Note that in practice gompertz models tend to fit real data better than logistic models, but they can be more difficult to fit using the frequentist backends.
 
 Before trying to fit the model it is generally a good idea to check one last plot of the data and make sure you have everything defined correctly.
 
@@ -525,7 +525,7 @@ We can check the model fits using `growthPlot`.
 ```{r, warning=FALSE, message=FALSE}
 growthPlot(nls_fit, form = nls_ss$pcvrForm, df=nls_ss$df)
 growthPlot(nlrq_fit, form = nlrq_ss$pcvrForm, df=nlrq_ss$df)
-growthPlot(nlme_fit, form = nlme_ss$pcvrForm, df=nlme_ss$df, boot=3)
+growthPlot(nlme_fit, form = nlme_ss$pcvrForm, df=nlme_ss$df)
 growthPlot(mgcv_fit, form = mgcv_ss$pcvrForm, df=mgcv_ss$df)
 ```
 

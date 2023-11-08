@@ -35,7 +35,10 @@ the outcome variable (phenotype). The right hand side needs at least the x varia
  (typically time). Grouping is also described in this formula using roughly lme4
  style syntax,with formulas like \code{y~time|individual/group} to show that predictors
  should vary by \code{group} and autocorrelation between \code{individual:group}
- interactions should be modeled. If group has only one level or is not included then
+ interactions should be modeled. Note that autocorrelation is only modeled with the "brms" backend in this way. 
+ "nlme" requires random effects and correlations to use the same grouping, so autocorrelation using the "nlme" backend
+ works at the group level, so will slightly underestimate the autocorrelation at the individual level.
+  If group has only one level or is not included then
  it will be ignored in formulas for growth and variance (this may be the case if 
  you split data before fitting models to be able to run more smaller models each more quickly).}
 

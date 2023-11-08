@@ -14,7 +14,7 @@ For type = "nlme" these are passed to \code{nlme::nlmeControl}, not \code{nlme::
 Additional arguments are documented in \link{fitGrowthBrm}, \link{fitGrowthNlme}, \link{fitGrowthNls}, and \link{fitGrowthNlrq}.}
 }
 \value{
-A \code{brmsfit} object, see \code{?`brmsfit-class`} for details.
+A fit model from the selected type.
 }
 \description{
 Ease of use wrapper function for fitting various growth models specified by \code{growthSS}

@@ -4,7 +4,7 @@
 \alias{nlmePlot}
 \title{Function to visualize common \code{nlme::nlme} growth models.}
 \usage{
-nlmePlot(fit, form, df = NULL, groups = NULL, timeRange = NULL, boot = 10)
+nlmePlot(fit, form, df = NULL, groups = NULL, timeRange = NULL)
 }
 \arguments{
 \item{fit}{A model fit returned by \code{fitGrowth} with type="nlme".}
@@ -12,7 +12,7 @@ nlmePlot(fit, form, df = NULL, groups = NULL, timeRange = NULL, boot = 10)
 \item{form}{A formula similar to that in \code{growthSS} inputs (or the \code{pcvrForm} part of the output) specifying the outcome,
 predictor, and grouping structure of the data as \code{outcome ~ predictor|individual/group}}
 
-\item{df}{An optional dataframe to use in plotting observed growth curves on top of the model.
+\item{df}{A dataframe to use in plotting observed growth curves on top of the model.
 This must be supplied for nlme models.}
 
 \item{groups}{An optional set of groups to keep in the plot.
@@ -20,8 +20,6 @@ Defaults to NULL in which case all groups in the model are plotted.}
 
 \item{timeRange}{An optional range of times to use. This can be used to view predictions for
 future data if the avaiable data has not reached some point (such as asymptotic size).}
-
-\item{boot}{number of bootstrap iterations to run.}
 }
 \value{
 Returns a ggplot showing an nlme model's credible
@@ -46,7 +44,7 @@ dim(ss$df)
 
 fit<-fitGrowth(ss)
 
-nlmePlot(fit, form = ss$pcvrForm, groups = NULL, df = ss$df, timeRange = NULL, boot=10)
+nlmePlot(fit, form = ss$pcvrForm, groups = NULL, df = ss$df, timeRange = NULL)
 
 }
 
