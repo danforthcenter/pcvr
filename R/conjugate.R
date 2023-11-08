@@ -341,6 +341,10 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta",
   #* loop over positions 1 and 2 (make samples list?)
   nSamples <- length(samplesList)
   
+  #* `this NEEDS to have a shared support used for all samples`
+  #* option that seems most plausible so far is a .getSupport helper function
+  #* that will take both samples and methods then just return the support that includes both.
+  
   sample_results <- lapply(1:length(samplesList), function(i){
     sample <- samplesList[[i]]
     matched_arg<-match.arg(method[i], choices = c("t", "gaussian", "beta", "lognormal", "poisson", "negbin", "dirichlet", "dirichlet2"))
@@ -522,13 +526,8 @@ return(rope_res)
     }
     #* `make x axis range if using default support`
     if(is.null(support)){
-      if(!is.null(s2)){
-        x_lower<-min( res$summary[,c("HDI_1_low", "HDI_2_low")] )/1.25
-        x_upper<-max( res$summary[,c("HDI_1_high", "HDI_2_high")] )*1.25
-      } else{
-        x_lower<-res$summary$HDI_1_low / 1.25
-        x_upper<-res$summary$HDI_1_high * 1.25
-      }
+      x_lower<-min( unlist(lapply(sample_results, function(s){min(s$plot_df$range)})) )/1.1
+      x_upper<-max( unlist(lapply(sample_results, function(s){max(s$plot_df$range)})) )*1.1
       p<-p+ggplot2::coord_cartesian(xlim=c(x_lower, x_upper))
     }
     

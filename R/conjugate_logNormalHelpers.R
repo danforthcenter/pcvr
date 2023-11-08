@@ -39,11 +39,6 @@
   bins_order<-sort(histCols_bin, index.return=TRUE)$ix
   s1<-s1[,bins_order]
   
-  #* `Define support if it is missing`
-  if(is.null(support)){
-    support<-seq(min(histCols_bin), max(histCols_bin), length.out=10000)
-  }
-  
   #* `Turn s1 matrix into a vector`
   X1<-rep(histCols_bin[bins_order], as.numeric(round(colSums(s1))) )
   
@@ -67,7 +62,11 @@
   n1_n<-n1+priors$n[1]
   mu_ls_n = ((mu_ls * n1) + (priors$mu_log[1] * priors$n[1])) / n1_n
   sigma_ls_n = ((sigma_ls * n1) + (priors$sigma_log[1] * priors$n[1])) / n1_n
-  
+  #* `Define support if it is missing`
+  if(is.null(support)){
+    quantiles <- qlnorm(c(0.0001, 0.9999), mu_ls_n, sigma_ls_n)
+    support<- seq(quantiles[1], quantiles[2], length.out=10000)
+  }
   #* `posterior`
   dens1 <- dlnorm(support, mu_ls_n, sigma_ls_n)
   pdf1 <- dens1/sum(dens1)
@@ -136,10 +135,6 @@
   if(is.null(priors)){
     priors <- list( mu_log=c(log(10),log(10)),n=c(1,1),sigma_log=c(log(3),log(3)) )
   }
-  #* `Define support if it is missing`
-  if(is.null(support)){
-    support<-seq(floor(min(c(s1,s2))*0.75), ceiling(max(c(s1,s2))/0.75), length.out=10000)
-  }
   #* `Get mean and variance from s1`
   if(length(s1)>1){
     xbar_1 <- mean(s1)
@@ -161,7 +156,11 @@
     n1_n<-n1+priors$n[1]
     mu_ls_n = ((mu_ls * n1) + (priors$mu_log[1] * priors$n[1])) / n1_n
     sigma_ls_n = ((sigma_ls * n1) + (priors$sigma_log[1] * priors$n[1])) / n1_n
-    
+    #* `Define support if it is missing`
+    if(is.null(support)){
+      quantiles <- qlnorm(c(0.0001, 0.9999), mu_ls_n, sigma_ls_n)
+      support<- seq(quantiles[1], quantiles[2], length.out=10000)
+    }
     #* `posterior`
     dens1 <- dlnorm(support, mu_ls_n, sigma_ls_n)
     pdf1 <- dens1/sum(dens1)

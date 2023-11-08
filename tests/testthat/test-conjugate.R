@@ -8,13 +8,13 @@ test_that("conjugate single value T works", {
          39.6312400911458, 66.9134811003628) # dput(rnorm(10, 60,12))
   set.seed(123)
   out <- conjugate(s1=s1, s2=s2, method="t",
-                          priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ),
+                          priors = list( mu=c(40,40),n=c(1,1),s2=c(100,100) ),
                           plot=FALSE, rope_range = c(-8,8), rope_ci = 0.89,
-                          cred.int.level = 0.89, hypothesis="equal", support=NULL)
+                          cred.int.level = 0.89, hypothesis="equal", support=seq(20,100, length.out=10000 ))
   
-  expect_equal(out$summary$post.prob, 0.7260736, tolerance = 1e-6)
+  expect_equal(out$summary$post.prob, 0.5864103, tolerance = 1e-6)
   
-  expect_equal(out$summary$rope_prob, 0.6110549, tolerance = 1e-6)
+  expect_equal(out$summary$rope_prob, 0.7396922, tolerance = 1e-6)
   
   expect_equal(names(out), c("summary", "posterior") )
 })
@@ -27,11 +27,11 @@ test_that("conjugate multi value T works", {
   }
   set.seed(123)
   mv_gauss<-rbind(do.call(rbind, lapply(1:30, function(i){makeMvGauss(bins=180, mu=50, sigma=10 )})),
-                  do.call(rbind, lapply(1:40, function(i){makeMvGauss(bins=180, mu=60, sigma=12 )})))
+                  do.call(rbind, lapply(1:40, function(i){makeMvGauss(bins=180, mu=100, sigma=10 )})))
   
   out <- conjugate(s1=mv_gauss[1:30,], s2= mv_gauss[31:70,], method="t",
-                          priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ),
-                          plot=FALSE, rope_range = c(-5,5), rope_ci = 0.89,
+                          priors = list( mu=c(40,40),n=c(1,1),s2=c(100,100) ),
+                          plot=TRUE, rope_range = c(-5,5), rope_ci = 0.89,
                           cred.int.level = 0.89, hypothesis="equal", support=NULL)
   
   expect_equal(out$summary$post.prob, 0.03881883, tolerance = 1e-6)

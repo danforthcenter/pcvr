@@ -67,18 +67,17 @@
     priors <- list(r=c(10, 10), a=c(0.5,0.5),b=c(0.5,0.5)) # beta prior on P
     warning("True value of r for negative binomial distribution has defaulted to 10, you should add a prior including r parameter.")
   }
-  #* `Define dense Support if missing`
-  if(is.null(support)){
-    upper <- max(c(s1,s2))*2
-    support <-seq(0, upper, 0.01)
-  }
+  
   out <- list()
   
   #* `Use conjugate beta prior on probability`
   #* Note that this is very sensitive to the R value being appropriate
   a1_prime <- priors$a[1] + priors$r[1] * length(s1)
   b1_prime <- priors$b[1] + sum(s1) 
-  
+  #* `Define support if it is missing`
+  if(is.null(support)){
+    support<- seq(0.0001,0.9999, 0.0001)
+  }
   #* `calculate density over support``
   dens1 <- dbeta(support, a1_prime, b1_prime)
   pdf1 <- dens1/sum(dens1)

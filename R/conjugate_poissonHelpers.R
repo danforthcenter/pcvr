@@ -28,17 +28,17 @@
   if(is.null(priors)){
     priors <- list(a=c(0.5,0.5),b=c(0.5,0.5)) # gamma prior on lambda
   }
-  #* `Define dense Support if missing`
-  if(is.null(support)){
-    upper <- max(c(s1,s2))*2
-    support <-seq(0, upper, 0.01)
-  }
+
   out <- list()
   
   #* `Use conjugate gamma prior on lambda`
   a1_prime <- priors$a[1] + sum(s1)
   b1_prime <- priors$b[1] + length(s1)
-  
+  #* `Define support if it is missing`
+  if(is.null(support)){
+    quantiles <- qgamma(c(0.0001, 0.9999), a1_prime, b1_prime)
+    support<- seq(quantiles[1], quantiles[2], length.out=10000)
+  }
   #* `calculate density over support``
   dens1 <- dgamma(support, a1_prime, b1_prime)
   pdf1 <- dens1/sum(dens1)
