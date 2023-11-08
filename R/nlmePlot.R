@@ -81,13 +81,13 @@ nlmePlot<-function(fit, form, df = NULL, groups = NULL, timeRange = NULL){
   #* `plot`
   pal <- viridis::plasma(2, begin=0.1, end = 0.9)
   
-  plot <- ggplot2::ggplot(preds, ggplot2::aes(x=.data[[x]], y = trendline))+
+  plot <- ggplot2::ggplot(preds, ggplot2::aes(x=.data[[x]], y = .data[["trendline"]]))+
     ggplot2::facet_wrap(paste0("~", group)) +
     ggplot2::geom_line(data=df, ggplot2::aes(x=.data[[x]], y=.data[[y]],
                                                 group = interaction(.data[[individual]],
                                                                     .data[[group]]) ),
                        linewidth=0.25, color="gray40")+
-    ggplot2::geom_ribbon(ggplot2::aes(ymin=sigma_ymin, ymax=sigma_ymax), fill=pal[1], alpha=0.5)+
+    ggplot2::geom_ribbon(ggplot2::aes(ymin=.data[["sigma_ymin"]], ymax=.data[["sigma_ymax"]]), fill=pal[1], alpha=0.5)+
     ggplot2::geom_line(color=pal[2], linewidth=0.75)+
     ggplot2::labs(x=x, y=y)+
     pcv_theme()
