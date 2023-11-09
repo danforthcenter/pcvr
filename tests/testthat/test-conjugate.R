@@ -8,7 +8,7 @@ test_that("conjugate single value T works", {
          39.6312400911458, 66.9134811003628) # dput(rnorm(10, 60,12))
   set.seed(123)
   out <- conjugate(s1=s1, s2=s2, method="t",
-                          priors = list( mu=c(40,40),n=c(1,1),s2=c(100,100) ),
+                          priors = list( mu=40,n=1, s2=100 ),
                           plot=FALSE, rope_range = c(-8,8), rope_ci = 0.89,
                           cred.int.level = 0.89, hypothesis="equal", support=seq(20,100, length.out=10000 ))
   
@@ -20,23 +20,21 @@ test_that("conjugate single value T works", {
 })
 
 test_that("conjugate multi value T works", {
-  makeMvGauss<-function(bins=180,mu,sigma){
-     setNames(data.frame(matrix(hist(rnorm(2000,mu, sigma),
-      breaks=seq(1,bins,1), plot=FALSE)$counts, nrow=1)),
-     paste0("b",1:(bins-1) ))
-  }
-  set.seed(123)
-  mv_gauss<-rbind(do.call(rbind, lapply(1:30, function(i){makeMvGauss(bins=180, mu=50, sigma=10 )})),
-                  do.call(rbind, lapply(1:40, function(i){makeMvGauss(bins=180, mu=100, sigma=10 )})))
   
-  out <- conjugate(s1=mv_gauss[1:30,], s2= mv_gauss[31:70,], method="t",
-                          priors = list( mu=c(40,40),n=c(1,1),s2=c(100,100) ),
-                          plot=TRUE, rope_range = c(-5,5), rope_ci = 0.89,
+  set.seed(123)
+  mv_gauss<- mvSim(
+    dists = list(rnorm = list(mean = 100, sd = 15),
+                 rnorm = list(mean = 70, sd=10)),
+    n_samples = c(15,20) )
+  
+  out <- conjugate(s1=mv_gauss[1:15, -1], s2= mv_gauss[16:35, -1], method="t",
+                          priors = list( mu=50, n=1, s2=100 ),
+                          plot=FALSE, rope_range = c(-5,5), rope_ci = 0.89,
                           cred.int.level = 0.89, hypothesis="equal", support=NULL)
   
-  expect_equal(out$summary$post.prob, 0.03881883, tolerance = 1e-6)
+  expect_equal(out$summary$post.prob, 0.001036255, tol=1e-6)
   
-  expect_equal(out$summary$rope_prob, 0.002359285, tolerance = 1e-6)
+  expect_true(out$summary$rope_prob  < 1e-5)
   
   expect_equal(names(out), c("summary", "posterior") )
 })
@@ -51,36 +49,34 @@ test_that("conjugate single value gaussian works", {
          60.3804997092304, 25.1210401427447, 42.6563192857856) # dput(rnorm(15, 60,12))
   set.seed(123)
   out <- conjugate(s1=s1, s2= s2, method = "gaussian",
-                    priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ),
+                    priors = list( mu=40, n=1, s2=100 ),
                     plot=FALSE, rope_range = c(-10, 10), rope_ci = 0.89,
-                    cred.int.level = 0.89, hypothesis="equal", support=seq(-20,120, 0.01))
+                    cred.int.level = 0.89, hypothesis="equal", support=NULL)
   
   
-  expect_equal(out$summary$post.prob, 0.9106556, tolerance = 1e-6)
+  expect_equal(out$summary$post.prob, 0.9198604, tolerance = 1e-6)
   
-  expect_equal(out$summary$rope_prob, 0.3123245, tolerance = 1e-6)
+  expect_equal(out$summary$rope_prob, 0.45927, tolerance = 1e-5)
   
   expect_equal(names(out), c("summary", "posterior") )
 })
 
 test_that("conjugate multi value gaussian works", {
-  makeMvGauss<-function(bins=180,mu,sigma){
-    setNames(data.frame(matrix(hist(rnorm(2000,mu, sigma),
-                                    breaks=seq(1,bins,1), plot=FALSE)$counts, nrow=1)),
-             paste0("b",1:(bins-1) ))
-  }
-  set.seed(123)
-  mv_gauss<-rbind(do.call(rbind, lapply(1:30, function(i){makeMvGauss(bins=180, mu=50, sigma=10 )})),
-                  do.call(rbind, lapply(1:40, function(i){makeMvGauss(bins=180, mu=60, sigma=12 )})))
   
-  out <- conjugate(s1=mv_gauss[1:30,], s2= mv_gauss[31:70,], method="gaussian",
-                   priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ),
+  set.seed(123)
+  mv_gauss<- mvSim(
+    dists = list(rnorm = list(mean = 50, sd = 10),
+                 rnorm = list(mean = 60, sd=12)),
+    n_samples = c(30,40) )
+  
+  out <- conjugate(s1=mv_gauss[1:30, -1], s2= mv_gauss[31:70, -1], method="gaussian",
+                   priors = list( mu=0, n=1, s2=20 ),
                    plot=FALSE, rope_range = c(-5,5), rope_ci = 0.89,
                    cred.int.level = 0.89, hypothesis="equal", support=NULL)
 
-  expect_equal(out$summary$post.prob, 0.7179459, tolerance = 1e-6)
+  expect_equal(out$summary$post.prob, 0.7153165, tolerance = 1e-6)
   
-  expect_equal(out$summary$rope_prob, 0.1951466, tolerance = 0.015)
+  expect_equal(out$summary$rope_prob, 0.1859342, tolerance = 0.015)
   
   expect_equal(names(out), c("summary", "posterior") )
 })
@@ -100,36 +96,34 @@ test_that("conjugate single value beta works", {
   ) # dput(rbeta(20, 8, 5))
   set.seed(123)
   out <- conjugate(s1 = s1, s2= s2, method="beta",
-                priors = list(a=c(0.5,0.5),b=c(0.5,0.5)),
+                priors = list(a=0.5, b=0.5),
                 plot=FALSE, rope_range = c(-0.1, 0.1), rope_ci = 0.89,
                 cred.int.level = 0.89, hypothesis="equal")
   
-  expect_equal(out$summary$post.prob, 0.02229257, tolerance = 1e-6)
+  expect_equal(out$summary$post.prob, 0.02229246, tolerance = 1e-6)
   
   expect_equal(out$summary$rope_prob, 0.1351534, tolerance = 1e-6)
   
   expect_equal(names(out), c("summary", "posterior") )
   
 })
+
 test_that("conjugate multi value beta works", {
+
   set.seed(123)
-  makeMvBeta<-function(n=100,a,b){
-    setNames(data.frame(matrix(hist(rbeta(2000,a,b),
-    breaks=seq(0,1,length.out=n), plot=FALSE)$counts, nrow=1)),
-    paste0("b0.",1:(n-1)))
-  }
+  mv_beta<- mvSim(
+    dists = list(rbeta = list(shape1=5, shape2=8),
+                 rbeta = list(shape1=10, shape2=10)),
+    n_samples = c(10,10))
   
-  mv_beta<-rbind(do.call(rbind, lapply(1:30, function(i){makeMvBeta(n=100, a=5, b=8 )})),
-                 do.call(rbind, lapply(1:40, function(i){makeMvBeta(n=100, a=10, b=3 )})))
-  
-  out <- conjugate(s1 = mv_beta[1:30,], s2= mv_beta[31:70,], method="beta",
-                priors = list(a=c(0.5,0.5),b=c(0.5,0.5)),
+  out <- conjugate(s1 = mv_beta[1:10, -1], s2= mv_beta[11:20, -1], method="beta",
+                priors = list(a=0.5, b=0.5 ),
                 plot=FALSE, rope_range = c(-0.1, 0.1), rope_ci = 0.89,
                 cred.int.level = 0.89, hypothesis="equal")
   
-  expect_equal(out$summary$post.prob, 1.377333e-17, tolerance = 1e-6)
+  expect_equal(out$summary$post.prob, 0.1575291, tolerance = 1e-6)
   
-  expect_equal(out$summary$rope_prob, 0, tolerance = 0.0001)
+  expect_equal(out$summary$rope_prob, 0.4059094, tolerance = 0.0001)
   
   expect_equal(names(out), c("summary", "posterior") )
   
@@ -139,14 +133,15 @@ test_that("conjugate single value lognormal works", {
   
   set.seed(123)
   s1<-rlnorm(100, log(130), log(1.3))
-  s2<-rlnorm(100, log(100), log(1.6))
+  s2<-rlnorm(100, log(100), log(2))
   out <- conjugate(s1=s1, s2= s2,
-   method = "lognormal", priors = list( mu_log=c(log(10),log(10)),n=c(1,1),sigma_log=c(log(3),log(3)) ), 
-   plot=FALSE, rope_range = c(-10,10), rope_ci = 0.89, cred.int.level = 0.89, hypothesis="equal", support=NULL)
+   method = "lognormal", priors = list( mu_log=log(10), n=1, sigma_log=log(3) ), 
+   plot=FALSE, rope_range = c(-10,10), rope_ci = 0.89, cred.int.level = 0.89,
+   hypothesis="equal", support=NULL)
   
-  expect_equal(out$summary$post.prob, 0.01365195, tolerance = 1e-6)
+  expect_equal(out$summary$post.prob, 0.2791104, tolerance = 1e-6)
   
-  expect_equal(out$summary$rope_prob, 0, tolerance = 1e-6)
+  expect_equal(out$summary$rope_prob, 0.2822155, tolerance = 1e-6)
   
   expect_equal(names(out), c("summary", "posterior") )
   
@@ -154,26 +149,21 @@ test_that("conjugate single value lognormal works", {
 
 
 test_that("conjugate multi value lognormal works", {
-  makeMvLn<-function(bins=500,mu_log,sigma_log){
-     setNames(data.frame(matrix(hist(rlnorm(2000,mu_log, sigma_log),
-        breaks=seq(1,bins,5), plot=FALSE)$counts, nrow=1)),
-      paste0("b",seq(1,bins,5))[-1] ) }
   set.seed(123)
-  mv_ln<-rbind(do.call(rbind,
-             lapply(1:30, function(i){makeMvLn(mu_log=log(130),
-               sigma_log=log(1.3) )})),
-            do.call(rbind,
-             lapply(1:30, function(i){makeMvLn(mu_log=log(100),
-               sigma_log=log(1.2) )})))
+  mv_ln<- mvSim(
+    dists = list(rlnorm = list(meanlog=log(50), sdlog=log(1.7)),
+                 rlnorm = list(meanlog=log(30), sdlog=log(2.1))),
+    n_samples = 30 )
+  
 
-  out <- conjugate(s1 = mv_ln[1:30,], s2= mv_ln[31:60,], method = "lognormal",
+  out <- conjugate(s1 = mv_ln[1:30,-1], s2= mv_ln[31:60, -1], method = "lognormal",
                      priors = list( mu_log=c(log(10),log(10)),n=c(1,1),sigma_log=c(log(3),log(3)) ),
-                     plot=FALSE, rope_range = c(-40,40), rope_ci = 0.89,
+                     plot=FALSE, rope_range = c(-10,10), rope_ci = 0.89,
                      cred.int.level = 0.89, hypothesis="equal", support=NULL)
   
-  expect_equal(out$summary$post.prob, 0.07805076, tolerance = 1e-6)
+  expect_equal(out$summary$post.prob, 0.2357624, tolerance = 1e-6)
   
-  expect_equal(out$summary$rope_prob, 0.8411414, tolerance = 0.0001)
+  expect_equal(out$summary$rope_prob, 0.2280643, tolerance = 0.0001)
   
   expect_equal(names(out), c("summary", "posterior") )
   
@@ -186,21 +176,11 @@ test_that("conjugate single value poisson works", {
   s1<-rpois(20, 10)
   s2<-rpois(20, 8)
   out <- conjugate(s1 =s1, s2= s2, method="poisson",
-                priors = list(a=c(0.5,0.5),b=c(0.5,0.5)),
+                priors = list(a=0.5,b=0.5 ),
                 plot=FALSE, rope_range = c(-1, 1), rope_ci = 0.89,
                 cred.int.level = 0.89, hypothesis="equal")
-  
-  # summary(unlist(lapply(1:100, function(i){
-  #   #set.seed(123)
-  #   out <- conjugate(s1 = s1, s2= s2, method = "poisson",
-  #                    priors = list(a=c(0.5,0.5),b=c(0.5,0.5)),
-  #                    plot=FALSE, rope_range = c(-1, 1), rope_ci = 0.89,
-  #                    cred.int.level = 0.89, hypothesis="equal")
-  #   #out$summary$post.prob
-  #   out$summary$rope_prob
-  # })))
-  
-  expect_equal(out$summary$post.prob, 0.09621425, tolerance = 1e-6)
+
+  expect_equal(out$summary$post.prob, 0.09622298, tolerance = 1e-6)
   
   expect_equal(out$summary$rope_prob, 0.05594877, tolerance = 1e-6)
   
@@ -215,7 +195,7 @@ test_that("conjugate single value negative binomial works", {
   s1<-rnbinom(20, 10, 0.5)
   s2<-rnbinom(20, 10, 0.25)
   out <- conjugate(s1 = s1, s2= s2, method="negbin",
-                priors = list(r = c(10, 10), a=c(0.5,0.5),b=c(0.5,0.5)),
+                priors = list(r = 10, a=0.5, b=0.5 ),
                 plot=FALSE, rope_range = c(-0.5, 0.5), rope_ci = 0.89,
                 cred.int.level = 0.89, hypothesis="equal")
   
@@ -239,12 +219,6 @@ test_that("conjugate single value negative binomial works", {
 
 
 
-
-
-
-
-
-
 test_that("generic conjugate plotting works", {
   s1 = c(43.8008289810423, 44.6084228775479, 68.9524219823026, 77.442231894233, 
          45.2302703709121, 53.8005757403944, 33.8292993277826, 59.7018653972819, 
@@ -257,62 +231,57 @@ test_that("generic conjugate plotting works", {
                    plot=TRUE, rope_range = c(-8,8), rope_ci = 0.89,
                    cred.int.level = 0.89, hypothesis="equal", support=NULL)
   
-  expect_equal(names(out), c("summary", "posterior", "plot_df", "rope_df", "plot") )
+  expect_equal(names(out), c("summary", "posterior", "plot") )
   
   expect_s3_class(out$plot, "ggplot")
   
 })
 
-test_that("dirichlet conjugate plotting version 1 works and is consistent", {
-  makeMvLn<-function(bins=500,mu_log,sigma_log){
-  setNames(data.frame(matrix(hist(rlnorm(2000,mu_log, sigma_log),
-                                  breaks=seq(1,bins,5), plot=FALSE)$counts, nrow=1)),
-                                           paste0("b",seq(1,bins,5))[-1] ) }
-  set.seed(123)
-  mv_ln<-rbind(do.call(rbind,
-                        lapply(1:30, function(i){makeMvLn(mu_log=log(130),
-                                            sigma_log=log(1.3) )})),
-              do.call(rbind, lapply(1:30, function(i){makeMvLn(mu_log=log(100),
-                                            sigma_log=log(1.2) )})))
-  s1 <- mv_ln[1:30, ]
-  s2 <- mv_ln[31:60, ]
-  out <- conjugate(s1, s2, method = "dirichlet", priors=NULL, plot=TRUE,
-        rope_range = c(-0.025, 0.025), rope_ci = 0.89,
-        cred.int.level = 0.89, hypothesis="equal")
-  
-  expect_equal(out$summary$post.prob, 0.5420556, tolerance = 1e-6)
-  
-  expect_equal(out$summary$mean_rope_prob, 0.6407565, tolerance = 1e-6)
-
-  expect_equal(names(out), c("summary", "posterior", "plot_df", "rope_df", "plot") )
-  
-  expect_s3_class(out$plot, "ggplot")
-})
-
-
-test_that("dirichlet conjugate plotting version 2 works and is consistent", {
-  makeMvLn<-function(bins=500,mu_log,sigma_log){
-    setNames(data.frame(matrix(hist(rlnorm(2000,mu_log, sigma_log),
-                                    breaks=seq(1,bins,5), plot=FALSE)$counts, nrow=1)),
-             paste0("b",seq(1,bins,5))[-1] ) }
-  set.seed(123)
-  mv_ln<-rbind(do.call(rbind,
-                       lapply(1:30, function(i){makeMvLn(mu_log=log(130),
-                                                         sigma_log=log(1.3) )})),
-               do.call(rbind, lapply(1:30, function(i){makeMvLn(mu_log=log(100),
-                                                                sigma_log=log(1.2) )})))
-  s1 <- mv_ln[1:30, ]
-  s2 <- mv_ln[31:60, ]
-  
-  out <- conjugate(s1, s2, method = "dirichlet2", priors=NULL, plot=TRUE,
-                         rope_range = c(-0.025, 0.025), rope_ci = 0.89,
-                         cred.int.level = 0.89, hypothesis="equal")
-  
-  expect_equal(out$summary$post.prob, 0.5420556, tolerance = 1e-6)
-  
-  expect_equal(out$summary$mean_rope_prob, 0.38, tolerance = 0.01)
-  
-  expect_equal(names(out), c("summary", "posterior", "plot_df", "rope_df", "plot") )
-  
-  expect_s3_class(out$plot, "ggplot")
-})
+# test_that("dirichlet conjugate plotting version 1 works", {
+#   set.seed(123)
+#   mv_ln<- mvSim(
+#     dists = list(rlnorm = list(meanlog=log(50), sdlog=log(1.7)),
+#                  rlnorm = list(meanlog=log(30), sdlog=log(2.1))),
+#     n_samples = 30 )
+#   s1 <- mv_ln[1:30, -1]
+#   s2 <- mv_ln[31:60, -1]
+#   out <- conjugate(s1, s2, method = "dirichlet", priors=NULL, plot=TRUE,
+#         rope_range = c(-0.025, 0.025), rope_ci = 0.89,
+#         cred.int.level = 0.89, hypothesis="equal")
+#   
+#   expect_equal(out$summary$post.prob, 0.5420556, tolerance = 1e-6)
+#   
+#   expect_equal(out$summary$mean_rope_prob, 0.6407565, tolerance = 1e-6)
+# 
+#   expect_equal(names(out), c("summary", "posterior", "plot") )
+#   
+#   expect_s3_class(out$plot, "ggplot")
+# })
+# 
+# 
+# test_that("dirichlet conjugate plotting version 2 works and is consistent", {
+#   makeMvLn<-function(bins=500,mu_log,sigma_log){
+#     setNames(data.frame(matrix(hist(rlnorm(2000,mu_log, sigma_log),
+#                                     breaks=seq(1,bins,5), plot=FALSE)$counts, nrow=1)),
+#              paste0("b",seq(1,bins,5))[-1] ) }
+#   set.seed(123)
+#   mv_ln<-rbind(do.call(rbind,
+#                        lapply(1:30, function(i){makeMvLn(mu_log=log(130),
+#                                                          sigma_log=log(1.3) )})),
+#                do.call(rbind, lapply(1:30, function(i){makeMvLn(mu_log=log(100),
+#                                                                 sigma_log=log(1.2) )})))
+#   s1 <- mv_ln[1:30, ]
+#   s2 <- mv_ln[31:60, ]
+#   
+#   out <- conjugate(s1, s2, method = "dirichlet2", priors=NULL, plot=TRUE,
+#                          rope_range = c(-0.025, 0.025), rope_ci = 0.89,
+#                          cred.int.level = 0.89, hypothesis="equal")
+#   
+#   expect_equal(out$summary$post.prob, 0.5420556, tolerance = 1e-6)
+#   
+#   expect_equal(out$summary$mean_rope_prob, 0.38, tolerance = 0.01)
+#   
+#   expect_equal(names(out), c("summary", "posterior", "plot_df", "rope_df", "plot") )
+#   
+#   expect_s3_class(out$plot, "ggplot")
+# })

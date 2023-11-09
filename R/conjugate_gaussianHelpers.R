@@ -14,11 +14,12 @@
 #' @noRd
 
 .conj_gaussian_sv<-function(s1 = NULL, priors = NULL,
-                            plot=FALSE, support=NULL, cred.int.level = NULL){
+                            plot=FALSE, support=NULL, cred.int.level = NULL,
+                            calculatingSupport = FALSE){
   out <- list()
   #* `make default prior if none provided`
   if(is.null(priors)){
-    priors <- list( mu=c(0,0),n=c(1,1),s2=c(100,100) )
+    priors <- list( mu=0, n=1, s2=100 )
   }
   #* `Get Mean, Variance, SE, and DF from s1`
   if(length(s1) > 1){
@@ -35,6 +36,7 @@
     #* `Define support if it is missing`
     if(is.null(support)){
       quantiles <- qlst(c(0.0001, 0.9999), v1_n, m1_n, sigma_1)
+      if(calculatingSupport){return(quantiles)}
       support<- seq(quantiles[1], quantiles[2], length.out=10000)
     }
     
@@ -87,11 +89,12 @@
 #' @noRd
 
 .conj_gaussian_mv<-function(s1 = NULL,  priors = NULL,
-                            plot=FALSE, support=NULL, cred.int.level = NULL){
+                            plot=FALSE, support=NULL, cred.int.level = NULL,
+                            calculatingSupport = FALSE){
   out <- list()
   #* `make default prior if none provided`
   if(is.null(priors)){
-    priors <- list( mu=c(0,0),n=c(1,1),s2=c(100,100) )
+    priors <- list( mu=0, n=1, s2=100 )
   }
   #* `Standardize sample 1 class and names`
   if(is.null(colnames(s1))){
@@ -125,6 +128,7 @@
   #* `Define support if it is missing`
   if(is.null(support)){
     quantiles <- qlst(c(0.0001, 0.9999), v1_n, m1_n, sigma_1)
+    if(calculatingSupport){return(quantiles)}
     support<- seq(quantiles[1], quantiles[2], length.out=10000)
   }
   dens <- extraDistr::dlst(support,v1_n,m1_n, sigma_1)

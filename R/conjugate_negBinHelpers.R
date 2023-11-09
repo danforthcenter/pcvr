@@ -58,13 +58,14 @@
 #' @noRd
 
 .conj_negbin_sv<-function(s1 = NULL, priors = NULL,
-                          plot=FALSE, support=NULL, cred.int.level = NULL){
+                          plot=FALSE, support=NULL, cred.int.level = NULL,
+                          calculatingSupport=FALSE){
   
   #* `Check samples`
   if(any(abs(c(s1,s2)-round(c(s1,s2)))>.Machine$double.eps^0.5) | any(c(s1,s2)<0) ){stop("Only positive whole numbers can be used in the Negative Binomial distribution")}
   #* `make default prior if none provided`
   if(is.null(priors)){
-    priors <- list(r=c(10, 10), a=c(0.5,0.5),b=c(0.5,0.5)) # beta prior on P
+    priors <- list(r=10, a=0.5, b= 0.5) # beta prior on P
     warning("True value of r for negative binomial distribution has defaulted to 10, you should add a prior including r parameter.")
   }
   
@@ -76,6 +77,7 @@
   b1_prime <- priors$b[1] + sum(s1) 
   #* `Define support if it is missing`
   if(is.null(support)){
+    if(calculatingSupport){return(c(0.0001, 0.9999))}
     support<- seq(0.0001,0.9999, 0.0001)
   }
   #* `calculate density over support``

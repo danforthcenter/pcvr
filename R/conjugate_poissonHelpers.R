@@ -21,12 +21,13 @@
 #' @noRd
 
 .conj_poisson_sv<-function(s1 = NULL, priors = NULL,
-                           plot=FALSE, support=NULL, cred.int.level = NULL){
+                           plot=FALSE, support=NULL, cred.int.level = NULL,
+                           calculatingSupport = FALSE ){
   #* `Check samples`
   if(any(abs(c(s1,s2)-round(c(s1,s2)))>.Machine$double.eps^0.5) | any(c(s1,s2)<0) ){stop("Only positive whole numbers can be used in the Poisson distribution")}
   #* `make default prior if none provided`
   if(is.null(priors)){
-    priors <- list(a=c(0.5,0.5),b=c(0.5,0.5)) # gamma prior on lambda
+    priors <- list(a=0.5, b=0.5) # gamma prior on lambda
   }
 
   out <- list()
@@ -37,6 +38,7 @@
   #* `Define support if it is missing`
   if(is.null(support)){
     quantiles <- qgamma(c(0.0001, 0.9999), a1_prime, b1_prime)
+    if(calculatingSupport){return(quantiles)}
     support<- seq(quantiles[1], quantiles[2], length.out=10000)
   }
   #* `calculate density over support``

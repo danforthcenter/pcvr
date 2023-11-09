@@ -8,20 +8,16 @@
 #' If a multi value trait is used then column names should include a number representing the "bin".
 #' @param s2 An optional second sample of the same form as s2.
 #' @param method The distribution/method to use.
-#' Currently "t", "gaussian", "beta", "lognormal", "poisson", "negbin" (negative binomial), "dirichlet", and "dirichlet2"
+#' Currently "t", "gaussian", "beta", "lognormal", "poisson", and "negbin" (negative binomial).
 #' are supported. The count distributions (poisson and negative binomial) 
-#' are only implemented for single value traits. Dirichlets are only implemented with multi value traits and
-#' will return the summary component as a data.table with nested data frames for the ROPE HDI/HDE
-#' if rope_range is specified. For brevity the HDE and HDI of the samples are not returned when
-#' using the dirichlet method. The "dirichlet" method does not compute an HDI and only compares how much of the posterior
-#' distribution (sample 1 - sample 2) is within the ROPE interval. The "dirichlet2" method does make an HDI and run normal 
-#' ROPE tests per each bin using the alpha vector from each sample to simulate draws from the dirichlet. Bear in mind
-#'  that dirichlet is sensitive to the total number of counts in the data. If the mean vector
-#' (alpha_vec ~ mean_vec * precision) were to be used instead of the alpha vector then the distributions
-#' in each bin would be much wider.
+#' are only implemented for single value traits. 
 #' The "t" and "gaussian" methods both use a T distribution with "t" testing for a difference
 #'  of means and "gaussian" testing for a difference in the distributions (similar to a Z test).
-#' @param priors Prior distributions described as a list. This varies by method, see details.
+#' @param priors Prior distributions described as a list of lists.
+#' If this is a single list then it will be duplicated for the second sample, which is generally a good idea if both
+#' samples use the same distribution (method). 
+#' Elements in the inner lists should be named for the parameter they represent (see examples).
+#' These names vary by method (see details).
 #'  By default this is NULL and weak priors (jeffrey's prior where appropriate) are used.
 #'  The \code{posterior} part of output can also be recycled as a new prior if Bayesian
 #'  updating is appropriate for your use.
@@ -70,6 +66,7 @@
 #'     where r is the r parameter of the negative binomial distribution (representing the number of successes required)
 #'      and where a and b are shape parameters of the beta distribution. Note that the r value is not updated.
 #'       The conjugate beta prior is only valid when r is fixed and known, which is a limitation for this method.}
+#'    
 #' }
 #' 
 #' See examples for plots of these prior distributions.
@@ -90,14 +87,14 @@
 #'              
 #' # lognormal mv
 #' ln_mv_ex <- conjugate(s1 = mv_ln[1:30,], s2= mv_ln[31:60,], method = "lognormal",
-#'                    priors = list( mu_log=c(log(10),log(10)),n=c(1,1),sigma_log=c(log(3),log(3)) ),
+#'                    priors = list( mu_log=log(10),n=1, sigma_log=log(3) ),
 #'                    plot=FALSE, rope_range = c(-40,40), rope_ci = 0.89,
 #'                    cred.int.level = 0.89, hypothesis="equal", support=NULL)
 #' 
 #' # lognormal sv
 #' ln_sv_ex <- conjugate(s1=rlnorm(100, log(130), log(1.3)), s2= rlnorm(100, log(100), log(1.6)),
 #'  method = "lognormal",
-#'                    priors = list( mu_log=c(log(10),log(10)),n=c(1,1),sigma_log=c(log(3),log(3)) ),
+#'                    priors = list( mu_log=log(10),n=1,sigma_log=log(3) ),
 #'                    plot=FALSE, rope_range = NULL, rope_ci = 0.89, 
 #'                    cred.int.level = 0.89, hypothesis="equal", support=NULL)
 #' 
@@ -112,14 +109,14 @@
 #'                 do.call(rbind, lapply(1:30, function(i){makeMvGauss(bins=180, mu=60, sigma=12 )})))
 #'                 
 #' gauss_mv_ex <- conjugate(s1=mv_gauss[1:30,], s2= mv_gauss[31:60,], method = "gaussian",
-#'                   priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ),
+#'                   priors =priors = list( mu=30, n=1,s2=100 ),
 #'                   plot=FALSE, rope_range = c(-25, 25), rope_ci = 0.89,
 #'                   cred.int.level = 0.89, hypothesis="equal", support=NULL)
 #'                   
 #' # Z test sv example
 #' set.seed(123)
 #' gauss_sv_ex_bad <- conjugate(s1=rnorm(15, 50,10), s2= rnorm(15, 60,12), method = "gaussian",
-#'                   priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ),
+#'                   priors = priors = list( mu=30, n=1,s2=100 ),
 #'                   plot=FALSE, rope_range = c(-10, 10), rope_ci = 0.89, 
 #'                   cred.int.level = 0.89, hypothesis="equal", support=NULL)
 #'                   
@@ -128,7 +125,7 @@
 #' # tend to be reasonably fast.
 #' 
 #' gauss_sv_ex <- conjugate(s1=rnorm(15, 50,10), s2= rnorm(15, 60,12), method = "gaussian",
-#'                   priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ),
+#'                   priors = priors = list( mu=30, n=1,s2=100 ),
 #'                   plot=FALSE, rope_range = c(-10, 10), rope_ci = 0.89, 
 #'                   cred.int.level = 0.89, hypothesis="equal", support=seq(-20,120, 0.01))
 #' # Note that the ROPE probability is somewhat unstable here since the distribution of differences
@@ -145,7 +142,7 @@
 #'                 do.call(rbind, lapply(1:30, function(i){makeMvGauss(bins=180, mu=60, sigma=12 )})))
 #'
 #' gaussianMeans_mv_ex <- conjugate(s1=mv_gauss[1:30,], s2= mv_gauss[31:60,], method="t",
-#'                         priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ),
+#'                         priors = list( mu=30, n=1,s2=100 ),
 #'                         plot=FALSE, rope_range = c(-5,5), rope_ci = 0.89, 
 #'                         cred.int.level = 0.89, hypothesis="equal", support=NULL)
 #'                         
@@ -153,7 +150,7 @@
 #' # T test sv example
 #' 
 #' gaussianMeans_sv_ex <- conjugate(s1=rnorm(10, 50,10), s2= rnorm(10, 60,12), method="t",
-#'                         priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ),
+#'                         priors = list( mu=30, n=1,s2=100 ),
 #'                         plot=FALSE, rope_range = c(-5,8), rope_ci = 0.89, 
 #'                         cred.int.level = 0.89, hypothesis="equal", support=NULL)
 #' 
@@ -171,21 +168,21 @@
 #'                do.call(rbind, lapply(1:30, function(i){makeMvBeta(n=100, a=10, b=3 )})))
 #' 
 #' beta_mv_ex <- conjugate(s1 = mv_beta[1:30,], s2= mv_beta[31:60,], method="beta",
-#'               priors = list(a=c(0.5,0.5),b=c(0.5,0.5)),
+#'               priors = list(a=0.5, b=0.5),
 #'               plot=FALSE, rope_range = c(-0.1, 0.1), rope_ci = 0.89, 
 #'               cred.int.level = 0.89, hypothesis="equal")
 #' 
 #' # beta sv example
 #' 
 #' beta_sv_ex <- conjugate(s1 = rbeta(20, 5, 5), s2= rbeta(20, 8, 5), method="beta",
-#'               priors = list(a=c(0.5,0.5),b=c(0.5,0.5)),
+#'               priors = list(a=0.5, b=0.5),
 #'               plot=FALSE, rope_range = c(-0.1, 0.1), rope_ci = 0.89, 
 #'               cred.int.level = 0.89, hypothesis="equal")
 #'
 #' # poisson sv example
 #' 
 #' poisson_sv_ex <- conjugate(s1 = rpois(20, 10), s2= rpois(20, 8), method="poisson",
-#'               priors = list(a=c(0.5,0.5),b=c(0.5,0.5)),
+#'               priors = list(a=0.5, b=0.5),
 #'               plot=FALSE, rope_range = c(-1, 1), rope_ci = 0.89, 
 #'               cred.int.level = 0.89, hypothesis="equal")
 #' 
@@ -194,31 +191,10 @@
 #' # in the current implementation we suggest using the poisson method for data such as leaf counts
 #' 
 #' negbin_sv_ex <- conjugate(s1 = rnbinom(20, 10, 0.5), s2= rnbinom(20, 10, 0.25), method="negbin",
-#'               priors = list(r = c(10, 10), a=c(0.5,0.5),b=c(0.5,0.5)),
+#'               priors = list(r = 10, a=0.5,b=0.5),
 #'               plot=FALSE, rope_range = c(-1, 1), rope_ci = 0.89, 
 #'               cred.int.level = 0.89, hypothesis="equal")
 #' 
-#' # Dirichlet mv example
-#' 
-#' makeMvLn<-function(bins=500,mu_log,sigma_log){
-#' setNames(data.frame(matrix(hist(rlnorm(2000,mu_log, sigma_log),
-#'                                 breaks=seq(1,bins,5), plot=FALSE)$counts, nrow=1)),
-#'                                          paste0("b",seq(1,bins,5))[-1] ) }
-#' set.seed(123) 
-#' mv_ln<-rbind(do.call(rbind,
-#'                       lapply(1:30, function(i){makeMvLn(mu_log=log(130),
-#'                                           sigma_log=log(1.3) )})),
-#'             do.call(rbind, lapply(1:30, function(i){makeMvLn(mu_log=log(100),
-#'                                           sigma_log=log(1.2) )})))
-#' s1 <- mv_ln[1:30, ]
-#' s2 <- mv_ln[31:60, ]
-#' diri_ex_1 <- conjugate(s1, s2, method = "dirichlet", priors=NULL, plot=FALSE,
-#'       rope_range = c(-0.025, 0.025), rope_ci = 0.89, 
-#'       cred.int.level = 0.89, hypothesis="equal")
-#'       
-#' diri_ex_2 <- conjugate(s1, s2, method = "dirichlet2", priors=NULL, plot=FALSE,
-#'       rope_range = c(-0.025, 0.025), rope_ci = 0.89, 
-#'       cred.int.level = 0.89, hypothesis="equal")  
 #'       
 #' 
 #' 
@@ -249,7 +225,7 @@
 #'                    grepl("hue_freq", colnames(wide))]
 #' 
 #' hue_res_t <- conjugate(s1 = mo17_sample, s2= B73_sample, method="t",
-#'               priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ),
+#'               priors = list( mu=50,n=1,s2=100 ),
 #'               plot=TRUE, rope_range = c(-10,10), rope_ci = 0.89, 
 #'               cred.int.level = 0.89, hypothesis="equal")
 #'               
@@ -281,7 +257,7 @@
 #' B73_area <- sv[wide$genotype=="B73" & wide$DAS > 18 & wide$fertilizer == 50, "area_cm2"]
 #' 
 #' area_res_t <- conjugate(s1 = mo17_area, s2= B73_area, method="t",
-#'               priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ),
+#'               priors = list( mu=30, n=1, s2=100 ),
 #'               plot=TRUE, rope_range = c(-5,5), rope_ci = 0.89, 
 #'               cred.int.level = 0.89, hypothesis="equal")
 #' }
@@ -295,7 +271,7 @@
 #' plot(seq(0,10,0.01), dgamma(seq(0,10,0.01), 0.5, 0.5), ylab="Density", xlab="Support",
 #'  main="Poisson (gamma prior on Lambda parameter)", type="l")
 #'
-#' plot(seq(-20,20.001), dnorm(seq(-20,20.001), 0, sqrt(20)), ylab="Density", 
+#' plot(seq(-20,20.001), dnorm(seq(-20,20.001), 0, sqrt(100)), ylab="Density", 
 #' xlab="Support", main="T and Gaussian", type="l")
 #' 
 #' plot(seq(0,70,0.001), dlnorm(seq(0,70,0.001), log(10), log(3)), ylab="Density", 
@@ -320,74 +296,60 @@
 #' @export
 
 conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta",
-                                                    "lognormal", "poisson", "negbin",
-                                                    "dirichlet", "dirichlet2"),
+                                                    "lognormal", "poisson", "negbin"),
                      priors=NULL, plot=FALSE, rope_range = NULL,
                     rope_ci = 0.89, cred.int.level = 0.89, hypothesis="equal",
                     support=NULL){
-  #* `Check sample class`
-  if(is.matrix(s1)|is.data.frame(s1)){ vec=FALSE
-  } else if(is.vector(s1)) { vec=TRUE 
-  } else{ stop("s1 must be a vector, data.frame, or matrix.") }
-  
   #* check length of method, replicate if there is a second sample
   if(length(method)==1 & !is.null(s2)){
       method <- rep(method, 2)
   }
-  
+  if(!is.null(s2) & !is.null(priors) && !methods::is(priors[[1]], "list")  ){
+    priors <- list(priors, priors)
+  }
   samplesList <- list(s1)
   if(!is.null(s2)){samplesList[[2]]<-s2 }
   
-  #* loop over positions 1 and 2 (make samples list?)
-  nSamples <- length(samplesList)
-  
-  #* `this NEEDS to have a shared support used for all samples`
-  #* option that seems most plausible so far is a .getSupport helper function
-  #* that will take both samples and methods then just return the support that includes both.
+  if(is.null(support)){
+    support <- .getSupport(samplesList, method, priors) # calculate shared support
+  }
   
   sample_results <- lapply(1:length(samplesList), function(i){
     sample <- samplesList[[i]]
-    matched_arg<-match.arg(method[i], choices = c("t", "gaussian", "beta", "lognormal", "poisson", "negbin", "dirichlet", "dirichlet2"))
+    prior <- priors[[i]]
+    #* `Check sample class`
+    if(is.matrix(sample)|is.data.frame(sample)){ vec=FALSE
+    } else if(is.vector(sample)) { vec=TRUE 
+    } else{ stop("samples must be a vector, data.frame, or matrix.") }
     
+    matched_arg<-match.arg(method[i], choices = c("t", "gaussian", "beta", "lognormal", "poisson", "negbin"))#, "dirichlet", "dirichlet2"))
+    # turning off dirichlet until I decide on a new implementation that I like better and a use case that isn't so ripe for abuse.
     if(matched_arg == "t" & vec){
-      res<-.conj_gaussian_means_sv(sample, priors, plot, support, cred.int.level)
-      
+      res<-.conj_gaussian_means_sv(sample, prior, plot, support, cred.int.level)
     } else if(matched_arg == "t" & !vec){
-      res<-.conj_gaussian_means_mv(sample, priors, plot, support, cred.int.level)
-      
+      res<-.conj_gaussian_means_mv(sample, prior, plot, support, cred.int.level)
     } else if(matched_arg == "gaussian" & vec){
-      res<-.conj_gaussian_sv(sample, priors, plot, support, cred.int.level)
-      
+      res<-.conj_gaussian_sv(sample, prior, plot, support, cred.int.level)
     } else if(matched_arg == "gaussian" & !vec){
-      res<-.conj_gaussian_mv(sample, priors, plot, support, cred.int.level)
-      
+      res<-.conj_gaussian_mv(sample, prior, plot, support, cred.int.level)
     } else if(matched_arg == "beta" & vec){
-      res<-.conj_beta_sv(sample, priors, plot, support, cred.int.level)
-      
+      res<-.conj_beta_sv(sample, prior, plot, support, cred.int.level)
     } else if(matched_arg == "beta" & !vec){
-      res<-.conj_beta_mv(sample, priors, plot, support, cred.int.level)
-      
+      res<-.conj_beta_mv(sample, prior, plot, support, cred.int.level)
     } else if(matched_arg == "lognormal" & vec){
-      res<-.conj_lognormal_sv(sample, priors, plot, support, cred.int.level)
-      
+      res<-.conj_lognormal_sv(sample, prior, plot, support, cred.int.level)
     } else if(matched_arg == "lognormal" & !vec){
-      res<-.conj_lognormal_mv(sample, priors, plot, support, cred.int.level)
-      
+      res<-.conj_lognormal_mv(sample, prior, plot, support, cred.int.level)
     } else if(matched_arg == "poisson" & vec){
-      res<-.conj_poisson_sv(sample, priors, plot, support, cred.int.level)
-      
+      res<-.conj_poisson_sv(sample, prior, plot, support, cred.int.level)
     } else if(matched_arg == "negbin" & vec){
-      res<-.conj_negbin_sv(sample, priors, plot, support, cred.int.level)
-      
+      res<-.conj_negbin_sv(sample, prior, plot, support, cred.int.level)
     } else if(matched_arg == "dirichlet" & !vec){
-      res<-.conj_diri_mv_1(sample, priors, plot)
-      
+      # res<-.conj_diri_mv_1(sample, prior, plot)
     } else if(matched_arg == "dirichlet2" & !vec){
-      res<-.conj_diri_mv_2(sample, priors, plot)
-      
+      # res<-.conj_diri_mv_2(sample, prior, plot)
     } else {
-      stop(paste0("Selected distribution and data type are not supported, review methods and check if you are using SV traits",
-                  " with an MV only distribution (dirichlet) or MV traits with an SV only distribution (poisson, negbin)"))
+      stop(paste0("Selected distribution and data type are not supported"))
     }
   })
   
@@ -402,7 +364,15 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta",
   } else { dirSymbol <- NULL }
     #* `parse output and do ROPE`
   if(!is.null(rope_range)){
-    rope_res <- .conj_rope(sample_results, rope_range, rope_ci, plot)
+    
+    # if(method[[1]]=="dirichlet"){
+    #   rope_res <- .diri1_rope(sample_results, rope_range, rope_ci, plot)
+    # } else if(method[[1]]=="dirichlet2"){
+    #   rope_res <- .diri2_rope(sample_results, rope_range, rope_ci, plot)
+    # } else{
+      rope_res <- .conj_rope(sample_results, rope_range, rope_ci, plot)
+    # }
+    
     out$summary <- cbind(out$summary, rope_res$summary)
     } else{rope_res <- NULL}
   out$posterior <- lapply(names(sample_results[[1]]$posterior), function(nm){
@@ -423,12 +393,81 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta",
 
 
 #' ***********************************************************************************************
+#' *************** `Support Calculating function` ***********************************
+#' ***********************************************************************************************
+#' 
+#' 
+#' @keywords internal
+#' @noRd
+
+
+.getSupport <- function(samplesList, method, priors){
+  support_quantiles <-lapply(1:length(samplesList), function(i){
+    
+    sample <- samplesList[[i]]
+    prior = priors[[1]]
+    #* `Check sample class`
+    if(is.matrix(sample)|is.data.frame(sample)){ vec=FALSE
+    } else if(is.vector(sample)) { vec=TRUE 
+    } else{ stop("samples must be a vector, data.frame, or matrix.") }
+    
+    matched_arg<-match.arg(method[i], choices = c("t", "gaussian", "beta", "lognormal", "poisson", "negbin"))#, "dirichlet", "dirichlet2"))
+    
+    if(matched_arg == "t" & vec){
+      qnts<-.conj_gaussian_means_sv(s1 = sample, priors = prior, calculatingSupport = TRUE)
+      
+    } else if(matched_arg == "t" & !vec){
+      qnts<-.conj_gaussian_means_mv(s1 = sample, priors = prior, calculatingSupport = TRUE)
+      
+    } else if(matched_arg == "gaussian" & vec){
+      qnts<-.conj_gaussian_sv(s1 = sample, priors = prior, calculatingSupport = TRUE)
+      
+    } else if(matched_arg == "gaussian" & !vec){
+      qnts<-.conj_gaussian_mv(s1 = sample, priors = prior, calculatingSupport = TRUE)
+      
+    } else if(matched_arg == "beta" & vec){
+      qnts<-.conj_beta_sv(s1 = sample, priors = prior, calculatingSupport = TRUE)
+      
+    } else if(matched_arg == "beta" & !vec){
+      qnts<-.conj_beta_mv(s1 = sample, priors = prior, calculatingSupport = TRUE)
+      
+    } else if(matched_arg == "lognormal" & vec){
+      qnts<-.conj_lognormal_sv(s1 = sample, priors = prior, calculatingSupport = TRUE)
+      
+    } else if(matched_arg == "lognormal" & !vec){
+      qnts<-.conj_lognormal_mv(s1 = sample, priors = prior, calculatingSupport = TRUE)
+      
+    } else if(matched_arg == "poisson" & vec){
+      qnts<-.conj_poisson_sv(s1 = sample, priors = prior, calculatingSupport = TRUE)
+      
+    } else if(matched_arg == "negbin" & vec){
+      qnts<-.conj_negbin_sv(s1 = sample, priors = priors, calculatingSupport = TRUE)
+      
+    } else if(matched_arg == "dirichlet" & !vec){
+      qnts<-c(1,100)
+      
+    } else if(matched_arg == "dirichlet2" & !vec){
+      qnts<-c(1,100)
+      
+    } else {
+      stop(paste0("Selected distribution and data type are not supported."))
+    }
+  })
+  qnts <- range(unlist(support_quantiles))
+  support <- seq(qnts[1], qnts[2], length.out=10000)
+  return(support)
+}
+
+
+
+#' ***********************************************************************************************
 #' *************** `ROPE testing on two conjugateHelper outputs` ***********************************
 #' ***********************************************************************************************
 #' 
 #' this should take outputs from conjHelpers and compare the $posteriorDraws.
 #' This requires me to decide how I want things to work between the loop over methods to here.
-
+#' @keywords internal
+#' @noRd
 .conj_rope <- function(sample_results, rope_range = c(-0.1, 0.1), rope_ci = 0.89, plot){
   #* `ROPE Comparison`
   rope_res <- list()

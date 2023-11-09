@@ -17,14 +17,18 @@
 #' @keywords internal
 #' @noRd
 .conj_beta_mv<-function(s1 = NULL, priors = NULL,
-                        plot=FALSE, support = NULL, cred.int.level = NULL){
+                        plot=FALSE, support = NULL, cred.int.level = NULL,
+                        calculatingSupport=FALSE){
   #* `make default prior if none provided`
   if(is.null(priors)){
-    priors <- list(a=c(0.5,0.5),b=c(0.5,0.5))
+    priors <- list(a=0.5, b=0.5)
   }
   #* `Define dense Support`
   
-  if(is.null(support)){support <-seq(0.0001, 0.9999, 0.0001)}
+  if(is.null(support)){
+    if(calculatingSupport){return(c(0.0001, 0.9999))}
+    support <-seq(0.0001, 0.9999, 0.0001)
+  }
   
   out <- list()
   #* `Standardize sample 1 class and names`
@@ -104,15 +108,19 @@
 #' @keywords internal
 #' @noRd
 .conj_beta_sv<-function(s1 = NULL, priors = NULL,
-                        plot=FALSE, support=NULL, cred.int.level = NULL){
+                        plot=FALSE, support=NULL, cred.int.level = NULL,
+                        calculatingSupport=FALSE){
   
   if(any(c(s1, s2)>1)){stop("Values above 1 cannot be used with the beta distribution")}
   #* `make default prior if none provided`
   if(is.null(priors)){
-    priors <- list(a=c(0.5,0.5),b=c(0.5,0.5))
+    priors <- list(a=0.5, b=0.5)
   }
   #* `Define dense Support`
-  if(is.null(support)){support <-seq(0.0001, 0.9999, 0.0001)}
+  if(is.null(support)){
+    if(calculatingSupport){return(c(0.0001, 0.9999))}
+    support <-seq(0.0001, 0.9999, 0.0001)
+  }
   out <- list()
   
   #* `get parameters for s1 using method of moments``

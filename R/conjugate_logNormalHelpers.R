@@ -19,11 +19,12 @@
 #' @noRd
 
 .conj_lognormal_mv<-function(s1 = NULL, priors=NULL,
-                             plot=FALSE, support=NULL, cred.int.level = NULL){
+                             plot=FALSE, support=NULL, cred.int.level = NULL,
+                             calculatingSupport = FALSE){
   out <- list()
   #* `make default prior if none provided`
   if(is.null(priors)){
-    priors <- list( mu_log=c(log(10),log(10)),n=c(1,1),sigma_log=c(log(3),log(3)) )
+    priors <- list( mu_log=log(10),n=1,sigma_log=log(3) )
   }
   #* `Standardize sample 1 class and names`
   if(is.null(colnames(s1))){
@@ -65,6 +66,7 @@
   #* `Define support if it is missing`
   if(is.null(support)){
     quantiles <- qlnorm(c(0.0001, 0.9999), mu_ls_n, sigma_ls_n)
+    if(calculatingSupport){return(quantiles)}
     support<- seq(quantiles[1], quantiles[2], length.out=10000)
   }
   #* `posterior`
@@ -129,11 +131,12 @@
 #' @noRd
 
 .conj_lognormal_sv<-function(s1 = NULL, priors=NULL,
-                             plot=FALSE, support=NULL, cred.int.level = NULL){
+                             plot=FALSE, support=NULL, cred.int.level = NULL,
+                             calculatingSupport=FALSE){
   out <- list()
   #* `make default prior if none provided`
   if(is.null(priors)){
-    priors <- list( mu_log=c(log(10),log(10)),n=c(1,1),sigma_log=c(log(3),log(3)) )
+    priors <- list( mu_log=log(10),n=1,sigma_log=log(3) )
   }
   #* `Get mean and variance from s1`
   if(length(s1)>1){
@@ -159,6 +162,7 @@
     #* `Define support if it is missing`
     if(is.null(support)){
       quantiles <- qlnorm(c(0.0001, 0.9999), mu_ls_n, sigma_ls_n)
+      if(calculatingSupport){return(quantiles)}
       support<- seq(quantiles[1], quantiles[2], length.out=10000)
     }
     #* `posterior`
