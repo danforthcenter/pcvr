@@ -19,7 +19,6 @@
 #' p = \bar{x}/s^2
 #' 
 #' @param s1 A vector of numerics drawn from a negative binomial distribution.
-#' @param s2 An optional second sample of the same form as s2.
 #' @examples
 #' if(FALSE){
 #' set.seed(123)
@@ -62,7 +61,7 @@
                           calculatingSupport=FALSE){
   
   #* `Check samples`
-  if(any(abs(c(s1,s2)-round(c(s1,s2)))>.Machine$double.eps^0.5) | any(c(s1,s2)<0) ){stop("Only positive whole numbers can be used in the Negative Binomial distribution")}
+  if(any(abs(s1-round(s1))>.Machine$double.eps^0.5) | any(s1<0) ){stop("Only positive whole numbers can be used in the Negative Binomial distribution")}
   #* `make default prior if none provided`
   if(is.null(priors)){
     priors <- list(r=10, a=0.5, b= 0.5) # beta prior on P

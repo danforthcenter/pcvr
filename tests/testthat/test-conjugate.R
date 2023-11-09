@@ -76,7 +76,7 @@ test_that("conjugate multi value gaussian works", {
 
   expect_equal(out$summary$post.prob, 0.7153165, tolerance = 1e-6)
   
-  expect_equal(out$summary$rope_prob, 0.1859342, tolerance = 0.015)
+  expect_equal(out$summary$rope_prob, 0.1824514, tolerance = 0.015)
   
   expect_equal(names(out), c("summary", "posterior") )
 })

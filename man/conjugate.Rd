@@ -111,7 +111,7 @@ mv_ln<- mvSim(
  n_samples = 30 )
              
 # lognormal mv
-ln_mv_ex <- conjugate(s1 = mv_ln[1:30,], s2= mv_ln[31:60,], method = "lognormal",
+ln_mv_ex <- conjugate(s1 = mv_ln[1:30, -1], s2= mv_ln[31:60, -1], method = "lognormal",
                    priors = list( mu_log=log(10),n=1, sigma_log=log(3) ),
                    plot=FALSE, rope_range = c(-40,40), rope_ci = 0.89,
                    cred.int.level = 0.89, hypothesis="equal", support=NULL)
@@ -130,8 +130,8 @@ mv_gauss<- mvSim(
               rnorm = list(mean = 60, sd=12)),
  n_samples = 30 )
                 
-gauss_mv_ex <- conjugate(s1=mv_gauss[1:30,], s2= mv_gauss[31:60,], method = "gaussian",
-                  priors =priors = list( mu=30, n=1,s2=100 ),
+gauss_mv_ex <- conjugate(s1=mv_gauss[1:30,-1], s2= mv_gauss[31:60,-1], method = "gaussian",
+                  priors = list( mu=30, n=1,s2=100 ),
                   plot=FALSE, rope_range = c(-25, 25), rope_ci = 0.89,
                   cred.int.level = 0.89, hypothesis="equal", support=NULL)
                   
@@ -160,7 +160,7 @@ mv_gauss<- mvSim(
               rnorm = list(mean = 60, sd=12)),
  n_samples = 30 )
 
-gaussianMeans_mv_ex <- conjugate(s1=mv_gauss[1:30,], s2= mv_gauss[31:60,], method="t",
+gaussianMeans_mv_ex <- conjugate(s1=mv_gauss[1:30, -1], s2= mv_gauss[31:60, -1], method="t",
                         priors = list( mu=30, n=1,s2=100 ),
                         plot=FALSE, rope_range = c(-5,5), rope_ci = 0.89, 
                         cred.int.level = 0.89, hypothesis="equal", support=NULL)
@@ -183,7 +183,7 @@ mv_beta<- mvSim(
                rbeta = list(shape1=10, shape2=10)),
   n_samples = c(30,20))
 
-beta_mv_ex <- conjugate(s1 = mv_beta[1:30,], s2= mv_beta[31:50,], method="beta",
+beta_mv_ex <- conjugate(s1 = mv_beta[1:30, -1], s2= mv_beta[31:50, -1], method="beta",
               priors = list(a=0.5, b=0.5),
               plot=FALSE, rope_range = c(-0.1, 0.1), rope_ci = 0.89, 
               cred.int.level = 0.89, hypothesis="equal")

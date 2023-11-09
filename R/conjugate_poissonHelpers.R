@@ -11,7 +11,6 @@
 #' 
 #' via MoM \hat(\labmda) =  = 1/n +sum^1_n(x)
 #' @param s1 A vector of numerics drawn from a beta distribution.
-#' @param s2 An optional second sample of the same form as s2.
 #' @examples
 #' if(FALSE){
 #' .conj_poisson_sv(s1 = rpois(20, 10), priors = list(a=c(0.5,0.5),b=c(0.5,0.5)),
@@ -24,7 +23,7 @@
                            plot=FALSE, support=NULL, cred.int.level = NULL,
                            calculatingSupport = FALSE ){
   #* `Check samples`
-  if(any(abs(c(s1,s2)-round(c(s1,s2)))>.Machine$double.eps^0.5) | any(c(s1,s2)<0) ){stop("Only positive whole numbers can be used in the Poisson distribution")}
+  if(any(abs(s1-round(s1))>.Machine$double.eps^0.5) | any(s1<0) ){stop("Only positive whole numbers can be used in the Negative Binomial distribution")}
   #* `make default prior if none provided`
   if(is.null(priors)){
     priors <- list(a=0.5, b=0.5) # gamma prior on lambda

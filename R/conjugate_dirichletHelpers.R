@@ -134,11 +134,16 @@
 
 .diri2_rope <- function(sample_results, rope_range = c(-0.1, 0.1), rope_ci = 0.89, plot){
 
+
   if(length(sample_results)==2){
     posterior <- sample_results[[1]]$posteriorDraws - sample_results[[2]]$posteriorDraws
   } else{
     posterior = sample_results[[1]]$posteriorDraws
   }
+  
+  abs_mean_diff <- abs(posterior)
+  norm_abs_mean_diff <- abs_mean_diff/sum(abs_mean_diff)
+  norm_mean_diff <- ifelse(direction, 1, -1) * norm_abs_mean_diff
   
   rope_probs<-lapply(1:ncol(posterior), function(bin){
     as.numeric(bayestestR::rope(posterior[,bin], range = rope_range, ci_method = "HDI", ci=rope_ci))

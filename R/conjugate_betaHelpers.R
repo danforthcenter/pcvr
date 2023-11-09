@@ -111,7 +111,7 @@
                         plot=FALSE, support=NULL, cred.int.level = NULL,
                         calculatingSupport=FALSE){
   
-  if(any(c(s1, s2)>1)){stop("Values above 1 cannot be used with the beta distribution")}
+  if(any(c(s1)>1)){stop("Values above 1 cannot be used with the beta distribution")}
   #* `make default prior if none provided`
   if(is.null(priors)){
     priors <- list(a=0.5, b=0.5)
