@@ -32,7 +32,7 @@ test_that("conjugate multi value T works", {
                           plot=FALSE, rope_range = c(-5,5), rope_ci = 0.89,
                           cred.int.level = 0.89, hypothesis="equal", support=NULL)
   
-  expect_equal(out$summary$post.prob, 0.001036255, tol=1e-6)
+  expect_equal(out$summary$post.prob, 0.001036255, tolerance=1e-6)
   
   expect_true(out$summary$rope_prob  < 1e-5)
   
