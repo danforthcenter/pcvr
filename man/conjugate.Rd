@@ -138,7 +138,7 @@ gauss_mv_ex <- conjugate(s1=mv_gauss[1:30,-1], s2= mv_gauss[31:60,-1], method = 
 # Z test sv example
 set.seed(123)
 gauss_sv_ex_bad <- conjugate(s1=rnorm(15, 50,10), s2= rnorm(15, 60,12), method = "gaussian",
-                  priors = priors = list( mu=30, n=1,s2=100 ),
+                  priors = list( mu=30, n=1,s2=100 ),
                   plot=FALSE, rope_range = c(-10, 10), rope_ci = 0.89, 
                   cred.int.level = 0.89, hypothesis="equal", support=NULL)
                   
@@ -147,7 +147,7 @@ gauss_sv_ex_bad <- conjugate(s1=rnorm(15, 50,10), s2= rnorm(15, 60,12), method =
 # tend to be reasonably fast.
 
 gauss_sv_ex <- conjugate(s1=rnorm(15, 50,10), s2= rnorm(15, 60,12), method = "gaussian",
-                  priors = priors = list( mu=30, n=1,s2=100 ),
+                  priors = list( mu=30, n=1,s2=100 ),
                   plot=FALSE, rope_range = c(-10, 10), rope_ci = 0.89, 
                   cred.int.level = 0.89, hypothesis="equal", support=seq(-20,120, 0.01))
 # Note that the ROPE probability is somewhat unstable here since the distribution of differences
