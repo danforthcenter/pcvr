@@ -137,8 +137,10 @@
 
   if(length(sample_results)==2){
     posterior <- sample_results[[1]]$posteriorDraws - sample_results[[2]]$posteriorDraws
+    direction <- sample_results[[1]]$posteriorDraws >= sample_results[[2]]$posteriorDraws
   } else{
     posterior = sample_results[[1]]$posteriorDraws
+    direction = rep(TRUE, length(posterior))
   }
   
   abs_mean_diff <- abs(posterior)

@@ -199,16 +199,6 @@ test_that("conjugate single value negative binomial works", {
                 plot=FALSE, rope_range = c(-0.5, 0.5), rope_ci = 0.89,
                 cred.int.level = 0.89, hypothesis="equal")
   
-  # summary(unlist(lapply(1:100, function(i){
-  #   #set.seed(123)
-  #   out <- conjugate(s1 = s1, s2= s2, method = "poisson",
-  #                    priors = list(a=c(0.5,0.5),b=c(0.5,0.5)),
-  #                    plot=FALSE, rope_range = c(-1, 1), rope_ci = 0.89,
-  #                    cred.int.level = 0.89, hypothesis="equal")
-  #   #out$summary$post.prob
-  #   out$summary$rope_prob
-  # })))
-  
   expect_equal(out$summary$post.prob, 6.569111e-09, tolerance = 1e-6)
   
   expect_equal(out$summary$rope_prob, 1, tolerance = 1e-6)
@@ -236,6 +226,59 @@ test_that("generic conjugate plotting works", {
   expect_s3_class(out$plot, "ggplot")
   
 })
+
+
+
+
+test_that("conjugate single value lognormal vs gaussian", {
+  
+  set.seed(123)
+  s1<-rlnorm(100, log(70), log(2))
+  s2<-rnorm(100, 100, 20)
+  out <- conjugate(s1=s1, s2= s2,
+                   method = c("lognormal", "gaussian"), priors = list(
+                     list(mu_log=log(10), n=1, sigma_log=log(3)),
+                     list(mu=40, n=1, s2=100) ), 
+                   plot=FALSE, rope_range = c(-10,10), rope_ci = 0.89, cred.int.level = 0.89,
+                   hypothesis="equal", support=NULL)
+  
+  expect_equal(out$summary$post.prob, 0.4956441, tolerance = 1e-6)
+  
+  expect_equal(out$summary$rope_prob, 0.3808561, tolerance = 1e-6)
+  
+  expect_equal(unlist(lapply(out$posterior, function(p){names(p)})), c("mu_log", "n", "sigma_log", "mu", "n", "s2") )
+  
+  expect_equal(names(out), c("summary", "posterior") )
+  
+})
+
+
+test_that("conjugate multi value lognormal works", {
+  set.seed(123)
+  mv_ln<- mvSim(
+    dists = list(rlnorm = list(meanlog=log(50), sdlog=log(1.7)),
+                 rnorm = list(mean=60, sd=10 )),
+    n_samples = 30 )
+  
+  
+  out <- conjugate(s1 = mv_ln[1:30,-1], s2= mv_ln[31:60, -1], method = c("lognormal", "gaussian"),
+                   priors = list(
+                     list( mu_log=log(10), n=1, sigma_log=log(3) ),
+                     list( mu=40, n=1, s2=100 )
+                     ),
+                   plot=FALSE, rope_range = c(-5,5), rope_ci = 0.89,
+                   cred.int.level = 0.89, hypothesis="equal", support=NULL)
+  
+  expect_equal(out$summary$post.prob, 0.7009422, tolerance = 1e-6)
+  
+  expect_equal(out$summary$rope_prob, 0.3070442, tolerance = 0.0001)
+  
+  expect_equal(unlist(lapply(out$posterior, function(p){names(p)})), c("mu_log", "n", "sigma_log", "mu", "n", "s2") )
+  
+  expect_equal(names(out), c("summary", "posterior") )
+})
+
+
 
 # test_that("dirichlet conjugate plotting version 1 works", {
 #   set.seed(123)
