@@ -7,8 +7,7 @@
 conjugate(
   s1 = NULL,
   s2 = NULL,
-  method = c("t", "gaussian", "beta", "lognormal", "poisson", "negbin", "dirichlet",
-    "dirichlet2"),
+  method = c("t", "gaussian", "beta", "lognormal", "poisson", "negbin"),
   priors = NULL,
   plot = FALSE,
   rope_range = NULL,
@@ -25,24 +24,20 @@ If a multi value trait is used then column names should include a number represe
 \item{s2}{An optional second sample of the same form as s2.}
 
 \item{method}{The distribution/method to use.
-Currently "t", "gaussian", "beta", "lognormal", "poisson", "negbin" (negative binomial), "dirichlet", and "dirichlet2"
+Currently "t", "gaussian", "beta", "lognormal", "poisson", and "negbin" (negative binomial).
 are supported. The count distributions (poisson and negative binomial) 
-are only implemented for single value traits. Dirichlets are only implemented with multi value traits and
-will return the summary component as a data.table with nested data frames for the ROPE HDI/HDE
-if rope_range is specified. For brevity the HDE and HDI of the samples are not returned when
-using the dirichlet method. The "dirichlet" method does not compute an HDI and only compares how much of the posterior
-distribution (sample 1 - sample 2) is within the ROPE interval. The "dirichlet2" method does make an HDI and run normal 
-ROPE tests per each bin using the alpha vector from each sample to simulate draws from the dirichlet. Bear in mind
- that dirichlet is sensitive to the total number of counts in the data. If the mean vector
-(alpha_vec ~ mean_vec * precision) were to be used instead of the alpha vector then the distributions
-in each bin would be much wider.
+are only implemented for single value traits. 
 The "t" and "gaussian" methods both use a T distribution with "t" testing for a difference
  of means and "gaussian" testing for a difference in the distributions (similar to a Z test).}
 
-\item{priors}{Prior distributions described as a list. This varies by method, see details.
-By default this is NULL and weak priors (jeffrey's prior where appropriate) are used.
-The \code{posterior} part of output can also be recycled as a new prior if Bayesian
-updating is appropriate for your use.}
+\item{priors}{Prior distributions described as a list of lists.
+If this is a single list then it will be duplicated for the second sample, which is generally a good idea if both
+samples use the same distribution (method). 
+Elements in the inner lists should be named for the parameter they represent (see examples).
+These names vary by method (see details).
+ By default this is NULL and weak priors (jeffrey's prior where appropriate) are used.
+ The \code{posterior} part of output can also be recycled as a new prior if Bayesian
+ updating is appropriate for your use.}
 
 \item{plot}{Logical, should a ggplot be made and returned.}
 
@@ -104,55 +99,46 @@ Prior distributions default to be weakly informative and in some cases you may w
     where r is the r parameter of the negative binomial distribution (representing the number of successes required)
      and where a and b are shape parameters of the beta distribution. Note that the r value is not updated.
       The conjugate beta prior is only valid when r is fixed and known, which is a limitation for this method.}
+   
 }
 
 See examples for plots of these prior distributions.
 }
 \examples{
-makeMvLn<-function(bins=500,mu_log,sigma_log){
-   setNames(data.frame(matrix(hist(rlnorm(2000,mu_log, sigma_log),
-      breaks=seq(1,bins,5), plot=FALSE)$counts, nrow=1)),
-    paste0("b",seq(1,bins,5))[-1] ) }
-set.seed(123) 
-mv_ln<-rbind(do.call(rbind,
-           lapply(1:30, function(i){makeMvLn(mu_log=log(130),
-             sigma_log=log(1.3) )})),
-          do.call(rbind,
-           lapply(1:30, function(i){makeMvLn(mu_log=log(100),
-             sigma_log=log(1.2) )})))
+mv_ln<- mvSim(
+ dists = list(rlnorm = list(meanlog=log(130), sdlog=log(1.2)),
+              rlnorm = list(meanlog=log(100), sdlog=log(1.3))),
+ n_samples = 30 )
              
 # lognormal mv
 ln_mv_ex <- conjugate(s1 = mv_ln[1:30,], s2= mv_ln[31:60,], method = "lognormal",
-                   priors = list( mu_log=c(log(10),log(10)),n=c(1,1),sigma_log=c(log(3),log(3)) ),
+                   priors = list( mu_log=log(10),n=1, sigma_log=log(3) ),
                    plot=FALSE, rope_range = c(-40,40), rope_ci = 0.89,
                    cred.int.level = 0.89, hypothesis="equal", support=NULL)
 
 # lognormal sv
 ln_sv_ex <- conjugate(s1=rlnorm(100, log(130), log(1.3)), s2= rlnorm(100, log(100), log(1.6)),
  method = "lognormal",
-                   priors = list( mu_log=c(log(10),log(10)),n=c(1,1),sigma_log=c(log(3),log(3)) ),
+                   priors = list( mu_log=log(10),n=1,sigma_log=log(3) ),
                    plot=FALSE, rope_range = NULL, rope_ci = 0.89, 
                    cred.int.level = 0.89, hypothesis="equal", support=NULL)
 
 # Z test mv example
 
-makeMvGauss<-function(bins=180,mu,sigma){
-   setNames(data.frame(matrix(hist(rnorm(2000,mu, sigma),
-   breaks=seq(1,bins,1), plot=FALSE)$counts, nrow=1)),
-   paste0("b",1:(bins-1) ))
-   }
-mv_gauss<-rbind(do.call(rbind, lapply(1:30, function(i){makeMvGauss(bins=180, mu=50, sigma=10 )})),
-                do.call(rbind, lapply(1:30, function(i){makeMvGauss(bins=180, mu=60, sigma=12 )})))
+mv_gauss<- mvSim(
+ dists = list(rnorm = list(mean = 50, sd = 10),
+              rnorm = list(mean = 60, sd=12)),
+ n_samples = 30 )
                 
 gauss_mv_ex <- conjugate(s1=mv_gauss[1:30,], s2= mv_gauss[31:60,], method = "gaussian",
-                  priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ),
+                  priors =priors = list( mu=30, n=1,s2=100 ),
                   plot=FALSE, rope_range = c(-25, 25), rope_ci = 0.89,
                   cred.int.level = 0.89, hypothesis="equal", support=NULL)
                   
 # Z test sv example
 set.seed(123)
 gauss_sv_ex_bad <- conjugate(s1=rnorm(15, 50,10), s2= rnorm(15, 60,12), method = "gaussian",
-                  priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ),
+                  priors = priors = list( mu=30, n=1,s2=100 ),
                   plot=FALSE, rope_range = c(-10, 10), rope_ci = 0.89, 
                   cred.int.level = 0.89, hypothesis="equal", support=NULL)
                   
@@ -161,7 +147,7 @@ gauss_sv_ex_bad <- conjugate(s1=rnorm(15, 50,10), s2= rnorm(15, 60,12), method =
 # tend to be reasonably fast.
 
 gauss_sv_ex <- conjugate(s1=rnorm(15, 50,10), s2= rnorm(15, 60,12), method = "gaussian",
-                  priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ),
+                  priors = priors = list( mu=30, n=1,s2=100 ),
                   plot=FALSE, rope_range = c(-10, 10), rope_ci = 0.89, 
                   cred.int.level = 0.89, hypothesis="equal", support=seq(-20,120, 0.01))
 # Note that the ROPE probability is somewhat unstable here since the distribution of differences
@@ -169,16 +155,13 @@ gauss_sv_ex <- conjugate(s1=rnorm(15, 50,10), s2= rnorm(15, 60,12), method = "ga
 
 # T test mv example 
 
-makeMvGauss<-function(bins=180,mu,sigma){
-   setNames(data.frame(matrix(hist(rnorm(2000,mu, sigma),
-    breaks=seq(1,bins,1), plot=FALSE)$counts, nrow=1)),
-   paste0("b",1:(bins-1) ))
-   }
-mv_gauss<-rbind(do.call(rbind, lapply(1:30, function(i){makeMvGauss(bins=180, mu=50, sigma=10 )})),
-                do.call(rbind, lapply(1:30, function(i){makeMvGauss(bins=180, mu=60, sigma=12 )})))
+mv_gauss<- mvSim(
+ dists = list(rnorm = list(mean = 50, sd = 10),
+              rnorm = list(mean = 60, sd=12)),
+ n_samples = 30 )
 
 gaussianMeans_mv_ex <- conjugate(s1=mv_gauss[1:30,], s2= mv_gauss[31:60,], method="t",
-                        priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ),
+                        priors = list( mu=30, n=1,s2=100 ),
                         plot=FALSE, rope_range = c(-5,5), rope_ci = 0.89, 
                         cred.int.level = 0.89, hypothesis="equal", support=NULL)
                         
@@ -186,7 +169,7 @@ gaussianMeans_mv_ex <- conjugate(s1=mv_gauss[1:30,], s2= mv_gauss[31:60,], metho
 # T test sv example
 
 gaussianMeans_sv_ex <- conjugate(s1=rnorm(10, 50,10), s2= rnorm(10, 60,12), method="t",
-                        priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ),
+                        priors = list( mu=30, n=1,s2=100 ),
                         plot=FALSE, rope_range = c(-5,8), rope_ci = 0.89, 
                         cred.int.level = 0.89, hypothesis="equal", support=NULL)
 
@@ -194,31 +177,28 @@ gaussianMeans_sv_ex <- conjugate(s1=rnorm(10, 50,10), s2= rnorm(10, 60,12), meth
 
 # beta mv example
 
-makeMvBeta<-function(n=100,a,b){
-  setNames(data.frame(matrix(hist(rbeta(2000,a,b),
-  breaks=seq(0,1,length.out=n), plot=FALSE)$counts, nrow=1)),
-  paste0("b0.",1:(n-1)))
-}
+set.seed(123)
+mv_beta<- mvSim(
+  dists = list(rbeta = list(shape1=5, shape2=8),
+               rbeta = list(shape1=10, shape2=10)),
+  n_samples = c(30,20))
 
-mv_beta<-rbind(do.call(rbind, lapply(1:30, function(i){makeMvBeta(n=100, a=5, b=8 )})),
-               do.call(rbind, lapply(1:30, function(i){makeMvBeta(n=100, a=10, b=3 )})))
-
-beta_mv_ex <- conjugate(s1 = mv_beta[1:30,], s2= mv_beta[31:60,], method="beta",
-              priors = list(a=c(0.5,0.5),b=c(0.5,0.5)),
+beta_mv_ex <- conjugate(s1 = mv_beta[1:30,], s2= mv_beta[31:50,], method="beta",
+              priors = list(a=0.5, b=0.5),
               plot=FALSE, rope_range = c(-0.1, 0.1), rope_ci = 0.89, 
               cred.int.level = 0.89, hypothesis="equal")
 
 # beta sv example
 
 beta_sv_ex <- conjugate(s1 = rbeta(20, 5, 5), s2= rbeta(20, 8, 5), method="beta",
-              priors = list(a=c(0.5,0.5),b=c(0.5,0.5)),
+              priors = list(a=0.5, b=0.5),
               plot=FALSE, rope_range = c(-0.1, 0.1), rope_ci = 0.89, 
               cred.int.level = 0.89, hypothesis="equal")
 
 # poisson sv example
 
 poisson_sv_ex <- conjugate(s1 = rpois(20, 10), s2= rpois(20, 8), method="poisson",
-              priors = list(a=c(0.5,0.5),b=c(0.5,0.5)),
+              priors = list(a=0.5, b=0.5),
               plot=FALSE, rope_range = c(-1, 1), rope_ci = 0.89, 
               cred.int.level = 0.89, hypothesis="equal")
 
@@ -227,31 +207,10 @@ poisson_sv_ex <- conjugate(s1 = rpois(20, 10), s2= rpois(20, 8), method="poisson
 # in the current implementation we suggest using the poisson method for data such as leaf counts
 
 negbin_sv_ex <- conjugate(s1 = rnbinom(20, 10, 0.5), s2= rnbinom(20, 10, 0.25), method="negbin",
-              priors = list(r = c(10, 10), a=c(0.5,0.5),b=c(0.5,0.5)),
+              priors = list(r = 10, a=0.5,b=0.5),
               plot=FALSE, rope_range = c(-1, 1), rope_ci = 0.89, 
               cred.int.level = 0.89, hypothesis="equal")
 
-# Dirichlet mv example
-
-makeMvLn<-function(bins=500,mu_log,sigma_log){
-setNames(data.frame(matrix(hist(rlnorm(2000,mu_log, sigma_log),
-                                breaks=seq(1,bins,5), plot=FALSE)$counts, nrow=1)),
-                                         paste0("b",seq(1,bins,5))[-1] ) }
-set.seed(123) 
-mv_ln<-rbind(do.call(rbind,
-                      lapply(1:30, function(i){makeMvLn(mu_log=log(130),
-                                          sigma_log=log(1.3) )})),
-            do.call(rbind, lapply(1:30, function(i){makeMvLn(mu_log=log(100),
-                                          sigma_log=log(1.2) )})))
-s1 <- mv_ln[1:30, ]
-s2 <- mv_ln[31:60, ]
-diri_ex_1 <- conjugate(s1, s2, method = "dirichlet", priors=NULL, plot=FALSE,
-      rope_range = c(-0.025, 0.025), rope_ci = 0.89, 
-      cred.int.level = 0.89, hypothesis="equal")
-      
-diri_ex_2 <- conjugate(s1, s2, method = "dirichlet2", priors=NULL, plot=FALSE,
-      rope_range = c(-0.025, 0.025), rope_ci = 0.89, 
-      cred.int.level = 0.89, hypothesis="equal")  
       
 
 
@@ -282,7 +241,7 @@ B73_sample <- wide[wide$genotype=="B73" &
                    grepl("hue_freq", colnames(wide))]
 
 hue_res_t <- conjugate(s1 = mo17_sample, s2= B73_sample, method="t",
-              priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ),
+              priors = list( mu=50,n=1,s2=100 ),
               plot=TRUE, rope_range = c(-10,10), rope_ci = 0.89, 
               cred.int.level = 0.89, hypothesis="equal")
               
@@ -314,7 +273,7 @@ mo17_area <- sv[wide$genotype=="Mo17" & wide$DAS > 18 & wide$fertilizer == 50, "
 B73_area <- sv[wide$genotype=="B73" & wide$DAS > 18 & wide$fertilizer == 50, "area_cm2"]
 
 area_res_t <- conjugate(s1 = mo17_area, s2= B73_area, method="t",
-              priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ),
+              priors = list( mu=30, n=1, s2=100 ),
               plot=TRUE, rope_range = c(-5,5), rope_ci = 0.89, 
               cred.int.level = 0.89, hypothesis="equal")
 }
@@ -328,7 +287,7 @@ plot(seq(0,1,0.0001), dbeta(seq(0,1,0.0001), 0.5, 0.5), ylab="Density",
 plot(seq(0,10,0.01), dgamma(seq(0,10,0.01), 0.5, 0.5), ylab="Density", xlab="Support",
  main="Poisson (gamma prior on Lambda parameter)", type="l")
 
-plot(seq(-20,20.001), dnorm(seq(-20,20.001), 0, sqrt(20)), ylab="Density", 
+plot(seq(-20,20.001), dnorm(seq(-20,20.001), 0, sqrt(100)), ylab="Density", 
 xlab="Support", main="T and Gaussian", type="l")
 
 plot(seq(0,70,0.001), dlnorm(seq(0,70,0.001), log(10), log(3)), ylab="Density", 

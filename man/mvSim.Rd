@@ -8,6 +8,7 @@ mvSim(
   dists = list(rnorm = list(mean = 100, sd = 15)),
   n_samples = 10,
   counts = 1000,
+  min_bin = 1,
   max_bin = 180,
   wide = TRUE
 )
@@ -17,7 +18,7 @@ mvSim(
 and arguments to the function in the list values (see examples). Note that the n argument
 does not need to be provided.}
 
-\item{n_samples}{Number of samples per distribution to generate. Defaults to 10.}
+\item{n_samples}{Number of samples per distribution to generate. Defaults to 10, can be >1L.}
 
 \item{counts}{Number of counts per histogram, defaults to 1000.}
 

@@ -73,17 +73,10 @@
 #' 
 #' 
 #' @examples 
-#' makeMvLn<-function(bins=500,mu_log,sigma_log){
-#'    setNames(data.frame(matrix(hist(rlnorm(2000,mu_log, sigma_log),
-#'       breaks=seq(1,bins,5), plot=FALSE)$counts, nrow=1)),
-#'     paste0("b",seq(1,bins,5))[-1] ) }
-#' set.seed(123) 
-#' mv_ln<-rbind(do.call(rbind,
-#'            lapply(1:30, function(i){makeMvLn(mu_log=log(130),
-#'              sigma_log=log(1.3) )})),
-#'           do.call(rbind,
-#'            lapply(1:30, function(i){makeMvLn(mu_log=log(100),
-#'              sigma_log=log(1.2) )})))
+#' mv_ln<- mvSim(
+#'  dists = list(rlnorm = list(meanlog=log(130), sdlog=log(1.2)),
+#'               rlnorm = list(meanlog=log(100), sdlog=log(1.3))),
+#'  n_samples = 30 )
 #'              
 #' # lognormal mv
 #' ln_mv_ex <- conjugate(s1 = mv_ln[1:30,], s2= mv_ln[31:60,], method = "lognormal",
@@ -100,13 +93,10 @@
 #' 
 #' # Z test mv example
 #'
-#' makeMvGauss<-function(bins=180,mu,sigma){
-#'    setNames(data.frame(matrix(hist(rnorm(2000,mu, sigma),
-#'    breaks=seq(1,bins,1), plot=FALSE)$counts, nrow=1)),
-#'    paste0("b",1:(bins-1) ))
-#'    }
-#' mv_gauss<-rbind(do.call(rbind, lapply(1:30, function(i){makeMvGauss(bins=180, mu=50, sigma=10 )})),
-#'                 do.call(rbind, lapply(1:30, function(i){makeMvGauss(bins=180, mu=60, sigma=12 )})))
+#' mv_gauss<- mvSim(
+#'  dists = list(rnorm = list(mean = 50, sd = 10),
+#'               rnorm = list(mean = 60, sd=12)),
+#'  n_samples = 30 )
 #'                 
 #' gauss_mv_ex <- conjugate(s1=mv_gauss[1:30,], s2= mv_gauss[31:60,], method = "gaussian",
 #'                   priors =priors = list( mu=30, n=1,s2=100 ),
@@ -133,13 +123,10 @@
 #' 
 #' # T test mv example 
 #' 
-#' makeMvGauss<-function(bins=180,mu,sigma){
-#'    setNames(data.frame(matrix(hist(rnorm(2000,mu, sigma),
-#'     breaks=seq(1,bins,1), plot=FALSE)$counts, nrow=1)),
-#'    paste0("b",1:(bins-1) ))
-#'    }
-#' mv_gauss<-rbind(do.call(rbind, lapply(1:30, function(i){makeMvGauss(bins=180, mu=50, sigma=10 )})),
-#'                 do.call(rbind, lapply(1:30, function(i){makeMvGauss(bins=180, mu=60, sigma=12 )})))
+#' mv_gauss<- mvSim(
+#'  dists = list(rnorm = list(mean = 50, sd = 10),
+#'               rnorm = list(mean = 60, sd=12)),
+#'  n_samples = 30 )
 #'
 #' gaussianMeans_mv_ex <- conjugate(s1=mv_gauss[1:30,], s2= mv_gauss[31:60,], method="t",
 #'                         priors = list( mu=30, n=1,s2=100 ),
@@ -158,16 +145,13 @@
 #' 
 #' # beta mv example
 #' 
-#' makeMvBeta<-function(n=100,a,b){
-#'   setNames(data.frame(matrix(hist(rbeta(2000,a,b),
-#'   breaks=seq(0,1,length.out=n), plot=FALSE)$counts, nrow=1)),
-#'   paste0("b0.",1:(n-1)))
-#' }
+#' set.seed(123)
+#' mv_beta<- mvSim(
+#'   dists = list(rbeta = list(shape1=5, shape2=8),
+#'                rbeta = list(shape1=10, shape2=10)),
+#'   n_samples = c(30,20))
 #' 
-#' mv_beta<-rbind(do.call(rbind, lapply(1:30, function(i){makeMvBeta(n=100, a=5, b=8 )})),
-#'                do.call(rbind, lapply(1:30, function(i){makeMvBeta(n=100, a=10, b=3 )})))
-#' 
-#' beta_mv_ex <- conjugate(s1 = mv_beta[1:30,], s2= mv_beta[31:60,], method="beta",
+#' beta_mv_ex <- conjugate(s1 = mv_beta[1:30,], s2= mv_beta[31:50,], method="beta",
 #'               priors = list(a=0.5, b=0.5),
 #'               plot=FALSE, rope_range = c(-0.1, 0.1), rope_ci = 0.89, 
 #'               cred.int.level = 0.89, hypothesis="equal")
