@@ -359,11 +359,7 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta",
     
     out$summary <- cbind(out$summary, rope_res$summary)
     } else{rope_res <- NULL}
-  out$posterior <- lapply(names(sample_results[[1]]$posterior), function(nm){
-    unlist(lapply(sample_results, function(s){s$posterior[[nm]]}))
-    })
-  out$posterior <- stats::setNames(out$posterior, names(sample_results[[1]]$posterior) )
-  
+  out$posterior <- lapply(sample_results, function(s) s$posterior)
   
   #* `Make plot`
   if(grepl("dirichlet", method[1]) & plot){
