@@ -1,6 +1,6 @@
 #' Variance partitioning using Fully Random Effects Models
 #' 
-#' df, des, phenotypes, timeCol, cor, returnData, combine, markSingular, time
+#' Variance partitioning for phenotypes (over time) using fully random effects models
 #' 
 #' @param df Dataframe containing phenotypes and design variables, optionally over time.
 #' @param des Design variables to partition variance for as a character vector.

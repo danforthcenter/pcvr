@@ -52,7 +52,7 @@ Returns either a plot (if returnData=FALSE) or a list with a plot and
 data/a list of dataframes (depending on returnData and cor).
 }
 \description{
-df, des, phenotypes, timeCol, cor, returnData, combine, markSingular, time
+Variance partitioning for phenotypes (over time) using fully random effects models
 }
 \examples{
 
