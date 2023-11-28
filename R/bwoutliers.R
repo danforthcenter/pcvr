@@ -176,14 +176,15 @@ bw.outliers<-function(df = NULL,
     if(is.null(x)){x = group[1]}
     p<-ggplot2::ggplot()+
       ggplot2::facet_wrap(stats::as.formula(paste0("~", paste(group[-1], collapse="+"))))+
-      ggplot2::geom_line(data=out_plotData, ggplot2::aes(x=.data[[x]], y=.data[[phenotype]], group=.data[["grouping"]]),linewidth=0.25 )+
+      ggplot2::geom_line(data=df, ggplot2::aes(x=.data[[x]], y=.data[[phenotype]], group=.data[["grouping"]]),linewidth=0.25 )+
       ggplot2::labs(title=pctRm)+
       pcv_theme()
     
     yLims <- ggplot2::layer_scales(p)$y$range$range
     
     p <- p +
-      ggplot2::geom_line(data=rmdf_plotData, ggplot2::aes(x=.data[[x]], y=.data[[phenotype]], group=.data[["grouping"]]), linewidth=0.15, color="red")+
+      #ggplot2::geom_line(data=rmdf_plotData, ggplot2::aes(x=.data[[x]], y=.data[[phenotype]], group=.data[["grouping"]]), linewidth=0.15, color="red")+
+      ggplot2::geom_point(data=rmdf_plotData, ggplot2::aes(x=.data[[x]], y=.data[[phenotype]]), color="red", size=0.5)+
       ggplot2::coord_cartesian(ylim = yLims)
     
   } else if(plot & !wide & !mv){
@@ -194,9 +195,16 @@ bw.outliers<-function(df = NULL,
     if(is.null(x)){x = group[1]}
     p<-ggplot2::ggplot()+
       ggplot2::facet_wrap(stats::as.formula(paste0("~", paste(group[-1], collapse="+"))))+
-      ggplot2::geom_line(data=out_plotData, ggplot2::aes(x=.data[[x]], y=.data[[valueCol]], group=.data[["grouping"]]),linewidth=0.25 )+
+      ggplot2::geom_line(data=df, ggplot2::aes(x=.data[[x]], y=.data[[valueCol]], group=.data[["grouping"]]),linewidth=0.25 )+
       ggplot2::labs(title=pctRm)+
       pcv_theme()
+    
+    yLims <- ggplot2::layer_scales(p)$y$range$range
+    
+    p <- p +
+      #ggplot2::geom_line(data=rmdf_plotData, ggplot2::aes(x=.data[[x]], y=.data[[valueCol]], group=.data[["grouping"]]), linewidth=0.15, color="red")+
+      ggplot2::geom_point(data=rmdf_plotData, ggplot2::aes(x=.data[[x]], y=.data[[valueCol]]), color="red", size=0.5)+
+      ggplot2::coord_cartesian(ylim = yLims)
     
   } else if(plot & wide & mv){
     #* lengthen data, make bar plot?
