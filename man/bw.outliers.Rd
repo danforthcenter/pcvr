@@ -68,7 +68,7 @@ Defaults to plotGroup.}
 If left NULL (the default) then 3 will be used.}
 }
 \value{
-The input dataframe with outliers removed.
+The input dataframe with outliers removed and optionally a plot (if a plot is returned then output is a list).
 }
 \description{
 Remove outliers from bellwether data using cook's distance

@@ -108,7 +108,7 @@
 #' 
 #' ## End(Not run)
 #' 
-#' @return The input dataframe with outliers removed.
+#' @return The input dataframe with outliers removed and optionally a plot (if a plot is returned then output is a list).
 #' @export
 
 
@@ -186,7 +186,6 @@ bw.outliers<-function(df = NULL,
       ggplot2::geom_line(data=rmdf_plotData, ggplot2::aes(x=.data[[x]], y=.data[[phenotype]], group=.data[["grouping"]]), linewidth=0.15, color="red")+
       ggplot2::coord_cartesian(ylim = yLims)
     
-    print(p)
   } else if(plot & !wide & !mv){
     plotdf<-df[df[[traitCol]]==phenotype,]
     plotdf$grouping<-interaction(plotdf[,plotgroup])
@@ -221,7 +220,6 @@ bw.outliers<-function(df = NULL,
                         alpha=0.25)+
       ggplot2::labs(title=pctRm)+
       pcv_theme()
-    print(p)
     
   } else if(plot & !wide & mv){
     
@@ -238,7 +236,10 @@ bw.outliers<-function(df = NULL,
                         alpha=0.25)+
       ggplot2::labs(title=pctRm)+
       pcv_theme()
-    print(p)
+  }
+  
+  if(plot){
+    out <- list("data"=out, "plot"=p)
   }
 
   return(out)

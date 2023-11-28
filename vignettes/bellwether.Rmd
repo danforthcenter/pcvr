@@ -204,10 +204,14 @@ dim(sv_ag_withOutliers)
 ```
 
 
+### Outlier Removal
+
 The `bw.outliers` function can be used to remove outliers relative to a phenotype using cook's distance. Here due to the experimental design having these plants germinate on the machine around 1 percent of data are removed as outliers. The plot shows removed data points in red, although here that is hard to see.
 
 ```{r}
-sv_ag<-bw.outliers(df = sv_ag_withOutliers, phenotype="area_pixels", group = c("DAS", "genotype", "fertilizer"), plotgroup = c("barcode"))
+out<-bw.outliers(df = sv_ag_withOutliers, phenotype="area_pixels", group = c("DAS", "genotype", "fertilizer"), plotgroup = c("barcode"))
+sv_ag <- out$data
+out$plot
 dim(sv_ag)
 ```
 
@@ -218,7 +222,7 @@ checkGroups(sv_ag, c("DAS", "barcode", "genotype", "fertilizer"))
 ```
 
 
-#### Watering Data
+### Watering Data
 
 We might also want to check the watering data, which can be read easily from json with `bw.water`.
 
