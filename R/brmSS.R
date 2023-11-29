@@ -14,9 +14,12 @@
 #' @param sigma A model for heteroskedasticity from the same list of options as the model argument.  
 #' @param df A dataframe to use. Must contain all the variables listed in the formula.
 #' @param priors A named list of means for prior distributions.
-#'  Currently this function makes lognormal priors for all growth model parameters.
+#'  Currently this function makes lognormal priors for all growth model parameters
+#'  and T_5(mu, 3) priors for changepoint parameters.
 #'   This is done because the values are strictly positive and the lognormal distribution
-#'   is easily interpreted. If this argument is not provided then priors are not 
+#'   is easily interpreted. The changepoint priors are T distributions for symmetry, 5 DF 
+#'   having been chosen for heavy but not unmanageable tails.
+#'   If this argument is not provided then priors are not 
 #'   returned and a different set of priors will need to be made for the model using
 #'   \code{brms::set_prior}. This works similarly to the \code{params} argument
 #'   in \code{growthSim}. Names should correspond to parameter names from the
