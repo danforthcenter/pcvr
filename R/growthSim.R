@@ -143,6 +143,7 @@ growthSim<-function(model=c("logistic", "gompertz", "double logistic", "double g
   } else{
     out <- .multiGrowthSim(model, n, t, params, noise)
   }
+  return(out)
 }
 
 #' Internal helper function to simulate growth from a series of growth models
@@ -198,11 +199,14 @@ growthSim<-function(model=c("logistic", "gompertz", "double logistic", "double g
         })
       }
       n_df <- do.call(rbind, lapply(1:length(iterChangepoints_rand), function(g){
-        .singleGrowthSim(iterModel, n=1, t=iterChangepoints_rand[[g]],
+        if(u==length(component_models)){ gt = t - max(df1[df1$id==paste0("id_",i), "time"])
+        }else{gt = iterChangepoints_rand[[g]]}
+        
+        .singleGrowthSim(iterModel, n=1, t= gt ,
                          params= stats::setNames(lapply(iterParams, function(l) l[[g]]), c(sub(paste0(iterModel,u), "", names(iterParams)))),
                          noise=iterNoise )
       }))
-      n_df$group <- rep(LETTERS[1:length(iterChangepoints_rand)], times = unlist(iterChangepoints_rand))
+      n_df$group <- rep(LETTERS[1:length(iterChangepoints_rand)], times = as.numeric(table(n_df$group)) )
       n_df$id <- paste0("id_",i)
       n_df
     }))
@@ -220,6 +224,7 @@ growthSim<-function(model=c("logistic", "gompertz", "double logistic", "double g
     dataList[[(u)]] <- new_data
   }
   out <- do.call(rbind, dataList)
+  out <- out[out$time < t,]
   return(out)
 }
 
