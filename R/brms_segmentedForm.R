@@ -6,6 +6,10 @@
 #' @param group The grouping variable from the pcvrForm argument in \code{\link{growthSS}}
 #' @param nTimes a Number of times that are present in the data, only used for making splines have a workable number of knots.
 #' @param useGroup logical, should groups be used?
+#' @param priors A list describing priors in the style of \code{\link{brmSS}}, \code{\link{growthSS}}, and \code{\link{growthSim}}.
+#' This is only used currently to identify fixed and estimated changepoints. If a changepoint is called "changePointX" with X being its
+#' position in the formula then it will be estimated as a parameter in the model, but if the changepoint is called "fixedChangePointX"
+#' then it will be passed as a numeric in the growth model. 
 #'
 #' @examples
 #' df1<-do.call(rbind, lapply(1:30, function(i){
@@ -35,10 +39,12 @@
 #' @keywords internal
 #' @noRd
 
-.brmsChangePointHelper <- function(model, x, y, group, sigma=FALSE, nTimes=25, useGroup){
+.brmsChangePointHelper <- function(model, x, y, group, sigma=FALSE, nTimes=25, useGroup, priors){
 
   component_models <- trimws(strsplit(model, "\\+")[[1]])
   models<-c("logistic", "gompertz", "monomolecular", "exponential", "linear", "power law", "gam", "spline", "int", "homo")
+  if(is.null(priors)){priors <- stats::setNames(lapply(1:length(component_models), identity ),
+                                                paste0("changePoint",1:length(component_models))) }
   
   formulae <- lapply(1:length(component_models), function(i){
     iter_model <- component_models[i]

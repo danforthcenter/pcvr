@@ -150,7 +150,7 @@
     sigmaSplineHelperForm <- NULL
     splineHelperForm <- NULL
     if(grepl("\\+", model)){
-      chngptHelper_list <- .brmsChangePointHelper(model, x, y, group, sigma=FALSE, nTimes = nTimes, useGroup=USEGROUP)
+      chngptHelper_list <- .brmsChangePointHelper(model, x, y, group, sigma=FALSE, nTimes = nTimes, useGroup=USEGROUP, priors = priors)
       growthForm <- chngptHelper_list$growthForm
       pars <- chngptHelper_list$pars
       splineHelperForm <- chngptHelper_list$splineHelperForm
