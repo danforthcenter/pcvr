@@ -291,8 +291,14 @@
     }
       
     }
-    if(!any(names(out)=="prior")){
-      priorStanStrings<-lapply(pars, function(par) paste0("lognormal(log(", priors[[par]],"), 0.25)") )
+    if(!any(names(out)=="prior")){ # right now pars includes changepoints, but those might be better as T or N
+      priorStanStrings<-lapply(pars, function(par) {
+        if(!grepl("changePoint", par)){
+          paste0("lognormal(log(", priors[[par]],"), 0.25)") # growth parameters ar LN
+        } else {
+          paste0("student_t(5,", priors[[par]],", 3)") # changepoints are T_5(mu, 3) by default
+        }
+        } )
       priorStanStrings<-unlist(priorStanStrings)
       parNames<-rep(names(priors), each = length(priors[[1]]))
       if(USEGROUP){
