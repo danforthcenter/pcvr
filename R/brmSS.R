@@ -185,7 +185,7 @@
     if(!is.null(sigma)){
       if(grepl("\\+", sigma)){
         
-        chngptHelper_list <- .brmsChangePointHelper(model=sigma, x, y, group, sigma = TRUE, nTimes = nTimes, useGroup=USEGROUP)
+        chngptHelper_list <- .brmsChangePointHelper(model=sigma, x, y, group, sigma = TRUE, nTimes = nTimes, useGroup=USEGROUP, priors = priors)
         sigmaForm <- chngptHelper_list$growthForm
         pars <- c(pars, chngptHelper_list$pars)
         sigmaPars <- chngptHelper_list$pars
@@ -264,6 +264,7 @@
         warning("Assuming that each element in priors is in order: ", paste0(pars, collapse=', '))
         names(priors)<-pars
       }
+      priors <- priors[!grepl("fixedChangePoint", names(priors))]
       if(!all(pars %in% names(priors))){
         stop(paste0("Parameter names and prior names do not match. Priors include ",
                     paste(setdiff(names(priors), pars), collapse=", "), "... and parameters include ",
