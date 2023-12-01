@@ -177,7 +177,7 @@
     
     form <- paste0(prefix,"linear", position, "A * (", x,"-", paste0(prev_changePoints, collapse = "-"), ")")
     cp <- paste0("inv_logit((", x,"-", paste0(prev_changePoints, collapse = "-"), ") * 5)")
-    cpInt <- paste0(prefix, "linear", i, "A * (", paste0(rev(prev_and_current_changePoints), collapse="-"),")")
+    cpInt <- paste0(prefix, "linear", position, "A * (", paste0(rev(prev_and_current_changePoints), collapse="-"),")")
     #* cpInt would be wrong for the last position but it isn't used.
   }
   
