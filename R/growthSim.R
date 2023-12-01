@@ -174,7 +174,7 @@ growthSim<-function(model=c("logistic", "gompertz", "double logistic", "double g
                        params= stats::setNames(lapply(firstParams, function(l) l[[g]]), c(sub(paste0(firstModel,"1"), "", names(firstParams)))),
                        noise = firstNoise)
     }))
-    n_df$group <- rep(LETTERS[1:length(firstChangepoints_rand)], times = unlist(firstChangepoints_rand))
+    n_df$group <- rep(letters[1:length(firstChangepoints_rand)], times = unlist(firstChangepoints_rand))
     n_df$id <- paste0("id_",i)
     n_df
   }))
@@ -202,11 +202,12 @@ growthSim<-function(model=c("logistic", "gompertz", "double logistic", "double g
         if(u==length(component_models)){ gt = t - max(df1[df1$id==paste0("id_",i), "time"])
         }else{gt = iterChangepoints_rand[[g]]}
         
-        .singleGrowthSim(iterModel, n=1, t= gt ,
+        inner_df <- .singleGrowthSim(iterModel, n=1, t= gt ,
                          params= stats::setNames(lapply(iterParams, function(l) l[[g]]), c(sub(paste0(iterModel,u), "", names(iterParams)))),
                          noise=iterNoise )
+        inner_df$group <- letters[g]
+        inner_df
       }))
-      n_df$group <- rep(LETTERS[1:length(iterChangepoints_rand)], times = as.numeric(table(n_df$group)) )
       n_df$id <- paste0("id_",i)
       n_df
     }))

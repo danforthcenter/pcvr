@@ -340,6 +340,41 @@ if(file.exists("/home/josh/Desktop/") & interactive()){ # only run locally, don'
     expect_s3_class(plot, "ggplot")
   })
   
+  test_that("int+int fixed changepoint homoskedastic model pipeline", {
+    
+    set.seed(123)
+    
+    noise<-do.call(rbind, lapply(1:30, function(i){
+      chngpt <- 20
+      rbind(data.frame(id = paste0("id_",i), time = 1:chngpt[1], group = "a", y = c(runif(chngpt[1]-1, 0, 20), rnorm(1,5,1))),
+            data.frame(id = paste0("id_",i), time = 1:chngpt[2], group = "b", y = c(runif(chngpt[2]-1, 0, 20), rnorm(1,5,1))) )
+    }))
+    noise2<-do.call(rbind, lapply(1:30, function(i){
+      start1 <- max(noise[noise$id == paste0("id_",i) & noise$group=="a", "time"])
+      start2 <- max(noise[noise$id == paste0("id_",i) & noise$group=="b", "time"])
+      
+      rbind(data.frame(id = paste0("id_",i), time = start1:40, group = "a", y = c(runif(length(start1:40), 15, 50))),
+            data.frame(id = paste0("id_",i), time = start2:40, group = "b", y = c(runif(length(start2:40), 15, 50))) )
+    }))
+    simdf <- rbind(noise, noise2)
+    
+    # ggplot(simdf, aes(x=time, y=y, color=group, group = interaction(group, id)))+
+    #   geom_line()+
+    #   theme_minimal()
+    
+    ss<-growthSS(model = "int + int", form=y~time|id/group, sigma="int",
+                 list("int1"=10, "fixedChangePoint1"=20, "int2"=20),
+                 df=simdf, type = "brms")
+    expect_equal(ss$prior$nlpar, c("","","int1", "int2"))
+    
+    fit <- fitGrowth(ss, backend="cmdstanr", iter=500, chains=1, cores=1)
+    expect_s3_class(fit, "brmsfit")
+    
+    plot <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
+    ggsave("/home/josh/Desktop/stargate/fahlgren_lab/labMeetings/intPlusInt_fixedChngpt_fitGrowth.png", plot, width=10, height=6, dpi=300, bg="#ffffff")
+    expect_s3_class(plot, "ggplot")
+  })  
+  
   
   
   test_that("int+int thresholded homoskedasticity model pipeline", {
@@ -379,7 +414,7 @@ if(file.exists("/home/josh/Desktop/") & interactive()){ # only run locally, don'
   
   
   
-  test_that("int + linear model with thresholded homoskedasticity pipeline", {
+  test_that("int + linear model and submodel pipeline", {
     
     set.seed(123)
     noise<-do.call(rbind, lapply(1:30, function(i){
@@ -460,6 +495,52 @@ if(file.exists("/home/josh/Desktop/") & interactive()){ # only run locally, don'
     
   })
   
+  
+  test_that("fixed and estimated changepoints can be mixed in growth formula", {
+    
+    simdf1 <- growthSim(model = "logistic", n=20, t=20, params = list("A"=c(180, 160), "B"=c(9,11), "C"=c(3,3.5)))
+    
+    simdf2 <- growthSim(model = "linear + linear", n=20, t=20,
+                        params = list("linear1A"= c(6,8), "changePoint1" = c(7,9), "linear2A"=c(15, 20)))
+    
+    simdf2_adj<-do.call(rbind, lapply(unique(paste0(simdf2$id, simdf2$group)), function(int){
+      p1<-simdf1[paste0(simdf1$id, simdf1$group)==int,]
+      p2 <- simdf2[paste0(simdf2$id, simdf2$group) == int, ]
+      y_end_p1 <- p1[p1$time == max(p1$time), "y"]
+      p2$time <- p2$time + max(p1$time)
+      p2$y <- y_end_p1 + p2$y
+      p2
+    }))
+    simdf<-rbind(simdf1, simdf2_adj)
+
+    ss <- growthSS(model = "logistic+linear+linear", form=y~time|id/group,
+                   sigma = "logistic+linear", df = simdf,
+                   start = list("logistic1A" = 130, "logistic1B" = 10, "logistic1C" = 3.5,
+                                "fixedChangePoint1" = 20, "linear2A" = 5, "changePoint2" = 28, "linear3A" = 20,
+                                "sublogistic1A" = 10, "sublogistic1B" = 12, "sublogistic1C" = 20,
+                                "subfixedChangePoint1"=20, "sublinear2A"=3), type = "brms")
+    
+    expect_equal(ss$prior$nlpar, c("", "logistic1A", "logistic1B", "logistic1C", "linear2A", "changePoint2", 
+                                   "linear3A", "sublogistic1A", "sublogistic1B", "sublogistic1C", 
+                                   "sublinear2A"))
+    #* problem: 
+    #* ss$formula has linear1A in it: (linear1A * (20 - changePoint2)
+    #* 
+    #* Problem persists whether changePoint1 is fixed or estimated
+    #* 
+    #* y ~ logistic1A/(1 + exp((logistic1B - (time))/logistic1C)) * inv_logit((20 - time) * 5) +
+    #*  (logistic1A/(1 + exp((logistic1B - (20))/logistic1C)) + 
+    #*  linear2A * (time - 20)) * inv_logit((time - 20) * 5) + (linear1A * (20 - changePoint2) + 
+    #*  linear2A * (20 - changePoint2) + linear3A * (time - 20 - changePoint2)) * inv_logit((time - 20 - changePoint2) * 5) 
+    
+    fit <- fitGrowth(ss, backend="cmdstanr", iter=500, chains=1, cores=1)
+    
+    expect_s3_class(fit, "brmsfit")
+    
+    plot <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
+    ggsave("/home/josh/Desktop/stargate/fahlgren_lab/labMeetings/threePart_fixedAndEstimatedChangepoint.png", plot, width=10, height=6, dpi=300, bg="#ffffff")
+    expect_s3_class(plot, "ggplot")
+  })
   
 }
 
