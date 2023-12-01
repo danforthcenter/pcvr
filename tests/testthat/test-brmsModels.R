@@ -523,16 +523,7 @@ if(file.exists("/home/josh/Desktop/") & interactive()){ # only run locally, don'
     expect_equal(ss$prior$nlpar, c("", "logistic1A", "logistic1B", "logistic1C", "linear2A", "changePoint2", 
                                    "linear3A", "sublogistic1A", "sublogistic1B", "sublogistic1C", 
                                    "sublinear2A"))
-    #* problem: 
-    #* ss$formula has linear1A in it: (linear1A * (20 - changePoint2)
-    #* 
-    #* Problem persists whether changePoint1 is fixed or estimated
-    #* 
-    #* y ~ logistic1A/(1 + exp((logistic1B - (time))/logistic1C)) * inv_logit((20 - time) * 5) +
-    #*  (logistic1A/(1 + exp((logistic1B - (20))/logistic1C)) + 
-    #*  linear2A * (time - 20)) * inv_logit((time - 20) * 5) + (linear1A * (20 - changePoint2) + 
-    #*  linear2A * (20 - changePoint2) + linear3A * (time - 20 - changePoint2)) * inv_logit((time - 20 - changePoint2) * 5) 
-    
+
     fit <- fitGrowth(ss, backend="cmdstanr", iter=500, chains=1, cores=1)
     
     expect_s3_class(fit, "brmsfit")
