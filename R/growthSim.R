@@ -12,7 +12,7 @@
 #' @param t Max time (assumed to start at 1) to simulate growth to as an integer.
 #' @param params A list of numeric parameters. A, B, C notation is used in the order that parameters appear in the formula (see examples).
 #' Number of groups is inferred from the length of these vectors of parameters. In the case of the "double" models there are also 
-#' A2, B2, and C2 terms.
+#' A2, B2, and C2 terms. Changepoints should be specified as "changePointX" or "fixedChangePointX" as in \code{\link{growthSS}}.
 #' @param noise Optionally this can be used to add specific amounts of
 #' noise to the input parameters by specifying a list similar to params.
 #' If NULL (the default) then data is simulated with 10\% random noise like: param + N(0, 0.1*param).
@@ -126,11 +126,15 @@
 growthSim<-function(model=c("logistic", "gompertz", "double logistic", "double gompertz", "monomolecular", "exponential", "linear", "power law"), n=20, t=25, params=list(), noise=NULL){
   
   if(length(model)>1){stop("Select one model to use")}
-  if(is.null(noise)){noise = lapply(params, function(i) mean(i)/10)}
+  if(is.null(noise)){noise = lapply(params, function(i) mean(i)/10) ; wasNull = TRUE} else{wasNULL=FALSE}
   if(is.null(names(noise))){names(noise)<-c(LETTERS[1:length(noise)])}
   if(any(names(noise)%in%letters)){ names(noise)<-c(LETTERS[ which(letters%in%substr(names(noise),1,1)) ]) }
   if(is.null(names(params))){names(params)<-c(LETTERS[1:length(params)])}
   if(any(names(params)%in%letters)){ names(params)<-c(LETTERS[ which(letters%in%substr(names(params),1,1)) ]) }
+  if(wasNULL & any(grepl("fixedChangePoint", names(noise)))){
+    noise[grepl("fixedChangePoint", names(noise))]<-0
+  }
+  
   #* check that params are all the same length, if not then rep until they are
   if(!all(unlist(lapply(params,length))== max(unlist(lapply(params,length))))){
     warning("params are not uniform length, values are being recycled to fit max length")
