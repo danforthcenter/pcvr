@@ -26,7 +26,7 @@ they are not simulated by this function.}
 
 \item{params}{A list of numeric parameters. A, B, C notation is used in the order that parameters appear in the formula (see examples).
 Number of groups is inferred from the length of these vectors of parameters. In the case of the "double" models there are also 
-A2, B2, and C2 terms.}
+A2, B2, and C2 terms. Changepoints should be specified as "changePointX" or "fixedChangePointX" as in \code{\link{growthSS}}.}
 
 \item{noise}{Optionally this can be used to add specific amounts of
 noise to the input parameters by specifying a list similar to params.

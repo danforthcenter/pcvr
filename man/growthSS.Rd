@@ -23,11 +23,18 @@ which is only used in brms (and is expected to only be used in threshold models 
 See \code{\link{growthSim}} for examples of each type of single parameterized growth curve ("gam" is not supported in \code{growthSim}).
 With type="brms" you can also specify segmented models by combining model names with a plus sign such as "linear + linear". In a segmented 
 model the names for parameters do not follow the normal "A", "B", "C" notation, instead they are named
-for the type of model, the position in the formula, then for the parameter of that model. There will also be parameters to represent
-the time when growth switches from one model to another called "changepointX". For the "linear + linear" example
-this would yield parameters "linear1A", "changePoint1", and "linear2A". A "linear + gompertz" model would have
-"linear1A", "changePoint1", "gompertz2A",   "gompertz2B", and "gompertz2C" for parameters. Note that double sigmoid models are not
-supported as parts of segmented models and gams can currently only be included as the last part of a segmented model.
+for the type of model, the position in the formula, then for the parameter of that model.
+There will also be parameters to represent
+the time when growth switches from one model to another called either "changepointX" or "fixedChangePointX".
+"changePointX" terms are estimated as parameters of the model. "fixedChangePointX" parameters are not estimated
+and are kept as the numeric value given in the priors, this is useful if your experiment has an intervention at a 
+set time which you expect to change the growth process acutely.
+For the "linear + linear" example
+this would yield parameters "linear1A", "changePoint1" (or "fixedChangePoint1"), and "linear2A".
+ A "linear + gompertz" model would have
+"linear1A", "changePoint1", "gompertz2A",   "gompertz2B", and "gompertz2C" for parameters.
+Note that double sigmoid models are not supported as parts of segmented models and gams
+ can currently only be included as the last part of a segmented model.
 Currently "homo" and "int" are treated the same and "spline" and "gam" are interchangeable, but that will be temporary.}
 
 \item{form}{A formula describing the model. The left hand side should only be 
@@ -57,9 +64,11 @@ or \code{nlme::varExp} respectively where "power" is the default.}
 \item{start}{An optional named list of starting values OR means for prior distributions.
 If this is not provided then starting values are picked with \code{stats::selfStart}.
  When type = "brms" these must be provided and are treated as the means of
-  lognormal priors for all growth model parameters.
+  lognormal priors for all growth model parameters and T_5(mu, 3) priors for changepoint parameters.
   This is done because the values are strictly positive and the lognormal distribution
-  is easily interpreted. If this argument is not provided then priors are not 
+  is easily interpreted. The changepoint priors are T distributions for symmetry, 5 DF 
+  having been chosen for heavy but not unmanageable tails.
+  If this argument is not provided then priors are not 
   returned and a different set of priors will need to be made for the model using
   \code{brms::set_prior}. When specifying starting values/prior means 
   think of this as being similar to the \code{params} argument

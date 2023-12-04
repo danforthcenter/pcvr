@@ -40,7 +40,7 @@
 #' sv<-bw.time(sv, plantingDelay = 0, phenotype="area_pixels", cutoff=10,
 #'  timeCol="timestamp", group=c("barcode", "rotation"), plot=TRUE)
 #' sv<-bw.outliers(sv, phenotype="area_pixels", group = c("DAS", "genotype", "fertilizer"),
-#'  plotgroup = c("barcode", "rotation"))
+#'  plotgroup = c("barcode", "rotation"))$data
 #' phenotypes <- colnames(sv)[19:35]
 #' phenoForm<-paste0("cbind(", paste0(phenotypes, collapse=", "), ")")
 #' groupForm<-"DAS+DAP+barcode+genotype+fertilizer"
