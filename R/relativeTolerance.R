@@ -48,7 +48,7 @@
 #' sv<-aggregate(form, data=sv, mean, na.rm=TRUE)
 #' sv<-bw.outliers(sv, phenotype="area_pixels",
 #'    group = c("DAS", "genotype", "fertilizer"),
-#'    plotgroup = c("barcode"))
+#'    plotgroup = c("barcode"))$data
 #' 
 #' pixels_per_cmsq <- 42.5^2   # pixel per cm^2
 #' sv$area_cm2<-sv$area_pixels / pixels_per_cmsq
