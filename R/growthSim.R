@@ -126,13 +126,19 @@
 growthSim<-function(model=c("logistic", "gompertz", "double logistic", "double gompertz", "monomolecular", "exponential", "linear", "power law"), n=20, t=25, params=list(), noise=NULL){
   
   if(length(model)>1){stop("Select one model to use")}
-  if(is.null(noise)){noise = lapply(params, function(i) mean(i)/10) ; wasNull = TRUE} else{wasNULL=FALSE}
+  if(is.null(noise)){noise = lapply(params, function(i) mean(i)/10); wasNULL = TRUE} else{wasNULL=FALSE}
   if(is.null(names(noise))){names(noise)<-c(LETTERS[1:length(noise)])}
   if(any(names(noise)%in%letters)){ names(noise)<-c(LETTERS[ which(letters%in%substr(names(noise),1,1)) ]) }
   if(is.null(names(params))){names(params)<-c(LETTERS[1:length(params)])}
   if(any(names(params)%in%letters)){ names(params)<-c(LETTERS[ which(letters%in%substr(names(params),1,1)) ]) }
   if(wasNULL & any(grepl("fixedChangePoint", names(noise)))){
     noise[grepl("fixedChangePoint", names(noise))]<-0
+    nms <- names(noise)
+    nms <- sub("fixedC", "c", nms)
+    names(noise)<-nms
+    nms <- names(params)
+    nms <- sub("fixedC", "c", nms)
+    names(params)<-nms
   }
   
   #* check that params are all the same length, if not then rep until they are
