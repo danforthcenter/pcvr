@@ -6,21 +6,27 @@
 #'  (not by growth curve parameters), visualizes the difference in predictions,
 #'   and will generally be less powerful than brms::hypothesis used on growth model parameters.
 #'  
-#' @param fit A brmsfit object, similar to those fit with \code{\link{growthSS}} outputs.
+#' @param fit A brmsfit object, similar to those fit with \code{\link{growthSS}} outputs. Alternatively this can be a list 
+#' of two brmsfit objects, in which case they are compared. If this option is used then the groups argument should be specified.
 #' @param form A formula similar to that in \code{growthSS} inputs specifying the outcome,
 #' predictor, and grouping structure of the data as \code{outcome ~ predictor|individual/group}.
+#' If the fit argument is a list of two brmsfit objects then this can be a list or a single form will be recycled to length 2.
 #' @param groups An optional set of groups to use.
-#' Defaults to NULL in which case the first two groups in the model are used.
+#' Defaults to NULL in which case the first two groups in the model are used. If the fit argument is a list of two
+#' brmsfit objects then the first group comes from the first model and the second group comes from the second model,
+#' in which case a NULL value here will use the first group from each model.
 #' @param timeRange An optional range of times to use. This can be used to view predictions for
 #' future data if the available data has not reached some point (such as asymptotic size),
 #' although prediction using splines outside of the observed range is not necessarily reliable.
 #' @param hyp Optionally a character string representing a hypothesis to test. To test the difference of 
-#' two groups "diff" can be used as shorthand for group1-group2.
+#' two groups "diff" can be used as shorthand for group1-group2. If fit is a list then group names should be prefixed with 
+#' "fit1_" or "fit2_", respectively.
 #' @param plot Logical, should a ggplot be returned?
 #' @keywords growth-curve, brms
 #' @import ggplot2
 #' @import viridis
 #' @importFrom stats as.formula setNames
+#' @importFrom methods is
 #' @examples 
 #' 
 #' ## Not run:
@@ -51,39 +57,90 @@
 
 
 postPred <- function(fit, form, groups=NULL, timeRange=NULL, hyp = NULL, plot=TRUE){
-  out <- list()
-  fitData<-fit$data
-  y=as.character(form)[2]
-  x<-as.character(form)[3]
-  if(grepl("\\|", x) | grepl("\\/",x)){
-    x3<-trimws(strsplit(x, "[|]|[/]")[[1]])
-    x<-x3[1]
-    individual = x3[2]
-    group = x3[3]
-  } else {stop("form must specify grouping for observations. See documentation and examples.")}
   
-  if(is.null(groups)){
-    groups = unique(fitData[[group]])[1:2]
+  if(!methods::is(fit, "brmsfit")){
+    fit1 <- fit[[1]]
+    fit2 <- fit[[2]]
+    multiModel <- TRUE
+  } else{
+    fit1 <- fit
+    multiModel <- FALSE
   }
   
-  if(is.null(timeRange)){
-    times <- unique(fitData[[x]])
-  } else {
-    times = timeRange
-  }
-  
-  ppred <-do.call(rbind, lapply(times, function(i){
-    tpred <- do.call(cbind, lapply(groups, function(g){
-      ndf <- stats::setNames(data.frame(i, g), c("time", "group"))
-      ppred <- as.data.frame(predict(fit, ndf, summary=FALSE))# , ndraws %in% 1:max draws
-      colnames(ppred)<-g
-      ppred
+  if(multiModel){
+    if(is.character(form) | methods::is(form, "formula")){
+      form <- list(form, form)
+    }
+    
+    form1 <- .parseFormula(fit1, form[[1]] )
+    form2 <- .parseFormula(fit2, form[[2]] )
+    
+    fitData1 <-form1[[1]]
+    y1 <- form1[[2]]
+    x1 <- form1[[3]]
+    group1 <- form1[[4]]
+
+    fitData2 <-form2[[1]]
+    y2 <- form2[[2]]
+    x2 <- form2[[3]]
+    group2 <- form2[[4]]
+    
+    if(is.null(groups)){
+      groups = c(fitData1[[group1]][1], fitData2[[group2]][1])
+    }
+    
+    if(is.null(timeRange)){
+      times <- union(unique(fitData1[[x1]]), unique(fitData2[[x2]]))
+    } else {
+      times = timeRange
+    }
+    ndf1test <- stats::setNames(data.frame(min(times), groups[1]), c(x1, group1))
+    ndraws1 <- nrow(predict(fit1, ndf1test, summary=FALSE))
+    
+    ndf2test <- stats::setNames(data.frame(min(times), groups[2]), c(x2, group2))
+    ndraws2 <- nrow(predict(fit2, ndf2test, summary=FALSE))
+    
+    nDraws <- min(c(ndraws1, ndraws2))
+    
+    ppred <-do.call(rbind, lapply(times, function(i){
+      ndf1 <- stats::setNames(data.frame(i, groups[1]), c("time", "group"))
+      ppred1 <- as.data.frame(predict(fit1, ndf1, summary=FALSE, ndraws = nDraws))
+      colnames(ppred1)<-paste0("fit1_",groups[1])
+      ndf2 <- stats::setNames(data.frame(i, groups[2]), c("time", "group"))
+      ppred2 <- as.data.frame(predict(fit2, ndf2, summary=FALSE, ndraws = nDraws))
+      colnames(ppred2)<-paste0("fit2_",groups[2])
+      tpred <- cbind(ppred1, ppred2)
+      tpred[["time"]]<-i
+      tpred
     }))
-    tpred[["time"]]<-i
-    tpred
-  }))
+    ppred$diff <- ppred[[1]] - ppred[[2]]
+    
+  } else { # all using one model
+    if(is.null(groups)){
+      groups = unique(fitData[[group]])[1:2]
+    }
+    
+    if(is.null(timeRange)){
+      times <- unique(fitData[[x]])
+    } else {
+      times = timeRange
+    }
+    
+    ppred <-do.call(rbind, lapply(times, function(i){
+      tpred <- do.call(cbind, lapply(groups, function(g){
+        ndf <- stats::setNames(data.frame(i, g), c("time", "group"))
+        ppred <- as.data.frame(predict(fit, ndf, summary=FALSE))
+        colnames(ppred)<-g
+        ppred
+      }))
+      tpred[["time"]]<-i
+      tpred
+    }))
+    ppred$diff <- ppred[[groups[1] ]] - ppred[[groups[2] ]]
+  }
   
-  ppred$diff <- ppred[[groups[1] ]] - ppred[[groups[2] ]]
+  out <- list()
+  
   
   out[["posterior_predictive"]] <- ppred
   
@@ -114,9 +171,10 @@ postPred <- function(fit, form, groups=NULL, timeRange=NULL, hyp = NULL, plot=TR
       data.frame(time = i, prob = p)
     }))
     
-    hyps_df$y <- 1.1 * qpreds[,1]
     hyps_df$hyp <- hyp
     out[["hypothesis"]]<-hyps_df
+    
+    hyps_df$y <- 1.1 * qpreds[,1]
     if(plot){
       p <- p +
         ggplot2::geom_text(data = hyps_df, ggplot2::aes(x=time, y=y, label = round(prob, 2), angle=90, hjust=0))+
@@ -127,4 +185,25 @@ postPred <- function(fit, form, groups=NULL, timeRange=NULL, hyp = NULL, plot=TR
     
   }
   return(out)
+}
+
+
+#' @description
+#' Internal function for parsing formulae and brmsfit objects for plotting
+#' @param fit a brmsfit object
+#' @param form a pcvr style formula
+#' 
+#' @keywords internal
+#' @noRd
+
+.parseFormula <- function(fit, form){
+  fitData<-fit$data
+  y=as.character(form)[2]
+  x<-as.character(form)[3]
+  if(grepl("\\|", x) | grepl("\\/",x)){
+    x3<-trimws(strsplit(x, "[|]|[/]")[[1]])
+    x<-x3[1]
+    group = x3[3]
+  } else {stop("form must specify grouping for observations. See documentation and examples.")}
+  return(list(fitData, y, x, group))
 }

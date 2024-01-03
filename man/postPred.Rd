@@ -8,20 +8,25 @@ similar to those made using growthSS outputs.}
 postPred(fit, form, groups = NULL, timeRange = NULL, hyp = NULL, plot = TRUE)
 }
 \arguments{
-\item{fit}{A brmsfit object, similar to those fit with \code{\link{growthSS}} outputs.}
+\item{fit}{A brmsfit object, similar to those fit with \code{\link{growthSS}} outputs. Alternatively this can be a list 
+of two brmsfit objects, in which case they are compared. If this option is used then the groups argument should be specified.}
 
 \item{form}{A formula similar to that in \code{growthSS} inputs specifying the outcome,
-predictor, and grouping structure of the data as \code{outcome ~ predictor|individual/group}.}
+predictor, and grouping structure of the data as \code{outcome ~ predictor|individual/group}.
+If the fit argument is a list of two brmsfit objects then this can be a list or a single form will be recycled to length 2.}
 
 \item{groups}{An optional set of groups to use.
-Defaults to NULL in which case the first two groups in the model are used.}
+Defaults to NULL in which case the first two groups in the model are used. If the fit argument is a list of two
+brmsfit objects then the first group comes from the first model and the second group comes from the second model,
+in which case a NULL value here will use the first group from each model.}
 
 \item{timeRange}{An optional range of times to use. This can be used to view predictions for
 future data if the available data has not reached some point (such as asymptotic size),
 although prediction using splines outside of the observed range is not necessarily reliable.}
 
 \item{hyp}{Optionally a character string representing a hypothesis to test. To test the difference of 
-two groups "diff" can be used as shorthand for group1-group2.}
+two groups "diff" can be used as shorthand for group1-group2. If fit is a list then group names should be prefixed with 
+"fit1_" or "fit2_", respectively.}
 
 \item{plot}{Logical, should a ggplot be returned?}
 }
