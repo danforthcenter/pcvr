@@ -24,7 +24,7 @@ Imports:
     ggridges,
     igraph,
     jsonlite,
-    Matrix (>=1.6-2),
+    Matrix (>= 1.6-2),
     lme4,
     patchwork,
     extraDistr,
