@@ -23,6 +23,15 @@ if(file.exists("/home/josh/Desktop/") & interactive()){ # only run locally, don'
     #ggsave("/home/josh/Desktop/stargate/fahlgren_lab/labMeetings/logistic_fitGrowth.png", plot, width=10, height=6, dpi=300, bg="#ffffff")
     expect_s3_class(plot, "ggplot")
     
+    plot2 <- postPred(fit, form=ss$pcvrForm, groups=NULL, timeRange=NULL, hyp = "abs(diff) > 20", plot=FALSE)
+    expect_s3_class(plot2$hypothesis, "data.frame")
+    plot2 <- postPred(fit, form=ss$pcvrForm, groups=NULL, timeRange=10:30, hyp = "abs(diff) > 20", plot=TRUE)
+    expect_s3_class(plot2$plot, "ggplot")
+    plot2 <- postPred(fit, form=ss$pcvrForm, groups=c("b", "a"), timeRange=NULL, hyp = "abs(diff) > 20", plot=TRUE)
+    expect_s3_class(plot2$plot, "ggplot")
+    plot2 <- postPred(fit, form=ss$pcvrForm, groups=c("b", "a"), timeRange=10:30, hyp = "abs(diff) > 20", plot=TRUE)
+    expect_s3_class(plot2$plot, "ggplot")
+    
   })
   
   test_that("Gompertz brms model pipeline", {
@@ -532,6 +541,34 @@ if(file.exists("/home/josh/Desktop/") & interactive()){ # only run locally, don'
     ggsave("/home/josh/Desktop/stargate/fahlgren_lab/labMeetings/threePart_fixedAndEstimatedChangepoint.png", plot, width=10, height=6, dpi=300, bg="#ffffff")
     expect_s3_class(plot, "ggplot")
   })
+  
+  test_that("postPred can compare multiple models", {
+    set.seed(123)
+    simdf1<-growthSim("logistic", n=20, t=25,
+                     params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))
+    
+    ss1<-growthSS(model = "logistic", form=y~time|id/group, sigma="spline",
+                 list('A' = 130, 'B' = 10, "C" = 3),
+                 df=simdf1, type = "brms")
+    
+    fit1 <- fitGrowth(ss1, backend="cmdstanr", iter=500, chains=1, cores=1)
+   
+    simdf2<-growthSim("monomolecular", n=20, t=25,
+                     params = list("A"=c(200,160), "B"=c(0.01, 0.08)))
+    
+    ss2<-growthSS(model = "monomolecular", form=y~time|id/group, sigma="int",
+                 list('A' = 130, 'B' = 1),
+                 df=simdf2, type = "brms")
+    
+    fit2 <- fitGrowth(ss2, backend="cmdstanr", iter=550, chains=1, cores=1)
+    
+    
+    post <- postPred(fit = list(fit1, fit2), form=ss$pcvrForm, groups=c("a", "a"),
+                     timeRange=NULL, hyp = "abs(diff) > 20", plot=TRUE)
+    expect_s3_class(post$plot, "ggplot")
+    
+  })
+  
   
 }
 
