@@ -7,5 +7,5 @@
 *.#*
 *.csv
 inst/doc
-tutorials/*/*.html
+tutorials/pcvr*/*.html
 vignettes/*.html

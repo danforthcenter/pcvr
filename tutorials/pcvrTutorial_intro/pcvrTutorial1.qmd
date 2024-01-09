@@ -319,7 +319,7 @@ The interpretation is much simpler, posterior probability is the probability tha
 In a Bayesian context we flip "random" and "fixed" elements.
 
 |             | Fixed                                   | Random                                  | Interpretation                                                                                                                                                             |
-|------------|------------|------------|--------------------------------------|
+|-------------|-----------------------------------------|-----------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Frequentist | [True Effect]{style="color:goldenrod;"} | [Data]{style="color:purple;"}           | If the [True Effect is 0]{style="color:goldenrod;"} then there is an $\alpha\cdot100$% chance of [estimating an effect]{style="color:purple;"} of this size or more.       |
 | Bayesian    | [Data]{style="color:purple;"}           | [True Effect]{style="color:goldenrod;"} | Given the [estimated effect from our data]{style="color:purple;"} there is a P probability of the [True Effect]{style="color:goldenrod;"} being a difference of at least X |
 
@@ -335,7 +335,7 @@ One of the goals in `pcvr` is to make it easier to answer a broader range of que
 
 Historically Bayesian methods have been difficult to implement because of computational complexitity.
 
-. . . 
+. . .
 
 Using "conjugate" prior distributions makes simple questions very quick to answer.
 
@@ -404,7 +404,6 @@ conjugacy_ex <- betaBinom_dist_plot / beta_dist_plot + plot_layout(design = layo
 #| eval: true
 conjugacy_ex
 ```
-
 
 ## `conjugate` function
 
@@ -633,7 +632,6 @@ patch8<-(l+g+m+dg+e+ln+pl+dl)+
 patch8
 ```
 
-
 ## Data preparation
 
 For this example we subset the data, but we could also model the entire dataset by making a new `group` column that has fertilizer and genotype information.
@@ -694,7 +692,6 @@ summary(fit_test)
 Any of the 4 types of growth models can be plotted using `growthPlot`.
 
 ![](patched_growthPlots.png)
-
 
 ## Testing with `testGrowth`
 

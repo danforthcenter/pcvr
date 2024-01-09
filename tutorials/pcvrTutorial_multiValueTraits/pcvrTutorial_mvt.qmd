@@ -9,7 +9,7 @@ format:
     theme: [moon, ../quartoSupport/solarizedDark.scss]
     scrollable: true
     template-partials: 
-      - title-slide.html
+      - ../quartoSupport/title-slide.html
     title-slide-attributes: 
       data-background-image: ../quartoSupport/datascience.png
       data-background-size: 15%
@@ -73,7 +73,6 @@ Here our segmentation easily shows area, height, and other numeric phenotypes. T
 
 ![](segImage2.png)
 
-
 ## What are multi-value traits? {.smaller}
 
 There are many ways to describe color and many indices that can be calculated from those colors.
@@ -81,7 +80,6 @@ There are many ways to describe color and many indices that can be calculated fr
 Since each pixel has a color we describe the entire image using a histogram of those colors.
 
 ![Wikipedia HSV Color Space](HSV_color_solid_cylinder_saturation_gray.png)
-
 
 ## Multi value trait format {.smaller}
 
@@ -108,7 +106,6 @@ structure(list(sample = c("default", "default", "default", "default",
 
 In `pcvr` you can choose to read multi value traits in wide format with `mode="wide"` in `read.pcv`.
 
-
 ```{r}
 structure(list(hue_frequencies.45 = c(0.0154487872701993, 0, 
 0, 0, 0), hue_frequencies.47 = c(0, 0, 0, 0.0749063670411985, 
@@ -117,17 +114,16 @@ structure(list(hue_frequencies.45 = c(0.0154487872701993, 0,
 0.0657894736842105)), row.names = 100:104, class = "data.frame")
 ```
 
-. . . 
+. . .
 
 Either option will work for most `pcvr` functions.
 
-## Functions for multi-value trait analysis  {.smaller}
+## Functions for multi-value trait analysis {.smaller}
 
-- `pcv.joyplot`
-- `pcv.emd`
-- `pcv.net`
-- `conjugate`
-
+-   `pcv.joyplot`
+-   `pcv.emd`
+-   `pcv.net`
+-   `conjugate`
 
 ## Simulated data {.smaller}
 
@@ -171,6 +167,7 @@ We can make joyplots and optionally perform some tests using `pcv.joyplot`
 #| warning: false
 (p<-pcv.joyplot(sim_df, index = "sim", group=c("group"), method=NULL, compare=NULL))
 ```
+
 ## `pcv.joyplot` {.smaller}
 
 The plot output is a `ggplot` object so we can change it to match our needs. Here we show these distributions as if they are hues.
@@ -193,7 +190,7 @@ p2$stats
 
 ## `pcv.emd` {.smaller}
 
-Sometimes pairwise comparisons do not satisfactorily answer a research question or a more specific hypothesis should be tested than those possible through `pcv.joyplot`. 
+Sometimes pairwise comparisons do not satisfactorily answer a research question or a more specific hypothesis should be tested than those possible through `pcv.joyplot`.
 
 For those situations one option is to use earth mover's distance.
 
@@ -236,8 +233,6 @@ p1 + p2
 
 ```
 
-
-
 ## `pcv.emd` {.smaller}
 
 Here we use the wide data (although long can also be used).
@@ -261,7 +256,6 @@ Looking at the plot we can see that there are obvious differences between groups
 ```{r}
 sim_emd$plot
 ```
-
 
 ## `pcv.net` {.smaller}
 
@@ -335,7 +329,6 @@ s1 <- sim_df[sim_df$group=="normal", grepl("sim",colnames(sim_df))]
 s2 <- sim_df[sim_df$group=="lognormal", grepl("sim",colnames(sim_df))]
 ```
 
-
 ## `conjugate`
 
 Now we can run `conjugate` on our samples. Here we use assume a lognormal distribution.
@@ -369,8 +362,8 @@ The results are also returned as a summary dataframe
 res$summary
 ```
 
-
 ## Resources
+
 If you run into a novel situation please reach out and we will try to come up with a solution and add it to `pcvr` if possible.
 
 Good ways to reach out are the help-datascience slack channel and [pcvr github repository](https://github.com/danforthcenter/pcvr).

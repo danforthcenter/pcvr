@@ -9,7 +9,7 @@ format:
     theme: [moon, ../quartoSupport/solarizedDark.scss]
     scrollable: true
     template-partials: 
-      - title-slide.html
+      - ../quartoSupport/title-slide.html
     title-slide-attributes: 
       data-background-image: ../quartoSupport/datascience.png
       data-background-size: 15%
@@ -187,7 +187,7 @@ Bayesian modeling also allows for non-linear, probability driven hypothesis test
 In a Bayesian context we flip "random" and "fixed" elements.
 
 |             | Fixed                                   | Random                                  | Interpretation                                                                                                                                                             |
-|-------------|-----------------------------------------|-----------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|------------|------------|------------|--------------------------------------|
 | Frequentist | [True Effect]{style="color:goldenrod;"} | [Data]{style="color:purple;"}           | If the [True Effect is 0]{style="color:goldenrod;"} then there is an $\alpha\cdot100$% chance of [estimating an effect]{style="color:purple;"} of this size or more.       |
 | Bayesian    | [Data]{style="color:purple;"}           | [True Effect]{style="color:goldenrod;"} | Given the [estimated effect from our data]{style="color:purple;"} there is a P probability of the [True Effect]{style="color:goldenrod;"} being a difference of at least X |
 
@@ -433,7 +433,7 @@ p
 ## `growthSS` - Gompertz sigma {.smaller}
 
 | Pros                                | Cons                                   |
-|-------------------------------------|----------------------------------------|
+|-----------------------------------|-------------------------------------|
 | Models fit much faster than splines | Slightly slower than linear sub-models |
 | Variance is often asymptotic        | Requires priors on sigma model         |
 | Easy testing on variance model      |                                        |
@@ -461,7 +461,7 @@ p
 ## `growthSS` - Spline sigma {.smaller}
 
 | Pros                                                                     | Cons                                                                  |
-|--------------------------------------------------------------------------|-----------------------------------------------------------------------|
+|-------------------------------------|-----------------------------------|
 | [**Very**]{style="color:#FF007B;"} flexible and accurate model for sigma | [**Significantly**]{style="color:#FFD900;"} slower than other options |
 | Fewer priors                                                             | Splines can be a black-box                                            |
 
