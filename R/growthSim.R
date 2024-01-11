@@ -6,7 +6,9 @@
 #' @param model One of "logistic", "gompertz", "monomolecular", "exponential",
 #' "linear", "power law", "double logistic", or "double gompertz". Alternatively this can be 
 #' a pseudo formula to generate data from a segmented growth curve by specifying "model1 + model2",
-#' see examples and \code{\link{growthSS}}. While "gam" models are supported by \code{growthSS}
+#' see examples and \code{\link{growthSS}}. Decay can be specified by including "decay" as part of the model
+#' such as "logistic decay" or "linear + linear decay".
+#' While "gam" models are supported by \code{growthSS}
 #' they are not simulated by this function.
 #' @param n Number of individuals to simulate over time per each group in params
 #' @param t Max time (assumed to start at 1) to simulate growth to as an integer.
@@ -17,6 +19,7 @@
 #' noise to the input parameters by specifying a list similar to params.
 #' If NULL (the default) then data is simulated with 10\% random noise like: param + N(0, 0.1*param).
 #' This exists for fringe cases and should generally be left NULL.
+#' @param D If decay is being simulated then this is the starting point for decay. This defaults to 0.
 #' 
 #' @keywords growth curve, logistic, gompertz, monomolecular, linear, exponential, power-law
 #' @return Returns a dataframe of example growth data following the input parameters.
@@ -77,6 +80,11 @@
 #' ggplot(simdf,aes(time, y, group=interaction(group,id)))+ 
 #' geom_line(aes(color=group))+labs(title="linear + linear")
 #' 
+#' simdf<-growthSim(model = "linear + linear decay", n=20, t=25,
+#' params = list("linear1A"=c(16, 11), "linear2A"=c(3, 2), "changePoint1" = c(11, 14)))
+#' ggplot(simdf,aes(time, y, group=interaction(group,id)))+ 
+#'   geom_line(aes(color=group))+labs(title="linear + linear decay")
+#' 
 #' simdf<-growthSim(model = "linear + linear + logistic", n=20, t=50,
 #'   params = list("linear1A"=c(16, 11), "linear2A"=c(3, 4), # linear slopes, very intuitive
 #'    "changePoint1" = c(11, 14), "changePoint2" = c(10, 12),
@@ -123,7 +131,7 @@
 #' 
 #' 
 
-growthSim<-function(model=c("logistic", "gompertz", "double logistic", "double gompertz", "monomolecular", "exponential", "linear", "power law"), n=20, t=25, params=list(), noise=NULL){
+growthSim<-function(model=c("logistic", "gompertz", "double logistic", "double gompertz", "monomolecular", "exponential", "linear", "power law"), n=20, t=25, params=list(), noise=NULL, D=0){
   
   if(length(model)>1){stop("Select one model to use")}
   if(is.null(noise)){noise = lapply(params, function(i) mean(i)/10); wasNULL = TRUE} else{wasNULL=FALSE}
@@ -149,9 +157,9 @@ growthSim<-function(model=c("logistic", "gompertz", "double logistic", "double g
   }
   #* decide which internal funciton to use
   if(!grepl("\\+", model)){
-    out <- .singleGrowthSim(model, n, t, params, noise)
+    out <- .singleGrowthSim(model, n, t, params, noise, D)
   } else{
-    out <- .multiGrowthSim(model, n, t, params, noise)
+    out <- .multiGrowthSim(model, n, t, params, noise, D)
   }
   return(out)
 }
@@ -160,16 +168,17 @@ growthSim<-function(model=c("logistic", "gompertz", "double logistic", "double g
 #' @keywords internal
 #' @noRd
 
-.multiGrowthSim<- function(model, n=20, t=25, params=list(), noise=NULL){
+.multiGrowthSim<- function(model, n=20, t=25, params=list(), noise=NULL, D=0){
   
   component_models <- trimws(strsplit(model, "\\+")[[1]])
   
   firstModel <- component_models[1]
-  firstModel <- sub("\\s", "", firstModel)
-  firstParams <- params[grepl(paste0(firstModel,"1"), names(params))]
+  firstModel <- trimws(firstModel)
+  firstModel_findParams <- trimws(gsub("decay" ,"", iterModel))
+  firstParams <- params[grepl(paste0(firstModel_findParams,"1"), names(params))]
   firstChangepoints <- params[["changePoint1"]]
-  firstNoise <- noise[grepl(paste0(firstModel,"1|changePoint1"), names(noise))]
-  names(firstNoise)<- sub(paste0(firstModel,"1|Point."), "", names(firstNoise))
+  firstNoise <- noise[grepl(paste0(firstModel_findParams,"1|changePoint1"), names(noise))]
+  names(firstNoise)<- sub(paste0(firstModel_findParams,"1|Point."), "", names(firstNoise))
   
   if(is.null(firstChangepoints)){stop("Simulating segmented growth models requires 'changePointX' parameters as described in growthSS.")}
   
@@ -182,7 +191,7 @@ growthSim<-function(model=c("logistic", "gompertz", "double logistic", "double g
     n_df <- do.call(rbind, lapply(1:length(firstChangepoints_rand), function(g){
       .singleGrowthSim(firstModel, n=1, t=firstChangepoints_rand[[g]],
                        params= stats::setNames(lapply(firstParams, function(l) l[[g]]), c(sub(paste0(firstModel,"1"), "", names(firstParams)))),
-                       noise = firstNoise)
+                       noise = firstNoise, D)
     }))
     n_df$group <- rep(letters[1:length(firstChangepoints_rand)], times = unlist(firstChangepoints_rand))
     n_df$id <- paste0("id_",i)
@@ -193,12 +202,13 @@ growthSim<-function(model=c("logistic", "gompertz", "double logistic", "double g
   for(u in 2:length(component_models)){
     
     iterModel <- component_models[u]
-    iterModel <- sub("\\s", "", iterModel)
-    iterParams <- params[grepl(paste0(iterModel,u), names(params))]
+    iterModel <- trimws(iterModel)
+    iterModel_findParams <- trimws(gsub("decay" ,"", iterModel))
+    iterParams <- params[grepl(paste0(iterModel_findParams,u), names(params))]
     
     nextChangepoints <- params[[paste0("changePoint",u)]]
-    iterNoise <- noise[grepl(paste0(iterModel, u,"|changePoint",u), names(noise))]
-    names(iterNoise)<- sub(paste0(iterModel, u,"|Point."), "", names(iterNoise))
+    iterNoise <- noise[grepl(paste0(iterModel_findParams, u,"|changePoint",u), names(noise))]
+    names(iterNoise)<- sub(paste0(iterModel_findParams, u,"|Point."), "", names(iterNoise))
     
     iter_data<-do.call(rbind, lapply(1:n, function(i){
       if(is.null(nextChangepoints) | u==length(component_models) ){
@@ -213,8 +223,8 @@ growthSim<-function(model=c("logistic", "gompertz", "double logistic", "double g
         }else{gt = iterChangepoints_rand[[g]]}
         
         inner_df <- .singleGrowthSim(iterModel, n=1, t= gt ,
-                         params= stats::setNames(lapply(iterParams, function(l) l[[g]]), c(sub(paste0(iterModel,u), "", names(iterParams)))),
-                         noise=iterNoise )
+                         params= stats::setNames(lapply(iterParams, function(l) l[[g]]), c(sub(paste0(iterModel_findParams,u), "", names(iterParams)))),
+                         noise=iterNoise, D)
         inner_df$group <- letters[g]
         inner_df
       }))
@@ -246,10 +256,17 @@ growthSim<-function(model=c("logistic", "gompertz", "double logistic", "double g
 #' @keywords internal
 #' @noRd
 
-.singleGrowthSim<- function(model, n=20, t=25, params=list(), noise=NULL){
+.singleGrowthSim<- function(model, n=20, t=25, params=list(), noise=NULL, D){
   
   models<-c("logistic", "gompertz", "double logistic", "double gompertz",
             "monomolecular", "exponential", "linear", "power law")
+  
+  if(grepl("decay", model)){
+    decay=TRUE
+    model <- trimws(gsub("decay", "", model))
+  } else{
+    decay=FALSE
+  }
   
   matched_model <- match.arg(model, models)
   
@@ -271,10 +288,16 @@ growthSim<-function(model=c("logistic", "gompertz", "double logistic", "double g
     gsi<-gsi_powerlaw
   }
   
+  if(decay){
+    gsid <- function(D=0, ...){D-gsi(...)}
+  } else{
+    gsid <- function(D=0, ...){0+gsi(...)}
+  }
+  
   out<-do.call(rbind,lapply(1:length(params[[1]]), function(i) {
     pars<-lapply(params, function(p) p[i])
     as.data.frame(rbind(do.call(rbind,lapply(1:n,function(e){
-      data.frame("id"=paste0("id_",e),"group"=letters[i],"time"=1:t,"y"=gsi(1:t, pars, noise),stringsAsFactors = FALSE)}
+      data.frame("id"=paste0("id_",e),"group"=letters[i],"time"=1:t,"y"=gsid(D=D, 1:t, pars, noise),stringsAsFactors = FALSE)}
     ))))
   }))
   

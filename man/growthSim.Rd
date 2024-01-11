@@ -10,14 +10,17 @@ growthSim(
   n = 20,
   t = 25,
   params = list(),
-  noise = NULL
+  noise = NULL,
+  D = 0
 )
 }
 \arguments{
 \item{model}{One of "logistic", "gompertz", "monomolecular", "exponential",
 "linear", "power law", "double logistic", or "double gompertz". Alternatively this can be 
 a pseudo formula to generate data from a segmented growth curve by specifying "model1 + model2",
-see examples and \code{\link{growthSS}}. While "gam" models are supported by \code{growthSS}
+see examples and \code{\link{growthSS}}. Decay can be specified by including "decay" as part of the model
+such as "logistic decay" or "linear + linear decay".
+While "gam" models are supported by \code{growthSS}
 they are not simulated by this function.}
 
 \item{n}{Number of individuals to simulate over time per each group in params}
@@ -32,6 +35,8 @@ A2, B2, and C2 terms. Changepoints should be specified as "changePointX" or "fix
 noise to the input parameters by specifying a list similar to params.
 If NULL (the default) then data is simulated with 10\% random noise like: param + N(0, 0.1*param).
 This exists for fringe cases and should generally be left NULL.}
+
+\item{D}{If decay is being simulated then this is the starting point for decay. This defaults to 0.}
 }
 \value{
 Returns a dataframe of example growth data following the input parameters.
@@ -122,6 +127,11 @@ simdf<-growthSim(model = "linear + linear", n=20, t=25,
 params = list("linear1A"=c(16, 11), "linear2A"=c(0.75, 0.7), "changePoint1" = c(11, 14)))
 ggplot(simdf,aes(time, y, group=interaction(group,id)))+ 
 geom_line(aes(color=group))+labs(title="linear + linear")
+
+simdf<-growthSim(model = "linear + linear decay", n=20, t=25,
+params = list("linear1A"=c(16, 11), "linear2A"=c(3, 2), "changePoint1" = c(11, 14)))
+ggplot(simdf,aes(time, y, group=interaction(group,id)))+ 
+  geom_line(aes(color=group))+labs(title="linear + linear decay")
 
 simdf<-growthSim(model = "linear + linear + logistic", n=20, t=50,
   params = list("linear1A"=c(16, 11), "linear2A"=c(3, 4), # linear slopes, very intuitive
