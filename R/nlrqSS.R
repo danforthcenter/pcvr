@@ -50,6 +50,13 @@
     df[[group]]<-factor(df[[group]])
   }
   #* `assemble growth formula`
+  if(grepl("decay", model)){
+    decay=TRUE
+    model <- trimws(gsub("decay", "", model))
+  } else{
+    decay=FALSE
+  }
+  
   matched_model <- match.arg(model, models)
   if(matched_model=="double logistic"){
     if(is.null(pars)){ pars = c("A", "B", "C", "A2", "B2", "C2") }
@@ -80,6 +87,8 @@
     start <- 0
   }
   growthForm = form_fun(x,y, USEGROUP, group, pars)
+  
+  if(decay){ growthFrom <- .nlrq_Decay(growthForm) }
   
   if(is.null(start)){
     if(matched_model=="double logistic"){
@@ -414,4 +423,11 @@
   }
   return(nf)
 }
+
+.nlrq_Decay<-function(form){
+  chars <- as.character(form)
+  as.formula(paste0(chars[2], chars[1], "-(", chars[3],")" ))
+}
+
+
 

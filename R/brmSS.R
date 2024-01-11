@@ -156,6 +156,12 @@
       splineHelperForm <- chngptHelper_list$splineHelperForm
       
     } else{
+      
+        if(grepl("decay", model)){
+          decay=TRUE
+          model <- trimws(gsub("decay", "", model))
+        } else{ decay=FALSE }
+      
         if(matched_model=="double logistic"){
           formRes = .brms_form_dou_logistic(x,y, group, sigma = FALSE)
         } else if (matched_model=="double gompertz"){
@@ -177,6 +183,9 @@
         } else if (matched_model %in% c("int", "homo")){
           formRes = .brms_form_int(x,y, group, sigma = FALSE)
         }
+      
+      if(decay){ formRes<-.brms_form_decay(formRes) }
+      
       pars <- formRes$pars
       growthForm <- formRes$form
     }
@@ -192,7 +201,7 @@
         sigmaSplineHelperForm <- chngptHelper_list$splineHelperForm
         
       } else{
-      
+        
       if(matched_sigma=="double logistic"){
         formResSigma = .brms_form_dou_logistic(x,y, group, sigma = TRUE)
       } else if (matched_sigma=="double gompertz"){
@@ -214,6 +223,7 @@
       } else if (matched_sigma %in% c("int", "homo")){
         formResSigma = .brms_form_int(x,y, group, sigma = TRUE)
       }
+        
         sigmaForm <- formResSigma$form
         pars <- c(pars, formResSigma$pars)
         sigmaPars <- formResSigma$pars
@@ -542,8 +552,17 @@
   return(list(form=form, pars=pars))
 }
 
+#' Helper function for brms formulas
+#' 
+#' @keywords internal
+#' @noRd
 
-
+.brms_form_decay <- function(formList){
+  modelForm <- formList$model
+  chars <- as.character(modelForm)
+  formList$model <- as.formula(paste0(chars[2], chars[1], "-(", chars[3],")" ))
+  formList
+}
 
 
 
