@@ -47,7 +47,7 @@
 #' 
 #' @export
 
-rqPlot<-function(fit, form, df = NULL, groups = NULL, timeRange = NULL){
+rqPlot<-function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facetGroups=TRUE, groupFill=FALSE, virMaps = c("plasma")){
   #fit = fits; form = ss$pcvrForm; groups = NULL; df = ss$df; timeRange = NULL
   #* `get needed information from formula`
   x <-as.character(form)[3]

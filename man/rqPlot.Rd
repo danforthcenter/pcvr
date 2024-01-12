@@ -4,7 +4,16 @@
 \alias{rqPlot}
 \title{Function to visualize \code{quantreg::rq} general additive growth models.}
 \usage{
-rqPlot(fit, form, df = NULL, groups = NULL, timeRange = NULL)
+rqPlot(
+  fit,
+  form,
+  df = NULL,
+  groups = NULL,
+  timeRange = NULL,
+  facetGroups = TRUE,
+  groupFill = FALSE,
+  virMaps = c("plasma")
+)
 }
 \arguments{
 \item{fit}{A model fit, or list of model fits, returned by \code{fitGrowth} with type="nlrq" and model="gam".}
