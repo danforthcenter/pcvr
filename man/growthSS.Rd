@@ -21,6 +21,8 @@ Supported options are c("logistic", "gompertz", "monomolecular", "exponential", 
 "double logistic", "double gompertz", "gam", "int"), with "int" representing an intercept only model
 which is only used in brms (and is expected to only be used in threshold models or to model homoskedasticity.)
 See \code{\link{growthSim}} for examples of each type of single parameterized growth curve ("gam" is not supported in \code{growthSim}).
+You can also specify decay models by including the "decay" keyword with the model name. Note that in brms models the entire formula is negated
+for decay models so that lognormal priors can still be used when at least some coefficients would be negative.
 With type="brms" you can also specify segmented models by combining model names with a plus sign such as "linear + linear". In a segmented 
 model the names for parameters do not follow the normal "A", "B", "C" notation, instead they are named
 for the type of model, the position in the formula, then for the parameter of that model.
@@ -35,7 +37,7 @@ this would yield parameters "linear1A", "changePoint1" (or "fixedChangePoint1"),
 "linear1A", "changePoint1", "gompertz2A",   "gompertz2B", and "gompertz2C" for parameters.
 Note that double sigmoid models are not supported as parts of segmented models and gams
  can currently only be included as the last part of a segmented model.
-Currently "homo" and "int" are treated the same and "spline" and "gam" are interchangeable, but that will be temporary.}
+Currently "homo" and "int" are treated the same and "spline" and "gam" are interchangeable.}
 
 \item{form}{A formula describing the model. The left hand side should only be 
 the outcome variable (phenotype). The right hand side needs at least the x variable

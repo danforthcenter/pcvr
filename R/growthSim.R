@@ -174,7 +174,7 @@ growthSim<-function(model=c("logistic", "gompertz", "double logistic", "double g
   
   firstModel <- component_models[1]
   firstModel <- trimws(firstModel)
-  firstModel_findParams <- trimws(gsub("decay" ,"", iterModel))
+  firstModel_findParams <- trimws(gsub("decay" ,"", firstModel))
   firstParams <- params[grepl(paste0(firstModel_findParams,"1"), names(params))]
   firstChangepoints <- params[["changePoint1"]]
   firstNoise <- noise[grepl(paste0(firstModel_findParams,"1|changePoint1"), names(noise))]

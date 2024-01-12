@@ -140,6 +140,12 @@
     corForm<-as.formula(paste0("~arma(~",x,"|", individual,":",group,",1,1)"))
     #* `match args`
     if(!grepl("\\+", model)){
+      
+      if(grepl("decay", model)){
+        decay=TRUE
+        model <- trimws(gsub("decay", "", model))
+      } else{ decay=FALSE }
+      
       matched_model <- match.arg(model, models)
     }
     if(!grepl("\\+", sigma)){
@@ -156,11 +162,6 @@
       splineHelperForm <- chngptHelper_list$splineHelperForm
       
     } else{
-      
-        if(grepl("decay", model)){
-          decay=TRUE
-          model <- trimws(gsub("decay", "", model))
-        } else{ decay=FALSE }
       
         if(matched_model=="double logistic"){
           formRes = .brms_form_dou_logistic(x,y, group, sigma = FALSE)
@@ -558,9 +559,9 @@
 #' @noRd
 
 .brms_form_decay <- function(formList){
-  modelForm <- formList$model
+  modelForm <- formList$form
   chars <- as.character(modelForm)
-  formList$model <- as.formula(paste0(chars[2], chars[1], "-(", chars[3],")" ))
+  formList$form <- as.formula(paste0(chars[2], chars[1], "-(", chars[3],")" ))
   formList
 }
 

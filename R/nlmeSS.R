@@ -452,7 +452,7 @@ return(out)
   return(formulas)
 }
 
-.nlme_Decay <- function(formlist){
+.nlme_Decay <- function(formList){
   modelForm <- formList$model
   chars <- as.character(modelForm)
   formList$model <- as.formula(paste0(chars[2], chars[1], "-(", chars[3],")" ))

@@ -143,7 +143,7 @@
   xy <- stats::sortedXyData(df[[x]], df[[y]])
   if(nrow(xy) < 4)
     stop("too few distinct input values to fit a logistic model")
-  z <- xy[["y"]]
+  z <- abs(xy[["y"]])
   ## transform to proportion, i.e. in (0,1) :
   rng <- range(z); dz <- diff(rng)
   z <- (z - rng[1L] + 0.05 * dz)/(1.1 * dz)
@@ -186,7 +186,7 @@
   xy <- stats::sortedXyData(df[[x]], df[[y]])
   if(nrow(xy) < 4)
     stop("too few distinct input values to fit a monomolecular model")
-  z <- xy[["y"]]
+  z <- abs(xy[["y"]])
   ## transform to proportion, i.e. in (0,1) :
   rng <- range(z); dz <- diff(rng)
   z <- (z - rng[1L] + 0.05 * dz)/(1.1 * dz)

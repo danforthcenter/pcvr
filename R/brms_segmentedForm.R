@@ -699,9 +699,7 @@
 #' @noRd
 
 .decayChngptForm <- function(phaseList){
-  modelForm <- phaseList$form
-  chars <- as.character(modelForm)
-  phaseList$form <- as.formula(paste0(chars[2], chars[1], "-(", chars[3],")" ))
+  phaseList$form <- paste0("-",phaseList$form)
   phaseList
 }
 
