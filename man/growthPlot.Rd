@@ -4,7 +4,15 @@
 \alias{growthPlot}
 \title{Function to visualize common growth models.}
 \usage{
-growthPlot(fit, form, groups = NULL, df = NULL, timeRange = NULL)
+growthPlot(
+  fit,
+  form,
+  groups = NULL,
+  df = NULL,
+  timeRange = NULL,
+  facetGroups = TRUE,
+  groupFill = FALSE
+)
 }
 \arguments{
 \item{fit}{A model fit object (or a list of \code{nlrq} models) as returned by \code{fitGrowth}.}
@@ -19,6 +27,12 @@ Defaults to NULL in which case all groups in the model are plotted.}
 
 \item{timeRange}{An optional range of times to use. This can be used to view predictions for
 future data if the avaiable data has not reached some point (such as asymptotic size).}
+
+\item{facetGroups}{logical, should groups be separated in facets? Defaults to TRUE.}
+
+\item{groupFill}{logical, should groups have different colors? Defaults to FALSE. If TRUE then viridis colormaps are used in the order
+c('plasma', 'mako', 'viridis', 'inferno', 'cividis', 'magma', 'turbo', 'rocket'). Alternatively this can be given as a vector of
+viridis colormap names to use in a different order than above.}
 }
 \value{
 Returns a ggplot showing a brms model's credible

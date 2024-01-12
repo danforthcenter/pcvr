@@ -12,6 +12,10 @@
 #' @param timeRange An optional range of times to use. This can be used to view predictions for
 #' future data if the available data has not reached some point (such as asymptotic size),
 #' although prediction using splines outside of the observed range is not necessarily reliable.
+#' @param facetGroups logical, should groups be separated in facets? Defaults to TRUE. 
+#' @param groupFill logical, should groups have different colors? Defaults to FALSE. If TRUE then viridis colormaps are used in the order
+#' of virMaps
+#' @param virMaps order of viridis maps to use. Will be recycled to necessary length. Defaults to "plasma", but will generally be informed by growthPlot's default.
 #' @keywords growth-curve, logistic, gompertz, monomolecular, linear, exponential, power-law
 #' @import ggplot2
 #' @import viridis
@@ -38,7 +42,7 @@
 #' 
 #' @export
 
-brmPlot<-function(fit, form, df=NULL, groups = NULL, timeRange = NULL){
+brmPlot<-function(fit, form, df=NULL, groups = NULL, timeRange = NULL, facetGroups=TRUE, groupFill=FALSE, virMaps = c("plasma")){
   fitData<-fit$data
   y=as.character(form)[2]
   x<-as.character(form)[3]
@@ -55,7 +59,7 @@ brmPlot<-function(fit, form, df=NULL, groups = NULL, timeRange = NULL){
   }
   
   probs <- seq(from=99, to=1, by=-2)/100
-  avg_pal <- viridis::plasma(n=length(probs))
+  
   if(is.null(timeRange)){ timeRange <- unique(fitData[[x]]) }
   
   newData<-data.frame(x=rep( timeRange , times=length(unique(fitData[[group]])) ), 
@@ -70,20 +74,41 @@ brmPlot<-function(fit, form, df=NULL, groups = NULL, timeRange = NULL){
       df<-df[df[[group]] %in% groups, ]
     }
   }
-  if(!all(fitData[[group]]=="a")){ facetLayer <- ggplot2::facet_wrap(as.formula(paste0("~",group)))
-  } else {facetLayer <- NULL
+  
+  #* `facetGroups`
+  if(facetGroups){
+    if(!all(fitData[[group]]=="a")){ facetLayer <- ggplot2::facet_wrap(as.formula(paste0("~",group)))
+    } else {facetLayer <- NULL
     }
+  } else{ facetLayer <- NULL }
+  #* `groupFill`
+  if(groupFill){
+    virList <- lapply( rep(virMaps, length.out=length(unique( df[[group]] )) ), function(pal){
+      viridis::viridis(n=length(probs), option = pal)
+    })
+  } else{
+    pal <- viridis::plasma(n=length(probs))
+    virList <- lapply(1:length(unique(df[[group]])), function(i){pal} )
+  }
+  
   
   p<-ggplot2::ggplot(predictions, ggplot2::aes(x=.data[[x]], y=.data$Estimate))+
     facetLayer +
-    lapply(seq(1,49,2),function(i) ggplot2::geom_ribbon(ggplot2::aes(ymin=.data[[paste0("Q",i)]],
-                                                                     ymax=.data[[paste0("Q",100-i)]]),
-                                                        fill=avg_pal[i],alpha=0.5))+
     ggplot2::labs(x=x, y=y)+
     pcv_theme()
   
+  for( g in 1:length(unique(predictions[[group]])) ){
+    iteration_group <- unique(predictions[[group]])[g]
+    sub = predictions[predictions[[group]]==iteration_group, ]
+    p <- p +
+      lapply(seq(1,49,2),function(i) ggplot2::geom_ribbon(data = sub, ggplot2::aes(ymin=.data[[paste0("Q",i)]],
+                                                                       ymax=.data[[paste0("Q",100-i)]]),
+                                                          fill=virList[[g]][i],alpha=0.5))
+  }
+  
   if(!is.null(df)){
-    p<-p+ggplot2::geom_line(data=df, ggplot2::aes(.data[[x]], .data[[y]], group=.data[[individual]]),color="gray20", linewidth=0.2)
+    p<-p+ggplot2::geom_line(data=df, ggplot2::aes(.data[[x]], .data[[y]], group=interaction(.data[[individual]], .data[[group]])),
+                            color="gray20", linewidth=0.2)
   }
   return(p)
 }

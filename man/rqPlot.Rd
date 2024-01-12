@@ -20,6 +20,13 @@ Defaults to NULL in which case all groups in the model are plotted.}
 
 \item{timeRange}{An optional range of times to use. This can be used to view predictions for
 future data if the avaiable data has not reached some point (such as asymptotic size).}
+
+\item{facetGroups}{logical, should groups be separated in facets? Defaults to TRUE.}
+
+\item{groupFill}{logical, should groups have different colors? Defaults to FALSE. If TRUE then viridis colormaps are used in the order
+of virMaps}
+
+\item{virMaps}{order of viridis maps to use. Will be recycled to necessary length. Defaults to "plasma", but will generally be informed by growthPlot's default.}
 }
 \value{
 Returns a ggplot showing an rq general additive model's quantiles

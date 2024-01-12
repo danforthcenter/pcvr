@@ -12,6 +12,10 @@
 #' Defaults to NULL in which case all groups in the model are plotted.
 #' @param timeRange An optional range of times to use. This can be used to view predictions for
 #' future data if the avaiable data has not reached some point (such as asymptotic size).
+#' @param facetGroups logical, should groups be separated in facets? Defaults to TRUE. 
+#' @param groupFill logical, should groups have different colors? Defaults to FALSE. If TRUE then viridis colormaps are used in the order
+#' of virMaps
+#' @param virMaps order of viridis maps to use. Will be recycled to necessary length. Defaults to "plasma", but will generally be informed by growthPlot's default.
 #' @keywords growth-curve, logistic, gompertz, monomolecular, linear, exponential, power-law
 #' @importFrom methods is
 #' @import ggplot2
@@ -43,7 +47,7 @@
 #' 
 #' @export
 
-nlrqPlot<-function(fit, form, df = NULL, groups = NULL, timeRange = NULL){
+nlrqPlot<-function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facetGroups=TRUE, groupFill=FALSE, virMaps = c("plasma")){
   #fit = fits; form = ss$pcvrForm; groups = NULL; df = ss$df; timeRange = NULL
   #* `get needed information from formula`
   x <-as.character(form)[3]
@@ -88,10 +92,24 @@ nlrqPlot<-function(fit, form, df = NULL, groups = NULL, timeRange = NULL){
   keep <- which(!duplicated(preds))
   plotdf <- cbind(df[keep,], preds[keep,])
   colnames(plotdf) <- c(colnames(df), colnames(preds))
-  #* `define colors`
-  virPal_p1<-viridis::plasma(ceiling(length(predCols)/2), direction=1, end=1)
-  virPal_p2<-viridis::plasma(floor(length(predCols)/2), direction=-1, end=1)
-  virPal<-c(virPal_p1,virPal_p2)#; scales::show_col(virPal)
+  
+  #* `facetGroups`
+  if(facetGroups){
+    facet_layer <- ggplot2::facet_wrap(stats::as.formula(paste0("~",group)))
+  } else{ facet_layer <- NULL }
+  #* `groupFill`
+  if(groupFill){
+    virList <- lapply( rep(virMaps, length.out=length(unique( df[[group]] )) ), function(pal){
+      virPal_p1<-viridis::viridis(ceiling(length(predCols)/2), direction=1, end=1, option=pal)
+      virPal_p2<-viridis::viridis(floor(length(predCols)/2), direction=-1, end=1, option=pal)
+      c(virPal_p1,virPal_p2)
+    })
+  } else{
+    virPal_p1<-viridis::plasma(ceiling(length(predCols)/2), direction=1, end=1)
+    virPal_p2<-viridis::plasma(floor(length(predCols)/2), direction=-1, end=1)
+    virPal<-c(virPal_p1,virPal_p2)
+    virList <- lapply(1:length(unique(df[[group]])), function(i){virPal} )
+  }
   #* `layer for individual lines if formula was complete`
   if(!is.null(individual)){
     individual_lines<-ggplot2::geom_line(data=df, ggplot2::aes(x=.data[[x]], y=.data[[y]],
@@ -103,13 +121,19 @@ nlrqPlot<-function(fit, form, df = NULL, groups = NULL, timeRange = NULL){
   }
   #* `plot`
   plot<-ggplot(plotdf, ggplot2::aes(group = interaction(.data[[group]])))+
-    facet_wrap(stats::as.formula(paste0("~",group)))+
+    facet_layer+
     individual_lines+
-    lapply(1:length(predCols), function(i){
-      ggplot2::geom_line(ggplot2::aes(x=.data[[x]], y=.data[[ predCols[i] ]]), color=virPal[i], linewidth=0.7)
-    })+
     labs(x=x, y = as.character(form)[2])+
     pcv_theme()
+  
+  for(g in 1:length(unique(plotdf[[group]]))){
+    iteration_group <- unique(plotdf[[group]])[g]
+    sub = plotdf[plotdf[[group]]==iteration_group, ]
+    plot <- plot +
+      lapply(1:length(predCols), function(i){
+        ggplot2::geom_line(data = sub, ggplot2::aes(x=.data[[x]], y=.data[[ predCols[i] ]]), color=virList[[g]][i], linewidth=0.7)
+      })
+  }
   
   return(plot)
 }

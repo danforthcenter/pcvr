@@ -12,6 +12,10 @@
 #' Defaults to NULL in which case all groups in the model are plotted.
 #' @param timeRange An optional range of times to use. This can be used to view predictions for
 #' future data if the avaiable data has not reached some point (such as asymptotic size).
+#' @param facetGroups logical, should groups be separated in facets? Defaults to TRUE. 
+#' @param groupFill logical, should groups have different colors? Defaults to FALSE. If TRUE then viridis colormaps are used in the order
+#' of virMaps
+#' @param virMaps order of viridis maps to use. Will be recycled to necessary length. Defaults to "plasma", but will generally be informed by growthPlot's default.
 #' @keywords growth-curve, logistic, gompertz, monomolecular, linear, exponential, power-law
 #' @importFrom methods is
 #' @import ggplot2
@@ -44,7 +48,7 @@
 #' @export
 #' 
 
-nlmePlot<-function(fit, form, df = NULL, groups = NULL, timeRange = NULL){
+nlmePlot<-function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facetGroups=TRUE, groupFill=FALSE, virMaps = c("plasma") ){
   #* `get needed information from formula`
   x <-as.character(form)[3]
   y <-as.character(form)[2]
@@ -79,18 +83,37 @@ nlmePlot<-function(fit, form, df = NULL, groups = NULL, timeRange = NULL){
   preds <- .add_sigma_bounds(preds, fit, x, group)
 
   #* `plot`
-  pal <- viridis::plasma(2, begin=0.1, end = 0.9)
+
+  #* `facetGroups`
+  if(facetGroups){
+    facet_layer <- ggplot2::facet_wrap(stats::as.formula(paste0("~",group)))
+  } else{ facet_layer <- NULL }
+  #* `groupFill`
+  if(groupFill){
+    virList <- lapply( rep(virMaps, length.out=length(unique( df[[group]] )) ), function(pal){
+      viridis::viridis(2, begin=0.1, end=0.9, option = pal)
+    })
+  } else{
+    pal <- viridis::plasma(2, begin=0.1, end = 0.9)
+    virList <- lapply(1:length(unique(df[[group]])), function(i){pal} )
+  }
   
   plot <- ggplot2::ggplot(preds, ggplot2::aes(x=.data[[x]], y = .data[["trendline"]]))+
-    ggplot2::facet_wrap(paste0("~", group)) +
+    facet_layer + 
     ggplot2::geom_line(data=df, ggplot2::aes(x=.data[[x]], y=.data[[y]],
                                                 group = interaction(.data[[individual]],
                                                                     .data[[group]]) ),
                        linewidth=0.25, color="gray40")+
-    ggplot2::geom_ribbon(ggplot2::aes(ymin=.data[["sigma_ymin"]], ymax=.data[["sigma_ymax"]]), fill=pal[1], alpha=0.5)+
-    ggplot2::geom_line(color=pal[2], linewidth=0.75)+
     ggplot2::labs(x=x, y=y)+
     pcv_theme()
+  
+  for( g in 1:length(unique(preds[[group]])) ){
+    iteration_group <- unique(preds[[group]])[g]
+    sub = preds[preds[[group]]==iteration_group, ]
+    plot <- plot +
+      ggplot2::geom_ribbon(data =sub, ggplot2::aes(ymin=.data[["sigma_ymin"]], ymax=.data[["sigma_ymax"]]), fill=virList[[g]][1], alpha=0.5)+
+      ggplot2::geom_line(data=sub, color=virList[[g]][2], linewidth=0.75)
+  }
   
   return(plot)
 }
