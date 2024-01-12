@@ -197,3 +197,31 @@ test_that("Test gam brms model setup", {
   
   expect_s3_class(ss$formula, "brmsformula")
 })
+
+#* ************************************************************
+#* ******************** `decay modeling` ********************
+#* ************************************************************
+
+
+test_that("Test logistic decay", {
+  df<-simdf<-growthSim("logistic decay", n=20, t=25, params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5) ))
+  ss<-growthSS(model = "logistic decay", form=y~time|id/group, sigma="none",
+               df=simdf, start = NULL, type="nlme")
+  fit <- fitGrowth(ss)
+  expect_s3_class(fit, "lme")
+  
+  ss<-growthSS(model = "logistic decay", form=y~time|id/group, sigma="none",
+               df=simdf, start = NULL, type="nls")
+  fit <- fitGrowth(ss)
+  expect_s3_class(fit, "nls")
+  
+  ss<-growthSS(model = "logistic decay", form=y~time|id/group, sigma="none",
+               df=simdf, start = NULL, type="nlrq")
+  fit <- fitGrowth(ss)
+  expect_s3_class(fit, "nlrq")
+  
+})
+
+
+
+

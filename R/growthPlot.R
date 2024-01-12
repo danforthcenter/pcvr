@@ -12,6 +12,10 @@
 #' @param df A dataframe to use in plotting observed growth curves on top of the model and for making predictions.
 #' @param timeRange An optional range of times to use. This can be used to view predictions for
 #' future data if the avaiable data has not reached some point (such as asymptotic size).
+#' @param facetGroups logical, should groups be separated in facets? Defaults to TRUE. 
+#' @param groupFill logical, should groups have different colors? Defaults to FALSE. If TRUE then viridis colormaps are used in the order
+#' c('plasma', 'mako', 'viridis', 'inferno', 'cividis', 'magma', 'turbo', 'rocket'). Alternatively this can be given as a vector of
+#' viridis colormap names to use in a different order than above.
 #' @keywords growth-curve, logistic, gompertz, monomolecular, linear, exponential, power-law
 #' @importFrom methods is
 #' @examples 
@@ -36,20 +40,27 @@
 #' 
 #' @export
 
-growthPlot<-function(fit, form, groups = NULL, df = NULL, timeRange = NULL){
+growthPlot<-function(fit, form, groups = NULL, df = NULL, timeRange = NULL, facetGroups=TRUE, groupFill=FALSE){
+  
+  if(is.logical(groupFill)){
+    virMaps <- c('plasma', 'mako', 'viridis', 'inferno', 'cividis', 'magma', 'turbo', 'rocket')
+  } else{
+    virMaps <- groupFill
+    groupFill <- TRUE
+  }
   
   if(methods::is(fit, "brmsfit")){
-    plot <- brmPlot(fit=fit, form=form, groups = groups, df = df, timeRange = timeRange)
+    plot <- brmPlot(fit=fit, form=form, groups = groups, df = df, timeRange = timeRange, facetGroups = facetGroups, groupFill = groupFill, virMaps)
   } else if(methods::is(fit, "nls") | methods::is(fit, "gam") | methods::is(fit, "lm") ){
-    plot <- nlsPlot(fit=fit, form=form, groups = groups, df = df, timeRange = timeRange)
+    plot <- nlsPlot(fit=fit, form=form, groups = groups, df = df, timeRange = timeRange, facetGroups = facetGroups, groupFill = groupFill, virMaps)
   } else if(methods::is(fit, "lme")){
-    plot <- nlmePlot(fit, form = form, groups = groups, df = df, timeRange = timeRange)
+    plot <- nlmePlot(fit, form = form, groups = groups, df = df, timeRange = timeRange, facetGroups = facetGroups, groupFill = groupFill, virMaps)
   } else if(methods::is(fit, "nlme")){
-    plot <- nlmePlot(fit, form = form, groups = groups, df = df, timeRange = timeRange)
+    plot <- nlmePlot(fit, form = form, groups = groups, df = df, timeRange = timeRange, facetGroups = facetGroups, groupFill = groupFill, virMaps)
   } else if(methods::is(fit, "nlrq") | is.list(fit) && methods::is(fit[[1]], "nlrq") ){
-    plot <- nlrqPlot(fit=fit, form=form, groups = groups, df = df, timeRange = timeRange)
+    plot <- nlrqPlot(fit=fit, form=form, groups = groups, df = df, timeRange = timeRange, facetGroups = facetGroups, groupFill = groupFill, virMaps)
   } else if(methods::is(fit, "rq") | is.list(fit) && methods::is(fit[[1]], "rq") ){
-    plot <- rqPlot(fit=fit, form=form, groups = groups, df = df, timeRange = timeRange)
+    plot <- rqPlot(fit=fit, form=form, groups = groups, df = df, timeRange = timeRange, facetGroups = facetGroups, groupFill = groupFill, virMaps)
   } else{
     stop("Only implemented for brms, nls, nlme, mgcv, and nlrq models from fitGrowth currently.")
   }

@@ -112,6 +112,13 @@ df[[paste0(group, individual)]]<-interaction(df[[group]], df[[individual]])
 intVar <- paste0(group, individual)
 
 #* `assemble growth formula with FE, RE, Groups, and Weights`
+if(grepl("decay", model)){
+  decay=TRUE
+  model <- trimws(gsub("decay", "", model))
+} else{
+  decay=FALSE
+}
+
 matched_model <- match.arg(model, models)
 
 if(is.character(sigma)){
@@ -149,6 +156,9 @@ if(matched_model=="double logistic"){
   pars = df # there are no pars, this is just to pass df to pdIdent for the splines
 }
 growthForm_list = form_fun(x,y, group, individual, matched_sigma, pars)
+
+if(decay){ growthForm_list <- .nlme_Decay(growthForm_list) }
+
 
 #* `Make starting values`
 if(is.null(start)){
@@ -442,7 +452,12 @@ return(out)
   return(formulas)
 }
 
-
+.nlme_Decay <- function(formList){
+  modelForm <- formList$model
+  chars <- as.character(modelForm)
+  formList$model <- as.formula(paste0(chars[2], chars[1], "-(", chars[3],")" ))
+  formList
+}
 
 
 

@@ -13,6 +13,10 @@
 #' This must be supplied for nls models.
 #' @param timeRange An optional range of times to use. This can be used to view predictions for
 #' future data if the avaiable data has not reached some point (such as asymptotic size).
+#' @param facetGroups logical, should groups be separated in facets? Defaults to TRUE. 
+#' @param groupFill logical, should groups have different colors? Defaults to FALSE. If TRUE then viridis colormaps are used in the order
+#' of virMaps
+#' @param virMaps order of viridis maps to use. Will be recycled to necessary length. Defaults to "plasma", but will generally be informed by growthPlot's default.
 #' @keywords growth-curve, logistic, gompertz, monomolecular, linear, exponential, power-law
 #' @importFrom methods is
 #' @import ggplot2
@@ -42,7 +46,7 @@
 #' 
 #' @export
 
-nlsPlot<-function(fit, form, df = NULL, groups = NULL, timeRange = NULL){
+nlsPlot<-function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facetGroups=TRUE, groupFill=FALSE, virMaps = c("plasma")){
   #fit = fit_outer; form = ss$pcvrForm; groups = NULL; df = ss$df; timeRange = NULL
   #* `get needed information from formula`
   x <-as.character(form)[3]
@@ -88,11 +92,26 @@ nlsPlot<-function(fit, form, df = NULL, groups = NULL, timeRange = NULL){
   } else{
     individual_lines<-list()
   }
+  #* `facetGroups`
+  if(facetGroups){
+    facet_layer <- ggplot2::facet_wrap(stats::as.formula(paste0("~",group)))
+  } else{ facet_layer <- NULL }
+  #* `groupFill`
+  if(groupFill){
+    virVals <- unlist(lapply( rep(virMaps, length.out=length(unique( df[[group]] )) ), function(pal){
+      viridis::viridis(1, begin=0.5, option = pal)
+    }))
+    color_scale <- ggplot2::scale_color_manual(values = virVals)
+  } else{
+    color_scale <- ggplot2::scale_color_manual(values = rep("#CC4678FF", length(unique( df[[group]] ))))
+  }
+  
   #* `plot`
   plot<-ggplot(plotdf, ggplot2::aes(group = interaction(.data[[group]])))+
-    facet_wrap(stats::as.formula(paste0("~",group)))+
+    facet_layer+
     individual_lines+
-    ggplot2::geom_line(ggplot2::aes(x=.data[[x]], y=.data[["pred"]]), color="#CC4678FF", linewidth=0.7)+ # using middle of plasma pal
+    ggplot2::geom_line(ggplot2::aes(x=.data[[x]], y=.data[["pred"]], color = .data[[group]]), linewidth=0.7)+ # using middle of plasma pal
+    color_scale+
     labs(x=x, y = as.character(form)[2])+
     pcv_theme()
   

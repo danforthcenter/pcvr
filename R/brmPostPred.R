@@ -116,6 +116,14 @@ postPred <- function(fit, form, groups=NULL, timeRange=NULL, hyp = NULL, plot=TR
     ppred$diff <- ppred[[1]] - ppred[[2]]
     
   } else { # all using one model
+    
+    form1 <- .parseFormula(fit1, form )
+    
+    fitData <-form1[[1]]
+    y <- form1[[2]]
+    x <- form1[[3]]
+    group <- form1[[4]]
+    
     if(is.null(groups)){
       groups = unique(fitData[[group]])[1:2]
     }
@@ -177,7 +185,8 @@ postPred <- function(fit, form, groups=NULL, timeRange=NULL, hyp = NULL, plot=TR
     hyps_df$y <- 1.1 * qpreds[,1]
     if(plot){
       p <- p +
-        ggplot2::geom_text(data = hyps_df, ggplot2::aes(x=time, y=y, label = round(prob, 2), angle=90, hjust=0))+
+        ggplot2::geom_text(data = hyps_df, ggplot2::aes(x=.data[["time"]], y=.data[["y"]],
+                                                        label = round(.data[['prob']], 2), angle=90, hjust=0))+
         ggplot2::labs(title = paste0("Posterior Probability of `", hyp, "`"))+
         ggplot2::coord_cartesian(ylim = c(NA, 1.15*max(hyps_df$y)))
       out[["plot"]]<-p

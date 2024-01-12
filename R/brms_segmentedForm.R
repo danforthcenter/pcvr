@@ -51,6 +51,12 @@
   
   formulae <- lapply(1:length(component_models), function(i){
     iter_model <- component_models[i]
+    
+    if(grepl("decay", iter_model)){
+      decay=TRUE
+      iter_model <- trimws(gsub("decay", "", iter_model))
+    } else{ decay=FALSE }
+    
     matched_iter_model <- match.arg(iter_model, models)
     if(matched_iter_model=="logistic"){
       iter <- .logisticChngptForm(x, i, sigma, priors)
@@ -71,6 +77,8 @@
     } else if(matched_iter_model %in% c("int", "homo")){
       iter <- .intChngptForm(x, i, sigma, priors)
     }
+    # use decay helper option here
+    if(decay){ iter <- .decayChngptForm(iter) }
     return(iter)
   })
   
@@ -677,6 +685,22 @@
               "cpInt" = cpInt,
               "params" = pars,
               "splineVar" = paste0(prefix, "spline") ))
+}
+
+#* ****************************************
+#* ***** `Gam Changepoint Phase` *****
+#* ****************************************
+
+#' flip any model to a decay model
+#'
+#' @param phaseList A list returned from some *ChngptForm function
+#' 
+#' @return a list with form, cp, cpInt and params for a decay segment to a model
+#' @noRd
+
+.decayChngptForm <- function(phaseList){
+  phaseList$form <- paste0("-",phaseList$form)
+  phaseList
 }
 
 
