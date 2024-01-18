@@ -569,6 +569,23 @@ if(file.exists("/home/josh/Desktop/") & interactive()){ # only run locally, don'
     
   })
   
+  test_that("logistic decay as a segment", {
+    simdf<-growthSim(model = "logistic + logistic decay", n=20, t=45,
+                     params = list("logistic1A"=c(120, 140), "logistic1B"=c(12, 10), "logistic1C"=c(3,3.5),
+                                   "changePoint1"=c(20, 23), 
+                                   "logistic2A"=c(90, 100), "logistic2B"=c(11, 13), "logistic2C"=c(3, 3.5)))
+    p <- ggplot(simdf,aes(time, y, group=interaction(group,id)))+ 
+      geom_line(aes(color=group))+labs(title="logistic + logistic decay")
+    
+    ss<-growthSS(model = "logistic + logistic decay", form=y~time|id/group, sigma="spline",
+                 list("logistic1A"=100, "logistic1B"=10, "logistic1C"=3, "changePoint1"=20, 
+                      "logistic2A"=100, "logistic2B"=10, "logistic2C"=3),
+                 df=simdf, type = "brms")
+    fit <- fitGrowth(ss, backend="cmdstanr", iter=500, chains=1, cores=1)
+    plot<-growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
+    ggsave("/home/josh/Desktop/stargate/fahlgren_lab/labMeetings/logistic_plus_logisticDecay.png", plot, width=10, height=6, dpi=300, bg="#ffffff")
+    expect_s3_class(plot, "ggplot")
+  })
   
 }
 
