@@ -1,8 +1,8 @@
-#' Earth Mover's Distance between spectral histograms
+#' Euclidean Distance between spectral histograms
 #' 
-#' @description pcv.emd can be used to calculate Earth Mover's Distance between pairwise histograms 
+#' @description pcv.euc can be used to calculate Euclidean Distance between pairwise histograms 
 #' in a wide dataframe of multi value traits. The is expected to be used with output from \code{mv_ag}.
-#' See also \link{pcv.euc} for euclidean distance between histograms.
+#' See also \link{pcv.emd}.
 #' 
 #' @param df Data frame to use with multi value traits in wide format or long format
 #' @param cols Columns to use. Defaults to NULL in which case all columns are used.
@@ -40,7 +40,7 @@
 #' @return A dataframe/matrix (if plot=FALSE) or a list with a dataframe/matrix and a ggplot (if plot=TRUE).
 #'  The returned data contains pairwise EMD values.
 #' 
-#' @keywords emd, earth mover's distance, multi-value trait, histogram
+#' @keywords euclidean distance, multi-value trait, histogram
 #' @examples 
 #' 
 #' ## Not run:
@@ -54,7 +54,7 @@
 #' test$meta1<-rep(LETTERS[1:3], length.out = nrow(test))
 #' test$meta2<-rep(LETTERS[4:5], length.out = nrow(test))
 #' 
-#' x<-pcv.emd(df=test, cols="V", reorder="Mu",
+#' x<-pcv.euc(df=test, cols="V", reorder="Mu",
 #'    include = c("meta1", "meta2"), mat =FALSE,
 #'    plot=FALSE, parallel = 1)
 #' head(x)
@@ -72,34 +72,21 @@
 #' df1$fertilizer = ifelse(df1$fertilizer == "A", "100",
 #'                        ifelse(df1$fertilizer == "B", "50", "0"))
 #' 
-#' w<-pcv.emd(df1, cols="hue_frequencies", reorder=c("fertilizer", "genotype"), 
+#' w<-pcv.euc(df1, cols="hue_frequencies", reorder=c("fertilizer", "genotype"), 
 #'   mat =FALSE, plot=TRUE, parallel = 1)
-#'   
-#' 
-#' # Note on computational complexity
-#' # This scales as O^2, see the plot below for some idea
-#' # of the time for different input data sizes.
-#' emdTime<-function(x, n=1){
-#' x^2 / n * 0.0023
-#' }
-#' plot(x=c(18,36,54,72, 108, 135), y = c(0.74, 2.89, 6.86, 10.99, 26.25, 42.44),
-#' xlab="N Input Images", ylab="time (seconds)") # benchmarked test data
-#' lines(x=1:150, y = emdTime(1:150)) # exponential function
-#' 
-#' plot(x=1:1000, y=emdTime(1:1000), type="l", xlab="N Input Images", ylab="time (seconds)")
 #' }
 #' ## End(Not run)
 #' 
 #' @export
 #' 
-pcv.emd<-function(df, cols=NULL, reorder=NULL, include=reorder, mat=FALSE, plot =TRUE,
+pcv.euc<-function(df, cols=NULL, reorder=NULL, include=reorder, mat=FALSE, plot =TRUE,
                   parallel = getOption("mc.cores",1), trait="trait", id="image", 
                   value="value", raiseError=TRUE){
   # df = df1; cols="ndvi_"; reorder=c("treatment", "genotype"); mat =FALSE; plot=TRUE; parallel = 1; include=reorder; trait=FALSE; id="image";value="value"
   # df_long<-read.pcv(file, "long", FALSE)
   # df = df_long; cols="index_frequencies_index_ndvi"; reorder=c("treatment", "genotype"); mat =FALSE; plot=TRUE; parallel = 1; include=reorder;
   # longTrait="trait"; id="image"; value="value"
-
+  
   if(all(c(trait, value) %in% colnames(df))){
     long = TRUE
     traitCol = trait
@@ -112,35 +99,35 @@ pcv.emd<-function(df, cols=NULL, reorder=NULL, include=reorder, mat=FALSE, plot 
     df<-df[grepl(cols, df[[traitCol]]), ]
     #* if nrow df is too high then do calculation for time per core based on estimates and report time with error.
     if(raiseError){
-      eT_sec = 0.0025*((nrow(df)/parallel)^2)
+      eT_sec = 0.008*((nrow(df)/parallel)^2)
       eT_min = eT_sec/60
       eT_hour = eT_min/60
       if(eT_sec <= 300){message(paste0("Estimated time of calculation is roughly ", round(eT_sec,1), " seconds using ", parallel, " cores in parallel."))
       } else if(eT_min < 60){warning(paste0("Estimated time of calculation is roughly ", round(eT_min,2), " minutes using ", parallel, " cores in parallel."))
-          } else if(eT_min > 60){stop(paste0("Stopping, estimated time of calculation is roughly ", round(eT_hour,2), " hours using ", parallel, " cores in parallel.",
-                                    "\nIf you wish to proceed then rerun this command with raiseError=FALSE"))}
+      } else if(eT_min > 60){stop(paste0("Stopping, estimated time of calculation is roughly ", round(eT_hour,2), " hours using ", parallel, " cores in parallel.",
+                                         "\nIf you wish to proceed then rerun this command with raiseError=FALSE"))}
     }
-    df$INNER_ID_EMD<-interaction(df[,id], drop=TRUE)
+    df$INNER_ID_EUC<-interaction(df[,id], drop=TRUE)
     if(mat){ # make dist matrix
       out_data<-matrix(
-        unlist(lapply(unique(df$INNER_ID_EMD), function(i){parallel::mclapply(unique(df$INNER_ID_EMD), function(j){
-          if(i==j){0}else{emd1d(as.numeric(df[df$INNER_ID_EMD==as.character(i), value]), as.numeric(df[df$INNER_ID_EMD==as.character(j), value]))}
-        }, mc.cores=parallel)})), nrow=length(unique(df$INNER_ID_EMD)), ncol = length(unique(df$INNER_ID_EMD)) )
+        unlist(lapply(unique(df$INNER_ID_EUC), function(i){parallel::mclapply(unique(df$INNER_ID_EUC), function(j){
+          if(i==j){0}else{ euc1d(as.numeric(df[df$INNER_ID_EUC==as.character(i), value]), as.numeric(df[df$INNER_ID_EUC==as.character(j), value])) }
+        }, mc.cores=parallel)})), nrow=length(unique(df$INNER_ID_EUC)), ncol = length(unique(df$INNER_ID_EUC)) )
     }else{ # make long data
-      out_data<-do.call(rbind, lapply(unique(df$INNER_ID_EMD), function(i){
-        do.call(rbind, parallel::mclapply(unique(df$INNER_ID_EMD), function(j){
-          if(i==j){emdOut=0}else{emdOut=emd1d(as.numeric(df[df$INNER_ID_EMD==as.character(i), value]),
-                                              as.numeric(df[df$INNER_ID_EMD==as.character(j), value]) )}
-          if(!is.null(include)){x<-data.frame(i=i, j=j, emd = emdOut, df[df$INNER_ID_EMD==as.character(i), include][1,], df[df$INNER_ID_EMD==as.character(j), include][1,])
-          colnames(x)<-c("i", "j", "emd", paste0(include,"_i"), paste0(include, "_j"))
-          } else {x<-data.frame(i=i, j=j, emd = emdOut)}
+      out_data<-do.call(rbind, lapply(unique(df$INNER_ID_EUC), function(i){
+        do.call(rbind, parallel::mclapply(unique(df$INNER_ID_EUC), function(j){
+          if(i==j){eucOut=0}else{eucOut=euc1d(as.numeric(df[df$INNER_ID_EUC==as.character(i), value]),
+                                              as.numeric(df[df$INNER_ID_EUC==as.character(j), value]) )}
+          if(!is.null(include)){x<-data.frame(i=i, j=j, euc = eucOut, df[df$INNER_ID_EUC==as.character(i), include][1,], df[df$INNER_ID_EUC==as.character(j), include][1,])
+          colnames(x)<-c("i", "j", "euc", paste0(include,"_i"), paste0(include, "_j"))
+          } else {x<-data.frame(i=i, j=j, euc = eucOut)}
           x
         }, mc.cores=parallel))
       }))
     }
   } else{
-      if(is.null(cols)){cols<-colnames(df)
-      }else if(is.character(cols) && length(cols)==1){cols<-grepl(cols, colnames(df))}
+    if(is.null(cols)){cols<-colnames(df)
+    }else if(is.character(cols) && length(cols)==1){cols<-grepl(cols, colnames(df))}
     if(raiseError){
       eT_sec = 0.0025*((nrow(df)/parallel)^2)
       eT_min = eT_sec/60
@@ -150,33 +137,33 @@ pcv.emd<-function(df, cols=NULL, reorder=NULL, include=reorder, mat=FALSE, plot 
       } else if(eT_min > 60){stop(paste0("Stopping, estimated time of calculation is roughly ", round(eT_hour,2), " hours using ", parallel, " cores in parallel.",
                                          "\nIf you wish to proceed then rerun this command with raiseError=FALSE"))}
     }
-      if(mat){# make dist matrix
-        out_data<-matrix(
-          unlist(lapply(1:nrow(df), function(i){parallel::mclapply(1:nrow(df), function(j){
-            if(i==j){0}else{emd1d(as.numeric(df[i, cols]), as.numeric(df[j, cols]))}
-          }, mc.cores = parallel)})), nrow=nrow(df), ncol = nrow(df) )
-        if(!is.null(include)){
-          rownames(out_data)<-interaction(df[,include])
-        }
-      }else{# make long dataframe
-        out_data<-do.call(rbind, lapply(1:nrow(df), function(i){
-          do.call(rbind, parallel::mclapply(1:nrow(df), function(j){
-            if(i==j){emdOut=0}else{emdOut=emd1d(as.numeric(df[i, cols]), as.numeric(df[j, cols]))}
-            if(!is.null(include)){x<-data.frame(i=i, j=j, emd = emdOut, df[i, include], df[j,include])
-              colnames(x)<-c("i", "j", "emd", paste0(include,"_i"), paste0(include, "_j"))
-              } else {x<-data.frame(i=i, j=j, emd = emdOut)}
-            x
-          }, mc.cores=parallel))
-        }))
+    if(mat){# make dist matrix
+      out_data<-matrix(
+        unlist(lapply(1:nrow(df), function(i){parallel::mclapply(1:nrow(df), function(j){
+          if(i==j){0}else{euc1d(as.numeric(df[i, cols]), as.numeric(df[j, cols]))}
+        }, mc.cores = parallel)})), nrow=nrow(df), ncol = nrow(df) )
+      if(!is.null(include)){
+        rownames(out_data)<-interaction(df[,include])
       }
+    }else{# make long dataframe
+      out_data<-do.call(rbind, lapply(1:nrow(df), function(i){
+        do.call(rbind, parallel::mclapply(1:nrow(df), function(j){
+          if(i==j){eucOut=0}else{eucOut=euc1d(as.numeric(df[i, cols]), as.numeric(df[j, cols]))}
+          if(!is.null(include)){x<-data.frame(i=i, j=j, euc = eucOut, df[i, include], df[j,include])
+          colnames(x)<-c("i", "j", "emd", paste0(include,"_i"), paste0(include, "_j"))
+          } else {x<-data.frame(i=i, j=j, euc = eucOut)}
+          x
+        }, mc.cores=parallel))
+      }))
+    }
   }
   if(plot){
     if(mat){
       p<-stats::heatmap(out_data)
     }else{
-      p<-ggplot2::ggplot(out_data, ggplot2::aes(x=.data$i, y=.data$j, fill=.data$emd))+
+      p<-ggplot2::ggplot(out_data, ggplot2::aes(x=.data$i, y=.data$j, fill=.data$euc))+
         ggplot2::geom_tile(color=NA)+
-        ggplot2::labs(fill = "Earth Mover's Distance")+
+        ggplot2::labs(fill = "Euclidean Distance")+
         ggplot2::theme_minimal()+
         ggplot2::theme(axis.line.x.bottom = ggplot2::element_line(), axis.line.y.left = ggplot2::element_line(),
                        legend.position="bottom")
@@ -185,3 +172,28 @@ pcv.emd<-function(df, cols=NULL, reorder=NULL, include=reorder, mat=FALSE, plot 
   if(plot){outList<-list("data" = out_data, "plot"=p)} else{outList<-out_data}
   return(outList)
 }
+
+
+
+#' Euclidean Distance between spectral histograms
+#' 
+#' @description euc1d computes euclidean distance between two samples.
+#' 
+#' @param s1 Histogram as a numeric vector of counts per position.
+#' @param s2 Histogram as a numeric vector of counts per position. Must be the same length as s1.
+#' 
+#' @importFrom stats dist
+#' @keywords internal
+#' @return Returns euclidean distance as a numeric
+#' 
+#' @noRd
+
+euc1d<-function(s1, s2){
+  if(length(s1)!=length(s2)){stop("Samples must be from the same histogram and be of the same length")}
+  s1<-s1/sum(s1)
+  s2<-s2/sum(s2)
+  mat <- matrix(c(s1,s2), nrow=2, byrow=TRUE)
+  euc <- as.numeric(stats::dist(mat, method="euclidean"))
+  return(euc)
+}
+

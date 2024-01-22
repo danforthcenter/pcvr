@@ -37,8 +37,7 @@ If FALSE then long data is returned.}
 Returns a dataframe of example multi-value trait data simulated from specified distributions.
 }
 \description{
-growthSim can be used to help pick reasonable parameters for common
- growth models to use in prior distributions or to simulate data for example models/plots.
+mvSim can be used to simulate data for example models/plots.
 }
 \examples{
 
