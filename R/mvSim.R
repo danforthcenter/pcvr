@@ -1,7 +1,6 @@
 #' Multi Value Trait simulating function
 #' 
-#' @description growthSim can be used to help pick reasonable parameters for common
-#'  growth models to use in prior distributions or to simulate data for example models/plots.
+#' @description mvSim can be used to simulate data for example models/plots.
 #' 
 #' @param n_samples Number of samples per distribution to generate. Defaults to 10, can be >1L.
 #' @param counts Number of counts per histogram, defaults to 1000.
