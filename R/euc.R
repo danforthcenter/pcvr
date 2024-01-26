@@ -150,7 +150,7 @@ pcv.euc<-function(df, cols=NULL, reorder=NULL, include=reorder, mat=FALSE, plot 
         do.call(rbind, parallel::mclapply(1:nrow(df), function(j){
           if(i==j){eucOut=0}else{eucOut=euc1d(as.numeric(df[i, cols]), as.numeric(df[j, cols]))}
           if(!is.null(include)){x<-data.frame(i=i, j=j, euc = eucOut, df[i, include], df[j,include])
-          colnames(x)<-c("i", "j", "emd", paste0(include,"_i"), paste0(include, "_j"))
+          colnames(x)<-c("i", "j", "euc", paste0(include,"_i"), paste0(include, "_j"))
           } else {x<-data.frame(i=i, j=j, euc = eucOut)}
           x
         }, mc.cores=parallel))

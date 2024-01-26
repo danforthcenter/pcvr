@@ -4,6 +4,7 @@ if(file.exists("/home/josh/Desktop/") & interactive()){ # only run locally, don'
   #* there are lots of options and until one obviously breaks I am not going to try to test all of them. 
   library(testthat)
   library(brms)
+  library(ggplot2)
   # devtools::load_all("/home/josh/Desktop/stargate/fahlgren_lab/pcvr")
   test_that("Logistic brms model pipeline", {
     
@@ -534,7 +535,7 @@ if(file.exists("/home/josh/Desktop/") & interactive()){ # only run locally, don'
                                    "sublinear2A"))
 
     fit <- fitGrowth(ss, backend="cmdstanr", iter=500, chains=1, cores=1)
-    
+    # fit <- fitGrowth(ss, backend="cmdstanr", iter=1000, chains=6, cores=6)
     expect_s3_class(fit, "brmsfit")
     
     plot <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
