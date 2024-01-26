@@ -288,7 +288,7 @@ conjugate<-function(s1 = NULL, s2= NULL, method = c("t", "gaussian", "beta",
   if(length(method)==1 & !is.null(s2)){
       method <- rep(method, 2)
   }
-  if(!is.null(s2) & !is.null(priors) && !methods::is(priors[[1]], "list")  ){
+  if(!is.null(priors) && !methods::is(priors[[1]], "list")  ){
     priors <- list(priors, priors)
   }
   samplesList <- list(s1)
