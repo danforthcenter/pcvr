@@ -1,4 +1,4 @@
-#' Ease of use growth model helper function for 6 model parameterizations
+#' Ease of use growth model helper function. Output from this should be passed to \link{fitGrowth} to fit the specified model.
 #' 
 #' @param model The name of a model as a character string.
 #'  Supported options are c("logistic", "gompertz", "monomolecular", "exponential", "linear", "power law",
@@ -76,6 +76,7 @@
 #' Default priors are not provided, but these can serve as starting points for each distribution. 
 #' You are encouraged to use \code{growthSim} to consider what kind 
 #' of trendlines result from changes to your prior and for interpretation of each parameter.
+#' The \link{plotPrior} function can be used to do prior predictive checks.
 #' You should not looking back and forth at your data trying to match your
 #'  observed growth exactly with a prior distribution,
 #' rather this should be informed by an understanding of the plants you
