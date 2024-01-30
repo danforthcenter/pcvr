@@ -65,7 +65,10 @@
 #'   bound explicitly. Those warnings can safely be ignored and will be addressed if
 #'   the necessary features are added to \code{brms}. See details for guidance.
 #' @param type Type of model to fit, options are "brms", "nlrq", "nlme", "nls", and "mgcv".
-#' Note that the "mgcv" option only supports "gam" models.
+#' Note that the "mgcv" option only supports "gam" models. Note that for non-brms models variables in 
+#' the model will be labeled by the factor level of the group, not necessarily by the group name. This is 
+#' done for ease of use with different modeling functions, the levels are alphabetically sorted and can be checked using:
+#' \code{table(ss$df$group, ss$df$group_numericLabel)}.
 #' @param tau A vector of quantiles to fit for nlrq models.
 #' @keywords Bayesian, brms
 #' 
@@ -140,7 +143,7 @@
 #' \code{initfun}: A function to randomly initialize chains using a random draw from a gamma
 #' distribution (confines initial values to positive and makes correct number
 #' of initial values for chains and groups).
-#' \code{df} The data input, possibly with dummy variables added if needed.
+#' \code{df} The data input, with dummy variables added if needed and a column to link groups to their factor levels.
 #' \code{family} The model family, currently this will always be "student".
 #' \code{pcvrForm} The form argument unchanged. This is returned so that
 #' it can be used later on in model visualization. Often it may be a good idea

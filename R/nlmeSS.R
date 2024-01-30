@@ -90,7 +90,7 @@ if(grepl("\\|", x) & grepl("\\/",x)){
   x3<-trimws(strsplit(x, "[|]|[/]")[[1]])
   x<-x3[1]
   individual = x3[2]
-  group = x3[3] 
+  group = x3[length(x3)] 
   if(length(unique(df[[group]]))==1){USEGROUP=FALSE}else{USEGROUP=TRUE} # if there is only one group then ignore grouping for parameter and variance formulas
 } else if (grepl("\\|", x)){
   x2<-trimws(strsplit(x, "[|]")[[1]])
@@ -99,10 +99,12 @@ if(grepl("\\|", x) & grepl("\\/",x)){
   group="group"
   df[[group]]<-"group"
   USEGROUP=FALSE
+  #message("Using dummy grouping, if this is not what you want then specify individual and group")
 } else {stop("form must specify grouping. See documentation and examples.")}
 
 #* `make group a factor for nlme`
 df[[group]]<-as.factor(df[[group]])
+df[[paste0(group,"_numericLabel")]]<-unclass(df[[group]])
 #* `make an interaction variable for autocorrelation`
 #* Note that nlme does not allow random effects and correlations to apply at different "scales"
 #* so A,B,C can either vary by this interaction variable to have autocorrelation accurately modeled

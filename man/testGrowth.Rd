@@ -18,7 +18,7 @@ written as character strings. The latter method is not implemented for \code{nlr
 If this is a vector of parameters to test in the model then they should be parameters which
 vary by group in your original model and that you want to test against a null model where they
 do not vary by group. Alternatively for nlrq models this can be a comparison of model terms
-written as \code{"group_X|tau|par > group_Y|tau|par"}, which uses a fat tailed T distribution to make 
+written as \code{"group_X|tau|par - group_Y|tau|par"}, which uses a fat tailed T distribution to make 
 comparisons on the means of each quantile estimate. For GAMs these tests compare the model with
 splines either by group or interacting with group to a model that ignores the grouping in the data.
 If this is a list of hypothesis tests then they should describe tests similar to "A.group1 - A.group2*1.1" 
