@@ -124,7 +124,7 @@
       x3<-trimws(strsplit(x, "[|]|[/]")[[1]])
       x<-x3[1]
       individual = x3[2]
-      group = x3[3] 
+      group = x3[length(x3)] 
       if(length(unique(df[[group]]))==1){USEGROUP=FALSE}else{USEGROUP=TRUE} # if there is only one group then ignore grouping for parameter and variance formulas
     } else if (grepl("\\|", x)){
       x2<-trimws(strsplit(x, "[|]")[[1]])

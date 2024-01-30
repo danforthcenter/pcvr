@@ -22,14 +22,14 @@
     x3<-trimws(strsplit(x, "[|]|[/]")[[1]])
     x<-x3[1]
     individual = x3[2]
-    group = x3[3] 
+    group = x3[length(x3)] 
     message(paste0("Individual is not used with type = 'gam'."))
     if(length(unique(df[[group]]))==1){USEGROUP=FALSE}else{USEGROUP=TRUE} # if there is only one group then ignore grouping for parameter and variance formulas
   } else if (grepl("\\|", x)){
     x2<-trimws(strsplit(x, "[|]")[[1]])
     x<-x2[1]
     group = x2[2] # individual will not be used here 
-    USEGROUP=FALSE # leave x as is, in this parameterization this means no term[group] syntax
+    USEGROUP=TRUE # leave x as is, in this parameterization this means no term[group] syntax
     message(paste0("Individual is not used with type = 'gam', interpreting ", group, ", as a group."))
   } else {
     # leave x as is, in this parameterization this means no term[group] syntax
@@ -37,6 +37,7 @@
   }
   if(USEGROUP){
     df[[group]]<-factor(df[[group]])
+    df[[paste0(group,"_numericLabel")]]<-unclass(df[[group]])
   }
   #* `assemble gam formula`
   if(USEGROUP){
