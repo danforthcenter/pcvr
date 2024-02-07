@@ -37,10 +37,12 @@ this would yield parameters "linear1A", "changePoint1" (or "fixedChangePoint1"),
 "linear1A", "changePoint1", "gompertz2A",   "gompertz2B", and "gompertz2C" for parameters.
 Note that double sigmoid models are not supported as parts of segmented models and gams
  can currently only be included as the last part of a segmented model.
-Currently "homo" and "int" are treated the same and "spline" and "gam" are interchangeable.}
+Currently "homo" and "int" are treated the same and "spline" and "gam" are interchangeable.
+Time-to-event models can be specified using the "survival" keyword, see details for an explanation of the changes that entails.}
 
 \item{form}{A formula describing the model. The left hand side should only be 
-the outcome variable (phenotype). The right hand side needs at least the x variable
+the outcome variable (phenotype), and a cutoff if you are making a survival model (see details).
+The right hand side needs at least the x variable
  (typically time). Grouping is also described in this formula using roughly lme4
  style syntax,with formulas like \code{y~time|individual/group} to show that predictors
  should vary by \code{group} and autocorrelation between \code{individual:group}
@@ -190,6 +192,24 @@ see \code{?nlme::varClasses}.
     \item \bold{power}: \code{varPower(x|group)}, which models variance as a power of x per group.
     \item \bold{exp}: \code{varExp(x|group)}, which models variance as an exponent of x per group.
 }
+
+Survival models can be fit using the "survival" keyword in the model specification.
+Using the "brms" backend (type argument) you can specify "weibull" (the default) or "binomial" for the
+distribution to use in that model so that the final model string would be "survival binomial" or "survival weibull" 
+which is equivalent to "survival". Time to event data is very different than standard phenotype data, so the formula 
+argument should include a cutoff for the Y variable to count as an "event". For example, if you were checking germination
+using area and wanted to use 50 pixels as a germinated plant your formula would be \code{area > 50 ~ time|id/group}.
+Internally the input dataframe will be converted to time-to-event data based on that formula.
+Alternatively you can make your own time to event data and supply that to growthSS. In that case your data should have
+columns called "n_events" (number of individuals experiencing the event at this time) and
+"n_eligible" (number of individuals who had not experienced the event at least up to this time) 
+for the binomial model family OR "event" (binary 1,0 for TRUE, FALSE) and "censor" (binary 1,0 for censored, uncensored)
+for the Weibull model family. Note that since these are linear models using different model families the priors are handled differently.
+For survival models the default priors are weak regularizing priors (Normal(0,5)) on all parameters. If you wish 
+to specify your own priors you can supply them as brmsprior objects or as a list such as \code{priors = list("group1" = c(0,3), "group2" = c(0,1))}
+where the order of values is Mu, Sigma.
+Any non-brms backend will instead use \code{survival::survreg} to fit the model.
+Distributions will be passed to \code{survreg} where options are "weibull", "exponential", "gaussian", "logistic","lognormal" and "loglogistic".
 }
 \examples{
 

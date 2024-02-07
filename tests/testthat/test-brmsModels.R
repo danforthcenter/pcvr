@@ -588,5 +588,32 @@ if(file.exists("/home/josh/Desktop/") & interactive()){ # only run locally, don'
     expect_s3_class(plot, "ggplot")
   })
   
+  test_that("weibull survival", {
+    set.seed(123)
+    model = "survival weibull"
+    form <- y > 100 ~ time|id/group
+    df <- growthSim("logistic", n=20, t=25,
+                    params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))
+    prior <- c(0,5)
+    ss <- growthSS(model = model, form = form, df = df, start=prior)
+    lapply(ss,head)
+    test <- fitGrowth(ss,iter = 600, cores = 2, chains = 2, backend = "cmdstanr")
+    # need to still check plotting/testing, those are pending.
+  })
+  
+  test_that("binomial survival", {
+    set.seed(123)
+    model = "survival binomial"
+    form <- y > 100 ~ time|id/group
+    df <- growthSim("logistic", n=20, t=25,
+                    params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))
+    prior <- c(0,5)
+    ss <- growthSS(model = model, form = form, df = df, start=prior)
+    lapply(ss,head)
+    test <- fitGrowth(ss,iter = 600, cores = 2, chains = 2, backend = "cmdstanr")
+    # need to still check plotting/testing, those are pending.
+  })
+  
+  
 }
 
