@@ -159,7 +159,7 @@
   out <- list()
   #* `make survival data`
   fixData <- TRUE
-  if(all(c("event", "censor") %in% colnames(df))){ fixData <- FALSE }
+  if(all(c("event") %in% colnames(df))){ fixData <- FALSE }
   if(fixData){
     makeSurvData_ret <-  .makeSurvData(df, form, model="weibull")
     out_df <- makeSurvData_ret$data
@@ -177,16 +177,84 @@
   x <- makeSurvData_ret$x
   group <- makeSurvData_ret$group
   if(is.null(group) | length(unique(df[[group]]))==1 ){
-    formula <- stats::as.formula(paste0("Surv(",x, ", censor) ~ 1")) 
+    formula <- stats::as.formula(paste0("Surv(",x, ", event) ~ 1")) 
   } else{
-    formula <- stats::as.formula(paste0("Surv(",x, ", censor) ~ 0 + group")) 
+    formula <- stats::as.formula(paste0("Surv(",x, ", event) ~ 0 + group")) 
   }
   out[["formula"]] <- formula
   #* `return all`
   out[["pcvrForm"]]<-form
-  out[["model"]]<-model
+  out[["distribution"]]<-model
   return(out)
 }
+
+
+#' Function to parse survival model specifications in growthSS for modeling in the flexsurv package
+#' 
+#' @return a list of components passed to fitGrowth
+#' 
+#' @examples 
+#' 
+#' set.seed(123)
+#' model = "survival gengamma"
+#' form <- y > 100 ~ time|id/group
+#' df <- growthSim("logistic", n=20, t=25,
+#'                 params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))
+#' surv <- .survModelParser(model)
+#' survivalBool <- surv$survival
+#' model <- surv$model
+#' ss <- .flexSurvSS(model, form, df)
+#' lapply(ss,head)
+#' 
+#' @importFrom survival survreg Surv
+#' 
+#' @keywords internal
+#' @noRd
+
+.flexSurvSS <- function(model=NULL, form=NULL, df=NULL, anc = NULL){
+  out <- list()
+  distributions <- c("gengamma", "gengamma.orig", "genf", "genf.orig",
+                     "weibull", "gamma", "exp", "llogis", "lnorm", "gompertz",
+                     "exponential", "lognormal")
+  if(!model %in% distributions){stop(paste0("Supported distributions for flexsurv models are ",
+                                            paste(distributions, collapse=", "),
+                                            ".\nIf you are using a custom distribution please call flexsurvreg directly."))}
+  #* `make survival data`
+  fixData <- TRUE
+  if(all(c("event") %in% colnames(df))){ fixData <- FALSE }
+  if(fixData){
+    makeSurvData_ret <-  .makeSurvData(df, form, model="weibull")
+    out_df <- makeSurvData_ret$data
+    out_df[[makeSurvData_ret$group]]<-factor(out_df[[makeSurvData_ret$group]])
+    out_df[[paste0(makeSurvData_ret$group,"_numericLabel")]]<-unclass(out_df[[makeSurvData_ret$group]])
+    out[["df"]]<-out_df
+  } else{
+    makeSurvData_ret <- list()
+    getGroup <- trimws(strsplit(as.character(form)[3],"[|]|[/]")[[1]])
+    makeSurvData_ret$group <- getGroup[length(getGroup)]
+    makeSurvData_ret$x <- getGroup[1]
+    out[["df"]]<-df
+  }
+  #* `make main survival formula`
+  x <- makeSurvData_ret$x
+  group <- makeSurvData_ret$group
+  if(is.null(group) | length(unique(df[[group]]))==1 ){
+    formula <- stats::as.formula(paste0("Surv(",x, ", event) ~ 1")) 
+  } else{
+    formula <- stats::as.formula(paste0("Surv(",x, ", event) ~ 0 + group")) 
+  }
+  out[["formula"]][["f1"]] <- formula
+  #* `collect additional formulas`
+  if(!is.null(anc)){
+    out[["formula"]][["f2"]] <- anc
+  } else { out[["formula"]][["f2"]] <- NULL }
+  
+  #* `return all`
+  out[["pcvrForm"]]<-form
+  out[["distribution"]]<-model
+  return(out)
+}
+
 
 
 

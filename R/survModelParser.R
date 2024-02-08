@@ -16,11 +16,14 @@
 #' @noRd
 
 .survModelParser <- function(model){
-  distributions <- c("binomial", "weibull")
+  distributions <- c("binomial","gengamma", "gengamma.orig", "genf", "genf.orig",
+                     "weibull", "gamma", "exp", "llogis", "lnorm", "gompertz",
+                     "exponential", "lognormal")
   if( grepl("survival", model) ){
     survival = TRUE
-    dist <- distributions[which(unlist(lapply(distributions, function(dist) grepl(dist, model))))]
-    if(length(dist)==0){dist="weibull"}
+    model <- trimws(gsub("survival", "", model))
+    if(nchar(model)==0){model="weibull"}
+    dist <- match.arg(model, distributions)
     return(list("survival" = survival, "model" = dist))
   } else{
     return(list("survival" = FALSE, "model" = model))

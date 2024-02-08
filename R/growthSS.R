@@ -68,7 +68,8 @@
 #'   the necessary features are added to \code{brms}. See details for guidance.
 #' @param type Type of model to fit, options are "brms", "nlrq", "nlme", "nls", and "mgcv".
 #' Note that the "mgcv" option only supports "gam" models.
-#' Survival models can use the "survreg" model type, but it does not need to be specified since any non-brms type will use survreg.
+#' Survival models can use the "survreg" model type (this will be called if any non-brms/flexsurv type is given) or the "flexsurv" model type
+#' which requires the flexsurv package to be installed.
 #' Note that for non-brms models variables in the model will be labeled by the factor level of the group, not necessarily by the group name.
 #' This is done for ease of use with different modeling functions, the levels are alphabetically sorted and can be checked using:
 #' \code{table(ss$df$group, ss$df$group_numericLabel)}.
@@ -145,13 +146,18 @@
 #' Alternatively you can make your own time to event data and supply that to growthSS. In that case your data should have
 #' columns called "n_events" (number of individuals experiencing the event at this time) and
 #' "n_eligible" (number of individuals who had not experienced the event at least up to this time) 
-#' for the binomial model family OR "event" (binary 1,0 for TRUE, FALSE) and "censor" (binary 1,0 for censored, uncensored)
-#' for the Weibull model family. Note that since these are linear models using different model families the priors are handled differently.
+#' for the binomial model family OR "event" (binary 1,0 for TRUE, FALSE) for the Weibull model family.
+#' Note that since these are linear models using different model families the priors are handled differently.
 #' For survival models the default priors are weak regularizing priors (Normal(0,5)) on all parameters. If you wish 
 #' to specify your own priors you can supply them as brmsprior objects or as a list such as \code{priors = list("group1" = c(0,3), "group2" = c(0,1))}
 #' where the order of values is Mu, Sigma.
-#' Any non-brms backend will instead use \code{survival::survreg} to fit the model.
-#' Distributions will be passed to \code{survreg} where options are "weibull", "exponential", "gaussian", "logistic","lognormal" and "loglogistic".
+#' Any non-brms backend will instead use \code{survival::survreg} to fit the model unless the "flexsurv" type is specified.
+#' Distributions will be passed to \code{survreg} where options are "weibull", "exponential", "gaussian", "logistic","lognormal" and "loglogistic"
+#' if type = "survreg" or to \code{flexsurv::flexsurvreg} if type = "flexsurv" where options are
+#' "gengamma", "gengamma.orig", "genf", "genf.orig", "weibull", "gamma", "exp", "llogis", "lnorm", "gompertz", "exponential", and "lognormal".
+#' In \code{flexsurvreg} distributional modeling is supported and additional
+#' formula can be passed as a list to the sigma argument of growthSS in the same way as to the anc argument of \code{flexsurv::flexsurvreg}.
+#' Further additional arguments should be supplied via \code{fitGrowth} if desired.
 #' 
 #' 
 #' 
@@ -229,7 +235,7 @@
 #' @export
 
 growthSS<-function(model, form, sigma=NULL, df, start=NULL, pars=NULL, type="brms", tau = 0.5){
-  type_matched = match.arg(type, choices = c("brms", "nlrq", "nls", "nlme", "mgcv", "survreg"))
+  type_matched = match.arg(type, choices = c("brms", "nlrq", "nls", "nlme", "mgcv", "survreg","flexsurv"))
   
   surv <- .survModelParser(model)
   survivalBool <- surv$survival
@@ -239,6 +245,9 @@ growthSS<-function(model, form, sigma=NULL, df, start=NULL, pars=NULL, type="brm
     if(type_matched=="brms"){
       res <- .brmsSurvSS(model=model, form=form, df=df, prior=start)
       res$type <- type_matched
+    } else if(type_matched == "flexsurv"){
+      res <- .flexSurvSS(model=model, form=form, df=df, anc = sigma)
+      res$type <- "flexsurv"
     }else{
       res <- .survSS(model=model, form=form, df=df)
       res$type <- "survreg"
