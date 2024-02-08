@@ -89,9 +89,11 @@ If this is not provided then starting values are picked with \code{stats::selfSt
 dependent and is not implemented for brms models due to their more flexible hypothesis testing.}
 
 \item{type}{Type of model to fit, options are "brms", "nlrq", "nlme", "nls", and "mgcv".
-Note that the "mgcv" option only supports "gam" models. Note that for non-brms models variables in 
-the model will be labeled by the factor level of the group, not necessarily by the group name. This is 
-done for ease of use with different modeling functions, the levels are alphabetically sorted and can be checked using:
+Note that the "mgcv" option only supports "gam" models.
+Survival models can use the "survreg" model type (this will be called if any non-brms/flexsurv type is given) or the "flexsurv" model type
+which requires the flexsurv package to be installed.
+Note that for non-brms models variables in the model will be labeled by the factor level of the group, not necessarily by the group name.
+This is done for ease of use with different modeling functions, the levels are alphabetically sorted and can be checked using:
 \code{table(ss$df$group, ss$df$group_numericLabel)}.}
 
 \item{tau}{A vector of quantiles to fit for nlrq models.}
@@ -203,13 +205,18 @@ Internally the input dataframe will be converted to time-to-event data based on 
 Alternatively you can make your own time to event data and supply that to growthSS. In that case your data should have
 columns called "n_events" (number of individuals experiencing the event at this time) and
 "n_eligible" (number of individuals who had not experienced the event at least up to this time) 
-for the binomial model family OR "event" (binary 1,0 for TRUE, FALSE) and "censor" (binary 1,0 for censored, uncensored)
-for the Weibull model family. Note that since these are linear models using different model families the priors are handled differently.
+for the binomial model family OR "event" (binary 1,0 for TRUE, FALSE) for the Weibull model family.
+Note that since these are linear models using different model families the priors are handled differently.
 For survival models the default priors are weak regularizing priors (Normal(0,5)) on all parameters. If you wish 
 to specify your own priors you can supply them as brmsprior objects or as a list such as \code{priors = list("group1" = c(0,3), "group2" = c(0,1))}
 where the order of values is Mu, Sigma.
-Any non-brms backend will instead use \code{survival::survreg} to fit the model.
-Distributions will be passed to \code{survreg} where options are "weibull", "exponential", "gaussian", "logistic","lognormal" and "loglogistic".
+Any non-brms backend will instead use \code{survival::survreg} to fit the model unless the "flexsurv" type is specified.
+Distributions will be passed to \code{survreg} where options are "weibull", "exponential", "gaussian", "logistic","lognormal" and "loglogistic"
+if type = "survreg" or to \code{flexsurv::flexsurvreg} if type = "flexsurv" where options are
+"gengamma", "gengamma.orig", "genf", "genf.orig", "weibull", "gamma", "exp", "llogis", "lnorm", "gompertz", "exponential", and "lognormal".
+In \code{flexsurvreg} distributional modeling is supported and additional
+formula can be passed as a list to the sigma argument of growthSS in the same way as to the anc argument of \code{flexsurv::flexsurvreg}.
+Further additional arguments should be supplied via \code{fitGrowth} if desired.
 }
 \examples{
 

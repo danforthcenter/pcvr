@@ -48,7 +48,7 @@
     out_df <- do.call(rbind, lapply(unique(df$remove_interaction), function(i){
       sub <- df[df$remove_interaction == i, ]
       sub$censor <- ifelse(sub[[x]] == max(df[[x]]) & sub[[y_var]]==0, 1, 0 )
-      sub[sub$censor == 1 | sub[[x]]==min(sub[sub[[y_var]]==1, x]), ]
+      sub[sub$censor == 1 | sub[[x]]==min(c(sub[sub[[y_var]]==1, x], Inf)), ]
     }))
     colnames(out_df)[which(colnames(out_df)==y_var)]<-"event"
     
