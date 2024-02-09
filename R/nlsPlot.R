@@ -64,7 +64,7 @@ nlsPlot<-function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facetGr
   }
   #* `filter by groups if groups != NULL`
   if(!is.null(groups)){
-    df <- df[df[[groups]] %in% groups, ]
+    df <- df[df[[group]] %in% groups, ]
   }
   #* `make new data if timerange is not NULL`
   if(!is.null(timeRange)){
