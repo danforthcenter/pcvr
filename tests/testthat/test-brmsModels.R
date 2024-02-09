@@ -623,7 +623,7 @@ if(file.exists("/home/josh/Desktop/") & interactive()){ # only run locally, don'
     ss <- growthSS(model = model, form = form, df = df, type="flexsurv")
     #lapply(ss,head)
     fit <- fitGrowth(ss)
-    p <- growthPlot(fit, ss$pcvrForm, ss$df)
+    p <- growthPlot(fit, form = ss$pcvrForm, df = ss$df)
     
   })
   

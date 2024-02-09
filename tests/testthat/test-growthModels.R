@@ -233,7 +233,7 @@ test_that("Test survreg", {
                   params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))
   ss <- growthSS(model = model, form = form, df = df, type="survreg")
   fit <- fitGrowth(ss)
-  p <- growthPlot(fit, ss$pcvrForm, ss$df)
+  p <- growthPlot(fit, form = ss$pcvrForm, df = ss$df)
   
 })
 
