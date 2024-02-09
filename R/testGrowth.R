@@ -48,7 +48,7 @@
 
 testGrowth<-function(ss=NULL, fit, test = "A"){
   
-  if(grepl("surv",ss$type)){test="S"}
+  if(!is.null(ss) && grepl("surv",ss$type)){test="S"}
   
   if(all(unlist(lapply(test, nchar)) <= 2)){
     method = "anova"

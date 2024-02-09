@@ -37,6 +37,7 @@ Imports:
     splines,
     lmeSplines,
     scales,
+    survival,
     car
 Suggests: 
     knitr,
