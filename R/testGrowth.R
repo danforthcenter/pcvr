@@ -13,13 +13,16 @@
 #' comparisons on the means of each quantile estimate. For GAMs these tests compare the model with
 #' splines either by group or interacting with group to a model that ignores the grouping in the data.
 #' If this is a list of hypothesis tests then they should describe tests similar to "A.group1 - A.group2*1.1" 
-#' and can be thought of as contrasts.
+#' and can be thought of as contrasts. Note that for survreg the \code{survival::survdiff}
+#' function is used so fewer hypothesis testing options are available and flexsurv models are tested using
+#' contrasts via \code{flexsurv::standsurv}.
 #' @keywords hypothesis, nlme, nls, nlrq
 #' @importFrom stats getCall logLik pchisq anova as.formula setNames vcov coef pt
 #' @importFrom nlme pdIdent corAR1 fixef
 #' @importFrom extraDistr qlst dlst
 #' @importFrom methods is
 #' @importFrom car deltaMethod
+#' @importFrom survival survdiff
 #' 
 #' @details
 #' For nls and nlme models an anova is run and returned as part of a list along with the null model.
@@ -44,6 +47,8 @@
 #' @export
 
 testGrowth<-function(ss=NULL, fit, test = "A"){
+  
+  if(!is.null(ss) && grepl("surv",ss$type)){test="S"}
   
   if(all(unlist(lapply(test, nchar)) <= 2)){
     method = "anova"
@@ -84,7 +89,9 @@ testGrowth<-function(ss=NULL, fit, test = "A"){
       } else{
         res<-.nlrqTest2(ss, fit, test_pars = test)
       }
-    } else if(ss$type=="brms"){
+    } else if(grepl("surv", ss$type)){
+      res <- .survTest(ss)
+    }else if(ss$type=="brms"){
       stop("For brms model tests use brms::hypothesis")
     } 
   }
@@ -92,7 +99,7 @@ testGrowth<-function(ss=NULL, fit, test = "A"){
   return(res)
 }
 
-#' (non)linear hypothesis function for nls and nlrq models
+#' (non)linear hypothesis function for nls and nlme models
 #' @examples
 #' if(FALSE){
 #' set.seed(123)
@@ -336,35 +343,35 @@ testGrowth<-function(ss=NULL, fit, test = "A"){
 #' @noRd
 
 .nlrqTest <- function(ss, fit, test_pars = "A"){
-#* `Get parameters to vary in comparison model`
-xForm <- as.character(ss$formula)[3]
-rMatches <- gregexpr(".2?\\[", xForm)
-original_grouped_pars <- sub("\\[", "", regmatches(xForm, rMatches)[[1]])
-null_pars = original_grouped_pars[!original_grouped_pars %in% test_pars]
-#* `match call for previous model, updating pars`
-lcall <- as.list(ss$call)
-lcall$pars = null_pars
-lcall$df = ss$df
-new_call <- as.call(lcall)
-#* `rerun growthSS and fitGrowth with updated parameters`
-nullSS <- suppressMessages(eval(new_call))
-nullMods <- fitGrowth(nullSS)
-if(methods::is(fit, "nlrq")){
-  fit <- list(fit)
-  names(fit)<-ss$taus
-  nullMods <- list(nullMods)
-  names(nullMods)<-ss$taus
-}
-
-#* `arrange models for comparisons`
-
-modsList <- lapply(ss$taus, function(tau) list(fit[[paste0(tau)]], nullMods[[paste0(tau)]]))
-
-res <- lapply(modsList, function(modsPair){
-  .nlrq_pseudoLRT(modsPair)
-})
-names(res)<-ss$taus
-return(res)
+  #* `Get parameters to vary in comparison model`
+  xForm <- as.character(ss$formula)[3]
+  rMatches <- gregexpr(".2?\\[", xForm)
+  original_grouped_pars <- sub("\\[", "", regmatches(xForm, rMatches)[[1]])
+  null_pars = original_grouped_pars[!original_grouped_pars %in% test_pars]
+  #* `match call for previous model, updating pars`
+  lcall <- as.list(ss$call)
+  lcall$pars = null_pars
+  lcall$df = ss$df
+  new_call <- as.call(lcall)
+  #* `rerun growthSS and fitGrowth with updated parameters`
+  nullSS <- suppressMessages(eval(new_call))
+  nullMods <- fitGrowth(nullSS)
+  if(methods::is(fit, "nlrq")){
+    fit <- list(fit)
+    names(fit)<-ss$taus
+    nullMods <- list(nullMods)
+    names(nullMods)<-ss$taus
+  }
+  
+  #* `arrange models for comparisons`
+  
+  modsList <- lapply(ss$taus, function(tau) list(fit[[paste0(tau)]], nullMods[[paste0(tau)]]))
+  
+  res <- lapply(modsList, function(modsPair){
+    .nlrq_pseudoLRT(modsPair)
+  })
+  names(res)<-ss$taus
+  return(res)
 }
 
 
@@ -458,8 +465,34 @@ return(res)
 }
 
 
+#' Chisq based test for survreg and flexsurv models using SE
+#' @examples
+#' if(FALSE){
+#' set.seed(123)
+#' model = "survival weibull"
+#' form <- y > 100 ~ time|id/group
+#' df <- growthSim("logistic", n=20, t=25,
+#'                 params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))
+#' ss <- growthSS(model = model, form = form, df = df, type="survreg")
+#' #lapply(ss,head)
+#' fit <- fitGrowth(ss)
+#' p <- plotGrowth(fit, ss$pcvrForm, ss$df)
+#' }
+#' @keywords internal
+#' @noRd
 
-
+.survTest <- function(ss=NULL, fit=NULL){
+  if(ss$type =="survreg"){
+    survival::survdiff(formula = ss$formula, data = ss$df)
+  } else if (ss$type =="flexsurv"){
+    x <- as.character(ss$pcvrForm)[3]
+    x3<-trimws(strsplit(x, "[|]|[/]")[[1]])
+    group <- x3[length(x3)]
+    groups <- unique(ss$df[[group]])
+    at <- lapply(groups, function(i) stats::setNames(list(i), group))
+    as.data.frame(flexsurv::standsurv(fit, at = at, contrast="difference", se=TRUE, ci=TRUE))
+  }
+}
 
 
 

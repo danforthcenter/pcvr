@@ -11,7 +11,8 @@ fitGrowth(ss, ...)
 
 \item{...}{Additional arguments passed to model fitting functions determined by \code{ss$type}. 
 For type = "nlme" these are passed to \code{nlme::nlmeControl}, not \code{nlme::nlme}.
-Additional arguments are documented in \link{fitGrowthBrm}, \link{fitGrowthNlme}, \link{fitGrowthNls}, and \link{fitGrowthNlrq}.}
+Additional arguments are documented in \link{fitGrowthBrm}, \link{fitGrowthNlme}, \link{fitGrowthNls}, \link{fitGrowthNlrq},
+\link{fitGrowthMgcv}, \link{fitGrowthSurvReg}, \link{fitGrowthFlexSurvReg}.}
 }
 \value{
 A fit model from the selected type.

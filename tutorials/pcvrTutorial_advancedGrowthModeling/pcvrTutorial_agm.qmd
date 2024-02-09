@@ -187,7 +187,7 @@ Bayesian modeling also allows for non-linear, probability driven hypothesis test
 In a Bayesian context we flip "random" and "fixed" elements.
 
 |             | Fixed                                   | Random                                  | Interpretation                                                                                                                                                             |
-|-------------|-----------------------------------------|-----------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|------------|------------|------------|--------------------------------------|
 | Frequentist | [True Effect]{style="color:goldenrod;"} | [Data]{style="color:purple;"}           | If the [True Effect is 0]{style="color:goldenrod;"} then there is an $\alpha\cdot100$% chance of [estimating an effect]{style="color:purple;"} of this size or more.       |
 | Bayesian    | [Data]{style="color:purple;"}           | [True Effect]{style="color:goldenrod;"} | Given the [estimated effect from our data]{style="color:purple;"} there is a P probability of the [True Effect]{style="color:goldenrod;"} being a difference of at least X |
 
@@ -313,9 +313,19 @@ Segmented growth models are also supported using "model1 + model2" syntax in bot
 
 For now we will focus on single models but there will be examples of segmented models later on.
 
+## Supported Growth Models 6 {.smaller}
+
+Finally, the "decay" keyword can be used to specify a decay model instead. For now we will focus on growth models as these constitute the large majority of models used in plant phenotyping.
+
+## Survival Models {.smaller}
+
+Survival models can also be specified using the "survival" keyword. Using the brms backend these models use the weibull distribution by default but "binomial" family can also be specified by `model = "survival binomial"`.
+
+For details please see the `growthSS` documentation.
+
 ## `growthSS`
 
-Any of the models shown above can be specified easily using `growthSS`.
+Any of the aforementioned models can be specified easily using `growthSS`.
 
 ## `growthSS` - form
 
@@ -433,7 +443,7 @@ p
 ## `growthSS` - Gompertz sigma {.smaller}
 
 | Pros                                | Cons                                   |
-|-------------------------------------|----------------------------------------|
+|-----------------------------------|-------------------------------------|
 | Models fit much faster than splines | Slightly slower than linear sub-models |
 | Variance is often asymptotic        | Requires priors on sigma model         |
 | Easy testing on variance model      |                                        |
@@ -461,7 +471,7 @@ p
 ## `growthSS` - Spline sigma {.smaller}
 
 | Pros                                                                     | Cons                                                                  |
-|--------------------------------------------------------------------------|-----------------------------------------------------------------------|
+|-------------------------------------|-----------------------------------|
 | [**Very**]{style="color:#FF007B;"} flexible and accurate model for sigma | [**Significantly**]{style="color:#FFD900;"} slower than other options |
 | Fewer priors                                                             | Splines can be a black-box                                            |
 
@@ -925,6 +935,27 @@ plot <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
 ## int+logistic with int+gam sub model {.smaller}
 
 ![](intPluslogistic_intPlusGAMSubModel.png)
+
+## Example survival model {.smaller}
+
+```{r}
+#| eval: false
+#| echo: true
+#| code-line-numbers: "4"
+df <- growthSim("logistic", n=20, t=25,
+                params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))
+ss <- growthSS(model = "survival weibull", type="brms",
+               form = y > 100 ~ time|id/group,
+               df = df, start=c(0,5))
+fit <- fitGrowth(ss,iter = 600, cores = 2, chains = 2, backend = "cmdstanr")
+plot <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
+```
+
+Here the input data is standard phenotype data with a cutoff to represent the event (germination for instance) on the left hand side of the formula.
+
+## Example survival model {.smaller}
+
+![](exSurvivalModel.png)
 
 ## Using `brms` directly
 

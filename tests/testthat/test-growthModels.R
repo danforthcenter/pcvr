@@ -222,6 +222,22 @@ test_that("Test logistic decay", {
   
 })
 
+#* ************************************************************
+#* ******************** `time-to-event modeling` ********************
+#* ************************************************************
+
+test_that("Test survreg", {
+  model = "survival weibull"
+  form <- y > 100 ~ time|id/group
+  df <- growthSim("logistic", n=20, t=25,
+                  params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))
+  ss <- growthSS(model = model, form = form, df = df, type="survreg")
+  fit <- fitGrowth(ss)
+  p <- growthPlot(fit, form = ss$pcvrForm, df = ss$df)
+  
+})
+
+
 
 
 

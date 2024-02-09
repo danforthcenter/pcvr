@@ -50,7 +50,11 @@ growthPlot<-function(fit, form, groups = NULL, df = NULL, timeRange = NULL, face
   }
   
   if(methods::is(fit, "brmsfit")){
-    plot <- brmPlot(fit=fit, form=form, groups = groups, df = df, timeRange = timeRange, facetGroups = facetGroups, groupFill = groupFill, virMaps)
+    if(as.character(fit$family)[1]=="student"){
+      plot <- brmPlot(fit=fit, form=form, groups = groups, df = df, timeRange = timeRange, facetGroups = facetGroups, groupFill = groupFill, virMaps)
+    } else{
+      plot <- brmSurvPlot(fit=fit, form=form, groups = groups, df = df, timeRange = timeRange, facetGroups = facetGroups, groupFill = groupFill, virMaps)
+    }
   } else if(methods::is(fit, "nls") | methods::is(fit, "gam") | methods::is(fit, "lm") ){
     plot <- nlsPlot(fit=fit, form=form, groups = groups, df = df, timeRange = timeRange, facetGroups = facetGroups, groupFill = groupFill, virMaps)
   } else if(methods::is(fit, "lme")){
@@ -61,10 +65,13 @@ growthPlot<-function(fit, form, groups = NULL, df = NULL, timeRange = NULL, face
     plot <- nlrqPlot(fit=fit, form=form, groups = groups, df = df, timeRange = timeRange, facetGroups = facetGroups, groupFill = groupFill, virMaps)
   } else if(methods::is(fit, "rq") | is.list(fit) && methods::is(fit[[1]], "rq") ){
     plot <- rqPlot(fit=fit, form=form, groups = groups, df = df, timeRange = timeRange, facetGroups = facetGroups, groupFill = groupFill, virMaps)
+  } else if( methods::is(fit, "survreg") ){
+    plot <- survRegPlot(fit=fit, form=form, groups = groups, df = df, facetGroups = facetGroups, groupFill = groupFill, virMaps)
+  } else if( methods::is(fit, "flexsurvreg") ){
+    plot <- flexSurvRegPlot(fit=fit, form=form, groups = groups, df = df, facetGroups = facetGroups, groupFill = groupFill, virMaps)
   } else{
     stop("Only implemented for brms, nls, nlme, mgcv, and nlrq models from fitGrowth currently.")
   }
-  #* needs gam options
   
   return(plot)
 }

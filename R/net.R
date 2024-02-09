@@ -83,8 +83,8 @@ pcv.net<-function(emd = NULL, meta = NULL, dissim=TRUE, distCol="emd", filter = 
   } else{stop("emd must be a dataframe.")}
   if(is.null(meta)){meta<-unique(sub("_i$|_j$","",colnames(emd)[grepl("_i$|_j$", colnames(emd))])) }
   
-  gg<-as.data.frame(igraph::layout.auto(g))
-  both<-igraph::get.data.frame(g, "both")
+  gg<-as.data.frame(igraph::layout_nicely(g))
+  both<-igraph::as_data_frame(g, "both")
   gg$index<-both$vertices$name # previously min(as.numeric(eg$from)):max(as.numeric(eg$from)) after 1:nrow(gg)
   eg<-both$edges
   #* link metadata to nodes

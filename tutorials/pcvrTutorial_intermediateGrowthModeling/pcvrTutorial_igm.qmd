@@ -349,6 +349,12 @@ ggplot(wiggles, aes(x,y))+
   pcv_theme()
 ```
 
+## Survival Models {.smaller}
+
+Survival models can also be specified using the "survival" keyword. These models can use the "survival" or "flexsurv" backends where distributions can be specified as `model = "survival {distribution}"`.
+
+For details please see the `growthSS` documentation.
+
 ## GAMs
 
 ```{r}
@@ -563,6 +569,31 @@ mgcv_ss <- growthSS(model="gam", form =  y~time|id/group,
 lapply(mgcv_ss, class)
 ```
 
+## `growthSS` - survival models {.smaller}
+
+```{r}
+#| echo: true
+#| eval: true
+surv_ss <- growthSS(model="survival weibull",
+                    form =  y>100~time|id/group,
+                   df=simdf, type = "survreg") # type = "flexsurv" has more distribution options
+lapply(surv_ss, class)
+```
+
+## `growthSS` - survival models {.smaller}
+
+```{r}
+#| echo: true
+#| eval: true
+#| code-line-numbers: "2"
+surv_ss <- growthSS(model="survival weibull",
+                    form =  y>100~time|id/group,
+                   df=simdf, type = "survreg") # type = "flexsurv" has more distribution options
+lapply(surv_ss, class)
+```
+
+Note that here we still supply the standard phenotype data but give a cutoff on the left hand side of the formula. That cutoff represents the "event". For example, given area in pixels germination might be `area_px>10 ~ time|id/group`.
+
 ## `fitGrowth`
 
 Now that we have the components for our model from `growthSS` we can fit the model with `fitGrowth`.
@@ -578,6 +609,7 @@ nls_fit <- fitGrowth(nls_ss)
 nlrq_fit <- fitGrowth(nlrq_ss, cores = 4)
 nlme_fit <- fitGrowth(nlme_ss)
 mgcv_fit <- fitGrowth(mgcv_ss)
+surv_fit <- fitGrowth(surv_ss)
 ```
 
 ## `fitGrowth` 3
@@ -600,6 +632,7 @@ p_nls <- growthPlot(nls_fit, form = nls_ss$pcvrForm, df=nls_ss$df)
 p_nlrq <- growthPlot(nlrq_fit, form = nlrq_ss$pcvrForm, df=nlrq_ss$df)
 p_nlme <- growthPlot(nlme_fit, form = nlme_ss$pcvrForm, df=nlme_ss$df)
 p_mgcv <- growthPlot(mgcv_fit, form = mgcv_ss$pcvrForm, df=mgcv_ss$df)
+p_surv <- growthPlot(surv_fit, form = surv_ss$pcvrForm, df=surv_ss$df)
 ```
 
 ## `growthPlot` - nls
@@ -624,6 +657,12 @@ p_nlme
 
 ```{r}
 p_mgcv
+```
+
+## `growthPlot` - surv
+
+```{r}
+p_surv
 ```
 
 ## Hypothesis Testing
@@ -686,6 +725,16 @@ Due to GAMs nature we cannot test parameters individually.
 #| echo: true
 #| eval: true
 testGrowth(mgcv_ss, mgcv_fit)$anova
+```
+
+## `testGrowth` - surv
+
+The `flexsurv` backend provides more flexibility, but standard `survreg` models are tested using `survival::survdiff`
+
+```{r}
+#| echo: true
+#| eval: true
+testGrowth(surv_ss, surv_fit)
 ```
 
 ## Final Considerations
