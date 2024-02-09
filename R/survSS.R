@@ -54,7 +54,7 @@
   out[["formula"]]<-form_ret$formula
   #* `make priors if none specified`
   if(is.null(priors)){
-    out[["prior"]] <- brms::prior(normal(0, 5), class = "b")
+    out[["prior"]] <- brms::prior_string("normal(0, 5)", class = "b")
   } else if( any(methods::is(priors, "brmsprior")) ){out[["prior"]]<-priors
   } else if(is.numeric(priors)){ # priors = c(0,5) needs to be reworked
     priors <- rep(priors, length.out = 2*length(unique(out_df[[makeSurvData_ret$group]])))
