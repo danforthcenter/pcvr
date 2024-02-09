@@ -25,7 +25,6 @@
 #' ## Not run:
 #' 
 #' if(FALSE){
-#' devtools::load_all("~/pcvr/")
 #' set.seed(123)
 #' df<-growthSim("exponential", n=20, t=50,
 #'               params = list("A"=c(1, 1), "B"=c(0.15, 0.1)))
