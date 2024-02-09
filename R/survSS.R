@@ -179,7 +179,7 @@
   if(is.null(group) | length(unique(df[[group]]))==1 ){
     formula <- stats::as.formula(paste0("Surv(",x, ", event) ~ 1")) 
   } else{
-    formula <- stats::as.formula(paste0("Surv(",x, ", event) ~ 0 + group")) 
+    formula <- stats::as.formula(paste0("Surv(",x, ", event) ~ 1 + group")) 
   }
   out[["formula"]] <- formula
   #* `return all`
@@ -241,7 +241,7 @@
   if(is.null(group) | length(unique(df[[group]]))==1 ){
     formula <- stats::as.formula(paste0("Surv(",x, ", event) ~ 1")) 
   } else{
-    formula <- stats::as.formula(paste0("Surv(",x, ", event) ~ 0 + group")) 
+    formula <- stats::as.formula(paste0("Surv(",x, ", event) ~ 1 + group")) 
   }
   out[["formula"]][["f1"]] <- formula
   #* `collect additional formulas`

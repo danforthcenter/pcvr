@@ -235,7 +235,11 @@ test_that("Test logistic decay", {
   ss <- growthSS(model = model, form = form, df = df, type="survreg")
   #lapply(ss,head)
   fit <- fitGrowth(ss)
-  #summary(fit)
+  p <- plotGrowth(fit, ss$pcvrForm, ss$df)
   
 })
+
+
+
+
 

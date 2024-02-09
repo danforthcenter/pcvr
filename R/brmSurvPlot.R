@@ -164,7 +164,7 @@ brmSurvPlot <- function(fit, form, df=NULL, groups = NULL, timeRange = NULL, fac
     p <- p + ggplot2::geom_line(data=df, ggplot2::aes(x=.data[[x]],
                                                          y=.data[["pct_surv"]],
                                                          group=.data[[group]],
-                                                         linetype = .data[[group]]), color="black")  
+                                                         linetype = .data[[group]]), color="black", show.legend = FALSE)  
   }
   return(p)
 }
@@ -206,11 +206,10 @@ brmSurvPlot <- function(fit, form, df=NULL, groups = NULL, timeRange = NULL, fac
   #* `set groups to use`
   if(is.null(groups)){groups <- unique(fitData[[group]])}
   #* `Make Survival Quantiles`
+  probs <- seq(from=99, to=1, by=-2)/100
   quantiles <- do.call(rbind, lapply(groups, function(grp){
     test <- fdf[, c(paste0("scale_b_",group,grp), "shape")]
     colnames(test)<-c("scale", "shape")
-    
-    probs <- seq(from=99, to=1, by=-2)/100
     metrics <- do.call(rbind, lapply(probs, function(i){
       shape <- quantile(test[,"shape"], probs = i)
       scale <- quantile(test[,"scale"], probs=i)
@@ -278,7 +277,7 @@ brmSurvPlot <- function(fit, form, df=NULL, groups = NULL, timeRange = NULL, fac
     p <- p + ggplot2::geom_line(data=km_df, ggplot2::aes(x=.data[["time"]],
                                                          y=.data[["surv_pct"]],
                                                          group=.data[["group"]],
-                                                         linetype = .data[["group"]]), color="black")  
+                                                         linetype = .data[["group"]]), color="black", show.legend = FALSE)  
   }
   return(p)
 }

@@ -597,7 +597,7 @@ if(file.exists("/home/josh/Desktop/") & interactive()){ # only run locally, don'
     prior <- c(0,5)
     ss <- growthSS(model = model, form = form, df = df, start=prior)
     lapply(ss,head)
-    test <- fitGrowth(ss,iter = 600, cores = 2, chains = 2, backend = "cmdstanr")
+    fit <- fitGrowth(ss,iter = 600, cores = 2, chains = 2, backend = "cmdstanr")
     # need to still check plotting/testing, those are pending.
   })
   
@@ -613,6 +613,20 @@ if(file.exists("/home/josh/Desktop/") & interactive()){ # only run locally, don'
     test <- fitGrowth(ss,iter = 600, cores = 2, chains = 2, backend = "cmdstanr")
     # need to still check plotting/testing, those are pending.
   })
+  
+  test_that("Test flexsurv model", {
+    set.seed(123)
+    model = "survival gompertz"
+    form <- y > 100 ~ time|id/group
+    df <- growthSim("logistic", n=20, t=25,
+                    params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))
+    ss <- growthSS(model = model, form = form, df = df, type="flexsurv")
+    #lapply(ss,head)
+    fit <- fitGrowth(ss)
+    p <- plotGrowth(fit, ss$pcvrForm, ss$df)
+    
+  })
+  
   
   
 }

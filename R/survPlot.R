@@ -110,7 +110,24 @@ survRegPlot<-function(fit, form, df = NULL, groups = NULL, facetGroups=TRUE, gro
     ggplot2::labs(x=x, y="Survival")+
     pcv_theme()
   #* `Add data as KM line`
-  
+  if(!is.null(df)){
+    km_df <- do.call(rbind, lapply(groups, function(grp){
+      sub <- df[df[[group]]==grp, ]
+      do.call(rbind, lapply(seq(0, max(df[[x]]), 1), function(ti){
+        sum_events <- sum(c(sub[as.numeric(sub[[x]])<=ti, "event"],0))
+        n_at_risk <- nrow(sub)-sum_events
+        surv_pct <- n_at_risk / nrow(sub)
+        iter <- data.frame(group = grp, time = ti, events = sum_events, at_risk = n_at_risk, surv_pct = surv_pct)
+        colnames(iter)[1]<-group
+        iter
+      }))
+    }))
+    p <- p + ggplot2::geom_line(data=km_df, ggplot2::aes(x=.data[[x]],
+                                                         y=.data[["surv_pct"]],
+                                                         group=.data[[group]],
+                                                         linetype = .data[[group]]), color="black", show.legend=FALSE) 
+    
+  }
   
   
   return(p)

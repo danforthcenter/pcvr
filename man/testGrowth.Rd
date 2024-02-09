@@ -22,7 +22,9 @@ written as \code{"group_X|tau|par - group_Y|tau|par"}, which uses a fat tailed T
 comparisons on the means of each quantile estimate. For GAMs these tests compare the model with
 splines either by group or interacting with group to a model that ignores the grouping in the data.
 If this is a list of hypothesis tests then they should describe tests similar to "A.group1 - A.group2*1.1" 
-and can be thought of as contrasts.}
+and can be thought of as contrasts. Note that for survreg the \code{survival::survdiff}
+function is used so fewer hypothesis testing options are available and flexsurv models are tested using
+contrasts via \code{flexsurv::standsurv}.}
 }
 \value{
 A list containing an anova object comparing non-linear growth models and the null model.
