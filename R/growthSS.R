@@ -243,7 +243,7 @@ growthSS<-function(model, form, sigma=NULL, df, start=NULL, pars=NULL, type="brm
   
   if(survivalBool){
     if(type_matched=="brms"){
-      res <- .brmsSurvSS(model=model, form=form, df=df, prior=start)
+      res <- .brmsSurvSS(model=model, form=form, df=df, priors=start)
       res$type <- type_matched
     } else if(type_matched == "flexsurv"){
       res <- .flexSurvSS(model=model, form=form, df=df, anc = sigma)
