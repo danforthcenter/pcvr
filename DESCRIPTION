@@ -43,6 +43,7 @@ Suggests:
     knitr,
     rmarkdown,
     brms,
+    flexsurv,
     vroom,
     curl,
     cmdstanr,
