@@ -120,24 +120,37 @@
     y=as.character(form)[2]
     x<-as.character(form)[3]
     
-    if(grepl("\\|", x) & grepl("\\/",x)){
+    if(grepl("\\|", x) & grepl("\\/",x)){ # Y ~ X|Var/ID
       x3<-trimws(strsplit(x, "[|]|[/]")[[1]])
       x<-x3[1]
       individual = x3[2]
       group = x3[length(x3)] 
+      USEINDIVIDUAL = TRUE
       if(length(unique(df[[group]]))==1){USEGROUP=FALSE}else{USEGROUP=TRUE} # if there is only one group then ignore grouping for parameter and variance formulas
-    } else if (grepl("\\|", x)){
+    } else if (grepl("\\|", x)){ # Y ~ X|Var
       x2<-trimws(strsplit(x, "[|]")[[1]])
       x<-x2[1]
-      individual = x2[2]
-      group="group"
-      df[[group]]<-"group"
+      individual = "dummyIndividual"
+      df[[individual]]<-"dummyIndividual"
+      group = x2[length(x2)]
+      USEGROUP=TRUE
+      USEINDIVIDUAL = FALSE
+    } else { # Y ~ X
+      x2<-trimws(strsplit(x, "[|]")[[1]])
+      x<-x2[1]
+      individual = "dummyIndividual"
+      df[[individual]]<-"dummyIndividual"
+      group = "dummyGroup"
+      df[[group]]<-"dummyGroup"
       USEGROUP=FALSE
-    } else {stop("form must specify grouping at least for individual level for observations ( y ~ x|individual ). See documentation and examples.")}
+      USEINDIVIDUAL = FALSE
+      }
     #* `convert group to character to avoid unexpected factor stuff`
     df[[group]]<-as.character(df[[group]])
     #* `Make autocorrelation formula`
-    corForm<-as.formula(paste0("~arma(~",x,"|", individual,":",group,",1,1)"))
+    if(USEINDIVIDUAL){
+      corForm<-as.formula(paste0("~arma(~",x,"|", individual,":",group,",1,1)"))
+    } else {corForm <- NULL}
     #* `match args`
     if(!grepl("\\+", model)){
       
