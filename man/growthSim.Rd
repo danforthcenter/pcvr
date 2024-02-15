@@ -6,7 +6,8 @@
 \usage{
 growthSim(
   model = c("logistic", "gompertz", "double logistic", "double gompertz",
-    "monomolecular", "exponential", "linear", "power law"),
+    "monomolecular", "exponential", "linear", "power law", "frechet", "weibull",
+    "gumbel"),
   n = 20,
   t = 25,
   params = list(),
@@ -15,7 +16,7 @@ growthSim(
 )
 }
 \arguments{
-\item{model}{One of "logistic", "gompertz", "monomolecular", "exponential",
+\item{model}{One of "logistic", "gompertz", "weibull", "frechet", "gumbel", "monomolecular", "exponential",
 "linear", "power law", "double logistic", or "double gompertz". Alternatively this can be 
 a pseudo formula to generate data from a segmented growth curve by specifying "model1 + model2",
 see examples and \code{\link{growthSS}}. Decay can be specified by including "decay" as part of the model
@@ -87,6 +88,21 @@ simdf<-growthSim("gompertz", n=20, t=25,
 params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(0.2, 0.25)))
 ggplot(simdf,aes(time, y, group=interaction(group,id)))+
  geom_line(aes(color=group))+labs(title="Gompertz")
+ 
+simdf<-growthSim("weibull", n=20, t=25,
+params = list("A"=c(100,100), "B"=c(1, 0.75), "C"=c(2, 3)) )
+ggplot(simdf,aes(time, y, group=interaction(group,id)))+
+ geom_line(aes(color=group))+labs(title="weibull")
+ 
+simdf<-growthSim("frechet", n=20, t=25,
+params = list("A"=c(100,110), "B"=c(2, 1.5), "C"=c(5, 2)) )
+ggplot(simdf,aes(time, y, group=interaction(group,id)))+
+ geom_line(aes(color=group))+labs(title="frechet")
+ 
+simdf<-growthSim("gumbel", n=20, t=25,
+list("A"=c(120,140), "B"=c(6, 5), "C"=c(4, 3)) )
+ggplot(simdf,aes(time, y, group=interaction(group,id)))+
+ geom_line(aes(color=group))+labs(title="gumbel")
  
 simdf<-growthSim("double logistic", n=20, t=70,
 params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5),
