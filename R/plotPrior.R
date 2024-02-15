@@ -66,15 +66,11 @@ plotPrior<-function(priors, type = "density", n=200, t=25){
       iter_params <- .prior_sampler(priors)
       x<-growthSim(model = type, n = 1, t = t, params = iter_params); x$id = paste0("id_",i);x } ))
     
-    if(type=="logistic"){
+    if(type %in% c("logistic", "gompertz","weibull", "frechet", "gumbel")){
       x_margin_plot = densPlots[["B"]] 
       y_margin_plot = densPlots[["A"]] 
       z_margin_plot = densPlots[["C"]] 
-      } else if(type=="gompertz"){
-      x_margin_plot = densPlots[["B"]]
-      y_margin_plot = densPlots[["A"]]
-      z_margin_plot = densPlots[["C"]] 
-      } else if(type=="monomolecular"){
+      } else if(type %in% c("monomolecular")){
       y_margin_plot = densPlots[["A"]] 
       } 
     
