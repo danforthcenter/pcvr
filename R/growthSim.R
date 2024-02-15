@@ -370,7 +370,7 @@ gsi_frechet <- function(x, pars, noise){
   b_r <- max(c(0, pars[["B"]]+rnorm(1,mean=0,sd=noise[["B"]])))
   c_r <- max(c(0, pars[["C"]]+rnorm(1,mean=0,sd=noise[["C"]])))
   # holding location to 0, b is shape parameter, c is scale (growth rate)
-  return( a_r * exp(-((x-0)/c_r)^(-b_r))  ) # a_r * exp(((-(x-d_r)/c_r)^(-b_r))) # a_r * exp((-(x-0)/c_r))^(-b_r) 
+  return( a_r * exp(-((x-0)/c_r)^(-b_r))  )
 }
 gsi_gumbel <- function(x,pars, noise){
   a_r <- pars[["A"]]+rnorm(1,mean = 0,sd=noise[["A"]])

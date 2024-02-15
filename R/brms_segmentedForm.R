@@ -42,7 +42,7 @@
 .brmsChangePointHelper <- function(model, x, y, group, sigma=FALSE, nTimes=25, useGroup, priors){
 
   component_models <- trimws(strsplit(model, "\\+")[[1]])
-  models<-c("logistic", "gompertz", "monomolecular", "exponential", "linear", "power law", "gam", "spline", "int", "homo")
+  models<-c("logistic", "gompertz", "monomolecular", "exponential", "linear", "power law", "gam", "spline", "int", "homo", "weibull", "frechet", "gumbel")
   if(is.null(priors)){priors <- stats::setNames(lapply(1:length(component_models), identity ),
                                                 paste0("changePoint",1:length(component_models))) }
   
@@ -57,11 +57,17 @@
       iter_model <- trimws(gsub("decay", "", iter_model))
     } else{ decay=FALSE }
     
-    matched_iter_model <- match.arg(iter_model, models)
+    matched_iter_model <- match.arg(iter_model, models) # note: rewrite this to use function matching, this is getting out of hand
     if(matched_iter_model=="logistic"){
       iter <- .logisticChngptForm(x, i, sigma, priors)
     } else if (matched_iter_model=="gompertz"){
       iter <- .gompertzChngptForm(x, i, sigma, priors)
+    } else if (matched_iter_model=="weibull"){
+      iter <- .weibullChngptForm(x, i, sigma, priors)
+    } else if (matched_iter_model=="frechet"){
+      iter <- .frechetChngptForm(x, i, sigma, priors)
+    } else if (matched_iter_model=="gumbel"){
+      iter <- .gumbelChngptForm(x, i, sigma, priors)
     } else if (matched_iter_model=="monomolecular"){
       iter <- .monomolecularChngptForm(x, i, sigma, priors)
     } else if (matched_iter_model=="exponential"){
@@ -703,5 +709,220 @@
   phaseList
 }
 
+#* ****************************************
+#* ***** `Weibull Changepoint Phase` *****
+#* ****************************************
+
+#' Weibull changepoint section function
+#'
+#' @param x X variable name
+#' @param position Position in growth formula ("1" + "2" + "3"... etc)
+#' @param sigma Logical, is this a sub model of variance?
+#' @param priors a list of prior distributions (used for fixed vs estimated changepoints)
+#'
+#' @examples
+#'
+#' .weibullChngptForm(x="time", 1)
+#' .weibullChngptForm(x="time", 2)
+#' .weibullChngptForm(x="time", 3)
+#'
+#' @return a list with form, cp, and cpInt elements. "form" is the growth formula
+#' for this phase of the model. "cp" is the inv_logit function defining when this
+#' phase should happen. "cpInt" is the value at the end of this growth phase and is 
+#' used in starting the next growth phase from the right y value.
+#' 
+#' @noRd
+
+.weibullChngptForm <- function(x, position=1, sigma = FALSE, priors){ # return f, cp, and cpInt 
+  
+  if(sigma){prefix <- chngptPrefix <- "sub"} else { prefix <- chngptPrefix <- NULL}
+  
+  if(any(grepl(paste0("fixedChangePoint",position), names(priors)))){
+    changePointObj <- as.numeric(priors[[paste0(prefix,"fixedChangePoint",position)]])[1]
+    fixed=TRUE
+    chngptPrefix <- NULL # never a prefix if the changepoint is a fixed value
+  } else {
+    fixed=FALSE
+    if(sigma){chngptPrefix <- "sub"} else { prefix <- NULL}
+  }
+  
+  if(position==1){
+    if(!fixed){changePointObj <- "changePoint1"}
+    form <- paste0(prefix,"weibull",position,"A * (1-exp(-(",x,"/",prefix,"weibull",position,"C)^",prefix,"weibull",position,"B))")
+    cp <- paste0("inv_logit((",chngptPrefix,changePointObj," - ",x,") * 5)")
+    cpInt <- paste0(prefix,"weibull",position,"A * (1-exp(-(",chngptPrefix,changePointObj,"/",prefix,"weibull",position,"C)^",prefix,"weibull",position,"B))") 
+  } else{
+    
+    all_chngpts<- names(priors)[grepl("fixedChangePoint*|changePoint*", names(priors))]
+    prev_changePoints <- all_chngpts[which(as.numeric(sub(".*hangePoint", "", all_chngpts))<position)]
+    prev_and_current_changePoints <- all_chngpts[which(as.numeric(sub(".*hangePoint", "", all_chngpts)) %in% c(position, position-1))]
+    #* per location where "fixed" is in the prior name, replace the name with that number.
+    prev_fixed_index <- which(grepl("fixed", prev_changePoints))
+    if(length(prev_fixed_index)>0){
+      prev_changePoints[prev_fixed_index] <- as.numeric(priors[[prev_changePoints[prev_fixed_index]]])
+    }
+    pac_fixed_index <- which(grepl("fixed", prev_and_current_changePoints))
+    if(length(pac_fixed_index)>0){
+      prev_and_current_changePoints[pac_fixed_index] <- as.numeric(priors[[prev_and_current_changePoints[pac_fixed_index]]])
+    }
+    form <- paste0(prefix,"weibull",position,"A * (1-exp(-(",x,"-",paste0(prev_changePoints, collapse = "-"),
+                   "/",prefix,"weibull",position,"C)^",prefix,"weibull",position,"B))")
+    cp <- paste0("inv_logit((", x,"-", paste0(prev_changePoints, collapse = "-"), ") * 5)")
+    cpInt <- paste0(prefix,"weibull",position,"A * (1-exp(-(",paste0(rev(prev_and_current_changePoints), collapse="-"),
+                   "/",prefix,"weibull",position,"C)^",prefix,"weibull",position,"B))")
+    
+  }
+  pars <- paste0(prefix,"weibull", position, c("A", "B", "C"))
+  if(!fixed){ pars <- c(pars, paste0(chngptPrefix, "changePoint", position)) }
+  return(list("form" = form,
+              "cp" = cp,
+              "cpInt" = cpInt,
+              "params" = pars))
+}
+
+
+#* ****************************************
+#* ***** `Frechet Changepoint Phase` *****
+#* ****************************************
+
+#' Frechet changepoint section function
+#'
+#' @param x X variable name
+#' @param position Position in growth formula ("1" + "2" + "3"... etc)
+#' @param sigma Logical, is this a sub model of variance?
+#' @param priors a list of prior distributions (used for fixed vs estimated changepoints)
+#'
+#' @examples
+#'
+#' .frechetChngptForm(x="time", 1)
+#' .frechetChngptForm(x="time", 2)
+#' .frechetChngptForm(x="time", 3)
+#'
+#' @return a list with form, cp, and cpInt elements. "form" is the growth formula
+#' for this phase of the model. "cp" is the inv_logit function defining when this
+#' phase should happen. "cpInt" is the value at the end of this growth phase and is 
+#' used in starting the next growth phase from the right y value.
+#' 
+#' @noRd
+
+.frechetChngptForm <- function(x, position=1, sigma = FALSE, priors){ # return f, cp, and cpInt 
+  
+  if(sigma){prefix <- chngptPrefix <- "sub"} else { prefix <- chngptPrefix <- NULL}
+  
+  if(any(grepl(paste0("fixedChangePoint",position), names(priors)))){
+    changePointObj <- as.numeric(priors[[paste0(prefix,"fixedChangePoint",position)]])[1]
+    fixed=TRUE
+    chngptPrefix <- NULL # never a prefix if the changepoint is a fixed value
+  } else {
+    fixed=FALSE
+    if(sigma){chngptPrefix <- "sub"} else { prefix <- NULL}
+  }
+  
+  if(position==1){
+    if(!fixed){changePointObj <- "changePoint1"}
+    form <- paste0(prefix,"frechet",position,"A * exp(-((",x,"-0)/",prefix,"frechet",position,"C)^(-",prefix,"frechet",position,"B))")
+    cp <- paste0("inv_logit((",chngptPrefix,changePointObj," - ",x,") * 5)")
+    cpInt <- paste0(prefix,"frechet",position,"A * exp(-((",chngptPrefix,changePointObj,"-0)/",prefix,"frechet",position,"C)^(-",prefix,"frechet",position,"B))")
+  } else{
+    
+    all_chngpts<- names(priors)[grepl("fixedChangePoint*|changePoint*", names(priors))]
+    prev_changePoints <- all_chngpts[which(as.numeric(sub(".*hangePoint", "", all_chngpts))<position)]
+    prev_and_current_changePoints <- all_chngpts[which(as.numeric(sub(".*hangePoint", "", all_chngpts)) %in% c(position, position-1))]
+    #* per location where "fixed" is in the prior name, replace the name with that number.
+    prev_fixed_index <- which(grepl("fixed", prev_changePoints))
+    if(length(prev_fixed_index)>0){
+      prev_changePoints[prev_fixed_index] <- as.numeric(priors[[prev_changePoints[prev_fixed_index]]])
+    }
+    pac_fixed_index <- which(grepl("fixed", prev_and_current_changePoints))
+    if(length(pac_fixed_index)>0){
+      prev_and_current_changePoints[pac_fixed_index] <- as.numeric(priors[[prev_and_current_changePoints[pac_fixed_index]]])
+    }
+    
+    form <- paste0(prefix,"frechet",position,"A * exp(-((",x,"-",paste0(prev_changePoints, collapse = "-"),
+                   "-0)/",prefix,"frechet",position,"C)^(-",prefix,"frechet",position,"B))")
+    cp <- paste0("inv_logit((", x,"-", paste0(prev_changePoints, collapse = "-"), ") * 5)")
+    cpInt <- paste0(prefix,"frechet",position,"A * exp(-((",paste0(rev(prev_and_current_changePoints), collapse="-"),
+                   "-0)/",prefix,"frechet",position,"C)^(-",prefix,"frechet",position,"B))")
+    
+  }
+  pars <- paste0(prefix,"frechet", position, c("A", "B", "C"))
+  if(!fixed){ pars <- c(pars, paste0(chngptPrefix, "changePoint", position)) }
+  return(list("form" = form,
+              "cp" = cp,
+              "cpInt" = cpInt,
+              "params" = pars))
+}
+
+
+#* ****************************************
+#* ***** `Gumbel Changepoint Phase` *****
+#* ****************************************
+
+#' Gumbel changepoint section function
+#'
+#' @param x X variable name
+#' @param position Position in growth formula ("1" + "2" + "3"... etc)
+#' @param sigma Logical, is this a sub model of variance?
+#' @param priors a list of prior distributions (used for fixed vs estimated changepoints)
+#'
+#' @examples
+#'
+#' .gumbelChngptForm(x="time", 1)
+#' .gumbelChngptForm(x="time", 2)
+#' .gumbelChngptForm(x="time", 3)
+#'
+#' @return a list with form, cp, and cpInt elements. "form" is the growth formula
+#' for this phase of the model. "cp" is the inv_logit function defining when this
+#' phase should happen. "cpInt" is the value at the end of this growth phase and is 
+#' used in starting the next growth phase from the right y value.
+#' 
+#' @noRd
+
+.gumbelChngptForm <- function(x, position=1, sigma = FALSE, priors){ # return f, cp, and cpInt 
+  
+  if(sigma){prefix <- chngptPrefix <- "sub"} else { prefix <- chngptPrefix <- NULL}
+  
+  if(any(grepl(paste0("fixedChangePoint",position), names(priors)))){
+    changePointObj <- as.numeric(priors[[paste0(prefix,"fixedChangePoint",position)]])[1]
+    fixed=TRUE
+    chngptPrefix <- NULL # never a prefix if the changepoint is a fixed value
+  } else {
+    fixed=FALSE
+    if(sigma){chngptPrefix <- "sub"} else { prefix <- NULL}
+  }
+  
+  if(position==1){
+    if(!fixed){changePointObj <- "changePoint1"}
+    form <- paste0(prefix,"gumbel",position,"A * exp(-exp(-(",x,"-",prefix,"gumbel",position,"B)/",prefix,"gumbel",position,"C))")
+    cp <- paste0("inv_logit((",chngptPrefix,changePointObj," - ",x,") * 5)")
+    cpInt <- paste0(prefix,"gumbel",position,"A * exp(-exp(-(",chngptPrefix,changePointObj,"-",prefix,"gumbel",position,"B)/",prefix,"gumbel",position,"C))")
+  } else{
+    
+    all_chngpts<- names(priors)[grepl("fixedChangePoint*|changePoint*", names(priors))]
+    prev_changePoints <- all_chngpts[which(as.numeric(sub(".*hangePoint", "", all_chngpts))<position)]
+    prev_and_current_changePoints <- all_chngpts[which(as.numeric(sub(".*hangePoint", "", all_chngpts)) %in% c(position, position-1))]
+    #* per location where "fixed" is in the prior name, replace the name with that number.
+    prev_fixed_index <- which(grepl("fixed", prev_changePoints))
+    if(length(prev_fixed_index)>0){
+      prev_changePoints[prev_fixed_index] <- as.numeric(priors[[prev_changePoints[prev_fixed_index]]])
+    }
+    pac_fixed_index <- which(grepl("fixed", prev_and_current_changePoints))
+    if(length(pac_fixed_index)>0){
+      prev_and_current_changePoints[pac_fixed_index] <- as.numeric(priors[[prev_and_current_changePoints[pac_fixed_index]]])
+    }
+    
+    form <- paste0(prefix,"gumbel",position,"A * exp(-exp(-(",x,"-",paste0(prev_changePoints, collapse = "-"),
+                   "-",prefix,"gumbel",position,"B)/",prefix,"gumbel",position,"C))")
+    cp <- paste0("inv_logit((", x,"-", paste0(prev_changePoints, collapse = "-"), ") * 5)")
+    cpInt <- paste0(prefix,"gumbel",position,"A * exp(-exp(-(",paste0(rev(prev_and_current_changePoints), collapse="-"),
+                    "-",prefix,"gumbel",position,"B)/",prefix,"gumbel",position,"C))")
+  }
+  pars <- paste0(prefix,"gumbel", position, c("A", "B", "C"))
+  if(!fixed){ pars <- c(pars, paste0(chngptPrefix, "changePoint", position)) }
+  return(list("form" = form,
+              "cp" = cp,
+              "cpInt" = cpInt,
+              "params" = pars))
+}
 
 
