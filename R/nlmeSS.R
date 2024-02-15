@@ -156,7 +156,16 @@ if(matched_model=="double logistic"){
   form_fun<-.nlme_form_gam
   start <- 0
   pars = df # there are no pars, this is just to pass df to pdIdent for the splines
-}
+} else if (matched_model=="weibull"){
+  if(is.null(pars)){ pars = c("A", "B", "C") }
+  form_fun<-.nlme_form_weibull
+} else if (matched_model=="frechet"){
+  if(is.null(pars)){ pars = c("A", "B", "C") }
+  form_fun<-.nlme_form_frechet
+} else if (matched_model=="gumbel"){
+  if(is.null(pars)){ pars = c("A", "B", "C") }
+  form_fun<-.nlme_form_gumbel
+} 
 growthForm_list = form_fun(x,y, group, individual, matched_sigma, pars)
 
 if(decay){ growthForm_list <- .nlme_Decay(growthForm_list) }
@@ -182,6 +191,8 @@ if(is.null(start)){
     startingValues <- .initLinear(df,x,y)
   } else if (matched_model=="power law"){
     startingValues <- .initPowerLaw(df,x,y)
+  } else if(matched_model %in% c("weibull", "frechet", "gumbel")){
+    startingValues <- .initWeibull(df,x,y)
   }
   startingValuesList <- unlist(lapply(names(startingValues), function(nm){
     val<-startingValues[nm]
@@ -462,4 +473,83 @@ return(out)
 }
 
 
+
+.nlme_form_weibull<-function(x, y, group, individual, matched_sigma, pars){
+  model_form <- as.formula(paste0(y," ~ A * (1-exp(-(",x,"/C)^B))"))
+  #* `random effects formula`
+  random_form <- A + B + C ~ 1
+  #* `fixed effects formula`
+  total_pars <- c("A", "B", "C")
+  fixed_form <- lapply(total_pars, function(par){
+    if(par %in% pars){
+      stats::as.formula(paste0(par," ~ 0 + ", group))
+    } else{
+      stats::as.formula(paste0(par," ~ 1"))
+    }
+  })
+  #* `groups formula`
+  groups_form = stats::as.formula(paste0("~", group))
+  #* `variance formula`
+  weights_form <- .nlme_sigma_form(matched_sigma, x, group)
+  #* `correlation formula`
+  correlation_form <- nlme::corAR1(0.8, form = as.formula(paste0("~ 1 |",group)))
+  
+  formulas <- list("model"=model_form, "random"=random_form,
+                   "fixed"=fixed_form, "groups"=groups_form,
+                   "weights" = weights_form, "cor_form" = correlation_form)
+  return(formulas)
+}
+
+.nlme_form_frechet<-function(x, y, group, individual, matched_sigma, pars){
+  model_form <- as.formula(paste0(y," ~ A * exp(-((",x,"-0)/C)^(-B))"))
+  #* `random effects formula`
+  random_form <- A + B + C ~ 1
+  #* `fixed effects formula`
+  total_pars <- c("A", "B", "C")
+  fixed_form <- lapply(total_pars, function(par){
+    if(par %in% pars){
+      stats::as.formula(paste0(par," ~ 0 + ", group))
+    } else{
+      stats::as.formula(paste0(par," ~ 1"))
+    }
+  })
+  #* `groups formula`
+  groups_form = stats::as.formula(paste0("~", group))
+  #* `variance formula`
+  weights_form <- .nlme_sigma_form(matched_sigma, x, group)
+  #* `correlation formula`
+  correlation_form <- nlme::corAR1(0.8, form = as.formula(paste0("~ 1 |",group)))
+  
+  formulas <- list("model"=model_form, "random"=random_form,
+                   "fixed"=fixed_form, "groups"=groups_form,
+                   "weights" = weights_form, "cor_form" = correlation_form)
+  return(formulas)
+}
+
+
+.nlme_form_gumbel<-function(x, y, group, individual, matched_sigma, pars){
+  model_form <- as.formula(paste0(y," ~ A * exp(-exp(-(",x,"-B)/C))"))
+  #* `random effects formula`
+  random_form <- A + B + C ~ 1
+  #* `fixed effects formula`
+  total_pars <- c("A", "B", "C")
+  fixed_form <- lapply(total_pars, function(par){
+    if(par %in% pars){
+      stats::as.formula(paste0(par," ~ 0 + ", group))
+    } else{
+      stats::as.formula(paste0(par," ~ 1"))
+    }
+  })
+  #* `groups formula`
+  groups_form = stats::as.formula(paste0("~", group))
+  #* `variance formula`
+  weights_form <- .nlme_sigma_form(matched_sigma, x, group)
+  #* `correlation formula`
+  correlation_form <- nlme::corAR1(0.8, form = as.formula(paste0("~ 1 |",group)))
+  
+  formulas <- list("model"=model_form, "random"=random_form,
+                   "fixed"=fixed_form, "groups"=groups_form,
+                   "weights" = weights_form, "cor_form" = correlation_form)
+  return(formulas)
+}
 
