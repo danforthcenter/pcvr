@@ -131,7 +131,8 @@
 #' 
 #' 
 
-growthSim<-function(model=c("logistic", "gompertz", "double logistic", "double gompertz", "monomolecular", "exponential", "linear", "power law"), n=20, t=25, params=list(), noise=NULL, D=0){
+growthSim<-function(model=c("logistic", "gompertz", "double logistic", "double gompertz",
+                            "monomolecular", "exponential", "linear", "power law", "frechet", "weibull", "gumbel"), n=20, t=25, params=list(), noise=NULL, D=0){
   
   if(length(model)>1){stop("Select one model to use")}
   if(is.null(noise)){noise = lapply(params, function(i) mean(i)/10); wasNULL = TRUE} else{wasNULL=FALSE}
@@ -259,7 +260,7 @@ growthSim<-function(model=c("logistic", "gompertz", "double logistic", "double g
 .singleGrowthSim<- function(model, n=20, t=25, params=list(), noise=NULL, D){
   
   models<-c("logistic", "gompertz", "double logistic", "double gompertz",
-            "monomolecular", "exponential", "linear", "power law")
+            "monomolecular", "exponential", "linear", "power law", "frechet", "weibull", "gumbel")
   
   if(grepl("decay", model)){
     decay=TRUE
@@ -286,6 +287,12 @@ growthSim<-function(model=c("logistic", "gompertz", "double logistic", "double g
     gsi<-gsi_linear
   } else if (matched_model=="power law"){
     gsi<-gsi_powerlaw
+  } else if (matched_model=="frechet"){
+    gsi<-gsi_frechet
+  } else if (matched_model=="weibull"){
+    gsi<-gsi_weibull
+  } else if (matched_model=="gumbel"){
+    gsi<-gsi_gumbel
   }
   
   if(decay){
@@ -358,4 +365,30 @@ gsi_powerlaw <- function(x,pars, noise){
   b_r <- pars[["B"]]+rnorm(1,mean=0,sd=noise[["B"]])
   return(a_r * x^(b_r))
 }
+gsi_frechet <- function(x, pars, noise){
+  a_r <- pars[["A"]]+rnorm(1,mean = 0,sd=noise[["A"]])
+  b_r <- max(c(0, pars[["B"]]+rnorm(1,mean=0,sd=noise[["B"]])))
+  c_r <- max(c(0, pars[["C"]]+rnorm(1,mean=0,sd=noise[["C"]])))
+  # holding location to 0, b is shape parameter, c is scale (growth rate)
+  return( a_r * exp(-((x-0)/c_r)^(-b_r))  ) # a_r * exp(((-(x-d_r)/c_r)^(-b_r))) # a_r * exp((-(x-0)/c_r))^(-b_r) 
+}
+gsi_gumbel <- function(x,pars, noise){
+  a_r <- pars[["A"]]+rnorm(1,mean = 0,sd=noise[["A"]])
+  b_r <- pars[["B"]]+rnorm(1,mean=0,sd=noise[["B"]])
+  c_r <- pars[["C"]]+rnorm(1,mean=0,sd=noise[["C"]])
+  # b is location, c is scale (rate)
+  return(a_r * exp( -exp( -(x-b_r)/c_r  ) ))
+}
+gsi_weibull <- function(x,pars, noise){ 
+  a_r <- pars[["A"]]+rnorm(1,mean = 0,sd=noise[["A"]])
+  b_r <- pars[["B"]]+rnorm(1,mean=0,sd=noise[["B"]])
+  c_r <- pars[["C"]]+rnorm(1,mean=0,sd=noise[["C"]])
+  # c is scale, b is shape
+  return(a_r * (1-exp(-(x/c_r)^b_r)))
+}
+
+
+
+
+
 

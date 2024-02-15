@@ -114,7 +114,8 @@
 .brmSS<-function(model, form, sigma=NULL, df, priors=NULL){
   out<-list()
   # sigmas<-c("homo", "linear", "spline", "gompertz")
-  models<-c("int", "logistic", "gompertz", "monomolecular", "exponential", "linear", "power law", "double logistic", "double gompertz", "gam", "spline", "homo")
+  models<-c("int", "logistic", "gompertz", "monomolecular", "exponential", "linear", "power law",
+            "double logistic", "double gompertz", "gam", "spline", "homo", "frechet", "gumbel", "weibull")
   #* ***** `Make bayesian formula` *****
     #* `parse form argument`
     y=as.character(form)[2]
@@ -175,7 +176,7 @@
       splineHelperForm <- chngptHelper_list$splineHelperForm
       
     } else{
-      
+      # Note, if I do end up liking these functions then it's time to start using match.fun instead of this.
         if(matched_model=="double logistic"){
           formRes = .brms_form_dou_logistic(x,y, group, sigma = FALSE)
         } else if (matched_model=="double gompertz"){
@@ -184,6 +185,12 @@
           formRes = .brms_form_logistic(x,y, group, sigma = FALSE)
         } else if (matched_model=="gompertz"){
           formRes = .brms_form_gompertz(x,y, group, sigma = FALSE)
+        } else if (matched_model=="frechet"){
+          formRes = .brms_form_frechet(x,y, group, sigma = FALSE)
+        } else if (matched_model=="gumbel"){
+          formRes = .brms_form_gumbel(x,y, group, sigma = FALSE)
+        } else if (matched_model=="weibull"){
+          formRes = .brms_form_weibull(x,y, group, sigma = FALSE)
         } else if (matched_model=="monomolecular"){
           formRes = .brms_form_monomolecular(x,y, group, sigma = FALSE)
         } else if (matched_model=="exponential"){
@@ -224,6 +231,12 @@
         formResSigma = .brms_form_logistic(x,y, group, sigma = TRUE)
       } else if (matched_sigma=="gompertz"){
         formResSigma = .brms_form_gompertz(x,y, group, sigma = TRUE)
+      } else if (matched_sigma=="frechet"){
+        formResSigma = .brms_form_frechet(x,y, group, sigma = TRUE)
+      } else if (matched_sigma=="gumbel"){
+        formResSigma = .brms_form_gumbel(x,y, group, sigma = TRUE)
+      } else if (matched_sigma=="weibull"){
+        formResSigma = .brms_form_weibull(x,y, group, sigma = TRUE)
       } else if (matched_sigma=="monomolecular"){
         formResSigma = .brms_form_monomolecular(x,y, group, sigma = TRUE)
       } else if (matched_sigma=="exponential"){
@@ -578,8 +591,52 @@
   formList
 }
 
+#' Helper function for brms formulas
+#' 
+#' @keywords internal
+#' @noRd
 
+.brms_form_frechet<-function(x, y, group, sigma = FALSE){ 
+  if(sigma){
+    form <- brms::nlf(stats::as.formula(paste0("sigma ~ subA * exp(-((",x,"-0)/subC)^(-subB))")))
+    pars <- c("subA", "subB", "subC")
+  }else{
+    form <-stats::as.formula(paste0(y," ~ A * exp(-((",x,"-0)/C)^(-B))"))
+    pars <- c("A", "B", "C")
+  }
+  return(list(form=form, pars=pars))
+}
 
+#' Helper function for brms formulas
+#' 
+#' @keywords internal
+#' @noRd
 
+.brms_form_weibull<-function(x, y, group, sigma = FALSE){ 
+  if(sigma){
+    form <- brms::nlf(stats::as.formula(paste0("sigma ~ subA * (1-exp(-(",x,"/subC)^subB))")))
+    pars <- c("subA", "subB", "subC")
+  }else{
+    form <-stats::as.formula(paste0(y," ~ A * (1-exp(-(",x,"/C)^B))"))
+    pars <- c("A", "B", "C")
+  }
+  return(list(form=form, pars=pars))
+}
+
+#' Helper function for brms formulas
+#' 
+#' @keywords internal
+#' @noRd
+
+.brms_form_gumbel<-function(x, y, group, sigma = FALSE){  # a_r * exp(-exp( -(x-b_r)/c_r))
+  if(sigma){
+    form <- brms::nlf(stats::as.formula(paste0("sigma ~ subA * exp(-exp( -(",x,"-subB)/subC))")))
+    pars <- c("subA", "subB", "subC")
+  }else{
+    form <-stats::as.formula(paste0(y," ~ A * exp(-exp( -(",x,"-B)/C))"))
+    pars <- c("A", "B", "C")
+  }
+  return(list(form=form, pars=pars))
+}
 
 
