@@ -23,7 +23,8 @@
   out<-list()
   models<-c("logistic", "gompertz", "monomolecular",
             "exponential", "linear", "power law",
-            "double logistic", "double gompertz", "gam")
+            "double logistic", "double gompertz", "gam",
+            "frechet", "weibull", "gumbel")
   #* ***** `Make nlrq formula` *****
   #* `parse form argument`
   y=as.character(form)[2]
@@ -86,6 +87,15 @@
   } else if(matched_model=="gam"){
     form_fun<-.nlrq_form_gam
     start <- 0
+  } else if (matched_model=="frechet"){
+    if(is.null(pars)){ pars = c("A", "B", "C") }
+    form_fun<-.nlrq_form_frechet
+  } else if (matched_model=="weibull"){
+    if(is.null(pars)){ pars = c("A", "B", "C") }
+    form_fun<-.nlrq_form_weibull
+  } else if (matched_model=="gumbel"){
+    if(is.null(pars)){ pars = c("A", "B", "C") }
+    form_fun<-.nlrq_form_gumbel
   }
   growthForm = form_fun(x,y, USEGROUP, group, pars)
   
@@ -110,6 +120,8 @@
       startingValues <- .initLinear(df,x,y)
     } else if (matched_model=="power law"){
       startingValues <- .initPowerLaw(df,x,y)
+    } else if(matched_model %in% c("weibull", "frechet", "gumbel")){
+      startingValues <- .initWeibull(df,x,y)
     }
     if((!matched_model %in% c("double logistic", "double gompertz")) & USEGROUP){
       nms <- names(startingValues)
@@ -231,10 +243,10 @@
 }
 
 
-#* `power law self starter`
+#* `exponential self starter`
 # ex<-growthSim("exponential", n=20, t=25,
 #                  params = list("A"=c(15, 20), "B"=c(0.095, 0.095)))
-# .initExponential2(ex, "time","y")
+# .initExponential(ex, "time","y")
 
 .initExponential <- function(df, x, y) {
   xy <- stats::sortedXyData(df[[x]], df[[y]])
@@ -246,6 +258,27 @@
                    algorithm = "plinear", control = stats::nls.control(warnOnly=TRUE) ) )
   stats::setNames(pars[c(".lin", "B")],c("A", "B"))
 }
+
+#* `Extreme Value Distribution Self Starter (weibull, frechet, gumbel)`
+
+.initWeibull <- function(df, x, y){
+    xy <- sortedXyData(df[[x]], df[[y]])
+    if (nrow(xy) < 5) {
+        stop("too few distinct input values to fit the EVD growth model")
+    }
+    if (any(xy[["x"]] < 0)) {
+        stop("all 'x' values must be non-negative to fit the EVD growth model")
+    }
+    Rasym <- stats::NLSstRtAsymptote(xy)
+    Lasym <- stats::NLSstLfAsymptote(xy)
+    pars <- stats::coef(stats::lm(log(-log((Rasym - y)/(Rasym - Lasym))) ~ 
+        log(x), data = xy, subset = x > 0))
+    # coef(nls(y ~ cbind(1, -exp(-exp(lrc) * x^pwr)), 
+    #                   data = xy, start = c(lrc = pars[[1L]], pwr = pars[[2L]]), 
+    #                   algorithm = "plinear"))
+    stats::setNames(c(Rasym, exp(pars)+c(1,0) ), c("A", "B", "C"))
+}
+
 
 #* `Define growth formulas`
 
@@ -430,5 +463,68 @@
   as.formula(paste0(chars[2], chars[1], "-(", chars[3],")" ))
 }
 
+.nlrq_form_frechet<-function(x, y, USEGROUP, group, pars){
+  if(is.null(pars)){
+    pars = c("A", "B", "C")
+  }
+  total_pars = c("A", "B", "C")
+  if(USEGROUP){
+    str_nf <- paste0(y, " ~ A[] * exp(-((",x,"-0)/C[])^(-B[]))")
+    for(par in total_pars){
+      if(par %in% pars){
+        str_nf<-gsub(paste0(par, "\\[\\]"), paste0(par, "[",group,"]"), str_nf)
+      } else{
+        str_nf<-gsub(paste0(par, "\\[\\]"), par, str_nf)
+      }
+    }
+    nf<-as.formula(str_nf)
+  } else{
+    nf<-as.formula(paste0(y," ~ A * exp(-((",x,"-0)/C)^(-B))"))
+  }
+  return(nf)
+}
+
+
+.nlrq_form_weibull<-function(x, y, USEGROUP, group, pars){
+  if(is.null(pars)){
+    pars = c("A", "B", "C")
+  }
+  total_pars = c("A", "B", "C")
+  if(USEGROUP){
+    str_nf <- paste0(y, " ~ A[] * (1-exp(-(",x,"/C[])^B[]))")
+    for(par in total_pars){
+      if(par %in% pars){
+        str_nf<-gsub(paste0(par, "\\[\\]"), paste0(par, "[",group,"]"), str_nf)
+      } else{
+        str_nf<-gsub(paste0(par, "\\[\\]"), par, str_nf)
+      }
+    }
+    nf<-as.formula(str_nf)
+  } else{
+    nf<-as.formula(paste0(y," ~ A * (1-exp(-(",x,"/C)^B))"))
+  }
+  return(nf)
+}
+
+.nlrq_form_gumbel<-function(x, y, USEGROUP, group, pars){
+  if(is.null(pars)){
+    pars = c("A", "B", "C")
+  }
+  total_pars = c("A", "B", "C")
+  if(USEGROUP){
+    str_nf <- paste0(y, " ~ A[] * exp(-exp(-(",x,"-B[])/C[]))")
+    for(par in total_pars){
+      if(par %in% pars){
+        str_nf<-gsub(paste0(par, "\\[\\]"), paste0(par, "[",group,"]"), str_nf)
+      } else{
+        str_nf<-gsub(paste0(par, "\\[\\]"), par, str_nf)
+      }
+    }
+    nf<-as.formula(str_nf)
+  } else{
+    nf<-as.formula(paste0(y," ~ A * exp(-exp(-(",x,"-B)/C))"))
+  }
+  return(nf)
+}
 
 
