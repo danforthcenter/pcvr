@@ -17,7 +17,7 @@ growthSS(
 }
 \arguments{
 \item{model}{The name of a model as a character string.
-Supported options are c("logistic", "gompertz", "monomolecular", "exponential", "linear", "power law",
+Supported options are c("logistic", "gompertz", "weibull", "frechet", "gumbel", "monomolecular", "exponential", "linear", "power law",
 "double logistic", "double gompertz", "gam", "int"), with "int" representing an intercept only model
 which is only used in brms (and is expected to only be used in threshold models or to model homoskedasticity.)
 See \code{\link{growthSim}} for examples of each type of single parameterized growth curve ("gam" is not supported in \code{growthSim}).
@@ -36,7 +36,8 @@ this would yield parameters "linear1A", "changePoint1" (or "fixedChangePoint1"),
  A "linear + gompertz" model would have
 "linear1A", "changePoint1", "gompertz2A",   "gompertz2B", and "gompertz2C" for parameters.
 Note that double sigmoid models are not supported as parts of segmented models and gams
- can currently only be included as the last part of a segmented model.
+ can currently only be included as the last part of a segmented model. When using a changepoint model
+ it may be worth using segments that are simpler to fit (gompertz instead of EVD options, for instance).
 Currently "homo" and "int" are treated the same and "spline" and "gam" are interchangeable.
 Time-to-event models can be specified using the "survival" keyword, see details for an explanation of the changes that entails.}
 
@@ -157,6 +158,9 @@ rather this should be informed by an understanding of the plants you
 \itemize{
    \item \bold{Logistic}: \code{list('A' = 130, 'B' = 12, 'C' = 3)}
     \item \bold{Gompertz}: \code{list('A' = 130, 'B' = 12, 'C' = 1.25)}
+    \item \bold{Weibull}: \code{list('A' = 130, 'B' = 2, 'C' = 2)}
+    \item \bold{Frechet}: \code{list('A' = 130, 'B' = 5, 'C' = 6)}
+    \item \bold{Gumbel}: \code{list('A' = 130, 'B' = 6, 'C' = 4)}
     \item \bold{Double Logistic}: \code{list('A' = 130, 'B' = 12, 'C' = 3, 'A2' = 200, 'B2' = 25, 'C2' = 1)}
     \item \bold{Double Gompertz}: \code{list('A' = 130, 'B' = 12, 'C' = 0.25, 'A2' = 220, 'B2' = 30, 'C2' = 0.1)}
     \item \bold{Monomolecular}: \code{list('A' = 130, 'B' = 2)}
@@ -165,26 +169,45 @@ rather this should be informed by an understanding of the plants you
     \item \bold{Power Law}: \code{list('A' = 13, 'B' = 2)}
 }
 
-
-
-The \code{sigma} argument optionally specifies a sub model to account for heteroskedasticity.
-Currently there are four supported \code{brms} sub models described below.
-
+See details below about parameterization for each model option.
 \itemize{
-   \item \bold{homo}: \code{sigma ~ 1}, fitting only a global or per group intercept to sigma.
-    \item \bold{linear}: \code{sigma ~ time}, modeling sigma with a linear relationship to time
-     and possibly with an interaction term per groups.
-    \item \bold{spline}: \code{sigma ~ s(time)}, modeling sigma using a smoothing function through `mgcv::s`, possibly by group.
-    \item \bold{gompertz}: \code{sigma ~ subA * exp(-subB * exp(-subC * x))},
-     modeling sigma as a gompertz function of time, possibly by group. Note that you
-     should specify priors for the parameters in this sub model by adding them into the \code{priors}
-     argument, such as \code{list(..., subA = 20, subB = 15, subC = 0.25)}. If you do not specify priors
-     then default (flat) priors will be used, which is liable to cause fitting problems and less
-     accurate results. Looking at your data and making a semi-informed estimate of the total variance at the end
-     of the experiment can help set a reasonable prior for subA, while subB and subC can generally be the 
-     same as B and C in a gompertz growth model of the same data. These priors will have fat tails so they
-     are pretty forgiving.
-}
+ \item \bold{Logistic}: `A / (1 + exp( (B-x)/C) )`
+ Where A is the asymptote, B is the inflection point, C is the growth rate. 
+ \item \bold{Gompertz}: `A * exp(-B * exp(-C*x))` 
+ Where A is the asymptote, B is the inflection point, C is the growth rate. 
+ \item \bold{Weibull}: `A * (1-exp(-(x/C)^B))`
+ Where A is the asymptote, B is the weibull shape parameter, C is the weibull scale parameter. 
+ \item \bold{Frechet}: `A * exp(-((x-0)/C)^(-B))`
+ Where A is the asymptote, B is the frechet shape parameter, C is the frechet scale parameter. 
+ Note that the location parameter (conventionally m) is 0 in these models for simplicity but is still
+ included in the formula.
+ \item \bold{Gumbel}: `A * exp(-exp(-(x-B)/C))`
+ Where A is the asymptote, B is the inflection point (location), C is the growth rate (scale). 
+ \item \bold{Double Logistic}: `A / (1+exp((B-x)/C)) + ((A2-A) /(1+exp((B2-x)/C2)))`
+ Where A is the asymptote, B is the inflection point, C is the growth rate,
+ A2 is the second asymptote, B2 is the second inflection point, and C2 is the second 
+ growth rate.
+ \item \bold{Double Gompertz}: `A * exp(-B * exp(-C*x)) + ((A2-A) * exp(-B2 * exp(-C2*(x-B))))`
+ Where A is the asymptote, B is the inflection point, C is the growth rate,
+ A2 is the second asymptote, B2 is the second inflection point, and C2 is the second 
+ growth rate.
+ \item \bold{Monomolecular}: `A-A * exp(-B * x)`
+ Where A is the asymptote and B is the growth rate. 
+ \item \bold{Exponential}: `A * exp(B * x)` 
+ Where A is the scale parameter and B is the growth rate. 
+ \item \bold{Linear}: `A * x` 
+ Where A is the growth rate.
+ \item \bold{Power Law}: `A * x^(B)` 
+ Where A is the scale parameter and B is the growth rate.
+ }
+ Note that for these distributions parameters do not exist in a vacuum.
+ Changing one will make the others look different in the resulting data.
+ The \code{growthSim} function can be helpful in familiarizing further with these distributions.
+
+Using the \code{brms} backend the \code{sigma} argument optionally specifies a sub model to account for heteroskedasticity.
+Any combination of models (except for decay models) can be specified in the \code{sigma} term.
+If you need variance to raise and lower then a gam/spline is the most appropriate option.
+
 
 There are also three supported submodel options for \code{nlme} models, but a \code{varFunc} object can also be supplied,
 see \code{?nlme::varClasses}.

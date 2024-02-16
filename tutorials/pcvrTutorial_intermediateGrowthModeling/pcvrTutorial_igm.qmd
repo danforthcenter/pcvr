@@ -287,6 +287,33 @@ patch6<-(l+g+m)/(e+ln+pl)
 patch6
 ```
 
+## Supported Growth Models {.smaller}
+
+There are an additional 3 sigmoidal models based on the Extreme Value Distribution. Those are Weibull, Frechet, and Gumbel. The authors generally prefer Gompertz to these options but for your data it is possible that these could be a better fit.
+
+```{r}
+#| echo: false
+#| eval: true
+simdf<-growthSim("weibull", n=20, t=25,
+params = list("A"=c(100,100), "B"=c(1, 0.75), "C"=c(2, 3)) )
+w <-ggplot(simdf,aes(time, y, group=interaction(group,id)))+
+ geom_line(aes(color=group))+labs(title="weibull")+theme(legend.position="none")
+ 
+simdf<-growthSim("frechet", n=20, t=25,
+params = list("A"=c(100,110), "B"=c(2, 1.5), "C"=c(5, 2)) )
+f <- ggplot(simdf,aes(time, y, group=interaction(group,id)))+
+ geom_line(aes(color=group))+labs(title="frechet")+theme(legend.position="none")
+ 
+simdf<-growthSim("gumbel", n=20, t=25,
+list("A"=c(120,140), "B"=c(6, 5), "C"=c(4, 3)) )
+gb <- ggplot(simdf,aes(time, y, group=interaction(group,id)))+
+ geom_line(aes(color=group))+labs(title="gumbel")+theme(legend.position="none")
+
+patch3<-(w+f+gb)
+patch3
+```
+
+
 ## Supported Growth Models 2 {.smaller}
 
 There are also two double sigmoid curves intended for use with recovery experiments.

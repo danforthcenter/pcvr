@@ -114,7 +114,8 @@
 .brmSS<-function(model, form, sigma=NULL, df, priors=NULL){
   out<-list()
   # sigmas<-c("homo", "linear", "spline", "gompertz")
-  models<-c("int", "logistic", "gompertz", "monomolecular", "exponential", "linear", "power law", "double logistic", "double gompertz", "gam", "spline", "homo")
+  models<-c("int", "logistic", "gompertz", "monomolecular", "exponential", "linear", "power law",
+            "double logistic", "double gompertz", "gam", "spline", "homo", "frechet", "gumbel", "weibull")
   #* ***** `Make bayesian formula` *****
     #* `parse form argument`
     y=as.character(form)[2]
@@ -175,31 +176,13 @@
       splineHelperForm <- chngptHelper_list$splineHelperForm
       
     } else{
+      if(matched_model=="homo"){matched_model="int" # recode alternate names
+        } else if(matched_model =="spline"){matched_model="gam"}
       
-        if(matched_model=="double logistic"){
-          formRes = .brms_form_dou_logistic(x,y, group, sigma = FALSE)
-        } else if (matched_model=="double gompertz"){
-          formRes = .brms_form_dou_gompertz(x,y, group, sigma = FALSE)
-        } else if(matched_model=="logistic"){
-          formRes = .brms_form_logistic(x,y, group, sigma = FALSE)
-        } else if (matched_model=="gompertz"){
-          formRes = .brms_form_gompertz(x,y, group, sigma = FALSE)
-        } else if (matched_model=="monomolecular"){
-          formRes = .brms_form_monomolecular(x,y, group, sigma = FALSE)
-        } else if (matched_model=="exponential"){
-          formRes = .brms_form_exponential(x,y, group, sigma = FALSE)
-        } else if (matched_model=="linear"){
-          formRes = .brms_form_linear(x,y, group, sigma = FALSE)
-        } else if (matched_model=="power law"){
-          formRes = .brms_form_powerlaw(x,y, group, sigma = FALSE)
-        } else if (matched_model %in% c("gam", "spline")){
-          formRes = .brms_form_gam(x,y, group, sigma = FALSE, nTimes = nTimes)
-        } else if (matched_model %in% c("int", "homo")){
-          formRes = .brms_form_int(x,y, group, sigma = FALSE)
-        }
-      
+      string_brmsFormFun <- paste0(".brms_form_", gsub(" ", "", matched_model))
+      brmsFormFun <- match.fun(string_brmsFormFun)
+      formRes <- brmsFormFun(x,y, group, sigma = FALSE, nTimes=nTimes, useGroup=USEGROUP, prior=priors)
       if(decay){ formRes<-.brms_form_decay(formRes) }
-      
       pars <- formRes$pars
       growthForm <- formRes$form
     }
@@ -215,29 +198,11 @@
         sigmaSplineHelperForm <- chngptHelper_list$splineHelperForm
         
       } else{
-        
-      if(matched_sigma=="double logistic"){
-        formResSigma = .brms_form_dou_logistic(x,y, group, sigma = TRUE)
-      } else if (matched_sigma=="double gompertz"){
-        formResSigma = .brms_form_dou_gompertz(x,y, group, sigma = TRUE)
-      } else if(matched_sigma=="logistic"){
-        formResSigma = .brms_form_logistic(x,y, group, sigma = TRUE)
-      } else if (matched_sigma=="gompertz"){
-        formResSigma = .brms_form_gompertz(x,y, group, sigma = TRUE)
-      } else if (matched_sigma=="monomolecular"){
-        formResSigma = .brms_form_monomolecular(x,y, group, sigma = TRUE)
-      } else if (matched_sigma=="exponential"){
-        formResSigma = .brms_form_exponential(x,y, group, sigma = TRUE)
-      } else if (matched_sigma=="linear"){
-        formResSigma = .brms_form_linear(x,y, group, sigma = TRUE, prior=priors)
-      } else if (matched_sigma=="power law"){
-        formResSigma = .brms_form_powerlaw(x,y, group, sigma = TRUE)
-      } else if (matched_sigma %in% c("gam", "spline")){
-        formResSigma = .brms_form_gam(x,y, group, sigma = TRUE, nTimes = nTimes)
-      } else if (matched_sigma %in% c("int", "homo")){
-        formResSigma = .brms_form_int(x,y, group, sigma = TRUE)
-      }
-        
+        if(matched_sigma=="homo"){matched_sigma="int" # recode alternate names
+        } else if(matched_sigma =="spline"){matched_sigma="gam"}
+        string_brmsSigmaFormFun <- paste0(".brms_form_", gsub(" ", "", matched_sigma))
+        brmsSigmaFormFun <- match.fun(string_brmsSigmaFormFun)
+        formResSigma <- brmsSigmaFormFun(x,y, group, sigma = TRUE, nTimes=nTimes, useGroup=USEGROUP, prior=priors)
         sigmaForm <- formResSigma$form
         pars <- c(pars, formResSigma$pars)
         sigmaPars <- formResSigma$pars
@@ -397,7 +362,7 @@
 #' @keywords internal
 #' @noRd
 
-.brms_form_logistic<-function(x, y, group, sigma = FALSE){
+.brms_form_logistic<-function(x, y, group, sigma = FALSE, nTimes=NULL, useGroup = TRUE, prior = NULL){
   if(sigma){
     form <- brms::nlf(stats::as.formula(paste0("sigma ~ subA/(1+exp((subB-",x,")/subC))")))
     pars <- c("subA", "subB", "subC")
@@ -412,7 +377,7 @@
 #' @keywords internal
 #' @noRd
 
-.brms_form_gompertz<-function(x, y, group, sigma = FALSE){
+.brms_form_gompertz<-function(x, y, group, sigma = FALSE, nTimes=NULL, useGroup = TRUE, prior = NULL){
   if(sigma){
     form <- brms::nlf(stats::as.formula(paste0("sigma ~ subA*exp(-subB*exp(-subC*",x,"))")))
     pars <- c("subA", "subB", "subC")
@@ -428,7 +393,7 @@
 #' @noRd
 
 
-.brms_form_dou_logistic<-function(x, y, group, sigma = FALSE){
+.brms_form_doublelogistic<-function(x, y, group, sigma = FALSE, nTimes=NULL, useGroup = TRUE, prior = NULL){
   if(sigma){
     form<-brms::nlf(stats::as.formula(paste0("sigma ~ subA/(1+exp((subB-",x,")/subC)) + ((subA2-subA) /(1+exp((subB2-",x,")/subC2)))")))
     pars <- c("subA", "subB", "subC","subA2", "subB2", "subC2" )
@@ -444,7 +409,7 @@
 #' @noRd
 
 
-.brms_form_dou_gompertz<-function(x, y, group, sigma = FALSE){
+.brms_form_doublegompertz<-function(x, y, group, sigma = FALSE, nTimes=NULL, useGroup = TRUE, prior = NULL){
   if(sigma){
     form <- brms::nlf(stats::as.formula(paste0("sigma ~ subA * exp(-subB * exp(-subC*",x,")) + (subA2-subA) * exp(-subB2 * exp(-subC2*(",x,"-subB)))")))
     pars <- c("subA", "subB", "subC","subA2", "subB2", "subC2" )
@@ -460,7 +425,7 @@
 #' @noRd
 
 
-.brms_form_monomolecular<-function(x, y, group, sigma = FALSE){
+.brms_form_monomolecular<-function(x, y, group, sigma = FALSE, nTimes=NULL, useGroup = TRUE, prior = NULL){
   if(sigma){
     form <- brms::nlf(stats::as.formula(paste0("sigma ~ subA-subA*exp(-subB*",x,")")))
     pars <- c("subA", "subB")
@@ -476,7 +441,7 @@
 #' @noRd
 
 
-.brms_form_exponential<-function(x, y, group, sigma = FALSE){
+.brms_form_exponential<-function(x, y, group, sigma = FALSE, nTimes=NULL, useGroup = TRUE, prior = NULL){
   if(sigma){
     form <- brms::nlf(stats::as.formula(paste0("sigma ~ subA*exp(subB*",x, ")")))
     pars <- c("A", "B")
@@ -492,7 +457,7 @@
 #' @noRd
 
 
-.brms_form_linear<-function(x, y, group, sigma = FALSE, prior = NULL){
+.brms_form_linear<-function(x, y, group, sigma = FALSE, nTimes=NULL, useGroup = TRUE, prior = NULL){
   if(sigma){
     if(!is.null(prior) && any(grepl("subA", names(prior))) ){
       #* use non-linear parameterization with subA
@@ -515,7 +480,7 @@
 #' @noRd
 
 
-.brms_form_powerlaw<-function(x, y, group, sigma = FALSE){
+.brms_form_powerlaw<-function(x, y, group, sigma = FALSE, nTimes=NULL, useGroup = TRUE, prior = NULL){
   if(sigma){
     form <- brms::nlf(stats::as.formula(paste0(y," ~ subA*",x,"^subB")))
     pars <- c("subA", "subB")
@@ -531,7 +496,7 @@
 #' @noRd
 
 
-.brms_form_gam<-function(x, y, group, sigma = FALSE, nTimes, useGroup = TRUE){
+.brms_form_gam<-function(x, y, group, sigma = FALSE, nTimes=NULL, useGroup = TRUE, prior = NULL){
   if(useGroup){by <- paste0(", by = ", group)
   } else {by <- "," }
   if(nTimes < 11){
@@ -553,7 +518,7 @@
 #' @noRd
 
 
-.brms_form_int<-function(x, y, group, sigma = FALSE, useGroup = TRUE){
+.brms_form_int<-function(x, y, group, sigma = FALSE, nTimes=NULL, useGroup = TRUE, prior = NULL){
   if(useGroup){rhs <- paste0("0 + ", group)
     } else {rhs <- paste0("1") }
   if(sigma){
@@ -578,8 +543,52 @@
   formList
 }
 
+#' Helper function for brms formulas
+#' 
+#' @keywords internal
+#' @noRd
 
+.brms_form_frechet<-function(x, y, group, sigma = FALSE, nTimes=NULL, useGroup = TRUE, prior = NULL){ 
+  if(sigma){
+    form <- brms::nlf(stats::as.formula(paste0("sigma ~ subA * exp(-((",x,"-0)/subC)^(-subB))")))
+    pars <- c("subA", "subB", "subC")
+  }else{
+    form <-stats::as.formula(paste0(y," ~ A * exp(-((",x,"-0)/C)^(-B))"))
+    pars <- c("A", "B", "C")
+  }
+  return(list(form=form, pars=pars))
+}
 
+#' Helper function for brms formulas
+#' 
+#' @keywords internal
+#' @noRd
 
+.brms_form_weibull<-function(x, y, group, sigma = FALSE, nTimes=NULL, useGroup = TRUE, prior = NULL){ 
+  if(sigma){
+    form <- brms::nlf(stats::as.formula(paste0("sigma ~ subA * (1-exp(-(",x,"/subC)^subB))")))
+    pars <- c("subA", "subB", "subC")
+  }else{
+    form <-stats::as.formula(paste0(y," ~ A * (1-exp(-(",x,"/C)^B))"))
+    pars <- c("A", "B", "C")
+  }
+  return(list(form=form, pars=pars))
+}
+
+#' Helper function for brms formulas
+#' 
+#' @keywords internal
+#' @noRd
+
+.brms_form_gumbel<-function(x, y, group, sigma = FALSE, nTimes=NULL, useGroup = TRUE, prior = NULL){
+  if(sigma){
+    form <- brms::nlf(stats::as.formula(paste0("sigma ~ subA * exp(-exp( -(",x,"-subB)/subC))")))
+    pars <- c("subA", "subB", "subC")
+  }else{
+    form <-stats::as.formula(paste0(y," ~ A * exp(-exp( -(",x,"-B)/C))"))
+    pars <- c("A", "B", "C")
+  }
+  return(list(form=form, pars=pars))
+}
 
 

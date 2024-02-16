@@ -187,7 +187,7 @@ Bayesian modeling also allows for non-linear, probability driven hypothesis test
 In a Bayesian context we flip "random" and "fixed" elements.
 
 |             | Fixed                                   | Random                                  | Interpretation                                                                                                                                                             |
-|------------|------------|------------|--------------------------------------|
+|--------------|--------------|--------------|-------------------------------|
 | Frequentist | [True Effect]{style="color:goldenrod;"} | [Data]{style="color:purple;"}           | If the [True Effect is 0]{style="color:goldenrod;"} then there is an $\alpha\cdot100$% chance of [estimating an effect]{style="color:purple;"} of this size or more.       |
 | Bayesian    | [Data]{style="color:purple;"}           | [True Effect]{style="color:goldenrod;"} | Given the [estimated effect from our data]{style="color:purple;"} there is a P probability of the [True Effect]{style="color:goldenrod;"} being a difference of at least X |
 
@@ -211,6 +211,21 @@ simdf<-growthSim("gompertz", n=20, t=25, params = list("A"=c(200,160), "B"=c(13,
 g<-ggplot(simdf,aes(time, y, group=interaction(group,id)))+
   geom_line(aes(color=group))+labs(title="Gompertz")+theme_minimal()+theme(legend.position="none")
 
+simdf<-growthSim("weibull", n=20, t=25,
+params = list("A"=c(100,100), "B"=c(1, 0.75), "C"=c(2, 3)) )
+w <-ggplot(simdf,aes(time, y, group=interaction(group,id)))+
+ geom_line(aes(color=group))+labs(title="weibull")+theme(legend.position="none")
+ 
+simdf<-growthSim("frechet", n=20, t=25,
+params = list("A"=c(100,110), "B"=c(2, 1.5), "C"=c(5, 2)) )
+f <- ggplot(simdf,aes(time, y, group=interaction(group,id)))+
+ geom_line(aes(color=group))+labs(title="frechet")+theme(legend.position="none")
+ 
+simdf<-growthSim("gumbel", n=20, t=25,
+list("A"=c(120,140), "B"=c(6, 5), "C"=c(4, 3)) )
+gb <- ggplot(simdf,aes(time, y, group=interaction(group,id)))+
+ geom_line(aes(color=group))+labs(title="gumbel")+theme(legend.position="none")
+
 simdf<-growthSim("monomolecular", n=20, t=25, params = list("A"=c(200,160), "B"=c(0.08, 0.1)))
 m<-ggplot(simdf,aes(time, y, group=interaction(group,id)))+
   geom_line(aes(color=group))+labs(title="Monomolecular")+theme_minimal()+theme(legend.position="none")
@@ -230,6 +245,18 @@ pl<-ggplot(simdf,aes(time, y, group=interaction(group,id)))+ geom_line(aes(color
 patch6<-(l+g+m)/(e+ln+pl)
 patch6
 ```
+
+## Supported Growth Models {.smaller}
+
+There are an additional 3 sigmoidal models based on the Extreme Value Distribution. Those are Weibull, Frechet, and Gumbel. The authors generally prefer Gompertz to these options but for your data it is possible that these could be a better fit.
+
+```{r}
+#| echo: false
+#| eval: true
+patch3<-(w+f+gb)
+patch3
+```
+
 
 ## Supported Growth Models 2 {.smaller}
 

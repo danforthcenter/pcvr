@@ -3,7 +3,7 @@
 #' @description growthSim can be used to help pick reasonable parameters for common
 #'  growth models to use in prior distributions or to simulate data for example models/plots.
 #' 
-#' @param model One of "logistic", "gompertz", "monomolecular", "exponential",
+#' @param model One of "logistic", "gompertz", "weibull", "frechet", "gumbel", "monomolecular", "exponential",
 #' "linear", "power law", "double logistic", or "double gompertz". Alternatively this can be 
 #' a pseudo formula to generate data from a segmented growth curve by specifying "model1 + model2",
 #' see examples and \code{\link{growthSS}}. Decay can be specified by including "decay" as part of the model
@@ -39,6 +39,21 @@
 #' params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(0.2, 0.25)))
 #' ggplot(simdf,aes(time, y, group=interaction(group,id)))+
 #'  geom_line(aes(color=group))+labs(title="Gompertz")
+#'  
+#' simdf<-growthSim("weibull", n=20, t=25,
+#' params = list("A"=c(100,100), "B"=c(1, 0.75), "C"=c(2, 3)) )
+#' ggplot(simdf,aes(time, y, group=interaction(group,id)))+
+#'  geom_line(aes(color=group))+labs(title="weibull")
+#'  
+#' simdf<-growthSim("frechet", n=20, t=25,
+#' params = list("A"=c(100,110), "B"=c(2, 1.5), "C"=c(5, 2)) )
+#' ggplot(simdf,aes(time, y, group=interaction(group,id)))+
+#'  geom_line(aes(color=group))+labs(title="frechet")
+#'  
+#' simdf<-growthSim("gumbel", n=20, t=25,
+#' list("A"=c(120,140), "B"=c(6, 5), "C"=c(4, 3)) )
+#' ggplot(simdf,aes(time, y, group=interaction(group,id)))+
+#'  geom_line(aes(color=group))+labs(title="gumbel")
 #'  
 #' simdf<-growthSim("double logistic", n=20, t=70,
 #' params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5),
@@ -98,6 +113,7 @@
 #' 
 #' ## End(Not run)
 #' 
+#' 
 #' @details 
 #'     The \code{params} argument requires some understanding of how each growth model is parameterized.
 #'     Examples of each are below should help, as will the examples.
@@ -106,6 +122,14 @@
 #'     Where A is the asymptote, B is the inflection point, C is the growth rate. 
 #'     \item \bold{Gompertz}: `A * exp(-B * exp(-C*x))` 
 #'     Where A is the asymptote, B is the inflection point, C is the growth rate. 
+#'     \item \bold{Weibull}: `A * (1-exp(-(x/C)^B))`
+#'     Where A is the asymptote, B is the weibull shape parameter, C is the weibull scale parameter. 
+#'     \item \bold{Frechet}: `A * exp(-((x-0)/C)^(-B))`
+#'     Where A is the asymptote, B is the frechet shape parameter, C is the frechet scale parameter. 
+#'     Note that the location parameter (conventionally m) is 0 in these models for simplicity but is still
+#'     included in the formula.
+#'     \item \bold{Gumbel}: `A * exp(-exp(-(x-B)/C))`
+#'     Where A is the asymptote, B is the inflection point (location), C is the growth rate (scale). 
 #'     \item \bold{Double Logistic}: `A / (1+exp((B-x)/C)) + ((A2-A) /(1+exp((B2-x)/C2)))`
 #'     Where A is the asymptote, B is the inflection point, C is the growth rate,
 #'     A2 is the second asymptote, B2 is the second inflection point, and C2 is the second 
@@ -131,7 +155,8 @@
 #' 
 #' 
 
-growthSim<-function(model=c("logistic", "gompertz", "double logistic", "double gompertz", "monomolecular", "exponential", "linear", "power law"), n=20, t=25, params=list(), noise=NULL, D=0){
+growthSim<-function(model=c("logistic", "gompertz", "double logistic", "double gompertz",
+                            "monomolecular", "exponential", "linear", "power law", "frechet", "weibull", "gumbel"), n=20, t=25, params=list(), noise=NULL, D=0){
   
   if(length(model)>1){stop("Select one model to use")}
   if(is.null(noise)){noise = lapply(params, function(i) mean(i)/10); wasNULL = TRUE} else{wasNULL=FALSE}
@@ -259,7 +284,7 @@ growthSim<-function(model=c("logistic", "gompertz", "double logistic", "double g
 .singleGrowthSim<- function(model, n=20, t=25, params=list(), noise=NULL, D){
   
   models<-c("logistic", "gompertz", "double logistic", "double gompertz",
-            "monomolecular", "exponential", "linear", "power law")
+            "monomolecular", "exponential", "linear", "power law", "frechet", "weibull", "gumbel")
   
   if(grepl("decay", model)){
     decay=TRUE
@@ -286,6 +311,12 @@ growthSim<-function(model=c("logistic", "gompertz", "double logistic", "double g
     gsi<-gsi_linear
   } else if (matched_model=="power law"){
     gsi<-gsi_powerlaw
+  } else if (matched_model=="frechet"){
+    gsi<-gsi_frechet
+  } else if (matched_model=="weibull"){
+    gsi<-gsi_weibull
+  } else if (matched_model=="gumbel"){
+    gsi<-gsi_gumbel
   }
   
   if(decay){
@@ -358,4 +389,26 @@ gsi_powerlaw <- function(x,pars, noise){
   b_r <- pars[["B"]]+rnorm(1,mean=0,sd=noise[["B"]])
   return(a_r * x^(b_r))
 }
+gsi_frechet <- function(x, pars, noise){
+  a_r <- pars[["A"]]+rnorm(1,mean = 0,sd=noise[["A"]])
+  b_r <- max(c(0, pars[["B"]]+rnorm(1,mean=0,sd=noise[["B"]])))
+  c_r <- max(c(0, pars[["C"]]+rnorm(1,mean=0,sd=noise[["C"]])))
+  # holding location to 0, b is shape parameter, c is scale (growth rate)
+  return( a_r * exp(-((x-0)/c_r)^(-b_r))  )
+}
+gsi_gumbel <- function(x,pars, noise){
+  a_r <- pars[["A"]]+rnorm(1,mean = 0,sd=noise[["A"]])
+  b_r <- pars[["B"]]+rnorm(1,mean=0,sd=noise[["B"]])
+  c_r <- pars[["C"]]+rnorm(1,mean=0,sd=noise[["C"]])
+  # b is location, c is scale (rate)
+  return(a_r * exp( -exp( -(x-b_r)/c_r  ) ))
+}
+gsi_weibull <- function(x,pars, noise){ 
+  a_r <- pars[["A"]]+rnorm(1,mean = 0,sd=noise[["A"]])
+  b_r <- pars[["B"]]+rnorm(1,mean=0,sd=noise[["B"]])
+  c_r <- pars[["C"]]+rnorm(1,mean=0,sd=noise[["C"]])
+  # c is scale, b is shape
+  return(a_r * (1-exp(-(x/c_r)^b_r)))
+}
+
 
