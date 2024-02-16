@@ -200,7 +200,7 @@
       } else{
         if(matched_sigma=="homo"){matched_sigma="int" # recode alternate names
         } else if(matched_sigma =="spline"){matched_sigma="gam"}
-        string_brmsSigmaFormFun <- paste0(".brms_form_", gsub(" ", "", matched_model))
+        string_brmsSigmaFormFun <- paste0(".brms_form_", gsub(" ", "", matched_sigma))
         brmsSigmaFormFun <- match.fun(string_brmsSigmaFormFun)
         formResSigma <- brmsSigmaFormFun(x,y, group, sigma = TRUE, nTimes=nTimes, useGroup=USEGROUP, prior=priors)
         sigmaForm <- formResSigma$form

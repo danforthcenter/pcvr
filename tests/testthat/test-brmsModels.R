@@ -627,6 +627,41 @@ if(file.exists("/home/josh/Desktop/") & interactive()){ # only run locally, don'
     
   })
   
+  # test_that("int + EVD brms int sub model pipeline", {
+  #   set.seed(123)
+  #   noise<-do.call(rbind, lapply(1:30, function(i){
+  #     chngpt <- rnorm(2, 18, 2)
+  #     rbind(data.frame(id = paste0("id_",i), time = 1:chngpt[1], group = "a", y = c(runif(chngpt[1]-1, 0, 20), rnorm(1,5,1))),
+  #           data.frame(id = paste0("id_",i), time = 1:chngpt[2], group = "b", y = c(runif(chngpt[2]-1, 0, 20), rnorm(1,5,1))) )
+  #   }))
+  #   signal<-growthSim("frechet", n=20, t=30,
+  #                     params = list("A"=c(100,90), "B"=c(5, 3), "C"=c(6, 4)) )
+  #   signal<-do.call(rbind, lapply(unique(paste0(signal$id, signal$group)), function(int){
+  #     noisesub<-noise[paste0(noise$id, noise$group)==int,]
+  #     signalSub <- signal[paste0(signal$id, signal$group) == int, ]
+  #     y_end <- noisesub[noisesub$time == max(noisesub$time), "y"]
+  #     signalSub$time <- signalSub$time + max(noisesub$time)
+  #     signalSub$y <- y_end + signalSub$y
+  #     signalSub
+  #   }))
+  #   simdf <- rbind(noise, signal)
+  #   simdf<-simdf[simdf$time<45, ]
+  #   
+  #   ss<-growthSS(model = "int+frechet", form=y~time|id/group, sigma = "homo",
+  #                start = list("int1" = 5, "changePoint1"=10 ,
+  #                             'frechet2A' = 100, 'frechet2B' = 3, "frechet2C" = 3),
+  #                df=simdf, type = "brms")
+  #   
+  #   expect_equal(ss$prior$nlpar, c("", "", "int1", "changePoint1", "frechet2A", "frechet2B", "frechet2C"))
+  #   
+  #   fit <- fitGrowth(ss, backend="cmdstanr", iter=1000, chains=1, cores=1)
+  #   expect_s3_class(fit, "brmsfit")
+  #   
+  #   plot <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
+  #   ggsave("/home/josh/Desktop/stargate/fahlgren_lab/labMeetings/intPlusEVD.png", plot, width=10, height=6, dpi=300, bg="#ffffff")
+  #   expect_s3_class(plot, "ggplot")
+  #   
+  # })
   
   
 }
