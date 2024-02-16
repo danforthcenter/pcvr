@@ -36,7 +36,8 @@ this would yield parameters "linear1A", "changePoint1" (or "fixedChangePoint1"),
  A "linear + gompertz" model would have
 "linear1A", "changePoint1", "gompertz2A",   "gompertz2B", and "gompertz2C" for parameters.
 Note that double sigmoid models are not supported as parts of segmented models and gams
- can currently only be included as the last part of a segmented model.
+ can currently only be included as the last part of a segmented model. When using a changepoint model
+ it may be worth using segments that are simpler to fit (gompertz instead of EVD options, for instance).
 Currently "homo" and "int" are treated the same and "spline" and "gam" are interchangeable.
 Time-to-event models can be specified using the "survival" keyword, see details for an explanation of the changes that entails.}
 
