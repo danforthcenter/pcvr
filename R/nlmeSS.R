@@ -128,60 +128,18 @@ if(is.character(sigma)){
   matched_sigma <- match.arg(sigma, sigmas)
   } else{ matched_sigma = sigma}
 
-if(matched_model=="double logistic"){
-  if(is.null(pars)){ pars = c("A", "B", "C", "A2", "B2", "C2") }
-  form_fun<-.nlme_form_dou_logistic
-} else if (matched_model=="double gompertz"){
-  if(is.null(pars)){ pars = c("A", "B", "C", "A2", "B2", "C2") }
-  form_fun<-.nlme_form_dou_gompertz
-} else if(matched_model=="logistic"){
-  if(is.null(pars)){ pars = c("A", "B", "C") }
-  form_fun<-.nlme_form_logistic
-} else if (matched_model=="gompertz"){
-  if(is.null(pars)){ pars = c("A", "B", "C") }
-  form_fun<-.nlme_form_gompertz
-} else if (matched_model=="weibull"){
-  if(is.null(pars)){ pars = c("A", "B", "C") }
-  form_fun<-.nlme_form_weibull
-} else if (matched_model=="gumbel"){
-  if(is.null(pars)){ pars = c("A", "B", "C") }
-  form_fun<-.nlme_form_gumbel
-} else if (matched_model=="frechet"){
-  if(is.null(pars)){ pars = c("A", "B", "C") }
-  form_fun<-.nlme_form_frechet
-} else if (matched_model=="monomolecular"){
-  if(is.null(pars)){ pars = c("A", "B") }
-  form_fun<-.nlme_form_monomolecular
-} else if (matched_model=="exponential"){
-  if(is.null(pars)){ pars = c("A", "B") }
-  form_fun<-.nlme_form_exponential
-} else if (matched_model=="linear"){
-  if(is.null(pars)){ pars = c("A") }
-  form_fun<-.nlme_form_linear
-} else if (matched_model=="power law"){
-  if(is.null(pars)){ pars = c("A", "B") }
-  form_fun<-.nlme_form_powerlaw
-} else if (matched_model=="gam"){
-  df$splines <- lmeSplines::smspline(as.formula(paste0("~ ", x)), data=df)
-  form_fun<-.nlme_form_gam
-  start <- 0
+string_formFun <- paste0(".nlme_form_", gsub(" ", "", matched_model))
+form_fun <- match.fun(string_formFun)
+if (matched_model=="gam"){ # gam takes some extra work
+  df$splines <- lmeSplines::smspline(as.formula(paste0("~ ", x)), data=df) # spline setup
+  start <- 0 # no starting values (no parameters)
   pars = df # there are no pars, this is just to pass df to pdIdent for the splines
-} else if (matched_model=="weibull"){
-  if(is.null(pars)){ pars = c("A", "B", "C") }
-  form_fun<-.nlme_form_weibull
-} else if (matched_model=="frechet"){
-  if(is.null(pars)){ pars = c("A", "B", "C") }
-  form_fun<-.nlme_form_frechet
-} else if (matched_model=="gumbel"){
-  if(is.null(pars)){ pars = c("A", "B", "C") }
-  form_fun<-.nlme_form_gumbel
-} 
+}
 growthForm_list = form_fun(x,y, group, individual, matched_sigma, pars)
-
 if(decay){ growthForm_list <- .nlme_Decay(growthForm_list) }
 
-
 #* `Make starting values`
+if(matched_model =="gam"){start<-0}
 if(is.null(start)){
   if(matched_model=="double logistic"){
     warning("Double Sigmoid models are not supported as self-starting models, you will need to add starting parameters. Note for these models type='brms' is recommended.")
@@ -189,20 +147,10 @@ if(is.null(start)){
   } else if (matched_model=="double gompertz"){
     warning("Double Sigmoid models are not supported as self-starting models, you will need to add starting parameters. Note for these models type='brms' is recommended.")
     startingValues<-NULL
-  } else if(matched_model=="logistic"){
-    startingValues <- .initLogistic(df, x, y) # see nlrqSS.R helper functions
-  } else if (matched_model=="gompertz"){
-    startingValues <- .initGompertz(df, x, y)
-  } else if (matched_model=="monomolecular"){
-    startingValues <- .initMonomolecular(df, x, y)
-  } else if (matched_model=="exponential"){
-    startingValues <- .initExponential(df,x,y)
-  } else if (matched_model=="linear"){
-    startingValues <- .initLinear(df,x,y)
-  } else if (matched_model=="power law"){
-    startingValues <- .initPowerLaw(df,x,y)
-  } else if(matched_model %in% c("weibull", "frechet", "gumbel")){
-    startingValues <- .initWeibull(df,x,y)
+  } else{
+    string_initFun <- paste0(".init", gsub(" ", "", matched_model))
+    initFunction <- match.fun(string_initFun)
+    startingValues <- initFunction(df, x, y)
   }
   startingValuesList <- unlist(lapply(names(startingValues), function(nm){
     val<-startingValues[nm]
@@ -222,10 +170,6 @@ out[["df"]]<-df
 out[["pcvrForm"]]<-form
 return(out)
 }
-
-
-
-
 
 
 
@@ -281,6 +225,7 @@ return(out)
   random_form <- A + B + C ~ 1
   #* `fixed effects formula`
   total_pars <- c("A", "B", "C")
+  if(is.null(pars)){pars <- total_pars}
   fixed_form <- lapply(total_pars, function(par){
     if(par %in% pars){
       stats::as.formula(paste0(par," ~ 0 + ", group))
@@ -301,12 +246,13 @@ return(out)
   return(formulas)
 }
 
-.nlme_form_dou_logistic<-function(x, y, group, individual, matched_sigma, pars){
+.nlme_form_doublelogistic<-function(x, y, group, individual, matched_sigma, pars){
   model_form <- as.formula(paste0(y," ~ A/(1+exp((B-",x,")/C)) + ((A2-A) /(1+exp((B2-",x,")/C2)))"))
   #* `random effects formula`
   random_form <- A + B + C + A2 + B2 + C2 ~ 1
   #* `fixed effects formula`
   total_pars <- c("A", "B", "C", "A2", "B2", "C2")
+  if(is.null(pars)){pars <- total_pars}
   fixed_form <- lapply(total_pars, function(par){
     if(par %in% pars){
       stats::as.formula(paste0(par," ~ 0 + ", group))
@@ -327,12 +273,13 @@ return(out)
   return(formulas)
 }
 
-.nlme_form_dou_gompertz<-function(x, y, group, individual, matched_sigma, pars){
+.nlme_form_doublegompertz<-function(x, y, group, individual, matched_sigma, pars){
     model_form <- as.formula(paste0(y," ~ A * exp(-B * exp(-C*",x,")) + (A2-A) * exp(-B2 * exp(-C2*(",x,"-B)))"))
     #* `random effects formula`
     random_form <- A + B + C + A2 + B2 + C2 ~ 1
     #* `fixed effects formula`
     total_pars <- c("A", "B", "C", "A2", "B2", "C2")
+    if(is.null(pars)){pars <- total_pars}
     fixed_form <- lapply(total_pars, function(par){
       if(par %in% pars){
         stats::as.formula(paste0(par," ~ 0 + ", group))
@@ -359,6 +306,7 @@ return(out)
   random_form <- A + B ~ 1
   #* `fixed effects formula`
   total_pars <- c("A", "B")
+  if(is.null(pars)){pars <- total_pars}
   fixed_form <- lapply(total_pars, function(par){
     if(par %in% pars){
       stats::as.formula(paste0(par," ~ 0 + ", group))
@@ -385,6 +333,7 @@ return(out)
   random_form <- A + B ~ 1
   #* `fixed effects formula`
   total_pars <- c("A", "B")
+  if(is.null(pars)){pars <- total_pars}
   fixed_form <- lapply(total_pars, function(par){
     if(par %in% pars){
       stats::as.formula(paste0(par," ~ 0 + ", group))
@@ -411,6 +360,7 @@ return(out)
   random_form <- A ~ 1
   #* `fixed effects formula`
   total_pars <- c("A")
+  if(is.null(pars)){pars <- total_pars}
   fixed_form <- lapply(total_pars, function(par){
     if(par %in% pars){
       stats::as.formula(paste0(par," ~ 0 + ", group))
@@ -437,6 +387,7 @@ return(out)
   random_form <- A + B ~ 1
   #* `fixed effects formula`
   total_pars <- c("A", "B")
+  if(is.null(pars)){pars <- total_pars}
   fixed_form <- lapply(total_pars, function(par){
     if(par %in% pars){
       stats::as.formula(paste0(par," ~ 0 + ", group))
@@ -490,6 +441,7 @@ return(out)
   random_form <- A + B + C ~ 1
   #* `fixed effects formula`
   total_pars <- c("A", "B", "C")
+  if(is.null(pars)){pars <- total_pars}
   fixed_form <- lapply(total_pars, function(par){
     if(par %in% pars){
       stats::as.formula(paste0(par," ~ 0 + ", group))
@@ -516,6 +468,7 @@ return(out)
   random_form <- A + B + C ~ 1
   #* `fixed effects formula`
   total_pars <- c("A", "B", "C")
+  if(is.null(pars)){pars <- total_pars}
   fixed_form <- lapply(total_pars, function(par){
     if(par %in% pars){
       stats::as.formula(paste0(par," ~ 0 + ", group))
@@ -543,6 +496,7 @@ return(out)
   random_form <- A + B + C ~ 1
   #* `fixed effects formula`
   total_pars <- c("A", "B", "C")
+  if(is.null(pars)){pars <- total_pars}
   fixed_form <- lapply(total_pars, function(par){
     if(par %in% pars){
       stats::as.formula(paste0(par," ~ 0 + ", group))
