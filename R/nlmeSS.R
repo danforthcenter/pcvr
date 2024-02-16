@@ -136,6 +136,8 @@ if (matched_model=="gam"){ # gam takes some extra work
   pars = df # there are no pars, this is just to pass df to pdIdent for the splines
 }
 growthForm_list = form_fun(x,y, group, individual, matched_sigma, pars)
+pars <- growthForm_list$pars
+growthForm_list <- growthForm_list[!grepl("pars", names(growthForm_list))]
 if(decay){ growthForm_list <- .nlme_Decay(growthForm_list) }
 
 #* `Make starting values`
@@ -199,6 +201,7 @@ return(out)
   random_form <- A + B + C ~ 1
   #* `fixed effects formula`
   total_pars <- c("A", "B", "C")
+  if(is.null(pars)){pars <- total_pars}
   fixed_form <- lapply(total_pars, function(par){
     if(par %in% pars){
       stats::as.formula(paste0(par," ~ 0 + ", group))
@@ -215,7 +218,7 @@ return(out)
   
   formulas <- list("model"=model_form, "random"=random_form,
                    "fixed"=fixed_form, "groups"=groups_form,
-                   "weights" = weights_form, "cor_form" = correlation_form)
+                   "weights" = weights_form, "cor_form" = correlation_form, 'pars' = pars)
   return(formulas)
 }
 
@@ -242,7 +245,7 @@ return(out)
   
   formulas <- list("model"=model_form, "random"=random_form,
                    "fixed"=fixed_form, "groups"=groups_form,
-                   "weights" = weights_form, "cor_form" = correlation_form)
+                   "weights" = weights_form, "cor_form" = correlation_form, 'pars' = pars)
   return(formulas)
 }
 
@@ -269,7 +272,7 @@ return(out)
   
   formulas <- list("model"=model_form, "random"=random_form,
                    "fixed"=fixed_form, "groups"=groups_form,
-                   "weights" = weights_form, "cor_form" = correlation_form)
+                   "weights" = weights_form, "cor_form" = correlation_form, 'pars' = pars)
   return(formulas)
 }
 
@@ -296,7 +299,7 @@ return(out)
     
     formulas <- list("model"=model_form, "random"=random_form,
                      "fixed"=fixed_form, "groups"=groups_form,
-                     "weights" = weights_form, "cor_form" = correlation_form)
+                     "weights" = weights_form, "cor_form" = correlation_form, 'pars' = pars)
     return(formulas)
 }
 
@@ -323,7 +326,7 @@ return(out)
   
   formulas <- list("model"=model_form, "random"=random_form,
                    "fixed"=fixed_form, "groups"=groups_form,
-                   "weights" = weights_form, "cor_form" = correlation_form)
+                   "weights" = weights_form, "cor_form" = correlation_form, 'pars' = pars)
   return(formulas)
 }
 
@@ -350,7 +353,7 @@ return(out)
   
   formulas <- list("model"=model_form, "random"=random_form,
                    "fixed"=fixed_form, "groups"=groups_form,
-                   "weights" = weights_form, "cor_form" = correlation_form)
+                   "weights" = weights_form, "cor_form" = correlation_form, 'pars' = pars)
   return(formulas)
 }
 
@@ -377,7 +380,7 @@ return(out)
   
   formulas <- list("model"=model_form, "random"=random_form,
                    "fixed"=fixed_form, "groups"=groups_form,
-                   "weights" = weights_form, "cor_form" = correlation_form)
+                   "weights" = weights_form, "cor_form" = correlation_form, 'pars' = pars)
   return(formulas)
 }
 
@@ -404,7 +407,7 @@ return(out)
   
   formulas <- list("model"=model_form, "random"=random_form,
                    "fixed"=fixed_form, "groups"=groups_form,
-                   "weights" = weights_form, "cor_form" = correlation_form)
+                   "weights" = weights_form, "cor_form" = correlation_form, 'pars' = pars)
   return(formulas)
 }
 
@@ -422,7 +425,7 @@ return(out)
   correlation_form <- nlme::corAR1(0.8, form = stats::as.formula(paste0("~ 1 |",group)))
   
   formulas <- list("model"=model_form, "random"=random_form,
-                   "weights" = weights_form, "cor_form" = correlation_form)
+                   "weights" = weights_form, "cor_form" = correlation_form, 'pars' = pars)
   return(formulas)
 }
 
@@ -458,7 +461,7 @@ return(out)
   
   formulas <- list("model"=model_form, "random"=random_form,
                    "fixed"=fixed_form, "groups"=groups_form,
-                   "weights" = weights_form, "cor_form" = correlation_form)
+                   "weights" = weights_form, "cor_form" = correlation_form, 'pars' = pars)
   return(formulas)
 }
 
@@ -485,7 +488,7 @@ return(out)
   
   formulas <- list("model"=model_form, "random"=random_form,
                    "fixed"=fixed_form, "groups"=groups_form,
-                   "weights" = weights_form, "cor_form" = correlation_form)
+                   "weights" = weights_form, "cor_form" = correlation_form, 'pars' = pars)
   return(formulas)
 }
 
@@ -513,7 +516,7 @@ return(out)
   
   formulas <- list("model"=model_form, "random"=random_form,
                    "fixed"=fixed_form, "groups"=groups_form,
-                   "weights" = weights_form, "cor_form" = correlation_form)
+                   "weights" = weights_form, "cor_form" = correlation_form, 'pars' = pars)
   return(formulas)
 }
 
