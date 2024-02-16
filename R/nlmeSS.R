@@ -77,7 +77,8 @@
 out<-list()
 models<-c("logistic", "gompertz", "monomolecular",
           "exponential", "linear", "power law",
-          "double logistic", "double gompertz", "gam")
+          "double logistic", "double gompertz", "gam", 
+          "frechet", "weibull", "gumbel")
 sigmas = c("none", "int", "power", "exp")
 #* check if sigma is class "varFunc", if it is then return it as is?
 
@@ -139,6 +140,15 @@ if(matched_model=="double logistic"){
 } else if (matched_model=="gompertz"){
   if(is.null(pars)){ pars = c("A", "B", "C") }
   form_fun<-.nlme_form_gompertz
+} else if (matched_model=="weibull"){
+  if(is.null(pars)){ pars = c("A", "B", "C") }
+  form_fun<-.nlme_form_weibull
+} else if (matched_model=="gumbel"){
+  if(is.null(pars)){ pars = c("A", "B", "C") }
+  form_fun<-.nlme_form_gumbel
+} else if (matched_model=="frechet"){
+  if(is.null(pars)){ pars = c("A", "B", "C") }
+  form_fun<-.nlme_form_frechet
 } else if (matched_model=="monomolecular"){
   if(is.null(pars)){ pars = c("A", "B") }
   form_fun<-.nlme_form_monomolecular

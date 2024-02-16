@@ -168,7 +168,40 @@ rather this should be informed by an understanding of the plants you
     \item \bold{Power Law}: \code{list('A' = 13, 'B' = 2)}
 }
 
-
+See details below about parameterization for each model option.
+\itemize{
+ \item \bold{Logistic}: `A / (1 + exp( (B-x)/C) )`
+ Where A is the asymptote, B is the inflection point, C is the growth rate. 
+ \item \bold{Gompertz}: `A * exp(-B * exp(-C*x))` 
+ Where A is the asymptote, B is the inflection point, C is the growth rate. 
+ \item \bold{Weibull}: `A * (1-exp(-(x/C)^B))`
+ Where A is the asymptote, B is the weibull shape parameter, C is the weibull scale parameter. 
+ \item \bold{Frechet}: `A * exp(-((x-0)/C)^(-B))`
+ Where A is the asymptote, B is the frechet shape parameter, C is the frechet scale parameter. 
+ Note that the location parameter (conventionally m) is 0 in these models for simplicity but is still
+ included in the formula.
+ \item \bold{Gumbel}: `A * exp(-exp(-(x-B)/C))`
+ Where A is the asymptote, B is the inflection point (location), C is the growth rate (scale). 
+ \item \bold{Double Logistic}: `A / (1+exp((B-x)/C)) + ((A2-A) /(1+exp((B2-x)/C2)))`
+ Where A is the asymptote, B is the inflection point, C is the growth rate,
+ A2 is the second asymptote, B2 is the second inflection point, and C2 is the second 
+ growth rate.
+ \item \bold{Double Gompertz}: `A * exp(-B * exp(-C*x)) + ((A2-A) * exp(-B2 * exp(-C2*(x-B))))`
+ Where A is the asymptote, B is the inflection point, C is the growth rate,
+ A2 is the second asymptote, B2 is the second inflection point, and C2 is the second 
+ growth rate.
+ \item \bold{Monomolecular}: `A-A * exp(-B * x)`
+ Where A is the asymptote and B is the growth rate. 
+ \item \bold{Exponential}: `A * exp(B * x)` 
+ Where A is the scale parameter and B is the growth rate. 
+ \item \bold{Linear}: `A * x` 
+ Where A is the growth rate.
+ \item \bold{Power Law}: `A * x^(B)` 
+ Where A is the scale parameter and B is the growth rate.
+ }
+ Note that for these distributions parameters do not exist in a vacuum.
+ Changing one will make the others look different in the resulting data.
+ The \code{growthSim} function can be helpful in familiarizing further with these distributions.
 
 Using the \code{brms} backend the \code{sigma} argument optionally specifies a sub model to account for heteroskedasticity.
 Any combination of models (except for decay models) can be specified in the \code{sigma} term.

@@ -54,6 +54,14 @@ The \code{params} argument requires some understanding of how each growth model 
     Where A is the asymptote, B is the inflection point, C is the growth rate. 
     \item \bold{Gompertz}: `A * exp(-B * exp(-C*x))` 
     Where A is the asymptote, B is the inflection point, C is the growth rate. 
+    \item \bold{Weibull}: `A * (1-exp(-(x/C)^B))`
+    Where A is the asymptote, B is the weibull shape parameter, C is the weibull scale parameter. 
+    \item \bold{Frechet}: `A * exp(-((x-0)/C)^(-B))`
+    Where A is the asymptote, B is the frechet shape parameter, C is the frechet scale parameter. 
+    Note that the location parameter (conventionally m) is 0 in these models for simplicity but is still
+    included in the formula.
+    \item \bold{Gumbel}: `A * exp(-exp(-(x-B)/C))`
+    Where A is the asymptote, B is the inflection point (location), C is the growth rate (scale). 
     \item \bold{Double Logistic}: `A / (1+exp((B-x)/C)) + ((A2-A) /(1+exp((B2-x)/C2)))`
     Where A is the asymptote, B is the inflection point, C is the growth rate,
     A2 is the second asymptote, B2 is the second inflection point, and C2 is the second 
@@ -161,6 +169,7 @@ ggplot(simdf,aes(time, y, group=interaction(group,id)))+
 geom_line(aes(color=group))+ labs(title="linear + linear + logistic")
 
 ## End(Not run)
+
 
 }
 \keyword{curve,}
