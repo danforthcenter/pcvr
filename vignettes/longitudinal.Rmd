@@ -205,7 +205,7 @@ At a high level the relevant functions in `pcvr` are `growthSS`, `fitGrowth`, `g
 
 #### `growthSS(..., form, ...)`
 
-The `form` argument of `growthSS` needs to specify the outcome variable, the time variable, an identifier for individuals, and the grouping structure. These are passed as a formula object, using similar syntax to `lme4` and `brms`, such as `outcome ~ time|individual_id/group_id`. Verbally this would be read as "outcome modeled by time accounting for correlation between individual_id's with fixed effects specified per each group_id". Note that this formula will not have to change for different growth models, this is only to specify the structure of your data. This simplification requires each of these parts of the formula must be a single column in your dataframe.
+The `form` argument of `growthSS` needs to specify the outcome variable, the time variable, an identifier for individuals, and the grouping structure. These are passed as a formula object, using similar syntax to `lme4` and `brms`, such as `outcome ~ time|individual_id/group_id`. Verbally this would be read as "outcome modeled by time accounting for correlation between individual_id's with fixed effects specified per each group_id". Note that this formula will not have to change for different growth models, this is only to specify the structure of your data. This simplification requires each of these parts of the formula must be a single column in your dataframe. Note that for each group in your data a set of parameters will be estimated. If you have lots of groups in your data then it may make sense to fit models to only a few groups at a time. If you do that then the models can still be compared by extracting the MCMC draws, combining them into a dataframe, then using `brms::hypothesis` per normal.
 
 For model backends that do not account for autocorrelation the individual will not be used and can be omitted leaving `outcome ~ time|group_id`, but there is no harm in including the `individual_id` component.
 
@@ -780,6 +780,10 @@ plot <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
 
 ![](intPluslogistic_intPlusGAMSubModel.png)
 
+## Bayesian Analysis and Reporting Guidelines
+
+Bayesian modeling offers a lot of flexibility but it is in less common use than frequentist statistics so it can be more difficult to explain to collaborators or reviewers. Additionally, guaranteeing reproducibility and transparency requires some different steps. To help with these (and other) potential issues John Kruschke wrote a paper on the [Bayesian Analysis and Reporting Guidelines](https://www.nature.com/articles/s41562-021-01177-7) (BARG).
+All the information required to fully explain a Bayesian model is returned by `Stan` and by `brms`, but for ease of use pcvr has a `barg` function that takes the fit model object and the `growthSS` output to return several components of the BARG useful for checking one or more models. See the documentation (`?barg`) for more details.
 
 ## Comparing Models Over Time
 

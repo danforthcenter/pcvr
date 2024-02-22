@@ -187,9 +187,15 @@ Bayesian modeling also allows for non-linear, probability driven hypothesis test
 In a Bayesian context we flip "random" and "fixed" elements.
 
 |             | Fixed                                   | Random                                  | Interpretation                                                                                                                                                             |
-|--------------|--------------|--------------|-------------------------------|
+|---------------|---------------|---------------|---------------------------|
 | Frequentist | [True Effect]{style="color:goldenrod;"} | [Data]{style="color:purple;"}           | If the [True Effect is 0]{style="color:goldenrod;"} then there is an $\alpha\cdot100$% chance of [estimating an effect]{style="color:purple;"} of this size or more.       |
 | Bayesian    | [Data]{style="color:purple;"}           | [True Effect]{style="color:goldenrod;"} | Given the [estimated effect from our data]{style="color:purple;"} there is a P probability of the [True Effect]{style="color:goldenrod;"} being a difference of at least X |
+
+## Why Bayesian Modeling? 3 {.smaller}
+
+Before moving on we should note that each group in your data will have parameters fit to it. If you have many groups then fitting models to only a few groups at a time is likely to make your life easier. Larger models will fit, but they can take a very long time.
+
+It's generally been easier for the authors to fit 50 models each with 4 groups in them then compare across models than to fit 1 model with 200 groups in it.
 
 ## Supported Growth Models {.smaller}
 
@@ -256,7 +262,6 @@ There are an additional 3 sigmoidal models based on the Extreme Value Distributi
 patch3<-(w+f+gb)
 patch3
 ```
-
 
 ## Supported Growth Models 2 {.smaller}
 
@@ -983,6 +988,12 @@ Here the input data is standard phenotype data with a cutoff to represent the ev
 ## Example survival model {.smaller}
 
 ![](exSurvivalModel.png)
+
+## Evaluating your models {.smaller}
+
+John Kruschke wrote a paper on the [Bayesian Analysis and Reporting Guidelines](https://www.nature.com/articles/s41562-021-01177-7) (BARG) to aid in transparency and reproducibility when using Bayesian methods.
+
+In pcvr some of what Kruschke recommends can be accessed from a model/list of models using the `barg` function, see `?barg` for details on what that entails.
 
 ## Using `brms` directly
 
