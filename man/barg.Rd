@@ -39,17 +39,17 @@ The purpose of this function is to summarize goodness of fit metrics from one or
     One of the benefits to using lots of chains and/or longer chains is that you will get more complete information
     and that benefit will be shown by a larger ESS. This is separated into "bulk" and "tail" to represent the
     middle and tails of the posterior distribution, since those can sometimes have very different sampling behavior.
-    A summary and the total values are returned.
+    A summary and the total values are returned, with the summary being useful if several models are included in a list for fit argument
     
     \item \bold{Rhat}: Rhat is a measure of "chain mixture". It compares the between vs within chain values to assess
     how well the chains mixed. If chains did not mix well then Rhat will be greater than 1, with 1.05 being a broadly
     agreed upon cutoff to signify a problem. Running longer chains should result in lower Rhat values. The default in brms
     is to run 4 chains, partially to ensure that there is a good chance to check that the chains mixed well via Rhat.
-    A summary and the total values are returned.
+    A summary and the total values are returned, with the summary being useful if several models are included in a list for fit argument
     
     \item \bold{NEFF}: NEFF is the NEFF ratio (Effective Sample Size over Total MCMC Sample Size). Values greater than 0.5 
     are generally considered good, but there is a consensus that lower can be fine down to about 0.1.
-    A summary and the total values are returned.
+    A summary and the total values are returned, with the summary being useful if several models are included in a list for fit argument
     
     \item \bold{priorPredictive}: A plot of data simulated from the prior using \link{plotPrior}. This should generate
     data that is biologically plausible for your situation, but it will probably be much more variable than your data.
@@ -77,6 +77,10 @@ ss<-growthSS(model = "logistic", form=y~time|id/group, sigma="spline",
  fit_test <- fitGrowth(ss, iter = 600, cores = 2, chains = 2, backend = "cmdstanr",
                        control = list(adapt_delta = 0.999, max_treedepth = 20))
   barg(fit_test, ss)
+  #fit_stable <- fit
+  fit_stable2 <- fit_test
+  fit <- list(fit_stable, fit_stable2)
+  x <- barg(list(fit_stable, fit_stable2), ss)
 }
 
 ## End(Not run:)
