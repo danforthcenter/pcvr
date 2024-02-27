@@ -147,7 +147,10 @@
 #' 
 #' Using the \code{brms} backend the \code{sigma} argument optionally specifies a sub model to account for heteroskedasticity.
 #' Any combination of models (except for decay models) can be specified in the \code{sigma} term.
-#' If you need variance to raise and lower then a gam/spline is the most appropriate option.
+#' If you need variance to raise and lower then a gam/spline is the most appropriate option. 
+#' Using the \code{brms} backend a model with lots of parameters may be difficult to estimate if there are lots of groups.
+#' If you have very many levels of your "group" variable in a complex model then consider fitting models to subsets
+#' of the "group" variable and using \link{combineDraws} to make a data.frame for hypothesis testing.
 #' 
 #' 
 #' There are also three supported submodel options for \code{nlme} models, but a \code{varFunc} object can also be supplied,
