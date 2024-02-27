@@ -83,6 +83,11 @@ test<-test[sample(rownames(test), nrow(test), replace=FALSE),]
 test$meta1<-rep(LETTERS[1:3], length.out = nrow(test))
 test$meta2<-rep(LETTERS[4:5], length.out = nrow(test))
 
+df=test; cols="V"; reorder="Mu"; include = c("meta1", "meta2"); mat =FALSE; plot=FALSE; parallel = 1; trait="trait"; id="image" 
+value="value"; raiseError=TRUE
+
+
+
 x<-pcv.emd(df=test, cols="V", reorder="Mu",
    include = c("meta1", "meta2"), mat =FALSE,
    plot=FALSE, parallel = 1)

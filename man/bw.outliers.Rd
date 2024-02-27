@@ -18,7 +18,8 @@ bw.outliers(
   valueCol = "value",
   labelCol = "label",
   idCol = NULL,
-  ncp = NULL
+  ncp = NULL,
+  separate = NULL
 )
 }
 \arguments{
@@ -66,6 +67,10 @@ Defaults to plotGroup.}
 
 \item{ncp}{Optionally specify the number of principle components to be used for MV data outlier detection with cooks distance.
 If left NULL (the default) then 3 will be used.}
+
+\item{separate}{Optionally separate the data by some variable to speed up the modeling step. If you have a design variable with 
+very many levels then it may be helpful to separate by that variable. Note this will subset the data for each model so it will change
+the outlier removal (generally to be more conservative).}
 }
 \value{
 The input dataframe with outliers removed and optionally a plot (if a plot is returned then output is a list).
@@ -90,9 +95,13 @@ sv$fertilizer = ifelse(sv$fertilizer == "A", "100",
 sv<-bw.time(sv, plantingDelay = 0, phenotype="area_pixels", cutoff=10, timeCol="timestamp",
  group=c("barcode", "rotation"), plot=FALSE)
 
-sv<-bw.outliers(df = sv, phenotype="area_pixels", naTo0 =FALSE, 
+res1<-bw.outliers(df = sv, phenotype="area_pixels", naTo0 =FALSE, 
  group = c("DAS", "genotype", "fertilizer"),outlierMethod = "cooks",
  plotgroup=c("barcode","rotation"), plot=TRUE)
+ 
+res2<-bw.outliers(df = sv, phenotype="area_pixels", naTo0 =FALSE, 
+ group = c("DAS", "genotype", "fertilizer"),outlierMethod = "cooks",
+ plotgroup=c("barcode","rotation"), plot=TRUE, separate="genotype")
 
 if(FALSE){
 svl<-read.pcv(
