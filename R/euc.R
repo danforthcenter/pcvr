@@ -110,7 +110,7 @@ pcv.euc<-function(df, cols=NULL, reorder=NULL, include=reorder, mat=FALSE, plot 
     df$INNER_ID_EUC<-interaction(df[,id], drop=TRUE)
     if(mat){ # make dist matrix
       mat_obj <- matrix(0, nrow=length(unique(df$INNER_ID_EUC)), ncol = length(unique(df$INNER_ID_EUC)))
-      out_data<- unlist(lapply(unique(df$INNER_ID_EUC), function(i){parallel::mclapply(unique(df$INNER_ID_EUC), function(j){
+      values<- unlist(lapply(unique(df$INNER_ID_EUC), function(i){parallel::mclapply(unique(df$INNER_ID_EUC), function(j){
           if(i==j){0}else{
             euc1d(as.numeric(df[df$INNER_ID_EUC==as.character(i), value]),
                   as.numeric(df[df$INNER_ID_EUC==as.character(j), value])) }
@@ -122,10 +122,12 @@ pcv.euc<-function(df, cols=NULL, reorder=NULL, include=reorder, mat=FALSE, plot 
       out_data <- mat_obj
       
     }else{ # make long data
-      out_data<-do.call(rbind, lapply(unique(df$INNER_ID_EUC), function(i){
-        do.call(rbind, parallel::mclapply(unique(df$INNER_ID_EUC), function(j){
+      out_data<-do.call(rbind, lapply(1:length(unique(df$INNER_ID_EUC)), function(i_n){
+        do.call(rbind, parallel::mclapply(1:length(unique(df$INNER_ID_EUC)), function(j_n){
+          i <- unique(df$INNER_ID_EUC)[i_n]
+          j <- unique(df$INNER_ID_EUC)[j_n]
           eucOut<- NULL
-          if(i==j){eucOut=0}else if(i<j){eucOut=euc1d(as.numeric(df[df$INNER_ID_EUC==as.character(i), value]),
+          if(i_n==j_n){eucOut=0}else if(i_n<j_n){eucOut=euc1d(as.numeric(df[df$INNER_ID_EUC==as.character(i), value]),
                                               as.numeric(df[df$INNER_ID_EUC==as.character(j), value]) )}
           if(!is.null(eucOut)){
             if(!is.null(include)){
@@ -157,7 +159,7 @@ pcv.euc<-function(df, cols=NULL, reorder=NULL, include=reorder, mat=FALSE, plot 
     }
     if(mat){# make dist matrix
       mat_obj <- matrix(0, nrow=nrow(df), ncol = nrow(df) )
-      out_data<-unlist(lapply(1:nrow(df), function(i){parallel::mclapply(1:nrow(df), function(j){
+      values<-unlist(lapply(1:nrow(df), function(i){parallel::mclapply(1:nrow(df), function(j){
           if(i==j){0}else{euc1d(as.numeric(df[i, cols]), as.numeric(df[j, cols]))}
         }, mc.cores = parallel)}))
       mat_obj[lower.tri(mat_obj)] <- values

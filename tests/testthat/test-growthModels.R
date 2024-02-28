@@ -233,8 +233,9 @@ test_that("Test survreg", {
                   params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))
   ss <- growthSS(model = model, form = form, df = df, type="survreg")
   fit <- fitGrowth(ss)
+  expect_s3_class(fit, "survreg")
   p <- growthPlot(fit, form = ss$pcvrForm, df = ss$df)
-  
+  expect_s3_class(p, "ggplot")
 })
 
 

@@ -54,11 +54,6 @@
 #' test$meta1<-rep(LETTERS[1:3], length.out = nrow(test))
 #' test$meta2<-rep(LETTERS[4:5], length.out = nrow(test))
 #' 
-#' df=test; cols="V"; reorder="Mu"; include = c("meta1", "meta2"); mat =FALSE; plot=FALSE; parallel = 1; trait="trait"; id="image" 
-#' value="value"; raiseError=TRUE
-#' 
-#' 
-#' 
 #' x<-pcv.emd(df=test, cols="V", reorder="Mu",
 #'    include = c("meta1", "meta2"), mat =FALSE,
 #'    plot=FALSE, parallel = 1)
@@ -141,10 +136,12 @@ pcv.emd<-function(df, cols=NULL, reorder=NULL, include=reorder, mat=FALSE, plot 
       rownames(mat_obj) <- colnames(mat_obj) <- unique(df$INNER_ID_EMD)
       out_data <- mat_obj
     }else{ # make long data
-      out_data<-do.call(rbind, lapply(unique(df$INNER_ID_EMD), function(i){
-        do.call(rbind, parallel::mclapply(unique(df$INNER_ID_EMD), function(j){
+      out_data<-do.call(rbind, lapply(1:length(unique(df$INNER_ID_EMD)), function(i_n){
+        do.call(rbind, parallel::mclapply(1:length(unique(df$INNER_ID_EMD)), function(j_n){
+          i <- unique(df$INNER_ID_EMD)[i_n]
+          j <- unique(df$INNER_ID_EMD)[j_n]
           emdOut <- NULL
-          if(i==j){emdOut=0}else if(i<j){emdOut=emd1d(as.numeric(df[df$INNER_ID_EMD==as.character(i), value]),
+          if(i_n==j_n){emdOut=0}else if(i_n<j_n){emdOut=emd1d(as.numeric(df[df$INNER_ID_EMD==as.character(i), value]),
                                               as.numeric(df[df$INNER_ID_EMD==as.character(j), value]) )}
           if(!is.null(emdOut)){
             if(!is.null(include)){

@@ -557,7 +557,7 @@ return(rope_res)
         ggplot2::geom_histogram(data=data.frame("X"=rdf[rdf$X > rope_range[1] & rdf$X < rope_range[2] &
                                                           rdf$X > res$summary$HDI_rope_low & rdf$X < res$summary$HDI_rope_high,]),
                                 bins=100,fill="gray30",color="gray30")+
-        ggplot2::geom_segment(ggplot2::aes(x=rope_range[1],xend=rope_range[2],y=0,yend=0),linewidth=2,color="gray70")+
+        ggplot2::annotate("segment", x=rope_range[1],xend=rope_range[2],y=0,yend=0,linewidth=2,color="gray70")+
         ggplot2::geom_vline(ggplot2::aes(xintercept=res$summary$HDI_rope_low),linewidth=0.7)+
         ggplot2::geom_vline(ggplot2::aes(xintercept=res$summary$HDE_rope),linetype="dashed",linewidth=0.7)+
         ggplot2::geom_vline(ggplot2::aes(xintercept=res$summary$HDI_rope_high),linewidth=0.7)+
