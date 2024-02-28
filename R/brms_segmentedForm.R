@@ -4,6 +4,7 @@
 #' @param x The x variable from the pcvrForm argument in \code{\link{growthSS}}
 #' @param y The y variable from the pcvrForm argument in \code{\link{growthSS}}
 #' @param group The grouping variable from the pcvrForm argument in \code{\link{growthSS}}
+#' @param dpar Logical, is this a distributional parameter formula (TRUE) or part of the main growth formula (FALSE)?
 #' @param nTimes a Number of times that are present in the data, only used for making splines have a workable number of knots.
 #' @param useGroup logical, should groups be used?
 #' @param priors A list describing priors in the style of \code{\link{brmSS}}, \code{\link{growthSS}}, and \code{\link{growthSim}}.
@@ -39,15 +40,20 @@
 #' @keywords internal
 #' @noRd
 
-.brmsChangePointHelper <- function(model, x, y, group, sigma=FALSE, nTimes=25, useGroup, priors){
+.brmsChangePointHelper <- function(model, x, y, group, dpar=FALSE, nTimes=25, useGroup, priors){
 
   component_models <- trimws(strsplit(model, "\\+")[[1]])
-  models<-c("logistic", "gompertz", "monomolecular", "exponential", "linear", "power law", "gam", "spline", "int", "homo", "weibull", "frechet", "gumbel")
+  models<-c("logistic", "gompertz", "monomolecular", "exponential", "linear", "power law", "gam",
+            "spline", "int", "homo", "weibull", "frechet", "gumbel")
   if(is.null(priors)){priors <- stats::setNames(lapply(1:length(component_models), identity ),
                                                 paste0("changePoint",1:length(component_models))) }
   
-  if(sigma){priors <- priors[grepl("sub", names(priors))]
-    } else{priors <- priors[!grepl("sub", names(priors))] }
+  if(dpar){prefix <- y} else{ prefix <- NULL}
+  
+  mainGrowthModelPriorStrings <- paste(paste0("^",gsub(" ","",c(models, "changePoint", "fixedChangePoint"))), collapse="|")
+  if(dpar){priors <- priors[grepl(prefix, names(priors))]
+  } else{priors <- priors[ grepl(mainGrowthModelPriorStrings, names(priors)) ] }
+  # else should be any prior whose name starts with a model name, with changePoint or with fixedChangePoint.
   
   formulae <- lapply(1:length(component_models), function(i){
     iter_model <- component_models[i]
@@ -57,39 +63,15 @@
       iter_model <- trimws(gsub("decay", "", iter_model))
     } else{ decay=FALSE }
     
-    matched_iter_model <- match.arg(iter_model, models) # note: rewrite this to use function matching, this is getting out of hand
-    if(matched_iter_model=="logistic"){
-      iter <- .logisticChngptForm(x, i, sigma, priors)
-    } else if (matched_iter_model=="gompertz"){
-      iter <- .gompertzChngptForm(x, i, sigma, priors)
-    } else if (matched_iter_model=="weibull"){
-      iter <- .weibullChngptForm(x, i, sigma, priors)
-    } else if (matched_iter_model=="frechet"){
-      iter <- .frechetChngptForm(x, i, sigma, priors)
-    } else if (matched_iter_model=="gumbel"){
-      iter <- .gumbelChngptForm(x, i, sigma, priors)
-    } else if (matched_iter_model=="monomolecular"){
-      iter <- .monomolecularChngptForm(x, i, sigma, priors)
-    } else if (matched_iter_model=="exponential"){
-      iter <- .exponentialChngptForm(x, i, sigma, priors)
-    } else if (matched_iter_model=="linear"){
-      iter <- .linearChngptForm(x, i, sigma, priors)
-    } else if (matched_iter_model=="power law"){
-      iter <- .powerLawChngptForm(x, i, sigma, priors)
-    } else if (matched_iter_model %in% c("gam", "spline")){
-      iter <- .gamChngptForm(x, i, sigma, priors)
-      if(i != length(component_models)){
-        stop("gam segments are only supported as the last segment of a multi part model")}
-    } else if(matched_iter_model %in% c("int", "homo")){
-      iter <- .intChngptForm(x, i, sigma, priors)
-    }
-    # use decay helper option here
+    matched_iter_model <- match.arg(iter_model, models)
+    if(matched_iter_model=="homo"){matched_iter_model="int"} # recoding
+    if(matched_iter_model=="spline"){matched_iter_model="gam"}
+    chngptFormFun <- match.fun(paste0(".", gsub(" ", "", matched_iter_model), "ChngptForm")) 
+    iter <- chngptFormFun(x, i, dpar = prefix, priors)
     if(decay){ iter <- .decayChngptForm(iter) }
     return(iter)
   })
   
-  if(sigma){y = "sigma"}
-
   growthForm <- paste0(y, " ~ ", formulae[[1]]$form, " * ", formulae[[1]]$cp)
   #* Make cpInt cumulative
   for(i in 2:length(formulae)){
@@ -105,7 +87,7 @@
   }
   growthForm <- stats::as.formula(growthForm)
   
-  if(sigma){growthForm <- brms::nlf(growthForm)}
+  if(dpar){growthForm <- brms::nlf(growthForm)}
   
   params <- unique(unlist(lapply(formulae, function(f){f$params})))
   params <- params[-length(params)]
@@ -113,7 +95,7 @@
   splineSegments <- which(unlist(lapply(formulae, function(fml){"splineVar"%in%names(fml)})))
   
   if(length(splineSegments)>0){
-    if(sigma){prefix <- "sub"} else { prefix <- NULL}
+    #if(dpar){prefix <- y} else { prefix <- NULL}
     if(useGroup){by <- paste0(", by = ", group)
     } else {by <- "," }
     if(nTimes < 11){
@@ -127,9 +109,7 @@
     rhs <- paste0("s(",x, by, k,")")
     splineForm <- paste0(lhs, "~", rhs)
   } else {splineForm <- NULL}
-  
-  
-  
+
   return(list("growthForm"= growthForm, "pars" = params, "splineHelperForm" = splineForm))
 }
 
@@ -141,7 +121,7 @@
 #'
 #' @param x X variable name
 #' @param position Position in growth formula ("1" + "2" + "3"... etc)
-#' @param sigma Logical, is this a sub model of variance?
+#' @param dpar string or NULL, if string should be the name of the distributional parameter
 #' @param priors a list of prior distributions (used for fixed vs estimated changepoints)
 #'
 #' @examples
@@ -156,17 +136,17 @@
 #' used in starting the next growth phase from the right y value.
 #' @noRd
 
-.linearChngptForm <- function(x, position=1, sigma = FALSE, priors){ # return f, cp, and cpInt 
+.linearChngptForm <- function(x, position=1, dpar = NULL, priors){ # return f, cp, and cpInt 
   
-  if(sigma){prefix <- chngptPrefix <- "sub"} else { prefix <- chngptPrefix <- NULL}
+  prefix <- chngptPrefix <- dpar
   
   if(any(grepl(paste0("fixedChangePoint",position), names(priors)))){
     changePointObj <- as.numeric(priors[[paste0(prefix,"fixedChangePoint",position)]])[1]
     fixed=TRUE
-    chngptPrefix <- NULL # never a prefix if the changepoint is a fixed value
+    chngptPrefix <- NULL # never a prefix if the changepoint is a fixed value, even in sub model
   } else {
     fixed=FALSE
-    if(sigma){chngptPrefix <- "sub"} else { prefix <- NULL}
+    #if(dpar){chngptPrefix <- "sub"} else { prefix <- NULL} # I don't think this ever matters
   }
   
   if(position==1){
@@ -213,7 +193,7 @@
 #'
 #' @param x X variable name
 #' @param position Position in growth formula ("1" + "2" + "3"... etc)
-#' @param sigma Logical, is this a sub model of variance?
+#' @param dpar string or NULL, if string should be the name of the distributional parameter
 #' @param priors a list of prior distributions (used for fixed vs estimated changepoints)
 #'
 #' @examples
@@ -229,9 +209,9 @@
 #' 
 #' @noRd
 
-.logisticChngptForm <- function(x, position=1, sigma = FALSE, priors){ # return f, cp, and cpInt 
+.logisticChngptForm <- function(x, position=1, dpar = NULL, priors){ # return f, cp, and cpInt 
   
-  if(sigma){prefix <- chngptPrefix <- "sub"} else { prefix <- chngptPrefix <- NULL}
+  prefix <- chngptPrefix <- dpar
   
   if(any(grepl(paste0("fixedChangePoint",position), names(priors)))){
     changePointObj <- as.numeric(priors[[paste0(prefix,"fixedChangePoint",position)]])[1]
@@ -239,7 +219,7 @@
     chngptPrefix <- NULL # never a prefix if the changepoint is a fixed value
   } else {
     fixed=FALSE
-    if(sigma){chngptPrefix <- "sub"} else { prefix <- NULL}
+    #if(dpar){chngptPrefix <- "sub"} else { prefix <- NULL}
   }
   
   if(position==1){
@@ -289,7 +269,7 @@
 #'
 #' @param x X variable name
 #' @param position Position in growth formula ("1" + "2" + "3"... etc)
-#' @param sigma Logical, is this a sub model of variance?
+#' @param dpar string or NULL, if string should be the name of the distributional parameter
 #' @param priors a list of prior distributions (used for fixed vs estimated changepoints)
 #'
 #' @examples
@@ -304,9 +284,9 @@
 #' used in starting the next growth phase from the right y value.
 #' @noRd
 
-.gompertzChngptForm <- function(x, position=1, sigma = FALSE, priors){ # return f, cp, and cpInt 
+.gompertzChngptForm <- function(x, position=1, dpar = NULL, priors){ # return f, cp, and cpInt 
   
-  if(sigma){prefix <- chngptPrefix <- "sub"} else { prefix <-chngptPrefix <-  NULL}
+  if(dpar){prefix <- chngptPrefix <- "sub"} else { prefix <-chngptPrefix <-  NULL}
   
   if(any(grepl(paste0("fixedChangePoint",position), names(priors)))){
     changePointObj <- as.numeric(priors[[paste0(prefix,"fixedChangePoint",position)]])[1]
@@ -314,7 +294,7 @@
     chngptPrefix <- NULL # never a prefix if the changepoint is a fixed value
   } else {
     fixed=FALSE
-    if(sigma){chngptPrefix <- "sub"} else { prefix <- NULL}
+    #if(dpar){chngptPrefix <- "sub"} else { prefix <- NULL}
   }
   
   if(position==1){
@@ -360,7 +340,7 @@
 #'
 #' @param x X variable name
 #' @param position Position in growth formula ("1" + "2" + "3"... etc)
-#' @param sigma Logical, is this a sub model of variance?
+#' @param dpar string or NULL, if string should be the name of the distributional parameter
 #' @param priors a list of prior distributions (used for fixed vs estimated changepoints)
 #'
 #' @examples
@@ -376,9 +356,9 @@
 #' 
 #' @noRd
 
-.monomolecularChngptForm <- function(x, position=1, sigma = FALSE, priors){ # return f, cp, and cpInt 
+.monomolecularChngptForm <- function(x, position=1, dpar = NULL, priors){ # return f, cp, and cpInt 
   
-  if(sigma){prefix <- chngptPrefix <- "sub"} else { prefix <- chngptPrefix <- NULL}
+  prefix <- chngptPrefix <- dpar
   
   if(any(grepl(paste0("fixedChangePoint",position), names(priors)))){
     changePointObj <- as.numeric(priors[[paste0(prefix,"fixedChangePoint",position)]])[1]
@@ -386,7 +366,7 @@
     chngptPrefix <- NULL # never a prefix if the changepoint is a fixed value
   } else {
     fixed=FALSE
-    if(sigma){chngptPrefix <- "sub"} else { prefix <- NULL}
+    #if(dpar){chngptPrefix <- "sub"} else { prefix <- NULL}
   }
   
   if(position==1){
@@ -432,7 +412,7 @@
 #'
 #' @param x X variable name
 #' @param position Position in growth formula ("1" + "2" + "3"... etc)
-#' @param sigma Logical, is this a sub model of variance?
+#' @param dpar string or NULL, if string should be the name of the distributional parameter
 #' @param priors a list of prior distributions (used for fixed vs estimated changepoints)
 #'
 #' @examples
@@ -447,9 +427,9 @@
 #' used in starting the next growth phase from the right y value.
 #' @noRd
 
-.exponentialChngptForm <- function(x, position=1, sigma = FALSE, priors){ # return f, cp, and cpInt 
+.exponentialChngptForm <- function(x, position=1, dpar = NULL, priors){ # return f, cp, and cpInt 
   
-  if(sigma){prefix <- chngptPrefix <- "sub"} else { prefix <- chngptPrefix <- NULL}
+  prefix <- chngptPrefix <- dpar
   
   if(any(grepl(paste0("fixedChangePoint",position), names(priors)))){
     changePointObj <- as.numeric(priors[[paste0(prefix,"fixedChangePoint",position)]])[1]
@@ -457,7 +437,7 @@
     chngptPrefix <- NULL # never a prefix if the changepoint is a fixed value
   } else {
     fixed=FALSE
-    if(sigma){chngptPrefix <- "sub"} else { prefix <- NULL}
+    #if(dpar){chngptPrefix <- "sub"} else { prefix <- NULL}
   }
   
   if(position==1){
@@ -503,14 +483,14 @@
 #'
 #' @param x X variable name
 #' @param position Position in growth formula ("1" + "2" + "3"... etc)
-#' @param sigma Logical, is this a sub model of variance?
+#' @param dpar string or NULL, if string should be the name of the distributional parameter
 #' @param priors a list of prior distributions (used for fixed vs estimated changepoints)
 #'
 #' @examples
 #'
-#' .powerLawChngptForm(x="time", 1)
-#' .powerLawChngptForm(x="time", 2)
-#' .powerLawChngptForm(x="time", 3)
+#' .powerlawChngptForm(x="time", 1)
+#' .powerlawChngptForm(x="time", 2)
+#' .powerlawChngptForm(x="time", 3)
 #'
 #' @return a list with form, cp, and cpInt elements. "form" is the growth formula
 #' for this phase of the model. "cp" is the inv_logit function defining when this
@@ -519,9 +499,9 @@
 #' 
 #' @noRd
 
-.powerLawChngptForm <- function(x, position=1, sigma = FALSE, priors){ # return f, cp, and cpInt 
+.powerlawChngptForm <- function(x, position=1, dpar = NULL, priors){ # return f, cp, and cpInt 
   
-  if(sigma){prefix <- chngptPrefix <- "sub"} else { prefix <- chngptPrefix <- NULL}
+  prefix <- chngptPrefix <- dpar
   
   if(any(grepl(paste0("fixedChangePoint",position), names(priors)))){
     changePointObj <- as.numeric(priors[[paste0(prefix,"fixedChangePoint",position)]])[1]
@@ -529,7 +509,7 @@
     chngptPrefix <- NULL # never a prefix if the changepoint is a fixed value
   } else {
     fixed=FALSE
-    if(sigma){chngptPrefix <- "sub"} else { prefix <- NULL}
+    #if(dpar){chngptPrefix <- "sub"} else { prefix <- NULL}
   }
   
   if(position==1){
@@ -573,7 +553,7 @@
 #'
 #' @param x X variable name
 #' @param position Position in growth formula ("1" + "2" + "3"... etc)
-#' @param sigma Logical, is this a sub model of variance?
+#' @param dpar string or NULL, if string should be the name of the distributional parameter
 #' @param priors a list of prior distributions (used for fixed vs estimated changepoints)
 #'
 #' @examples
@@ -589,9 +569,9 @@
 #' undefined and GAMs should only be used at the end of a segmented model.
 #' @noRd
 
-.intChngptForm <- function(x, position=1, sigma = FALSE, priors){ # return f, cp, and cpInt 
+.intChngptForm <- function(x, position=1, dpar = NULL, priors){ # return f, cp, and cpInt 
   
-  if(sigma){prefix <- chngptPrefix <- "sub"} else { prefix <- chngptPrefix <- NULL}
+  prefix <- chngptPrefix <- dpar
   
   if(any(grepl(paste0("fixedChangePoint",position), names(priors)))){
     changePointObj <- as.numeric(priors[[paste0(prefix,"fixedChangePoint",position)]])[1]
@@ -599,7 +579,7 @@
     chngptPrefix <- NULL # never a prefix if the changepoint is a fixed value
   } else {
     fixed=FALSE
-    if(sigma){chngptPrefix <- "sub"} else { prefix <- NULL}
+    #if(dpar){chngptPrefix <- "sub"} else { prefix <- NULL}
   }
   
   if(position==1){
@@ -640,7 +620,7 @@
 #'
 #' @param x X variable name
 #' @param position Position in growth formula ("1" + "2" + "3"... etc)
-#' @param sigma Logical, is this a sub model of variance?
+#' @param dpar string or NULL, if string should be the name of the distributional parameter
 #' @param priors a list of prior distributions (used for fixed vs estimated changepoints)
 #'
 #' @examples
@@ -657,9 +637,9 @@
 #' "splineForm" is to use in making a spline for a predictor.
 #' @noRd
 
-.gamChngptForm <- function(x, position=1, sigma = FALSE, priors){ # return f, cp, and cpInt
+.gamChngptForm <- function(x, position=1, dpar = NULL, priors){ # return f, cp, and cpInt
   
-  if(sigma){prefix <- chngptPrefix <- "sub"} else { prefix <- chngptPrefix <- NULL}
+  prefix <- chngptPrefix <- dpar
   
   if(any(grepl(paste0("fixedChangePoint",position), names(priors)))){
     changePointObj <- as.numeric(priors[[paste0(prefix,"fixedChangePoint",position)]])[1]
@@ -667,7 +647,7 @@
     chngptPrefix <- NULL # never a prefix if the changepoint is a fixed value
   } else {
     fixed=FALSE
-    if(sigma){chngptPrefix <- "sub"} else { prefix <- NULL}
+    #if(dpar){chngptPrefix <- "sub"} else { prefix <- NULL}
   }
   
   if(position==1){
@@ -717,7 +697,7 @@
 #'
 #' @param x X variable name
 #' @param position Position in growth formula ("1" + "2" + "3"... etc)
-#' @param sigma Logical, is this a sub model of variance?
+#' @param dpar string or NULL, if string should be the name of the distributional parameter
 #' @param priors a list of prior distributions (used for fixed vs estimated changepoints)
 #'
 #' @examples
@@ -733,9 +713,9 @@
 #' 
 #' @noRd
 
-.weibullChngptForm <- function(x, position=1, sigma = FALSE, priors){ # return f, cp, and cpInt 
+.weibullChngptForm <- function(x, position=1, dpar = NULL, priors){ # return f, cp, and cpInt 
   
-  if(sigma){prefix <- chngptPrefix <- "sub"} else { prefix <- chngptPrefix <- NULL}
+  prefix <- chngptPrefix <- dpar
   
   if(any(grepl(paste0("fixedChangePoint",position), names(priors)))){
     changePointObj <- as.numeric(priors[[paste0(prefix,"fixedChangePoint",position)]])[1]
@@ -743,7 +723,7 @@
     chngptPrefix <- NULL # never a prefix if the changepoint is a fixed value
   } else {
     fixed=FALSE
-    if(sigma){chngptPrefix <- "sub"} else { prefix <- NULL}
+    #if(dpar){chngptPrefix <- "sub"} else { prefix <- NULL}
   }
   
   if(position==1){
@@ -789,7 +769,7 @@
 #'
 #' @param x X variable name
 #' @param position Position in growth formula ("1" + "2" + "3"... etc)
-#' @param sigma Logical, is this a sub model of variance?
+#' @param dpar string or NULL, if string should be the name of the distributional parameter
 #' @param priors a list of prior distributions (used for fixed vs estimated changepoints)
 #'
 #' @examples
@@ -805,9 +785,9 @@
 #' 
 #' @noRd
 
-.frechetChngptForm <- function(x, position=1, sigma = FALSE, priors){ # return f, cp, and cpInt 
+.frechetChngptForm <- function(x, position=1, dpar = NULL, priors){ # return f, cp, and cpInt 
   
-  if(sigma){prefix <- chngptPrefix <- "sub"} else { prefix <- chngptPrefix <- NULL}
+  prefix <- chngptPrefix <- dpar
   
   if(any(grepl(paste0("fixedChangePoint",position), names(priors)))){
     changePointObj <- as.numeric(priors[[paste0(prefix,"fixedChangePoint",position)]])[1]
@@ -815,7 +795,7 @@
     chngptPrefix <- NULL # never a prefix if the changepoint is a fixed value
   } else {
     fixed=FALSE
-    if(sigma){chngptPrefix <- "sub"} else { prefix <- NULL}
+    #if(dpar){chngptPrefix <- "sub"} else { prefix <- NULL}
   }
   
   if(position==1){
@@ -862,7 +842,7 @@
 #'
 #' @param x X variable name
 #' @param position Position in growth formula ("1" + "2" + "3"... etc)
-#' @param sigma Logical, is this a sub model of variance?
+#' @param dpar string or NULL, if string should be the name of the distributional parameter
 #' @param priors a list of prior distributions (used for fixed vs estimated changepoints)
 #'
 #' @examples
@@ -878,9 +858,10 @@
 #' 
 #' @noRd
 
-.gumbelChngptForm <- function(x, position=1, sigma = FALSE, priors){ # return f, cp, and cpInt 
+.gumbelChngptForm <- function(x, position=1, dpar = NULL, priors){ # return f, cp, and cpInt 
   
-  if(sigma){prefix <- chngptPrefix <- "sub"} else { prefix <- chngptPrefix <- NULL}
+  
+  prefix <- chngptPrefix <- dpar
   
   if(any(grepl(paste0("fixedChangePoint",position), names(priors)))){
     changePointObj <- as.numeric(priors[[paste0(prefix,"fixedChangePoint",position)]])[1]
@@ -888,7 +869,7 @@
     chngptPrefix <- NULL # never a prefix if the changepoint is a fixed value
   } else {
     fixed=FALSE
-    if(sigma){chngptPrefix <- "sub"} else { prefix <- NULL}
+    #if(dpar){chngptPrefix <- "sub"} else { prefix <- NULL}
   }
   
   if(position==1){
