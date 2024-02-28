@@ -122,23 +122,43 @@ pcv.emd<-function(df, cols=NULL, reorder=NULL, include=reorder, mat=FALSE, plot 
     }
     df$INNER_ID_EMD<-interaction(df[,id], drop=TRUE)
     if(mat){ # make dist matrix
-      out_data<-matrix(
-        unlist(lapply(unique(df$INNER_ID_EMD), function(i){parallel::mclapply(unique(df$INNER_ID_EMD), function(j){
-          if(i==j){0}else{emd1d(as.numeric(df[df$INNER_ID_EMD==as.character(i), value]), as.numeric(df[df$INNER_ID_EMD==as.character(j), value]))}
-        }, mc.cores=parallel)})), nrow=length(unique(df$INNER_ID_EMD)), ncol = length(unique(df$INNER_ID_EMD)) )
+      mat_obj <- matrix(0, nrow=length(unique(df$INNER_ID_EMD)), ncol = length(unique(df$INNER_ID_EMD)))
+      values<-unlist(lapply(unique(df$INNER_ID_EMD), function(i){
+          parallel::mclapply(unique(df$INNER_ID_EMD), function(j){
+          if(i<=j){
+            emd1d(as.numeric(df[df$INNER_ID_EMD==as.character(i), value]),
+                  as.numeric(df[df$INNER_ID_EMD==as.character(j), value]))}
+        }, mc.cores=parallel)
+          }))
+      mat_obj[lower.tri(mat_obj)] <- values
+      tmat_obj <- t(mat_obj)
+      mat_obj[upper.tri(mat_obj)] <- tmat_obj[upper.tri(tmat_obj)]
+      rownames(mat_obj) <- colnames(mat_obj) <- unique(df$INNER_ID_EMD)
+      out_data <- mat_obj
     }else{ # make long data
-      out_data<-do.call(rbind, lapply(unique(df$INNER_ID_EMD), function(i){
-        do.call(rbind, parallel::mclapply(unique(df$INNER_ID_EMD), function(j){
-          if(i==j){emdOut=0}else{emdOut=emd1d(as.numeric(df[df$INNER_ID_EMD==as.character(i), value]),
+      out_data<-do.call(rbind, lapply(1:length(unique(df$INNER_ID_EMD)), function(i_n){
+        do.call(rbind, parallel::mclapply(1:length(unique(df$INNER_ID_EMD)), function(j_n){
+          i <- unique(df$INNER_ID_EMD)[i_n]
+          j <- unique(df$INNER_ID_EMD)[j_n]
+          emdOut <- NULL
+          if(i_n==j_n){emdOut=0}else if(i_n<j_n){emdOut=emd1d(as.numeric(df[df$INNER_ID_EMD==as.character(i), value]),
                                               as.numeric(df[df$INNER_ID_EMD==as.character(j), value]) )}
-          if(!is.null(include)){x<-data.frame(i=i, j=j, emd = emdOut, df[df$INNER_ID_EMD==as.character(i), include][1,], df[df$INNER_ID_EMD==as.character(j), include][1,])
-          colnames(x)<-c("i", "j", "emd", paste0(include,"_i"), paste0(include, "_j"))
-          } else {x<-data.frame(i=i, j=j, emd = emdOut)}
-          x
+          if(!is.null(emdOut)){
+            if(!is.null(include)){
+              x<-rbind(data.frame(i=i, j=j, emd = emdOut,
+                            df[df$INNER_ID_EMD==as.character(i),include][1,],
+                            df[df$INNER_ID_EMD==as.character(j), include][1,]),
+                       data.frame(i=j, j=i, emd = emdOut,
+                                  df[df$INNER_ID_EMD==as.character(j),include][1,],
+                                  df[df$INNER_ID_EMD==as.character(i), include][1,]) )
+            colnames(x)<-c("i", "j", "emd", paste0(include,"_i"), paste0(include, "_j"))
+            } else {x<-data.frame(i=c(i,j), j=c(j,i), emd = emdOut)}
+            x
+          }
         }, mc.cores=parallel))
       }))
     }
-  } else{
+  } else{ # wide input
       if(is.null(cols)){cols<-colnames(df)
       }else if(is.character(cols) && length(cols)==1){cols<-grepl(cols, colnames(df))}
     if(raiseError){
@@ -151,21 +171,32 @@ pcv.emd<-function(df, cols=NULL, reorder=NULL, include=reorder, mat=FALSE, plot 
                                          "\nIf you wish to proceed then rerun this command with raiseError=FALSE"))}
     }
       if(mat){# make dist matrix
-        out_data<-matrix(
-          unlist(lapply(1:nrow(df), function(i){parallel::mclapply(1:nrow(df), function(j){
-            if(i==j){0}else{emd1d(as.numeric(df[i, cols]), as.numeric(df[j, cols]))}
-          }, mc.cores = parallel)})), nrow=nrow(df), ncol = nrow(df) )
+        mat_obj <- matrix(0, nrow=nrow(df), ncol = nrow(df) )
+        values <- unlist(lapply(1:nrow(df), function(i){
+          parallel::mclapply(1:nrow(df), function(j){
+            if(i<j){emd1d(as.numeric(df[i, cols]), as.numeric(df[j, cols]))}
+          }, mc.cores = parallel)}))
+        mat_obj[lower.tri(mat_obj)] <- values
+        tmat_obj <- t(mat_obj)
+        mat_obj[upper.tri(mat_obj)] <- tmat_obj[upper.tri(tmat_obj)]
+        rownames(mat_obj) <- colnames(mat_obj) <- 1:nrow(df)
+        out_data <- mat_obj
         if(!is.null(include)){
           rownames(out_data)<-interaction(df[,include])
         }
       }else{# make long dataframe
         out_data<-do.call(rbind, lapply(1:nrow(df), function(i){
           do.call(rbind, parallel::mclapply(1:nrow(df), function(j){
-            if(i==j){emdOut=0}else{emdOut=emd1d(as.numeric(df[i, cols]), as.numeric(df[j, cols]))}
-            if(!is.null(include)){x<-data.frame(i=i, j=j, emd = emdOut, df[i, include], df[j,include])
-              colnames(x)<-c("i", "j", "emd", paste0(include,"_i"), paste0(include, "_j"))
-              } else {x<-data.frame(i=i, j=j, emd = emdOut)}
-            x
+            emdOut <- NULL
+            if(i==j){emdOut=0}else if(i<j){emdOut=emd1d(as.numeric(df[i, cols]), as.numeric(df[j, cols]))}
+            if(!is.null(emdOut)){
+              if(!is.null(include)){
+                x<-rbind(data.frame(i=i, j=j, emd = emdOut, df[i, include], df[j,include]),
+                         data.frame(i=j, j=i, emd = emdOut, df[j, include], df[i,include]) )
+                colnames(x)<-c("i", "j", "emd", paste0(include,"_i"), paste0(include, "_j"))
+                } else {x<-data.frame(i=c(i,j), j=c(j,i), emd = emdOut)}
+              x
+            }
           }, mc.cores=parallel))
         }))
       }

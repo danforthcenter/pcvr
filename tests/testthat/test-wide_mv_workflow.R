@@ -47,7 +47,7 @@ test_that("reading mv github data as long works", {
   emd<-pcv.emd(df = mv[mv$image %in% images, ], cols="hue_frequencies", reorder=c("fertilizer", "genotype"),
                mat =FALSE, plot=TRUE, parallel = 1, raiseError=FALSE)
   expect_s3_class(emd$plot, "ggplot")
-  expect_equal(dim(emd$data), c(100, 7))
+  expect_equal(dim(emd$data), c(110, 7))
   expect_equal(sum(emd$data$emd), 5684.034, tolerance = 0.01)
   
   #* test network

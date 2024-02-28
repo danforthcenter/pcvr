@@ -31,6 +31,9 @@
 #' Defaults to plotGroup.
 #' @param ncp Optionally specify the number of principle components to be used for MV data outlier detection with cooks distance.
 #' If left NULL (the default) then 3 will be used.
+#' @param separate Optionally separate the data by some variable to speed up the modeling step. If you have a design variable with 
+#' very many levels then it may be helpful to separate by that variable. Note this will subset the data for each model so it will change
+#' the outlier removal (generally to be more conservative).
 #' @keywords Bellwether, ggplot, outliers
 #' @import ggplot2
 #' @import data.table
@@ -52,9 +55,13 @@
 #' sv<-bw.time(sv, plantingDelay = 0, phenotype="area_pixels", cutoff=10, timeCol="timestamp",
 #'  group=c("barcode", "rotation"), plot=FALSE)
 #' 
-#' sv<-bw.outliers(df = sv, phenotype="area_pixels", naTo0 =FALSE, 
+#' res1<-bw.outliers(df = sv, phenotype="area_pixels", naTo0 =FALSE, 
 #'  group = c("DAS", "genotype", "fertilizer"),outlierMethod = "cooks",
 #'  plotgroup=c("barcode","rotation"), plot=TRUE)
+#'  
+#' res2<-bw.outliers(df = sv, phenotype="area_pixels", naTo0 =FALSE, 
+#'  group = c("DAS", "genotype", "fertilizer"),outlierMethod = "cooks",
+#'  plotgroup=c("barcode","rotation"), plot=TRUE, separate="genotype")
 #' 
 #' if(FALSE){
 #' svl<-read.pcv(
@@ -119,7 +126,8 @@ bw.outliers<-function(df = NULL,
                       cutoff = 3,
                       outlierMethod = "cooks",
                       plotgroup=c('barcode',"rotation"),
-                      plot=TRUE, x=NULL, traitCol="trait", valueCol="value", labelCol="label", idCol=NULL, ncp = NULL){
+                      plot=TRUE, x=NULL, traitCol="trait", valueCol="value",
+                      labelCol="label", idCol=NULL, ncp = NULL, separate = NULL){
   # df = svl; phenotype="area_pixels"; naTo0 = F; group = c("DAS", "genotype", "fertilizer"); plotgroup=c("barcode","rotation"); plot=FALSE
   # traitCol="trait"; valueCol="value"; idCol=c("barcode","rotation")
   if(all(c(traitCol, valueCol) %in% colnames(df))){
@@ -134,38 +142,35 @@ bw.outliers<-function(df = NULL,
   
   if(is.null(idCol)){idCol = plotgroup}
   
-  if(wide & !mv){ # wide data single value
-    if(outlierMethod=="mahalanobis"){warning("Mahalanobis distance is only implemented with MV traits, using cooks")}
-    res<-.wide_sv_cooks_bw.outliers(df, naTo0, phenotype, group, cutoff)
-    df <- res[["data"]]
-    pctRm <- res[["pctRm"]]
-    
-  } else if (!wide & !mv){ # long data single value
-    if(outlierMethod=="mahalanobis"){warning("Mahalanobis distance is only implemented with MV traits, using cooks")}
-    res<-.long_sv_cooks_bw.outliers(df, naTo0, phenotype, group, cutoff, traitCol, valueCol, labelCol, idCol)
-    df <- res[["data"]]
-    pctRm <- res[["pctRm"]]
-    
-  } else if(wide & mv){ # wide multi value data
-    if(outlierMethod=="cooks"){
-      res<-.wide_mv_cooks_bw.outliers(df, naTo0, phenotype, group, cutoff, ncp)
-    } else if(outlierMethod == "mahalanobis"){
-      res<-.wide_mv_mahalanobis_bw.outliers(df, naTo0, phenotype, group, cutoff)
-    }
-    df <- res[["data"]]
-    pctRm <- res[["pctRm"]]
-    
-  } else if(!wide & mv){ # long multi value data
-    if(outlierMethod=="cooks"){
-       res<-.long_mv_cooks_bw.outliers(df, naTo0, phenotype, group, cutoff, ncp, traitCol, valueCol, labelCol, idCol)
-    } else if(outlierMethod == "mahalanobis"){
-       res<-.long_mv_mahalanobis_bw.outliers(df, naTo0, phenotype, group, cutoff, traitCol, valueCol, labelCol, idCol)
-    }
-    df <- res[["data"]]
-    pctRm <- res[["pctRm"]]
-    
-  }
+  if(!is.null(separate)){
+    dfList <- split(df, df[[separate]])
+    group <- group[!grepl(separate, group)]
+  } else{dfList <- list(df)}
   
+  resList <- lapply(dfList, function(df){
+    if(wide & !mv){ # wide data single value
+      if(outlierMethod=="mahalanobis"){warning("Mahalanobis distance is only implemented with MV traits, using cooks")}
+      res<-.wide_sv_cooks_bw.outliers(df, naTo0, phenotype, group, cutoff)
+    } else if (!wide & !mv){ # long data single value
+      if(outlierMethod=="mahalanobis"){warning("Mahalanobis distance is only implemented with MV traits, using cooks")}
+      res<-.long_sv_cooks_bw.outliers(df, naTo0, phenotype, group, cutoff, traitCol, valueCol, labelCol, idCol)
+    } else if(wide & mv){ # wide multi value data
+      if(outlierMethod=="cooks"){
+        res<-.wide_mv_cooks_bw.outliers(df, naTo0, phenotype, group, cutoff, ncp)
+      } else if(outlierMethod == "mahalanobis"){
+        res<-.wide_mv_mahalanobis_bw.outliers(df, naTo0, phenotype, group, cutoff)
+      }
+    } else if(!wide & mv){ # long multi value data
+      if(outlierMethod=="cooks"){
+        res<-.long_mv_cooks_bw.outliers(df, naTo0, phenotype, group, cutoff, ncp, traitCol, valueCol, labelCol, idCol)
+      } else if(outlierMethod == "mahalanobis"){
+        res<-.long_mv_mahalanobis_bw.outliers(df, naTo0, phenotype, group, cutoff, traitCol, valueCol, labelCol, idCol)
+      }
+    }
+    return(res)
+  })
+  df <- do.call(rbind, lapply(resList, function(res){res[["data"]]}))
+  pctRm <- do.call(rbind, lapply(1:length(resList), function(i){data.frame(i=i, pctRm = resList[[i]][["pctRm"]])}))
   
   out<-df[which(!df$outlier), -which(grepl("outlier", colnames(df)))]
   
@@ -177,7 +182,7 @@ bw.outliers<-function(df = NULL,
     p<-ggplot2::ggplot()+
       ggplot2::facet_wrap(stats::as.formula(paste0("~", paste(group[-1], collapse="+"))))+
       ggplot2::geom_line(data=df, ggplot2::aes(x=.data[[x]], y=.data[[phenotype]], group=.data[["grouping"]]),linewidth=0.25 )+
-      ggplot2::labs(title=pctRm)+
+      ggplot2::labs(title=paste0("~", round(mean(pctRm$pctRm), 3), "% Removed"))+
       pcv_theme()
     
     yLims <- ggplot2::layer_scales(p)$y$range$range
@@ -196,7 +201,7 @@ bw.outliers<-function(df = NULL,
     p<-ggplot2::ggplot()+
       ggplot2::facet_wrap(stats::as.formula(paste0("~", paste(group[-1], collapse="+"))))+
       ggplot2::geom_line(data=df, ggplot2::aes(x=.data[[x]], y=.data[[valueCol]], group=.data[["grouping"]]),linewidth=0.25 )+
-      ggplot2::labs(title=pctRm)+
+      ggplot2::labs(title=paste0("~", round(mean(pctRm$pctRm), 3), "% Removed"))+
       pcv_theme()
     
     yLims <- ggplot2::layer_scales(p)$y$range$range
@@ -226,7 +231,7 @@ bw.outliers<-function(df = NULL,
                         fill="red", alpha=0.25)+
       ggplot2::geom_col(data = out_plotData, ggplot2::aes(x = .data[['bin']], y=.data[[valueCol]] ), position="identity",
                         alpha=0.25)+
-      ggplot2::labs(title=pctRm)+
+      ggplot2::labs(title=paste0("~", round(mean(pctRm$pctRm), 3), "% Removed"))+
       pcv_theme()
     
   } else if(plot & !wide & mv){
@@ -242,7 +247,7 @@ bw.outliers<-function(df = NULL,
                         fill="red", alpha=0.25)+
       ggplot2::geom_col(data = out_plotData, ggplot2::aes(x = .data[[traitCol]], y=.data[[valueCol]] ), position="identity",
                         alpha=0.25)+
-      ggplot2::labs(title=pctRm)+
+      ggplot2::labs(title=paste0("~", round(mean(pctRm$pctRm), 3), "% Removed"))+
       pcv_theme()
   }
   
@@ -276,7 +281,7 @@ bw.outliers<-function(df = NULL,
     cooksd_df<-data.frame("outlier" = cooksd)
     df<-cbind(df, cooksd_df)
     df$outlier <- df$outlier > outlierCutoff
-    pctRm<-paste0(100*(round(nrow(df[df$outlier, ]) / nrow(df), 5)), "% removed as outliers using Cook's Distance")
+    pctRm<-100*(round(nrow(df[df$outlier, ]) / nrow(df), 5))
     
     return(list('data'=df, 'pctRm'=pctRm))
 }
@@ -304,8 +309,8 @@ bw.outliers<-function(df = NULL,
     subdf<-subdf[, c(group, idCol, "outlier")]
     subdf<-subdf[!duplicated(subdf[,c(group, idCol)]),] # if there are multiple images per day this will change data.
     subdf$outlier <- subdf$outlier > outlierCutoff
-    pctRm<-paste0(100*(round(nrow(subdf[subdf$outlier, ]) / nrow(subdf), 5)),
-                  "% removed as outliers using Cook's Distance")
+    pctRm<-100*(round(nrow(subdf[subdf$outlier, ]) / nrow(subdf), 5))
+
     #* take IDs using plotgroup and label all phenotype rows
     df<-merge(df, subdf, all.x = TRUE)
   return(list('data'=df, 'pctRm'=pctRm))
@@ -369,7 +374,7 @@ bw.outliers<-function(df = NULL,
   }))
   
   df<-cbind(df, outlierMatrix)
-  pctRm<-paste0(100*(round(nrow(df[df$outlier, ]) / nrow(df), 5)), "% removed as outliers using Cook's Distance\non first ", use_ncp, " Principle Components.")
+  pctRm<-100*(round(nrow(df[df$outlier, ]) / nrow(df), 5))
   return(list('data'=df, 'pctRm'=pctRm))
 }
 
@@ -433,8 +438,7 @@ bw.outliers<-function(df = NULL,
     subMeta
   }))
   
-  pctRm<-paste0(100*(round(nrow(df_out[df_out$outlier, ]) / nrow(df_out), 5)),
-                "% removed as outliers using Mahalanobis distance.")
+  pctRm<-100*(round(nrow(df_out[df_out$outlier, ]) / nrow(df_out), 5))
   
   return(list('data'=df_out, 'pctRm'=pctRm))
 }

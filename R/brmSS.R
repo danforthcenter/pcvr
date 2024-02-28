@@ -346,6 +346,14 @@
       wrapper = 0
     }
     
+    #* ***** `Raise Message for complex models` *****
+    
+    if(length(pars)*length(unique(df[[group]])) > 50){
+      message(paste0("This model will estimate >50 parameters (excluding any smooth terms). \n\n",
+                     "If the MCMC is very slow then consider fitting separate models and using `combineDraws()` to make a data.frame for hypothesis testing."))
+    }
+    
+    #* ***** `Return Components` *****
     out[["initfun"]]<-wrapper
     out[["df"]]<-df
     out[["family"]]<-"student"

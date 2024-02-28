@@ -15,6 +15,7 @@
 #' dim(ss$df)
 #' ss[c("formula", "taus", "start", "pcvrForm")]
 #' @importFrom splines bs
+#' @importFrom stats sortedXyData
 #' @keywords internal
 #' @noRd
 
@@ -219,7 +220,7 @@
 #* `Extreme Value Distribution Self Starter (weibull, frechet, gumbel)`
 
 .initweibull <- function(df, x, y){
-    xy <- sortedXyData(df[[x]], df[[y]])
+    xy <- stats::sortedXyData(df[[x]], df[[y]])
     if (nrow(xy) < 5) {
         stop("too few distinct input values to fit the EVD growth model")
     }
