@@ -7,7 +7,7 @@
 #' "linear", "power law", "double logistic", or "double gompertz". Alternatively this can be 
 #' a pseudo formula to generate data from a segmented growth curve by specifying "model1 + model2",
 #' see examples and \code{\link{growthSS}}. Decay can be specified by including "decay" as part of the model
-#' such as "logistic decay" or "linear + linear decay". Count data can be specified with the "count" keyword,
+#' such as "logistic decay" or "linear + linear decay". Count data can be specified with the "count: " prefix,
 #' similar to using "poisson: model" in \link{growthSS}.
 #' While "gam" models are supported by \code{growthSS}
 #' they are not simulated by this function.
@@ -158,9 +158,9 @@
 
 growthSim<-function(model=c("logistic", "gompertz", "double logistic", "double gompertz",
                             "monomolecular", "exponential", "linear", "power law", "frechet", "weibull", "gumbel"), n=20, t=25, params=list(), noise=NULL, D=0){
-  if(grepl("count", model)){
+  if(grepl("count:", model)){
     COUNT = TRUE
-    model <- trimws(gsub("count", "", model))
+    model <- trimws(gsub("count:", "", model))
   } else {COUNT = FALSE}
   if(length(model)>1){stop("Select one model to use, changepoints should be specified with '+'")}
   if(is.null(noise)){noise = lapply(params, function(i) mean(i)/10); wasNULL = TRUE} else{wasNULL=FALSE}

@@ -211,11 +211,11 @@ For model backends that do not account for autocorrelation the individual will n
 
 #### `growthSS(..., sigma, ...)`
 
-The `sigma` argument controls the sub model on variance. This is only used with `nlme` and `brms` backends which support different options.
+The `sigma` argument controls distributional sub models. This is only used with `nlme` and `brms` backends which support different options.
 
-In `nlme` models this can be "int", "power", or "exp" which correspond to using `nlme::varIdent` (constant variance within groups), `nlme::varPower` (variance changing by a power function), `nlme::varExp` (variance changing by an exponential function).
+In `nlme` models this models sigma and can be "int", "power", or "exp" which correspond to using `nlme::varIdent` (constant variance within groups), `nlme::varPower` (variance changing by a power function), `nlme::varExp` (variance changing by an exponential function).
 
-In `brms` models this can be specified in the same way as the general growth model. There is also an "int" model type which fits a 0 slope intercept only model. While "int" can be used in any `brms` model the option is meant to be used specifying a homoskedastic sub model, or a period of noise before the main growth trend begins (in terms of growth or variance).
+In `brms` models this can be specified in the same way as the general growth model and can be used to model any distributional parameter in the model family you use. The default model family is Student T, which has sigma and nu parameters. Other distributions can be specified in the main growth model as `model = "family_name: model_name"` (`model = "poisson: linear"` as an example). For details on available families see `?brms::brmsfamily`. There is also an "int" model type which fits a 0 slope intercept only model. While "int" can be used in any `brms` model the option is meant to be used specifying a homoskedastic sub model, or a period of noise before the main growth trend begins (in terms of growth or variance). Distributional parameters that are not specified will be modeled as constant between groups.
 
 At a high level we can think about any of these models as fitting a curve to these lines.
 
@@ -307,7 +307,7 @@ When setting priors for the gompertz sub-model it is generally reasonable to exp
 
 ```{r}
 ss <- growthSS(model = "gompertz", form = y~time|id/group, sigma = "gompertz",
-               df = gomp, start = list("A"=130, "B"=15, "C"=0.25, "subA"=15, "subB"=15, "subC"=0.25),
+               df = gomp, start = list("A"=130, "B"=15, "C"=0.25, "sigmaA"=15, "sigmaB"=15, "sigmaC"=0.25),
                type="brms")
 ```
 
@@ -611,7 +611,7 @@ As alluded to previously, using the `brms` backend segmented models are possible
 
 Here we briefly show several threshold model options.
 
-First we look at a "linear + linear" model using a gam submodel. To make the parameters distinct these segmented models have slightly different parameter names. Each section of the model has parameters named for the model and it's parameters, so here we have "linear1A", "changePoint1", and "linear2A". Similar to the standard models, a changepoint model of variance will have "sub" appended to each parameter name.
+First we look at a "linear + linear" model using a gam submodel. To make the parameters distinct these segmented models have slightly different parameter names. Each section of the model has parameters named for the model and it's parameters, so here we have "linear1A", "changePoint1", and "linear2A". Similar to the standard models, a changepoint model of variance will have the name of the distributional parameter they are modeling appended to each parameter name.
 
 ```{r, echo=TRUE, eval=FALSE}
 simdf<-growthSim(model = "linear + linear", 
@@ -700,7 +700,7 @@ simdf <- rbind(noise, noise2)
 ```{r, echo=TRUE, eval=FALSE}
 ss<-growthSS(model = "int + int", form=y~time|id/group, sigma="int + int",
              list("int1"=10, "changePoint1"=10, "int2"=20, #main model
-                  "subint1"=10, "subchangePoint1"=10, "subint2"=10), # sub model
+                  "sigmaint1"=10, "sigmachangePoint1"=10, "sigmaint2"=10), # sub model
              df=simdf, type = "brms")
 
 fit <- fitGrowth(ss, backend="cmdstanr", iter=500, chains=1, cores=1)
@@ -736,7 +736,7 @@ simdf <- rbind(noise, signal)
 ```{r, echo=TRUE, eval=FALSE}
 ss<-growthSS(model = "int + linear", form=y~time|id/group, sigma="int + linear",
                  list("int1"=10, "changePoint1"=10, "linear2A"=20,
-                      "subint1"=10, "subchangePoint1"=10, "sublinear2A"=10),
+                      "sigmaint1"=10, "sigmachangePoint1"=10, "sigmalinear2A"=10),
                  df=simdf, type = "brms")
 fit <- fitGrowth(ss, backend="cmdstanr", iter=500, chains=1, cores=1)
 plot <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df, timeRange = 1:40)
@@ -772,7 +772,7 @@ simdf<-simdf[simdf$time<45, ]
 ss<-growthSS(model = "int+logistic", form=y~time|id/group, sigma="int + spline",
              list("int1" = 5, "changePoint1"=10 ,
                   'logistic2A' = 130, 'logistic2B' = 10, "logistic2C" = 3,
-                  'subint1' = 5, "subchangePoint1"=15),
+                  'sigmaint1' = 5, "sigmachangePoint1"=15),
               df=simdf, type = "brms")
 fit <- fitGrowth(ss, backend="cmdstanr", iter=500, chains=1, cores=1)
 plot <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
