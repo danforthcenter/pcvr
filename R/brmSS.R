@@ -165,10 +165,11 @@
     if(methods::is(sigma, "formula")){ 
       sigma <- list(sigma)
     }
+    #print(sigma)
     if(length(sigma)>length(dpars)){
       stop(paste0("sigma contains ", length(sigma), " formulas.",
                      "The specified family (", family, ") only has ", length(dpars),
-                     "valid distributional parameters (", paste0(dpars, collapse=", "),")."))
+                     " valid additional distributional parameters (", paste0(dpars, collapse=", "),")."))
     } else if(length(sigma) < length(dpars)){
       n_to_add <- length(dpars) - length(sigma)
       sigma <- append(sigma, lapply(1:n_to_add, function(i) paste0("not_estimated")))
@@ -217,17 +218,22 @@
     }
     
     #* `Make distributional parameter formulas`
-      
-      dpar_res <- lapply(1:length(sigma), function(i){
-        dpar <- names(sigma)[[i]]
-        model <- sigma[[i]]
-        .brmDparHelper(dpar, model, x, group, nTimes, useGroup, priors)
-      })
-      names(dpar_res)<-names(sigma)
-      dparForm <- unlist(lapply(dpar_res, function(res){res$dparForm}))
-      dparSplineHelperForm <- unlist(lapply(dpar_res, function(res){res$dparSplineHelperForm}))
-      dpar_pars <- unlist(lapply(dpar_res, function(res){res$dpar_pars}))
-      pars <- append(pars, dpar_pars)
+      if(length(sigma)>0){
+        dpar_res <- lapply(1:length(sigma), function(i){
+          dpar <- names(sigma)[[i]]
+          model <- sigma[[i]]
+          .brmDparHelper(dpar, model, x, group, nTimes, USEGROUP, priors)
+        })
+        names(dpar_res)<-names(sigma) # in example I did not get a sigmaA term out, that is probably the problem
+        dparForm <- unlist(lapply(dpar_res, function(res){res$dparForm}))
+        dparSplineHelperForm <- unlist(lapply(dpar_res, function(res){res$dparSplineHelperForm}))
+        dpar_pars <- unlist(lapply(dpar_res, function(res){res$dpar_pars}))
+        names(dpar_pars)<-NULL
+        pars <- append(pars, dpar_pars)
+      } else{
+        dparForm <- NULL
+        dparSplineHelperForm <- NULL
+      }
     
     #* `Make parameter grouping formulae`
     
@@ -336,11 +342,20 @@
       if(length(int_only_dpars)>=1){
         int_dpars_form <- as.formula(paste0(paste(int_only_dpars, collapse="+"), "~1")) 
       } else { int_dpars_form <- NULL}
-      gp <- brms::get_prior(bf(y~x, int_dpars_form), data = data.frame(y=1, x=1), family=family)
-      prior <- rbind(gp[1,], gp[gp$dpar %in% int_only_dpars,])
+      smooth_dpars <- names(sigma[which(sigma %in% c("gam", "spline"))])
+      if(length(smooth_dpars)>=1){
+        smooth_dpars_form <- as.formula(paste0(paste(smooth_dpars, collapse="+"), "~s(x)")) 
+      } else { smooth_dpars_form <- NULL}
+      flist <- list(int_dpars_form, smooth_dpars_form)
+      flist<-flist[!unlist(lapply(flist, is.null))]
+      if(length(flist)==0){flist=NULL}
+      gp <- brms::get_prior(bf(y~x, flist = flist),
+                            data = data.frame(y=1:100, x=1:100), family=family)
+      prior <- rbind(gp[1,], gp[gp$dpar %in% smooth_dpars & gp$class=="Intercept",],
+                     gp[gp$dpar %in% int_only_dpars,])
 
       #* `add priors for estimated parameters`
-      
+      #return(priorStanStrings)
       for(nm in names(priorStanStrings)){
         dist = priorStanStrings[[nm]]
         pr = strsplit(nm, "_")[[1]][1]
@@ -400,11 +415,11 @@
 
 .brms_form_logistic<-function(x, y, group, dpar = FALSE, nTimes=NULL, useGroup = TRUE, prior = NULL){
   if(dpar){
-    form <- brms::nlf(stats::as.formula(paste0(y, " ~ subA/(1+exp((subB-",x,")/subC))"))) # replace sub with y?
-    pars <- c("subA", "subB", "subC") # paste0(y,LETTERS[1:3])
+    form <- brms::nlf(stats::as.formula(paste0(y, " ~ ",y,"A/(1+exp((",y,"B-",x,")/",y,"C))"))) 
+    pars <- paste0(y, LETTERS[1:3])
   }else{
     form <- stats::as.formula(paste0(y," ~ A/(1+exp((B-",x,")/C))"))
-    pars <- c("A", "B", "C")
+    pars <- LETTERS[1:3]
   }
   return(list(form=form, pars=pars))
 }
@@ -415,11 +430,11 @@
 
 .brms_form_gompertz<-function(x, y, group, dpar = FALSE, nTimes=NULL, useGroup = TRUE, prior = NULL){
   if(dpar){
-    form <- brms::nlf(stats::as.formula(paste0(y, " ~ subA*exp(-subB*exp(-subC*",x,"))")))
-    pars <- c("subA", "subB", "subC")
+    form <- brms::nlf(stats::as.formula(paste0(y, " ~ ",y,"A*exp(-",y,"B*exp(-",y,"C*",x,"))")))
+    pars <- paste0(y, LETTERS[1:3])
   }else{
     form <-stats::as.formula(paste0(y," ~ A*exp(-B*exp(-C*",x,"))"))
-    pars <- c("A", "B", "C")
+    pars <- LETTERS[1:3]
   }
   return(list(form=form, pars=pars))
 }
@@ -431,8 +446,8 @@
 
 .brms_form_doublelogistic<-function(x, y, group, dpar = FALSE, nTimes=NULL, useGroup = TRUE, prior = NULL){
   if(dpar){
-    form<-brms::nlf(stats::as.formula(paste0(y," ~ subA/(1+exp((subB-",x,")/subC)) + ((subA2-subA) /(1+exp((subB2-",x,")/subC2)))")))
-    pars <- c("subA", "subB", "subC","subA2", "subB2", "subC2" )
+    form<-brms::nlf(stats::as.formula(paste0(y," ~ ",y,"A/(1+exp((",y,"B-",x,")/",y,"C)) + ((",y,"A2-",y,"A) /(1+exp((",y,"B2-",x,")/",y,"C2)))")))
+    pars <- paste0(y, c("A", "B", "C","A2", "B2", "C2" ))
   }else{
     form <- stats::as.formula(paste0(y," ~ A/(1+exp((B-",x,")/C)) + ((A2-A) /(1+exp((B2-",x,")/C2)))"))
     pars <- c("A", "B", "C","A2", "B2", "C2" )
@@ -447,8 +462,8 @@
 
 .brms_form_doublegompertz<-function(x, y, group, dpar = FALSE, nTimes=NULL, useGroup = TRUE, prior = NULL){
   if(dpar){
-    form <- brms::nlf(stats::as.formula(paste0(y," ~ subA * exp(-subB * exp(-subC*",x,")) + (subA2-subA) * exp(-subB2 * exp(-subC2*(",x,"-subB)))")))
-    pars <- c("subA", "subB", "subC","subA2", "subB2", "subC2" )
+    form <- brms::nlf(stats::as.formula(paste0(y," ~ ",y,"A * exp(-",y,"B * exp(-",y,"C*",x,")) + (",y,"A2-",y,"A) * exp(-",y,"B2 * exp(-",y,"C2*(",x,"-",y,"B)))")))
+    pars <- paste0(y, c("A", "B", "C","A2", "B2", "C2" ))
   }else{
     form <- stats::as.formula(paste0(y," ~ A * exp(-B * exp(-C*",x,")) + (A2-A) * exp(-B2 * exp(-C2*(",x,"-B)))"))
     pars <- c("A", "B", "C","A2", "B2", "C2" )
@@ -463,11 +478,11 @@
 
 .brms_form_monomolecular<-function(x, y, group, dpar = FALSE, nTimes=NULL, useGroup = TRUE, prior = NULL){
   if(dpar){
-    form <- brms::nlf(stats::as.formula(paste0(y," ~ subA-subA*exp(-subB*",x,")")))
-    pars <- c("subA", "subB")
+    form <- brms::nlf(stats::as.formula(paste0(y," ~ ",y,"A-",y,"A*exp(-",y,"B*",x,")")))
+    pars <- paste0(y, LETTERS[1:2])
   }else{
     form <- stats::as.formula(paste0(y,"~A-A*exp(-B*",x,")"))
-    pars <- c("A", "B")
+    pars <- LETTERS[1:2]
   }
   return(list(form=form, pars=pars))
 }
@@ -479,11 +494,11 @@
 
 .brms_form_exponential<-function(x, y, group, dpar = FALSE, nTimes=NULL, useGroup = TRUE, prior = NULL){
   if(dpar){
-    form <- brms::nlf(stats::as.formula(paste0(y," ~ subA*exp(subB*",x, ")")))
-    pars <- c("A", "B")
+    form <- brms::nlf(stats::as.formula(paste0(y," ~ ",y,"A*exp(",y,"B*",x, ")")))
+    pars <-  paste0(y, LETTERS[1:2])
   }else{
     form <- stats::as.formula(paste0(y," ~ A*exp(B*",x, ")"))
-    pars <- c("A", "B")
+    pars <- LETTERS[1:2]
   }
   return(list(form=form, pars=pars))
 }
@@ -495,10 +510,10 @@
 
 .brms_form_linear<-function(x, y, group, dpar = FALSE, nTimes=NULL, useGroup = TRUE, prior = NULL){
   if(dpar){
-    if(!is.null(prior) && any(grepl("subA", names(prior))) ){
+    if(!is.null(prior) && any(grepl(paste0(y,"A"), names(prior))) ){
       #* use non-linear parameterization with subA
-      form <- brms::nlf(stats::as.formula(paste0(y," ~ subA*",x)))
-      pars <- c("subA")
+      form <- brms::nlf(stats::as.formula(paste0(y," ~ ",y,"A","*",x)))
+      pars <- c(paste0(y,"A"))
     } else{
       #* linear parameterization using x directly
       form <- as.formula(paste0(y," ~ ", x, "+", x, ":",group))
@@ -518,11 +533,11 @@
 
 .brms_form_powerlaw<-function(x, y, group, dpar = FALSE, nTimes=NULL, useGroup = TRUE, prior = NULL){
   if(dpar){
-    form <- brms::nlf(stats::as.formula(paste0(y," ~ subA*",x,"^subB")))
-    pars <- c("subA", "subB")
+    form <- brms::nlf(stats::as.formula(paste0(y," ~ ",y,"A*",x,"^",y,"B")))
+    pars <-  paste0(y, LETTERS[1:2])
   }else{
     form <- stats::as.formula(paste0(y," ~ A*",x,"^B"))
-    pars <- c("A", "B")
+    pars <- LETTERS[1:2]
   }
   return(list(form=form, pars=pars))
 }
@@ -589,11 +604,11 @@
 
 .brms_form_frechet<-function(x, y, group, dpar = FALSE, nTimes=NULL, useGroup = TRUE, prior = NULL){ 
   if(dpar){
-    form <- brms::nlf(stats::as.formula(paste0(y," ~ subA * exp(-((",x,"-0)/subC)^(-subB))")))
-    pars <- c("subA", "subB", "subC")
+    form <- brms::nlf(stats::as.formula(paste0(y," ~ ",y,"A * exp(-((",x,"-0)/",y,"C)^(-",y,"B))")))
+    pars <- paste0(y, LETTERS[1:3])
   }else{
     form <-stats::as.formula(paste0(y," ~ A * exp(-((",x,"-0)/C)^(-B))"))
-    pars <- c("A", "B", "C")
+    pars <- LETTERS[1:3]
   }
   return(list(form=form, pars=pars))
 }
@@ -605,11 +620,11 @@
 
 .brms_form_weibull<-function(x, y, group, dpar = FALSE, nTimes=NULL, useGroup = TRUE, prior = NULL){ 
   if(dpar){
-    form <- brms::nlf(stats::as.formula(paste0(y," ~ subA * (1-exp(-(",x,"/subC)^subB))")))
-    pars <- c("subA", "subB", "subC")
+    form <- brms::nlf(stats::as.formula(paste0(y," ~ ",y,"A * (1-exp(-(",x,"/",y,"C)^",y,"))")))
+    pars <- paste0(y, LETTERS[1:3])
   }else{
     form <-stats::as.formula(paste0(y," ~ A * (1-exp(-(",x,"/C)^B))"))
-    pars <- c("A", "B", "C")
+    pars <- LETTERS[1:3]
   }
   return(list(form=form, pars=pars))
 }
@@ -621,11 +636,11 @@
 
 .brms_form_gumbel<-function(x, y, group, dpar = FALSE, nTimes=NULL, useGroup = TRUE, prior = NULL){
   if(dpar){
-    form <- brms::nlf(stats::as.formula(paste0(y," ~ subA * exp(-exp( -(",x,"-subB)/subC))")))
-    pars <- c("subA", "subB", "subC")
+    form <- brms::nlf(stats::as.formula(paste0(y," ~ ",y,"A * exp(-exp( -(",x,"-",y,"B)/",y,"C))")))
+    pars <- paste0(y, LETTERS[1:3])
   }else{
     form <-stats::as.formula(paste0(y," ~ A * exp(-exp( -(",x,"-B)/C))"))
-    pars <- c("A", "B", "C")
+    pars <- LETTERS[1:3]
   }
   return(list(form=form, pars=pars))
 }

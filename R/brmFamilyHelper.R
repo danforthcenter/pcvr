@@ -16,8 +16,8 @@
   if(!grepl("[:]", model)){
     model <- paste0("student:", model)
   }
-  dist <- gsub(":.*", "", model)
-  rhs <- gsub(".*:", "", model)
+  dist <- trimws(gsub(":.*", "", model))
+  rhs <- trimws(gsub(".*:", "", model))
   family = dist
   dpars <- brms::brmsfamily(dist)$dpars[-1]
   return(list(family = family, dpars = dpars, rhs = rhs))

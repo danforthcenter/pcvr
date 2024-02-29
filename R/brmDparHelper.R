@@ -32,7 +32,7 @@
     } else if(model =="spline"){model="gam"}
     string_brmsDparFormFun <- paste0(".brms_form_", gsub(" ", "", model))
     brmsDparFormFun <- match.fun(string_brmsDparFormFun)
-    formResDpar <- brmsDparFormFun(x, dpar, group, dpar=TRUE, nTimes=nTimes, useGroup=USEGROUP, prior=priors)
+    formResDpar <- brmsDparFormFun(x, dpar, group, dpar=TRUE, nTimes=nTimes, useGroup=useGroup, prior=priors)
     dparForm <- formResDpar$form
     dpar_pars <- formResDpar$pars
   }
