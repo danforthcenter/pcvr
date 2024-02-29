@@ -97,13 +97,19 @@ nlmePlot<-function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facetG
     pal <- viridis::plasma(2, begin=0.1, end = 0.9)
     virList <- lapply(1:length(unique(df[[group]])), function(i){pal} )
   }
+  #* `layer for individual lines if formula was complete`
+  if(!is.null(individual)){
+    individual_lines<-ggplot2::geom_line(data=df, ggplot2::aes(x=.data[[x]], y=.data[[y]],
+                                                               group = interaction(.data[[individual]],
+                                                                                   .data[[group]]) ),
+                                         linewidth=0.25, color="gray40")
+  } else{
+    individual_lines<-list()
+  }
   
   plot <- ggplot2::ggplot(preds, ggplot2::aes(x=.data[[x]], y = .data[["trendline"]]))+
     facet_layer + 
-    ggplot2::geom_line(data=df, ggplot2::aes(x=.data[[x]], y=.data[[y]],
-                                                group = interaction(.data[[individual]],
-                                                                    .data[[group]]) ),
-                       linewidth=0.25, color="gray40")+
+    individual_lines+
     ggplot2::labs(x=x, y=y)+
     pcv_theme()
   

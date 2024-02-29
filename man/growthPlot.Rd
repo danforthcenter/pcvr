@@ -18,7 +18,10 @@ growthPlot(
 \item{fit}{A model fit object (or a list of \code{nlrq} models) as returned by \code{fitGrowth}.}
 
 \item{form}{A formula similar to that in \code{growthSS} inputs (or the \code{pcvrForm} part of the output) specifying the outcome,
-predictor, and grouping structure of the data as \code{outcome ~ predictor|individual/group}.}
+predictor, and grouping structure of the data as \code{outcome ~ predictor|individual/group}. Generally this is given directly from
+the growthSS output (\code{ss$pcvrForm}). If the formula does not include both individuals
+and groups then lines from the data will not be plotted which may be best if your data does not specify unique individuals and your model 
+does not include autocorrelation.}
 
 \item{groups}{An optional set of groups to keep in the plot.
 Defaults to NULL in which case all groups in the model are plotted.}

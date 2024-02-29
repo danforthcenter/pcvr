@@ -46,12 +46,17 @@ brmPlot<-function(fit, form, df=NULL, groups = NULL, timeRange = NULL, facetGrou
   fitData<-fit$data
   y=as.character(form)[2]
   x<-as.character(form)[3]
-  if(grepl("\\|", x) | grepl("\\/",x)){
+  if(grepl("\\|", x) & grepl("\\/",x)){
     x3<-trimws(strsplit(x, "[|]|[/]")[[1]])
     x<-x3[1]
     individual = x3[2]
-    group = x3[3]
-  } else {stop("form must specify grouping for observations. See documentation and examples.")}
+    group = x3[3] 
+  } else if (grepl("\\|", x)){
+    x2<-trimws(strsplit(x, "[|]")[[1]])
+    x<-x2[1]
+    group = x2[2]
+    individual=NULL
+  }else {stop("form must specify grouping for observations. See documentation and examples.")}
   
   #* if no group in fitdata then add a dummy group
   if(!group %in% colnames(fitData)){
@@ -106,7 +111,7 @@ brmPlot<-function(fit, form, df=NULL, groups = NULL, timeRange = NULL, facetGrou
                                                           fill=virList[[g]][i],alpha=0.5))
   }
   
-  if(!is.null(df)){
+  if(!is.null(df) & !is.null(individual)){
     p<-p+ggplot2::geom_line(data=df, ggplot2::aes(.data[[x]], .data[[y]], group=interaction(.data[[individual]], .data[[group]])),
                             color="gray20", linewidth=0.2)
   }
