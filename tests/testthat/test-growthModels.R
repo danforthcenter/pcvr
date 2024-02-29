@@ -71,9 +71,9 @@ test_that("Test Logistic nlme modeling", {
 
 test_that("Test Logistic brms model setup", {
   ss<-growthSS(model = "logistic", form=y~time|id/group, sigma="gompertz",
-               list('A' = 130, 'B' = 12, 'C' = 3, 'subA' = 20, 'subB' = 15, 'subC' = 0.25),
+               list('A' = 130, 'B' = 12, 'C' = 3, 'sigmaA' = 20, 'sigmaB' = 15, 'sigmaC' = 0.25),
                df=logistic_df, type = "brms")
-  expect_equal(ss$prior$nlpar, c("", "A", "B", "C", "subA", "subB", "subC"))
+  expect_equal(ss$prior$nlpar, c("", "A", "B", "C", "sigmaA", "sigmaB", "sigmaC"))
 
   expect_s3_class(ss$formula, "brmsformula")
 })

@@ -39,7 +39,10 @@ Note that double sigmoid models are not supported as parts of segmented models a
  can currently only be included as the last part of a segmented model. When using a changepoint model
  it may be worth using segments that are simpler to fit (gompertz instead of EVD options, for instance).
 Currently "homo" and "int" are treated the same and "spline" and "gam" are interchangeable.
-Time-to-event models can be specified using the "survival" keyword, see details for an explanation of the changes that entails.}
+Time-to-event models can be specified using the "survival" keyword, see details for an explanation of the changes that entails. 
+Similarly, using the brms backend response distributions (see \code{brms::brmsfamily})
+can be specified in the model as "family: model" so that a model 
+of logistic increasing counts may be written as \code{model = "poisson: logistic"}.}
 
 \item{form}{A formula describing the model. The left hand side should only be 
 the outcome variable (phenotype), and a cutoff if you are making a survival model (see details).
@@ -54,12 +57,20 @@ The right hand side needs at least the x variable
  it will be ignored in formulas for growth and variance (this may be the case if 
  you split data before fitting models to be able to run more smaller models each more quickly).}
 
-\item{sigma}{A model for heteroskedasticity. This argument is only used with "brms" and "nlme" models.
-When type="brms" this is turned into a formula and the supported options are
-the same as the model options (including threshold models), if left NULL then "int" will be used corresponding
-to a homoskedastic model. Parameter names are the same as those in the main model but with the "sub" prefix. Additionally,
-if a linear model is used for sigma then it can be modeled with or without a prior, if a prior is specified ("subA") then 
-a non-linear formula is used and the "subA" parameter will be included in the output instead of the default "sigma" term.
+\item{sigma}{Other models for distributional parameters.
+This argument is only used with "brms" and "nlme" models and is handled differently for each.
+When type="brms" this can be supplied as a model or as a list of models.
+It is turned into a formula (or list of formulas) with an entry corresponding to each distributional parameter (after the mean)
+of the growth model family. If no family was specified (\code{model="logistic"} for instance) then the student T distribution 
+is used, with additional distributional parameters sigma and nu. To check the naming of distributional parameters in each response family
+use \code{brms::brmsfamily("family")$dpars}.
+The supported options are the same as the model options (including threshold models). 
+For distributional parameters that do not have a formula specified they will be modeled as intercept only (not by group).
+Parameter names are the same as those in the main model but with the distributional parameter name as a prefix. Additionally,
+if a linear model is used for sigma then it can be modeled with or without a prior, if a prior is specified ("sigmaA") then 
+a non-linear formula is used and the "sigmaA" parameter will be included in the output instead of the default "sigma" term.
+In the rare case that you wish to model the mean and the 3rd distributional parameter but not the 2nd then
+\code{sigma = list("not_estimated", "model")} would allow for that.
  When type ="nlme" the options are more limited to c("none", "power", "exp"),
   corresponding to using \code{nlme::varIdent}, \code{nlme::varPower},
 or \code{nlme::varExp} respectively where "power" is the default.}

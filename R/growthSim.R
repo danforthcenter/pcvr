@@ -7,7 +7,8 @@
 #' "linear", "power law", "double logistic", or "double gompertz". Alternatively this can be 
 #' a pseudo formula to generate data from a segmented growth curve by specifying "model1 + model2",
 #' see examples and \code{\link{growthSS}}. Decay can be specified by including "decay" as part of the model
-#' such as "logistic decay" or "linear + linear decay".
+#' such as "logistic decay" or "linear + linear decay". Count data can be specified with the "count: " prefix,
+#' similar to using "poisson: model" in \link{growthSS}.
 #' While "gam" models are supported by \code{growthSS}
 #' they are not simulated by this function.
 #' @param n Number of individuals to simulate over time per each group in params
@@ -157,8 +158,11 @@
 
 growthSim<-function(model=c("logistic", "gompertz", "double logistic", "double gompertz",
                             "monomolecular", "exponential", "linear", "power law", "frechet", "weibull", "gumbel"), n=20, t=25, params=list(), noise=NULL, D=0){
-  
-  if(length(model)>1){stop("Select one model to use")}
+  if(grepl("count:", model)){
+    COUNT = TRUE
+    model <- trimws(gsub("count:", "", model))
+  } else {COUNT = FALSE}
+  if(length(model)>1){stop("Select one model to use, changepoints should be specified with '+'")}
   if(is.null(noise)){noise = lapply(params, function(i) mean(i)/10); wasNULL = TRUE} else{wasNULL=FALSE}
   if(is.null(names(noise))){names(noise)<-c(LETTERS[1:length(noise)])}
   if(any(names(noise)%in%letters)){ names(noise)<-c(LETTERS[ which(letters%in%substr(names(noise),1,1)) ]) }
@@ -185,6 +189,13 @@ growthSim<-function(model=c("logistic", "gompertz", "double logistic", "double g
     out <- .singleGrowthSim(model, n, t, params, noise, D)
   } else{
     out <- .multiGrowthSim(model, n, t, params, noise, D)
+  }
+  if(COUNT){
+    out <- do.call(rbind, lapply(split(out, interaction(out$group, out$id)), function(sub){
+      sub$y <- round(cummax(sub$y))
+      sub
+    }))
+    rownames(out)<-NULL
   }
   return(out)
 }
@@ -294,30 +305,7 @@ growthSim<-function(model=c("logistic", "gompertz", "double logistic", "double g
   }
   
   matched_model <- match.arg(model, models)
-  
-  if(matched_model=="logistic"){
-    gsi<-gsi_logistic
-  } else if (matched_model =="gompertz"){
-    gsi<-gsi_gompertz
-  } else if (matched_model=="double logistic"){
-    gsi<-gsi_dou_logistic
-  } else if (matched_model=="double gompertz"){
-    gsi<-gsi_dou_gompertz
-  } else if (matched_model=="monomolecular"){
-    gsi<-gsi_monomolecular
-  } else if (matched_model=="exponential"){
-    gsi<-gsi_exponential
-  } else if (matched_model=="linear"){
-    gsi<-gsi_linear
-  } else if (matched_model=="power law"){
-    gsi<-gsi_powerlaw
-  } else if (matched_model=="frechet"){
-    gsi<-gsi_frechet
-  } else if (matched_model=="weibull"){
-    gsi<-gsi_weibull
-  } else if (matched_model=="gumbel"){
-    gsi<-gsi_gumbel
-  }
+  gsi <- match.fun(paste0("gsi_", gsub(" ","",matched_model)))
   
   if(decay){
     gsid <- function(D=0, ...){D-gsi(...)}
@@ -352,7 +340,7 @@ gsi_gompertz <- function(x,pars, noise){
   c_r <- pars[["C"]]+rnorm(1,mean=0,sd=noise[["C"]])
   return(a_r*exp(-b_r*exp(-c_r*x)))
 }
-gsi_dou_logistic <- function(x,pars, noise){
+gsi_doublelogistic <- function(x,pars, noise){
   a_r <- pars[["A"]]+rnorm(1,mean = 0,sd=noise[["A"]])
   b_r <- pars[["B"]]+rnorm(1,mean=0,sd=noise[["B"]])
   c_r <- pars[["C"]]+rnorm(1,mean=0,sd=noise[["C"]])
@@ -361,7 +349,7 @@ gsi_dou_logistic <- function(x,pars, noise){
   c2_r <- pars[["C2"]]+rnorm(1,mean=0,sd=noise[["C2"]])
   return( a_r/(1+exp((b_r-x)/c_r)) + ((a2_r-a_r) /(1+exp((b2_r-x)/c2_r))) )
 }
-gsi_dou_gompertz <- function(x,pars, noise){
+gsi_doublegompertz <- function(x,pars, noise){
   a_r <- pars[["A"]]+rnorm(1,mean = 0,sd=noise[["A"]])
   b_r <- pars[["B"]]+rnorm(1,mean=0,sd=noise[["B"]])
   c_r <- pars[["C"]]+rnorm(1,mean=0,sd=noise[["C"]])

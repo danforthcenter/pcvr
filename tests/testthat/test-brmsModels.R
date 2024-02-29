@@ -1,5 +1,5 @@
 
-if(file.exists("/home/josh/Desktop/") & interactive()){ # only run locally, don't test for each R-CMD Check
+if(file.exists("/home/josh/Desktop/") & interactive() ){ # only run locally, don't test for each R-CMD Check
   
   #* there are lots of options and until one obviously breaks I am not going to try to test all of them. 
   library(testthat)
@@ -15,7 +15,7 @@ if(file.exists("/home/josh/Desktop/") & interactive()){ # only run locally, don'
     ss<-growthSS(model = "logistic", form=y~time|id/group, sigma="spline",
                  list('A' = 130, 'B' = 10, "C" = 3),
                  df=simdf, type = "brms")
-    expect_equal(ss$prior$nlpar, c("", "", "A", "B", "C"))
+    expect_equal(ss$prior$nlpar, c("", "", "A", "B", "C") )
     
     fit <- fitGrowth(ss, backend="cmdstanr", iter=500, chains=1, cores=1)
     expect_s3_class(fit, "brmsfit")
@@ -44,7 +44,7 @@ if(file.exists("/home/josh/Desktop/") & interactive()){ # only run locally, don'
     ss<-growthSS(model = "gompertz", form=y~time|id/group, sigma="int",
                  list('A' = 130, 'B' = 10, "C" = 1),
                  df=simdf, type = "brms")
-    expect_equal(ss$prior$nlpar, c("", "", "A", "B", "C"))
+    expect_equal(ss$prior$nlpar, c("", "A", "B", "C"))
     
     fit <- fitGrowth(ss, backend="cmdstanr", iter=500, chains=1, cores=1)
     expect_s3_class(fit, "brmsfit")
@@ -64,7 +64,7 @@ if(file.exists("/home/josh/Desktop/") & interactive()){ # only run locally, don'
     ss<-growthSS(model = "monomolecular", form=y~time|id/group, sigma="int",
                  list('A' = 130, 'B' = 1),
                  df=simdf, type = "brms")
-    expect_equal(ss$prior$nlpar, c("", "", "A", "B"))
+    expect_equal(ss$prior$nlpar, c("", "A", "B"))
     
     fit <- fitGrowth(ss, backend="cmdstanr", iter=500, chains=1, cores=1)
     expect_s3_class(fit, "brmsfit")
@@ -84,7 +84,7 @@ if(file.exists("/home/josh/Desktop/") & interactive()){ # only run locally, don'
     ss<-growthSS(model = "exponential", form=y~time|id/group, sigma="int",
                  list('A' = 10, 'B' = 1),
                  df=simdf, type = "brms")
-    expect_equal(ss$prior$nlpar, c("", "", "A", "B"))
+    expect_equal(ss$prior$nlpar, c("", "A", "B"))
     
     fit <- fitGrowth(ss, backend="cmdstanr", iter=500, chains=1, cores=1)
     expect_s3_class(fit, "brmsfit")
@@ -102,7 +102,7 @@ if(file.exists("/home/josh/Desktop/") & interactive()){ # only run locally, don'
     ss<-growthSS(model = "power law", form=y~time|id/group, sigma="linear",
                  list('A' = 10, 'B' = 1),
                  df=simdf, type = "brms")
-    expect_equal(ss$prior$nlpar, c("", "", "A", "B"))
+    expect_equal(ss$prior$nlpar, c("", "A", "B"))
     
     fit <- fitGrowth(ss, backend="cmdstanr", iter=500, chains=1, cores=1)
     expect_s3_class(fit, "brmsfit")
@@ -120,7 +120,7 @@ if(file.exists("/home/josh/Desktop/") & interactive()){ # only run locally, don'
     ss<-growthSS(model = "linear", form=y~time|id/group, sigma="int",
                  list('A' = 5),
                  df=simdf, type = "brms")
-    expect_equal(ss$prior$nlpar, c("", "", "A"))
+    expect_equal(ss$prior$nlpar, c("", "A"))
     
     fit <- fitGrowth(ss, backend="cmdstanr", iter=500, chains=1, cores=1)
     expect_s3_class(fit, "brmsfit")
@@ -136,13 +136,13 @@ if(file.exists("/home/josh/Desktop/") & interactive()){ # only run locally, don'
                      params = list("A"=c(15, 12)))
     
     model = "linear"; form=y~time|id/group; sigma="linear";
-    priors = list('A' = 5, "subA"=2);
+    priors = list('A' = 5, "sigmaA"=2);
     df=simdf; type = "brms"
     
     ss<-growthSS(model = "linear", form=y~time|id/group, sigma="linear",
-                 list('A' = 5, "subA"=2),
+                 list('A' = 5, "sigmaA"=2),
                  df=simdf, type = "brms")
-    expect_equal(ss$prior$nlpar, c( "", "A", "subA"))
+    expect_equal(ss$prior$nlpar, c( "", "A", "sigmaA"))
     
     fit <- fitGrowth(ss, backend="cmdstanr", iter=500, chains=1, cores=1)
     expect_s3_class(fit, "brmsfit")
@@ -223,7 +223,7 @@ if(file.exists("/home/josh/Desktop/") & interactive()){ # only run locally, don'
                  list("linear1A"=10, "changePoint1"=5),
                  df=simdf, type = "brms")
     
-    expect_equal(ss$prior$nlpar, c("","","linear1A","changePoint1"))
+    expect_equal(ss$prior$nlpar, c("","linear1A","changePoint1"))
     
     fit <- fitGrowth(ss, backend="cmdstanr", iter=500, chains=1, cores=1)
     expect_s3_class(fit, "brmsfit")
@@ -261,9 +261,9 @@ if(file.exists("/home/josh/Desktop/") & interactive()){ # only run locally, don'
                      params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))
     
     ss<-growthSS(model = "logistic", form=y~time|id/group, sigma="logistic",
-                 list('A' = 130, 'B' = 10, "C" = 3, 'subA' = 20, 'subB' = 10, "subC" = 2),
+                 list('A' = 130, 'B' = 10, "C" = 3, 'sigmaA' = 20, 'sigmaB' = 10, "sigmaC" = 2),
                  df=simdf, type = "brms")
-    expect_equal(ss$prior$nlpar, c("", "A", "B", "C", "subA", "subB", "subC"))
+    expect_equal(ss$prior$nlpar, c("", "A", "B", "C", "sigmaA", "sigmaB", "sigmaC"))
     
     fit <- fitGrowth(ss, backend="cmdstanr", iter=500, chains=1, cores=1) # that's fast
     expect_s3_class(fit, "brmsfit")
@@ -281,9 +281,9 @@ if(file.exists("/home/josh/Desktop/") & interactive()){ # only run locally, don'
                      params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))
     
     ss<-growthSS(model = "logistic", form=y~time|id/group, sigma="gompertz",
-                 list('A' = 130, 'B' = 10, "C" = 3, 'subA' = 20, 'subB' = 10, "subC" = 2),
+                 list('A' = 130, 'B' = 10, "C" = 3, 'sigmaA' = 20, 'sigmaB' = 10, "sigmaC" = 2),
                  df=simdf, type = "brms")
-    expect_equal(ss$prior$nlpar, c("", "A", "B", "C", "subA", "subB", "subC"))
+    expect_equal(ss$prior$nlpar, c("", "A", "B", "C", "sigmaA", "sigmaB", "sigmaC"))
     
     fit <- fitGrowth(ss, backend="cmdstanr", iter=500, chains=1, cores=1) # that's fast
     expect_s3_class(fit, "brmsfit")
@@ -301,9 +301,9 @@ if(file.exists("/home/josh/Desktop/") & interactive()){ # only run locally, don'
                      params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))
     
     ss<-growthSS(model = "logistic", form=y~time|id/group, sigma="monomolecular",
-                 list('A' = 130, 'B' = 10, "C" = 3, 'subA' = 5, 'subB' = 0.5),
+                 list('A' = 130, 'B' = 10, "C" = 3, 'sigmaA' = 5, 'sigmaB' = 0.5),
                  df=simdf, type = "brms")
-    expect_equal(ss$prior$nlpar, c("", "A", "B", "C", "subA", "subB"))
+    expect_equal(ss$prior$nlpar, c("", "A", "B", "C", "sigmaA", "sigmaB"))
     
     fit <- fitGrowth(ss, backend="cmdstanr", iter=500, chains=1, cores=1) # that's fast
     expect_s3_class(fit, "brmsfit")
@@ -340,7 +340,7 @@ if(file.exists("/home/josh/Desktop/") & interactive()){ # only run locally, don'
     ss<-growthSS(model = "int + int", form=y~time|id/group, sigma="int",
                  list("int1"=10, "changePoint1"=10, "int2"=20),
                  df=simdf, type = "brms")
-    expect_equal(ss$prior$nlpar, c("","","int1","changePoint1", "int2"))
+    expect_equal(ss$prior$nlpar, c("","int1","changePoint1", "int2"))
     
     fit <- fitGrowth(ss, backend="cmdstanr", iter=500, chains=1, cores=1)
     expect_s3_class(fit, "brmsfit")
@@ -355,7 +355,7 @@ if(file.exists("/home/josh/Desktop/") & interactive()){ # only run locally, don'
     set.seed(123)
     
     noise<-do.call(rbind, lapply(1:30, function(i){
-      chngpt <- 20
+      chngpt <- c(20, 21)
       rbind(data.frame(id = paste0("id_",i), time = 1:chngpt[1], group = "a", y = c(runif(chngpt[1]-1, 0, 20), rnorm(1,5,1))),
             data.frame(id = paste0("id_",i), time = 1:chngpt[2], group = "b", y = c(runif(chngpt[2]-1, 0, 20), rnorm(1,5,1))) )
     }))
@@ -375,7 +375,7 @@ if(file.exists("/home/josh/Desktop/") & interactive()){ # only run locally, don'
     ss<-growthSS(model = "int + int", form=y~time|id/group, sigma="int",
                  list("int1"=10, "fixedChangePoint1"=20, "int2"=20),
                  df=simdf, type = "brms")
-    expect_equal(ss$prior$nlpar, c("","","int1", "int2"))
+    expect_equal(ss$prior$nlpar, c("","int1", "int2"))
     
     fit <- fitGrowth(ss, backend="cmdstanr", iter=500, chains=1, cores=1)
     expect_s3_class(fit, "brmsfit")
@@ -409,9 +409,9 @@ if(file.exists("/home/josh/Desktop/") & interactive()){ # only run locally, don'
     #   geom_line()+
     #   theme_minimal()
     ss<-growthSS(model = "int + int", form=y~time|id/group, sigma="int + int",
-                 list("int1"=10, "changePoint1"=10, "int2"=20, "subint1"=10, "subchangePoint1"=10, "subint2"=10),
+                 list("int1"=10, "changePoint1"=10, "int2"=20, "sigmaint1"=10, "sigmachangePoint1"=10, "sigmaint2"=10),
                  df=simdf, type = "brms")
-    expect_equal(ss$prior$nlpar, c("", "int1", "changePoint1", "int2", "subint1", "subchangePoint1", "subint2"))
+    expect_equal(ss$prior$nlpar, c("", "int1", "changePoint1", "int2", "sigmaint1", "sigmachangePoint1", "sigmaint2"))
     
     fit <- fitGrowth(ss, backend="cmdstanr", iter=500, chains=1, cores=1)
     expect_s3_class(fit, "brmsfit")
@@ -449,9 +449,9 @@ if(file.exists("/home/josh/Desktop/") & interactive()){ # only run locally, don'
     #   theme_minimal()
     
     ss<-growthSS(model = "int + linear", form=y~time|id/group, sigma="int + linear",
-                 list("int1"=10, "changePoint1"=10, "linear2A"=20, "subint1"=10, "subchangePoint1"=10, "sublinear2A"=10),
+                 list("int1"=10, "changePoint1"=10, "linear2A"=20, "sigmaint1"=10, "sigmachangePoint1"=10, "sigmalinear2A"=10),
                  df=simdf, type = "brms")
-    expect_equal(ss$prior$nlpar, c("", "int1", "changePoint1", "linear2A", "subint1", "subchangePoint1", "sublinear2A"))
+    expect_equal(ss$prior$nlpar, c("", "int1", "changePoint1", "linear2A", "sigmaint1", "sigmachangePoint1", "sigmalinear2A"))
     
     fit <- fitGrowth(ss, backend="cmdstanr", iter=500, chains=1, cores=1)
     expect_s3_class(fit, "brmsfit")
@@ -489,12 +489,12 @@ if(file.exists("/home/josh/Desktop/") & interactive()){ # only run locally, don'
     
     ss<-growthSS(model = "int+logistic", form=y~time|id/group, sigma="int + spline",
                  list("int1" = 5, "changePoint1"=10 ,'logistic2A' = 130, 'logistic2B' = 10, "logistic2C" = 3,
-                      'subint1' = 5, "subchangePoint1"=15),
+                      'sigmaint1' = 5, "sigmachangePoint1"=15),
                  df=simdf, type = "brms")
     
     
     expect_equal(ss$prior$nlpar, c("", "int1", "changePoint1", "logistic2A", "logistic2B", "logistic2C", 
-                                   "subint1", "subchangePoint1"))
+                                   "sigmaint1", "sigmachangePoint1"))
     
     fit <- fitGrowth(ss, backend="cmdstanr", iter=500, chains=1, cores=1)
     expect_s3_class(fit, "brmsfit")
@@ -527,12 +527,12 @@ if(file.exists("/home/josh/Desktop/") & interactive()){ # only run locally, don'
                    sigma = "logistic+linear", df = simdf,
                    start = list("logistic1A" = 130, "logistic1B" = 10, "logistic1C" = 3.5,
                                 "fixedChangePoint1" = 20, "linear2A" = 5, "changePoint2" = 28, "linear3A" = 20,
-                                "sublogistic1A" = 10, "sublogistic1B" = 12, "sublogistic1C" = 20,
-                                "subfixedChangePoint1"=20, "sublinear2A"=3), type = "brms")
+                                "sigmalogistic1A" = 10, "sigmalogistic1B" = 12, "sigmalogistic1C" = 20,
+                                "sigmafixedChangePoint1"=20, "sigmalinear2A"=3), type = "brms")
     
     expect_equal(ss$prior$nlpar, c("", "logistic1A", "logistic1B", "logistic1C", "linear2A", "changePoint2", 
-                                   "linear3A", "sublogistic1A", "sublogistic1B", "sublogistic1C", 
-                                   "sublinear2A"))
+                                   "linear3A", "sigmalogistic1A", "sigmalogistic1B", "sigmalogistic1C", 
+                                   "sigmalinear2A"))
 
     fit <- fitGrowth(ss, backend="cmdstanr", iter=500, chains=1, cores=1)
     # fit <- fitGrowth(ss, backend="cmdstanr", iter=1000, chains=6, cores=6)
@@ -564,7 +564,7 @@ if(file.exists("/home/josh/Desktop/") & interactive()){ # only run locally, don'
     fit2 <- fitGrowth(ss2, backend="cmdstanr", iter=550, chains=1, cores=1)
     
     
-    post <- postPred(fit = list(fit1, fit2), form=ss$pcvrForm, groups=c("a", "a"),
+    post <- postPred(fit = list(fit1, fit2), form=ss1$pcvrForm, groups=c("a", "a"),
                      timeRange=NULL, hyp = "abs(diff) > 20", plot=TRUE)
     expect_s3_class(post$plot, "ggplot")
     
@@ -575,8 +575,8 @@ if(file.exists("/home/josh/Desktop/") & interactive()){ # only run locally, don'
                      params = list("logistic1A"=c(120, 140), "logistic1B"=c(12, 10), "logistic1C"=c(3,3.5),
                                    "changePoint1"=c(20, 23), 
                                    "logistic2A"=c(90, 100), "logistic2B"=c(11, 13), "logistic2C"=c(3, 3.5)))
-    p <- ggplot(simdf,aes(time, y, group=interaction(group,id)))+ 
-      geom_line(aes(color=group))+labs(title="logistic + logistic decay")
+    # p <- ggplot(simdf,aes(time, y, group=interaction(group,id)))+ 
+    #   geom_line(aes(color=group))+labs(title="logistic + logistic decay")
     
     ss<-growthSS(model = "logistic + logistic decay", form=y~time|id/group, sigma="spline",
                  list("logistic1A"=100, "logistic1B"=10, "logistic1C"=3, "changePoint1"=20, 
@@ -584,7 +584,7 @@ if(file.exists("/home/josh/Desktop/") & interactive()){ # only run locally, don'
                  df=simdf, type = "brms")
     fit <- fitGrowth(ss, backend="cmdstanr", iter=500, chains=1, cores=1)
     plot<-growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
-    ggsave("/home/josh/Desktop/stargate/fahlgren_lab/labMeetings/logistic_plus_logisticDecay.png", plot, width=10, height=6, dpi=300, bg="#ffffff")
+    # ggsave("/home/josh/Desktop/stargate/fahlgren_lab/labMeetings/logistic_plus_logisticDecay.png", plot, width=10, height=6, dpi=300, bg="#ffffff")
     expect_s3_class(plot, "ggplot")
   })
   
@@ -596,8 +596,10 @@ if(file.exists("/home/josh/Desktop/") & interactive()){ # only run locally, don'
                     params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))
     prior <- c(0,5)
     ss <- growthSS(model = model, form = form, df = df, start=prior)
-    lapply(ss,head)
-    fit <- fitGrowth(ss,iter = 600, cores = 2, chains = 2, backend = "cmdstanr")
+    expect_equal(ss$prior$coef, c("groupa", "groupb"))
+    #lapply(ss,head)
+    fit <- fitGrowth(ss,iter = 600, cores = 1, chains = 1, backend = "cmdstanr")
+    expect_s3_class(fit, "brmsfit")
     # need to still check plotting/testing, those are pending.
   })
   
@@ -609,8 +611,9 @@ if(file.exists("/home/josh/Desktop/") & interactive()){ # only run locally, don'
                     params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))
     prior <- c(0,5)
     ss <- growthSS(model = model, form = form, df = df, start=prior)
-    lapply(ss,head)
-    test <- fitGrowth(ss,iter = 600, cores = 2, chains = 2, backend = "cmdstanr")
+    #lapply(ss,head)
+    test <- fitGrowth(ss,iter = 600, cores = 1, chains = 1, backend = "cmdstanr")
+    expect_s3_class(test, "brmsfit")
     # need to still check plotting/testing, those are pending.
   })
   
@@ -622,46 +625,25 @@ if(file.exists("/home/josh/Desktop/") & interactive()){ # only run locally, don'
                     params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))
     ss <- growthSS(model = model, form = form, df = df, type="flexsurv")
     #lapply(ss,head)
+    library(flexsurv)
     fit <- fitGrowth(ss)
     p <- growthPlot(fit, form = ss$pcvrForm, df = ss$df)
-    
+    expect_s3_class(p, "ggplot")
   })
   
-  # test_that("int + EVD brms int sub model pipeline", {
-  #   set.seed(123)
-  #   noise<-do.call(rbind, lapply(1:30, function(i){
-  #     chngpt <- rnorm(2, 18, 2)
-  #     rbind(data.frame(id = paste0("id_",i), time = 1:chngpt[1], group = "a", y = c(runif(chngpt[1]-1, 0, 20), rnorm(1,5,1))),
-  #           data.frame(id = paste0("id_",i), time = 1:chngpt[2], group = "b", y = c(runif(chngpt[2]-1, 0, 20), rnorm(1,5,1))) )
-  #   }))
-  #   signal<-growthSim("frechet", n=20, t=30,
-  #                     params = list("A"=c(100,90), "B"=c(5, 3), "C"=c(6, 4)) )
-  #   signal<-do.call(rbind, lapply(unique(paste0(signal$id, signal$group)), function(int){
-  #     noisesub<-noise[paste0(noise$id, noise$group)==int,]
-  #     signalSub <- signal[paste0(signal$id, signal$group) == int, ]
-  #     y_end <- noisesub[noisesub$time == max(noisesub$time), "y"]
-  #     signalSub$time <- signalSub$time + max(noisesub$time)
-  #     signalSub$y <- y_end + signalSub$y
-  #     signalSub
-  #   }))
-  #   simdf <- rbind(noise, signal)
-  #   simdf<-simdf[simdf$time<45, ]
-  #   
-  #   ss<-growthSS(model = "int+frechet", form=y~time|id/group, sigma = "homo",
-  #                start = list("int1" = 5, "changePoint1"=10 ,
-  #                             'frechet2A' = 100, 'frechet2B' = 3, "frechet2C" = 3),
-  #                df=simdf, type = "brms")
-  #   
-  #   expect_equal(ss$prior$nlpar, c("", "", "int1", "changePoint1", "frechet2A", "frechet2B", "frechet2C"))
-  #   
-  #   fit <- fitGrowth(ss, backend="cmdstanr", iter=1000, chains=1, cores=1)
-  #   expect_s3_class(fit, "brmsfit")
-  #   
-  #   plot <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
-  #   ggsave("/home/josh/Desktop/stargate/fahlgren_lab/labMeetings/intPlusEVD.png", plot, width=10, height=6, dpi=300, bg="#ffffff")
-  #   expect_s3_class(plot, "ggplot")
-  #   
-  # })
+  test_that("Logistic Poisson Model", {
+    set.seed(123)
+    form <- y ~ time|id/group
+    df <-growthSim("count: logistic", n=20, t=25,
+                   params = list("A"=c(10,12), "B"=c(13, 11), "C"=c(3, 3.5)))
+    ss <- growthSS(model = "poisson: logistic", form = y ~ time|id/group, sigma=NULL,
+                   df = df, start=list("A"=8, "B"=10, "C"=3) )
+    lapply(ss,head)
+    fit <- fitGrowth(ss,iter = 600, cores = 1, chains = 1, backend = "cmdstanr")
+    expect_s3_class(fit, "brmsfit")
+    p <- growthPlot(fit, ss$pcvrForm, df=ss$df)
+    expect_s3_class(p, "ggplot")
+  })
   
   
 }

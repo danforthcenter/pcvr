@@ -452,6 +452,8 @@ Coding a multilevel bayesian model can be a difficult and time consuming process
 
 ##### submodel options
 
+For the purposes of this vignette we will only consider the default Student T model family, for examples of other model families see the [Advanced Growth Modeling tutorial on github](https://github.com/danforthcenter/pcvr/tree/main/tutorials/pcvrTutorial_advancedGrowthModeling) or the longitudinalGrowth vignette.
+
 There are several ways to consider variance over time. By default almost all modeling assumes homoscedasticity, that is constant variance across predictor variables (time here). That assumption is very unrealistic in biological settings since all seeds/seedlings will start from a very low area but will grow differently through the experiment. The `growthSS` function has three options for modeling variance: homo, linear, spline. There are many ways that we could model variance, but these three are implemented for general use. Splines will almost always yield the best fit to your data.
 
 ![Different sub model options shown and compared with LOO Information Criterion](subModelComparisons.png)

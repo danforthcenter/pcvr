@@ -187,7 +187,7 @@ Bayesian modeling also allows for non-linear, probability driven hypothesis test
 In a Bayesian context we flip "random" and "fixed" elements.
 
 |             | Fixed                                   | Random                                  | Interpretation                                                                                                                                                             |
-|---------------|---------------|---------------|---------------------------|
+|----------------|----------------|----------------|------------------------|
 | Frequentist | [True Effect]{style="color:goldenrod;"} | [Data]{style="color:purple;"}           | If the [True Effect is 0]{style="color:goldenrod;"} then there is an $\alpha\cdot100$% chance of [estimating an effect]{style="color:purple;"} of this size or more.       |
 | Bayesian    | [Data]{style="color:purple;"}           | [True Effect]{style="color:goldenrod;"} | Given the [estimated effect from our data]{style="color:purple;"} there is a P probability of the [True Effect]{style="color:goldenrod;"} being a difference of at least X |
 
@@ -553,6 +553,24 @@ ggplot(sigma_df, aes(x=time, y=y))+
   labs(y="SD of y", title = "Gompertz Sigma", color = "")
 ```
 
+## `growthSS` - Distributional Models {.smaller}
+
+Here we have limited the examples to talk about sigma, a parameter of the Student T distribution that our model belongs to. Written another way we might say all the previous methods are modeling:
+
+Y ~ T(mu ~ main growth formula, [sigma ~ sigma formula]{style="color:#FF007B;"}, [nu ~ 1]{style="color:#FFD900;"})
+
+## `growthSS` - Distributional Models 2 {.smaller}
+
+In `pcvr` the Student T family is the default for these models, but other distributions are supported through `"distribution: model"` syntax.
+
+In general this is only for special cases where the Gaussian/T does not capture some important quality of the data. An obvious example could be leaf counts, which might be modelled as `"poisson: monomolecular"`, for instance.
+
+## `growthSS` - Distributional Models 3 {.smaller}
+
+You can specify sigma as a list of formulas to model different distributional parameters separately. Most of the time this is overkill and adds unnecessary complexity, but the option exists for certain cases such as ZINB where modeling mean, shape, and zero inflation per group may make sense.
+
+For details on supported families and their parameterization try running `growthSS(..., sigma=NULL,...)` and examining the priors, or checking `?brmfamily`.
+
 ## `growthSS` - priors
 
 Bayesian statistics combine prior distributions and collected data to form a posterior distribution.
@@ -613,7 +631,7 @@ Our final call to `growthSS` will look like this for our sample data.
 ss<-growthSS(model="gompertz", form =  y~time|id/group,
              sigma="gompertz", df=simdf,
              start = list("A" = 130, "B" = 10, "C" = 0.5,
-                          "subA"=20, "subB"=10, "subC"=0.25))
+                          "sigmaA"=20, "sigmaB"=10, "sigmaC"=0.25))
 ```
 
 ## `fitGrowth`
@@ -811,7 +829,7 @@ growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
 #| eval: false
 #| echo: true
 #| code-line-numbers: "1,2,3"
-ss<-growthSS(model = "linear + gam", form=y~time|id/group, sigma="homo",
+ss<-growthSS(model = "linear + gam", form=y~time|id/group, sigma="int",
              list("linear1A"=10, "changePoint1"=5),
              df=simdf, type = "brms")
 
@@ -874,7 +892,7 @@ simdf <- rbind(noise, noise2)
 #| code-line-numbers: "1,2,3,4"
 ss<-growthSS(model = "int + int", form=y~time|id/group, sigma="int + int",
              list("int1"=10, "changePoint1"=10, "int2"=20, #main model
-                  "subint1"=10, "subchangePoint1"=10, "subint2"=10), # sub model
+                  "sigmaint1"=10, "sigmachangePoint1"=10, "sigmaint2"=10), # sub model
              df=simdf, type = "brms")
 
 fit <- fitGrowth(ss, backend="cmdstanr", iter=500, chains=1, cores=1)
@@ -916,7 +934,7 @@ simdf <- rbind(noise, signal)
 #| code-line-numbers: "1,2,3,4"
 ss<-growthSS(model = "int + linear", form=y~time|id/group, sigma="int + linear",
                  list("int1"=10, "changePoint1"=10, "linear2A"=20,
-                      "subint1"=10, "subchangePoint1"=10, "sublinear2A"=10),
+                      "sigmaint1"=10, "sigmachangePoint1"=10, "sigmalinear2A"=10),
                  df=simdf, type = "brms")
 fit <- fitGrowth(ss, backend="cmdstanr", iter=500, chains=1, cores=1)
 plot <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df, timeRange = 1:40)
@@ -958,7 +976,7 @@ simdf<-simdf[simdf$time<45, ]
 ss<-growthSS(model = "int+logistic", form=y~time|id/group, sigma="int + spline",
              list("int1" = 5, "changePoint1"=10 ,
                   'logistic2A' = 130, 'logistic2B' = 10, "logistic2C" = 3,
-                  'subint1' = 5, "subchangePoint1"=15),
+                  'sigmaint1' = 5, "sigmachangePoint1"=15),
               df=simdf, type = "brms")
 fit <- fitGrowth(ss, backend="cmdstanr", iter=500, chains=1, cores=1)
 plot <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
@@ -988,6 +1006,27 @@ Here the input data is standard phenotype data with a cutoff to represent the ev
 ## Example survival model {.smaller}
 
 ![](exSurvivalModel.png)
+
+## Example count model {.smaller}
+
+```{r}
+#| eval: false
+#| echo: true
+#| code-line-numbers: "3,5"
+df <-growthSim("count: logistic", n=20, t=25,
+               params = list("A"=c(10,12), "B"=c(13, 11), "C"=c(3, 3.5)))
+ss <- growthSS(model = "poisson: logistic", # specify poisson family
+               form = y ~ time|id/group,
+               sigma=NULL, # poisson only has one parameter
+               df = df, start=list("A"=8, "B"=10, "C"=3) )
+fit <- fitGrowth(ss,iter = 2000, cores = 4, chains = 4)
+plot <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
+ggsave("~/pcvr/tutorials/pcvrTutorial_advancedGrowthModeling/exCountModel.png", plot, width=6,height=4, dpi=300, bg="#ffffff")
+```
+
+## Example count model {.smaller}
+
+![](exCountModel.png)
 
 ## Evaluating your models {.smaller}
 

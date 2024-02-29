@@ -20,7 +20,8 @@ growthSim(
 "linear", "power law", "double logistic", or "double gompertz". Alternatively this can be 
 a pseudo formula to generate data from a segmented growth curve by specifying "model1 + model2",
 see examples and \code{\link{growthSS}}. Decay can be specified by including "decay" as part of the model
-such as "logistic decay" or "linear + linear decay".
+such as "logistic decay" or "linear + linear decay". Count data can be specified with the "count: " prefix,
+similar to using "poisson: model" in \link{growthSS}.
 While "gam" models are supported by \code{growthSS}
 they are not simulated by this function.}
 

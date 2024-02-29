@@ -313,7 +313,7 @@ fitGrowthSurvReg <- function(ss, ...){
 #' @export
 
 fitGrowthFlexSurvReg <- function(ss, ...){
-  fit <- do.call("flexsurvreg", args = list(
+  fit <- do.call(eval(parse(text="flexsurv::flexsurvreg")), args = list(
     formula = ss[["formula"]][["f1"]],
     anc = ss[["formula"]][["f2"]],
     data = quote(ss[["df"]]),
