@@ -1,5 +1,5 @@
 
-if(file.exists("/home/josh/Desktop/") ){ #& interactive() only run locally, don't test for each R-CMD Check
+if(file.exists("/home/josh/Desktop/") & interactive() ){ # only run locally, don't test for each R-CMD Check
   
   #* there are lots of options and until one obviously breaks I am not going to try to test all of them. 
   library(testthat)

@@ -349,7 +349,7 @@
       flist <- list(int_dpars_form, smooth_dpars_form)
       flist<-flist[!unlist(lapply(flist, is.null))]
       if(length(flist)==0){flist=NULL}
-      gp <- brms::get_prior(bf(y~x, flist = flist),
+      gp <- brms::get_prior(brms::bf(y~x, flist = flist),
                             data = data.frame(y=1:100, x=1:100), family=family)
       prior <- rbind(gp[1,], gp[gp$dpar %in% smooth_dpars & gp$class=="Intercept",],
                      gp[gp$dpar %in% int_only_dpars,])
