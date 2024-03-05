@@ -79,6 +79,92 @@ test_that("Test Logistic brms model setup", {
 })
 
 #* ************************************************************
+#* *************** `Testing pcvrFormula options` *************** 
+#* ************************************************************
+
+test_that("Test Logistic nls modeling without individuals", {
+  ss<-suppressMessages(growthSS(model = "logistic", form=y~time|group, 
+                                df=logistic_df, type = "nls"))
+  expect_equal(as.numeric(unlist(ss$start)),
+               c(184.201800401145, 184.201800401145, 12.0514357556166, 12.0514357556166, 
+                 3.34892124655795, 3.34892124655795) )
+  
+  fit <- fitGrowth(ss)
+  expect_s3_class(fit, "nls")
+  
+  nls_p2 <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
+  expect_s3_class(nls_p2, "ggplot")
+})
+
+test_that("Test Logistic nls modeling without individuals or groups", {
+  ss<-suppressMessages(growthSS(model = "logistic", form=y~time, 
+                                df=logistic_df, type = "nls"))
+  expect_equal(as.numeric(unlist(ss$start)),
+               c(184.201800401145, 12.0514357556166, 3.34892124655795) )
+  
+  fit <- fitGrowth(ss)
+  expect_s3_class(fit, "nls")
+  
+  nls_p2 <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
+  expect_s3_class(nls_p2, "ggplot")
+})
+
+test_that("Test Logistic nlrq modeling without individuals", {
+  ss<-suppressMessages(growthSS(model = "logistic", form=y~time|group,
+                                df=logistic_df, type = "nlrq", tau = 0.5)) # seq(0.02, 0.99, 0.02)
+  expect_equal(as.numeric(unlist(ss$start)),
+               c(184.201800401145, 184.201800401145, 12.0514357556166, 12.0514357556166, 
+                 3.34892124655795, 3.34892124655795) )
+  
+  fit <- fitGrowth(ss)
+  expect_s3_class(fit, "nlrq")
+  
+  nlrq_p2 <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
+  expect_s3_class(nlrq_p2, "ggplot")
+})
+
+test_that("Test Logistic nlrq modeling without individuals or groups", {
+  ss<-suppressMessages(growthSS(model = "logistic", form=y~time,
+                                df=logistic_df, type = "nlrq", tau = 0.5)) # seq(0.02, 0.99, 0.02)
+  expect_equal(as.numeric(unlist(ss$start)),
+               c(184.201800401145, 12.0514357556166, 3.34892124655795) )
+  
+  fit <- fitGrowth(ss)
+  expect_s3_class(fit, "nlrq")
+  
+  nlrq_p2 <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
+  expect_s3_class(nlrq_p2, "ggplot")
+})
+
+test_that("Test Logistic nlme modeling without individuals", {
+  ss<-growthSS(model = "logistic", form=y~time|group, sigma="power", # failing on this so far
+               df=logistic_df, type = "nlme")
+  expect_equal(as.numeric(unlist(ss$start)),
+               c(184.201800401145, 184.201800401145, 12.0514357556166, 12.0514357556166, 
+                 3.34892124655795, 3.34892124655795) )
+  
+  fit <- suppressWarnings(fitGrowth(ss))
+  expect_s3_class(fit, "nlme")
+  
+  nlme_p2 <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
+  expect_s3_class(nlme_p2, "ggplot")
+})
+
+test_that("Test Logistic nlme modeling without individuals or groups", {
+  ss<-growthSS(model = "logistic", form=y~time, sigma="power", # failing on this so far
+               df=logistic_df, type = "nlme")
+  expect_equal(as.numeric(unlist(ss$start)),
+               c(184.201800401145, 12.0514357556166, 3.34892124655795) )
+  
+  fit <- suppressWarnings(fitGrowth(ss))
+  expect_s3_class(fit, "nlme")
+  
+  nlme_p2 <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
+  expect_s3_class(nlme_p2, "ggplot")
+})
+
+
+#* ************************************************************
 #* *************** `Monomolecular growth modeling` *************** 
 #* ************************************************************
 
