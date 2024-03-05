@@ -159,10 +159,15 @@
 #' Using the \code{brms} backend the \code{sigma} argument optionally specifies a sub model to account for heteroskedasticity.
 #' Any combination of models (except for decay models) can be specified in the \code{sigma} term.
 #' If you need variance to raise and lower then a gam/spline is the most appropriate option. 
+#' 
 #' Using the \code{brms} backend a model with lots of parameters may be difficult to estimate if there are lots of groups.
 #' If you have very many levels of your "group" variable in a complex model then consider fitting models to subsets
 #' of the "group" variable and using \link{combineDraws} to make a data.frame for hypothesis testing.
 #' 
+#' Limits on the Y variable can be specified in the \code{brms} backend. This should generally be unnecessary and will make the model
+#' slower to fit and potentially more difficult to set priors on. If you do have a limited phenotype (besides the normal positive constraint
+#' for growth models) then this may be helpful, one situation may be canopy coverage percentage which is naturally bounded at an upper and lower limit.
+#' To specify these limits add square brackets to the Y term with upper and lower limits such as \code{"y[0,100] ~ time|id/group"}.
 #' 
 #' There are also three supported submodel options for \code{nlme} models, but a \code{varFunc} object can also be supplied,
 #' see \code{?nlme::varClasses}.
