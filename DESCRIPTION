@@ -45,6 +45,7 @@ Suggests:
     flexsurv,
     curl,
     cmdstanr,
+    vroom,
     rstan,
     caret,
     testthat (>= 3.0.0)
