@@ -84,24 +84,14 @@ sigmas = c("none", "int", "power", "exp")
 
 #* ***** `Make nlme model formula` *****
 #* `parse form argument`
-y=as.character(form)[2]
-x<-as.character(form)[3]
-group = NULL
-if(grepl("\\|", x) & grepl("\\/",x)){
-  x3<-trimws(strsplit(x, "[|]|[/]")[[1]])
-  x<-x3[1]
-  individual = x3[2]
-  group = x3[length(x3)] 
-  if(length(unique(df[[group]]))==1){USEGROUP=FALSE}else{USEGROUP=TRUE} # if there is only one group then ignore grouping for parameter and variance formulas
-} else if (grepl("\\|", x)){
-  x2<-trimws(strsplit(x, "[|]")[[1]])
-  x<-x2[1]
-  individual = x2[2]
-  group="group"
-  df[[group]]<-"group"
-  USEGROUP=FALSE
-  #message("Using dummy grouping, if this is not what you want then specify individual and group")
-} else {stop("form must specify grouping. See documentation and examples.")}
+parsed_form <- .parsePcvrForm(form, df)
+y <- parsed_form$y
+x <- parsed_form$x
+individual <- parsed_form$individual
+group <- parsed_form$group
+USEGROUP <- parsed_form$USEG
+USEINDIVIDUAL <- parsed_form$USEID
+df <- parsed_form$data
 
 #* `make group a factor for nlme`
 df[[group]]<-as.factor(df[[group]])
@@ -178,15 +168,19 @@ return(out)
 #* `Sigma matching helper function`
 
 .nlme_sigma_form <- function(matched_sigma, x, group){
+  if(group == "dummyGroup"){group <- NULL}
   #* `variance formula`
   if(methods::is(matched_sigma, "varFun")){
     weights_form = matched_sigma
   } else if(matched_sigma %in% c("int","none")){
-    weights_form = nlme::varIdent(form = stats::as.formula(paste0("~1|", group)))
+    weights_form = nlme::varIdent(form = stats::as.formula( paste(c("~1", group), collapse="|") ))
   } else if(matched_sigma=="power"){
-    weights_form = nlme::varPower(form = stats::as.formula(paste0("~",x,"|",group)))
+    weights_form = nlme::varPower(form = stats::as.formula( paste(c(paste0("~",x), group), collapse="|") ))
   } else if(matched_sigma =="exp"){
-    weights_form = nlme::varExp(form = stats::as.formula(paste0("~",x,"|",group)))
+    weights_form = nlme::varExp(form = stats::as.formula( paste(c(paste0("~",x), group), collapse="|") ))
+  }
+  if(is.null(group)){
+    
   }
   return(weights_form)
 }
@@ -202,6 +196,7 @@ return(out)
   #* `fixed effects formula`
   total_pars <- c("A", "B", "C")
   if(is.null(pars)){pars <- total_pars}
+  if(is.null(group) | group == "dummyGroup"){pars <- ""}
   fixed_form <- lapply(total_pars, function(par){
     if(par %in% pars){
       stats::as.formula(paste0(par," ~ 0 + ", group))
@@ -229,6 +224,7 @@ return(out)
   #* `fixed effects formula`
   total_pars <- c("A", "B", "C")
   if(is.null(pars)){pars <- total_pars}
+  if(is.null(group) | group == "dummyGroup"){pars <- ""}
   fixed_form <- lapply(total_pars, function(par){
     if(par %in% pars){
       stats::as.formula(paste0(par," ~ 0 + ", group))
@@ -256,6 +252,7 @@ return(out)
   #* `fixed effects formula`
   total_pars <- c("A", "B", "C", "A2", "B2", "C2")
   if(is.null(pars)){pars <- total_pars}
+  if(is.null(group) | group == "dummyGroup"){pars <- ""}
   fixed_form <- lapply(total_pars, function(par){
     if(par %in% pars){
       stats::as.formula(paste0(par," ~ 0 + ", group))
@@ -283,6 +280,7 @@ return(out)
     #* `fixed effects formula`
     total_pars <- c("A", "B", "C", "A2", "B2", "C2")
     if(is.null(pars)){pars <- total_pars}
+    if(is.null(group) | group == "dummyGroup"){pars <- ""}
     fixed_form <- lapply(total_pars, function(par){
       if(par %in% pars){
         stats::as.formula(paste0(par," ~ 0 + ", group))
@@ -310,6 +308,7 @@ return(out)
   #* `fixed effects formula`
   total_pars <- c("A", "B")
   if(is.null(pars)){pars <- total_pars}
+  if(is.null(group) | group == "dummyGroup"){pars <- ""}
   fixed_form <- lapply(total_pars, function(par){
     if(par %in% pars){
       stats::as.formula(paste0(par," ~ 0 + ", group))
@@ -337,6 +336,7 @@ return(out)
   #* `fixed effects formula`
   total_pars <- c("A", "B")
   if(is.null(pars)){pars <- total_pars}
+  if(is.null(group) | group == "dummyGroup"){pars <- ""}
   fixed_form <- lapply(total_pars, function(par){
     if(par %in% pars){
       stats::as.formula(paste0(par," ~ 0 + ", group))
@@ -364,6 +364,7 @@ return(out)
   #* `fixed effects formula`
   total_pars <- c("A")
   if(is.null(pars)){pars <- total_pars}
+  if(is.null(group) | group == "dummyGroup"){pars <- ""}
   fixed_form <- lapply(total_pars, function(par){
     if(par %in% pars){
       stats::as.formula(paste0(par," ~ 0 + ", group))
@@ -391,6 +392,7 @@ return(out)
   #* `fixed effects formula`
   total_pars <- c("A", "B")
   if(is.null(pars)){pars <- total_pars}
+  if(is.null(group) | group == "dummyGroup"){pars <- ""}
   fixed_form <- lapply(total_pars, function(par){
     if(par %in% pars){
       stats::as.formula(paste0(par," ~ 0 + ", group))
@@ -445,6 +447,7 @@ return(out)
   #* `fixed effects formula`
   total_pars <- c("A", "B", "C")
   if(is.null(pars)){pars <- total_pars}
+  if(is.null(group) | group == "dummyGroup"){pars <- ""}
   fixed_form <- lapply(total_pars, function(par){
     if(par %in% pars){
       stats::as.formula(paste0(par," ~ 0 + ", group))
@@ -472,6 +475,7 @@ return(out)
   #* `fixed effects formula`
   total_pars <- c("A", "B", "C")
   if(is.null(pars)){pars <- total_pars}
+  if(is.null(group) | group == "dummyGroup"){pars <- ""}
   fixed_form <- lapply(total_pars, function(par){
     if(par %in% pars){
       stats::as.formula(paste0(par," ~ 0 + ", group))
@@ -500,6 +504,7 @@ return(out)
   #* `fixed effects formula`
   total_pars <- c("A", "B", "C")
   if(is.null(pars)){pars <- total_pars}
+  if(is.null(group) | group == "dummyGroup"){pars <- ""}
   fixed_form <- lapply(total_pars, function(par){
     if(par %in% pars){
       stats::as.formula(paste0(par," ~ 0 + ", group))

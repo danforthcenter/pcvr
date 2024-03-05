@@ -207,12 +207,9 @@ postPred <- function(fit, form, groups=NULL, timeRange=NULL, hyp = NULL, plot=TR
 
 .parseFormula <- function(fit, form){
   fitData<-fit$data
-  y=as.character(form)[2]
-  x<-as.character(form)[3]
-  if(grepl("\\|", x) | grepl("\\/",x)){
-    x3<-trimws(strsplit(x, "[|]|[/]")[[1]])
-    x<-x3[1]
-    group = x3[3]
-  } else {stop("form must specify grouping for observations. See documentation and examples.")}
+  parsed_form <- .parsePcvrForm(form, fitData)
+  y <- parsed_form$y
+  x <- parsed_form$x
+  group <- parsed_form$group
   return(list(fitData, y, x, group))
 }

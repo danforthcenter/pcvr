@@ -18,29 +18,19 @@
 #' @noRd
 
 .makeSurvData <- function(df, form , model = "weibull"){
-  y <- as.character(form)[2]
+  #* `general pcvr formula parsing`
+  parsed_form <- .parsePcvrForm(form, df)
+  y <- parsed_form$y
+  x <- parsed_form$x
+  individual <- parsed_form$individual
+  group <- parsed_form$group
+  # USEGROUP <- parsed_form$USEG
+  # USEINDIVIDUAL <- parsed_form$USEID
+  df <- parsed_form$data
+  #* `further survival formula steps`
   y_var <- trimws(strsplit(y, ">|[|]")[[1]][1])
   y_condition <- as.numeric(trimws(strsplit(y, ">|[|]")[[1]][2]))
   df[[y_var]] <- as.numeric(df[[y_var]] >= y_condition)
-  x <- as.character(form)[3]
-  if(grepl("\\|", x) & grepl("\\/",x)){
-    x3<-trimws(strsplit(x, "[|]|[/]")[[1]])
-    x<-x3[1]
-    individual = x3[2]
-    group = x3[length(x3)] 
-  } else if (grepl("\\|", x)){
-    x2<-trimws(strsplit(x, "[|]")[[1]])
-    x<-x2[1]
-    group = x2[2]
-    individual = "dummy_id"
-    ds[[individual]]<-"a"
-  } else {
-    x <- trimws(x)
-    group = "dummy_group"
-    ds[[group]]<-"a"
-    individual = "dummy_id"
-    ds[[individual]]<-"a"
-  }
   
   df$remove_interaction <- interaction(df[[individual]], df[[group]])
   

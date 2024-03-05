@@ -45,19 +45,14 @@
 
 survRegPlot<-function(fit, form, df = NULL, groups = NULL, facetGroups=TRUE, groupFill=FALSE, virMaps = c("plasma")){
   #* `parse formula`
-  x <-as.character(form)[3]
-  y <-as.character(form)[2]
-  if(grepl("\\|", x) & grepl("\\/",x)){
-    x3<-trimws(strsplit(x, "[|]|[/]")[[1]])
-    x<-x3[1]
-    individual = x3[2]
-    group = x3[3] 
-  } else if (grepl("\\|", x)){
-    x2<-trimws(strsplit(x, "[|]")[[1]])
-    x<-x2[1]
-    group = x2[2]
-    individual=NULL
-  }
+  parsed_form <- .parsePcvrForm(form, df)
+  y <- parsed_form$y
+  x <- parsed_form$x
+  individual <- parsed_form$individual
+  group <- parsed_form$group
+  USEGROUP <- parsed_form$USEG
+  USEINDIVIDUAL <- parsed_form$USEID
+  df <- parsed_form$data
   #* `filter by groups if groups != NULL`
   if(!is.null(groups)){
     df <- df[df[[group]] %in% groups, ]

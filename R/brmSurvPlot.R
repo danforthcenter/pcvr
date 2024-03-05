@@ -69,20 +69,17 @@ brmSurvPlot <- function(fit, form, df=NULL, groups = NULL, timeRange = NULL, fac
 .binomial_brmSurvPlot<-function(fit, form, df=NULL, groups = NULL, timeRange = NULL, facetGroups=TRUE, groupFill=FALSE, virMaps = c("plasma")){
   #* `pull model data`
   fitData <- fit$data
-  #* `Parse pcvrForm`
-  y <- as.character(form)[2]
+  #* `general pcvr formula parsing`
+  parsed_form <- .parsePcvrForm(form, df)
+  y <- parsed_form$y
+  x <- parsed_form$x
+  individual <- parsed_form$individual
+  group <- parsed_form$group
+  df <- parsed_form$data
+  #* `further survival formula steps`
   y_var <- trimws(strsplit(y, ">|[|]")[[1]][1])
   y_condition <- as.numeric(trimws(strsplit(y, ">|[|]")[[1]][2]))
   
-  x<-as.character(form)[3]
-  if(grepl("\\|", x) | grepl("\\/",x)){
-    x3<-trimws(strsplit(x, "[|]|[/]")[[1]])
-    x<-x3[1]
-    group = x3[length(x3)]
-    if(!group %in% colnames(fitData)){
-      fitData[[group]] <- "a"
-    }
-  } else {stop("form must specify grouping for observations. See documentation and examples.")}
   #* `set groups to use`
   if(is.null(groups)){groups <- unique(fitData[[group]])}
   #* `pull draws and convert to survival`
@@ -184,20 +181,19 @@ brmSurvPlot <- function(fit, form, df=NULL, groups = NULL, timeRange = NULL, fac
   }))
   colnames(scales) <- paste0("scale_", mu_cols)
   fdf <- cbind(fdf, scales)
-  #* `Parse pcvrForm`
-  y <- as.character(form)[2]
+  #* `general pcvr formula parsing`
+  parsed_form <- .parsePcvrForm(form, df)
+  y <- parsed_form$y
+  x <- parsed_form$x
+  individual <- parsed_form$individual
+  group <- parsed_form$group
+  # USEGROUP <- parsed_form$USEG
+  # USEINDIVIDUAL <- parsed_form$USEID
+  df <- parsed_form$data
+  #* `further survival formula steps`
   y_var <- trimws(strsplit(y, ">|[|]")[[1]][1])
   y_condition <- as.numeric(trimws(strsplit(y, ">|[|]")[[1]][2]))
   
-  x<-as.character(form)[3]
-  if(grepl("\\|", x) | grepl("\\/",x)){
-    x3<-trimws(strsplit(x, "[|]|[/]")[[1]])
-    x<-x3[1]
-    group = x3[length(x3)]
-    if(!group %in% colnames(fitData)){
-      fitData[[group]] <- "a"
-    }
-  } else {stop("form must specify grouping for observations. See documentation and examples.")}
   #* `Define Time Range`
   if(is.null(timeRange)){
     timeRange <- seq(0,round(max(fitData[[x]]),-1), length.out=100)
