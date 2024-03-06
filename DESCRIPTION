@@ -14,7 +14,6 @@ LazyDataCompression: xz
 Additional_repositories: https://mc-stan.org/r-packages/
 RoxygenNote: 7.2.3
 Imports: 
-    FactoMineR,
     stats,
     utils,
     methods,
@@ -46,6 +45,7 @@ Suggests:
     curl,
     cmdstanr,
     vroom,
+    FactoMineR,
     rstan,
     caret,
     testthat (>= 3.0.0)
