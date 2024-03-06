@@ -44,19 +44,13 @@
 
 brmPlot<-function(fit, form, df=NULL, groups = NULL, timeRange = NULL, facetGroups=TRUE, groupFill=FALSE, virMaps = c("plasma")){
   fitData<-fit$data
-  y=as.character(form)[2]
-  x<-as.character(form)[3]
-  if(grepl("\\|", x) & grepl("\\/",x)){
-    x3<-trimws(strsplit(x, "[|]|[/]")[[1]])
-    x<-x3[1]
-    individual = x3[2]
-    group = x3[3] 
-  } else if (grepl("\\|", x)){
-    x2<-trimws(strsplit(x, "[|]")[[1]])
-    x<-x2[1]
-    group = x2[2]
-    individual=NULL
-  }else {stop("form must specify grouping for observations. See documentation and examples.")}
+  parsed_form <- .parsePcvrForm(form, df)
+  y <- parsed_form$y
+  x <- parsed_form$x
+  individual <- parsed_form$individual
+  if(individual == "dummyIndividual"){individual=NULL}
+  group <- parsed_form$group
+  df <- parsed_form$data
   
   #* if no group in fitdata then add a dummy group
   if(!group %in% colnames(fitData)){

@@ -51,14 +51,14 @@ distributionPlot<-function(fits, form, priors=NULL, params=NULL, d, maxTime=NULL
   if(missing(form)){stop("A formula must be supplied")}
   if(missing(d)){stop("Data used to fit the final model must be supplied")}
   #* ***** `Reused helper variables`
-  y=as.character(form)[2]
-  x<-as.character(form)[3]
-  if(grepl("\\|", x) | grepl("\\/",x)){
-    x3<-trimws(strsplit(x, "[|]|[/]")[[1]])
-    x<-x3[1]
-    individual = x3[2]
-    group = x3[3]
-  } else {stop("form must specify grouping for observations. See documentation and examples.")}
+  parsed_form <- .parsePcvrForm(form, d)
+  y <- parsed_form$y
+  x <- parsed_form$x
+  individual <- parsed_form$individual
+  group <- parsed_form$group
+  USEGROUP <- parsed_form$USEG
+  USEINDIVIDUAL <- parsed_form$USEID
+  d <- parsed_form$data
   fitData<-fits[[length(fits)]]$data
   dSplit<-split(d, d[[group]])
   startTime<-min(unlist(lapply(fits, function(ft){min(ft$data[[x]], na.rm=TRUE)})))

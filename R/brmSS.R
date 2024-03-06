@@ -113,39 +113,26 @@
 
 .brmSS<-function(model, form, sigma=NULL, df, priors=NULL){
   out<-list()
-  # sigmas<-c("homo", "linear", "spline", "gompertz")
   models<-c("int", "logistic", "gompertz", "monomolecular", "exponential", "linear", "power law",
             "double logistic", "double gompertz", "gam", "spline", "homo", "frechet", "gumbel", "weibull", "not_estimated")
   #* ***** `Make bayesian formula` *****
     #* `parse form argument`
-    y=as.character(form)[2]
-    x<-as.character(form)[3]
+    parsed_form <- .parsePcvrForm(form, df)
+    y <- parsed_form$y
+    if(grepl("\\[", y)){
+      lims <- gsub(".*\\[|\\]", "", y)
+      lims <- as.numeric(strsplit(lims, ",")[[1]])
+      lower <- lims[1]
+      upper <- lims[2]
+      y <- trimws(gsub("\\[.*", paste0("|trunc(lb=", lower,", ub=", upper,")"), y))
+    }
+    x <- parsed_form$x
+    individual <- parsed_form$individual
+    group <- parsed_form$group
+    USEGROUP <- parsed_form$USEG
+    USEINDIVIDUAL <- parsed_form$USEID
+    df <- parsed_form$data
     
-    if(grepl("\\|", x) & grepl("\\/",x)){ # Y ~ X|Var/ID
-      x3<-trimws(strsplit(x, "[|]|[/]")[[1]])
-      x<-x3[1]
-      individual = x3[2]
-      group = x3[length(x3)] 
-      USEINDIVIDUAL = TRUE
-      if(length(unique(df[[group]]))==1){USEGROUP=FALSE}else{USEGROUP=TRUE} # if there is only one group then ignore grouping for parameter and variance formulas
-    } else if (grepl("\\|", x)){ # Y ~ X|Var
-      x2<-trimws(strsplit(x, "[|]")[[1]])
-      x<-x2[1]
-      individual = "dummyIndividual"
-      df[[individual]]<-"dummyIndividual"
-      group = x2[length(x2)]
-      USEGROUP=TRUE
-      USEINDIVIDUAL = FALSE
-    } else { # Y ~ X
-      x2<-trimws(strsplit(x, "[|]")[[1]])
-      x<-x2[1]
-      individual = "dummyIndividual"
-      df[[individual]]<-"dummyIndividual"
-      group = "dummyGroup"
-      df[[group]]<-"dummyGroup"
-      USEGROUP=FALSE
-      USEINDIVIDUAL = FALSE
-      }
     #* `convert group to character to avoid unexpected factor stuff`
     df[[group]]<-as.character(df[[group]])
     #* `Make autocorrelation formula`
