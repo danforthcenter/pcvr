@@ -3,14 +3,14 @@
 #' @param s1 A vector of numerics drawn from a gaussian distribution.
 #' @examples
 #' if(FALSE){
-#' .conj_gaussian_means_sv(s1=rnorm(100, 50,10), s2= rnorm(100, 60,12),
+#' .conj_t_sv(s1=rnorm(100, 50,10), s2= rnorm(100, 60,12),
 #'                         priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ),
 #'                         plot=FALSE, rope_range = c(-0.1, 0.1), rope_ci = 0.89,
 #'                         cred.int.level = 0.89, hypothesis="equal", support=NULL)
 #' }
 #' @keywords internal
 #' @noRd
-.conj_gaussian_means_sv<-function(s1 = NULL,  priors = NULL,
+.conj_t_sv<-function(s1 = NULL,  priors = NULL,
                                   plot=FALSE, support=NULL, cred.int.level=NULL,
                                   calculatingSupport = FALSE){
   out <- list()
@@ -77,7 +77,7 @@
 #'    }
 #' mv_gauss<-rbind(do.call(rbind, lapply(1:30, function(i){makeMvGauss(bins=180, mu=50, sigma=10 )})),
 #'                 do.call(rbind, lapply(1:30, function(i){makeMvGauss(bins=180, mu=60, sigma=12 )})))
-#' .conj_gaussian_means_mv(s1 = mv_gauss[1:30,], s2= mv_gauss[31:60,],
+#' .conj_t_mv(s1 = mv_gauss[1:30,], s2= mv_gauss[31:60,],
 #'                         priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ),
 #'                         plot=FALSE, rope_range = c(-0.1,0.1), rope_ci = 0.89, 
 #'                         cred.int.level = 0.89, hypothesis="equal", support=NULL)
@@ -85,7 +85,7 @@
 #' @keywords internal
 #' @noRd
 
-.conj_gaussian_means_mv<-function(s1 = NULL, priors = NULL,
+.conj_t_mv<-function(s1 = NULL, priors = NULL,
                                   plot=FALSE, support=NULL, cred.int.level=NULL,
                                   calculatingSupport = FALSE){
   out <- list()
