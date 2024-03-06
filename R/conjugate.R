@@ -1,7 +1,8 @@
 #' Bayesian testing using conjugate priors and method of moments for single or multi value traits.
 #'
 #' @description
-#' Function to perform bayesian tests and ROPE comparisons using single or multi value traits with several distributions.
+#' Function to perform bayesian tests and ROPE comparisons using single or multi value traits with
+#' several distributions.
 #'
 #' @param s1 A data.frame or matrix of multi value traits or a vector of single value traits.
 #' If a multi value trait is used then column names should include a number representing the "bin".
@@ -13,7 +14,8 @@
 #' The "t" and "gaussian" methods both use a T distribution with "t" testing for a difference
 #'  of means and "gaussian" testing for a difference in the distributions (similar to a Z test).
 #' @param priors Prior distributions described as a list of lists.
-#' If this is a single list then it will be duplicated for the second sample, which is generally a good idea if both
+#' If this is a single list then it will be duplicated for the second sample,
+#' which is generally a good idea if both
 #' samples use the same distribution (method).
 #' Elements in the inner lists should be named for the parameter they represent (see examples).
 #' These names vary by method (see details).
@@ -46,7 +48,8 @@
 #' @import ggplot2
 #' @import patchwork
 #' @import extraDistr
-#' @importFrom stats var median rnorm dnorm qbeta rbeta dbeta qbeta rlnorm dlnorm qlnorm qt rgamma qgamma dgamma rpois
+#' @importFrom stats var median rnorm dnorm qbeta rbeta dbeta qbeta rlnorm
+#' dlnorm qlnorm qt rgamma qgamma dgamma rpois
 #'
 #' @details
 #'
@@ -56,16 +59,20 @@
 #'     where mu is the mean, n is the number of prior observations, and s2 is variance}
 #'    \item{\strong{"beta":} \code{priors = list( a=c(0.5, 0.5), b=c(0.5, 0.5) )},
 #'     where a and b are shape parameters of the beta distribution.}
-#'    \item{\strong{"lognormal": } \code{priors = list( mu_log=c(log(10),log(10)),n=c(1,1),sigma_log=c(log(3),log(3)) ) },
-#'     where mu_log is the mean on log scale, n is the number of prior observations, and sigma_log is the
-#'     standard deviation on log scale }
+#'    \item{\strong{"lognormal": } \code{priors = list( mu_log=c(log(10),log(10)),n=c(1,1),
+#'    sigma_log=c(log(3),log(3)) ) },
+#'    where mu_log is the mean on log scale, n is the number of prior observations,
+#'    and sigma_log is the
+#'    standard deviation on log scale }
 #'    \item{\strong{"poisson": } \code{priors = list(a=c(0.5,0.5),b=c(0.5,0.5))},
 #'     where a and b are shape parameters of the gamma distribution.}
 #'    \item{\strong{"negbin": } \code{priors = list(r=c(10,10), a=c(0.5,0.5),b=c(0.5,0.5))},
-#'     where r is the r parameter of the negative binomial distribution (representing the number of successes required)
-#'      and where a and b are shape parameters of the beta distribution. Note that the r value is not updated.
-#'       The conjugate beta prior is only valid when r is fixed and known, which is a limitation for this method.}
-#'
+#'     where r is the r parameter of the negative binomial distribution
+#'     (representing the number of successes required)
+#'      and where a and b are shape parameters of the beta distribution.
+#'      Note that the r value is not updated.
+#'       The conjugate beta prior is only valid when r is fixed and known,
+#'       which is a limitation for this method.}
 #' }
 #'
 #' See examples for plots of these prior distributions.
@@ -221,14 +228,14 @@
 #'     reader = "fread", mode = "wide"
 #'   )
 #'
-#'   wide$genotype = substr(wide$barcode, 3, 5)
-#'   wide$genotype = ifelse(wide$genotype == "002", "B73",
+#'   wide$genotype <- substr(wide$barcode, 3, 5)
+#'   wide$genotype <- ifelse(wide$genotype == "002", "B73",
 #'     ifelse(wide$genotype == "003", "W605S",
 #'       ifelse(wide$genotype == "004", "MM", "Mo17")
 #'     )
 #'   )
-#'   wide$fertilizer = substr(wide$barcode, 8, 8)
-#'   wide$fertilizer = ifelse(wide$fertilizer == "A", "100",
+#'   wide$fertilizer <- substr(wide$barcode, 8, 8)
+#'   wide$fertilizer <- ifelse(wide$fertilizer == "A", "100",
 #'     ifelse(wide$fertilizer == "B", "50", "0")
 #'   )
 #'   wide <- bw.time(wide, timeCol = "timestamp", group = "barcode")
@@ -270,14 +277,14 @@
 #'     reader = "fread", mode = "wide"
 #'   )
 #'
-#'   sv$genotype = substr(sv$barcode, 3, 5)
-#'   sv$genotype = ifelse(sv$genotype == "002", "B73",
+#'   sv$genotype <- substr(sv$barcode, 3, 5)
+#'   sv$genotype <- ifelse(sv$genotype == "002", "B73",
 #'     ifelse(sv$genotype == "003", "W605S",
 #'       ifelse(sv$genotype == "004", "MM", "Mo17")
 #'     )
 #'   )
-#'   sv$fertilizer = substr(sv$barcode, 8, 8)
-#'   sv$fertilizer = ifelse(sv$fertilizer == "A", "100",
+#'   sv$fertilizer <- substr(sv$barcode, 8, 8)
+#'   sv$fertilizer <- ifelse(sv$fertilizer == "A", "100",
 #'     ifelse(sv$fertilizer == "B", "50", "0")
 #'   )
 #'
@@ -338,15 +345,13 @@
 #' @keywords bayesian, conjugate, ROPE
 #' @export
 
-conjugate <- function(s1 = NULL, s2 = NULL, method = c(
-                        "t", "gaussian", "beta",
-                        "lognormal", "poisson", "negbin"
-                      ),
+conjugate <- function(s1 = NULL, s2 = NULL,
+                      method = c("t", "gaussian", "beta", "lognormal", "poisson", "negbin"),
                       priors = NULL, plot = FALSE, rope_range = NULL,
                       rope_ci = 0.89, cred.int.level = 0.89, hypothesis = "equal",
                       support = NULL) {
   #* check length of method, replicate if there is a second sample
-  if (length(method) == 1 & !is.null(s2)) {
+  if (length(method) == 1 && !is.null(s2)) {
     method <- rep(method, 2)
   }
   if (!is.null(priors) && !methods::is(priors[[1]], "list")) {
@@ -361,47 +366,26 @@ conjugate <- function(s1 = NULL, s2 = NULL, method = c(
     support <- .getSupport(samplesList, method, priors) # calculate shared support
   }
 
-  sample_results <- lapply(1:length(samplesList), function(i) {
+  sample_results <- lapply(seq_along(samplesList), function(i) {
     sample <- samplesList[[i]]
     prior <- priors[[i]]
     #* `Check sample class`
     if (is.matrix(sample) | is.data.frame(sample)) {
-      vec = FALSE
+      vec <- FALSE
     } else if (is.vector(sample)) {
-      vec = TRUE
+      vec <- TRUE
     } else {
       stop("samples must be a vector, data.frame, or matrix.")
     }
-
-    matched_arg <- match.arg(method[i], choices = c("t", "gaussian", "beta", "lognormal", "poisson", "negbin")) # , "dirichlet", "dirichlet2"))
-    # turning off dirichlet until I decide on a new implementation that I like better and a use case that isn't so ripe for abuse.
-    if (matched_arg == "t" & vec) {
-      res <- .conj_gaussian_means_sv(sample, prior, plot, support, cred.int.level)
-    } else if (matched_arg == "t" & !vec) {
-      res <- .conj_gaussian_means_mv(sample, prior, plot, support, cred.int.level)
-    } else if (matched_arg == "gaussian" & vec) {
-      res <- .conj_gaussian_sv(sample, prior, plot, support, cred.int.level)
-    } else if (matched_arg == "gaussian" & !vec) {
-      res <- .conj_gaussian_mv(sample, prior, plot, support, cred.int.level)
-    } else if (matched_arg == "beta" & vec) {
-      res <- .conj_beta_sv(sample, prior, plot, support, cred.int.level)
-    } else if (matched_arg == "beta" & !vec) {
-      res <- .conj_beta_mv(sample, prior, plot, support, cred.int.level)
-    } else if (matched_arg == "lognormal" & vec) {
-      res <- .conj_lognormal_sv(sample, prior, plot, support, cred.int.level)
-    } else if (matched_arg == "lognormal" & !vec) {
-      res <- .conj_lognormal_mv(sample, prior, plot, support, cred.int.level)
-    } else if (matched_arg == "poisson" & vec) {
-      res <- .conj_poisson_sv(sample, prior, plot, support, cred.int.level)
-    } else if (matched_arg == "negbin" & vec) {
-      res <- .conj_negbin_sv(sample, prior, plot, support, cred.int.level)
-    } else if (matched_arg == "dirichlet" & !vec) {
-      # res<-.conj_diri_mv_1(sample, prior, plot)
-    } else if (matched_arg == "dirichlet2" & !vec) {
-      # res<-.conj_diri_mv_2(sample, prior, plot)
-    } else {
-      stop(paste0("Selected distribution and data type are not supported"))
-    }
+    matched_arg <- match.arg(method[i], choices = c("t", "gaussian", "beta",
+                                                    "lognormal", "poisson", "negbin"))
+    # , "dirichlet", "dirichlet2"))
+    # turning off dirichlet until I decide on a new implementation that I like better
+    # and a use case that isn't so ripe for abuse.
+    vec_suffix <- if (vec) { "sv" } else { "mv" }
+    matched_fun <- match.fun(paste0(".conj_", matched_arg, "_", vec_suffix))
+    res <- matched_fun(sample, prior, plot, support, cred.int.level)
+    return(res)
   })
 
   #* `combine results into an object to return`
@@ -412,21 +396,15 @@ conjugate <- function(s1 = NULL, s2 = NULL, method = c(
   if (!is.null(s2)) {
     colnames(out$summary) <- c("HDE_1", "HDI_1_low", "HDI_1_high", "HDE_2", "HDI_2_low", "HDI_2_high")
     postProbRes <- .post.prob.from.pdfs(sample_results[[1]]$pdf, sample_results[[2]]$pdf, hypothesis)
-    out$summary <- cbind(out$summary, data.frame("hyp" = hypothesis, "post.prob" = postProbRes$post.prob))
+    out$summary <- cbind(out$summary,
+                         data.frame("hyp" = hypothesis, "post.prob" = postProbRes$post.prob))
     dirSymbol <- postProbRes$direction
   } else {
     dirSymbol <- NULL
   }
   #* `parse output and do ROPE`
   if (!is.null(rope_range)) {
-    # if(method[[1]]=="dirichlet"){
-    #   rope_res <- .diri1_rope(sample_results, rope_range, rope_ci, plot)
-    # } else if(method[[1]]=="dirichlet2"){
-    #   rope_res <- .diri2_rope(sample_results, rope_range, rope_ci, plot)
-    # } else{
     rope_res <- .conj_rope(sample_results, rope_range, rope_ci, plot)
-    # }
-
     out$summary <- cbind(out$summary, rope_res$summary)
   } else {
     rope_res <- NULL
@@ -434,12 +412,10 @@ conjugate <- function(s1 = NULL, s2 = NULL, method = c(
   out$posterior <- lapply(sample_results, function(s) s$posterior)
 
   #* `Make plot`
-  if (grepl("dirichlet", method[1]) & plot) {
-    res <- .conj_diri_plot(res, s2, rope_range, rope_ci)
-  } else if (plot) {
-    out$plot <- .conj_general_plot(sample_results, rope_res, res = out, rope_range, rope_ci, dirSymbol, support)
+  if (plot) {
+    out$plot <- .conj_general_plot(sample_results, rope_res, res = out,
+                                   rope_range, rope_ci, dirSymbol, support)
   }
-
   return(out)
 }
 
@@ -454,47 +430,24 @@ conjugate <- function(s1 = NULL, s2 = NULL, method = c(
 
 
 .getSupport <- function(samplesList, method, priors) {
-  support_quantiles <- lapply(1:length(samplesList), function(i) {
+  support_quantiles <- lapply(seq_along(samplesList), function(i) {
     sample <- samplesList[[i]]
-    prior = priors[[i]]
+    prior <- priors[[i]]
     #* `Check sample class`
     if (is.matrix(sample) | is.data.frame(sample)) {
-      vec = FALSE
+      vec <- FALSE
     } else if (is.vector(sample)) {
-      vec = TRUE
+      vec <- TRUE
     } else {
       stop("samples must be a vector, data.frame, or matrix.")
     }
 
-    matched_arg <- match.arg(method[i], choices = c("t", "gaussian", "beta", "lognormal", "poisson", "negbin")) # , "dirichlet", "dirichlet2"))
-
-    if (matched_arg == "t" & vec) {
-      qnts <- .conj_gaussian_means_sv(s1 = sample, priors = prior, calculatingSupport = TRUE)
-    } else if (matched_arg == "t" & !vec) {
-      qnts <- .conj_gaussian_means_mv(s1 = sample, priors = prior, calculatingSupport = TRUE)
-    } else if (matched_arg == "gaussian" & vec) {
-      qnts <- .conj_gaussian_sv(s1 = sample, priors = prior, calculatingSupport = TRUE)
-    } else if (matched_arg == "gaussian" & !vec) {
-      qnts <- .conj_gaussian_mv(s1 = sample, priors = prior, calculatingSupport = TRUE)
-    } else if (matched_arg == "beta" & vec) {
-      qnts <- .conj_beta_sv(s1 = sample, priors = prior, calculatingSupport = TRUE)
-    } else if (matched_arg == "beta" & !vec) {
-      qnts <- .conj_beta_mv(s1 = sample, priors = prior, calculatingSupport = TRUE)
-    } else if (matched_arg == "lognormal" & vec) {
-      qnts <- .conj_lognormal_sv(s1 = sample, priors = prior, calculatingSupport = TRUE)
-    } else if (matched_arg == "lognormal" & !vec) {
-      qnts <- .conj_lognormal_mv(s1 = sample, priors = prior, calculatingSupport = TRUE)
-    } else if (matched_arg == "poisson" & vec) {
-      qnts <- .conj_poisson_sv(s1 = sample, priors = prior, calculatingSupport = TRUE)
-    } else if (matched_arg == "negbin" & vec) {
-      qnts <- .conj_negbin_sv(s1 = sample, priors = priors, calculatingSupport = TRUE)
-    } else if (matched_arg == "dirichlet" & !vec) {
-      qnts <- c(1, 100)
-    } else if (matched_arg == "dirichlet2" & !vec) {
-      qnts <- c(1, 100)
-    } else {
-      stop(paste0("Selected distribution and data type are not supported."))
-    }
+    matched_arg <- match.arg(method[i], choices = c("t", "gaussian", "beta",
+                                                    "lognormal", "poisson", "negbin"))
+    vec_suffix <- if (vec) {"sv"} else {"mv"}
+    matched_fun <- match.fun(paste0(".conj_", matched_arg, "_", vec_suffix))
+    qnts <- matched_fun(s1 = sample, priors = prior, calculatingSupport = TRUE)
+    return(qnts)
   })
   qnts <- range(unlist(support_quantiles))
   support <- seq(qnts[1], qnts[2], length.out = 10000)
@@ -516,17 +469,19 @@ conjugate <- function(s1 = NULL, s2 = NULL, method = c(
   rope_res <- list()
   if (!is.null(rope_range)) {
     if (length(rope_range) == 2) {
-      post1 = sample_results[[1]]$posteriorDraws
+      post1 <- sample_results[[1]]$posteriorDraws
       if (length(sample_results) == 2) {
-        post2 = sample_results[[2]]$posteriorDraws
-        posterior = post1 - post2
+        post2 <- sample_results[[2]]$posteriorDraws
+        posterior <- post1 - post2
       } else {
-        posterior = post1
+        posterior <- post1
       }
       hdi_diff <- as.numeric(bayestestR::hdi(posterior, ci = rope_ci))[2:3]
       hde_diff <- median(posterior)
-      rope_prob <- as.numeric(bayestestR::rope(posterior, range = rope_range, ci_method = "HDI", ci = rope_ci))
-      rope_test <- data.frame(HDE_rope = hde_diff, HDI_rope_low = hdi_diff[1], HDI_rope_high = hdi_diff[2], rope_prob = rope_prob)
+      rope_prob <- as.numeric(bayestestR::rope(posterior, range = rope_range,
+                                               ci_method = "HDI", ci = rope_ci))
+      rope_test <- data.frame(HDE_rope = hde_diff, HDI_rope_low = hdi_diff[1],
+                              HDI_rope_high = hdi_diff[2], rope_prob = rope_prob)
       rope_res$summary <- rope_test
       if (plot) {
         rope_res$rope_df <- data.frame("X" = posterior)
@@ -550,22 +505,22 @@ conjugate <- function(s1 = NULL, s2 = NULL, method = c(
 .post.prob.from.pdfs <- function(pdf1, pdf2, hypothesis) {
   if (hypothesis == "unequal") {
     post.prob <- 1 - sum(apply(cbind(pdf1, pdf2), MARGIN = 1, function(i) min(i)), na.rm = TRUE)
-    dirSymbol = "!="
+    dirSymbol <- "!="
   } else if (hypothesis == "equal") {
     post.prob <- sum(apply(cbind(pdf1, pdf2), MARGIN = 1, function(i) min(i)), na.rm = TRUE)
-    dirSymbol = "="
+    dirSymbol <- "="
   } else if (hypothesis == "lesser") {
     direction <- pdf1 <= pdf2
     post.prob <- 1 - sum(pdf1 * direction, na.rm = TRUE) # switch from compliment prob to prob
-    dirSymbol = "<"
+    dirSymbol <- "<"
   } else if (hypothesis == "greater") {
     direction <- pdf1 >= pdf2
     post.prob <- 1 - sum(pdf1 * direction, na.rm = TRUE) # switch from compliment prob to prob
-    dirSymbol = ">"
+    dirSymbol <- ">"
   } else {
     stop("hypothesis must be either unequal, equal, lesser, or greater")
   }
-  return(list('post.prob' = post.prob, "direction" = dirSymbol))
+  return(list("post.prob" = post.prob, "direction" = dirSymbol))
 }
 
 #' ***********************************************************************************************
@@ -575,14 +530,18 @@ conjugate <- function(s1 = NULL, s2 = NULL, method = c(
 
 #' @keywords internal
 #' @noRd
-.conj_general_plot <- function(sample_results, rope_res = NULL, res, rope_range, rope_ci, dirSymbol = NULL, support) {
+.conj_general_plot <- function(sample_results, rope_res = NULL, res,
+                               rope_range, rope_ci, dirSymbol = NULL, support) {
   s1_plot_df <- sample_results[[1]]$plot_df
 
   p <- ggplot2::ggplot(s1_plot_df, ggplot2::aes(x = .data$range, y = .data$prob)) +
     ggplot2::geom_area(data = s1_plot_df, fill = "red", alpha = 0.5) +
-    ggplot2::geom_vline(ggplot2::aes(xintercept = res$summary$HDI_1_low), color = "red", linewidth = 1.1) +
-    ggplot2::geom_vline(ggplot2::aes(xintercept = res$summary$HDE_1), color = "red", linetype = "dashed", linewidth = 1.1) +
-    ggplot2::geom_vline(ggplot2::aes(xintercept = res$summary$HDI_1_high), color = "red", linewidth = 1.1) +
+    ggplot2::geom_vline(ggplot2::aes(xintercept = res$summary$HDI_1_low), color = "red",
+                        linewidth = 1.1) +
+    ggplot2::geom_vline(ggplot2::aes(xintercept = res$summary$HDE_1),
+                        color = "red", linetype = "dashed", linewidth = 1.1) +
+    ggplot2::geom_vline(ggplot2::aes(xintercept = res$summary$HDI_1_high), color = "red",
+                        linewidth = 1.1) +
     ggplot2::labs(
       x = "Posterior Distribution of Random Variable", y = "Density", title = "Distribution of Samples",
       subtitle = paste0(
@@ -597,19 +556,24 @@ conjugate <- function(s1 = NULL, s2 = NULL, method = c(
     s2_plot_df <- sample_results[[2]]$plot_df
 
     if (res$summary$post.prob < 1e-5) {
-      post.prob.text = "<1e-5"
+      post.prob.text <- "<1e-5"
     } else {
       post.prob.text <- round(res$summary$post.prob, 5)
     }
 
     p <- p +
       ggplot2::geom_area(data = s2_plot_df, fill = "blue", alpha = 0.5) +
-      ggplot2::geom_vline(ggplot2::aes(xintercept = res$summary$HDI_2_low), color = "blue", linewidth = 1.1) +
-      ggplot2::geom_vline(ggplot2::aes(xintercept = res$summary$HDE_2), color = "blue", linetype = "dashed", linewidth = 1.1) +
-      ggplot2::geom_vline(ggplot2::aes(xintercept = res$summary$HDI_2_high), color = "blue", linewidth = 1.1) +
+      ggplot2::geom_vline(ggplot2::aes(xintercept = res$summary$HDI_2_low), color = "blue",
+                          linewidth = 1.1) +
+      ggplot2::geom_vline(ggplot2::aes(xintercept = res$summary$HDE_2), color = "blue",
+                          linetype = "dashed", linewidth = 1.1) +
+      ggplot2::geom_vline(ggplot2::aes(xintercept = res$summary$HDI_2_high), color = "blue",
+                          linewidth = 1.1) +
       ggplot2::labs(subtitle = paste0(
-        "Sample 1:  ", round(res$summary$HDE_1, 2), " [", round(res$summary$HDI_1_low, 2), ", ", round(res$summary$HDI_1_high, 2), "]\n",
-        "Sample 2:  ", round(res$summary$HDE_2, 2), " [", round(res$summary$HDI_2_low, 2), ", ", round(res$summary$HDI_2_high, 2), "]\n",
+        "Sample 1:  ", round(res$summary$HDE_1, 2), " [", round(res$summary$HDI_1_low, 2), ", ",
+        round(res$summary$HDI_1_high, 2), "]\n",
+        "Sample 2:  ", round(res$summary$HDE_2, 2), " [", round(res$summary$HDI_2_low, 2), ", ",
+        round(res$summary$HDI_2_high, 2), "]\n",
         "P[p1", dirSymbol, "p2] = ", post.prob.text
       ))
   }
@@ -630,23 +594,29 @@ conjugate <- function(s1 = NULL, s2 = NULL, method = c(
       ggplot2::geom_histogram(bins = 100, fill = "purple", color = "purple", alpha = 0.7) +
       ggplot2::geom_histogram(
         data = data.frame("X" = rdf[rdf$X > rope_range[1] & rdf$X < rope_range[2] &
-          rdf$X > res$summary$HDI_rope_low & rdf$X < res$summary$HDI_rope_high, ]),
+                                      rdf$X > res$summary$HDI_rope_low &
+                                      rdf$X < res$summary$HDI_rope_high, ]),
         bins = 100, fill = "gray30", color = "gray30"
       ) +
-      ggplot2::annotate("segment", x = rope_range[1], xend = rope_range[2], y = 0, yend = 0, linewidth = 2, color = "gray70") +
+      ggplot2::annotate("segment", x = rope_range[1], xend = rope_range[2], y = 0, yend = 0,
+                        linewidth = 2, color = "gray70") +
       ggplot2::geom_vline(ggplot2::aes(xintercept = res$summary$HDI_rope_low), linewidth = 0.7) +
-      ggplot2::geom_vline(ggplot2::aes(xintercept = res$summary$HDE_rope), linetype = "dashed", linewidth = 0.7) +
+      ggplot2::geom_vline(ggplot2::aes(xintercept = res$summary$HDE_rope), linetype = "dashed",
+                          linewidth = 0.7) +
       ggplot2::geom_vline(ggplot2::aes(xintercept = res$summary$HDI_rope_high), linewidth = 0.7) +
       ggplot2::labs(
         x = "Posterior of Difference", y = "Frequency", title = "Distribution of Difference",
         subtitle = paste0(
           "Median Difference of ", round(res$summary$HDE_rope, 2), "\n",
-          100 * rope_ci, "% CI [", round(res$summary$HDI_rope_low, 2), ", ", round(res$summary$HDI_rope_high, 2), "]\n",
-          rope_ci, "% HDI in [", rope_range[1], ", ", rope_range[2], "]: ", round(res$summary$rope_prob, 2)
+          100 * rope_ci, "% CI [", round(res$summary$HDI_rope_low, 2), ", ",
+          round(res$summary$HDI_rope_high, 2), "]\n",
+          rope_ci, "% HDI in [", rope_range[1], ", ", rope_range[2], "]: ",
+          round(res$summary$rope_prob, 2)
         )
       ) +
       pcv_theme() +
-      ggplot2::theme(axis.title.y.left = ggplot2::element_blank(), axis.text.y.left = ggplot2::element_blank()) +
+      ggplot2::theme(axis.title.y.left = ggplot2::element_blank(),
+                     axis.text.y.left = ggplot2::element_blank()) +
       patchwork::plot_layout(widths = c(2, 1))
   }
   plot(p)
