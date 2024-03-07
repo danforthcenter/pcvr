@@ -273,7 +273,9 @@ bw.outliers <- function(df = NULL,
 
 .outlierPlottingHelper <- function(wide, mv, df, plotgroup, group,
                                    x, phenotype, traitCol, valueCol, pctRm) {
-  if (is.null(x)) { x <- group[1] }
+  if (is.null(x)) {
+    x <- group[1]
+  }
   if (wide && !mv) {
     df$grouping <- interaction(df[, plotgroup])
     outPlotData <- df[!df$outlier, ]
@@ -324,10 +326,15 @@ bw.outliers <- function(df = NULL,
       ) +
       ggplot2::coord_cartesian(ylim = yLims)
   } else if (wide && mv) {
-    plotdf <- suppressWarnings(as.data.frame(data.table::melt(data.table::as.data.table(df),
-      measure.vars = phenotype,
-      variable.name = traitCol, value.name = valueCol
-    )))
+    plotdf <- suppressWarnings(
+      as.data.frame(
+        data.table::melt(data.table::as.data.table(df),
+          measure.vars = phenotype,
+          variable.name = traitCol,
+          value.name = valueCol
+        )
+      )
+    )
 
     plotdf$bin <- as.numeric(regmatches(plotdf$trait, regexpr("[0-9]+", plotdf$trait)))
 
@@ -384,7 +391,7 @@ bw.outliers <- function(df = NULL,
 #' @noRd
 
 .wide_sv_cooks_outliers <- function(df, naTo0, phenotype, group, cutoff, ncp,
-                                       traitCol, valueCol, labelCol, idCol) {
+                                    traitCol, valueCol, labelCol, idCol) {
   if (naTo0) {
     df[[phenotype]][is.na(df[[phenotype]])] <- 0
   }
@@ -414,12 +421,12 @@ bw.outliers <- function(df = NULL,
 #' @noRd
 
 .long_sv_cooks_outliers <- function(df, naTo0, phenotype, group, cutoff, ncp,
-                                       traitCol, valueCol, labelCol, idCol) {
+                                    traitCol, valueCol, labelCol, idCol) {
   if (naTo0) {
     df[df[[traitCol]] == phenotype, valueCol][is.na(df[df[[traitCol]] == phenotype, valueCol])] <- 0
   }
   subdf <- df[complete.cases(df[df[[traitCol]] == phenotype, c(valueCol, traitCol, group)]) &
-    df[[traitCol]] == phenotype, ]
+                df[[traitCol]] == phenotype, ]
   outlierForm <- paste("as.numeric(", valueCol, ")~", paste(paste0("as.factor(", group, ")"),
     collapse = ":"
   ))
@@ -447,7 +454,7 @@ bw.outliers <- function(df = NULL,
 #' @noRd
 
 .wide_mv_cooks_outliers <- function(df, naTo0, phenotype, group, cutoff, ncp,
-                                       traitCol, valueCol, labelCol, idCol) {
+                                    traitCol, valueCol, labelCol, idCol) {
   if (naTo0) {
     df[, phenotype][is.na(df[, phenotype])] <- 0
   }
@@ -512,7 +519,7 @@ bw.outliers <- function(df = NULL,
 #' @noRd
 
 .long_mv_cooks_outliers <- function(df, naTo0, phenotype, group, cutoff, ncp,
-                                       traitCol, valueCol, labelCol, idCol) {
+                                    traitCol, valueCol, labelCol, idCol) {
   #* widen data
   dcast_form <- as.formula(paste0("... ~ ", traitCol, "+", labelCol))
   dfw <- as.data.frame(data.table::dcast(data.table::as.data.table(df[df[[traitCol]] == phenotype, ]),
@@ -543,7 +550,7 @@ bw.outliers <- function(df = NULL,
 
 
 .wide_mv_mahalanobis_outliers <- function(df, naTo0, phenotype, group, cutoff, ncp,
-                                             traitCol, valueCol, labelCol, idCol) {
+                                          traitCol, valueCol, labelCol, idCol) {
   if (naTo0) {
     df[, phenotype][is.na(df[, phenotype])] <- 0
   }
@@ -578,7 +585,7 @@ bw.outliers <- function(df = NULL,
 #' @noRd
 
 .long_mv_mahalanobis_outliers <- function(df, naTo0, phenotype, group, cutoff,
-                                             ncp, traitCol, valueCol, labelCol, idCol) {
+                                          ncp, traitCol, valueCol, labelCol, idCol) {
   #* widen data
   dcast_form <- as.formula(paste0("... ~ ", traitCol, "+", labelCol))
   dfw <- as.data.frame(data.table::dcast(data.table::as.data.table(df[df[[traitCol]] == phenotype, ]),
