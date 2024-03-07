@@ -499,7 +499,7 @@ bw.outliers <- function(df = NULL,
     cooks_vec[is.na(cooks_vec)] <- outlierCutoffs[i] - 0.1
     setNames(data.frame(cooks_vec > outlierCutoffs[i]), paste0("outlier_", i))
   }))
-  outlierMatrix$outlier <- unlist(lapply(seq_along(outlierMatrix), function(i) {
+  outlierMatrix$outlier <- unlist(lapply(seq_len(nrow(outlierMatrix)), function(i) {
     any(outlierMatrix[i, ]) # could be a more nuanced rule
   }))
 
