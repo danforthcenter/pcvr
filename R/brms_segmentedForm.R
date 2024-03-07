@@ -63,9 +63,13 @@
     prefix <- NULL
   }
 
-  mainGrowthModelPriorStrings <- paste(paste0("^", gsub(" ", "",
-                                                        c(models, "changePoint", "fixedChangePoint"))),
-                                       collapse = "|")
+  mainGrowthModelPriorStrings <- paste(
+    paste0("^", gsub(
+      " ", "",
+      c(models, "changePoint", "fixedChangePoint")
+    )),
+    collapse = "|"
+  )
   if (dpar) {
     priors <- priors[grepl(prefix, names(priors))]
   } else {
@@ -109,8 +113,10 @@
   }
   # assemble segments into complete formula
   for (i in 2:length(formulae)) {
-    nextPhase <- paste0("+ (", formulae[[(i - 1)]]$cpInt, " + ", formulae[[i]]$form, ") * ",
-                        formulae[[i]]$cp)
+    nextPhase <- paste0(
+      "+ (", formulae[[(i - 1)]]$cpInt, " + ", formulae[[i]]$form, ") * ",
+      formulae[[i]]$cp
+    )
     growthForm <- paste0(growthForm, nextPhase)
   }
   growthForm <- stats::as.formula(growthForm)
@@ -214,7 +220,7 @@
     all_chngpts <- names(priors)[grepl("fixedChangePoint*|changePoint*", names(priors))]
     prevChangePoints <- all_chngpts[which(as.numeric(sub(".*hangePoint", "", all_chngpts)) < position)]
     prevAndCurrentChangePoints <- all_chngpts[which(as.numeric(sub(".*hangePoint", "", all_chngpts))
-                                                    %in% c(position, position - 1))]
+    %in% c(position, position - 1))]
     #* per location where "fixed" is in the prior name, replace the name with that number.
     prev_fixed_index <- which(grepl("fixed", prevChangePoints))
     if (length(prev_fixed_index) > 0) {
@@ -227,11 +233,14 @@
       )
     }
 
-    form <- paste0(prefix, "linear", position, "A * (", x, "-",
-                   paste0(prevChangePoints, collapse = "-"), ")")
+    form <- paste0(
+      prefix, "linear", position, "A * (", x, "-",
+      paste0(prevChangePoints, collapse = "-"), ")"
+    )
     cp <- paste0("inv_logit((", x, "-", paste0(prevChangePoints, collapse = "-"), ") * 5)")
     cpInt <- paste0(prefix, "linear", position, "A * (", paste0(rev(prevAndCurrentChangePoints),
-                                                                collapse = "-"), ")")
+      collapse = "-"
+    ), ")")
     #* cpInt would be wrong for the last position but it isn't used.
   }
 
@@ -290,16 +299,20 @@
       changePointObj <- "changePoint1"
     }
 
-    form <- paste0(prefix, "logistic", position, "A / (1 + exp( (", prefix, "logistic", position,
-                   "B-(", x, "))/", prefix, "logistic", position, "C) )")
+    form <- paste0(
+      prefix, "logistic", position, "A / (1 + exp( (", prefix, "logistic", position,
+      "B-(", x, "))/", prefix, "logistic", position, "C) )"
+    )
     cp <- paste0("inv_logit((", chngptPrefix, changePointObj, " - ", x, ") * 5)")
-    cpInt <- paste0(prefix, "logistic", position, "A / (1 + exp( (", prefix, "logistic", position,
-                    "B-(", chngptPrefix, changePointObj, "))/", prefix, "logistic", position, "C) )")
+    cpInt <- paste0(
+      prefix, "logistic", position, "A / (1 + exp( (", prefix, "logistic", position,
+      "B-(", chngptPrefix, changePointObj, "))/", prefix, "logistic", position, "C) )"
+    )
   } else {
     all_chngpts <- names(priors)[grepl("fixedChangePoint*|changePoint*", names(priors))]
     prevChangePoints <- all_chngpts[which(as.numeric(sub(".*hangePoint", "", all_chngpts)) < position)]
     prevAndCurrentChangePoints <- all_chngpts[which(as.numeric(sub(".*hangePoint", "", all_chngpts))
-                                                    %in% c(position, position - 1))]
+    %in% c(position, position - 1))]
     #* per location where "fixed" is in the prior name, replace the name with that number.
     prev_fixed_index <- which(grepl("fixed", prevChangePoints))
     if (length(prev_fixed_index) > 0) {
@@ -380,17 +393,21 @@
     if (!fixed) {
       changePointObj <- "changePoint1"
     }
-    form <- paste0(prefix, "gompertz", position, "A * exp(-", prefix, "gompertz", position,
-                   "B * exp(-", prefix, "gompertz", position, "C * ", x, "))")
+    form <- paste0(
+      prefix, "gompertz", position, "A * exp(-", prefix, "gompertz", position,
+      "B * exp(-", prefix, "gompertz", position, "C * ", x, "))"
+    )
     cp <- paste0("inv_logit((", prefix, changePointObj, " - ", x, ") * 5)")
-    cpInt <- paste0(prefix, "gompertz", position, "A * exp(-", prefix, "gompertz", position,
-                    "B * exp(-", prefix, "gompertz", position, "C * ", chngptPrefix, changePointObj,
-                    "))")
+    cpInt <- paste0(
+      prefix, "gompertz", position, "A * exp(-", prefix, "gompertz", position,
+      "B * exp(-", prefix, "gompertz", position, "C * ", chngptPrefix, changePointObj,
+      "))"
+    )
   } else {
     all_chngpts <- names(priors)[grepl("fixedChangePoint*|changePoint*", names(priors))]
     prevChangePoints <- all_chngpts[which(as.numeric(sub(".*hangePoint", "", all_chngpts)) < position)]
     prevAndCurrentChangePoints <- all_chngpts[which(as.numeric(sub(".*hangePoint", "", all_chngpts))
-                                                    %in% c(position, position - 1))]
+    %in% c(position, position - 1))]
     #* per location where "fixed" is in the prior name, replace the name with that number.
     prev_fixed_index <- which(grepl("fixed", prevChangePoints))
     if (length(prev_fixed_index) > 0) {
@@ -468,17 +485,21 @@
     if (!fixed) {
       changePointObj <- "changePoint1"
     }
-    form <- paste0(prefix, "monomolecular", position, "A-", prefix, "monomolecular", position,
-                   "A * exp(-", prefix, "monomolecular", position, "B * ", x, ")")
+    form <- paste0(
+      prefix, "monomolecular", position, "A-", prefix, "monomolecular", position,
+      "A * exp(-", prefix, "monomolecular", position, "B * ", x, ")"
+    )
     cp <- paste0("inv_logit((", chngptPrefix, changePointObj, " - ", x, ") * 5)")
-    cpInt <- paste0(prefix, "monomolecular", position, "A-", prefix, "monomolecular", position,
-                    "A * exp(-", prefix, "monomolecular", position, "B * ", chngptPrefix,
-                    changePointObj, ")")
+    cpInt <- paste0(
+      prefix, "monomolecular", position, "A-", prefix, "monomolecular", position,
+      "A * exp(-", prefix, "monomolecular", position, "B * ", chngptPrefix,
+      changePointObj, ")"
+    )
   } else {
     all_chngpts <- names(priors)[grepl("fixedChangePoint*|changePoint*", names(priors))]
     prevChangePoints <- all_chngpts[which(as.numeric(sub(".*hangePoint", "", all_chngpts)) < position)]
     prevAndCurrentChangePoints <- all_chngpts[which(as.numeric(sub(".*hangePoint", "", all_chngpts))
-                                                    %in% c(position, position - 1))]
+    %in% c(position, position - 1))]
     #* per location where "fixed" is in the prior name, replace the name with that number.
     prev_fixed_index <- which(grepl("fixed", prevChangePoints))
     if (length(prev_fixed_index) > 0) {
@@ -556,16 +577,20 @@
       changePointObj <- "changePoint1"
     }
 
-    form <- paste0(prefix, "exponential", position, "A * exp(", prefix, "exponential", position,
-                   "B * ", x, ")")
+    form <- paste0(
+      prefix, "exponential", position, "A * exp(", prefix, "exponential", position,
+      "B * ", x, ")"
+    )
     cp <- paste0("inv_logit((", chngptPrefix, changePointObj, " - ", x, ") * 5)")
-    cpInt <- paste0(prefix, "exponential", position, "A * exp(", prefix, "exponential", position,
-                    "B * ", chngptPrefix, changePointObj, ")")
+    cpInt <- paste0(
+      prefix, "exponential", position, "A * exp(", prefix, "exponential", position,
+      "B * ", chngptPrefix, changePointObj, ")"
+    )
   } else {
     all_chngpts <- names(priors)[grepl("fixedChangePoint*|changePoint*", names(priors))]
     prevChangePoints <- all_chngpts[which(as.numeric(sub(".*hangePoint", "", all_chngpts)) < position)]
     prevAndCurrentChangePoints <- all_chngpts[which(as.numeric(sub(".*hangePoint", "", all_chngpts))
-                                                    %in% c(position, position - 1))]
+    %in% c(position, position - 1))]
     #* per location where "fixed" is in the prior name, replace the name with that number.
     prev_fixed_index <- which(grepl("fixed", prevChangePoints))
     if (length(prev_fixed_index) > 0) {
@@ -642,13 +667,15 @@
     }
     form <- paste0(prefix, "powerLaw", position, "A * ", x, "^(", prefix, "powerLaw", position, "B)")
     cp <- paste0("inv_logit((", chngptPrefix, changePointObj, " - ", x, ") * 5)")
-    cpInt <- paste0(prefix, "powerLaw", position, "A * ", chngptPrefix, changePointObj, "^(", prefix,
-                    "powerLaw", position, "B)")
+    cpInt <- paste0(
+      prefix, "powerLaw", position, "A * ", chngptPrefix, changePointObj, "^(", prefix,
+      "powerLaw", position, "B)"
+    )
   } else {
     all_chngpts <- names(priors)[grepl("fixedChangePoint*|changePoint*", names(priors))]
     prevChangePoints <- all_chngpts[which(as.numeric(sub(".*hangePoint", "", all_chngpts)) < position)]
     prevAndCurrentChangePoints <- all_chngpts[which(as.numeric(sub(".*hangePoint", "", all_chngpts))
-                                                    %in% c(position, position - 1))]
+    %in% c(position, position - 1))]
     #* per location where "fixed" is in the prior name, replace the name with that number.
     prev_fixed_index <- which(grepl("fixed", prevChangePoints))
     if (length(prev_fixed_index) > 0) {
@@ -661,8 +688,10 @@
       )
     }
 
-    form <- paste0(prefix, "powerLaw", position, "A * ", x, "-",
-                   paste0(prevChangePoints, collapse = "-"), "^(", prefix, "powerLaw", position, "B)")
+    form <- paste0(
+      prefix, "powerLaw", position, "A * ", x, "-",
+      paste0(prevChangePoints, collapse = "-"), "^(", prefix, "powerLaw", position, "B)"
+    )
     cp <- paste0("inv_logit((", x, "-", paste0(prevChangePoints, collapse = "-"), ") * 5)")
     cpInt <- paste0(
       prefix, "powerLaw", position, "A * (", paste0(rev(prevAndCurrentChangePoints), collapse = "-"),
@@ -873,16 +902,20 @@
     if (!fixed) {
       changePointObj <- "changePoint1"
     }
-    form <- paste0(prefix, "weibull", position, "A * (1-exp(-(", x, "/", prefix,
-                   "weibull", position, "C)^", prefix, "weibull", position, "B))")
+    form <- paste0(
+      prefix, "weibull", position, "A * (1-exp(-(", x, "/", prefix,
+      "weibull", position, "C)^", prefix, "weibull", position, "B))"
+    )
     cp <- paste0("inv_logit((", chngptPrefix, changePointObj, " - ", x, ") * 5)")
-    cpInt <- paste0(prefix, "weibull", position, "A * (1-exp(-(", chngptPrefix, changePointObj,
-                    "/", prefix, "weibull", position, "C)^", prefix, "weibull", position, "B))")
+    cpInt <- paste0(
+      prefix, "weibull", position, "A * (1-exp(-(", chngptPrefix, changePointObj,
+      "/", prefix, "weibull", position, "C)^", prefix, "weibull", position, "B))"
+    )
   } else {
     all_chngpts <- names(priors)[grepl("fixedChangePoint*|changePoint*", names(priors))]
     prevChangePoints <- all_chngpts[which(as.numeric(sub(".*hangePoint", "", all_chngpts)) < position)]
     prevAndCurrentChangePoints <- all_chngpts[which(as.numeric(sub(".*hangePoint", "", all_chngpts))
-                                                    %in% c(position, position - 1))]
+    %in% c(position, position - 1))]
     #* per location where "fixed" is in the prior name, replace the name with that number.
     prev_fixed_index <- which(grepl("fixed", prevChangePoints))
     if (length(prev_fixed_index) > 0) {
@@ -901,7 +934,8 @@
     cp <- paste0("inv_logit((", x, "-", paste0(prevChangePoints, collapse = "-"), ") * 5)")
     cpInt <- paste0(
       prefix, "weibull", position, "A * (1-exp(-(", paste0(rev(prevAndCurrentChangePoints),
-                                                           collapse = "-"),
+        collapse = "-"
+      ),
       "/", prefix, "weibull", position, "C)^", prefix, "weibull", position, "B))"
     )
   }
@@ -958,16 +992,20 @@
     if (!fixed) {
       changePointObj <- "changePoint1"
     }
-    form <- paste0(prefix, "frechet", position, "A * exp(-((", x, "-0)/", prefix, "frechet",
-                   position, "C)^(-", prefix, "frechet", position, "B))")
+    form <- paste0(
+      prefix, "frechet", position, "A * exp(-((", x, "-0)/", prefix, "frechet",
+      position, "C)^(-", prefix, "frechet", position, "B))"
+    )
     cp <- paste0("inv_logit((", chngptPrefix, changePointObj, " - ", x, ") * 5)")
-    cpInt <- paste0(prefix, "frechet", position, "A * exp(-((", chngptPrefix, changePointObj, "-0)/",
-                    prefix, "frechet", position, "C)^(-", prefix, "frechet", position, "B))")
+    cpInt <- paste0(
+      prefix, "frechet", position, "A * exp(-((", chngptPrefix, changePointObj, "-0)/",
+      prefix, "frechet", position, "C)^(-", prefix, "frechet", position, "B))"
+    )
   } else {
     all_chngpts <- names(priors)[grepl("fixedChangePoint*|changePoint*", names(priors))]
     prevChangePoints <- all_chngpts[which(as.numeric(sub(".*hangePoint", "", all_chngpts)) < position)]
     prevAndCurrentChangePoints <- all_chngpts[which(as.numeric(sub(".*hangePoint", "", all_chngpts))
-                                                    %in% c(position, position - 1))]
+    %in% c(position, position - 1))]
     #* per location where "fixed" is in the prior name, replace the name with that number.
     prev_fixed_index <- which(grepl("fixed", prevChangePoints))
     if (length(prev_fixed_index) > 0) {
@@ -987,7 +1025,8 @@
     cp <- paste0("inv_logit((", x, "-", paste0(prevChangePoints, collapse = "-"), ") * 5)")
     cpInt <- paste0(
       prefix, "frechet", position, "A * exp(-((", paste0(rev(prevAndCurrentChangePoints),
-                                                         collapse = "-"),
+        collapse = "-"
+      ),
       "-0)/", prefix, "frechet", position, "C)^(-", prefix, "frechet", position, "B))"
     )
   }
@@ -1045,16 +1084,20 @@
     if (!fixed) {
       changePointObj <- "changePoint1"
     }
-    form <- paste0(prefix, "gumbel", position, "A * exp(-exp(-(", x, "-",
-                   prefix, "gumbel", position, "B)/", prefix, "gumbel", position, "C))")
+    form <- paste0(
+      prefix, "gumbel", position, "A * exp(-exp(-(", x, "-",
+      prefix, "gumbel", position, "B)/", prefix, "gumbel", position, "C))"
+    )
     cp <- paste0("inv_logit((", chngptPrefix, changePointObj, " - ", x, ") * 5)")
-    cpInt <- paste0(prefix, "gumbel", position, "A * exp(-exp(-(", chngptPrefix, changePointObj, "-",
-                    prefix, "gumbel", position, "B)/", prefix, "gumbel", position, "C))")
+    cpInt <- paste0(
+      prefix, "gumbel", position, "A * exp(-exp(-(", chngptPrefix, changePointObj, "-",
+      prefix, "gumbel", position, "B)/", prefix, "gumbel", position, "C))"
+    )
   } else {
     all_chngpts <- names(priors)[grepl("fixedChangePoint*|changePoint*", names(priors))]
     prevChangePoints <- all_chngpts[which(as.numeric(sub(".*hangePoint", "", all_chngpts)) < position)]
     prevAndCurrentChangePoints <- all_chngpts[which(as.numeric(sub(".*hangePoint", "", all_chngpts))
-                                                    %in% c(position, position - 1))]
+    %in% c(position, position - 1))]
     #* per location where "fixed" is in the prior name, replace the name with that number.
     prev_fixed_index <- which(grepl("fixed", prevChangePoints))
     if (length(prev_fixed_index) > 0) {
@@ -1074,7 +1117,8 @@
     cp <- paste0("inv_logit((", x, "-", paste0(prevChangePoints, collapse = "-"), ") * 5)")
     cpInt <- paste0(
       prefix, "gumbel", position, "A * exp(-exp(-(", paste0(rev(prevAndCurrentChangePoints),
-                                                            collapse = "-"),
+        collapse = "-"
+      ),
       "-", prefix, "gumbel", position, "B)/", prefix, "gumbel", position, "C))"
     )
   }
