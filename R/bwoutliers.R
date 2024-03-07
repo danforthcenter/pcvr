@@ -163,7 +163,7 @@ bw.outliers <- function(df = NULL,
                         plotgroup = c("barcode", "rotation"),
                         plot = TRUE, x = NULL, traitCol = "trait", valueCol = "value",
                         labelCol = "label", idCol = NULL, ncp = NULL, separate = NULL) {
-  wide <- .outliersDetectWideData(df, traitCol, valueCol)
+  wide <- .detectWideData(df, traitCol, valueCol)
   if (is.null(phenotype)) {
     stop("A phenotype must be provided")
   }
@@ -252,7 +252,7 @@ bw.outliers <- function(df = NULL,
 #' @keywords internal
 #' @noRd
 
-.outliersDetectWideData <- function(df, traitCol, valueCol) {
+.detectWideData <- function(df, traitCol, valueCol) {
   if (all(c(traitCol, valueCol) %in% colnames(df))) {
     wide <- FALSE
   } else {
