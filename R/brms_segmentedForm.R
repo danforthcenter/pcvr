@@ -72,18 +72,18 @@
     iter_model <- component_models[i]
 
     if (grepl("decay", iter_model)) {
-      decay = TRUE
+      decay <- TRUE
       iter_model <- trimws(gsub("decay", "", iter_model))
     } else {
-      decay = FALSE
+      decay <- FALSE
     }
 
     matched_iter_model <- match.arg(iter_model, models)
     if (matched_iter_model == "homo") {
-      matched_iter_model = "int"
+      matched_iter_model <- "int"
     } # recoding
     if (matched_iter_model == "spline") {
-      matched_iter_model = "gam"
+      matched_iter_model <- "gam"
     }
     chngptFormFun <- match.fun(paste0(".", gsub(" ", "", matched_iter_model), "ChngptForm"))
     iter <- chngptFormFun(x, i, dpar = prefix, priors)
@@ -129,9 +129,9 @@
       by <- ","
     }
     if (nTimes < 11) {
-      k = paste0(", k = ", nTimes)
+      k <- paste0(", k = ", nTimes)
     } else {
-      k = NULL
+      k <- NULL
     }
     splineVars <- c()
     for (seg in splineSegments) {
@@ -176,10 +176,10 @@
 
   if (any(grepl(paste0("fixedChangePoint", position), names(priors)))) {
     changePointObj <- as.numeric(priors[[paste0(prefix, "fixedChangePoint", position)]])[1]
-    fixed = TRUE
+    fixed <- TRUE
     chngptPrefix <- NULL # never a prefix if the changepoint is a fixed value, even in sub model
   } else {
-    fixed = FALSE
+    fixed <- FALSE
     # if(dpar){chngptPrefix <- "sub"} else { prefix <- NULL} # I don't think this ever matters
   }
 
@@ -255,10 +255,10 @@
 
   if (any(grepl(paste0("fixedChangePoint", position), names(priors)))) {
     changePointObj <- as.numeric(priors[[paste0(prefix, "fixedChangePoint", position)]])[1]
-    fixed = TRUE
+    fixed <- TRUE
     chngptPrefix <- NULL # never a prefix if the changepoint is a fixed value
   } else {
-    fixed = FALSE
+    fixed <- FALSE
     # if(dpar){chngptPrefix <- "sub"} else { prefix <- NULL}
   }
 
@@ -341,10 +341,10 @@
 
   if (any(grepl(paste0("fixedChangePoint", position), names(priors)))) {
     changePointObj <- as.numeric(priors[[paste0(prefix, "fixedChangePoint", position)]])[1]
-    fixed = TRUE
+    fixed <- TRUE
     chngptPrefix <- NULL # never a prefix if the changepoint is a fixed value
   } else {
-    fixed = FALSE
+    fixed <- FALSE
     # if(dpar){chngptPrefix <- "sub"} else { prefix <- NULL}
   }
 
@@ -423,10 +423,10 @@
 
   if (any(grepl(paste0("fixedChangePoint", position), names(priors)))) {
     changePointObj <- as.numeric(priors[[paste0(prefix, "fixedChangePoint", position)]])[1]
-    fixed = TRUE
+    fixed <- TRUE
     chngptPrefix <- NULL # never a prefix if the changepoint is a fixed value
   } else {
-    fixed = FALSE
+    fixed <- FALSE
     # if(dpar){chngptPrefix <- "sub"} else { prefix <- NULL}
   }
 
@@ -503,10 +503,10 @@
 
   if (any(grepl(paste0("fixedChangePoint", position), names(priors)))) {
     changePointObj <- as.numeric(priors[[paste0(prefix, "fixedChangePoint", position)]])[1]
-    fixed = TRUE
+    fixed <- TRUE
     chngptPrefix <- NULL # never a prefix if the changepoint is a fixed value
   } else {
-    fixed = FALSE
+    fixed <- FALSE
     # if(dpar){chngptPrefix <- "sub"} else { prefix <- NULL}
   }
 
@@ -584,10 +584,10 @@
 
   if (any(grepl(paste0("fixedChangePoint", position), names(priors)))) {
     changePointObj <- as.numeric(priors[[paste0(prefix, "fixedChangePoint", position)]])[1]
-    fixed = TRUE
+    fixed <- TRUE
     chngptPrefix <- NULL # never a prefix if the changepoint is a fixed value
   } else {
-    fixed = FALSE
+    fixed <- FALSE
     # if(dpar){chngptPrefix <- "sub"} else { prefix <- NULL}
   }
 
@@ -662,10 +662,10 @@
 
   if (any(grepl(paste0("fixedChangePoint", position), names(priors)))) {
     changePointObj <- as.numeric(priors[[paste0(prefix, "fixedChangePoint", position)]])[1]
-    fixed = TRUE
+    fixed <- TRUE
     chngptPrefix <- NULL # never a prefix if the changepoint is a fixed value
   } else {
-    fixed = FALSE
+    fixed <- FALSE
     # if(dpar){chngptPrefix <- "sub"} else { prefix <- NULL}
   }
 
@@ -736,10 +736,10 @@
 
   if (any(grepl(paste0("fixedChangePoint", position), names(priors)))) {
     changePointObj <- as.numeric(priors[[paste0(prefix, "fixedChangePoint", position)]])[1]
-    fixed = TRUE
+    fixed <- TRUE
     chngptPrefix <- NULL # never a prefix if the changepoint is a fixed value
   } else {
-    fixed = FALSE
+    fixed <- FALSE
     # if(dpar){chngptPrefix <- "sub"} else { prefix <- NULL}
   }
 
@@ -816,10 +816,10 @@
 
   if (any(grepl(paste0("fixedChangePoint", position), names(priors)))) {
     changePointObj <- as.numeric(priors[[paste0(prefix, "fixedChangePoint", position)]])[1]
-    fixed = TRUE
+    fixed <- TRUE
     chngptPrefix <- NULL # never a prefix if the changepoint is a fixed value
   } else {
-    fixed = FALSE
+    fixed <- FALSE
     # if(dpar){chngptPrefix <- "sub"} else { prefix <- NULL}
   }
 
@@ -896,10 +896,10 @@
 
   if (any(grepl(paste0("fixedChangePoint", position), names(priors)))) {
     changePointObj <- as.numeric(priors[[paste0(prefix, "fixedChangePoint", position)]])[1]
-    fixed = TRUE
+    fixed <- TRUE
     chngptPrefix <- NULL # never a prefix if the changepoint is a fixed value
   } else {
-    fixed = FALSE
+    fixed <- FALSE
     # if(dpar){chngptPrefix <- "sub"} else { prefix <- NULL}
   }
 
@@ -978,10 +978,10 @@
 
   if (any(grepl(paste0("fixedChangePoint", position), names(priors)))) {
     changePointObj <- as.numeric(priors[[paste0(prefix, "fixedChangePoint", position)]])[1]
-    fixed = TRUE
+    fixed <- TRUE
     chngptPrefix <- NULL # never a prefix if the changepoint is a fixed value
   } else {
-    fixed = FALSE
+    fixed <- FALSE
     # if(dpar){chngptPrefix <- "sub"} else { prefix <- NULL}
   }
 
