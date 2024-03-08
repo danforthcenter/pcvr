@@ -1,42 +1,46 @@
 #' Ease of use nlrq starter function for 6 growth model parameterizations
-#' 
+#'
 #' Internal to growthSS
-#' 
-#' @examples 
-#' 
-#' simdf<-growthSim("logistic", n=20, t=25,
-#'   params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))
-#' 
-#' ss<-.mgcvSS(model = "gam", form=y~time|id/group, df=simdf)
+#'
+#' @examples
+#'
+#' simdf <- growthSim("logistic",
+#'   n = 20, t = 25,
+#'   params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
+#' )
+#'
+#' ss <- .mgcvSS(model = "gam", form = y ~ time | id / group, df = simdf)
 #' names(ss) # formula, df, pcvrForm
-#' 
+#'
 #' @keywords internal
 #' @noRd
 
-.mgcvSS<-function(model="gam", form, df){
+.mgcvSS <- function(model = "gam", form, df) {
   #* `parse form argument`
   parsed_form <- .parsePcvrForm(form, df)
   y <- parsed_form$y
   x <- parsed_form$x
   group <- parsed_form$group
   USEGROUP <- parsed_form$USEG
-  if(parsed_form$USEID){message(paste0("Individual is not used with type = 'gam'."))}
+  if (parsed_form$USEID) {
+    message(paste0("Individual is not used with type = 'gam'."))
+  }
   df <- parsed_form$data
-  
-  if(USEGROUP){
-    df[[group]]<-factor(df[[group]])
-    df[[paste0(group,"_numericLabel")]]<-unclass(df[[group]])
+
+  if (USEGROUP) {
+    df[[group]] <- factor(df[[group]])
+    df[[paste0(group, "_numericLabel")]] <- unclass(df[[group]])
   }
   #* `assemble gam formula`
-  if(USEGROUP){
-    gam_form <- stats::as.formula(paste0(y, "~0+",group,"+s(", x, ", by=", group, ")"))
-  } else{
+  if (USEGROUP) {
+    gam_form <- stats::as.formula(paste0(y, "~0+", group, "+s(", x, ", by=", group, ")"))
+  } else {
     gam_form <- stats::as.formula(paste0(y, "~0+s(", x, ")"))
   }
   #* `return list`
-  out<-list()
+  out <- list()
   out[["formula"]] <- gam_form
-  out[["df"]]<-df
-  out[["pcvrForm"]]<-form
+  out[["df"]] <- df
+  out[["pcvrForm"]] <- form
   return(out)
 }
