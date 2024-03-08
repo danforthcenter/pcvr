@@ -113,7 +113,23 @@ nlsPlot<-function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facetGr
   
 }
 
+#' alias of nls for using gam models via class matching
+#' @keywords internal
+#' @noRd
 
+gamPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facetGroups=TRUE,
+                    groupFill=FALSE, virMaps = c("plasma")) {
+  nlsPlot(fit, form, df, groups, timeRange, facetGroups, groupFill, virMaps)
+}
+
+#' alias of nlsPlot for using lm models via class matching
+#' @keywords internal
+#' @noRd
+
+lmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facetGroups=TRUE,
+                    groupFill=FALSE, virMaps = c("plasma")) {
+  nlsPlot(fit, form, df, groups, timeRange, facetGroups, groupFill, virMaps)
+}
 
 
 

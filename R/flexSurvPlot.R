@@ -13,6 +13,7 @@
 #' Defaults to NULL in which case all groups in the model are plotted.
 #' @param df A dataframe to use in plotting observed growth curves on top of the model.
 #' This must be supplied for nls models.
+#' @param timeRange Ignored, included for compatibility with other plotting functions.
 #' @param facetGroups logical, should groups be separated in facets? Defaults to TRUE.
 #' @param groupFill logical, should groups have different colors? Defaults to FALSE. If TRUE then
 #' viridis colormaps are used in the order of virMaps
@@ -37,7 +38,7 @@
 #'   ss <- growthSS(model = model, form = form, df = df, type = "flexsurv")
 #'   lapply(ss, head)
 #'   fit <- fitGrowth(ss)
-#'   flexSurvRegPlot(fit, form = ss$pcvrForm, df = ss$df)
+#'   flexsurvregPlot(fit, form = ss$pcvrForm, df = ss$df)
 #' }
 #'
 #' ## End(Not run)
@@ -47,8 +48,8 @@
 #' @export
 
 
-flexSurvRegPlot <- function(fit, form, df = NULL, groups = NULL, facetGroups = TRUE,
-                            groupFill = FALSE, virMaps = c("plasma")) {
+flexsurvregPlot <- function(fit, form, groups, df = NULL, timeRange=NULL, facetGroups=TRUE,
+                            groupFill=FALSE, virMaps = c("plasma")) {
   #* `parse formula`
   parsed_form <- .parsePcvrForm(form, df)
   x <- parsed_form$x

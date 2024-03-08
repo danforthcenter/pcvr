@@ -148,4 +148,12 @@ nlmePlot<-function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facetG
   return(res)
 }
 
+#' alias of nlmePlot for using lme models via class matching
+#' @keywords internal
+#' @noRd
+
+lmePlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facetGroups=TRUE,
+                    groupFill=FALSE, virMaps = c("plasma")) {
+  nlmePlot(fit, form, df, groups, timeRange, facetGroups, groupFill, virMaps)
+}
 

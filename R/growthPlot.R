@@ -52,9 +52,12 @@ growthPlot <- function(fit, form, groups = NULL, df = NULL, timeRange = NULL,
     virMaps <- groupFill
     groupFill <- TRUE
   }
-
+  model_class <- class(fit)
+  if (is.list(fit)) {
+    model_class <- class(fit[[1]])
+  }
   if (methods::is(fit, "brmsfit")) {
-    if (as.character(fit$family)[1] == "student") {
+    if (attr(fit$formula$formula, "nl")) { # non linear models are growth models
       plot <- brmPlot(
         fit = fit, form = form, groups = groups, df = df, timeRange = timeRange,
         facetGroups = facetGroups, groupFill = groupFill, virMaps
@@ -65,39 +68,10 @@ growthPlot <- function(fit, form, groups = NULL, df = NULL, timeRange = NULL,
         facetGroups = facetGroups, groupFill = groupFill, virMaps
       )
     }
-  } else if (methods::is(fit, "nls") || methods::is(fit, "gam") || methods::is(fit, "lm")) {
-    plot <- nlsPlot(
+  } else {
+    plottingFunction <- match.fun(paste0(model_class, "Plot"))
+    plot <- plottingFunction(
       fit = fit, form = form, groups = groups, df = df, timeRange = timeRange,
-      facetGroups = facetGroups, groupFill = groupFill, virMaps
-    )
-  } else if (methods::is(fit, "lme")) {
-    plot <- nlmePlot(fit,
-      form = form, groups = groups, df = df, timeRange = timeRange,
-      facetGroups = facetGroups, groupFill = groupFill, virMaps
-    )
-  } else if (methods::is(fit, "nlme")) {
-    plot <- nlmePlot(fit,
-      form = form, groups = groups, df = df, timeRange = timeRange,
-      facetGroups = facetGroups, groupFill = groupFill, virMaps
-    )
-  } else if (methods::is(fit, "nlrq") || is.list(fit) && methods::is(fit[[1]], "nlrq")) {
-    plot <- nlrqPlot(
-      fit = fit, form = form, groups = groups, df = df, timeRange = timeRange,
-      facetGroups = facetGroups, groupFill = groupFill, virMaps
-    )
-  } else if (methods::is(fit, "rq") || is.list(fit) && methods::is(fit[[1]], "rq")) {
-    plot <- rqPlot(
-      fit = fit, form = form, groups = groups, df = df, timeRange = timeRange,
-      facetGroups = facetGroups, groupFill = groupFill, virMaps
-    )
-  } else if (methods::is(fit, "survreg")) {
-    plot <- survRegPlot(
-      fit = fit, form = form, groups = groups, df = df, facetGroups = facetGroups,
-      groupFill = groupFill, virMaps
-    )
-  } else if (methods::is(fit, "flexsurvreg")) {
-    plot <- flexSurvRegPlot(
-      fit = fit, form = form, groups = groups, df = df,
       facetGroups = facetGroups, groupFill = groupFill, virMaps
     )
   }
