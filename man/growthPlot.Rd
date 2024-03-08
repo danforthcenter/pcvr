@@ -17,24 +17,27 @@ growthPlot(
 \arguments{
 \item{fit}{A model fit object (or a list of \code{nlrq} models) as returned by \code{fitGrowth}.}
 
-\item{form}{A formula similar to that in \code{growthSS} inputs (or the \code{pcvrForm} part of the output) specifying the outcome,
-predictor, and grouping structure of the data as \code{outcome ~ predictor|individual/group}. Generally this is given directly from
+\item{form}{A formula similar to that in \code{growthSS} inputs (or the \code{pcvrForm} part of the
+output) specifying the outcome, predictor, and grouping structure of the data as
+\code{outcome ~ predictor|individual/group}. Generally this is given directly from
 the growthSS output (\code{ss$pcvrForm}). If the formula does not include both individuals
-and groups then lines from the data will not be plotted which may be best if your data does not specify unique individuals and your model 
-does not include autocorrelation.}
+and groups then lines from the data will not be plotted which may be best if your data does not
+specify unique individuals and your model does not include autocorrelation.}
 
 \item{groups}{An optional set of groups to keep in the plot.
 Defaults to NULL in which case all groups in the model are plotted.}
 
-\item{df}{A dataframe to use in plotting observed growth curves on top of the model and for making predictions.}
+\item{df}{A dataframe to use in plotting observed growth curves on top of the model and for making
+predictions.}
 
 \item{timeRange}{An optional range of times to use. This can be used to view predictions for
 future data if the avaiable data has not reached some point (such as asymptotic size).}
 
 \item{facetGroups}{logical, should groups be separated in facets? Defaults to TRUE.}
 
-\item{groupFill}{logical, should groups have different colors? Defaults to FALSE. If TRUE then viridis colormaps are used in the order
-c('plasma', 'mako', 'viridis', 'inferno', 'cividis', 'magma', 'turbo', 'rocket'). Alternatively this can be given as a vector of
+\item{groupFill}{logical, should groups have different colors? Defaults to FALSE. If TRUE then
+viridis colormaps are used in the order c('plasma', 'mako', 'viridis', 'inferno', 'cividis', 'magma',
+'turbo', 'rocket'). Alternatively this can be given as a vector of
 viridis colormap names to use in a different order than above.}
 }
 \value{
@@ -42,22 +45,20 @@ Returns a ggplot showing a brms model's credible
 intervals and optionally the individual growth lines.
 }
 \description{
-Models fit using \link{growthSS} inputs by \link{fitGrowth} (and similar models made through other means)
- can be visualized easily using this function.
+Models fit using \link{growthSS} inputs by \link{fitGrowth}
+(and similar models made through other means) can be visualized easily using this function.
 }
 \examples{
 
 ## Not run:
 
-if(FALSE){
-
-data(bw_vignette_fit)
-brmPlot(bw_vignette_fit, y~time|id/group, df=NULL)
-print(load(url("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/brmsFits.rdata")))
-brmPlot(fit_25, form = y~time|id/group)
-brmPlot(fit_9, form = y~time|id/group)
-brmPlot(fit_15, form = y~time|id/group)
-
+if (FALSE) {
+  data(bw_vignette_fit)
+  brmPlot(bw_vignette_fit, y ~ time | id / group, df = NULL)
+  print(load(url("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/brmsFits.rdata")))
+  brmPlot(fit_25, form = y ~ time | id / group)
+  brmPlot(fit_9, form = y ~ time | id / group)
+  brmPlot(fit_15, form = y ~ time | id / group)
 }
 
 ## End(Not run)

@@ -18,19 +18,20 @@ or should the components be shown individually (FALSE, the default).}
 \item{removePattern}{A pattern to remove to make the wavelength column into a numeric.}
 }
 \description{
-This function is used to visualize variable influence on projection (vip) from a plsr model.
+This function is used to visualize variable influence on projection (vip) from a plsr
+model.
 }
 \examples{
 
 ## Not run:
 
-if(FALSE){
-file = "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest1.csv"
-df1<-read.pcv(file, "wide")
-colnames(df1)<-sub("index_frequencies_index_ndvi.", "ndvi_", colnames(df1))
-# Note you will need pls installed to use pcv.plsr
-x<-pcv.plsr(df=df1, resps = "area.pixels", spectra = grepl("^ndvi_", colnames(df1)))
-plotVIP(x)
+if (FALSE) {
+  file = "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest1.csv"
+  df1 <- read.pcv(file, "wide")
+  colnames(df1) <- sub("index_frequencies_index_ndvi.", "ndvi_", colnames(df1))
+  # Note you will need pls installed to use pcv.plsr
+  x <- pcv.plsr(df = df1, resps = "area.pixels", spectra = grepl("^ndvi_", colnames(df1)))
+  plotVIP(x)
 }
 
 ## End(Not run)

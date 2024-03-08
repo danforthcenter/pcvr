@@ -11,8 +11,8 @@ pcv.plsr(df, resps = NULL, spectra = NULL, train = 0.8, cv = 10, ...)
 
 \item{resps}{Vector of response variables.}
 
-\item{spectra}{Either one column name (in the case of long data) or a set of columns in the case of wide data.
-If a single character string is provided and it is not one of the column names then it is
+\item{spectra}{Either one column name (in the case of long data) or a set of columns in the case of
+wide data. If a single character string is provided and it is not one of the column names then it is
 taken to be a pattern that will match some set of column names in the data to use (see examples).}
 
 \item{train}{Proportion of data to use as training data.}
@@ -25,19 +25,20 @@ taken to be a pattern that will match some set of column names in the data to us
 Partial Least Squares Regression (plsr) is often used to analyze spectral data.
 }
 \details{
-Note that columns that sum to 0 in the training or test data will be removed. This function also uses the 'pls' method from the pls package.
+Note that columns that sum to 0 in the training or test data will be removed.
+This function also uses the 'pls' method from the pls package.
 }
 \examples{
 
 ## Not run:
 
-if(FALSE){
-file = "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest1.csv"
-df1<-read.pcv(file, mode = "wide")
-colnames(df1)<-sub("index_frequencies_index_ndvi.", "ndvi_", colnames(df1))
-# Note, this requires the pls package.
-x<-pcv.plsr(df=df1, resps = "area.pixels", spectra = grepl("^ndvi_", colnames(df1)))
-x<-pcv.plsr(df=df1, resps = "area.pixels", spectra = "^ndvi_")
+if (FALSE) {
+  file = "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest1.csv"
+  df1 <- read.pcv(file, mode = "wide")
+  colnames(df1) <- sub("index_frequencies_index_ndvi.", "ndvi_", colnames(df1))
+  # Note, this requires the pls package.
+  x <- pcv.plsr(df = df1, resps = "area.pixels", spectra = grepl("^ndvi_", colnames(df1)))
+  x <- pcv.plsr(df = df1, resps = "area.pixels", spectra = "^ndvi_")
 }
 ## End(Not run)
 

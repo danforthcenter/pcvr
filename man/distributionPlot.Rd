@@ -25,7 +25,7 @@ and \code{\link{brmPlot}} such as: outcome ~ predictor |individual/group}
 \code{params}. This is only used if sample_prior=FALSE in the brmsfit object.
 If left NULL then no prior is included.}
 
-\item{params}{a vector of parameters to include distribution plots of. 
+\item{params}{a vector of parameters to include distribution plots of.
 Defaults to NULL which will use all parameters from the top level model.}
 
 \item{d}{data used to fit models (this is used to plot each subject's trend line)}
@@ -43,24 +43,30 @@ Function for plotting iterations of posterior distributions
 \examples{
 
 ## Not run:
-if(FALSE){
-print(load(url("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/brmsFits.rdata")))
-library(brms)
-library(ggplot2)
-library(patchwork)
-fits<-list(fit_3, fit_15)
-form <- y~time|id/group
-priors<-list("phi1"=rlnorm(2000, log(130), 0.25),
-   "phi2"=rlnorm(2000, log(12), 0.25),
-   "phi3"=rlnorm(2000, log(3), 0.25))
-params = c("A", "B", "C")
-d <- simdf
-maxTime = NULL
-patch=TRUE
-from3to25<-list(fit_3, fit_5, fit_7, fit_9, fit_11,
-    fit_13, fit_15, fit_17, fit_19, fit_21, fit_23, fit_25)
-distributionPlot(fits = from3to25, form = y~time|id/group,
-     params=params, d=d, priors=priors)
+if (FALSE) {
+  print(load(url("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/brmsFits.rdata")))
+  library(brms)
+  library(ggplot2)
+  library(patchwork)
+  fits <- list(fit_3, fit_15)
+  form <- y~time | id / group
+  priors <- list(
+    "phi1" = rlnorm(2000, log(130), 0.25),
+    "phi2" = rlnorm(2000, log(12), 0.25),
+    "phi3" = rlnorm(2000, log(3), 0.25)
+  )
+  params <- c("A", "B", "C")
+  d <- simdf
+  maxTime <- NULL
+  patch <- TRUE
+  from3to25 <- list(
+    fit_3, fit_5, fit_7, fit_9, fit_11,
+    fit_13, fit_15, fit_17, fit_19, fit_21, fit_23, fit_25
+  )
+  distributionPlot(
+    fits = from3to25, form = y ~ time | id / group,
+    params = params, d = d, priors = priors
+  )
 }
 ## End(Not run)
 }

@@ -28,17 +28,18 @@ Defaults to \code{c("barcode", "DAS")}.}
 
 \item{id}{Variable(s) that identify a plant over time. Defaults to \code{"barcode"}.}
 
-\item{offset}{Optionally you can specify how long before imaging a watering should not be taken into account. 
-This defaults to 0, meaning that if a plant were watered directly before being imaged then that water would
-be counted towards WUE between the current image and the prior one. This argument is taken to be in seconds.}
+\item{offset}{Optionally you can specify how long before imaging a watering should not be taken into
+account. This defaults to 0, meaning that if a plant were watered directly before being imaged then
+that water would be counted towards WUE between the current image and the prior one.
+This argument is taken to be in seconds.}
 
 \item{waterCol}{Column containing watering amounts in \code{w}. This defaults to "watering_amount".}
 
-\item{method}{Which method to use, options are "rate" and "abs". The "rate" method considers WUE as the
- change in a phenotype divided by the amount of water added. The "abs" method considers WUE as the amount of
- water used by a plant given its absolute size. The former is for questions more related to efficiency in using 
-water to grow while the latter is more suited to questions about how efficient a plant is at maintaining size given
-some amount of water.}
+\item{method}{Which method to use, options are "rate" and "abs". The "rate" method considers WUE as
+the change in a phenotype divided by the amount of water added. The "abs" method considers WUE as
+the amount of water used by a plant given its absolute size. The former is for questions more
+related to efficiency in using water to grow while the latter is more suited to questions about
+how efficient a plant is at maintaining size given some amount of water.}
 }
 \value{
 A data frame containing the bellwether watering data joined
@@ -46,43 +47,55 @@ A data frame containing the bellwether watering data joined
     change in the pre-watering weight, and pseudo-water use efficiency (pWUE).
 }
 \description{
-Rate based water use efficiency (WUE) is the change in biomass per unit of water metabolized.
-Using image based phenotypes and watering data we can calculate pseudo-WUE (pwue) over time.
-Here area_pixels is used as a proxy for biomass and transpiration is approximated using watering data.
-The equation is then \eqn{\frac{P_{t} - P_{t-1}}{W_{t_{end-1}}-W_{t_{start}} }}{P_[t] - P_[t-1] / W_[t_(end-1)]-W_[t_start]},
+Rate based water use efficiency (WUE) is the change in biomass per unit of water
+metabolized. Using image based phenotypes and watering data we can calculate pseudo-WUE (pwue) over
+time. Here area_pixels is used as a proxy for biomass and transpiration is approximated using
+watering data. The equation is then
+\eqn{\frac{P_{t} - P_{t-1}}{W_{t_{end-1}}-W_{t_{start}} }}
+{P_[t] - P_[t-1] / W_[t_(end-1)]-W_[t_start]},
 where P is the phenotype and W is the weight before watering.
 
 Absolute value based WUE is the amount of water used to sustain a plants biomass over a given period.
-The equation is then \eqn{\frac{P_{t}}{W_{t_{end-1}}-W_{t_{start}} }}{P_[t] / W_[t_(end-1)]-W_[t_start]}
+The equation is then
+\eqn{\frac{P_{t}}{W_{t_{end-1}}-W_{t_{start}} }}{P_[t] / W_[t_(end-1)]-W_[t_start]}
 }
 \examples{
 
 library(data.table)
-sv<-read.pcv(
-   "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv",
-   reader="fread")
-sv$genotype = substr(sv$barcode, 3,5)
-sv$genotype = ifelse(sv$genotype == "002", "B73",
-     ifelse(sv$genotype == "003", "W605S",
-     ifelse(sv$genotype == "004", "MM", "Mo17")))
-sv$fertilizer = substr(sv$barcode, 8, 8)
-sv$fertilizer = ifelse(sv$fertilizer == "A", "100",
-           ifelse(sv$fertilizer == "B", "50", "0"))
-sv<-bw.time(sv, plantingDelay = 0,
-      phenotype="area_pixels", cutoff=10, timeCol="timestamp",
-      group=c("barcode", "rotation"), plot=FALSE)
+sv <- read.pcv(
+  "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv",
+  reader = "fread"
+)
+sv$genotype <- substr(sv$barcode, 3, 5)
+sv$genotype <- ifelse(sv$genotype == "002", "B73",
+  ifelse(sv$genotype == "003", "W605S",
+    ifelse(sv$genotype == "004", "MM", "Mo17")
+  )
+)
+sv$fertilizer <- substr(sv$barcode, 8, 8)
+sv$fertilizer <- ifelse(sv$fertilizer == "A", "100",
+  ifelse(sv$fertilizer == "B", "50", "0")
+)
+sv <- bw.time(sv,
+  plantingDelay = 0,
+  phenotype = "area_pixels", cutoff = 10, timeCol = "timestamp",
+  group = c("barcode", "rotation"), plot = FALSE
+)
 phenotypes <- colnames(sv)[19:35]
-phenoForm<-paste0("cbind(", paste0(phenotypes, collapse=", "), ")")
-groupForm<-"DAS+DAP+barcode+genotype+fertilizer+timestamp"
-sv<-aggregate(as.formula(paste0(phenoForm, "~", groupForm)), data=sv, mean, na.rm=TRUE)
-sv<-bw.outliers(sv, phenotype="area_pixels",
-      group = c("DAS", "genotype", "fertilizer"), plotgroup = c("barcode"), plot=FALSE)
-water<-bw.water("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/metadata.json")
+phenoForm <- paste0("cbind(", paste0(phenotypes, collapse = ", "), ")")
+groupForm <- "DAS+DAP+barcode+genotype+fertilizer+timestamp"
+sv <- aggregate(as.formula(paste0(phenoForm, "~", groupForm)), data = sv, mean, na.rm = TRUE)
+sv <- bw.outliers(sv,
+  phenotype = "area_pixels",
+  group = c("DAS", "genotype", "fertilizer"), plotgroup = c("barcode"), plot = FALSE
+)
+water <- bw.water("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/metadata.json")
 
-x<-pwue(df = sv, w = water, pheno = "area_pixels", 
-  time="timestamp", id = "barcode", offset = 0,
-  waterCol = "water_amount", method = "rate")
-  
+x <- pwue(
+  df = sv, w = water, pheno = "area_pixels",
+  time = "timestamp", id = "barcode", offset = 0,
+  waterCol = "water_amount", method = "rate"
+)
 
 }
 \keyword{WUE}

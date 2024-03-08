@@ -16,11 +16,12 @@ growthSim(
 )
 }
 \arguments{
-\item{model}{One of "logistic", "gompertz", "weibull", "frechet", "gumbel", "monomolecular", "exponential",
-"linear", "power law", "double logistic", or "double gompertz". Alternatively this can be 
-a pseudo formula to generate data from a segmented growth curve by specifying "model1 + model2",
-see examples and \code{\link{growthSS}}. Decay can be specified by including "decay" as part of the model
-such as "logistic decay" or "linear + linear decay". Count data can be specified with the "count: " prefix,
+\item{model}{One of "logistic", "gompertz", "weibull", "frechet", "gumbel", "monomolecular",
+"exponential", "linear", "power law", "double logistic", or "double gompertz".
+Alternatively this can be a pseudo formula to generate data from a segmented growth curve by
+specifying "model1 + model2", see examples and \code{\link{growthSS}}.
+Decay can be specified by including "decay" as part of the model such as "logistic decay" or
+"linear + linear decay". Count data can be specified with the "count: " prefix,
 similar to using "poisson: model" in \link{growthSS}.
 While "gam" models are supported by \code{growthSS}
 they are not simulated by this function.}
@@ -29,9 +30,11 @@ they are not simulated by this function.}
 
 \item{t}{Max time (assumed to start at 1) to simulate growth to as an integer.}
 
-\item{params}{A list of numeric parameters. A, B, C notation is used in the order that parameters appear in the formula (see examples).
-Number of groups is inferred from the length of these vectors of parameters. In the case of the "double" models there are also 
-A2, B2, and C2 terms. Changepoints should be specified as "changePointX" or "fixedChangePointX" as in \code{\link{growthSS}}.}
+\item{params}{A list of numeric parameters. A, B, C notation is used in the order that parameters
+appear in the formula (see examples). Number of groups is inferred from the length of these vectors
+of parameters. In the case of the "double" models there are also A2, B2, and C2 terms.
+Changepoints should be specified as "changePointX" or "fixedChangePointX" as in
+\code{\link{growthSS}}.}
 
 \item{noise}{Optionally this can be used to add specific amounts of
 noise to the input parameters by specifying a list similar to params.
@@ -52,32 +55,32 @@ The \code{params} argument requires some understanding of how each growth model 
     Examples of each are below should help, as will the examples.
     \itemize{
     \item \bold{Logistic}: `A / (1 + exp( (B-x)/C) )`
-    Where A is the asymptote, B is the inflection point, C is the growth rate. 
-    \item \bold{Gompertz}: `A * exp(-B * exp(-C*x))` 
-    Where A is the asymptote, B is the inflection point, C is the growth rate. 
+    Where A is the asymptote, B is the inflection point, C is the growth rate.
+    \item \bold{Gompertz}: `A * exp(-B * exp(-C*x))`
+    Where A is the asymptote, B is the inflection point, C is the growth rate.
     \item \bold{Weibull}: `A * (1-exp(-(x/C)^B))`
-    Where A is the asymptote, B is the weibull shape parameter, C is the weibull scale parameter. 
+    Where A is the asymptote, B is the weibull shape parameter, C is the weibull scale parameter.
     \item \bold{Frechet}: `A * exp(-((x-0)/C)^(-B))`
-    Where A is the asymptote, B is the frechet shape parameter, C is the frechet scale parameter. 
-    Note that the location parameter (conventionally m) is 0 in these models for simplicity but is still
-    included in the formula.
+    Where A is the asymptote, B is the frechet shape parameter, C is the frechet scale parameter.
+    Note that the location parameter (conventionally m) is 0 in these models for simplicity but is
+    still included in the formula.
     \item \bold{Gumbel}: `A * exp(-exp(-(x-B)/C))`
-    Where A is the asymptote, B is the inflection point (location), C is the growth rate (scale). 
+    Where A is the asymptote, B is the inflection point (location), C is the growth rate (scale).
     \item \bold{Double Logistic}: `A / (1+exp((B-x)/C)) + ((A2-A) /(1+exp((B2-x)/C2)))`
     Where A is the asymptote, B is the inflection point, C is the growth rate,
-    A2 is the second asymptote, B2 is the second inflection point, and C2 is the second 
+    A2 is the second asymptote, B2 is the second inflection point, and C2 is the second
     growth rate.
     \item \bold{Double Gompertz}: `A * exp(-B * exp(-C*x)) + ((A2-A) * exp(-B2 * exp(-C2*(x-B))))`
     Where A is the asymptote, B is the inflection point, C is the growth rate,
-    A2 is the second asymptote, B2 is the second inflection point, and C2 is the second 
+    A2 is the second asymptote, B2 is the second inflection point, and C2 is the second
     growth rate.
     \item \bold{Monomolecular}: `A-A * exp(-B * x)`
-    Where A is the asymptote and B is the growth rate. 
-    \item \bold{Exponential}: `A * exp(B * x)` 
-    Where A is the scale parameter and B is the growth rate. 
-    \item \bold{Linear}: `A * x` 
+    Where A is the asymptote and B is the growth rate.
+    \item \bold{Exponential}: `A * exp(B * x)`
+    Where A is the scale parameter and B is the growth rate.
+    \item \bold{Linear}: `A * x`
     Where A is the growth rate.
-    \item \bold{Power Law}: `A * x^(B)` 
+    \item \bold{Power Law}: `A * x^(B)`
     Where A is the scale parameter and B is the growth rate.
     }
     Note that for these distributions parameters do not exist in a vacuum.
@@ -88,89 +91,135 @@ The \code{params} argument requires some understanding of how each growth model 
 
 ## Not run:
 library(ggplot2)
-simdf<-growthSim("logistic", n=20, t=25,
-params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))
-ggplot(simdf,aes(time, y, group=interaction(group,id)))+ 
-geom_line(aes(color=group))+labs(title="Logistic")
+simdf <- growthSim("logistic",
+  n = 20, t = 25,
+  params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
+)
+ggplot(simdf, aes(time, y, group = interaction(group, id))) +
+  geom_line(aes(color = group)) +
+  labs(title = "Logistic")
 
-simdf<-growthSim("gompertz", n=20, t=25,
-params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(0.2, 0.25)))
-ggplot(simdf,aes(time, y, group=interaction(group,id)))+
- geom_line(aes(color=group))+labs(title="Gompertz")
- 
-simdf<-growthSim("weibull", n=20, t=25,
-params = list("A"=c(100,100), "B"=c(1, 0.75), "C"=c(2, 3)) )
-ggplot(simdf,aes(time, y, group=interaction(group,id)))+
- geom_line(aes(color=group))+labs(title="weibull")
- 
-simdf<-growthSim("frechet", n=20, t=25,
-params = list("A"=c(100,110), "B"=c(2, 1.5), "C"=c(5, 2)) )
-ggplot(simdf,aes(time, y, group=interaction(group,id)))+
- geom_line(aes(color=group))+labs(title="frechet")
- 
-simdf<-growthSim("gumbel", n=20, t=25,
-list("A"=c(120,140), "B"=c(6, 5), "C"=c(4, 3)) )
-ggplot(simdf,aes(time, y, group=interaction(group,id)))+
- geom_line(aes(color=group))+labs(title="gumbel")
- 
-simdf<-growthSim("double logistic", n=20, t=70,
-params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5),
- "A2"=c(400,300), "B2"=c(35, 40), "C2"=c(3.25, 2.75)))
-ggplot(simdf, aes(time, y, group=interaction(group,id)))+
- geom_line(aes(color=group))+labs(title="Double Logistic")
- 
-simdf<-growthSim("double gompertz", n=20, t=100,
-params = list("A"=c(180,140), "B"=c(13, 11), "C"=c(0.2, 0.2),
- "A2"=c(400,300), "B2"=c(50,50), "C2"=c(0.1, 0.1)))
-ggplot(simdf,aes(time, y, group=interaction(group,id)))+
- geom_line(aes(color=group))+labs(title="Double Gompertz")
+simdf <- growthSim("gompertz",
+  n = 20, t = 25,
+  params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(0.2, 0.25))
+)
+ggplot(simdf, aes(time, y, group = interaction(group, id))) +
+  geom_line(aes(color = group)) +
+  labs(title = "Gompertz")
 
-simdf<-growthSim("monomolecular", n=20, t=25,
-params = list("A"=c(200,160), "B"=c(0.08, 0.1)))
-ggplot(simdf,aes(time, y, group=interaction(group,id)))+ 
-geom_line(aes(color=group))+
-labs(title="Monomolecular")
+simdf <- growthSim("weibull",
+  n = 20, t = 25,
+  params = list("A" = c(100, 100), "B" = c(1, 0.75), "C" = c(2, 3))
+)
+ggplot(simdf, aes(time, y, group = interaction(group, id))) +
+  geom_line(aes(color = group)) +
+  labs(title = "weibull")
 
-simdf<-growthSim("exponential", n=20, t=25,
-params = list("A"=c(15, 20), "B"=c(0.095, 0.095)))
-ggplot(simdf,aes(time, y, group=interaction(group,id)))+ 
-geom_line(aes(color=group))+labs(title="Exponential")
+simdf <- growthSim("frechet",
+  n = 20, t = 25,
+  params = list("A" = c(100, 110), "B" = c(2, 1.5), "C" = c(5, 2))
+)
+ggplot(simdf, aes(time, y, group = interaction(group, id))) +
+  geom_line(aes(color = group)) +
+  labs(title = "frechet")
 
-simdf<-growthSim("linear", n=20, t=25,
-params = list("A"=c(1.1, 0.95)))
-ggplot(simdf,aes(time, y, group=interaction(group,id)))+ 
-geom_line(aes(color=group))+labs(title="Linear")
+simdf <- growthSim("gumbel",
+  n = 20, t = 25,
+  list("A" = c(120, 140), "B" = c(6, 5), "C" = c(4, 3))
+)
+ggplot(simdf, aes(time, y, group = interaction(group, id))) +
+  geom_line(aes(color = group)) +
+  labs(title = "gumbel")
 
-simdf<-growthSim("power law", n=20, t=25,
-params = list("A"=c(16, 11), "B"=c(0.75, 0.7)))
-ggplot(simdf,aes(time, y, group=interaction(group,id)))+ 
-geom_line(aes(color=group))+labs(title="Power Law")
+simdf <- growthSim("double logistic",
+  n = 20, t = 70,
+  params = list(
+    "A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5),
+    "A2" = c(400, 300), "B2" = c(35, 40), "C2" = c(3.25, 2.75)
+  )
+)
+ggplot(simdf, aes(time, y, group = interaction(group, id))) +
+  geom_line(aes(color = group)) +
+  labs(title = "Double Logistic")
+
+simdf <- growthSim("double gompertz",
+  n = 20, t = 100,
+  params = list(
+    "A" = c(180, 140), "B" = c(13, 11), "C" = c(0.2, 0.2),
+    "A2" = c(400, 300), "B2" = c(50, 50), "C2" = c(0.1, 0.1)
+  )
+)
+ggplot(simdf, aes(time, y, group = interaction(group, id))) +
+  geom_line(aes(color = group)) +
+  labs(title = "Double Gompertz")
+
+simdf <- growthSim("monomolecular",
+  n = 20, t = 25,
+  params = list("A" = c(200, 160), "B" = c(0.08, 0.1))
+)
+ggplot(simdf, aes(time, y, group = interaction(group, id))) +
+  geom_line(aes(color = group)) +
+  labs(title = "Monomolecular")
+
+simdf <- growthSim("exponential",
+  n = 20, t = 25,
+  params = list("A" = c(15, 20), "B" = c(0.095, 0.095))
+)
+ggplot(simdf, aes(time, y, group = interaction(group, id))) +
+  geom_line(aes(color = group)) +
+  labs(title = "Exponential")
+
+simdf <- growthSim("linear",
+  n = 20, t = 25,
+  params = list("A" = c(1.1, 0.95))
+)
+ggplot(simdf, aes(time, y, group = interaction(group, id))) +
+  geom_line(aes(color = group)) +
+  labs(title = "Linear")
+
+simdf <- growthSim("power law",
+  n = 20, t = 25,
+  params = list("A" = c(16, 11), "B" = c(0.75, 0.7))
+)
+ggplot(simdf, aes(time, y, group = interaction(group, id))) +
+  geom_line(aes(color = group)) +
+  labs(title = "Power Law")
 
 # simulating models from segmented growth models
 
-simdf<-growthSim(model = "linear + linear", n=20, t=25,
-params = list("linear1A"=c(16, 11), "linear2A"=c(0.75, 0.7), "changePoint1" = c(11, 14)))
-ggplot(simdf,aes(time, y, group=interaction(group,id)))+ 
-geom_line(aes(color=group))+labs(title="linear + linear")
+simdf <- growthSim(
+  model = "linear + linear", n = 20, t = 25,
+  params = list("linear1A" = c(16, 11), "linear2A" = c(0.75, 0.7), "changePoint1" = c(11, 14))
+)
+ggplot(simdf, aes(time, y, group = interaction(group, id))) +
+  geom_line(aes(color = group)) +
+  labs(title = "linear + linear")
 
-simdf<-growthSim(model = "linear + linear decay", n=20, t=25,
-params = list("linear1A"=c(16, 11), "linear2A"=c(3, 2), "changePoint1" = c(11, 14)))
-ggplot(simdf,aes(time, y, group=interaction(group,id)))+ 
-  geom_line(aes(color=group))+labs(title="linear + linear decay")
+simdf <- growthSim(
+  model = "linear + linear decay", n = 20, t = 25,
+  params = list("linear1A" = c(16, 11), "linear2A" = c(3, 2), "changePoint1" = c(11, 14))
+)
+ggplot(simdf, aes(time, y, group = interaction(group, id))) +
+  geom_line(aes(color = group)) +
+  labs(title = "linear + linear decay")
 
-simdf<-growthSim(model = "linear + linear + logistic", n=20, t=50,
-  params = list("linear1A"=c(16, 11), "linear2A"=c(3, 4), # linear slopes, very intuitive
-   "changePoint1" = c(11, 14), "changePoint2" = c(10, 12),
-   # changepoint1 is standard, changepoint2 happens relative to changepoint 1
-   "logistic3A" = c(200, 210), "logistic3B" = c(20, 25), "logistic3C"=c(3,3)  ))
-   # similar to changepoint2, the asymptote and inflection point are relative to the starting
-   # point of the logistic growth component. This is different than the model output
-   # if you were to fit a curve to this model using `growthSS`.
-ggplot(simdf,aes(time, y, group=interaction(group,id)))+ 
-geom_line(aes(color=group))+ labs(title="linear + linear + logistic")
+simdf <- growthSim(
+  model = "linear + linear + logistic", n = 20, t = 50,
+  params = list(
+    "linear1A" = c(16, 11), "linear2A" = c(3, 4), # linear slopes, very intuitive
+    "changePoint1" = c(11, 14), "changePoint2" = c(10, 12),
+    # changepoint1 is standard, changepoint2 happens relative to changepoint 1
+    "logistic3A" = c(200, 210), "logistic3B" = c(20, 25), "logistic3C" = c(3, 3)
+  )
+)
+# similar to changepoint2, the asymptote and inflection point are relative to the starting
+# point of the logistic growth component. This is different than the model output
+# if you were to fit a curve to this model using `growthSS`.
+ggplot(simdf, aes(time, y, group = interaction(group, id))) +
+  geom_line(aes(color = group)) +
+  labs(title = "linear + linear + logistic")
 
 ## End(Not run)
-
 
 }
 \keyword{curve,}

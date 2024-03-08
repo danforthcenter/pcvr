@@ -11,17 +11,17 @@ A brmsfit with 4000 draws across 257 total parameters
 data(bw_vignette_fit)
 }
 \description{
-A \code{brmsfit} object for use with examples in vignettes, 
+A \code{brmsfit} object for use with examples in vignettes,
    documentation, and familiarization with models fit using \code{fitGrowth}.
    The model uses the gompertz growth formula and has 3 main parameters with
    several parameters to account for heteroskedasticity. The parameters starting
    with (b_) A, B, or C are from the gompertz formula and correspond to the
    asymptote, inflection point, and growth rate respectively.
    The model uses groups corresponding to fertilizer level (0, 50, 100) and
-   genotype (MM, Mo17, B73, W605S). See brms documentation for full details 
-   on \code{brmsfit} model objects. 
-   \code{summary(fit)} will show a detailed summary of the model and some 
-   fit diagnostics. The smooth term and population level effects are 
+   genotype (MM, Mo17, B73, W605S). See brms documentation for full details
+   on \code{brmsfit} model objects.
+   \code{summary(fit)} will show a detailed summary of the model and some
+   fit diagnostics. The smooth term and population level effects are
    explained briefly below.
 }
 \details{
@@ -36,15 +36,15 @@ A \code{brmsfit} object for use with examples in vignettes,
   failed to mix then Rhat may be above 1.05, which is considered a viable cutoff for
   calling something a poor fit.
   \item Bulk_ESS: The bulk estimated sample size (ESS). That is, the effective number of samples
-  that are being used for mean/median estimates. Broadly, ESS is a number of 
-  post-warmup draws adjusted for the correlation between subsequent draws due to 
+  that are being used for mean/median estimates. Broadly, ESS is a number of
+  post-warmup draws adjusted for the correlation between subsequent draws due to
   the MCMC algorithm. These will depend on the length of your chains, the number
-  of chains, and the quality of your model fit. There are several ideas about 
+  of chains, and the quality of your model fit. There are several ideas about
   how large of an ESS is large enough with low cutoffs being around 100. Broadly,
   larger is better.
   \item Tail_ESS: The ESS from tails of the distribution. Estimating tails of a
   posterior distribution is potentially difficult depending on the posterior, so
-  this will be a lower number than Bulk_ESS but the same guidelines are used in 
+  this will be a lower number than Bulk_ESS but the same guidelines are used in
   deciding if it is "large enough".
 }
 }

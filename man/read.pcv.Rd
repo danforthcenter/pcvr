@@ -24,7 +24,7 @@ This controls whether data is \strong{returned} in long or wide format. If left 
 the output format will be the same as the input format.}
 
 \item{traitCol}{Column with phenotype names, defaults to "trait".
-This should generally not need to be changed from the default. This, 
+This should generally not need to be changed from the default. This,
 labelCol, and valueCol are used to determine if data are in long format in their
 raw state (the csv file itself).}
 
@@ -69,67 +69,79 @@ Read in plantCV csv output in wide or long format
 }
 \details{
 In plantCV version 4 the single value traits are returned in wide format from \code{json2csv}
-and the multi value traits are returned in long format. When data is read in using read.pcv 
-the traitCol, valueCol, and labelCol arguments are checked to determine if the data is in long 
+and the multi value traits are returned in long format. When data is read in using read.pcv
+the traitCol, valueCol, and labelCol arguments are checked to determine if the data is in long
 format. This is done to keep compatibility with interim versions of plantcv output where all outputs
-were in a single long format file. 
+were in a single long format file.
 
 With the current implementation and plantcv output you can read wide or long format files into
-wide or long format in R. Keep in mind that the 'mode' argument controls the format that will be returned in R,
-not the format that the data saved as in your csv file.
+wide or long format in R. Keep in mind that the 'mode' argument controls the format that will be
+returned in R, not the format that the data saved as in your csv file.
 }
 \examples{
 
-## Not run: 
+## Not run:
 
-if(FALSE){
-mv = paste0("https://media.githubusercontent.com/media/joshqsumner/",
-            "pcvrTestData/main/pcv4-multi-value-traits.csv")
-sv = paste0("https://raw.githubusercontent.com/joshqsumner/",
-            "pcvrTestData/main/pcv4-single-value-traits.csv")
+if (FALSE) {
+  mv <- paste0(
+    "https://media.githubusercontent.com/media/joshqsumner/",
+    "pcvrTestData/main/pcv4-multi-value-traits.csv"
+  )
+  sv <- paste0(
+    "https://raw.githubusercontent.com/joshqsumner/",
+    "pcvrTestData/main/pcv4-single-value-traits.csv"
+  )
 
-w2w <- read.pcv(sv, mode = "wide", reader="fread")
-dim(w2w)
+  w2w <- read.pcv(sv, mode = "wide", reader = "fread")
+  dim(w2w)
 
-w2l <- read.pcv(sv, mode = "long", reader="fread")
-dim(w2l)
+  w2l <- read.pcv(sv, mode = "long", reader = "fread")
+  dim(w2l)
 
-l2w <- read.pcv(mv, mode = "wide", reader="fread")
-dim(l2w)
+  l2w <- read.pcv(mv, mode = "wide", reader = "fread")
+  dim(l2w)
 
-l2l <- read.pcv(mv, mode = "long", reader="fread")
-dim(l2l)
+  l2l <- read.pcv(mv, mode = "long", reader = "fread")
+  dim(l2l)
 
 
-# Note only data stored on a Unix style system can be subset before reading in.
-# For DDPSC employees there are larger datasets on stargate that
-# better show the benefit of subsetting before reading data in.
+  # Note only data stored on a Unix style system can be subset before reading in.
+  # For DDPSC employees there are larger datasets on stargate that
+  # better show the benefit of subsetting before reading data in.
 
-fileBig="/shares/mgehan_share/llima/Maize_Project_2022/nir_maize_first_exp_results.csv"
-# library(vroom)
-start<-Sys.time()
-x3a<-pcv.sub.read(inputFile=fileBig, reader = "vroom",
-  filters = list("trait in area, perimeter", "barcode is Ea008AA114352"))
-Sys.time()-start
-# library(data.table)
-start<-Sys.time()
-x3b<-pcv.sub.read(inputFile=fileBig, reader = "fread",
-  filters = list("trait in area, perimeter", "barcode is Ea008AA114352"))
-Sys.time()-start
-start<-Sys.time()
-x3c<-pcv.sub.read(inputFile=fileBig, reader = "read.csv",
-  filters = list("trait in area, perimeter", "barcode is Ea008AA114352"))
-Sys.time()-start
-dim(x3a)
-dim(x3b)
-dim(x3c)
+  fileBig <- "/shares/mgehan_share/llima/Maize_Project_2022/nir_maize_first_exp_results.csv"
+  # library(vroom)
+  start <- Sys.time()
+  x3a <- pcv.sub.read(
+    inputFile = fileBig, reader = "vroom",
+    filters = list("trait in area, perimeter", "barcode is Ea008AA114352")
+  )
+  Sys.time() - start
+  # library(data.table)
+  start <- Sys.time()
+  x3b <- pcv.sub.read(
+    inputFile = fileBig, reader = "fread",
+    filters = list("trait in area, perimeter", "barcode is Ea008AA114352")
+  )
+  Sys.time() - start
+  start <- Sys.time()
+  x3c <- pcv.sub.read(
+    inputFile = fileBig, reader = "read.csv",
+    filters = list("trait in area, perimeter", "barcode is Ea008AA114352")
+  )
+  Sys.time() - start
+  dim(x3a)
+  dim(x3b)
+  dim(x3c)
 
-# There may be situations where you want to use wide mv traits which can read in easily:
-x4<-read.pcv(fileBig, reader="fread",
-  filters = list("trait in blue_frequencies"),
-  mode="wide")
+  # There may be situations where you want to use wide mv traits which can read in easily:
+  x4 <- read.pcv(fileBig,
+    reader = "fread",
+    filters = list("trait in blue_frequencies"),
+    mode = "wide"
+  )
 }
-## End(Not run) 
+## End(Not run)
 
 }
 \keyword{long}

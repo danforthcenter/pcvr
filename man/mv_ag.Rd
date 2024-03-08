@@ -47,7 +47,7 @@ defaults to 1 if the "mc.cores" option is not set globally.}
 
 \item{valueCol}{Column with phenotype values, defaults to "value".}
 
-\item{id}{Column that uniquely identifies images if the data is in long format. 
+\item{id}{Column that uniquely identifies images if the data is in long format.
 This is ignored when data is in wide format.}
 }
 \value{
@@ -64,63 +64,91 @@ comparing histograms and moving on with matrix methods or network analysis.
 
 ## Not run:
 
-makeMvData<-function(bins=180,mu,sigma){
-    setNames(data.frame(matrix(hist(rnorm(2000,mu, sigma),
-    breaks=seq(1,bins,1), plot=FALSE)$counts, nrow=1)),
-    paste0("b",1:(bins-1) )) }
+makeMvData <- function(bins = 180, mu, sigma) {
+  setNames(
+    data.frame(matrix(hist(rnorm(2000, mu, sigma),
+      breaks = seq(1, bins, 1), plot = FALSE
+    )$counts, nrow = 1)),
+    paste0("b", 1:(bins - 1))
+  )
+}
 set.seed(123)
-mv<-rbind(do.call(rbind, lapply(1:30, function(i){makeMvData(bins=180, mu=50, sigma=10 )})),
-                do.call(rbind, lapply(1:30, function(i){makeMvData(bins=180, mu=60, sigma=12 )})))
-mv$group <-rep(c("a", "b"), each=30)
+mv <- rbind(
+  do.call(rbind, lapply(1:30, function(i) {
+    makeMvData(bins = 180, mu = 50, sigma = 10)
+  })),
+  do.call(rbind, lapply(1:30, function(i) {
+    makeMvData(bins = 180, mu = 60, sigma = 12)
+  }))
+)
+mv$group <- rep(c("a", "b"), each = 30)
 dim(mv)
-mv_aggregated <- mv_ag(mv, group='group', n_per_group=5, mvCols="b")
+mv_aggregated <- mv_ag(mv, group = "group", n_per_group = 5, mvCols = "b")
 dim(mv_aggregated)
 
 
-if(FALSE){
-hue_wide<-read.pcv(paste0(
-"https://media.githubusercontent.com/media/joshqsumner/",
-"pcvrTestData/main/pcv4-multi-value-traits.csv"),
- mode="wide", reader="fread")
- 
-hue_wide$genotype = substr(hue_wide$barcode, 3,5)
-hue_wide$genotype = ifelse(hue_wide$genotype == "002", "B73",
-                           ifelse(hue_wide$genotype == "003", "W605S",
-                                  ifelse(hue_wide$genotype == "004", "MM", "Mo17")))
-hue_wide$fertilizer = substr(hue_wide$barcode, 8, 8)
-hue_wide$fertilizer = ifelse(hue_wide$fertilizer == "A", "100",
-                             ifelse(hue_wide$fertilizer == "B", "50", "0"))
-hue_wide<-bw.time(hue_wide,timeCol="timestamp", group="barcode")
-phenotypes <- colnames(hue_wide)[grepl("hue_frequencies", colnames(hue_wide))]
-phenoForm<-paste0("cbind(", paste0(phenotypes, collapse=", "), ")")
-groupForm<-"DAS+barcode+genotype+fertilizer"
-form<-as.formula(paste0(phenoForm, "~", groupForm))
-hue_wide<-aggregate(form, data=hue_wide, mean, na.rm=TRUE)
-dim(hue_wide)
-hue_ag1<-mv_ag(df=hue_wide, group = c("DAS", "genotype", "fertilizer"),
- n_per_group=2)
-dim(hue_ag1)
-hue_ag2<-mv_ag(hue_wide, group = c("DAS", "genotype", "fertilizer"),
- n_per_group=1)
-dim(hue_ag2)
+if (FALSE) {
+  hue_wide <- read.pcv(
+    paste0(
+      "https://media.githubusercontent.com/media/joshqsumner/",
+      "pcvrTestData/main/pcv4-multi-value-traits.csv"
+    ),
+    mode = "wide", reader = "fread"
+  )
 
-hue_long<-read.pcv(paste0(
-"https://media.githubusercontent.com/media/joshqsumner/",
-"pcvrTestData/main/pcv4-multi-value-traits.csv"),
- reader="fread")
-hue_long$genotype = substr(hue_long$barcode, 3,5)
-hue_long$genotype = ifelse(hue_long$genotype == "002", "B73",
-                           ifelse(hue_long$genotype == "003", "W605S",
-                                  ifelse(hue_long$genotype == "004", "MM", "Mo17")))
-hue_long$fertilizer = substr(hue_long$barcode, 8, 8)
-hue_long$fertilizer = ifelse(hue_long$fertilizer == "A", "100",
-                             ifelse(hue_long$fertilizer == "B", "50", "0"))
-hue_long<-bw.time(hue_long,timeCol="timestamp", group="barcode")
-dim(hue_long)
-hue_ag3 <- mv_ag(hue_long, group = c("DAS", "genotype", "fertilizer"),
-  mvCols = "hue", n_per_group = 2)
-dim(hue_ag3)
-head(hue_ag3)
+  hue_wide$genotype <- substr(hue_wide$barcode, 3, 5)
+  hue_wide$genotype <- ifelse(hue_wide$genotype == "002", "B73",
+    ifelse(hue_wide$genotype == "003", "W605S",
+      ifelse(hue_wide$genotype == "004", "MM", "Mo17")
+    )
+  )
+  hue_wide$fertilizer <- substr(hue_wide$barcode, 8, 8)
+  hue_wide$fertilizer <- ifelse(hue_wide$fertilizer == "A", "100",
+    ifelse(hue_wide$fertilizer == "B", "50", "0")
+  )
+  hue_wide <- bw.time(hue_wide, timeCol = "timestamp", group = "barcode")
+  phenotypes <- colnames(hue_wide)[grepl("hue_frequencies", colnames(hue_wide))]
+  phenoForm <- paste0("cbind(", paste0(phenotypes, collapse = ", "), ")")
+  groupForm <- "DAS+barcode+genotype+fertilizer"
+  form <- as.formula(paste0(phenoForm, "~", groupForm))
+  hue_wide <- aggregate(form, data = hue_wide, mean, na.rm = TRUE)
+  dim(hue_wide)
+  hue_ag1 <- mv_ag(
+    df = hue_wide, group = c("DAS", "genotype", "fertilizer"),
+    n_per_group = 2
+  )
+  dim(hue_ag1)
+  hue_ag2 <- mv_ag(hue_wide,
+    group = c("DAS", "genotype", "fertilizer"),
+    n_per_group = 1
+  )
+  dim(hue_ag2)
+
+  hue_long <- read.pcv(
+    paste0(
+      "https://media.githubusercontent.com/media/joshqsumner/",
+      "pcvrTestData/main/pcv4-multi-value-traits.csv"
+    ),
+    reader = "fread"
+  )
+  hue_long$genotype <- substr(hue_long$barcode, 3, 5)
+  hue_long$genotype <- ifelse(hue_long$genotype == "002", "B73",
+    ifelse(hue_long$genotype == "003", "W605S",
+      ifelse(hue_long$genotype == "004", "MM", "Mo17")
+    )
+  )
+  hue_long$fertilizer <- substr(hue_long$barcode, 8, 8)
+  hue_long$fertilizer <- ifelse(hue_long$fertilizer == "A", "100",
+    ifelse(hue_long$fertilizer == "B", "50", "0")
+  )
+  hue_long <- bw.time(hue_long, timeCol = "timestamp", group = "barcode")
+  dim(hue_long)
+  hue_ag3 <- mv_ag(hue_long,
+    group = c("DAS", "genotype", "fertilizer"),
+    mvCols = "hue", n_per_group = 2
+  )
+  dim(hue_ag3)
+  head(hue_ag3)
 }
 
 ## End(Not run)

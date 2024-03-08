@@ -23,18 +23,18 @@ pcv.joyplot(
 \item{df}{Data frame to use. Long or wide format is accepted.}
 
 \item{index}{If the data is long then this is a multi value trait as a
-character string that must be present in `trait`. 
+character string that must be present in `trait`.
 If the data is wide then this is a string used to find column names to use from the wide data.
  In the wide case this should include the entire
   trait name (ie, "hue_frequencies" instead of "hue_freq").}
 
-\item{group}{A length 1 or 2 character vector. 
-This is used for faceting the joyplot and identifying groups for testing. 
+\item{group}{A length 1 or 2 character vector.
+This is used for faceting the joyplot and identifying groups for testing.
 If this is length 1 then no faceting is done.}
 
 \item{y}{Optionally a variable to use on the y axis. This is useful when you
 have three variables to display. This argument will change faceting behavior to
-add an additional layer of faceting (single length group will be faceted, 
+add an additional layer of faceting (single length group will be faceted,
 length 2 group will be faceted group1 ~ group2).}
 
 \item{id}{Optionally a variable to show the outline of different replicates.
@@ -42,20 +42,21 @@ Note that ggridges::geom_density_ridges_gradient does not support transparency,
 so if fillx is TRUE then only the outer line will show individual IDs.}
 
 \item{method}{A method to use in comparing distributions/means.
-Currently "ks" and "pdf" are supported, where density is approximated from the 
+Currently "ks" and "pdf" are supported, where density is approximated from the
 histogram columns and  KS test is used between samples from those densities per each photo.
-For the "pdf" method a flat prior is added to the data and the distributions are compared 
+For the "pdf" method a flat prior is added to the data and the distributions are compared
 depending on the hypothesis provided. For other
 options in comparing multi-value traits see \code{\link{conjugate}} or
 \code{\link{pcv.emd}}.}
 
-\item{hypothesis}{A hypothesis for the "pdf" method, must be either unequal, equal, lesser, or greater.}
+\item{hypothesis}{A hypothesis for the "pdf" method,
+must be either unequal, equal, lesser, or greater.}
 
-\item{compare}{Groups to compare. By default this is set to FALSE, 
-which corresponds to no testing. Other values of compare are passed to 
-fixCompare to make t.test comparisons using ggpubr. 
-In short, NULL will run all pairwise T tests, a single value of the X axis 
-variable will compare that level to all other levels of the X variable, 
+\item{compare}{Groups to compare. By default this is set to FALSE,
+which corresponds to no testing. Other values of compare are passed to
+fixCompare to make t.test comparisons using ggpubr.
+In short, NULL will run all pairwise T tests, a single value of the X axis
+variable will compare that level to all other levels of the X variable,
 alternatively this can be a list as used by ggpubr: list(c("level1", "level2"),
  c("level1", "level3"))}
 
@@ -67,44 +68,56 @@ alternatively this can be a list as used by ggpubr: list(c("level1", "level2"),
 
 \item{fillx}{Logical, whether or not to use \code{ggridges::geom_density_ridges_gradient}.
 Default is T, if F then \code{ggridges::geom_density_ridges} is used instead,
- with arbitrary fill. Note that \code{ggridges::geom_density_ridges_gradient} 
+ with arbitrary fill. Note that \code{ggridges::geom_density_ridges_gradient}
  may issue a message about deprecated ggplot2 features.}
 }
 \value{
-Returns either a ggplot object or a list containing a ggplot and a dataframe of statistical comparisons (if compare is not FALSE).
+Returns either a ggplot object or a list containing a ggplot and a
+dataframe of statistical comparisons (if compare is not FALSE).
 }
 \description{
 Make Joyplots for multi value trait plantCV data and optionally compare distributions
 }
 \examples{
 
-## Not run: 
+## Not run:
 
 df <- read.pcv(
-  "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest2.csv", "long")
-  
-x <- pcv.joyplot(df, index = "index_frequencies_index_ndvi",
-    group=c("genotype", "timepoint"), method="pdf")
+  "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest2.csv", "long"
+)
 
-if (FALSE){
-wide<-read.pcv(
-  paste0("https://media.githubusercontent.com/media/joshqsumner/",
-        "pcvrTestData/main/pcv4-multi-value-traits.csv"),
-   mode="wide")
-wide <- bw.time(wide, mode="DAS",plot=FALSE)
-wide$genotype = substr(wide$barcode, 3,5)
-wide$genotype = ifelse(wide$genotype == "002", "B73",
-                       ifelse(wide$genotype == "003", "W605S",
-                              ifelse(wide$genotype == "004", "MM", "Mo17")))
-wide$fertilizer = substr(wide$barcode, 8, 8)
-wide$fertilizer = ifelse(wide$fertilizer == "A", "100",
-                         ifelse(wide$fertilizer == "B", "50", "0"))
-p<-pcv.joyplot(wide[wide$DAS > 15,], index = "hue_frequencies",
- group=c("genotype", "fertilizer"), y ="DAS")
+x <- pcv.joyplot(df,
+  index = "index_frequencies_index_ndvi",
+  group = c("genotype", "timepoint"), method = "pdf"
+)
 
-# For some color traits it makes sense to show the actual
-# represented color, which can be done easily by adding new fill scales.
-p+ggplot2::scale_fill_gradientn(colors = scales::hue_pal(l=65)(360))
+if (FALSE) {
+  wide <- read.pcv(
+    paste0(
+      "https://media.githubusercontent.com/media/joshqsumner/",
+      "pcvrTestData/main/pcv4-multi-value-traits.csv"
+    ),
+    mode = "wide"
+  )
+  wide <- bw.time(wide, mode = "DAS", plot = FALSE)
+  wide$genotype <- substr(wide$barcode, 3, 5)
+  wide$genotype <- ifelse(wide$genotype == "002", "B73",
+    ifelse(wide$genotype == "003", "W605S",
+      ifelse(wide$genotype == "004", "MM", "Mo17")
+    )
+  )
+  wide$fertilizer <- substr(wide$barcode, 8, 8)
+  wide$fertilizer <- ifelse(wide$fertilizer == "A", "100",
+    ifelse(wide$fertilizer == "B", "50", "0")
+  )
+  p <- pcv.joyplot(wide[wide$DAS > 15, ],
+    index = "hue_frequencies",
+    group = c("genotype", "fertilizer"), y = "DAS"
+  )
+
+  # For some color traits it makes sense to show the actual
+  # represented color, which can be done easily by adding new fill scales.
+  p + ggplot2::scale_fill_gradientn(colors = scales::hue_pal(l = 65)(360))
 }
 ## End(Not run)
 

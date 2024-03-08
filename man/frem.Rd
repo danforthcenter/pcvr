@@ -22,7 +22,8 @@ frem(
 
 \item{des}{Design variables to partition variance for as a character vector.}
 
-\item{phenotypes}{Phenotype column names (data is assumed to be in wide format) as a character vector.}
+\item{phenotypes}{Phenotype column names (data is assumed to be in wide format)
+as a character vector.}
 
 \item{timeCol}{A column of the data that denotes time for longitudinal experiments.
 If left NULL (the default) then all data is assumed to be from one timepoint.}
@@ -48,7 +49,7 @@ This can be left NULL which will use the maximum time if \code{timeCol} is speci
 \item{...}{Additional arguments passed to \code{lme4::lmer}.}
 }
 \value{
-Returns either a plot (if returnData=FALSE) or a list with a plot and 
+Returns either a plot (if returnData=FALSE) or a list with a plot and
 data/a list of dataframes (depending on returnData and cor).
 }
 \description{
@@ -60,24 +61,30 @@ Variance partitioning for phenotypes (over time) using fully random effects mode
 
 
 library(data.table)
-wide<-read.pcv(
- paste0("https://raw.githubusercontent.com/joshqsumner/",
- "pcvrTestData/main/pcv4-single-value-traits.csv"),
-  reader="fread")
-wide$genotype = substr(wide$barcode, 3,5)
-wide$genotype = ifelse(wide$genotype == "002", "B73",
-                       ifelse(wide$genotype == "003", "W605S",
-                              ifelse(wide$genotype == "004", "MM", "Mo17")))
-wide$fertilizer = substr(wide$barcode, 8, 8)
-wide$fertilizer = ifelse(wide$fertilizer == "A", "100",
-                         ifelse(wide$fertilizer == "B", "50", "0"))
-wide<-bw.time(wide,timeCol="timestamp", group="barcode", plot=FALSE)
+wide <- read.pcv(
+  paste0(
+    "https://raw.githubusercontent.com/joshqsumner/",
+    "pcvrTestData/main/pcv4-single-value-traits.csv"
+  ),
+  reader = "fread"
+)
+wide$genotype <- substr(wide$barcode, 3, 5)
+wide$genotype <- ifelse(wide$genotype == "002", "B73",
+  ifelse(wide$genotype == "003", "W605S",
+    ifelse(wide$genotype == "004", "MM", "Mo17")
+  )
+)
+wide$fertilizer <- substr(wide$barcode, 8, 8)
+wide$fertilizer <- ifelse(wide$fertilizer == "A", "100",
+  ifelse(wide$fertilizer == "B", "50", "0")
+)
+wide <- bw.time(wide, timeCol = "timestamp", group = "barcode", plot = FALSE)
 
-des=c("genotype", "fertilizer")
-phenotypes = colnames(wide)[20] # could be 20:25 or more
-timeCol = "DAS"
+des <- c("genotype", "fertilizer")
+phenotypes <- colnames(wide)[20] # could be 20:25 or more
+timeCol <- "DAS"
 
-frem(wide, des, phenotypes, cor=FALSE, timeCol, time = "all")
+frem(wide, des, phenotypes, cor = FALSE, timeCol, time = "all")
 
 
 ## End(Not run)

@@ -42,48 +42,57 @@ This should generally not need to be changed from the default.}
 A dataframe with relative tolerance columns added.
 }
 \description{
-Often in bellwether experiments we are curious about the effect of some treatment vs control.
-For certain routes in analysing the data this requires considering
-  phenotypes as relative differences compared to a control. Note that the \code{conjugate} 
-  function can also be useful in considering the relative tolerance to stress between groups.
+Often in bellwether experiments we are curious about the effect of some
+treatment vs control. For certain routes in analysing the data this requires considering
+phenotypes as relative differences compared to a control. Note that the \code{conjugate}
+function can also be useful in considering the relative tolerance to stress between groups and that
+growth models are another suggested way to test relative tolerance questions.
 }
 \examples{
 
 ## Not run:
 \donttest{
-sv<-read.pcv(
-   "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv",
-   reader="fread")
-sv$genotype = substr(sv$barcode, 3,5)
-sv$genotype = ifelse(sv$genotype == "002", "B73",
-              ifelse(sv$genotype == "003", "W605S",
-              ifelse(sv$genotype == "004", "MM", "Mo17")))
-sv$fertilizer = substr(sv$barcode, 8, 8)
-sv$fertilizer = ifelse(sv$fertilizer == "A", "100",
-              ifelse(sv$fertilizer == "B", "50", "0"))
-              
-sv<-bw.time(sv, plantingDelay = 0, phenotype="area_pixels",
- cutoff=10, timeCol="timestamp", group=c("barcode", "rotation"), plot=TRUE)
+sv <- read.pcv(
+  "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv",
+  reader = "fread"
+)
+sv$genotype <- substr(sv$barcode, 3, 5)
+sv$genotype <- ifelse(sv$genotype == "002", "B73",
+  ifelse(sv$genotype == "003", "W605S",
+    ifelse(sv$genotype == "004", "MM", "Mo17")
+  )
+)
+sv$fertilizer <- substr(sv$barcode, 8, 8)
+sv$fertilizer <- ifelse(sv$fertilizer == "A", "100",
+  ifelse(sv$fertilizer == "B", "50", "0")
+)
+
+sv <- bw.time(sv,
+  plantingDelay = 0, phenotype = "area_pixels",
+  cutoff = 10, timeCol = "timestamp", group = c("barcode", "rotation"), plot = TRUE
+)
 phenotypes <- colnames(sv)[19:35]
-phenoForm<-paste0("cbind(", paste0(phenotypes, collapse=", "), ")")
-groupForm<-"DAS+DAP+barcode+genotype+fertilizer"
-form<-as.formula(paste0(phenoForm, "~", groupForm))
-sv<-aggregate(form, data=sv, mean, na.rm=TRUE)
-sv<-bw.outliers(sv, phenotype="area_pixels",
-   group = c("DAS", "genotype", "fertilizer"),
-   plotgroup = c("barcode"))$data
+phenoForm <- paste0("cbind(", paste0(phenotypes, collapse = ", "), ")")
+groupForm <- "DAS+DAP+barcode+genotype+fertilizer"
+form <- as.formula(paste0(phenoForm, "~", groupForm))
+sv <- aggregate(form, data = sv, mean, na.rm = TRUE)
+sv <- bw.outliers(sv,
+  phenotype = "area_pixels",
+  group = c("DAS", "genotype", "fertilizer"),
+  plotgroup = c("barcode")
+)$data
 
-pixels_per_cmsq <- 42.5^2   # pixel per cm^2
-sv$area_cm2<-sv$area_pixels / pixels_per_cmsq
-sv$height_cm <- sv$height_pixels/42.5
+pixels_per_cmsq <- 42.5^2 # pixel per cm^2
+sv$area_cm2 <- sv$area_pixels / pixels_per_cmsq
+sv$height_cm <- sv$height_pixels / 42.5
 
-df=sv
-phenotypes = c("area_cm2", "height_cm")
-grouping = c("fertilizer", "genotype", "DAS")
-controlGroup = "100" 
-control = "fertilizer"
+df <- sv
+phenotypes <- c("area_cm2", "height_cm")
+grouping <- c("fertilizer", "genotype", "DAS")
+controlGroup <- "100"
+control <- "fertilizer"
 
-rt <-relativeTolerance(df, phenotypes, grouping, control, controlGroup)
+rt <- relativeTolerance(df, phenotypes, grouping, control, controlGroup)
 head(rt)
 sapply(rt, function(c) sum(is.na(c)))
 }

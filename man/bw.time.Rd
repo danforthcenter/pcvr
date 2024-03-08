@@ -6,7 +6,7 @@
 \usage{
 bw.time(
   df = NULL,
-  mode = NULL,
+  mode = c("DAS", "DAP", "DAE"),
   plantingDelay = NULL,
   phenotype = NULL,
   cutoff = 1,
@@ -23,7 +23,7 @@ bw.time(
 \item{df}{Data frame to use, this can be in wide or long format.}
 
 \item{mode}{One of "DAS", "DAP" or "DAE" (Days After Planting and Days After Emergence).
-Defaults to NULL in which case all columns are added.
+Defaults to adding all columns.
 Note that if timeCol is not an integer then DAS is always returned.}
 
 \item{plantingDelay}{If `mode` includes "DAP" then `plantingDelay` is used to adjust "DAS"}
@@ -54,7 +54,7 @@ This should generally not need to be changed from the default.
 \item{valueCol}{Column with phenotype values, defaults to "value".
 This should generally not need to be changed from the default.}
 
-\item{index}{Optionally a time to use as the beginning of the experiment. This 
+\item{index}{Optionally a time to use as the beginning of the experiment. This
 may be useful if you have multiple datasets or you are adding data from bw.water
 and plants were watered before being imaged or if you want to index days off of
 midnight. This defaults to NULL but will take any value coercible to POSIXct by
@@ -71,32 +71,44 @@ Time conversion and plotting for bellwether data
 
 ## Not run:
 \donttest{
-sv<-read.pcv(
-"https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv",
- mode="wide", reader="fread")
-sv$genotype = substr(sv$barcode, 3,5)
+sv <- read.pcv(
+  "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv",
+  mode = "wide", reader = "fread"
+)
+sv$genotype = substr(sv$barcode, 3, 5)
 sv$genotype = ifelse(sv$genotype == "002", "B73",
-                     ifelse(sv$genotype == "003", "W605S",
-                           ifelse(sv$genotype == "004", "MM", "Mo17")))
+  ifelse(sv$genotype == "003", "W605S",
+    ifelse(sv$genotype == "004", "MM", "Mo17")
+  )
+)
 sv$fertilizer = substr(sv$barcode, 8, 8)
 sv$fertilizer = ifelse(sv$fertilizer == "A", "100",
-                   ifelse(sv$fertilizer == "B", "50", "0"))
-sv<-bw.time(sv, plantingDelay = 0, phenotype="area_pixels", cutoff=10,
- timeCol="timestamp", group=c("barcode", "rotation"), plot=FALSE)
+  ifelse(sv$fertilizer == "B", "50", "0")
+)
+sv <- bw.time(sv,
+  plantingDelay = 0, phenotype = "area_pixels", cutoff = 10,
+  timeCol = "timestamp", group = c("barcode", "rotation"), plot = FALSE
+)
 
 
-svl<-read.pcv(
-"https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv",
- mode="long", reader="fread")
-svl$genotype = substr(svl$barcode, 3,5)
+svl <- read.pcv(
+  "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv",
+  mode = "long", reader = "fread"
+)
+svl$genotype = substr(svl$barcode, 3, 5)
 svl$genotype = ifelse(svl$genotype == "002", "B73",
-                     ifelse(svl$genotype == "003", "W605S",
-                           ifelse(svl$genotype == "004", "MM", "Mo17")))
+  ifelse(svl$genotype == "003", "W605S",
+    ifelse(svl$genotype == "004", "MM", "Mo17")
+  )
+)
 svl$fertilizer = substr(svl$barcode, 8, 8)
 svl$fertilizer = ifelse(svl$fertilizer == "A", "100",
-                   ifelse(svl$fertilizer == "B", "50", "0"))
-svl<-bw.time(svl, plantingDelay = 0, phenotype="area_pixels", cutoff=10, timeCol="timestamp",
- group=c("barcode", "rotation"), plot=FALSE)
+  ifelse(svl$fertilizer == "B", "50", "0")
+)
+svl <- bw.time(svl,
+  plantingDelay = 0, phenotype = "area_pixels", cutoff = 10, timeCol = "timestamp",
+  group = c("barcode", "rotation"), plot = FALSE
+)
 }
 ## End(Not run)
 

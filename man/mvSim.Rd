@@ -27,7 +27,7 @@ be accepted in the distribution functions, with lower numbers being raised to th
 Note that bin arguments are both ignored in the case of "rbeta" and treated as 0,1.}
 
 \item{max_bin}{The number of bins to return. Note that this is also the max value that will be
-accepted in the distribution functions, with higher numbers being shrunk to this value. 
+accepted in the distribution functions, with higher numbers being shrunk to this value.
 Defaults to 180.}
 
 \item{wide}{Boolean, should data be returned in wide format (the default)?
@@ -48,36 +48,40 @@ n_samples = 10
 counts = 1000
 min_bin = 0
 max_bin = 180
-dists <- list(rmixnorm = list(mean=c(70, 150), sd = c(15,5), alpha = c(0.3, 0.7)),
-              rnorm = list(mean = 90, sd = 3))
-x <- mvSim(dists=dists, wide=FALSE)
+dists <- list(
+  rmixnorm = list(mean = c(70, 150), sd = c(15, 5), alpha = c(0.3, 0.7)),
+  rnorm = list(mean = 90, sd = 3)
+)
+x <- mvSim(dists = dists, wide = FALSE)
 dim(x)
-x2 <- mvSim(dists=dists)
+x2 <- mvSim(dists = dists)
 dim(x2)
 
-ggplot(x, aes(x=as.numeric(sub("sim_", "", variable)),
-              y = value, group = interaction(group,id), fill = group))+
-  geom_col(position="identity", alpha=0.25)+
-  pcv_theme()+
-  labs(x="bin")
+ggplot(x, aes(
+  x = as.numeric(sub("sim_", "", variable)),
+  y = value, group = interaction(group, id), fill = group
+)) +
+  geom_col(position = "identity", alpha = 0.25) +
+  pcv_theme() +
+  labs(x = "bin")
 
-if(FALSE){ # example of plotting based on the dists argument
+if (FALSE) { # example of plotting based on the dists argument
 
-ggplot(data=data.frame(x=1:180), aes(x=x))+
-facet_grid(dist~group)+
- lapply(c("a", "b"), function(grp){
-   lapply(1:length(dists), function(di){
-     rfun <- names(dists)[di]
-     rargs <- append(dists[[di]], 1000)
-     names(rargs)[length(rargs)]<-"n"
-     v1 <- do.call(rfun, rargs)
-     v1[v1>max_bin]<-max_bin
-     v1[v1<min_bin]<-min_bin
-     d <- data.frame(group = grp, x = v1, dist = di)
-     geom_histogram(data=d, aes(x=x, fill=di), alpha=1, binwidth=1, show.legend = FALSE)
-   })
- })+
- pcv_theme()
+  ggplot(data = data.frame(x = 1:180), aes(x = x)) +
+    facet_grid(dist ~ group) +
+    lapply(c("a", "b"), function(grp) {
+      lapply(1:length(dists), function(di) {
+        rfun <- names(dists)[di]
+        rargs <- append(dists[[di]], 1000)
+        names(rargs)[length(rargs)] <- "n"
+        v1 <- do.call(rfun, rargs)
+        v1[v1 > max_bin] <- max_bin
+        v1[v1 < min_bin] <- min_bin
+        d <- data.frame(group = grp, x = v1, dist = di)
+        geom_histogram(data = d, aes(x = x, fill = di), alpha = 1, binwidth = 1, show.legend = FALSE)
+      })
+    }) +
+    pcv_theme()
 }
 
 

@@ -15,7 +15,8 @@ pcv.euc(
   trait = "trait",
   id = "image",
   value = "value",
-  raiseError = TRUE
+  raiseError = TRUE,
+  method = "euc"
 )
 }
 \arguments{
