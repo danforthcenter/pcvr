@@ -15,7 +15,7 @@ vignette: >
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)#, tidy.opts=list(width.cutoff=60),tidy=TRUE
+knitr::opts_chunk$set(echo = TRUE) # , tidy.opts=list(width.cutoff=60),tidy=TRUE
 ```
 
 ```{r, message = FALSE}
@@ -39,10 +39,10 @@ The `brms` package is not automatically imported by `pcvr`, so before fitting `b
 Once `cmdstanr` is installed we also need to set the cmdstan path and link cmdstan to R, which is all done easily by `cmdstanr`. For example, packages can be installed and prepped using this code.
 
 ```{r, eval = FALSE}
-if(!"cmdstanr" %in% installed.packages()){
+if (!"cmdstanr" %in% installed.packages()) {
   install.packages("cmdstanr", repos = c("https://mc-stan.org/r-packages/", getOption("repos")))
 }
-if(!"brms" %in% installed.packages()){
+if (!"brms" %in% installed.packages()) {
   install.packages("brms")
 }
 library(brms)
@@ -128,31 +128,57 @@ In general these are less useful since they do not give directly interpretable p
 Data from any parameterized model can be simulated using `growthSim`. Through this vignette we will use data created in this way to show modeling options.
 
 ```{r}
-simdf<-growthSim("logistic", n=20, t=25, params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))
-l<-ggplot(simdf,aes(time, y, group=interaction(group,id)))+
-  geom_line(aes(color=group))+labs(title="Logistic")+theme_minimal()+theme(legend.position="none")
+simdf <- growthSim("logistic", n = 20, t = 25, params = list(
+  "A" = c(200, 160),
+  "B" = c(13, 11),
+  "C" = c(3, 3.5)
+))
+l <- ggplot(simdf, aes(time, y, group = interaction(group, id))) +
+  geom_line(aes(color = group)) +
+  labs(title = "Logistic") +
+  theme_minimal() +
+  theme(legend.position = "none")
 
-simdf<-growthSim("gompertz", n=20, t=25, params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(0.2, 0.25)))
-g<-ggplot(simdf,aes(time, y, group=interaction(group,id)))+
-  geom_line(aes(color=group))+labs(title="Gompertz")+theme_minimal()+theme(legend.position="none")
+simdf <- growthSim("gompertz", n = 20, t = 25, params = list(
+  "A" = c(200, 160),
+  "B" = c(13, 11),
+  "C" = c(0.2, 0.25)
+))
+g <- ggplot(simdf, aes(time, y, group = interaction(group, id))) +
+  geom_line(aes(color = group)) +
+  labs(title = "Gompertz") +
+  theme_minimal() +
+  theme(legend.position = "none")
 
-simdf<-growthSim("monomolecular", n=20, t=25, params = list("A"=c(200,160), "B"=c(0.08, 0.1)))
-m<-ggplot(simdf,aes(time, y, group=interaction(group,id)))+
-  geom_line(aes(color=group))+labs(title="Monomolecular")+theme_minimal()+theme(legend.position="none")
+simdf <- growthSim("monomolecular", n = 20, t = 25, params = list("A" = c(200, 160), "B" = c(0.08, 0.1)))
+m <- ggplot(simdf, aes(time, y, group = interaction(group, id))) +
+  geom_line(aes(color = group)) +
+  labs(title = "Monomolecular") +
+  theme_minimal() +
+  theme(legend.position = "none")
 
-simdf<-growthSim("exponential", n=20, t=25, params = list("A"=c(15, 20), "B"=c(0.095, 0.095)))
-e<-ggplot(simdf,aes(time, y, group=interaction(group,id)))+
-  geom_line(aes(color=group))+labs(title="Exponential")+theme_minimal()+theme(legend.position="none")
+simdf <- growthSim("exponential", n = 20, t = 25, params = list("A" = c(15, 20), "B" = c(0.095, 0.095)))
+e <- ggplot(simdf, aes(time, y, group = interaction(group, id))) +
+  geom_line(aes(color = group)) +
+  labs(title = "Exponential") +
+  theme_minimal() +
+  theme(legend.position = "none")
 
-simdf<-growthSim("linear", n=20, t=25, params = list("A"=c(1.1, 0.95)))
-ln<-ggplot(simdf,aes(time, y, group=interaction(group,id)))+
-  geom_line(aes(color=group))+labs(title="Linear")+theme_minimal()+theme(legend.position="none")
+simdf <- growthSim("linear", n = 20, t = 25, params = list("A" = c(1.1, 0.95)))
+ln <- ggplot(simdf, aes(time, y, group = interaction(group, id))) +
+  geom_line(aes(color = group)) +
+  labs(title = "Linear") +
+  theme_minimal() +
+  theme(legend.position = "none")
 
-simdf<-growthSim("power law", n=20, t=25, params = list("A"=c(16, 11), "B"=c(0.75, 0.7)))
-pl<-ggplot(simdf,aes(time, y, group=interaction(group,id)))+ geom_line(aes(color=group))+
-  labs(title="Power Law")+theme_minimal()+theme(legend.position="none")
+simdf <- growthSim("power law", n = 20, t = 25, params = list("A" = c(16, 11), "B" = c(0.75, 0.7)))
+pl <- ggplot(simdf, aes(time, y, group = interaction(group, id))) +
+  geom_line(aes(color = group)) +
+  labs(title = "Power Law") +
+  theme_minimal() +
+  theme(legend.position = "none")
 
-patch<-(l+g+m)/(e+ln+pl)
+patch <- (l + g + m) / (e + ln + pl)
 patch
 ```
 
@@ -221,46 +247,63 @@ At a high level we can think about any of these models as fitting a curve to the
 
 ```{r}
 set.seed(345)
-gomp<-growthSim("gompertz", n=20, t=35, params = list("A"=c(200,180, 160), "B"=c(20,22, 18), "C"=c(0.15, 0.2, 0.1)))
+gomp <- growthSim("gompertz", n = 20, t = 35, params = list(
+  "A" = c(200, 180, 160),
+  "B" = c(20, 22, 18),
+  "C" = c(0.15, 0.2, 0.1)
+))
 
 
-sigma_df <- aggregate(y ~ group+time, data = gomp, FUN = sd)
+sigma_df <- aggregate(y ~ group + time, data = gomp, FUN = sd)
 
-ggplot(sigma_df, aes(x=time, y=y, group=group))+
-  geom_line(color = "gray60")+
-  pcv_theme()+
-  labs(y="SD of y", title = "Gompertz Sigma")
+ggplot(sigma_df, aes(x = time, y = y, group = group)) +
+  geom_line(color = "gray60") +
+  pcv_theme() +
+  labs(y = "SD of y", title = "Gompertz Sigma")
 ```
 
 Several options are shown here, ignoring grouping here since the data is already aggregated. 
 
 
 ```{r, message = FALSE}
-draw_gomp_sigma <- function(x){ 23*exp(-21*exp(-0.22*x)) }
-ggplot(sigma_df, aes(x=time, y=y))+
-  geom_line(aes(group=group), color = "gray60")+
-  geom_hline(aes(yintercept = 12, color="Homoskedastic"), linetype=5, key_glyph = draw_key_path)+
-  geom_abline(aes(slope = 0.8, intercept=0,color="Linear"), linetype=5, key_glyph = draw_key_path)+
-  geom_smooth(method="gam", aes(color = "Spline"), linetype=5, se=F, key_glyph = draw_key_path)+
-  geom_function(fun = draw_gomp_sigma, aes(color="Gompertz"), linetype=5)+
-  scale_color_viridis_d(option="plasma", begin = 0.1, end = 0.9)+
-  guides(color=guide_legend(override.aes = list(linewidth=1, linetype=1)))+
-  pcv_theme()+
-  theme(legend.position="bottom")+
-  labs(y="SD of y", title = "Gompertz Sigma", color = "")
+draw_gomp_sigma <- function(x) {
+  23 * exp(-21 * exp(-0.22 * x))
+}
+ggplot(sigma_df, aes(x = time, y = y)) +
+  geom_line(aes(group = group), color = "gray60") +
+  geom_hline(aes(yintercept = 12, color = "Homoskedastic"),
+    linetype = 5,
+    key_glyph = draw_key_path
+  ) +
+  geom_abline(aes(slope = 0.8, intercept = 0, color = "Linear"),
+    linetype = 5,
+    key_glyph = draw_key_path
+  ) +
+  geom_smooth(
+    method = "gam", aes(color = "Spline"), linetype = 5, se = FALSE,
+    key_glyph = draw_key_path
+  ) +
+  geom_function(fun = draw_gomp_sigma, aes(color = "Gompertz"), linetype = 5) +
+  scale_color_viridis_d(option = "plasma", begin = 0.1, end = 0.9) +
+  guides(color = guide_legend(override.aes = list(linewidth = 1, linetype = 1))) +
+  pcv_theme() +
+  theme(legend.position = "bottom") +
+  labs(y = "SD of y", title = "Gompertz Sigma", color = "")
 ```
 
 "int" will specify a homoskedastic model, that is one with constant variance over time per each group. While this is the default for almost every kind of statistical modeling it is an unrealistic assumption in this setting where we often follow growth from small seedlings to potentially fully grown plants. Even if we start with larger plants the homoskedastic assumption almost never holds in longitudinal modeling. We can fit an example model and see the issue with the homoskedastic assumption through the model's credible intervals, which are far too wide at the beginning of the experiment and even include some negative values for plant area.
 
 ```{r}
-ss <- growthSS(model = "gompertz", form = y~time|id/group, sigma = "int",
-               df = gomp, start = list("A"=130, "B"=15, "C"=0.25))
+ss <- growthSS(
+  model = "gompertz", form = y ~ time | id / group, sigma = "int",
+  df = gomp, start = list("A" = 130, "B" = 15, "C" = 0.25)
+)
 ```
 
 ```{r, eval=FALSE}
-fit_h <- fitGrowth(ss, iter=1000, cores=4, chains=4, silent=0)
+fit_h <- fitGrowth(ss, iter = 1000, cores = 4, chains = 4, silent = 0)
 
-brmPlot(fit_h, form = ss$pcvrForm, df=ss$df)
+brmPlot(fit_h, form = ss$pcvrForm, df = ss$df)
 ```
 
 ![Credible intervals show the unrealistic homoskedasticity assumption](homosked_brm.png)
@@ -269,16 +312,21 @@ brmPlot(fit_h, form = ss$pcvrForm, df=ss$df)
 We can relax this assumption and model sigma separately from the main growth trend. To show an example of the options in `pcvr`, here we repeat the example from above using a linear submodel. Note that here we add some extra controls to the model fitting algorithm to help the model fit well with the added complexity at the cost of being slower.
 
 ```{r}
-ss <- growthSS(model = "gompertz", form = y~time|id/group, sigma = "linear",
-               df = gomp, start = list("A"=130, "B"=15, "C"=0.25))
+ss <- growthSS(
+  model = "gompertz", form = y ~ time | id / group, sigma = "linear",
+  df = gomp, start = list("A" = 130, "B" = 15, "C" = 0.25)
+)
 ```
 
 ```{r, eval=FALSE}
-fit_l <- fitGrowth(ss, iter=1000, cores=4, chains=4, silent=0, control = list(adapt_delta = 0.999, max_treedepth = 20))
+fit_l <- fitGrowth(ss,
+  iter = 1000, cores = 4, chains = 4, silent = 0,
+  control = list(adapt_delta = 0.999, max_treedepth = 20)
+)
 
-p1<-brmPlot(fit_l, form = ss$pcvrForm, df=ss$df)
-p2<-p1+coord_cartesian(ylim = c(0,300))
-p <- p1/p2
+p1 <- brmPlot(fit_l, form = ss$pcvrForm, df = ss$df)
+p2 <- p1 + coord_cartesian(ylim = c(0, 300))
+p <- p1 / p2
 p
 ```
 
@@ -290,14 +338,19 @@ We can also use spline sub models. The spline model does a very good job of fitt
 
 
 ```{r}
-ss <- growthSS(model = "gompertz", form = y~time|id/group, sigma = "spline",
-               df = gomp, start = list("A"=130, "B"=15, "C"=0.25))
+ss <- growthSS(
+  model = "gompertz", form = y ~ time | id / group, sigma = "spline",
+  df = gomp, start = list("A" = 130, "B" = 15, "C" = 0.25)
+)
 ```
 
 ```{r, eval=FALSE}
-fit_s <- fitGrowth(ss, iter=2000, cores=4, chains=4, silent=0, control = list(adapt_delta = 0.999, max_treedepth = 20))
+fit_s <- fitGrowth(ss,
+  iter = 2000, cores = 4, chains = 4, silent = 0,
+  control = list(adapt_delta = 0.999, max_treedepth = 20)
+)
 
-brmPlot(fit_s, form = ss$pcvrForm, df=ss$df)
+brmPlot(fit_s, form = ss$pcvrForm, df = ss$df)
 ```
 
 ![Spline sub models allow for taking heteroskedasticity into account without complex formulae](spline_brm.png)
@@ -306,15 +359,23 @@ Here we try applying a gompertz function to the variance submodel. While this is
 When setting priors for the gompertz sub-model it is generally reasonable to expect a similar growth rate and inflection point as in the main model (assuming the main model is gompertz as well).
 
 ```{r}
-ss <- growthSS(model = "gompertz", form = y~time|id/group, sigma = "gompertz",
-               df = gomp, start = list("A"=130, "B"=15, "C"=0.25, "sigmaA"=15, "sigmaB"=15, "sigmaC"=0.25),
-               type="brms")
+ss <- growthSS(
+  model = "gompertz", form = y ~ time | id / group, sigma = "gompertz",
+  df = gomp, start = list(
+    "A" = 130, "B" = 15, "C" = 0.25,
+    "sigmaA" = 15, "sigmaB" = 15, "sigmaC" = 0.25
+  ),
+  type = "brms"
+)
 ```
 
 ```{r, eval=FALSE}
-fit_g <- fitGrowth(ss, iter=2000, cores=4, chains=4, silent=0, control = list(adapt_delta = 0.999, max_treedepth = 20))
+fit_g <- fitGrowth(ss,
+  iter = 2000, cores = 4, chains = 4, silent = 0,
+  control = list(adapt_delta = 0.999, max_treedepth = 20)
+)
 
-brmPlot(fit_g, form = ss$pcvrForm, df=ss$df)
+brmPlot(fit_g, form = ss$pcvrForm, df = ss$df)
 ```
 
 ![Using a Gompertz formula for both growth and for increasing variance](gompSubModel.png)
@@ -322,25 +383,39 @@ brmPlot(fit_g, form = ss$pcvrForm, df=ss$df)
 A few other options are shown here as further examples. There are as many ways to model variance as there are to model growth using the `brms` backend, but other options are more limited.
 
 ```{r, message = FALSE}
-draw_gomp_sigma <- function(x){ 23*exp(-21*exp(-0.22*x)) }
-draw_logistic_sigma <- function(x){ 20 / (1 + exp( (15-x)/2) ) }
-draw_logistic_exp <- function(x){ 2.5 * exp(0.08 * x) }
-draw_logistic_quad <- function(x){ (0.3 * x) + (0.02*x^2) }
+draw_gomp_sigma <- function(x) {
+  23 * exp(-21 * exp(-0.22 * x))
+}
+draw_logistic_sigma <- function(x) {
+  20 / (1 + exp((15 - x) / 2))
+}
+draw_logistic_exp <- function(x) {
+  2.5 * exp(0.08 * x)
+}
+draw_logistic_quad <- function(x) {
+  (0.3 * x) + (0.02 * x^2)
+}
 
-ggplot(sigma_df, aes(x=time, y=y))+
-  geom_line(aes(group=group), color = "gray60", linetype=5)+
-  geom_hline(aes(yintercept = 12, color="Homoskedastic"), linetype=1)+
-  geom_abline(aes(slope = 0.8, intercept=0,color="Linear"), linetype=1, key_glyph = draw_key_path)+
-  geom_smooth(method="gam", aes(color = "Spline"), linetype=1, se=F, key_glyph = draw_key_path)+
-  geom_function(fun = draw_gomp_sigma, aes(color="Gompertz"), linetype=1)+
-  geom_function(fun = draw_logistic_sigma, aes(color="Logistic"), linetype=1)+
-  geom_function(fun = draw_logistic_exp, aes(color="Exponential"), linetype=1)+
-  geom_function(fun = draw_logistic_quad, aes(color="Quadratic"), linetype=1)+
-  scale_color_viridis_d(option="plasma", begin = 0.1, end = 0.9)+
-  guides(color=guide_legend(override.aes = list(linewidth=1, linetype=1)))+
-  pcv_theme()+
-  theme(legend.position="bottom")+
-  labs(y="SD of y", title = "Gompertz Sigma", color = "")
+ggplot(sigma_df, aes(x = time, y = y)) +
+  geom_line(aes(group = group), color = "gray60", linetype = 5) +
+  geom_hline(aes(yintercept = 12, color = "Homoskedastic"), linetype = 1) +
+  geom_abline(aes(slope = 0.8, intercept = 0, color = "Linear"),
+    linetype = 1,
+    key_glyph = draw_key_path
+  ) +
+  geom_smooth(
+    method = "gam", aes(color = "Spline"), linetype = 1, se = FALSE,
+    key_glyph = draw_key_path
+  ) +
+  geom_function(fun = draw_gomp_sigma, aes(color = "Gompertz"), linetype = 1) +
+  geom_function(fun = draw_logistic_sigma, aes(color = "Logistic"), linetype = 1) +
+  geom_function(fun = draw_logistic_exp, aes(color = "Exponential"), linetype = 1) +
+  geom_function(fun = draw_logistic_quad, aes(color = "Quadratic"), linetype = 1) +
+  scale_color_viridis_d(option = "plasma", begin = 0.1, end = 0.9) +
+  guides(color = guide_legend(override.aes = list(linewidth = 1, linetype = 1))) +
+  pcv_theme() +
+  theme(legend.position = "bottom") +
+  labs(y = "SD of y", title = "Gompertz Sigma", color = "")
 ```
 
 When considering several sub models (or growth models) we can compare `brms` models using Leave-One-Out Information Criterion (LOO IC). For frequentist models a more familiar metric like BIC or AIC might be used.
@@ -351,20 +426,22 @@ loo_homo <- add_criterion(fit_h, "loo")
 loo_linear <- add_criterion(fit_l, "loo")
 loo_gomp <- add_criterion(fit_g, "loo")
 
-h<-loo_homo$criteria$loo$estimates[3,1]
-s<-loo_spline$criteria$loo$estimates[3,1]
-l<-loo_linear$criteria$loo$estimates[3,1]
-g<-loo_gomp$criteria$loo$estimates[3,1]
+h <- loo_homo$criteria$loo$estimates[3, 1]
+s <- loo_spline$criteria$loo$estimates[3, 1]
+l <- loo_linear$criteria$loo$estimates[3, 1]
+g <- loo_gomp$criteria$loo$estimates[3, 1]
 
-loodf<-data.frame(loo = c(h,s,l,g), model = c("Homosked", "Spline", "Linear", "Gompertz"))
-loodf$model <- factor(loodf$model, levels=unique(loodf$model[order(loodf$loo)]), ordered=TRUE)
+loodf <- data.frame(loo = c(h, s, l, g), model = c("Homosked", "Spline", "Linear", "Gompertz"))
+loodf$model <- factor(loodf$model, levels = unique(loodf$model[order(loodf$loo)]), ordered = TRUE)
 
-ggplot(loodf,
-       aes(x=model,y=loo,fill=model))+
-  geom_col()+
-  scale_fill_viridis_d()+
-  labs(y = "LOO Information Criteria", x = "Sub Model of Sigma")+
-  theme_minimal()+
+ggplot(
+  loodf,
+  aes(x = model, y = loo, fill = model)
+) +
+  geom_col() +
+  scale_fill_viridis_d() +
+  labs(y = "LOO Information Criteria", x = "Sub Model of Sigma") +
+  theme_minimal() +
   theme(legend.position = "none")
 ```
 
@@ -386,19 +463,21 @@ A strong prior is generally thought of as a prior with low variance. Almost all 
 
 ```{r, eval = FALSE}
 set.seed(345)
-ln <- growthSim("linear", n=5, t=10, params = list("A"=c(2, 3, 10)))
+ln <- growthSim("linear", n = 5, t = 10, params = list("A" = c(2, 3, 10)))
 
-strongPrior <- prior(student_t(3,0,5), dpar="sigma", class="b") +
-  prior(gamma(2,0.1), class="nu", lb=0.001)+
-  prior(normal(10, .05),nlpar = "A", lb = 0)
+strongPrior <- prior(student_t(3, 0, 5), dpar = "sigma", class = "b") +
+  prior(gamma(2, 0.1), class = "nu", lb = 0.001) +
+  prior(normal(10, .05), nlpar = "A", lb = 0)
 
-ss <- growthSS(model = "linear", form = y~time|id/group, sigma = "homo",
-               df = ln, priors = strongPrior)
+ss <- growthSS(
+  model = "linear", form = y ~ time | id / group, sigma = "homo",
+  df = ln, priors = strongPrior
+)
 
-fit <- fitGrowth(ss, iter=1000, cores=2, chains=2, silent=0)
+fit <- fitGrowth(ss, iter = 1000, cores = 2, chains = 2, silent = 0)
 
-brmPlot(fit, form = ss$pcvrForm, df=ss$df)+
- coord_cartesian(ylim = c(0,100))
+brmPlot(fit, form = ss$pcvrForm, df = ss$df) +
+  coord_cartesian(ylim = c(0, 100))
 ```
 
 ![Credible intervals from strong priors](strongPrior.png)
@@ -414,17 +493,19 @@ Above all, remember to focus on evidence instead of hopes and beliefs. By defaul
 Generally we aim for "weak" or "mildly informative" priors. The goal with these is to constrict our sampler to possible values so that it moves faster and to introduce evidence driven domain expertise. 
 
 ```{r, eval = FALSE}
-weakPrior <- prior(student_t(3,0,5), dpar="sigma", class="b") +
-  prior(gamma(2,0.1), class="nu", lb=0.001)+
+weakPrior <- prior(student_t(3, 0, 5), dpar = "sigma", class = "b") +
+  prior(gamma(2, 0.1), class = "nu", lb = 0.001) +
   prior(lognormal(log(10), 0.25), nlpar = "A", lb = 0)
 
-ss <- growthSS(model = "linear", form = y~time|id/group, sigma = "homo",
-               df = ln, priors = weakPrior)
+ss <- growthSS(
+  model = "linear", form = y ~ time | id / group, sigma = "homo",
+  df = ln, priors = weakPrior
+)
 
-fit <- fitGrowth(ss, iter=1000, cores=2, chains=2, silent=0)
+fit <- fitGrowth(ss, iter = 1000, cores = 2, chains = 2, silent = 0)
 
-brmPlot(fit, form = ss$pcvrForm, df=ss$df)+
- coord_cartesian(ylim = c(0,100))
+brmPlot(fit, form = ss$pcvrForm, df = ss$df) +
+  coord_cartesian(ylim = c(0, 100))
 ```
 
 ![Using weak priors our mean lines make sense](weakPrior.png)
@@ -438,16 +519,16 @@ In `growthSS` priors can be specified as a `brmsprior` object (in which case it 
 We can check the priors made by `growthSS` with the `plotPrior` function.
 
 ```{r}
-priors = list("A" = 130, "B" = 10, "C" = 0.2)
-priorPlots<-plotPrior(priors)
-priorPlots[[1]]/priorPlots[[2]]/priorPlots[[3]]
+priors <- list("A" = 130, "B" = 10, "C" = 0.2)
+priorPlots <- plotPrior(priors)
+priorPlots[[1]] / priorPlots[[2]] / priorPlots[[3]]
 ```
 
 Looking at the prior distributions this way is useful, but the parameter values can be a degree removed from what we are really wanting to check. To help with picking reasonable priors based on the growth curves they'd represent the `plotPrior` function can also simulate growth curves by making draws from the specified prior distributions. Here is an example of using `plotPrior` in this way to pick between possible sets of prior distributions for a gompertz model. For asymptotic distributions the prior on "A" is added to the y margin. For distributions with an inflection point the prior on "B" is shown in the x margin. Arbitrary numbers of priors can be compared in this manner, but more than two or three can be cluttered so an iterative process is recommended if you are learning about your growth model.
 
 ```{r}
-twoPriors = list("A" = c(100, 130), "B" = c(6, 12), "C" = c(0.5, 0.25))
-plotPrior(twoPriors, "gompertz",n=100)[[1]]
+twoPriors <- list("A" = c(100, 130), "B" = c(6, 12), "C" = c(0.5, 0.25))
+plotPrior(twoPriors, "gompertz", n = 100)[[1]]
 ```
 
 #### `growthSS(..., tau, ...)`
@@ -462,34 +543,48 @@ Here we fit a model using each backend to simulated data.
 
 ```{r}
 set.seed(123)
-simdf<-growthSim("logistic", n=20, t=25, params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))
+simdf <- growthSim("logistic", n = 20, t = 25, params = list(
+  "A" = c(200, 160),
+  "B" = c(13, 11),
+  "C" = c(3, 3.5)
+))
 ```
 
 ```{r}
-nls_ss <- growthSS(model="logistic", form =  y~time|id/group,
-                   df=simdf, type = "nls")
+nls_ss <- growthSS(
+  model = "logistic", form = y ~ time | id / group,
+  df = simdf, type = "nls"
+)
 ```
 
 ```{r}
-nlrq_ss <- growthSS(model="logistic", form =  y~time|id/group,
-                    df=simdf, type = "nlrq",
-                    tau = seq(0.01, 0.99, 0.04))
+nlrq_ss <- growthSS(
+  model = "logistic", form = y ~ time | id / group,
+  df = simdf, type = "nlrq",
+  tau = seq(0.01, 0.99, 0.04)
+)
 ```
 
 ```{r}
-nlme_ss <- growthSS(model="logistic", form =  y~time|id/group,
-                    df=simdf, sigma = "power", type = "nlme")
+nlme_ss <- growthSS(
+  model = "logistic", form = y ~ time | id / group,
+  df = simdf, sigma = "power", type = "nlme"
+)
 ```
 
 ```{r}
-mgcv_ss <- growthSS(model="gam", form =  y~time|id/group,
-                   df=simdf, type = "mgcv")
+mgcv_ss <- growthSS(
+  model = "gam", form = y ~ time | id / group,
+  df = simdf, type = "mgcv"
+)
 ```
 
 ```{r, eval=FALSE}
-brms_ss<-growthSS(model="logistic", form =  y~time|id/group,
-             sigma="spline", df=simdf,
-             start = list("A" = 130, "B" = 10, "C" = 1))
+brms_ss <- growthSS(
+  model = "logistic", form = y ~ time | id / group,
+  sigma = "spline", df = simdf,
+  start = list("A" = 130, "B" = 10, "C" = 1)
+)
 ```
 
 Now we have all the essential model components in the `..._ss` objects. Since we specified a logistic model we have three parameters, the asymptote (`A`), the inflection point (`B`), and the growth rate (`C`). In the `brms` option our sub model uses a GAM and does not add more parameters. Note that in practice gompertz models tend to fit real data better than logistic models, but they can be more difficult to fit using the frequentist backends.
@@ -497,8 +592,8 @@ Now we have all the essential model components in the `..._ss` objects. Since we
 Before trying to fit the model it is generally a good idea to check one last plot of the data and make sure you have everything defined correctly.
 
 ```{r}
-ggplot(simdf, aes(time, y, group=interaction(group,id)))+
- geom_line(aes(color=group))
+ggplot(simdf, aes(time, y, group = interaction(group, id))) +
+  geom_line(aes(color = group))
 ```
 
 This looks okay, there are no strange jumps in the data or glaring problems, the group and id variables seem to uniquely identify lines so the models should fit well.
@@ -513,8 +608,10 @@ mgcv_fit <- fitGrowth(mgcv_ss)
 ```
 
 ```{r, eval=FALSE}
-brms_fit <- fitGrowth(brms_ss, iter = 500, cores = 1, chains = 1, 
-               control = list(adapt_delta = 0.999, max_treedepth = 20))
+brms_fit <- fitGrowth(brms_ss,
+  iter = 500, cores = 1, chains = 1,
+  control = list(adapt_delta = 0.999, max_treedepth = 20)
+)
 ```
 
 
@@ -523,14 +620,14 @@ brms_fit <- fitGrowth(brms_ss, iter = 500, cores = 1, chains = 1,
 We can check the model fits using `growthPlot`.
 
 ```{r, warning=FALSE, message=FALSE}
-growthPlot(nls_fit, form = nls_ss$pcvrForm, df=nls_ss$df)
-growthPlot(nlrq_fit, form = nlrq_ss$pcvrForm, df=nlrq_ss$df)
-growthPlot(nlme_fit, form = nlme_ss$pcvrForm, df=nlme_ss$df)
-growthPlot(mgcv_fit, form = mgcv_ss$pcvrForm, df=mgcv_ss$df)
+growthPlot(nls_fit, form = nls_ss$pcvrForm, df = nls_ss$df)
+growthPlot(nlrq_fit, form = nlrq_ss$pcvrForm, df = nlrq_ss$df)
+growthPlot(nlme_fit, form = nlme_ss$pcvrForm, df = nlme_ss$df)
+growthPlot(mgcv_fit, form = mgcv_ss$pcvrForm, df = mgcv_ss$df)
 ```
 
 ```{r, eval=FALSE}
-growthPlot(brms_fit, form = brms_ss$pcvrForm, df=brms_ss$df)
+growthPlot(brms_fit, form = brms_ss$pcvrForm, df = brms_ss$df)
 ```
 
 
@@ -575,16 +672,20 @@ The second kind of hypothesis test in `testGrowth` is used if the `test` argumen
 Here we test several hypotheses on our `nls` and `nlme` models to show the versatility of this option. In practice you should not use these hypotheses and should be giving some thought to how to express your stated hypothesis in terms of the model parameters.
 
 ```{r}
-testGrowth(fit = nls_fit, test = list("A1 - A2 *1.1",
-                                       "(B1+1) - B2",
-                                       "C1 - (C2-0.5)",
-                                      "A1/B1 - (1.1 * A2/B2)"))
+testGrowth(fit = nls_fit, test = list(
+  "A1 - A2 *1.1",
+  "(B1+1) - B2",
+  "C1 - (C2-0.5)",
+  "A1/B1 - (1.1 * A2/B2)"
+))
 ```
 
 ```{r}
-testGrowth(fit = nlme_fit, test = list("(A.groupa / A.groupb) - 0.9",
-                                  "1 + (B.groupa - B.groupb)",
-                                  "C.groupa/C.groupb - 1"))
+testGrowth(fit = nlme_fit, test = list(
+  "(A.groupa / A.groupb) - 0.9",
+  "1 + (B.groupa - B.groupb)",
+  "C.groupa/C.groupb - 1"
+))
 ```
 
 
@@ -594,15 +695,15 @@ testGrowth(fit = nlme_fit, test = list("(A.groupa / A.groupb) - 0.9",
 With the `brms` backend our options expand dramatically. We can write arbitrarily complex hypotheses about our models and test the posterior probability using `brms::hypothesis`. Here we keep it simple and test that group A has an asymptote 10% larger than group B's asymptote. If we had a more complicated dataset then there is no reason we could not expand this hypothesis instead to something like `((A_genotype1_treatment1/A_genotype1_treatment2))-(1.1*(A_genotype2_treatment1/A_genotype2_treatment2)) > 0` to test relative tolerance to different treatments between genotypes. It would be out of scope to go over all the potentially interesting hypotheses since those will depend on your experimental design and questions, but hopefully this communicates the flexibility in using these models once they are fit. Access to the `brms::hypothesis` function is generally a compelling reason to use the `brms` backend if you have questions beyond "are these groups different?"
 
 ```{r, echo=TRUE, eval=FALSE}
-(hyp<-brms::hypothesis(brms_fit, "(A_groupa) > 1.1 * (A_groupb)"))
+(hyp <- brms::hypothesis(brms_fit, "(A_groupa) > 1.1 * (A_groupb)"))
 ```
 
 ```{r, echo=FALSE, eval=TRUE}
-# dput(hyp)
-structure(list(Hypothesis = "((A_groupa))-(1.1*(A_groupb)) > 0", 
-    Estimate = 16.7880224, Est.Error = 3.13518501598807, CI.Lower = 12.012705, 
-    CI.Upper = 21.952505, Evid.Ratio = Inf, Post.Prob = 1, Star = "*"), row.names = c(NA, 
--1L), class = "data.frame")
+structure(list(
+  Hypothesis = "((A_groupa))-(1.1*(A_groupb)) > 0",
+  Estimate = 16.7880224, Est.Error = 3.13518501598807, CI.Lower = 12.012705,
+  CI.Upper = 21.952505, Evid.Ratio = Inf, Post.Prob = 1, Star = "*"
+), row.names = c(NA, -1L), class = "data.frame")
 ```
 
 ### Threshold Models
@@ -614,16 +715,20 @@ Here we briefly show several threshold model options.
 First we look at a "linear + linear" model using a gam submodel. To make the parameters distinct these segmented models have slightly different parameter names. Each section of the model has parameters named for the model and it's parameters, so here we have "linear1A", "changePoint1", and "linear2A". Similar to the standard models, a changepoint model of variance will have the name of the distributional parameter they are modeling appended to each parameter name.
 
 ```{r, echo=TRUE, eval=FALSE}
-simdf<-growthSim(model = "linear + linear", 
-                 n=20, t=25,
-                 params = list("linear1A"=c(15, 12), "changePoint1"=c(8, 6), "linear2A"=c(3, 5) ))
+simdf <- growthSim(
+  model = "linear + linear",
+  n = 20, t = 25,
+  params = list("linear1A" = c(15, 12), "changePoint1" = c(8, 6), "linear2A" = c(3, 5))
+)
 
-ss<-growthSS(model = "linear + linear", form=y~time|id/group, sigma="spline",
-             start = list("linear1A"=10, "changePoint1"=5, "linear2A"=2 ),
-             df=simdf, type = "brms")
+ss <- growthSS(
+  model = "linear + linear", form = y ~ time | id / group, sigma = "spline",
+  start = list("linear1A" = 10, "changePoint1" = 5, "linear2A" = 2),
+  df = simdf, type = "brms"
+)
 
-fit <- fitGrowth(ss, backend="cmdstanr", iter=500, chains=1, cores=1)
-growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
+fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1)
+growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
 ```
 
 ![](linearPlusLinear_fitGrowth.png)
@@ -631,18 +736,26 @@ growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
 Here we look at a "linear + logistic" model using a gam submodel.
 
 ```{r, echo=TRUE, eval=FALSE}
-simdf<-growthSim("linear + logistic", n=20, t=25,
-                     params = list("linear1A"=c(15, 12), "changePoint1"=c(8, 6),
-                                   "logistic2A"=c(100, 150), "logistic2B"=c(10, 8),
-                                   "logistic2C"=c(3, 2.5) ))
+simdf <- growthSim("linear + logistic",
+  n = 20, t = 25,
+  params = list(
+    "linear1A" = c(15, 12), "changePoint1" = c(8, 6),
+    "logistic2A" = c(100, 150), "logistic2B" = c(10, 8),
+    "logistic2C" = c(3, 2.5)
+  )
+)
 
-ss<-growthSS(model = "linear + logistic", form=y~time|id/group, sigma="spline",
-             list("linear1A"=10, "changePoint1"=5, 
-                  "logistic2A"=100, "logistic2B"=10, "logistic2C"=3),
-             df=simdf, type = "brms")
-    
-fit <- fitGrowth(ss, backend="cmdstanr", iter=500, chains=1, cores=1)
-growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
+ss <- growthSS(
+  model = "linear + logistic", form = y ~ time | id / group, sigma = "spline",
+  list(
+    "linear1A" = 10, "changePoint1" = 5,
+    "logistic2A" = 100, "logistic2B" = 10, "logistic2C" = 3
+  ),
+  df = simdf, type = "brms"
+)
+
+fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1)
+growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
 ```
 
 ![](linearPlusLogistic_fitGrowth.png)
@@ -650,12 +763,14 @@ growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
 Here we fit a "linear + gam" model with a homoskedastic sub model.
 
 ```{r, eval=FALSE, echo=TRUE}
-ss<-growthSS(model = "linear + gam", form=y~time|id/group, sigma="int",
-             list("linear1A"=10, "changePoint1"=5),
-             df=simdf, type = "brms")
+ss <- growthSS(
+  model = "linear + gam", form = y ~ time | id / group, sigma = "int",
+  list("linear1A" = 10, "changePoint1" = 5),
+  df = simdf, type = "brms"
+)
 
-fit <- fitGrowth(ss, backend="cmdstanr", iter=500, chains=1, cores=1)
-growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
+fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1)
+growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
 ```
 
 ![](linearPlusGAM_fitGrowth.png)
@@ -663,18 +778,26 @@ growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
 Here we fit a three part linear model with a gam to model variance. In this case we only used 500 iterations on one chain but the model still fits reasonably well.
 
 ```{r, echo=TRUE, eval=FALSE}
-simdf<-growthSim("linear + linear + linear", n=25, t=50,
-                     params = list("linear1A"=c(10, 12), "changePoint1"=c(8, 6),
-                                   "linear2A"=c(1, 2), "changePoint2"=c(25, 30),"linear3A"=c(20, 24)))
+simdf <- growthSim("linear + linear + linear",
+  n = 25, t = 50,
+  params = list(
+    "linear1A" = c(10, 12), "changePoint1" = c(8, 6),
+    "linear2A" = c(1, 2), "changePoint2" = c(25, 30), "linear3A" = c(20, 24)
+  )
+)
 
-ss<-growthSS(model = "linear + linear + linear", form=y~time|id/group, sigma="spline",
-             list("linear1A"=10, "changePoint1"=5,
-                  "linear2A"=2, "changePoint2"=15,
-                  "linear3A"=5 ), df=simdf, type = "brms")
+ss <- growthSS(
+  model = "linear + linear + linear", form = y ~ time | id / group, sigma = "spline",
+  list(
+    "linear1A" = 10, "changePoint1" = 5,
+    "linear2A" = 2, "changePoint2" = 15,
+    "linear3A" = 5
+  ), df = simdf, type = "brms"
+)
 
-fit <- fitGrowth(ss, backend="cmdstanr", iter=500, chains=1, cores=1)
+fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1)
 
-plot <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
+plot <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
 ```
 
 ![](linearPlusLinearPlusLinear_fitGrowth.png)
@@ -683,29 +806,49 @@ We can also fit thresholded models to the variance. Here we fit two part interce
 
 ```{r, echo=FALSE, eval=FALSE}
 set.seed(123)
-    noise<-do.call(rbind, lapply(1:30, function(i){
-      chngpt <- rnorm(2, 18, 2)
-      rbind(data.frame(id = paste0("id_",i), time = 1:chngpt[1], group = "a", y = c(runif(chngpt[1]-1, 0, 20), rnorm(1,5,1))),
-            data.frame(id = paste0("id_",i), time = 1:chngpt[2], group = "b", y = c(runif(chngpt[2]-1, 0, 20), rnorm(1,5,1))) )
-    }))
-noise2<-do.call(rbind, lapply(1:30, function(i){
-      start1 <- max(noise[noise$id == paste0("id_",i) & noise$group=="a", "time"])
-      start2 <- max(noise[noise$id == paste0("id_",i) & noise$group=="b", "time"])
-      rbind(data.frame(id = paste0("id_",i), time = start1:40, group = "a", y = c(runif(length(start1:40), 15, 50))),
-            data.frame(id = paste0("id_",i), time = start2:40, group = "b", y = c(runif(length(start2:40), 15, 50))) )
-    }))
+noise <- do.call(rbind, lapply(1:30, function(i) {
+  chngpt <- rnorm(2, 18, 2)
+  rbind(
+    data.frame(
+      id = paste0("id_", i), time = 1:chngpt[1], group = "a",
+      y = c(runif(chngpt[1] - 1, 0, 20), rnorm(1, 5, 1))
+    ),
+    data.frame(
+      id = paste0("id_", i), time = 1:chngpt[2], group = "b",
+      y = c(runif(chngpt[2] - 1, 0, 20), rnorm(1, 5, 1))
+    )
+  )
+}))
+noise2 <- do.call(rbind, lapply(1:30, function(i) {
+  start1 <- max(noise[noise$id == paste0("id_", i) & noise$group == "a", "time"])
+  start2 <- max(noise[noise$id == paste0("id_", i) & noise$group == "b", "time"])
+  rbind(
+    data.frame(
+      id = paste0("id_", i), time = start1:40, group = "a",
+      y = c(runif(length(start1:40), 15, 50))
+    ),
+    data.frame(
+      id = paste0("id_", i), time = start2:40, group = "b",
+      y = c(runif(length(start2:40), 15, 50))
+    )
+  )
+}))
 simdf <- rbind(noise, noise2)
 ```
 
 ```{r, echo=TRUE, eval=FALSE}
-ss<-growthSS(model = "int + int", form=y~time|id/group, sigma="int + int",
-             list("int1"=10, "changePoint1"=10, "int2"=20, #main model
-                  "sigmaint1"=10, "sigmachangePoint1"=10, "sigmaint2"=10), # sub model
-             df=simdf, type = "brms")
+ss <- growthSS(
+  model = "int + int", form = y ~ time | id / group, sigma = "int + int",
+  list(
+    "int1" = 10, "changePoint1" = 10, "int2" = 20, # main model
+    "sigmaint1" = 10, "sigmachangePoint1" = 10, "sigmaint2" = 10
+  ), # sub model
+  df = simdf, type = "brms"
+)
 
-fit <- fitGrowth(ss, backend="cmdstanr", iter=500, chains=1, cores=1)
+fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1)
 
-plot <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
+plot <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
 ```
 
 ![](intPlusInt_heteroskedastic_fitGrowth.png)
@@ -714,32 +857,46 @@ Here we fit int + linear models to the overall trend and the variance
 
 ```{r, echo=FALSE, eval=FALSE}
 set.seed(123)
-noise<-do.call(rbind, lapply(1:30, function(i){
-      chngpt <- rnorm(2, 18, 2)
-      rbind(data.frame(id = paste0("id_",i), time = 1:chngpt[1], group = "a", y = c(runif(chngpt[1]-1, 0, 20), rnorm(1,5,1))),
-            data.frame(id = paste0("id_",i), time = 1:chngpt[2], group = "b", y = c(runif(chngpt[2]-1, 0, 20), rnorm(1,5,1))) )
-    }))
-signal<-growthSim("linear", n=30, t=20,
-                      params = list("A"=c(3, 5) ))
-signal<-do.call(rbind, lapply(unique(paste0(signal$id, signal$group)), function(int){
-      noisesub<-noise[paste0(noise$id, noise$group)==int,]
-      signalSub <- signal[paste0(signal$id, signal$group) == int, ]
-      y_end <- noisesub[noisesub$time == max(noisesub$time), "y"]
-      signalSub$time <- signalSub$time + max(noisesub$time)
-      signalSub$y <- y_end + signalSub$y
-      signalSub
-    }))
+noise <- do.call(rbind, lapply(1:30, function(i) {
+  chngpt <- rnorm(2, 18, 2)
+  rbind(
+    data.frame(
+      id = paste0("id_", i), time = 1:chngpt[1], group = "a",
+      y = c(runif(chngpt[1] - 1, 0, 20), rnorm(1, 5, 1))
+    ),
+    data.frame(
+      id = paste0("id_", i), time = 1:chngpt[2], group = "b",
+      y = c(runif(chngpt[2] - 1, 0, 20), rnorm(1, 5, 1))
+    )
+  )
+}))
+signal <- growthSim("linear",
+  n = 30, t = 20,
+  params = list("A" = c(3, 5))
+)
+signal <- do.call(rbind, lapply(unique(paste0(signal$id, signal$group)), function(int) {
+  noisesub <- noise[paste0(noise$id, noise$group) == int, ]
+  signalSub <- signal[paste0(signal$id, signal$group) == int, ]
+  y_end <- noisesub[noisesub$time == max(noisesub$time), "y"]
+  signalSub$time <- signalSub$time + max(noisesub$time)
+  signalSub$y <- y_end + signalSub$y
+  signalSub
+}))
 simdf <- rbind(noise, signal)
 ```
 
 
 ```{r, echo=TRUE, eval=FALSE}
-ss<-growthSS(model = "int + linear", form=y~time|id/group, sigma="int + linear",
-                 list("int1"=10, "changePoint1"=10, "linear2A"=20,
-                      "sigmaint1"=10, "sigmachangePoint1"=10, "sigmalinear2A"=10),
-                 df=simdf, type = "brms")
-fit <- fitGrowth(ss, backend="cmdstanr", iter=500, chains=1, cores=1)
-plot <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df, timeRange = 1:40)
+ss <- growthSS(
+  model = "int + linear", form = y ~ time | id / group, sigma = "int + linear",
+  list(
+    "int1" = 10, "changePoint1" = 10, "linear2A" = 20,
+    "sigmaint1" = 10, "sigmachangePoint1" = 10, "sigmalinear2A" = 10
+  ),
+  df = simdf, type = "brms"
+)
+fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1)
+plot <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df, timeRange = 1:40)
 ```
 
 ![](intPlusLinear_heteroskedasticIntPlusLinear_fitGrowth.png)
@@ -749,33 +906,47 @@ Finally we fit a model of "int + logistic" for the main growth trend and "int + 
 
 ```{r, eval=FALSE, echo=FALSE}
 set.seed(123)
-noise<-do.call(rbind, lapply(1:30, function(i){
-      chngpt <- rnorm(2, 18, 2)
-      rbind(data.frame(id = paste0("id_",i), time = 1:chngpt[1], group = "a", y = c(runif(chngpt[1]-1, 0, 20), rnorm(1,5,1))),
-            data.frame(id = paste0("id_",i), time = 1:chngpt[2], group = "b", y = c(runif(chngpt[2]-1, 0, 20), rnorm(1,5,1))) )
-    }))
-signal<-growthSim("logistic", n=20, t=30,
-                  params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))
-signal<-do.call(rbind, lapply(unique(paste0(signal$id, signal$group)), function(int){
-      noisesub<-noise[paste0(noise$id, noise$group)==int,]
-      signalSub <- signal[paste0(signal$id, signal$group) == int, ]
-      y_end <- noisesub[noisesub$time == max(noisesub$time), "y"]
-      signalSub$time <- signalSub$time + max(noisesub$time)
-      signalSub$y <- y_end + signalSub$y
-      signalSub
-    }))
+noise <- do.call(rbind, lapply(1:30, function(i) {
+  chngpt <- rnorm(2, 18, 2)
+  rbind(
+    data.frame(
+      id = paste0("id_", i), time = 1:chngpt[1], group = "a",
+      y = c(runif(chngpt[1] - 1, 0, 20), rnorm(1, 5, 1))
+    ),
+    data.frame(
+      id = paste0("id_", i), time = 1:chngpt[2], group = "b",
+      y = c(runif(chngpt[2] - 1, 0, 20), rnorm(1, 5, 1))
+    )
+  )
+}))
+signal <- growthSim("logistic",
+  n = 20, t = 30,
+  params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
+)
+signal <- do.call(rbind, lapply(unique(paste0(signal$id, signal$group)), function(int) {
+  noisesub <- noise[paste0(noise$id, noise$group) == int, ]
+  signalSub <- signal[paste0(signal$id, signal$group) == int, ]
+  y_end <- noisesub[noisesub$time == max(noisesub$time), "y"]
+  signalSub$time <- signalSub$time + max(noisesub$time)
+  signalSub$y <- y_end + signalSub$y
+  signalSub
+}))
 simdf <- rbind(noise, signal)
-simdf<-simdf[simdf$time<45, ]
+simdf <- simdf[simdf$time < 45, ]
 ```
 
 ```{r, echo=TRUE, eval=FALSE}
-ss<-growthSS(model = "int+logistic", form=y~time|id/group, sigma="int + spline",
-             list("int1" = 5, "changePoint1"=10 ,
-                  'logistic2A' = 130, 'logistic2B' = 10, "logistic2C" = 3,
-                  'sigmaint1' = 5, "sigmachangePoint1"=15),
-              df=simdf, type = "brms")
-fit <- fitGrowth(ss, backend="cmdstanr", iter=500, chains=1, cores=1)
-plot <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
+ss <- growthSS(
+  model = "int+logistic", form = y ~ time | id / group, sigma = "int + spline",
+  list(
+    "int1" = 5, "changePoint1" = 10,
+    "logistic2A" = 130, "logistic2B" = 10, "logistic2C" = 3,
+    "sigmaint1" = 5, "sigmachangePoint1" = 15
+  ),
+  df = simdf, type = "brms"
+)
+fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1)
+plot <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
 ```
 
 ![](intPluslogistic_intPlusGAMSubModel.png)
@@ -791,9 +962,12 @@ As a final note on `brms` models, there is a possiblity of making interesting ea
 
 ```{r, eval=FALSE}
 print(load(url("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/brmsFits.rdata")))
-from3to25<-list(fit_3, fit_5, fit_7, fit_9, fit_11, fit_13, fit_15, fit_17, fit_19, fit_21, fit_23, fit_25)
+from3to25 <- list(
+  fit_3, fit_5, fit_7, fit_9, fit_11, fit_13,
+  fit_15, fit_17, fit_19, fit_21, fit_23, fit_25
+)
 
-distributionPlot(fits = from3to25, form = y~time|id/group, params=c("A", "B", "C"), d=simdf)
+distributionPlot(fits = from3to25, form = y ~ time | id / group, params = c("A", "B", "C"), d = simdf)
 ```
 
 
