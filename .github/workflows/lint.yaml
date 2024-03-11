@@ -37,12 +37,12 @@ jobs:
           needs: lint
         
       - name: Lint
-        run: lintr::lint_package(linters = linters_with_defaults(line_length_linter(length = 105L),
-                                          object_name_linter(styles = c("snake_case", "symbols",
-                                                                        "camelCase", "dotted.case",
-                                                                        "lowercase", "UPPERCASE")),
-                                          brace_linter(allow_single_line = TRUE)
-                                          ))
+        run: lintr::lint_package(linters = lintr::linters_with_defaults(
+                                           lintr::line_length_linter(length = 105L),
+                                           lintr::object_name_linter(styles = c("snake_case", "symbols",
+                                                                              "camelCase", "dotted.case",
+                                                                              "lowercase", "UPPERCASE")),
+                                           lintr::brace_linter(allow_single_line = TRUE) ) )
         shell: Rscript {0}
         env:
           LINTR_ERROR_ON_LINT: true
