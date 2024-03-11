@@ -20,11 +20,11 @@ A data frame containing the bellwether watering data
 Read in lemnatech watering data from metadata.json files
 }
 \examples{
-## Not run: 
+## Not run:
 
-w<-bw.water("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/metadata.json")
+w <- bw.water("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/metadata.json")
 
-## End(Not run) 
+## End(Not run)
 }
 \keyword{json}
 \keyword{watering,}

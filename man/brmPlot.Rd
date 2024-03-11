@@ -32,32 +32,33 @@ although prediction using splines outside of the observed range is not necessari
 
 \item{facetGroups}{logical, should groups be separated in facets? Defaults to TRUE.}
 
-\item{groupFill}{logical, should groups have different colors? Defaults to FALSE. If TRUE then viridis colormaps are used in the order
+\item{groupFill}{logical, should groups have different colors? Defaults to FALSE.
+If TRUE then viridis colormaps are used in the order
 of virMaps}
 
-\item{virMaps}{order of viridis maps to use. Will be recycled to necessary length. Defaults to "plasma", but will generally be informed by growthPlot's default.}
+\item{virMaps}{order of viridis maps to use. Will be recycled to necessary length.
+Defaults to "plasma", but will generally be informed by growthPlot's default.}
 }
 \value{
 Returns a ggplot showing a brms model's credible
 intervals and optionally the individual growth lines.
 }
 \description{
-Models fit using \link{growthSS} inputs by \link{fitGrowth} (and similar models made through other means)
- can be visualized easily using this function. This will generally be called by \code{growthPlot}.
+Models fit using \link{growthSS} inputs by \link{fitGrowth} (and similar models made through other
+means) can be visualized easily using this function. This will generally be called by
+\code{growthPlot}.
 }
 \examples{
 
 ## Not run:
 
-if(FALSE){
-
-data(bw_vignette_fit)
-brmPlot(bw_vignette_fit, y~time|id/group, df=NULL)
-print(load(url("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/brmsFits.rdata")))
-brmPlot(fit_25, form = y~time|id/group)
-brmPlot(fit_9, form = y~time|id/group)
-brmPlot(fit_15, form = y~time|id/group)
-
+if (FALSE) {
+  data(bw_vignette_fit)
+  brmPlot(bw_vignette_fit, y ~ time | id / group, df = NULL)
+  print(load(url("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/brmsFits.rdata")))
+  brmPlot(fit_25, form = y ~ time | id / group)
+  brmPlot(fit_9, form = y ~ time | id / group)
+  brmPlot(fit_15, form = y ~ time | id / group)
 }
 
 ## End(Not run)

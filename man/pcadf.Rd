@@ -27,9 +27,9 @@ the column names that should be used.}
 \item{trace}{Optional column to use to show changes over by way of geom_path,
 generally this would be a time variable.}
 
-\item{facet}{Optional column or vector to facet/split plots on. 
-If this is a character then it is taken as a column name. 
-Numeric vectors are taken as values of trace to split on, 
+\item{facet}{Optional column or vector to facet/split plots on.
+If this is a character then it is taken as a column name.
+Numeric vectors are taken as values of trace to split on,
 if trace=NULL and this is numeric then plots will be split by the split argument.
  If this is a vector then a list of plots is returned.}
 
@@ -52,23 +52,29 @@ If data is returned then it will contain the coordinates from the
 
 ## Not run:
 
-if(FALSE){
-hue_wide<-read.pcv(
-  paste0("https://media.githubusercontent.com/media/joshqsumner/",
-  "pcvrTestData/main/pcv4-multi-value-traits.csv"),
-   mode="wide", reader="fread")
-hue_wide$genotype = substr(hue_wide$barcode, 3,5)
-hue_wide$genotype = ifelse(hue_wide$genotype == "002", "B73",
-                           ifelse(hue_wide$genotype == "003", "W605S",
-                                  ifelse(hue_wide$genotype == "004", "MM", "Mo17")))
-hue_wide$fertilizer = substr(hue_wide$barcode, 8, 8)
-hue_wide$fertilizer = ifelse(hue_wide$fertilizer == "A", "100",
-                             ifelse(hue_wide$fertilizer == "B", "50", "0"))
-hue_wide<-bw.time(hue_wide,timeCol="timestamp", group="barcode")
+if (FALSE) {
+  hue_wide <- read.pcv(
+    paste0(
+      "https://media.githubusercontent.com/media/joshqsumner/",
+      "pcvrTestData/main/pcv4-multi-value-traits.csv"
+    ),
+    mode = "wide", reader = "fread"
+  )
+  hue_wide$genotype <- substr(hue_wide$barcode, 3, 5)
+  hue_wide$genotype <- ifelse(hue_wide$genotype == "002", "B73",
+    ifelse(hue_wide$genotype == "003", "W605S",
+      ifelse(hue_wide$genotype == "004", "MM", "Mo17")
+    )
+  )
+  hue_wide$fertilizer <- substr(hue_wide$barcode, 8, 8)
+  hue_wide$fertilizer <- ifelse(hue_wide$fertilizer == "A", "100",
+    ifelse(hue_wide$fertilizer == "B", "50", "0")
+  )
+  hue_wide <- bw.time(hue_wide, timeCol = "timestamp", group = "barcode")
 
-hue_wide$geno_fertilizer<-interaction(hue_wide$fertilizer, hue_wide$genotype)
+  hue_wide$geno_fertilizer <- interaction(hue_wide$fertilizer, hue_wide$genotype)
 
-pcadf(hue_wide, cols = "hue_frequencies", color = "geno_fertilizer", returnData=FALSE)
+  pcadf(hue_wide, cols = "hue_frequencies", color = "geno_fertilizer", returnData = FALSE)
 }
 
 ## End(Not run)

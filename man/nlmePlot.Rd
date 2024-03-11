@@ -18,8 +18,9 @@ nlmePlot(
 \arguments{
 \item{fit}{A model fit returned by \code{fitGrowth} with type="nlme".}
 
-\item{form}{A formula similar to that in \code{growthSS} inputs (or the \code{pcvrForm} part of the output) specifying the outcome,
-predictor, and grouping structure of the data as \code{outcome ~ predictor|individual/group}}
+\item{form}{A formula similar to that in \code{growthSS} inputs (or the \code{pcvrForm} part of the
+output) specifying the outcome, predictor, and grouping structure of the data as
+\code{outcome ~ predictor|individual/group}}
 
 \item{df}{A dataframe to use in plotting observed growth curves on top of the model.
 This must be supplied for nlme models.}
@@ -32,36 +33,40 @@ future data if the avaiable data has not reached some point (such as asymptotic 
 
 \item{facetGroups}{logical, should groups be separated in facets? Defaults to TRUE.}
 
-\item{groupFill}{logical, should groups have different colors? Defaults to FALSE. If TRUE then viridis colormaps are used in the order
-of virMaps}
+\item{groupFill}{logical, should groups have different colors? Defaults to FALSE. If TRUE then
+viridis colormaps are used in the order of virMaps.}
 
-\item{virMaps}{order of viridis maps to use. Will be recycled to necessary length. Defaults to "plasma", but will generally be informed by growthPlot's default.}
+\item{virMaps}{order of viridis maps to use. Will be recycled to necessary length.
+Defaults to "plasma", but will generally be informed by growthPlot's default.}
 }
 \value{
 Returns a ggplot showing an nlme model's credible
 intervals and optionally the individual growth lines.
 }
 \description{
-Models fit using \link{growthSS} inputs by \link{fitGrowth} (and similar models made through other means)
+Models fit using \link{growthSS} inputs by \link{fitGrowth}
+(and similar models made through other means)
  can be visualized easily using this function. This will generally be called by \code{growthPlot}.
 }
 \examples{
 
 ## Not run:
 
-if(FALSE){
+if (FALSE) {
+  simdf <- growthSim("logistic",
+    n = 20, t = 25,
+    params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
+  )
 
-simdf<-growthSim("logistic", n=20, t=25,
-params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))
+  ss <- growthSS(
+    model = "logistic", form = y ~ time | id / group,
+    df = simdf, sigma = "power", start = NULL, type = "nlme"
+  )
+  dim(ss$df)
 
-ss<-growthSS(model = "logistic", form=y~time|id/group,
- df=simdf, sigma="power", start=NULL, type="nlme")
-dim(ss$df)
+  fit <- fitGrowth(ss)
 
-fit<-fitGrowth(ss)
-
-nlmePlot(fit, form = ss$pcvrForm, groups = NULL, df = ss$df, timeRange = NULL)
-
+  nlmePlot(fit, form = ss$pcvrForm, groups = NULL, df = ss$df, timeRange = NULL)
 }
 
 ## End(Not run)

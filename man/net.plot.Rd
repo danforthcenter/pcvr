@@ -14,22 +14,24 @@ net.plot(
 )
 }
 \arguments{
-\item{net}{Network object similar to that returned from pcv.net, having dataframes named "edges" and "nodes"}
+\item{net}{Network object similar to that returned from pcv.net, having dataframes named "edges"
+and "nodes"}
 
-\item{fill}{Variable name(s) from the nodes data to be used to color points. By default "strength" is used.}
+\item{fill}{Variable name(s) from the nodes data to be used to color points. By default "strength"
+is used.}
 
-\item{shape}{Optional discrete variable name(s) from the nodes data to be used to change the shape of points.
-If this variable is numeric it will be coerced to character.}
+\item{shape}{Optional discrete variable name(s) from the nodes data to be used to change the shape
+of points. If this variable is numeric it will be coerced to character.}
 
 \item{size}{Size of points, defaults to 3.}
 
-\item{edgeWeight}{Edge dataframe column to weight connections between nodes. Defaults to "emd" 
+\item{edgeWeight}{Edge dataframe column to weight connections between nodes. Defaults to "emd"
 for compatability with \code{pcv.emd}.}
 
-\item{edgeFilter}{How should edges be filtered? This can be either a numeric (0.5) 
-in which case it is taken as a filter where only edges with values greater than or equal to 
-that number are kept or a character string ("0.5") in which case the strongest 
-X percentage of edges are kept. This defaults to NULL which does no filtering, 
+\item{edgeFilter}{How should edges be filtered? This can be either a numeric (0.5)
+in which case it is taken as a filter where only edges with values greater than or equal to
+that number are kept or a character string ("0.5") in which case the strongest
+X percentage of edges are kept. This defaults to NULL which does no filtering,
 although that should not be considered the best standard behaviour. See details.}
 }
 \value{
@@ -42,25 +44,34 @@ Easy igraph visualization with pcv.net output
 
 ## Not run:
 
-if(FALSE){
-file = "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest1.csv"
-df1<-read.pcv(file, mode = "wide")
+if (FALSE) {
+  file <- "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest1.csv"
+  df1 <- read.pcv(file, mode = "wide")
 
-df1$genotype = substr(df1$barcode, 3,5)
-df1$genotype = ifelse(df1$genotype == "002", "B73",
-              ifelse(df1$genotype == "003", "W605S",
-              ifelse(df1$genotype == "004", "MM", "Mo17")))
-df1$fertilizer = substr(df1$barcode, 8, 8)
-df1$fertilizer = ifelse(df1$fertilizer == "A", "100",
-              ifelse(df1$fertilizer == "B", "50", "0"))
-              
-w<-pcv.emd(df1, cols="index_frequencies_index_ndvi.",
- reorder=c("treatment", "genotype"), mat =FALSE, plot=FALSE)
-  
-network<-pcv.net(w, meta = c("treatment", "genotype"))
-net=network; fill = "strength"; shape = "genotype"; size=5; edgeWeight="emd"
-net.plot(network, fill = "strength", shape = "genotype", size=5, edgeFilter=0.5)
-net.plot(network, fill = "strength", shape = "genotype", size=5, edgeFilter="0.5")
+  df1$genotype <- substr(df1$barcode, 3, 5)
+  df1$genotype <- ifelse(df1$genotype == "002", "B73",
+    ifelse(df1$genotype == "003", "W605S",
+      ifelse(df1$genotype == "004", "MM", "Mo17")
+    )
+  )
+  df1$fertilizer <- substr(df1$barcode, 8, 8)
+  df1$fertilizer <- ifelse(df1$fertilizer == "A", "100",
+    ifelse(df1$fertilizer == "B", "50", "0")
+  )
+
+  w <- pcv.emd(df1,
+    cols = "index_frequencies_index_ndvi.",
+    reorder = c("treatment", "genotype"), mat = FALSE, plot = FALSE
+  )
+
+  network <- pcv.net(w, meta = c("treatment", "genotype"))
+  net <- network
+  fill <- "strength"
+  shape <- "genotype"
+  size <- 5
+  edgeWeight <- "emd"
+  net.plot(network, fill = "strength", shape = "genotype", size = 5, edgeFilter = 0.5)
+  net.plot(network, fill = "strength", shape = "genotype", size = 5, edgeFilter = "0.5")
 }
 ## End(Not run)
 

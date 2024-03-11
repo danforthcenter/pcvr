@@ -1,7 +1,7 @@
 #' Function to visualize hypotheses tested on brms models similar to those made using growthSS outputs.
-#' 
-#' 
-#' 
+#'
+#'
+#'
 #' @param model A brmsfit object or a list of brmsfit objects
 #' @param params A list of parameters to use from the model.
 #' Defaults to NULL in which case all growth model parameters are used.
@@ -29,161 +29,209 @@
 #' @param returnData Logical, should data be returned?
 #' This is treated as TRUE if a plot will not be generated but
 #' otherwise defaults to FALSE.
-#' 
-#' @keywords growth curve, logistic, gompertz, monomolecular, linear, exponential, power-law, brms, ggplot2
-#' 
+#'
+#' @keywords brms, ggplot2
+#'
 #' @import ggplot2
 #' @import viridis
 #' @import parallel
 #' @importFrom utils combn
 #' @importFrom stats as.formula setNames
-#' 
-#' @examples 
-#' 
+#'
+#' @examples
+#'
 #' ## Not run:
-#' 
-#' if(FALSE){
-#' 
-#' data(bw_vignette_fit)
-#' brmViolin(model = bw_vignette_fit, params = NULL,
-#'         hyp="num/denom>1.05", compareX = c("0.B73", "50.B73", "100.B73"), againstY = "0.B73",
-#'         group_sep = "[.]", groups_into = c("soil", "genotype"), x="soil", facet="genotype",
-#'         returnData=FALSE)
-#'         
-#' }      
+#'
+#' if (FALSE) {
+#'   data(bw_vignette_fit)
+#'   brmViolin(
+#'     model = bw_vignette_fit, params = NULL,
+#'     hyp = "num/denom>1.05", compareX = c("0.B73", "50.B73", "100.B73"), againstY = "0.B73",
+#'     group_sep = "[.]", groups_into = c("soil", "genotype"), x = "soil", facet = "genotype",
+#'     returnData = FALSE
+#'   )
+#' }
 #' ## End(Not run)
-#' 
+#'
 #' @return Returns a ggplot showing a brms model's posterior distributions
 #' as violins and filled by posterior probability of some hypothesis.
-#' 
+#'
 #' @export
 
-brmViolin<-function(model, params=NULL,hyp="num/denom>1.05", compareX=NULL, againstY=NULL,
-                    group_sep="[.]", groups_into = c(), x=NULL, facet=NULL,
-                    cores=getOption("mc.cores",1), returnData = FALSE){
-  #* Example Args for testing
-
-  # setwd("/home/jsumner/Desktop/stargate/SINC/SINC2/statisticalAnalysis")
-  # print(load("brmsModels/soil0_areaModel.rdata"))
-  # print(load("brmsModels/soil50_areaModel.rdata"))
-  # print(load("brmsModels/soil100_areaModel.rdata"))
-  # model = list(s0_gompertz_area, s50_gompertz_area, s100_gompertz_area);params = NULL; cores = getOption("mc.cores",1)
-  # hyp="num/denom>1.05"; compareX = c("0.drip", "0.mock", "0.slurry"); againstY = "0.mock"; group_sep = "[.]"
-  # groups_into = c("soil", "inoc"); x="inoc"; facet="soil"
-  
-  #* parse arguments
-  compareFew=FALSE
-  if(!is.null(compareX) & !is.null(againstY)){
-    compareFew=TRUE
-    if(!againstY %in% compareX){compareX<-c(compareX, againstY)} # make sure all violins will be filled if both are provided
-  }
-  
-  if( any(unlist(lapply(model,class))!="brmsfit") ){ # if only one brmsfit is given then make a list of itself
-    model=list(model)
-  }
-  
-  if(is.null(params)){ # if params aren't given then grab all
-    nlPars<-names(model[[1]]$formula$pforms)
-    params<-nlPars[-which(grepl("sigma",nlPars))]
-  }
-  
-  if(is.null(group_sep) | is.null(groups_into)){
-    useGroups=FALSE
-  } else {useGroups=TRUE}
-  
-  #* internals
-  
-  draws<-do.call(cbind, lapply(model, function(mod){ # extract draws for relevant parameters
-    mdf<-as.data.frame(mod[["fit"]])
-    colPattern<-paste0("^b_[", paste0(params,collapse="|"),"]")
-    mdf<-mdf[ ,grepl(colPattern, colnames(mdf))]
-    colnames(mdf)<-sub("^b_", "", colnames(mdf))
+brmViolin <- function(model, params = NULL, hyp = "num/denom>1.05", compareX = NULL, againstY = NULL,
+                      group_sep = "[.]", groups_into = c(), x = NULL, facet = NULL,
+                      cores = getOption("mc.cores", 1), returnData = FALSE) {
+  #* `parse arguments`
+  brmViolinParseArgumentsRes <- .brmViolinParseArguments(
+    compareX, againstY,
+    model, params, group_sep,
+    groups_into
+  )
+  compareFew <- brmViolinParseArgumentsRes[["compareFew"]]
+  compareX <- brmViolinParseArgumentsRes[["compareX"]]
+  model <- brmViolinParseArgumentsRes[["model"]]
+  params <- brmViolinParseArgumentsRes[["params"]]
+  useGroups <- brmViolinParseArgumentsRes[["useGroups"]]
+  #* `get draws`
+  draws <- do.call(cbind, lapply(model, function(mod) { # extract draws for relevant parameters
+    mdf <- as.data.frame(mod[["fit"]])
+    colPattern <- paste0("^b_[", paste0(params, collapse = "|"), "]")
+    mdf <- mdf[, grepl(colPattern, colnames(mdf))]
+    colnames(mdf) <- sub("^b_", "", colnames(mdf))
     mdf
   }))
-  
-  #* take "grouping" string from formula (pform) and using that with the parameter names I can find groups for any models?
-  #* For models fit with only one group of many from data this would fail, I'll need another option for that.
+  #* take "grouping" string from formula (pform) and using that with the parameter names I can find
+  #* groups for any models?
+  #* For models fit with only one group of many from data this would fail, I'll need another option
+  #* for that.
   #* probably fine to build this out first then think about how that edge case works.
-  
-  group_string<-trimws(strsplit(as.character(model[[1]]$formula$pforms[[params[1]]])[3], "[+]")[[1]])[2]
-  
-  groupings<-unique(sub(paste0(".*",group_string),"",colnames(draws)))
-  p1<-combn(groupings, 2, simplify=FALSE)
-  p2<-lapply(p1,rev)
-  p3<-lapply(unique(groupings), function(g) c(g,g))
-  comparisons = c(p1,p2,p3)
-  if(compareFew){
-    comparisons<-comparisons[unlist(lapply(comparisons, function(comp) comp[1] %in% compareX & comp[2]==againstY  ))]
+  group_string <- trimws(
+    strsplit(
+      as.character(model[[1]]$formula$pforms[[params[1]]])[3], "[+]"
+    )[[1]]
+  )[2]
+
+  groupings <- unique(sub(paste0(".*", group_string), "", colnames(draws)))
+  p1 <- combn(groupings, 2, simplify = FALSE)
+  p2 <- lapply(p1, rev)
+  p3 <- lapply(unique(groupings), function(g) c(g, g))
+  comparisons <- c(p1, p2, p3)
+  if (compareFew) {
+    comparisons <- comparisons[unlist(lapply(comparisons, function(comp) {
+      comp[1] %in% compareX & comp[2] == againstY
+    }))]
   }
-  # this could do the subsetting before actually testing hypotheses, but I like the idea of returning all hypotheses?
-  
-  colnames(draws)<-sub(group_string, "",colnames(draws))
-  
-  hyps_df<-do.call(rbind, lapply(params, function(param){
-    param_df<-do.call(rbind, parallel::mclapply(comparisons, function(comp){
-      num = paste(param, comp[1], sep="_")
-      denom = paste(param, comp[2], sep="_")
-      temp<-draws
-      temp$num = temp[[num]]
-      temp$denom = temp[[denom]]
-      x<-as.data.frame(brms::hypothesis(temp, paste0(hyp))$h)
-      x$param = param
-      x$num = sub("grouping","",comp[1])
-      x$denom = sub("grouping","",comp[2])
-      x[,c("Post.Prob", "param", "num", "denom")]
-    }, mc.cores=cores))
+
+  colnames(draws) <- sub(group_string, "", colnames(draws))
+
+  hyps_df <- do.call(rbind, lapply(params, function(param) {
+    param_df <- do.call(rbind, parallel::mclapply(comparisons, function(comp) {
+      num <- paste(param, comp[1], sep = "_")
+      denom <- paste(param, comp[2], sep = "_")
+      temp <- draws
+      temp$num <- temp[[num]]
+      temp$denom <- temp[[denom]]
+      x <- as.data.frame(brms::hypothesis(temp, paste0(hyp))$h)
+      x$param <- param
+      x$num <- sub("grouping", "", comp[1])
+      x$denom <- sub("grouping", "", comp[2])
+      x[, c("Post.Prob", "param", "num", "denom")]
+    }, mc.cores = cores))
     param_df
   }))
-  
-  hyps_df$discrete_post_prob<-factor(ifelse(hyps_df$Post.Prob >= 0.99, "A",
-                                     ifelse(hyps_df$Post.Prob >= 0.95, "B",
-                                     ifelse(hyps_df$Post.Prob >= 0.85, "C",
-                                     ifelse(hyps_df$Post.Prob >= 0.75, "D", "E")))),
-                                     levels=c("A","B","C","D","E"),ordered=TRUE)
-  
-  longdraw<-as.data.frame(data.table::melt(data.table::as.data.table(draws), measure.vars = colnames(draws), value.name="draw"))
-  longdraw$param <- substr(longdraw$variable, 1,1)
-  longdraw$group <- sub(paste0("[", paste0(params,collapse="|"), "]_"), "", longdraw$variable)
-  if(useGroups){
-    group_meta<-do.call(rbind, parallel::mclapply(longdraw$group,
-                                                  function(g) setNames(data.frame(t(strsplit(g, group_sep)[[1]])),
-                                                                       groups_into), mc.cores=cores))
-    for(col in groups_into){
-      if(suppressWarnings(any(is.na(as.numeric(group_meta[[col]]))))){
+
+  hyps_df$discrete_post_prob <- factor(
+    ifelse(hyps_df$Post.Prob >= 0.99, "A",
+      ifelse(hyps_df$Post.Prob >= 0.95, "B",
+        ifelse(hyps_df$Post.Prob >= 0.85, "C",
+          ifelse(hyps_df$Post.Prob >= 0.75, "D", "E")
+        )
+      )
+    ),
+    levels = c("A", "B", "C", "D", "E"), ordered = TRUE
+  )
+
+  longdraw <- as.data.frame(data.table::melt(data.table::as.data.table(draws),
+    measure.vars = colnames(draws), value.name = "draw"
+  ))
+  longdraw$param <- substr(longdraw$variable, 1, 1)
+  longdraw$group <- sub(paste0("[", paste0(params, collapse = "|"), "]_"), "", longdraw$variable)
+  if (useGroups) {
+    group_meta <- do.call(rbind, parallel::mclapply(longdraw$group,
+      function(g) {
+        setNames(
+          data.frame(t(strsplit(g, group_sep)[[1]])),
+          groups_into
+        )
+      },
+      mc.cores = cores
+    ))
+    for (col in groups_into) {
+      if (suppressWarnings(any(is.na(as.numeric(group_meta[[col]]))))) {
         group_meta[[col]] <- factor(group_meta[[col]])
-      }else{
-        group_meta[[col]] <- factor(group_meta[[col]], levels= sort(as.numeric(unique(group_meta[[col]]))), ordered=TRUE)
+      } else {
+        group_meta[[col]] <- factor(group_meta[[col]],
+          levels = sort(as.numeric(unique(group_meta[[col]]))),
+          ordered = TRUE
+        )
       }
     }
-    
-    longdraw<-cbind(longdraw, group_meta)
+
+    longdraw <- cbind(longdraw, group_meta)
   }
-  ldj<-merge(longdraw, hyps_df, by.x=c("group", "param"), by.y=c("num", "param"))
-  
-  if(!compareFew){ return(ldj) }
-  
-  virPal<-unlist(lapply(c(1, 0.9, 0.75, 0.5, 0.25), function(i) viridis::plasma(1,1,i) ))
-  
+  ldj <- merge(longdraw, hyps_df, by.x = c("group", "param"), by.y = c("num", "param"))
+
+  if (!compareFew) {
+    return(ldj)
+  }
+
+  virPal <- unlist(lapply(c(1, 0.9, 0.75, 0.5, 0.25), function(i) viridis::plasma(1, 1, i)))
+
   # still need to separate "grouping" into x and y variables.
-  
-  if(is.null(facet)){
-    facet_layer=ggplot2::facet_wrap(~param, scales="free_y") } else{
-    facet_layer=ggplot2::facet_grid(as.formula(paste0("param~", facet)), scales="free_y") }
-  
-  violinPlot<-ggplot2::ggplot(ldj, ggplot2::aes(x=.data[[x]], y=.data[['draw']], fill=.data[['discrete_post_prob']]))+
-    facet_layer+
-    ggplot2::geom_violin()+
+
+  if (is.null(facet)) {
+    facet_layer <- ggplot2::facet_wrap(~param, scales = "free_y")
+  } else {
+    facet_layer <- ggplot2::facet_grid(as.formula(paste0("param~", facet)), scales = "free_y")
+  }
+
+  violinPlot <- ggplot2::ggplot(ldj, ggplot2::aes(
+    x = .data[[x]], y = .data[["draw"]],
+    fill = .data[["discrete_post_prob"]]
+  )) +
+    facet_layer +
+    ggplot2::geom_violin() +
     lapply(unique(ldj$param), function(p) {
-      x<-data.frame(param = p, mean = mean(ldj[ldj$param==p & ldj$group==ldj$denom, "draw"]))
-      ggplot2::geom_hline(data=x, ggplot2::aes(yintercept = mean), linetype=5, linewidth=0.5)
-    })+
-    ggplot2::scale_fill_manual(values = virPal,breaks=c("A","B","C","D","E"),
-                      labels = c(">99%", ">95%", ">85%", ">75%", "<75%"),drop=FALSE)+
-    ggplot2::labs(y="Posterior Distribution", x=x, fill="Discrete Posterior Probability")+
-    pcv_theme()+
-    ggplot2::theme(legend.position="bottom", axis.text.x.bottom = ggplot2::element_text(angle=0,hjust=0.5),
-          panel.border = ggplot2::element_rect(fill=NA))
-  if(returnData){
+      x <- data.frame(param = p, mean = mean(ldj[ldj$param == p & ldj$group == ldj$denom, "draw"]))
+      ggplot2::geom_hline(data = x, ggplot2::aes(yintercept = mean), linetype = 5, linewidth = 0.5)
+    }) +
+    ggplot2::scale_fill_manual(
+      values = virPal, breaks = c("A", "B", "C", "D", "E"),
+      labels = c(">99%", ">95%", ">85%", ">75%", "<75%"), drop = FALSE
+    ) +
+    ggplot2::labs(y = "Posterior Distribution", x = x, fill = "Discrete Posterior Probability") +
+    pcv_theme() +
+    ggplot2::theme(
+      legend.position = "bottom", axis.text.x.bottom = ggplot2::element_text(angle = 0, hjust = 0.5),
+      panel.border = ggplot2::element_rect(fill = NA)
+    )
+  if (returnData) {
     return(list(violinPlot, ldj))
-  } else {return(violinPlot)}
+  } else {
+    return(violinPlot)
+  }
+}
+
+
+.brmViolinParseArguments <- function(compareX, againstY, model, params, group_sep, groups_into) {
+  compareFew <- FALSE
+  if (!is.null(compareX) && !is.null(againstY)) {
+    compareFew <- TRUE
+    if (!againstY %in% compareX) {
+      compareX <- c(compareX, againstY)
+    } # make sure all violins will be filled if both are provided
+  }
+
+  if (any(unlist(lapply(model, class)) != "brmsfit")) {
+    # if only one brmsfit is given then make a list of itself
+    model <- list(model)
+  }
+
+  if (is.null(params)) { # if params aren't given then grab all
+    nlPars <- names(model[[1]]$formula$pforms)
+    params <- nlPars[-which(grepl("sigma", nlPars))]
+  }
+
+  if (is.null(group_sep) || is.null(groups_into)) {
+    useGroups <- FALSE
+  } else {
+    useGroups <- TRUE
+  }
+  return(list(
+    "compareFew" = compareFew,
+    "compareX" = compareX,
+    "model" = model,
+    "params" = params,
+    "useGroups" = useGroups
+  ))
 }

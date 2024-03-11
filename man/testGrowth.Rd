@@ -12,19 +12,20 @@ in \code{brms::hypothesis} style as a written statement.}
 
 \item{fit}{A non-brms model (or list of nlrq models) output from \link{fitGrowth}.}
 
-\item{test}{A description of the hypothesis to test. This can take two main forms, either the parameter names
-to vary before comparing a nested model ("A", "B", "C") using an anova or a hypothesis test/list of hypothesis tests 
-written as character strings. The latter method is not implemented for \code{nlrq} models.
-If this is a vector of parameters to test in the model then they should be parameters which
-vary by group in your original model and that you want to test against a null model where they
-do not vary by group. Alternatively for nlrq models this can be a comparison of model terms
-written as \code{"group_X|tau|par - group_Y|tau|par"}, which uses a fat tailed T distribution to make 
+\item{test}{A description of the hypothesis to test. This can take two main forms,
+either the parameter names to vary before comparing a nested model ("A", "B", "C") using an anova
+or a hypothesis test/list of hypothesis tests written as character strings.
+The latter method is not implemented for \code{nlrq} models. If this is a vector of parameters
+to test in the model then they should be parameters which vary by group in your original model
+and that you want to test against a null model where they do not vary by group.
+Alternatively for nlrq models this can be a comparison of model terms
+written as \code{"group_X|tau|par - group_Y|tau|par"}, which uses a fat tailed T distribution to make
 comparisons on the means of each quantile estimate. For GAMs these tests compare the model with
 splines either by group or interacting with group to a model that ignores the grouping in the data.
-If this is a list of hypothesis tests then they should describe tests similar to "A.group1 - A.group2*1.1" 
-and can be thought of as contrasts. Note that for survreg the \code{survival::survdiff}
-function is used so fewer hypothesis testing options are available and flexsurv models are tested using
-contrasts via \code{flexsurv::standsurv}.}
+If this is a list of hypothesis tests then they should describe tests similar to
+"A.group1 - A.group2*1.1" and can be thought of as contrasts.
+Note that for survreg the \code{survival::survdiff} function is used so fewer hypothesis testing
+options are available and flexsurv models are tested using contrasts via \code{flexsurv::standsurv}.}
 }
 \value{
 A list containing an anova object comparing non-linear growth models and the null model.
@@ -34,17 +35,21 @@ Hypothesis testing for frequentist \code{fitGrowth} models.
 }
 \details{
 For nls and nlme models an anova is run and returned as part of a list along with the null model.
- For nlrq models several assumptions are made and a likelihood ratio test for each tau 
+ For nlrq models several assumptions are made and a likelihood ratio test for each tau
  is run and returned as a list.
 }
 \examples{
 
 ## Not run:
 set.seed(123)
-simdf<-growthSim("logistic", n=20, t=25,
-   params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))
-ss<-suppressMessages(growthSS(model = "logistic", form=y~time|id/group,
-  df=simdf, type="nlrq"))
+simdf <- growthSim("logistic",
+  n = 20, t = 25,
+  params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
+)
+ss <- suppressMessages(growthSS(
+  model = "logistic", form = y ~ time | id / group,
+  df = simdf, type = "nlrq"
+))
 fit <- fitGrowth(ss)
 testGrowth(ss, fit, "A")
 

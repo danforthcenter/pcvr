@@ -13,14 +13,15 @@ checkGroups(df, group)
 These taken together should identify a unique plant (or unique plant at a unique angle) across time.}
 }
 \value{
-If there are duplicates in the grouping then this will return a message with code to start checking the duplicates in your data.
+If there are duplicates in the grouping then this will return a message with code to start
+checking the duplicates in your data.
 }
 \description{
 Helper function to check groups in data.
 }
 \examples{
 
-if(FALSE){ 
+if (FALSE) {
   checkGroups(sv, c("DAS", "barcode", "rotation", "genotype", "fertilizer"))
 }
 }

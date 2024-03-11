@@ -19,7 +19,8 @@ Format as list("trait in area, perimeter", "other in value")}
 \item{...}{further arguments passed from \code{read.pcv}.}
 }
 \value{
-Returns a dataframe after subsetting happens outside of R using the awk statement from \code{awkHelper}.
+Returns a dataframe after subsetting happens outside of R using the awk statement from
+\code{awkHelper}.
 }
 \description{
 reader function called within read.pcv when large data is used

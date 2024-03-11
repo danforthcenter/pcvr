@@ -36,7 +36,7 @@ issued but the model will still attempt to fit.}
 This defaults to use "cmdstanr".}
 
 \item{silent}{Passed to \code{brms::brm} to control verbosity.
-This defaults to 0, the most verbose option so that messages and progress are printed. 
+This defaults to 0, the most verbose option so that messages and progress are printed.
 With changes to \code{cmdstanr} and \code{brms} this may be removed, but the option
 will be available through \code{...}. Note that this is likely to print lots of
 messages during warmup iterations as the MCMC gets started.}

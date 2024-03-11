@@ -25,14 +25,15 @@ If a multi value trait is used then column names should include a number represe
 
 \item{method}{The distribution/method to use.
 Currently "t", "gaussian", "beta", "lognormal", "poisson", and "negbin" (negative binomial).
-are supported. The count distributions (poisson and negative binomial) 
-are only implemented for single value traits. 
+are supported. The count distributions (poisson and negative binomial)
+are only implemented for single value traits.
 The "t" and "gaussian" methods both use a T distribution with "t" testing for a difference
  of means and "gaussian" testing for a difference in the distributions (similar to a Z test).}
 
 \item{priors}{Prior distributions described as a list of lists.
-If this is a single list then it will be duplicated for the second sample, which is generally a good idea if both
-samples use the same distribution (method). 
+If this is a single list then it will be duplicated for the second sample,
+which is generally a good idea if both
+samples use the same distribution (method).
 Elements in the inner lists should be named for the parameter they represent (see examples).
 These names vary by method (see details).
  By default this is NULL and weak priors (jeffrey's prior where appropriate) are used.
@@ -53,7 +54,7 @@ and \url{https://doi.org/10.1177/251524591877130}.}
 
 \item{rope_ci}{The credible interval probability to use for ROPE. Defaults to 0.89.}
 
-\item{cred.int.level}{The credible interval probability to use 
+\item{cred.int.level}{The credible interval probability to use
 in computing HDI for samples, defaults to 0.89.}
 
 \item{hypothesis}{Direction of a hypothesis if two samples are provided.
@@ -62,236 +63,302 @@ Options are "unequal", "equal", "greater", and "lesser",
 
 \item{support}{Optional support vector to include all possible values the random variable
 (samples) might take. This defaults to NULL in which case each method will use default
-behavior to attempt to calculate a dense support, but it is a good idea to supply this 
+behavior to attempt to calculate a dense support, but it is a good idea to supply this
 with some suitable vector. For example, the Beta method uses \code{seq(0.0001, 0.9999, 0.0001)}
 for support.}
 }
 \value{
 A list with named elements:
 \itemize{
-   \item{\strong{summary}: A data frame containing HDI/HDE values for each sample and 
+   \item{\strong{summary}: A data frame containing HDI/HDE values for each sample and
    the ROPE as well as posterior probability of the hypothesis.}
    \item{\strong{posterior}: A list of updated parameters in the same format as the prior
     for the given method. If desired this does allow for Bayesian updating.}
    \item{\strong{plot_df}: A data frame of probabilities along the support for each sample.
     This is used for making the ggplot.}
    \item{\strong{rope_df}: A data frame of draws from the ROPE posterior.}
-   \item{\strong{plot}: A ggplot showing the distribution of samples and optionally the 
+   \item{\strong{plot}: A ggplot showing the distribution of samples and optionally the
    distribution of differences/ROPE}
 }
 }
 \description{
-Function to perform bayesian tests and ROPE comparisons using single or multi value traits with several distributions.
+Function to perform bayesian tests and ROPE comparisons using single or multi value traits with
+several distributions.
 }
 \details{
-Prior distributions default to be weakly informative and in some cases you may wish to change them. 
+Prior distributions default to be weakly informative and in some cases you may wish to change them.
 \itemize{
    \item{\strong{"t" and "gaussian":} \code{priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ) },
     where mu is the mean, n is the number of prior observations, and s2 is variance}
    \item{\strong{"beta":} \code{priors = list( a=c(0.5, 0.5), b=c(0.5, 0.5) )},
     where a and b are shape parameters of the beta distribution.}
-   \item{\strong{"lognormal": } \code{priors = list( mu_log=c(log(10),log(10)),n=c(1,1),sigma_log=c(log(3),log(3)) ) },
-    where mu_log is the mean on log scale, n is the number of prior observations, and sigma_log is the
-    standard deviation on log scale }
+   \item{\strong{"lognormal": } \code{priors = list( mu_log=c(log(10),log(10)),n=c(1,1),
+   sigma_log=c(log(3),log(3)) ) },
+   where mu_log is the mean on log scale, n is the number of prior observations,
+   and sigma_log is the
+   standard deviation on log scale }
    \item{\strong{"poisson": } \code{priors = list(a=c(0.5,0.5),b=c(0.5,0.5))},
     where a and b are shape parameters of the gamma distribution.}
    \item{\strong{"negbin": } \code{priors = list(r=c(10,10), a=c(0.5,0.5),b=c(0.5,0.5))},
-    where r is the r parameter of the negative binomial distribution (representing the number of successes required)
-     and where a and b are shape parameters of the beta distribution. Note that the r value is not updated.
-      The conjugate beta prior is only valid when r is fixed and known, which is a limitation for this method.}
-   
+    where r is the r parameter of the negative binomial distribution
+    (representing the number of successes required)
+     and where a and b are shape parameters of the beta distribution.
+     Note that the r value is not updated.
+      The conjugate beta prior is only valid when r is fixed and known,
+      which is a limitation for this method.}
 }
 
 See examples for plots of these prior distributions.
 }
 \examples{
-mv_ln<- mvSim(
- dists = list(rlnorm = list(meanlog=log(130), sdlog=log(1.2)),
-              rlnorm = list(meanlog=log(100), sdlog=log(1.3))),
- n_samples = 30 )
-             
+mv_ln <- mvSim(
+  dists = list(
+    rlnorm = list(meanlog = log(130), sdlog = log(1.2)),
+    rlnorm = list(meanlog = log(100), sdlog = log(1.3))
+  ),
+  n_samples = 30
+)
+
 # lognormal mv
-ln_mv_ex <- conjugate(s1 = mv_ln[1:30, -1], s2= mv_ln[31:60, -1], method = "lognormal",
-                   priors = list( mu_log=log(10),n=1, sigma_log=log(3) ),
-                   plot=FALSE, rope_range = c(-40,40), rope_ci = 0.89,
-                   cred.int.level = 0.89, hypothesis="equal", support=NULL)
+ln_mv_ex <- conjugate(
+  s1 = mv_ln[1:30, -1], s2 = mv_ln[31:60, -1], method = "lognormal",
+  priors = list(mu_log = log(10), n = 1, sigma_log = log(3)),
+  plot = FALSE, rope_range = c(-40, 40), rope_ci = 0.89,
+  cred.int.level = 0.89, hypothesis = "equal", support = NULL
+)
 
 # lognormal sv
-ln_sv_ex <- conjugate(s1=rlnorm(100, log(130), log(1.3)), s2= rlnorm(100, log(100), log(1.6)),
- method = "lognormal",
-                   priors = list( mu_log=log(10),n=1,sigma_log=log(3) ),
-                   plot=FALSE, rope_range = NULL, rope_ci = 0.89, 
-                   cred.int.level = 0.89, hypothesis="equal", support=NULL)
+ln_sv_ex <- conjugate(
+  s1 = rlnorm(100, log(130), log(1.3)), s2 = rlnorm(100, log(100), log(1.6)),
+  method = "lognormal",
+  priors = list(mu_log = log(10), n = 1, sigma_log = log(3)),
+  plot = FALSE, rope_range = NULL, rope_ci = 0.89,
+  cred.int.level = 0.89, hypothesis = "equal", support = NULL
+)
 
 # Z test mv example
 
-mv_gauss<- mvSim(
- dists = list(rnorm = list(mean = 50, sd = 10),
-              rnorm = list(mean = 60, sd=12)),
- n_samples = 30 )
-                
-gauss_mv_ex <- conjugate(s1=mv_gauss[1:30,-1], s2= mv_gauss[31:60,-1], method = "gaussian",
-                  priors = list( mu=30, n=1,s2=100 ),
-                  plot=FALSE, rope_range = c(-25, 25), rope_ci = 0.89,
-                  cred.int.level = 0.89, hypothesis="equal", support=NULL)
-                  
+mv_gauss <- mvSim(
+  dists = list(
+    rnorm = list(mean = 50, sd = 10),
+    rnorm = list(mean = 60, sd = 12)
+  ),
+  n_samples = 30
+)
+
+gauss_mv_ex <- conjugate(
+  s1 = mv_gauss[1:30, -1], s2 = mv_gauss[31:60, -1], method = "gaussian",
+  priors = list(mu = 30, n = 1, s2 = 100),
+  plot = FALSE, rope_range = c(-25, 25), rope_ci = 0.89,
+  cred.int.level = 0.89, hypothesis = "equal", support = NULL
+)
+
 # Z test sv example
 set.seed(123)
-gauss_sv_ex_bad <- conjugate(s1=rnorm(15, 50,10), s2= rnorm(15, 60,12), method = "gaussian",
-                  priors = list( mu=30, n=1,s2=100 ),
-                  plot=FALSE, rope_range = c(-10, 10), rope_ci = 0.89, 
-                  cred.int.level = 0.89, hypothesis="equal", support=NULL)
-                  
+gauss_sv_ex_bad <- conjugate(
+  s1 = rnorm(15, 50, 10), s2 = rnorm(15, 60, 12), method = "gaussian",
+  priors = list(mu = 30, n = 1, s2 = 100),
+  plot = FALSE, rope_range = c(-10, 10), rope_ci = 0.89,
+  cred.int.level = 0.89, hypothesis = "equal", support = NULL
+)
+
 # Here the plot clearly shows we have a problem with the default support, so we specify one
-# naturally the longer the support vector the more time this takes, but supports below 100k length 
+# naturally the longer the support vector the more time this takes, but supports below 100k length
 # tend to be reasonably fast.
 
-gauss_sv_ex <- conjugate(s1=rnorm(15, 50,10), s2= rnorm(15, 60,12), method = "gaussian",
-                  priors = list( mu=30, n=1,s2=100 ),
-                  plot=FALSE, rope_range = c(-10, 10), rope_ci = 0.89, 
-                  cred.int.level = 0.89, hypothesis="equal", support=seq(-20,120, 0.01))
+gauss_sv_ex <- conjugate(
+  s1 = rnorm(15, 50, 10), s2 = rnorm(15, 60, 12), method = "gaussian",
+  priors = list(mu = 30, n = 1, s2 = 100),
+  plot = FALSE, rope_range = c(-10, 10), rope_ci = 0.89,
+  cred.int.level = 0.89, hypothesis = "equal", support = seq(-20, 120, 0.01)
+)
 # Note that the ROPE probability is somewhat unstable here since the distribution of differences
 # is much wider than the ROPE interval.
 
-# T test mv example 
+# T test mv example
 
-mv_gauss<- mvSim(
- dists = list(rnorm = list(mean = 50, sd = 10),
-              rnorm = list(mean = 60, sd=12)),
- n_samples = 30 )
+mv_gauss <- mvSim(
+  dists = list(
+    rnorm = list(mean = 50, sd = 10),
+    rnorm = list(mean = 60, sd = 12)
+  ),
+  n_samples = 30
+)
 
-gaussianMeans_mv_ex <- conjugate(s1=mv_gauss[1:30, -1], s2= mv_gauss[31:60, -1], method="t",
-                        priors = list( mu=30, n=1,s2=100 ),
-                        plot=FALSE, rope_range = c(-5,5), rope_ci = 0.89, 
-                        cred.int.level = 0.89, hypothesis="equal", support=NULL)
-                        
-                        
+gaussianMeans_mv_ex <- conjugate(
+  s1 = mv_gauss[1:30, -1], s2 = mv_gauss[31:60, -1], method = "t",
+  priors = list(mu = 30, n = 1, s2 = 100),
+  plot = FALSE, rope_range = c(-5, 5), rope_ci = 0.89,
+  cred.int.level = 0.89, hypothesis = "equal", support = NULL
+)
+
+
 # T test sv example
 
-gaussianMeans_sv_ex <- conjugate(s1=rnorm(10, 50,10), s2= rnorm(10, 60,12), method="t",
-                        priors = list( mu=30, n=1,s2=100 ),
-                        plot=FALSE, rope_range = c(-5,8), rope_ci = 0.89, 
-                        cred.int.level = 0.89, hypothesis="equal", support=NULL)
-
-
+gaussianMeans_sv_ex <- conjugate(
+  s1 = rnorm(10, 50, 10), s2 = rnorm(10, 60, 12), method = "t",
+  priors = list(mu = 30, n = 1, s2 = 100),
+  plot = FALSE, rope_range = c(-5, 8), rope_ci = 0.89,
+  cred.int.level = 0.89, hypothesis = "equal", support = NULL
+)
 
 # beta mv example
 
 set.seed(123)
-mv_beta<- mvSim(
-  dists = list(rbeta = list(shape1=5, shape2=8),
-               rbeta = list(shape1=10, shape2=10)),
-  n_samples = c(30,20))
+mv_beta <- mvSim(
+  dists = list(
+    rbeta = list(shape1 = 5, shape2 = 8),
+    rbeta = list(shape1 = 10, shape2 = 10)
+  ),
+  n_samples = c(30, 20)
+)
 
-beta_mv_ex <- conjugate(s1 = mv_beta[1:30, -1], s2= mv_beta[31:50, -1], method="beta",
-              priors = list(a=0.5, b=0.5),
-              plot=FALSE, rope_range = c(-0.1, 0.1), rope_ci = 0.89, 
-              cred.int.level = 0.89, hypothesis="equal")
+beta_mv_ex <- conjugate(
+  s1 = mv_beta[1:30, -1], s2 = mv_beta[31:50, -1], method = "beta",
+  priors = list(a = 0.5, b = 0.5),
+  plot = FALSE, rope_range = c(-0.1, 0.1), rope_ci = 0.89,
+  cred.int.level = 0.89, hypothesis = "equal"
+)
 
 # beta sv example
 
-beta_sv_ex <- conjugate(s1 = rbeta(20, 5, 5), s2= rbeta(20, 8, 5), method="beta",
-              priors = list(a=0.5, b=0.5),
-              plot=FALSE, rope_range = c(-0.1, 0.1), rope_ci = 0.89, 
-              cred.int.level = 0.89, hypothesis="equal")
+beta_sv_ex <- conjugate(
+  s1 = rbeta(20, 5, 5), s2 = rbeta(20, 8, 5), method = "beta",
+  priors = list(a = 0.5, b = 0.5),
+  plot = FALSE, rope_range = c(-0.1, 0.1), rope_ci = 0.89,
+  cred.int.level = 0.89, hypothesis = "equal"
+)
 
 # poisson sv example
 
-poisson_sv_ex <- conjugate(s1 = rpois(20, 10), s2= rpois(20, 8), method="poisson",
-              priors = list(a=0.5, b=0.5),
-              plot=FALSE, rope_range = c(-1, 1), rope_ci = 0.89, 
-              cred.int.level = 0.89, hypothesis="equal")
+poisson_sv_ex <- conjugate(
+  s1 = rpois(20, 10), s2 = rpois(20, 8), method = "poisson",
+  priors = list(a = 0.5, b = 0.5),
+  plot = FALSE, rope_range = c(-1, 1), rope_ci = 0.89,
+  cred.int.level = 0.89, hypothesis = "equal"
+)
 
 # negative binomial sv example
 # knowing r (required number of successes) is an important caveat for this method.
 # in the current implementation we suggest using the poisson method for data such as leaf counts
 
-negbin_sv_ex <- conjugate(s1 = rnbinom(20, 10, 0.5), s2= rnbinom(20, 10, 0.25), method="negbin",
-              priors = list(r = 10, a=0.5,b=0.5),
-              plot=FALSE, rope_range = c(-1, 1), rope_ci = 0.89, 
-              cred.int.level = 0.89, hypothesis="equal")
-
-      
-
+negbin_sv_ex <- conjugate(
+  s1 = rnbinom(20, 10, 0.5), s2 = rnbinom(20, 10, 0.25), method = "negbin",
+  priors = list(r = 10, a = 0.5, b = 0.5),
+  plot = FALSE, rope_range = c(-1, 1), rope_ci = 0.89,
+  cred.int.level = 0.89, hypothesis = "equal"
+)
 
 # Example usage with plantCV data
 ## Not run:
-if(FALSE){
-library(data.table)
-wide<-read.pcv(
- paste0("https://media.githubusercontent.com/media/joshqsumner/",
- "pcvrTestData/main/pcv4-multi-value-traits.csv"), reader="fread", mode = "wide")
- 
-wide$genotype = substr(wide$barcode, 3,5)
-wide$genotype = ifelse(wide$genotype == "002", "B73",
-                       ifelse(wide$genotype == "003", "W605S",
-                              ifelse(wide$genotype == "004", "MM", "Mo17")))
-wide$fertilizer = substr(wide$barcode, 8, 8)
-wide$fertilizer = ifelse(wide$fertilizer == "A", "100",
-                         ifelse(wide$fertilizer == "B", "50", "0"))
-wide<-bw.time(wide,timeCol="timestamp", group="barcode")
+if (FALSE) {
+  library(data.table)
+  wide <- read.pcv(
+    paste0(
+      "https://media.githubusercontent.com/media/joshqsumner/",
+      "pcvrTestData/main/pcv4-multi-value-traits.csv"
+    ),
+    reader = "fread", mode = "wide"
+  )
 
-mo17_sample <- wide[wide$genotype=="Mo17" &
-                    wide$DAS > 18 &
-                    wide$fertilizer == 100,
-                    grepl("hue_freq", colnames(wide))]
-B73_sample <- wide[wide$genotype=="B73" &
-                   wide$DAS > 18 &
-                   wide$fertilizer == 100,
-                   grepl("hue_freq", colnames(wide))]
+  wide$genotype <- substr(wide$barcode, 3, 5)
+  wide$genotype <- ifelse(wide$genotype == "002", "B73",
+    ifelse(wide$genotype == "003", "W605S",
+      ifelse(wide$genotype == "004", "MM", "Mo17")
+    )
+  )
+  wide$fertilizer <- substr(wide$barcode, 8, 8)
+  wide$fertilizer <- ifelse(wide$fertilizer == "A", "100",
+    ifelse(wide$fertilizer == "B", "50", "0")
+  )
+  wide <- bw.time(wide, timeCol = "timestamp", group = "barcode")
 
-hue_res_t <- conjugate(s1 = mo17_sample, s2= B73_sample, method="t",
-              priors = list( mu=50,n=1,s2=100 ),
-              plot=TRUE, rope_range = c(-10,10), rope_ci = 0.89, 
-              cred.int.level = 0.89, hypothesis="equal")
-              
-hue_res_ln <- conjugate(s1 = mo17_sample, s2= B73_sample, method="lognormal",
-              plot=TRUE, rope_range = c(-10,10), rope_ci = 0.89, 
-              cred.int.level = 0.89, hypothesis="equal")
-# Picking the right distribution makes a difference,
-# checking plots of your data (see ?pcv.joyplot for mv traits)
-# will be useful.
+  mo17_sample <- wide[
+    wide$genotype == "Mo17" &
+      wide$DAS > 18 &
+      wide$fertilizer == 100,
+    grepl("hue_freq", colnames(wide))
+  ]
+  B73_sample <- wide[
+    wide$genotype == "B73" &
+      wide$DAS > 18 &
+      wide$fertilizer == 100,
+    grepl("hue_freq", colnames(wide))
+  ]
 
-sv<-read.pcv(
- paste0("https://raw.githubusercontent.com/joshqsumner/",
- "pcvrTestData/main/pcv4-single-value-traits.csv"), reader="fread", mode = "wide")
- 
-sv$genotype = substr(sv$barcode, 3,5)
-sv$genotype = ifelse(sv$genotype == "002", "B73",
-                       ifelse(sv$genotype == "003", "W605S",
-                              ifelse(sv$genotype == "004", "MM", "Mo17")))
-sv$fertilizer = substr(sv$barcode, 8, 8)
-sv$fertilizer = ifelse(sv$fertilizer == "A", "100",
-                         ifelse(sv$fertilizer == "B", "50", "0"))
-                         
-sv<-bw.time(sv,timeCol="timestamp", group="barcode")
+  hue_res_t <- conjugate(
+    s1 = mo17_sample, s2 = B73_sample, method = "t",
+    priors = list(mu = 50, n = 1, s2 = 100),
+    plot = TRUE, rope_range = c(-10, 10), rope_ci = 0.89,
+    cred.int.level = 0.89, hypothesis = "equal"
+  )
 
-pixels_per_cmsq <- 42.5^2   # pixel per cm^2
-sv$area_cm2<-sv$area_pixels / pixels_per_cmsq
+  hue_res_ln <- conjugate(
+    s1 = mo17_sample, s2 = B73_sample, method = "lognormal",
+    plot = TRUE, rope_range = c(-10, 10), rope_ci = 0.89,
+    cred.int.level = 0.89, hypothesis = "equal"
+  )
+  # Picking the right distribution makes a difference,
+  # checking plots of your data (see ?pcv.joyplot for mv traits)
+  # will be useful.
 
-mo17_area <- sv[wide$genotype=="Mo17" & wide$DAS > 18 & wide$fertilizer == 50, "area_cm2"]
-B73_area <- sv[wide$genotype=="B73" & wide$DAS > 18 & wide$fertilizer == 50, "area_cm2"]
+  sv <- read.pcv(
+    paste0(
+      "https://raw.githubusercontent.com/joshqsumner/",
+      "pcvrTestData/main/pcv4-single-value-traits.csv"
+    ),
+    reader = "fread", mode = "wide"
+  )
 
-area_res_t <- conjugate(s1 = mo17_area, s2= B73_area, method="t",
-              priors = list( mu=30, n=1, s2=100 ),
-              plot=TRUE, rope_range = c(-5,5), rope_ci = 0.89, 
-              cred.int.level = 0.89, hypothesis="equal")
+  sv$genotype <- substr(sv$barcode, 3, 5)
+  sv$genotype <- ifelse(sv$genotype == "002", "B73",
+    ifelse(sv$genotype == "003", "W605S",
+      ifelse(sv$genotype == "004", "MM", "Mo17")
+    )
+  )
+  sv$fertilizer <- substr(sv$barcode, 8, 8)
+  sv$fertilizer <- ifelse(sv$fertilizer == "A", "100",
+    ifelse(sv$fertilizer == "B", "50", "0")
+  )
+
+  sv <- bw.time(sv, timeCol = "timestamp", group = "barcode")
+
+  pixels_per_cmsq <- 42.5^2 # pixel per cm^2
+  sv$area_cm2 <- sv$area_pixels / pixels_per_cmsq
+
+  mo17_area <- sv[wide$genotype == "Mo17" & wide$DAS > 18 & wide$fertilizer == 50, "area_cm2"]
+  B73_area <- sv[wide$genotype == "B73" & wide$DAS > 18 & wide$fertilizer == 50, "area_cm2"]
+
+  area_res_t <- conjugate(
+    s1 = mo17_area, s2 = B73_area, method = "t",
+    priors = list(mu = 30, n = 1, s2 = 100),
+    plot = TRUE, rope_range = c(-5, 5), rope_ci = 0.89,
+    cred.int.level = 0.89, hypothesis = "equal"
+  )
 }
 ## End(Not run)
 
 # Plots of prior distributions
 set.seed(123)
-plot(seq(0,1,0.0001), dbeta(seq(0,1,0.0001), 0.5, 0.5), ylab="Density",
- xlab="Support", main="Beta", type="l")
+plot(seq(0, 1, 0.0001), dbeta(seq(0, 1, 0.0001), 0.5, 0.5),
+  ylab = "Density",
+  xlab = "Support", main = "Beta", type = "l"
+)
 
-plot(seq(0,10,0.01), dgamma(seq(0,10,0.01), 0.5, 0.5), ylab="Density", xlab="Support",
- main="Poisson (gamma prior on Lambda parameter)", type="l")
+plot(seq(0, 10, 0.01), dgamma(seq(0, 10, 0.01), 0.5, 0.5),
+  ylab = "Density", xlab = "Support",
+  main = "Poisson (gamma prior on Lambda parameter)", type = "l"
+)
 
-plot(seq(-20,20.001), dnorm(seq(-20,20.001), 0, sqrt(100)), ylab="Density", 
-xlab="Support", main="T and Gaussian", type="l")
+plot(seq(-20, 20.001), dnorm(seq(-20, 20.001), 0, sqrt(100)),
+  ylab = "Density",
+  xlab = "Support", main = "T and Gaussian", type = "l"
+)
 
-plot(seq(0,70,0.001), dlnorm(seq(0,70,0.001), log(10), log(3)), ylab="Density", 
-xlab="Support", main="Lognormal", type="l")
+plot(seq(0, 70, 0.001), dlnorm(seq(0, 70, 0.001), log(10), log(3)),
+  ylab = "Density",
+  xlab = "Support", main = "Lognormal", type = "l"
+)
 
 }
 \keyword{ROPE}
