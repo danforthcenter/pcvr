@@ -2,9 +2,33 @@
 % Please edit documentation in R/nlsPlot.R
 \name{nlsPlot}
 \alias{nlsPlot}
+\alias{gamPlot}
+\alias{lmPlot}
 \title{Function to visualize common \code{stats::nls} growth models.}
 \usage{
 nlsPlot(
+  fit,
+  form,
+  df = NULL,
+  groups = NULL,
+  timeRange = NULL,
+  facetGroups = TRUE,
+  groupFill = FALSE,
+  virMaps = c("plasma")
+)
+
+gamPlot(
+  fit,
+  form,
+  df = NULL,
+  groups = NULL,
+  timeRange = NULL,
+  facetGroups = TRUE,
+  groupFill = FALSE,
+  virMaps = c("plasma")
+)
+
+lmPlot(
   fit,
   form,
   df = NULL,

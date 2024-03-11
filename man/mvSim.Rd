@@ -78,7 +78,8 @@ if (FALSE) { # example of plotting based on the dists argument
         v1[v1 > max_bin] <- max_bin
         v1[v1 < min_bin] <- min_bin
         d <- data.frame(group = grp, x = v1, dist = di)
-        geom_histogram(data = d, aes(x = x, fill = di), alpha = 1, binwidth = 1, show.legend = FALSE)
+        geom_histogram(data = d, aes(x = x, fill = di),
+        alpha = 1, binwidth = 1, show.legend = FALSE)
       })
     }) +
     pcv_theme()

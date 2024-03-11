@@ -10,38 +10,39 @@
 #'   raw state (the csv file itself).
 #' @param labelCol Column with phenotype labels (units), defaults to "label".
 #'   This should generally not need to be changed from the default.
-#'   This is used with `traitCol` when `mode`="wide" to identify
+#'   This is used with traitCol when \code{mode="wide"} to identify
 #'   unique traits since some may be ambiguous
 #' (ellipseCenter.x vs ellipseCenter.y, bins of histograms, etc)
 #' @param valueCol Column with phenotype values, defaults to "value".
 #'   This should generally not need to be changed from the default.
 #' @param reader The function to use to read in data,
-#'   defaults to NULL in which case `data.table::fread` is used if filters are in place
-#'   and `read.csv` is used otherwise.
-#'   Other useful options are "vroom" and "fread", from the vroom and data.table packages, respectively.
-#'   With files that are still very large after subsetting "fread" or "vroom" should be used.
-#'   Note that if you use `read.csv` with filters in place then you will need to specify `header=FALSE`
-#'   so that the piped output from awk is read correctly.
+#'   defaults to NULL in which case \code{data.table::fread} is used if filters are in place
+#'   and \code{read.csv} is used otherwise.
+#'   Note that if you use \code{read.csv} with filters in place then you will need to specify
+#'   \code{header=FALSE} so that the piped output from awk is read correctly.
+#'   If fread is too slow for your needs then \code{vroom::vroom()} may be useful.
 #' @param filters If a very large pcv output file is read then it may be desireable
 #'   to subset it before reading it into R, either for ease of use or because of RAM limitations.
 #'   The filter argument works with "COLUMN in VALUES" syntax. This can either be a character vector
 #'   or a list of character vectors. In these vectors there needs to be a column name,
 #'   one of " in ", " is ", or " = " to match the string exactly, or "contains"
 #'   to match with awk style regex, then a set of comma delimited values to filter
-#'   that column for (see examples). Note that this and `awk` both use awk through pipe().
+#'   that column for (see examples). Note that this and awk both use awk through \code{pipe()}.
 #'   This functionality will not work on a windows system.
-#' @param awk As an alternative to `filters` a direct call to awk can be supplied here,
-#'   in which case that call will be used through pipe().
+#' @param awk As an alternative to filters a direct call to awk can be supplied here,
+#'   in which case that call will be used through \code{pipe()}.
 #' @param ... Other arguments passed to the reader function.
-#'   In the cases of 'vroom' and 'fread' there are several defaults provided already
+#'   In the case of 'fread' there are several defaults provided already
 #'   which can be overwritten with these extra arguments.
 #'
 #' @details
 #' In plantCV version 4 the single value traits are returned in wide format from \code{json2csv}
-#' and the multi value traits are returned in long format. When data is read in using read.pcv
-#' the traitCol, valueCol, and labelCol arguments are checked to determine if the data is in long
-#' format. This is done to keep compatibility with interim versions of plantcv output where all outputs
-#' were in a single long format file.
+#' and the multi value traits are returned in long format. Briefly plantCV data was returned as one
+#' long table which sparked the emphasis in this function on reading data quickly and parsing it
+#' outside of R. With the current plantCV output these options are largely unnecessary.
+#' When data is read in using read.pcv the traitCol, valueCol, and labelCol arguments are checked
+#' to determine if the data is in long format. This is done to keep compatibility with interim
+#' versions of plantcv output where all outputs were in a single long format file.
 #'
 #' With the current implementation and plantcv output you can read wide or long format files into
 #' wide or long format in R. Keep in mind that the 'mode' argument controls the format that will be
@@ -144,7 +145,7 @@ read.pcv <- function(filepath, mode = NULL,
     }
   }
   #* `check original data format`
-  checkDataStateRes <- .readpcvCheckDataState(df1, traitCol, valueCol, labelCol)
+  checkDataStateRes <- .readpcvCheckDataState(df1, traitCol, valueCol, labelCol, mode)
   startsLong <- checkDataStateRes[["startsLong"]]
   outputMode <- checkDataStateRes[["outputMode"]]
   #* `if data is long and mode is wide`
@@ -161,7 +162,7 @@ read.pcv <- function(filepath, mode = NULL,
 #' @keywords internal
 #' @noRd
 
-.readpcvCheckDataState <- function(df1, traitCol, valueCol, labelCol) {
+.readpcvCheckDataState <- function(df1, traitCol, valueCol, labelCol, mode) {
   if (all(c(traitCol, valueCol, labelCol) %in% colnames(df1))) {
     startsLong <- TRUE
   } else if (!any(c(traitCol, valueCol, labelCol) %in% colnames(df1))) {
@@ -178,7 +179,6 @@ read.pcv <- function(filepath, mode = NULL,
       " valueCol, and labelCol are expected. Data will be returned as is."
     ))
     startsLong <- FALSE
-    mode <- "wide" # wide to wide has no changes
   }
 
   if (is.null(mode)) {

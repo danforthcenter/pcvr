@@ -5,7 +5,7 @@ if (file.exists("/home/josh/Desktop/") && interactive()) {
   library(testthat)
   library(brms)
   library(ggplot2)
-  devtools::load_all("~/pcvr")
+  library(pcvr)
 
   test_that("Logistic brms model pipeline", {
     set.seed(123)

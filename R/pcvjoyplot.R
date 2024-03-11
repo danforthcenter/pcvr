@@ -114,9 +114,9 @@ pcv.joyplot <- function(df = NULL, index = NULL, group = NULL, y = NULL, id = NU
     sub$dummy <- "dummy"
   }
 
-  facet_layer <- .joyPlotFacetHelper(y, group, sub)
-
-  sub$y <- as.character(sub$y)
+  joyPlotFacetHelperResult <- .joyPlotFacetHelper(y, group, sub)
+  facet_layer <- joyPlotFacetHelperResult[["facet"]]
+  sub <- joyPlotFacetHelperResult[["data"]]
   sub$grouping <- interaction(sub[, c(y, group)], drop = TRUE)
 
   # default compare to NULL, but if F then skip all testing
@@ -145,7 +145,7 @@ pcv.joyplot <- function(df = NULL, index = NULL, group = NULL, y = NULL, id = NU
       suppressMessages(ggridges::geom_density_ridges_gradient(
         ggplot2::aes(
           x = .data$bin, y = .data$y,
-          height = .data$freq, fill = stat(x)
+          height = .data$freq, fill = ggplot2::after_stat(x)
         ),
         show.legend = FALSE, stat = "identity", rel_min_height = 0.001
       )),
@@ -249,6 +249,7 @@ pcv.joyplot <- function(df = NULL, index = NULL, group = NULL, y = NULL, id = NU
       sub$y <- sub[[y]]
       facet_layer <- ggplot2::facet_grid(as.formula(paste0(group[1], "~", group[2])))
     }
+    sub$y <- as.character(sub$y)
   } else { # if y is not provided then one less layer of faceting
     if (length(group) == 1) {
       sub$y <- sub[[group]]
@@ -259,7 +260,7 @@ pcv.joyplot <- function(df = NULL, index = NULL, group = NULL, y = NULL, id = NU
       facet_layer <- ggplot2::facet_grid(as.formula(paste0("~", group[2])))
     }
   }
-  return(facet_layer)
+  return(list("data" = sub, "facet" = facet_layer))
 }
 
 

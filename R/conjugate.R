@@ -383,7 +383,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
     # turning off dirichlet until I decide on a new implementation that I like better
     # and a use case that isn't so ripe for abuse.
     vec_suffix <- if (vec) { "sv" } else { "mv" }
-    matched_fun <- match.fun(paste0(".conj_", matched_arg, "_", vec_suffix))
+    matched_fun <- get(paste0(".conj_", matched_arg, "_", vec_suffix))
     res <- matched_fun(sample, prior, plot, support, cred.int.level)
     return(res)
   })
@@ -445,7 +445,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
     matched_arg <- match.arg(method[i], choices = c("t", "gaussian", "beta",
                                                     "lognormal", "poisson", "negbin"))
     vec_suffix <- if (vec) {"sv"} else {"mv"}
-    matched_fun <- match.fun(paste0(".conj_", matched_arg, "_", vec_suffix))
+    matched_fun <- get(paste0(".conj_", matched_arg, "_", vec_suffix))
     qnts <- matched_fun(s1 = sample, priors = prior, calculatingSupport = TRUE)
     return(qnts)
   })

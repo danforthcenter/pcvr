@@ -35,7 +35,7 @@
 #'  is to catch a few of those and give estimates of how much time something may take.
 #'   If the function is expected to take very long then a warning or an error is raised.
 #'    If this is set to FALSE then no time estimates are made.
-#' @param method Which method to use (one of "emd" or "euc").
+#' @param method Which method to use (one of "emd" or "euc"). Defaults to "emd".
 #' @import ggplot2
 #' @import parallel
 #' @return A dataframe/matrix (if plot=FALSE) or a list with a dataframe/matrix and\
@@ -101,7 +101,8 @@
 #'   ) # benchmarked test data
 #'   lines(x = 1:150, y = emdTime(1:150)) # exponential function
 #'
-#'   plot(x = 1:1000, y = emdTime(1:1000), type = "l", xlab = "N Input Images", ylab = "time (seconds)")
+#'   plot(x = 1:1000, y = emdTime(1:1000), type = "l",
+#'   xlab = "N Input Images", ylab = "time (seconds)")
 #' }
 #' ## End(Not run)
 #'

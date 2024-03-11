@@ -153,7 +153,7 @@ distributionPlot <- function(fits, form, priors = NULL,
   }))
 
   #* ***** `prior distribution extraction`
-  distPlotPriorExtractionRes <- .distPlotPriorExtraction(fits, priors, d, group, params)
+  distPlotPriorExtractionRes <- .distPlotPriorExtraction(fits, priors, d, group, params, x)
   prior_df <- distPlotPriorExtractionRes[["prior_df"]]
   USEPRIOR <- distPlotPriorExtractionRes[["UP"]]
 
@@ -222,9 +222,9 @@ distributionPlot <- function(fits, form, priors = NULL,
 #' @keywords internal
 #' @noRd
 
-.distPlotPriorExtraction <- function(fits, priors, d, group, params) {
+.distPlotPriorExtraction <- function(fits, priors, d, group, params, x) {
   if (all(unlist(lapply(fits, function(fit) nrow(brms::prior_draws(fit)) < 1)))) {
-    # if no models were fit with sample_prior = TRUE
+    # if no models were fit with sample_prior
     if (!is.null(priors)) { # if prior is supplied as argument
       USEPRIOR <- TRUE
       if (!methods::is(priors[[1]], "list")) {

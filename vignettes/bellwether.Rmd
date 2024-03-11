@@ -80,7 +80,9 @@ The single value traits can be read in with `read.pcv`, here using `data.table::
 
 ```{r}
 base_url <- "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/"
-sv <- read.pcv(paste0(base_url, "pcv4-single-value-traits.csv"),
+base_url2 <- "https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/"
+sv <- read.pcv(
+  filepath = paste0(base_url, "pcv4-single-value-traits.csv"),
   reader = "fread"
 )
 ```
@@ -130,8 +132,10 @@ Sometimes large plantCV output may be too large to be read into memory for R. In
 
 ```{r, class.source="static-code", eval=F}
 example <- read.pcv("prohibitivelyLargeFile.csv",
-  filters = list("trait in area_pixels, area_above_reference_pixels, area_below_reference_pixels",
-                 "sample in default")
+  filters = list(
+    "trait in area_pixels, area_above_reference_pixels, area_below_reference_pixels",
+    "sample in default"
+  )
 )
 ```
 
@@ -140,7 +144,6 @@ example <- read.pcv("prohibitivelyLargeFile.csv",
 Before the release of PlantCV version 4 there were several widely used branches of PlantCV that output results as a single long format csv file. The original goal of `read.pcv` was to make it easier to work with those files. Now that the default output has changed the `read.pcv` function has been somewhat simplified but it can still be used for these "PlantCV 4.x" legacy style data.
 
 ```{r, class.source="static-code", eval=F}
-base_url2 <- "https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/"
 sv <- read.pcv(paste0(base_url2, "smallPhenotyperRun.csv"),
   mode = "wide",
   reader = "fread"
@@ -174,9 +177,11 @@ Here we have examples of reading in various amounts of plantCV 3 bellwether data
 onlyPhenos <- read.pcv.3(file = paste0(base_url, "pcv3Phenos.csv"), metaCol = NULL)
 colnames(onlyPhenos)
 
-phenosAndMeta <- read.pcv.3(file = paste0(base_url, "pcv3Phenos.csv"), metaCol = "meta",
-                            metaForm = "vis_view_angle_zoom_horizontal_gain_exposure_v_new_n_rep",
-                            joinSnapshot = "id")
+phenosAndMeta <- read.pcv.3(
+  file = paste0(base_url, "pcv3Phenos.csv"), metaCol = "meta",
+  metaForm = "vis_view_angle_zoom_horizontal_gain_exposure_v_new_n_rep",
+  joinSnapshot = "id"
+)
 colnames(phenosAndMeta)
 
 all <- read.pcv.3(
@@ -195,8 +200,10 @@ colnames(all)
 Often we want to convert our timestamp data from the lemnatech into either days after start (DAS), days after planting (DAP), or days after emergence (DAE). By default the `bw.time` function will add columns called DAS, DAP, and DAE to your data. Days after emergence requires using a phenotype and a value to classify emergence. Here an area greater than 10 pixels is considered an emerged plant. In this example with a planting delay of 0 DAP and DAE will be the same, but both are still created for the purpose of the example.
 
 ```{r}
-sv <- bw.time(sv, plantingDelay = 0, phenotype = "area_pixels", cutoff = 10,
-              timeCol = "timestamp", group = c("barcode", "rotation"), plot = TRUE)
+sv <- bw.time(sv,
+  plantingDelay = 0, phenotype = "area_pixels", cutoff = 10,
+  timeCol = "timestamp", group = c("barcode", "rotation"), plot = TRUE
+)
 dim(sv)
 ```
 
@@ -226,8 +233,10 @@ dim(sv_ag_with_outliers)
 The `bw.outliers` function can be used to remove outliers relative to a phenotype using cook's distance. Here due to the experimental design having these plants germinate on the machine around 1 percent of data are removed as outliers. The plot shows removed data points in red, although here that is hard to see.
 
 ```{r}
-out <- bw.outliers(df = sv_ag_with_outliers, phenotype = "area_pixels",
-                   group = c("DAS", "genotype", "fertilizer"), plotgroup = c("barcode"))
+out <- bw.outliers(
+  df = sv_ag_with_outliers, phenotype = "area_pixels",
+  group = c("DAS", "genotype", "fertilizer"), plotgroup = c("barcode")
+)
 sv_ag <- out$data
 out$plot
 dim(sv_ag)
@@ -258,8 +267,10 @@ water$fertilizer <- ifelse(water$fertilizer == "A", "100",
   ifelse(water$fertilizer == "B", "50", "0")
 )
 
-ggplot(water[water$weight_after != -1, ], aes(x = DAS,
-                                              y = water_amount, group = barcode, color = genotype)) +
+ggplot(water[water$weight_after != -1, ], aes(
+  x = DAS,
+  y = water_amount, group = barcode, color = genotype
+)) +
   facet_wrap(~ factor(fertilizer, levels = c("0", "50", "100"))) +
   geom_line() +
   pcv_theme() +
@@ -360,8 +371,10 @@ Non-longitudinal data (or single day data from larger longitudinal data) can be 
 The `pcvBox` function is a simple wrapper around ggplot and ggpubr functions that compares data with either T tests (the default) or Wilcox tests.
 
 ```{r}
-pcvBox(sv_ag[sv_ag$genotype == "MM" & sv_ag$DAS == 15, ], x = "fertilizer", y = "area_cm2",
-       compare = "0", showPoints = TRUE) +
+pcvBox(sv_ag[sv_ag$genotype == "MM" & sv_ag$DAS == 15, ],
+  x = "fertilizer", y = "area_cm2",
+  compare = "0", showPoints = TRUE
+) +
   labs(y = expression("Area" ~ "(cm"^2 ~ ")"), fill = "Soil Fertilizer") +
   scale_x_discrete(limits = c("0", "50", "100"))
 ```
@@ -460,32 +473,40 @@ Longitudinal modeling is the most comprehensive way to use the single value trai
 Based on literature and observed trends there are 6 common growth models that `pcvr` supports. Those are shown here using the `growthSim` function.
 
 ```{r,  class.source="simulated", class.output="simulated"}
-simdf <- growthSim("logistic", n = 20, t = 25,
-                   params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5)))
+simdf <- growthSim("logistic",
+  n = 20, t = 25,
+  params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
+)
 l <- ggplot(simdf, aes(time, y, group = interaction(group, id))) +
   geom_line(aes(color = group)) +
   labs(title = "Logistic") +
   theme_minimal() +
   theme(legend.position = "none")
 
-simdf <- growthSim("gompertz", n = 20, t = 25,
-                   params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(0.2, 0.25)))
+simdf <- growthSim("gompertz",
+  n = 20, t = 25,
+  params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(0.2, 0.25))
+)
 g <- ggplot(simdf, aes(time, y, group = interaction(group, id))) +
   geom_line(aes(color = group)) +
   labs(title = "Gompertz") +
   theme_minimal() +
   theme(legend.position = "none")
 
-simdf <- growthSim("monomolecular", n = 20, t = 25,
-                   params = list("A" = c(200, 160), "B" = c(0.08, 0.1)))
+simdf <- growthSim("monomolecular",
+  n = 20, t = 25,
+  params = list("A" = c(200, 160), "B" = c(0.08, 0.1))
+)
 m <- ggplot(simdf, aes(time, y, group = interaction(group, id))) +
   geom_line(aes(color = group)) +
   labs(title = "Monomolecular") +
   theme_minimal() +
   theme(legend.position = "none")
 
-simdf <- growthSim("exponential", n = 20, t = 25,
-                   params = list("A" = c(15, 20), "B" = c(0.095, 0.095)))
+simdf <- growthSim("exponential",
+  n = 20, t = 25,
+  params = list("A" = c(15, 20), "B" = c(0.095, 0.095))
+)
 e <- ggplot(simdf, aes(time, y, group = interaction(group, id))) +
   geom_line(aes(color = group)) +
   labs(title = "Exponential") +
@@ -619,8 +640,10 @@ brmPlot(fit, form = area_cm2 ~ DAS | barcode / group, df = ss$df) +
 In this case our model has 12 groups (3 soil conditions in each of 4 genotypes), so we might want to pull out only a few groups to look at. 
 
 ```{r, eval=FALSE}
-brmPlot(fit, form = area_cm2 ~ DAS | barcode / group, df = ss$df,
-        groups = c("0.B73", "50.B73", "100.B73")) +
+brmPlot(fit,
+  form = area_cm2 ~ DAS | barcode / group, df = ss$df,
+  groups = c("0.B73", "50.B73", "100.B73")
+) +
   labs(y = expression("Area" ~ "(cm"^2 ~ ")"))
 ```
 
@@ -651,8 +674,10 @@ As a final note on `brms`, there is a possiblity of making interesting early sto
 
 ```{r, eval=FALSE}
 print(load(url(paste0(base_url, "brmsFits.rdata"))))
-from3to25 <- list(fit_3, fit_5, fit_7, fit_9, fit_11, fit_13,
-                  fit_15, fit_17, fit_19, fit_21, fit_23, fit_25)
+from3to25 <- list(
+  fit_3, fit_5, fit_7, fit_9, fit_11, fit_13,
+  fit_15, fit_17, fit_19, fit_21, fit_23, fit_25
+)
 
 distributionPlot(fits = from3to25, form = y ~ time | id / group, params = c("A", "B", "C"), d = simdf)
 ```
@@ -710,8 +735,9 @@ Joyplots are a common way to look at lots of distributions. Here we check the hu
 
 ```{r, message=FALSE}
 p <- pcv.joyplot(hue_wide[hue_wide$DAS == 18, ],
-                 index = "hue_frequencies",
-                 group = c("fertilizer", "genotype"), method = NULL, compare = NULL)
+  index = "hue_frequencies",
+  group = c("fertilizer", "genotype"), method = NULL, compare = NULL
+)
 p + scale_fill_gradientn(colors = scales::hue_pal(l = 65)(360)) +
   scale_y_discrete(limits = c("0", "50", "100"))
 ```
@@ -730,10 +756,14 @@ p + scale_fill_gradientn(colors = scales::hue_pal(l = 65)(360)) +
 As mentioned previously the `conjugate` function can be used with wide multi-value data. To use multi value data the samples should be data frames or matrices representing color histograms. Here we compare our color histograms assuming a lognormal distribution and find that they are very similar in this parameterization.
 
 ```{r}
-mo17_sample <- hue_wide[hue_wide$genotype == "Mo17" & hue_wide$DAS > 18 & hue_wide$fertilizer == 100,
-                        grepl("hue_freq", colnames(hue_wide))]
-b73_sample <- hue_wide[hue_wide$genotype == "B73" & hue_wide$DAS > 18 & hue_wide$fertilizer == 100,
-                       grepl("hue_freq", colnames(hue_wide))]
+mo17_sample <- hue_wide[
+  hue_wide$genotype == "Mo17" & hue_wide$DAS > 18 & hue_wide$fertilizer == 100,
+  grepl("hue_freq", colnames(hue_wide))
+]
+b73_sample <- hue_wide[
+  hue_wide$genotype == "B73" & hue_wide$DAS > 18 & hue_wide$fertilizer == 100,
+  grepl("hue_freq", colnames(hue_wide))
+]
 
 hue_res_ln <- conjugate(
   s1 = mo17_sample, s2 = b73_sample, method = "lognormal",
@@ -756,15 +786,19 @@ pcadf(hue_wide, cols = "hue_frequencies", color = "genotype", returnData = FALSE
 This is potentially useful but it does not show us the time component well. We can facet by day or add traces easily. Using the trace argument we can view the movement of groups over time, but that can be cluttered.
 
 ```{r}
-pcadf(hue_wide, cols = "hue_frequencies", color = c("genotype", "fertilizer"),
-      trace = "DAS", returnData = FALSE)
+pcadf(hue_wide,
+  cols = "hue_frequencies", color = c("genotype", "fertilizer"),
+  trace = "DAS", returnData = FALSE
+)
 ```
 
 When the trace is cluttered it generally helps to either use a facet or to return a list of plots showing a few days at a time in the trace. Both those options are done using the `facet` argument.
 
 ```{r}
-plots <- pcadf(hue_wide, cols = "hue_frequencies", color = c("genotype", "fertilizer"),
-               trace = "DAS", returnData = FALSE, facet = c(1, 2, 3, 4))
+plots <- pcadf(hue_wide,
+  cols = "hue_frequencies", color = c("genotype", "fertilizer"),
+  trace = "DAS", returnData = FALSE, facet = c(1, 2, 3, 4)
+)
 
 (plots[[1]] + plots[[2]]) / (plots[[3]] + plots[[2]]) + plot_layout(guides = "collect")
 ```

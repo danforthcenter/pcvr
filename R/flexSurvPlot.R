@@ -48,8 +48,8 @@
 #' @export
 
 
-flexsurvregPlot <- function(fit, form, groups, df = NULL, timeRange=NULL, facetGroups=TRUE,
-                            groupFill=FALSE, virMaps = c("plasma")) {
+flexsurvregPlot <- function(fit, form, groups, df = NULL, timeRange = NULL, facetGroups = TRUE,
+                            groupFill = FALSE, virMaps = c("plasma")) {
   #* `parse formula`
   parsed_form <- .parsePcvrForm(form, df)
   x <- parsed_form$x
@@ -63,8 +63,10 @@ flexsurvregPlot <- function(fit, form, groups, df = NULL, timeRange=NULL, facetG
   }
   #* `generate predictions`
   pct <- seq(0.01, 0.99, 0.01)
-  preds <- predict(fit, newdata = data.frame("group" = groups),
-                   type = "quantile", p = pct, se.fit = TRUE)
+  preds <- predict(fit,
+    newdata = data.frame("group" = groups),
+    type = "quantile", p = pct, se.fit = TRUE
+  )
   preds <- do.call(rbind, lapply(seq_along(preds[[1]]), function(i) {
     iter <- as.data.frame(preds[[1]][[i]])
     colnames(iter) <- c("pct", "est", "se")
@@ -93,8 +95,10 @@ flexsurvregPlot <- function(fit, form, groups, df = NULL, timeRange=NULL, facetG
     color_scale <- ggplot2::scale_color_manual(values = unlist(lapply(virVals, function(pal) pal[3])))
   }
   #* `Make ggplot`
-  p <- ggplot2::ggplot(preds, ggplot2::aes(x = .data[["est"]],
-                                           y = .data[["surv"]], group = .data[[group]])) +
+  p <- ggplot2::ggplot(preds, ggplot2::aes(
+    x = .data[["est"]],
+    y = .data[["surv"]], group = .data[[group]]
+  )) +
     facet_layer +
     lapply(groups, function(grp) {
       ggplot2::geom_ribbon(data = preds[preds[[group]] == grp, ], ggplot2::aes(
@@ -122,8 +126,10 @@ flexsurvregPlot <- function(fit, form, groups, df = NULL, timeRange=NULL, facetG
         sum_events <- sum(c(sub[as.numeric(sub[[x]]) <= ti, "event"], 0))
         n_at_risk <- nrow(sub) - sum_events
         surv_pct <- n_at_risk / nrow(sub)
-        iter <- data.frame(group = grp, time = ti, events = sum_events,
-                           at_risk = n_at_risk, surv_pct = surv_pct)
+        iter <- data.frame(
+          group = grp, time = ti, events = sum_events,
+          at_risk = n_at_risk, surv_pct = surv_pct
+        )
         colnames(iter)[1] <- group
         iter
       }))

@@ -119,6 +119,8 @@ pcadf <- function(df = NULL, cols = NULL, color = NULL, trace = NULL,
   additive <- TRUE
   facetLayer <- NULL
   traceSplits <- NULL
+  traceDraw <- FALSE
+  facetLayer <- NULL
   if (!is.null(facet)) {
     if (is.character(facet)) {
       facetLayer <- ggplot2::facet_wrap(as.formula(paste0("~", paste(facet, collapse = "+"))))

@@ -52,8 +52,8 @@ growthPlot <- function(fit, form, groups = NULL, df = NULL, timeRange = NULL,
     virMaps <- groupFill
     groupFill <- TRUE
   }
-  model_class <- class(fit)
-  if (is.list(fit)) {
+  model_class <- class(fit)[1]
+  if (methods::is(fit, "list")) {
     model_class <- class(fit[[1]])
   }
   if (methods::is(fit, "brmsfit")) {

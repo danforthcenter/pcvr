@@ -235,7 +235,7 @@ bw.outliers <- function(df = NULL,
     } else {
       ".long"
     }
-    matched_fun <- match.fun(paste(wide_label, mv_label, outlierMethod, "outliers", sep = "_"))
+    matched_fun <- get(paste(wide_label, mv_label, outlierMethod, "outliers", sep = "_"))
     res <- matched_fun(df, naTo0, phenotype, group, cutoff, ncp, traitCol, valueCol, labelCol, idCol)
     return(res)
   })
@@ -494,8 +494,8 @@ bw.outliers <- function(df = NULL,
   }
   outlierCutoffs <- cutoff * colMeans(cooksd, na.rm = TRUE)
 
-  outlierMatrix <- do.call(cbind, lapply(seq_along(cooksd), function(i) {
-    cooks_vec <- cooksd[, i]
+  outlierMatrix <- do.call(cbind, lapply(seq_len(ncol(cooksd)), function(i) {
+    cooks_vec <- cooksd[, i] # this is causing a problem
     cooks_vec[is.na(cooks_vec)] <- outlierCutoffs[i] - 0.1
     setNames(data.frame(cooks_vec > outlierCutoffs[i]), paste0("outlier_", i))
   }))

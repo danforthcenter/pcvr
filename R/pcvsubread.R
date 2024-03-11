@@ -16,10 +16,7 @@
 pcv.sub.read <- function(inputFile, filters, reader = "read.csv", awk = NULL, ...) {
   awkCommand <- awkHelper(inputFile, filters, awk)
   COLS <- colnames(read.csv(inputFile, nrows = 1))
-  if (reader == "vroom") {
-    x <- as.data.frame(vroom::vroom(pipe(awkCommand), show_col_types = FALSE, delim = ",",
-                                    col_names = COLS, ...))
-  } else if (reader == "fread") {
+  if (reader == "fread") {
     x <- as.data.frame(data.table::fread(cmd = awkCommand, col.names = COLS, ...))
   } else {
     readingFunction <- match.fun(reader)

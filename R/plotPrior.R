@@ -90,10 +90,11 @@ plotPrior <- function(priors, type = "density", n = 200, t = 25) {
       z <- "C"
     } else if (type %in% c("monomolecular")) {
       y <- "A"
+      x <- z <- NULL
     } else {
       x <- y <- z <- NULL
     }
-    out <- .plotPriorMarginPlots(model_plot, x, y, z)
+    out <- .plotPriorMarginPlots(model_plot, densPlots, x, y, z)
   }
 
   return(out)
@@ -108,14 +109,11 @@ plotPrior <- function(priors, type = "density", n = 200, t = 25) {
   xLims <- ggplot2::layer_scales(model_plot)$x$range$range
   yLims <- ggplot2::layer_scales(model_plot)$y$range$range
   model_plot_solo <- model_plot
-  x_margin_plot <- densPlots[[x]]
-  y_margin_plot <- densPlots[[y]]
-  z_margin_plot <- densPlots[[z]]
 
   sum_non_null <- 0
 
-  if (!is.null(y_margin_plot)) {
-    y_margin_plot <- y_margin_plot +
+  if (!is.null(y)) {
+    y_margin_plot <- densPlots[[y]] +
       ggplot2::scale_y_reverse(position = "right") +
       ggplot2::scale_x_continuous(position = "top", limits = yLims) +
       ggplot2::labs(x = "Asymptote Prior") +
@@ -128,8 +126,8 @@ plotPrior <- function(priors, type = "density", n = 200, t = 25) {
     sum_non_null <- sum_non_null + 1
   }
 
-  if (!is.null(x_margin_plot)) {
-    x_margin_plot <- x_margin_plot +
+  if (!is.null(x)) {
+    x_margin_plot <- densPlots[[x]] +
       ggplot2::labs(x = "Inflection Point Prior") +
       ggplot2::theme(
         plot.title = ggplot2::element_blank(), panel.grid = ggplot2::element_blank(),
@@ -140,8 +138,8 @@ plotPrior <- function(priors, type = "density", n = 200, t = 25) {
     sum_non_null <- sum_non_null + 1
   }
 
-  if (!is.null(z_margin_plot)) {
-    z_margin_plot <- z_margin_plot +
+  if (!is.null(z)) {
+    z_margin_plot <- densPlots[[z]] +
       ggplot2::labs(x = "Growth Rate Prior") +
       ggplot2::theme(
         plot.title = ggplot2::element_blank(), panel.grid = ggplot2::element_blank(),

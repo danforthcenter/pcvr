@@ -134,7 +134,7 @@
     "splineVar" %in% names(fml)
   })))
 
-  splineForm <- .handleSplineSegments(splineSegments, useGroup, group, nTimes, formulae)
+  splineForm <- .handleSplineSegments(splineSegments, useGroup, group, nTimes, formulae, x)
 
   return(list("growthForm" = growthForm, "pars" = params, "splineHelperForm" = splineForm))
 }
@@ -147,7 +147,7 @@
 #' @keywords internal
 #' @noRd
 
-.handleSplineSegments <- function(splineSegments, useGroup, group, nTimes, formulae) {
+.handleSplineSegments <- function(splineSegments, useGroup, group, nTimes, formulae, x) {
   if (length(splineSegments) > 0) {
     if (useGroup) {
       by <- paste0(", by = ", group)
@@ -220,7 +220,7 @@
     all_chngpts <- names(priors)[grepl("fixedChangePoint*|changePoint*", names(priors))]
     prevChangePoints <- all_chngpts[which(as.numeric(sub(".*hangePoint", "", all_chngpts)) < position)]
     prevAndCurrentChangePoints <- all_chngpts[which(as.numeric(sub(".*hangePoint", "", all_chngpts))
-    %in% c(position, position - 1))]
+                                                    %in% c(position, position - 1))]
     #* per location where "fixed" is in the prior name, replace the name with that number.
     prev_fixed_index <- which(grepl("fixed", prevChangePoints))
     if (length(prev_fixed_index) > 0) {
@@ -239,8 +239,8 @@
     )
     cp <- paste0("inv_logit((", x, "-", paste0(prevChangePoints, collapse = "-"), ") * 5)")
     cpInt <- paste0(prefix, "linear", position, "A * (", paste0(rev(prevAndCurrentChangePoints),
-      collapse = "-"
-    ), ")")
+                                                                collapse = "-"),
+                    ")")
     #* cpInt would be wrong for the last position but it isn't used.
   }
 
@@ -312,7 +312,7 @@
     all_chngpts <- names(priors)[grepl("fixedChangePoint*|changePoint*", names(priors))]
     prevChangePoints <- all_chngpts[which(as.numeric(sub(".*hangePoint", "", all_chngpts)) < position)]
     prevAndCurrentChangePoints <- all_chngpts[which(as.numeric(sub(".*hangePoint", "", all_chngpts))
-    %in% c(position, position - 1))]
+                                                    %in% c(position, position - 1))]
     #* per location where "fixed" is in the prior name, replace the name with that number.
     prev_fixed_index <- which(grepl("fixed", prevChangePoints))
     if (length(prev_fixed_index) > 0) {
@@ -407,7 +407,7 @@
     all_chngpts <- names(priors)[grepl("fixedChangePoint*|changePoint*", names(priors))]
     prevChangePoints <- all_chngpts[which(as.numeric(sub(".*hangePoint", "", all_chngpts)) < position)]
     prevAndCurrentChangePoints <- all_chngpts[which(as.numeric(sub(".*hangePoint", "", all_chngpts))
-    %in% c(position, position - 1))]
+                                                    %in% c(position, position - 1))]
     #* per location where "fixed" is in the prior name, replace the name with that number.
     prev_fixed_index <- which(grepl("fixed", prevChangePoints))
     if (length(prev_fixed_index) > 0) {
@@ -499,7 +499,7 @@
     all_chngpts <- names(priors)[grepl("fixedChangePoint*|changePoint*", names(priors))]
     prevChangePoints <- all_chngpts[which(as.numeric(sub(".*hangePoint", "", all_chngpts)) < position)]
     prevAndCurrentChangePoints <- all_chngpts[which(as.numeric(sub(".*hangePoint", "", all_chngpts))
-    %in% c(position, position - 1))]
+                                                    %in% c(position, position - 1))]
     #* per location where "fixed" is in the prior name, replace the name with that number.
     prev_fixed_index <- which(grepl("fixed", prevChangePoints))
     if (length(prev_fixed_index) > 0) {
@@ -590,7 +590,7 @@
     all_chngpts <- names(priors)[grepl("fixedChangePoint*|changePoint*", names(priors))]
     prevChangePoints <- all_chngpts[which(as.numeric(sub(".*hangePoint", "", all_chngpts)) < position)]
     prevAndCurrentChangePoints <- all_chngpts[which(as.numeric(sub(".*hangePoint", "", all_chngpts))
-    %in% c(position, position - 1))]
+                                                    %in% c(position, position - 1))]
     #* per location where "fixed" is in the prior name, replace the name with that number.
     prev_fixed_index <- which(grepl("fixed", prevChangePoints))
     if (length(prev_fixed_index) > 0) {
@@ -675,7 +675,7 @@
     all_chngpts <- names(priors)[grepl("fixedChangePoint*|changePoint*", names(priors))]
     prevChangePoints <- all_chngpts[which(as.numeric(sub(".*hangePoint", "", all_chngpts)) < position)]
     prevAndCurrentChangePoints <- all_chngpts[which(as.numeric(sub(".*hangePoint", "", all_chngpts))
-    %in% c(position, position - 1))]
+                                                    %in% c(position, position - 1))]
     #* per location where "fixed" is in the prior name, replace the name with that number.
     prev_fixed_index <- which(grepl("fixed", prevChangePoints))
     if (length(prev_fixed_index) > 0) {
@@ -915,7 +915,7 @@
     all_chngpts <- names(priors)[grepl("fixedChangePoint*|changePoint*", names(priors))]
     prevChangePoints <- all_chngpts[which(as.numeric(sub(".*hangePoint", "", all_chngpts)) < position)]
     prevAndCurrentChangePoints <- all_chngpts[which(as.numeric(sub(".*hangePoint", "", all_chngpts))
-    %in% c(position, position - 1))]
+                                                    %in% c(position, position - 1))]
     #* per location where "fixed" is in the prior name, replace the name with that number.
     prev_fixed_index <- which(grepl("fixed", prevChangePoints))
     if (length(prev_fixed_index) > 0) {
@@ -1005,7 +1005,7 @@
     all_chngpts <- names(priors)[grepl("fixedChangePoint*|changePoint*", names(priors))]
     prevChangePoints <- all_chngpts[which(as.numeric(sub(".*hangePoint", "", all_chngpts)) < position)]
     prevAndCurrentChangePoints <- all_chngpts[which(as.numeric(sub(".*hangePoint", "", all_chngpts))
-    %in% c(position, position - 1))]
+                                                    %in% c(position, position - 1))]
     #* per location where "fixed" is in the prior name, replace the name with that number.
     prev_fixed_index <- which(grepl("fixed", prevChangePoints))
     if (length(prev_fixed_index) > 0) {
@@ -1097,7 +1097,7 @@
     all_chngpts <- names(priors)[grepl("fixedChangePoint*|changePoint*", names(priors))]
     prevChangePoints <- all_chngpts[which(as.numeric(sub(".*hangePoint", "", all_chngpts)) < position)]
     prevAndCurrentChangePoints <- all_chngpts[which(as.numeric(sub(".*hangePoint", "", all_chngpts))
-    %in% c(position, position - 1))]
+                                                    %in% c(position, position - 1))]
     #* per location where "fixed" is in the prior name, replace the name with that number.
     prev_fixed_index <- which(grepl("fixed", prevChangePoints))
     if (length(prev_fixed_index) > 0) {
