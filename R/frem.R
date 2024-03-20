@@ -217,9 +217,11 @@ frem <- function(df, des, phenotypes, timeCol = NULL, cor = TRUE, returnData = F
   }
 
   #* `Get Correlations`
-
+  if (length(phenotypes) == 1) {
+    cor <- FALSE
+  }
   if (cor) {
-    corr <- cor(apply(dat[, (colnames(dat) %in% phenotypes)], 2, as.numeric),
+    corr <- cor(apply(matrix(dat[, (colnames(dat) %in% phenotypes)]), 2, as.numeric),
       use = "complete.obs", method = "spearman"
     )
     unexp <- anova_dat[anova_dat$variable == "Unexplained" &
@@ -228,9 +230,11 @@ frem <- function(df, des, phenotypes, timeCol = NULL, cor = TRUE, returnData = F
       as.character(unexp$Phenotypes[order(unexp$value)]),
       as.character(unexp$Phenotypes[order(unexp$value)])
     ]
-
-    x <- na.omit(as.data.frame(suppressWarnings(data.table::melt(as.data.table(corr),
-                                                                 variable.name = "Var2"))))
+    x <- na.omit(
+      as.data.frame(
+        suppressWarnings(data.table::melt(as.data.table(corr), variable.name = "Var2"))
+      )
+    )
     x$Var1 <- rep(rownames(corr), length.out = nrow(x))
 
     x$Var1 <- ordered(x$Var1, levels = unexp$Phenotypes[order(unexp$value)])
