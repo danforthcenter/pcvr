@@ -137,7 +137,7 @@ frem <- function(df, des, phenotypes, timeCol = NULL, cor = TRUE, returnData = F
   )
   plot <- plotHelperOutputs[["plot"]]
   x <- plotHelperOutputs[["x"]]
-
+  cor <- plotHelperOutputs[["cor"]]
   out <- .fremCollectOutputs(returnData, cor, H2, x, plot)
   return(out)
 }
@@ -267,7 +267,7 @@ frem <- function(df, des, phenotypes, timeCol = NULL, cor = TRUE, returnData = F
   } else {
     plot <- p
   }
-  return(list("plot" = plot, "x" = x))
+  return(list("plot" = plot, "x" = x, "cor" = cor))
 }
 
 #' helper function to run models in frem
