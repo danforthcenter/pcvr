@@ -149,11 +149,11 @@ frem <- function(df, des, phenotypes, timeCol = NULL, cor = TRUE, returnData = F
 .fremCollectOutputs <- function(returnData, cor, H2, x, plot) {
   if (returnData) {
     if (cor) {
-      out_data <- list(H2, x)
+      out_data <- list("variance" = H2, "cor" = x)
     } else {
       out_data <- H2
     }
-    out <- list(plot, out_data)
+    out <- list("plot" = plot, "data" = out_data)
   } else {
     out <- plot
   }
