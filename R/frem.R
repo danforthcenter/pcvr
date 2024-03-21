@@ -64,7 +64,7 @@
 #' timeCol <- "DAS"
 #'
 #' frem(wide, des, phenotypes, cor = FALSE, timeCol, time = "all")
-#'
+#' frem(wide, des, phenotypes = colnames(wide)[20:22], cor = TRUE, timeCol, time = "all")
 #'
 #' ## End(Not run)
 #'
@@ -221,7 +221,7 @@ frem <- function(df, des, phenotypes, timeCol = NULL, cor = TRUE, returnData = F
     cor <- FALSE
   }
   if (cor) {
-    corr <- cor(apply(matrix(dat[, (colnames(dat) %in% phenotypes)]), 2, as.numeric),
+    corr <- cor(apply(dat[, (colnames(dat) %in% phenotypes)], 2, as.numeric),
       use = "complete.obs", method = "spearman"
     )
     unexp <- anova_dat[anova_dat$variable == "Unexplained" &
