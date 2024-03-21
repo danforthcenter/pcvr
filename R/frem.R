@@ -64,7 +64,7 @@
 #' timeCol <- "DAS"
 #'
 #' frem(wide, des, phenotypes, cor = FALSE, timeCol, time = "all")
-#'
+#' frem(wide, des, phenotypes = colnames(wide)[20:22], cor = TRUE, timeCol, time = "all")
 #'
 #' ## End(Not run)
 #'
@@ -137,7 +137,7 @@ frem <- function(df, des, phenotypes, timeCol = NULL, cor = TRUE, returnData = F
   )
   plot <- plotHelperOutputs[["plot"]]
   x <- plotHelperOutputs[["x"]]
-
+  cor <- plotHelperOutputs[["cor"]]
   out <- .fremCollectOutputs(returnData, cor, H2, x, plot)
   return(out)
 }
@@ -149,11 +149,11 @@ frem <- function(df, des, phenotypes, timeCol = NULL, cor = TRUE, returnData = F
 .fremCollectOutputs <- function(returnData, cor, H2, x, plot) {
   if (returnData) {
     if (cor) {
-      out_data <- list(H2, x)
+      out_data <- list("variance" = H2, "cor" = x)
     } else {
       out_data <- H2
     }
-    out <- list(plot, out_data)
+    out <- list("plot" = plot, "data" = out_data)
   } else {
     out <- plot
   }
@@ -217,7 +217,9 @@ frem <- function(df, des, phenotypes, timeCol = NULL, cor = TRUE, returnData = F
   }
 
   #* `Get Correlations`
-
+  if (length(phenotypes) == 1) {
+    cor <- FALSE
+  }
   if (cor) {
     corr <- cor(apply(dat[, (colnames(dat) %in% phenotypes)], 2, as.numeric),
       use = "complete.obs", method = "spearman"
@@ -228,9 +230,11 @@ frem <- function(df, des, phenotypes, timeCol = NULL, cor = TRUE, returnData = F
       as.character(unexp$Phenotypes[order(unexp$value)]),
       as.character(unexp$Phenotypes[order(unexp$value)])
     ]
-
-    x <- na.omit(as.data.frame(suppressWarnings(data.table::melt(as.data.table(corr),
-                                                                 variable.name = "Var2"))))
+    x <- na.omit(
+      as.data.frame(
+        suppressWarnings(data.table::melt(as.data.table(corr), variable.name = "Var2"))
+      )
+    )
     x$Var1 <- rep(rownames(corr), length.out = nrow(x))
 
     x$Var1 <- ordered(x$Var1, levels = unexp$Phenotypes[order(unexp$value)])
@@ -263,7 +267,7 @@ frem <- function(df, des, phenotypes, timeCol = NULL, cor = TRUE, returnData = F
   } else {
     plot <- p
   }
-  return(list("plot" = plot, "x" = x))
+  return(list("plot" = plot, "x" = x, "cor" = cor))
 }
 
 #' helper function to run models in frem
