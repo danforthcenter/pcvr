@@ -35,7 +35,7 @@
     se1 <- sqrt(s2_1_n / n1_n) # standard error of the mean
     #* `Define support if it is missing`
     if (is.null(support)) {
-      quantiles <- qlst(c(0.0001, 0.9999), v1_n, m1_n, se1)
+      quantiles <- extraDistr::qlst(c(0.0001, 0.9999), v1_n, m1_n, se1)
       if (calculatingSupport) {
         return(quantiles)
       }

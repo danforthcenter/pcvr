@@ -85,7 +85,7 @@ phenotypes <- colnames(wide)[20] # could be 20:25 or more
 timeCol <- "DAS"
 
 frem(wide, des, phenotypes, cor = FALSE, timeCol, time = "all")
-
+frem(wide, des, phenotypes = colnames(wide)[20:22], cor = TRUE, timeCol, time = "all")
 
 ## End(Not run)
 
