@@ -7,7 +7,7 @@
 conjugate(
   s1 = NULL,
   s2 = NULL,
-  method = c("t", "gaussian", "beta", "lognormal", "poisson", "negbin"),
+  method = c("t", "gaussian", "beta", "binomial", "lognormal", "poisson", "negbin"),
   priors = NULL,
   plot = FALSE,
   rope_range = NULL,
@@ -24,11 +24,12 @@ If a multi value trait is used then column names should include a number represe
 \item{s2}{An optional second sample of the same form as s2.}
 
 \item{method}{The distribution/method to use.
-Currently "t", "gaussian", "beta", "lognormal", "poisson", and "negbin" (negative binomial).
-are supported. The count distributions (poisson and negative binomial)
-are only implemented for single value traits.
+Currently "t", "gaussian", "beta", "binomial", "lognormal", "poisson",
+and "negbin" (negative binomial). are supported.
+The count distributions (binomial, poisson and negative binomial) are only implemented for
+single value traits.
 The "t" and "gaussian" methods both use a T distribution with "t" testing for a difference
- of means and "gaussian" testing for a difference in the distributions (similar to a Z test).}
+of means and "gaussian" testing for a difference in the distributions (similar to a Z test).}
 
 \item{priors}{Prior distributions described as a list of lists.
 If this is a single list then it will be duplicated for the second sample,
@@ -90,8 +91,10 @@ Prior distributions default to be weakly informative and in some cases you may w
 \itemize{
    \item{\strong{"t" and "gaussian":} \code{priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ) },
     where mu is the mean, n is the number of prior observations, and s2 is variance}
-   \item{\strong{"beta":} \code{priors = list( a=c(0.5, 0.5), b=c(0.5, 0.5) )},
-    where a and b are shape parameters of the beta distribution.}
+   \item{\strong{"beta" and "binomial":} \code{priors = list( a=c(0.5, 0.5), b=c(0.5, 0.5) )},
+    where a and b are shape parameters of the beta distribution. Note that for the binomial
+    distribution this is used as the prior for success probability P,
+    which is assumed to be beta distributed as in a beta-binomial distribution.}
    \item{\strong{"lognormal": } \code{priors = list( mu_log=c(log(10),log(10)),n=c(1,1),
    sigma_log=c(log(3),log(3)) ) },
    where mu_log is the mean on log scale, n is the number of prior observations,
@@ -224,6 +227,18 @@ beta_mv_ex <- conjugate(
 
 beta_sv_ex <- conjugate(
   s1 = rbeta(20, 5, 5), s2 = rbeta(20, 8, 5), method = "beta",
+  priors = list(a = 0.5, b = 0.5),
+  plot = FALSE, rope_range = c(-0.1, 0.1), rope_ci = 0.89,
+  cred.int.level = 0.89, hypothesis = "equal"
+)
+
+# binomial sv example
+# note that specifying trials = 20 would also work
+# and the number of trials will be recycled to the length of successes
+
+binomial_sv_ex <- conjugate(
+  s1 = list(successes = c(15,14,16,11), trials = c(20,20,20,20)),
+  s2 = list(successes = c(7,8,10,5), trials = c(20,20,20,20)), method = "binomial",
   priors = list(a = 0.5, b = 0.5),
   plot = FALSE, rope_range = c(-0.1, 0.1), rope_ci = 0.89,
   cred.int.level = 0.89, hypothesis = "equal"
