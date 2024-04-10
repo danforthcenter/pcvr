@@ -105,8 +105,8 @@ pcv.net <- function(emd = NULL, meta = NULL, dissim = TRUE, distCol = "emd", fil
     j <- m[[2]]
     f <- eg[[i]][match(gg$index, eg$from)]
     to <- eg[[j]][match(gg$index, eg$to)]
-    f[which(is.na(f))] <- to[which(is.na(f))]
-    f
+    to[which(is.na(to))] <- f[which(is.na(to))]
+    to
   }) # this can be NA if there is no 'from' edge connected to a node, so check 'to' edges as well.
   colnames(gg)[newCols] <- meta
   gg[, newCols] <- type.convert(gg[, newCols], as.is = TRUE)
