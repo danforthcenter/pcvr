@@ -40,7 +40,8 @@
 #'
 #' @details
 #'
-#' Default informative priors are not provided, but these can serve as starting points for each distribution.
+#' Default informative priors are not provided,
+#' but these can serve as starting points for each distribution.
 #' You are encouraged to use \code{growthSim} to consider what kind
 #' of trendlines result from changes to your prior and for interpretation of each parameter.
 #' You should not looking back and forth at your data trying to match your
