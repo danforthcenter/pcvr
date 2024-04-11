@@ -89,15 +89,15 @@ is the default.}
 
 \item{start}{An optional named list of starting values OR means for prior distributions.
 If this is not provided then starting values are picked with \code{stats::selfStart}.
- When type = "brms" these must be provided and are treated as the means of
+ When type = "brms" these should be provided and are treated as the means of
   lognormal priors for all growth model parameters and T_5(mu, 3) priors for changepoint parameters.
   This is done because the values are strictly positive and the lognormal distribution
   is easily interpreted. The changepoint priors are T distributions for symmetry, 5 DF
   having been chosen for heavy but not unmanageable tails.
-  If this argument is not provided then priors are not
-  returned and a different set of priors will need to be made for the model using
-  \code{brms::set_prior}. When specifying starting values/prior means
-  think of this as being similar to the \code{params} argument
+  If this argument is not provided then priors are made using brms::get_prior.
+  Those priors are unlikely to be suitable and a different set of priors will need to be made
+  for the model using \code{brms::set_prior} for good convergence. When specifying starting
+  values/prior means think of this as being similar to the \code{params} argument
   in \code{growthSim}. Names should correspond to parameter names from the
   \code{model} argument. A numeric vector can also be used, but specifying
   names is best practice for clarity. Additionally, due to a limitation in

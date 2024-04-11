@@ -2,9 +2,10 @@
 #' @keywords internal
 #' @noRd
 
-.makePriors <- function(priors, pars, df, group, USEGROUP, sigma, family) {
+.makePriors <- function(priors, pars, df, group, USEGROUP, sigma, family, formula) {
   if (is.null(priors)) {
-    return(NULL)
+    prior <- .explicitDefaultPrior(formula, df, family)
+    return(prior)
   }
   #* `if priors is a brmsprior`
   if (any(methods::is(priors, "brmsprior"))) {
@@ -178,7 +179,15 @@
   return(prior)
 }
 
+#' Helper function to explicitly return default priors from get_prior
+#'
+#' @keywords internal
+#' @noRd
 
+.explicitDefaultPrior <- function(formula, df, family) {
+  gp <- brms::get_prior(formula = formula, data = df, family = family)
+  return(gp)
+}
 
 #' Helper function to reformat sigma argument in brmSS
 #'
