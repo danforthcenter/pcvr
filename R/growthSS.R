@@ -359,7 +359,8 @@ growthSS <- function(model, form, sigma = NULL, df, start = NULL,
       if (is.null(sigma)) {
         sigma <- "power"
       }
-      res <- .nlmeSS(model = model, form = form, sigma = sigma, df = df, pars = pars, start = start)
+      res <- .nlmeSS(model = model, form = form, sigma = sigma, df = df, pars = pars,
+                     start = start, int = int)
     } else if (type_matched == "mgcv") {
       res <- .mgcvSS(model = model, form = form, df = df)
     } else {
