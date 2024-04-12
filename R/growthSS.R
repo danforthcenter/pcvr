@@ -12,6 +12,11 @@
 #'  You can also specify decay models by including the "decay" keyword with the model name.
 #'  Note that in brms models the entire formula is negated for decay models so that lognormal priors can
 #'  still be used when at least some coefficients would be negative.
+#'  Additionally, the "int_" prefix may be added to a model name to specify that an intercept should
+#'  be included. By default these models are assumed to have intercepts at 0, which is often fine.
+#'  If you include an intercept in a brms model then you would specify the prior as you would for an
+#'  "A", "B", or "C" parameter but as "I". By default growthSS will make student T priors for intercept
+#'  parameters in the same way that it will for estimated changepoints (see below).
 #'  With type="brms" you can also specify segmented models by combining model names with a plus sign
 #'  such as "linear + linear". In a segmented model the names for parameters do not follow the normal
 #'  "A", "B", "C" notation, instead they are named for the type of model, the position in the formula,

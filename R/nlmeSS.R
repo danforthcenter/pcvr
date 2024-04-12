@@ -144,7 +144,7 @@
     start <- 0 # no starting values (no parameters)
     pars <- df # there are no pars, this is just to pass df to pdIdent for the splines
   }
-  growthFormList <- form_fun(x, y, group, individual, matched_sigma, pars)
+  growthFormList <- form_fun(x, y, group, individual, matched_sigma, pars, int)
   pars <- growthFormList$pars
   growthFormList <- growthFormList[!grepl("pars", names(growthFormList))]
   if (decay) {
@@ -238,9 +238,9 @@
   } else {
     total_pars <- c("A", "B", "C")
     model_form <- as.formula(paste0(y, " ~ A/(1+exp((B-", x, ")/C))"))
-    }
+  }
   #* `random effects formula`
-  random_form <- as.formula(paste0(paste0(total_pars, collapse=" + "), "~ 1"))
+  random_form <- as.formula(paste0(paste0(total_pars, collapse = " + "), "~ 1"))
   #* `fixed effects formula`
   if (is.null(pars)) {
     pars <- total_pars
@@ -280,7 +280,7 @@
     model_form <- as.formula(paste0(y, " ~ A*exp(-B*exp(-C*", x, "))"))
   }
   #* `random effects formula`
-  random_form <- as.formula(paste0(paste0(total_pars, collapse=" + "), "~ 1"))
+  random_form <- as.formula(paste0(paste0(total_pars, collapse = " + "), "~ 1"))
   #* `fixed effects formula`
   if (is.null(pars)) {
     pars <- total_pars
@@ -328,7 +328,7 @@
     ))
   }
   #* `random effects formula`
-  random_form <- as.formula(paste0(paste0(total_pars, collapse=" + "), "~ 1"))
+  random_form <- as.formula(paste0(paste0(total_pars, collapse = " + "), "~ 1"))
   #* `fixed effects formula`
   if (is.null(pars)) {
     pars <- total_pars
@@ -374,7 +374,7 @@
     ))
   }
   #* `random effects formula`
-  random_form <- as.formula(paste0(paste0(total_pars, collapse=" + "), "~ 1"))
+  random_form <- as.formula(paste0(paste0(total_pars, collapse = " + "), "~ 1"))
   #* `fixed effects formula`
   if (is.null(pars)) {
     pars <- total_pars
@@ -414,7 +414,7 @@
     model_form <- as.formula(paste0(y, "~A-A*exp(-B*", x, ")"))
   }
   #* `random effects formula`
-  random_form <- as.formula(paste0(paste0(total_pars, collapse=" + "), "~ 1"))
+  random_form <- as.formula(paste0(paste0(total_pars, collapse = " + "), "~ 1"))
   #* `fixed effects formula`
   if (is.null(pars)) {
     pars <- total_pars
@@ -454,7 +454,7 @@
     model_form <- as.formula(paste0(y, " ~ A*exp(B*", x, ")"))
   }
   #* `random effects formula`
-  random_form <- as.formula(paste0(paste0(total_pars, collapse=" + "), "~ 1"))
+  random_form <- as.formula(paste0(paste0(total_pars, collapse = " + "), "~ 1"))
   #* `fixed effects formula`
   if (is.null(pars)) {
     pars <- total_pars
@@ -494,7 +494,7 @@
     model_form <- as.formula(paste0(y, " ~ A*", x))
   }
   #* `random effects formula`
-  random_form <- as.formula(paste0(paste0(total_pars, collapse=" + "), "~ 1"))
+  random_form <- as.formula(paste0(paste0(total_pars, collapse = " + "), "~ 1"))
   #* `fixed effects formula`
   if (is.null(pars)) {
     pars <- total_pars
@@ -534,7 +534,7 @@
     model_form <- as.formula(paste0(y, " ~ A*", x, "^B"))
   }
   #* `random effects formula`
-  random_form <- as.formula(paste0(paste0(total_pars, collapse=" + "), "~ 1"))
+  random_form <- as.formula(paste0(paste0(total_pars, collapse = " + "), "~ 1"))
   #* `fixed effects formula`
   if (is.null(pars)) {
     pars <- total_pars
@@ -603,7 +603,7 @@
     model_form <- as.formula(paste0(y, " ~ A * (1-exp(-(", x, "/C)^B))"))
   }
   #* `random effects formula`
-  random_form <- as.formula(paste0(paste0(total_pars, collapse=" + "), "~ 1"))
+  random_form <- as.formula(paste0(paste0(total_pars, collapse = " + "), "~ 1"))
   #* `fixed effects formula`
   if (is.null(pars)) {
     pars <- total_pars
@@ -633,7 +633,7 @@
   return(formulas)
 }
 
-.nlme_form_frechet <- function(x, y, group, individual, matched_sigma, pars) {
+.nlme_form_frechet <- function(x, y, group, individual, matched_sigma, pars, int) {
   #* `Define parameters and main growth formula`
   if (int) {
     total_pars <- c("I", "A", "B", "C")
@@ -643,7 +643,7 @@
     model_form <- as.formula(paste0(y, " ~ A * exp(-((", x, "-0)/C)^(-B))"))
   }
   #* `random effects formula`
-  random_form <- as.formula(paste0(paste0(total_pars, collapse=" + "), "~ 1"))
+  random_form <- as.formula(paste0(paste0(total_pars, collapse = " + "), "~ 1"))
   #* `fixed effects formula`
   if (is.null(pars)) {
     pars <- total_pars
@@ -674,7 +674,7 @@
 }
 
 
-.nlme_form_gumbel <- function(x, y, group, individual, matched_sigma, pars) {
+.nlme_form_gumbel <- function(x, y, group, individual, matched_sigma, pars, int) {
   #* `Define parameters and main growth formula`
   if (int) {
     total_pars <- c("I", "A", "B", "C")
@@ -684,7 +684,7 @@
     model_form <- as.formula(paste0(y, " ~ A * exp(-exp(-(", x, "-B)/C))"))
   }
   #* `random effects formula`
-  random_form <- as.formula(paste0(paste0(total_pars, collapse=" + "), "~ 1"))
+  random_form <- as.formula(paste0(paste0(total_pars, collapse = " + "), "~ 1"))
   #* `fixed effects formula`
   if (is.null(pars)) {
     pars <- total_pars

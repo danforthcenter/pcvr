@@ -13,10 +13,6 @@
 #'
 #' @return A list of elements to pass brmSS for fitting distributional models
 #'
-#' @examples
-#' .brmDparHelper("logistic")
-#' .brmDparHelper("poisson: logistic")
-#' .brmDparHelper("von_mises: logistic")
 #'
 #' @keywords internal
 #' @noRd
@@ -41,7 +37,7 @@
     brmsDparFormFun <- match.fun(stringBrmsDparFormFun)
     formResDpar <- brmsDparFormFun(x, dpar, group,
       dpar = TRUE, nTimes = nTimes,
-      useGroup = useGroup, prior = priors, , int = int
+      useGroup = useGroup, prior = priors, int = int
     )
     dparForm <- formResDpar$form
     dpar_pars <- formResDpar$pars

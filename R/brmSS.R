@@ -203,7 +203,10 @@
     dpar_res <- lapply(seq_along(sigma), function(i) {
       dpar <- names(sigma)[[i]]
       model <- sigma[[i]]
-      .brmDparHelper(dpar, model, x, group, nTimes, USEGROUP, priors)
+      intModelRes <- .intModelHelper(model)
+      model <- intModelRes$model
+      sigmaInt <- intModelRes$int
+      .brmDparHelper(dpar, model, x, group, nTimes, USEGROUP, priors, sigmaInt)
     })
     names(dpar_res) <- names(sigma)
     dparForm <- unlist(lapply(dpar_res, function(res) {
