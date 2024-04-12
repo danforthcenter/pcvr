@@ -1,4 +1,4 @@
-#' Ease of use nlrq starter function for 6 growth model parameterizations
+#' Ease of use nlrq starter function for standard growth model parameterizations
 #'
 #' Internal to growthSS
 #'
@@ -13,7 +13,7 @@
 #'   model = "logistic", form = y ~ time | id / group,
 #'   tau = 0.5, df = simdf, start = NULL
 #' )
-#'
+#' model = "logistic"; form = y ~ time | id / group; tau = 0.5; df = simdf; start = NULL; pars=NULL
 #' ss <- .nlrqSS(model = "gam", form = y ~ time | id / group, df = simdf, start = NULL, tau = 0.5)
 #'
 #' dim(ss$df)
@@ -23,7 +23,7 @@
 #' @keywords internal
 #' @noRd
 
-.nlrqSS <- function(model, form, tau = 0.5, df, pars = NULL, start = NULL, type = "nlrq") {
+.nlrqSS <- function(model, form, tau = 0.5, df, pars = NULL, start = NULL, type = "nlrq", int = FALSE) {
   #* ***** `Define choices and make empty output list`
   out <- list()
   models <- c(
@@ -38,7 +38,7 @@
   group <- parsed_form$group
   USEGROUP <- parsed_form$USEG
   if (parsed_form$USEID) {
-    message(paste0("Individual is not used with type = 'nls'."))
+    message(paste0("Individual is not used with type = '", type ,"'."))
   }
   df <- parsed_form$data
   if (USEGROUP) {
@@ -56,7 +56,7 @@
   matched_model <- match.arg(model, models)
   stringFormFun <- paste0(".nlrq_form_", gsub(" ", "", matched_model))
   form_fun <- match.fun(stringFormFun)
-  res <- form_fun(x, y, USEGROUP, group, pars)
+  res <- form_fun(x, y, USEGROUP, group, pars, int)
   growthForm <- res[[1]]
   pars <- res[[2]]
 
@@ -69,14 +69,7 @@
   }
 
   if (is.null(start)) {
-    if (matched_model == "double logistic") {
-      warning(paste0(
-        "Double Sigmoid models are not supported as self-starting models,",
-        " you will need to add starting parameters.",
-        " Note for these models type='brms' is recommended."
-      ))
-      startingValues <- NULL
-    } else if (matched_model == "double gompertz") {
+    if (grepl("double", matched_model)) {
       warning(paste0(
         "Double Sigmoid models are not supported as self-starting models,",
         " you will need to add starting parameters.",
@@ -86,7 +79,7 @@
     } else {
       stringInitFun <- paste0(".init", gsub(" ", "", matched_model))
       initFunction <- match.fun(stringInitFun)
-      startingValues <- initFunction(df, x, y)
+      startingValues <- initFunction(df, x, y, int)
     }
     if ((!matched_model %in% c("double logistic", "double gompertz")) && USEGROUP) {
       nms <- names(startingValues)
@@ -126,7 +119,11 @@
 #' @keywords internal
 #' @noRd
 
-.initlogistic <- function(df, x, y) {
+.initlogistic <- function(df, x, y, int = FALSE) {
+  if (int) {
+    obs_min <- min(df[[y]], na.rm=TRUE)
+    df[[y]] <- df[[y]] - obs_min
+  }
   xy <- stats::sortedXyData(df[[x]], df[[y]])
   if (nrow(xy) < 4) {
     stop("too few distinct input values to fit a logistic model")
@@ -143,7 +140,9 @@
     start = list(B = aux[[1L]], C = aux[[2L]]),
     algorithm = "plinear", control = stats::nls.control(warnOnly = TRUE)
   ))
-  stats::setNames(pars[c(".lin", "B", "C")], c("A", "B", "C"))
+  start <- stats::setNames(pars[c(".lin", "B", "C")], c("A", "B", "C"))
+  if (int) { start <- stats::setNames(append(obs_min, start), c("I", "A", "B", "C")) }
+  return(start)
 }
 
 
@@ -154,6 +153,10 @@
 #' @noRd
 
 .initgompertz <- function(df, x, y) {
+  if (int) {
+    obs_min <- min(df[[y]], na.rm=TRUE)
+    df[[y]] <- df[[y]] - obs_min
+  }
   xy <- stats::sortedXyData(df[[x]], df[[y]])
   if (nrow(xy) < 4) {
     stop("too few distinct input values to fit the Gompertz model")
@@ -168,7 +171,9 @@
     ),
     algorithm = "plinear", control = stats::nls.control(warnOnly = TRUE)
   ))
-  stats::setNames(pars[c(".lin", "B", "C")], c("A", "B", "C"))
+  start <- stats::setNames(pars[c(".lin", "B", "C")], c("A", "B", "C"))
+  if (int) { start <- stats::setNames(append(obs_min, start), c("I", "A", "B", "C")) }
+  return(start)
 }
 
 
@@ -180,6 +185,10 @@
 #' @noRd
 
 .initmonomolecular <- function(df, x, y) {
+  if (int) {
+    obs_min <- min(df[[y]], na.rm=TRUE)
+    df[[y]] <- df[[y]] - obs_min
+  }
   xy <- stats::sortedXyData(df[[x]], df[[y]])
   if (nrow(xy) < 4) {
     stop("too few distinct input values to fit a monomolecular model")
@@ -195,7 +204,9 @@
     data = xy, start = list(B = aux[2L]),
     algorithm = "plinear", control = stats::nls.control(warnOnly = TRUE)
   ))
-  stats::setNames(pars[c(".lin", "B")], c("A", "B"))
+  start <- stats::setNames(pars[c(".lin", "B")], c("A", "B"))
+  if (int) { start <- stats::setNames(append(obs_min, start), c("I", "A", "B")) }
+  return(start)
 }
 
 #' `Linear self starter`
@@ -207,12 +218,18 @@
 #' @noRd
 
 .initlinear <- function(df, x, y) {
+  if (int) {
+    obs_min <- min(df[[y]], na.rm=TRUE)
+    df[[y]] <- df[[y]] - obs_min
+  }
   xy <- stats::sortedXyData(df[[x]], df[[y]])
   if (nrow(xy) < 2) {
     stop("too few distinct input values to fit a linear model")
   }
   pars <- stats::coef(stats::lm(y ~ x, xy))
-  stats::setNames(pars[c("x")], c("A"))
+  start <- stats::setNames(pars[c("x")], c("A"))
+  if (int) { start <- stats::setNames(append(obs_min, start), c("I", "A")) }
+  return(start)
 }
 
 
@@ -225,6 +242,10 @@
 #' @noRd
 
 .initpowerlaw <- function(df, x, y) {
+  if (int) {
+    obs_min <- min(df[[y]], na.rm=TRUE)
+    df[[y]] <- df[[y]] - obs_min
+  }
   xy <- stats::sortedXyData(df[[x]], df[[y]])
   if (nrow(xy) < 3) {
     stop("too few distinct input values to fit a power law model")
@@ -235,7 +256,9 @@
     data = xy, start = list(B = aux[2L]),
     algorithm = "plinear", control = stats::nls.control(warnOnly = TRUE)
   ))
-  stats::setNames(pars[c(".lin", "B")], c("A", "B"))
+  start <- stats::setNames(pars[c(".lin", "B")], c("A", "B"))
+  if (int) { start <- stats::setNames(append(obs_min, start), c("I", "A", "B")) }
+  return(start)
 }
 
 
@@ -248,6 +271,10 @@
 #' @noRd
 
 .initexponential <- function(df, x, y) {
+  if (int) {
+    obs_min <- min(df[[y]], na.rm=TRUE)
+    df[[y]] <- df[[y]] - obs_min
+  }
   xy <- stats::sortedXyData(df[[x]], df[[y]])
   if (nrow(xy) < 3) {
     stop("too few distinct input values to fit a exponential model")
@@ -258,7 +285,9 @@
     data = xy, start = list(B = aux[2L]),
     algorithm = "plinear", control = stats::nls.control(warnOnly = TRUE)
   ))
-  stats::setNames(pars[c(".lin", "B")], c("A", "B"))
+  start <- stats::setNames(pars[c(".lin", "B")], c("A", "B"))
+  if (int) { start <- stats::setNames(append(obs_min, start), c("I", "A", "B")) }
+  return(start)
 }
 
 #' `Extreme Value Distribution Self Starter (weibull, frechet, gumbel)`
@@ -266,6 +295,10 @@
 #' @noRd
 
 .initweibull <- function(df, x, y) {
+  if (int) {
+    obs_min <- min(df[[y]], na.rm=TRUE)
+    df[[y]] <- df[[y]] - obs_min
+  }
   xy <- stats::sortedXyData(df[[x]], df[[y]])
   if (nrow(xy) < 5) {
     stop("too few distinct input values to fit the EVD growth model")
@@ -276,7 +309,9 @@
   rAsym <- stats::NLSstRtAsymptote(xy)
   pars <- stats::coef(stats::lm(log(-log((rAsym - y) / (rAsym - stats::NLSstLfAsymptote(xy)))) ~
                                   log(x), data = xy, subset = x > 0))
-  stats::setNames(c(rAsym, exp(pars) + c(1, 0)), c("A", "B", "C"))
+  start <- stats::setNames(c(rAsym, exp(pars) + c(1, 0)), c("A", "B", "C"))
+  if (int) { start <- stats::setNames(append(obs_min, start), c("I", "A", "B", "C")) }
+  return(start)
 }
 .initfrechet <- .initweibull
 .initgumbel <- .initweibull
@@ -285,13 +320,17 @@
 #' @keywords internal
 #' @noRd
 
-.nlrq_form_logistic <- function(x, y, USEGROUP, group, pars) {
-  total_pars <- c("A", "B", "C")
+.nlrq_form_logistic <- function(x, y, USEGROUP, group, pars, int = FALSE) {
+  if (int) {total_pars <- c("I", "A", "B", "C") } else {total_pars <- c("A", "B", "C")}
   if (is.null(pars)) {
     pars <- total_pars
   }
-  if (USEGROUP) {
+  if (int) {
+    str_nf <- paste0(y, " ~I[] + (A[]/(1+exp((B[]-", x, ")/C[])))")
+  } else{
     str_nf <- paste0(y, " ~ A[]/(1+exp((B[]-", x, ")/C[]))")
+  }
+  if (USEGROUP) {
     for (par in total_pars) {
       if (par %in% pars) {
         str_nf <- gsub(paste0(par, "\\[\\]"), paste0(par, "[", group, "]"), str_nf)
@@ -301,18 +340,22 @@
     }
     nf <- as.formula(str_nf)
   } else {
-    nf <- as.formula(paste0(y, " ~ A/(1+exp((B-", x, ")/C))"))
+    nf <- as.formula(gsub("\\[|\\]", "", str_nf))
   }
   return(list("formula" = nf, "pars" = pars))
 }
 
-.nlrq_form_gompertz <- function(x, y, USEGROUP, group, pars) {
-  total_pars <- c("A", "B", "C")
+.nlrq_form_gompertz <- function(x, y, USEGROUP, group, pars, int = FALSE) {
+  if (int) {total_pars <- c("I", "A", "B", "C") } else {total_pars <- c("A", "B", "C")}
   if (is.null(pars)) {
     pars <- total_pars
   }
-  if (USEGROUP) {
+  if (int) {
+    str_nf <- paste0(y, " ~ I[] + (A[]*exp(-B[]*exp(-C[]*", x, ")))")
+  } else{
     str_nf <- paste0(y, " ~ A[]*exp(-B[]*exp(-C[]*", x, "))")
+  }
+  if (USEGROUP) {
     for (par in total_pars) {
       if (par %in% pars) {
         str_nf <- gsub(paste0(par, "\\[\\]"), paste0(par, "[", group, "]"), str_nf)
@@ -322,21 +365,29 @@
     }
     nf <- as.formula(str_nf)
   } else {
-    nf <- as.formula(paste0(y, " ~ A*exp(-B*exp(-C*", x, "))"))
+    nf <- as.formula(gsub("\\[|\\]", "", str_nf))
   }
   return(list("formula" = nf, "pars" = pars))
 }
 
-.nlrq_form_doublelogistic <- function(x, y, USEGROUP, group, pars) {
-  total_pars <- c("A", "B", "C", "A2", "B2", "C2")
+.nlrq_form_doublelogistic <- function(x, y, USEGROUP, group, pars, int = FALSE) {
+  if (int) {total_pars <- c("I", "A", "B", "C", "A2", "B2", "C2")
+    } else {total_pars <- c("A", "B", "C", "A2", "B2", "C2")}
   if (is.null(pars)) {
     pars <- total_pars
   }
-  if (USEGROUP) {
+  if (int) {
+    str_nf <- paste0(
+      y, " ~ I[] + (A[]/(1+exp((B[]-", x, ")/C[]))",
+      " + ((A2[]-A[]) /(1+exp((B2[]-", x, ")/C2[]))))"
+    )
+  } else{
     str_nf <- paste0(
       y, " ~ A[]/(1+exp((B[]-", x, ")/C[]))",
       " + ((A2[]-A[]) /(1+exp((B2[]-", x, ")/C2[])))"
     )
+  }
+  if (USEGROUP) {
     for (par in total_pars) {
       if (par %in% pars) {
         str_nf <- gsub(paste0(par, "\\[\\]"), paste0(par, "[", group, "]"), str_nf)
@@ -346,21 +397,29 @@
     }
     nf <- as.formula(str_nf)
   } else {
-    nf <- as.formula(paste0(y, " ~ A/(1+exp((B-", x, ")/C)) + ((A2-A) /(1+exp((B2-", x, ")/C2)))"))
+    nf <- as.formula(gsub("\\[|\\]", "", str_nf))
   }
   return(list("formula" = nf, "pars" = pars))
 }
 
-.nlrq_form_doublegompertz <- function(x, y, USEGROUP, group, pars) {
-  total_pars <- c("A", "B", "C", "A2", "B2", "C2")
+.nlrq_form_doublegompertz <- function(x, y, USEGROUP, group, pars, int = FALSE) {
+  if (int) {total_pars <- c("I", "A", "B", "C", "A2", "B2", "C2")
+  } else {total_pars <- c("A", "B", "C", "A2", "B2", "C2")}
   if (is.null(pars)) {
     pars <- total_pars
   }
-  if (USEGROUP) {
+  if (int) {
+    str_nf <- paste0(
+      y, " ~ I[] + (A[] * exp(-B[] * exp(-C[]*", x, "))",
+      " + (A2[]-A[]) * exp(-B2[] * exp(-C2[]*(", x, "-B[]))))"
+    )
+  } else{
     str_nf <- paste0(
       y, " ~ A[] * exp(-B[] * exp(-C[]*", x, "))",
       " + (A2[]-A[]) * exp(-B2[] * exp(-C2[]*(", x, "-B[])))"
     )
+  }
+  if (USEGROUP) {
     for (par in total_pars) {
       if (par %in% pars) {
         str_nf <- gsub(paste0(par, "\\[\\]"), paste0(par, "[", group, "]"), str_nf)
@@ -370,22 +429,22 @@
     }
     nf <- as.formula(str_nf)
   } else {
-    nf <- as.formula(paste0(
-      y,
-      " ~ A * exp(-B * exp(-C*", x, ")) + (A2-A) * exp(-B2 * exp(-C2*(",
-      x, "-B)))"
-    ))
+    nf <- as.formula(gsub("\\[|\\]", "", str_nf))
   }
   return(list("formula" = nf, "pars" = pars))
 }
 
-.nlrq_form_monomolecular <- function(x, y, USEGROUP, group, pars) {
-  total_pars <- c("A", "B")
+.nlrq_form_monomolecular <- function(x, y, USEGROUP, group, pars, int = FALSE) {
+  if (int) {total_pars <- c("I", "A", "B") } else {total_pars <- c("A", "B")}
   if (is.null(pars)) {
     pars <- total_pars
   }
-  if (USEGROUP) {
+  if (int) {
+    str_nf <- paste0(y, "~I[] + (A[]-A[]*exp(-B[]*", x, "))")
+  } else{
     str_nf <- paste0(y, "~A[]-A[]*exp(-B[]*", x, ")")
+  }
+  if (USEGROUP) {
     for (par in total_pars) {
       if (par %in% pars) {
         str_nf <- gsub(paste0(par, "\\[\\]"), paste0(par, "[", group, "]"), str_nf)
@@ -395,18 +454,22 @@
     }
     nf <- as.formula(str_nf)
   } else {
-    nf <- as.formula(paste0(y, "~A-A*exp(-B*", x, ")"))
+    nf <- as.formula(gsub("\\[|\\]", "", str_nf))
   }
   return(list("formula" = nf, "pars" = pars))
 }
 
-.nlrq_form_exponential <- function(x, y, USEGROUP, group, pars) {
-  total_pars <- c("A", "B")
+.nlrq_form_exponential <- function(x, y, USEGROUP, group, pars, int = FALSE) {
+  if (int) {total_pars <- c("I", "A", "B") } else {total_pars <- c("A", "B")}
   if (is.null(pars)) {
     pars <- total_pars
   }
-  if (USEGROUP) {
+  if (int) {
+    str_nf <- paste0(y, " ~ I[] + (A[]*exp(B[]*", x, "))")
+  } else{
     str_nf <- paste0(y, " ~ A[]*exp(B[]*", x, ")")
+  }
+  if (USEGROUP) {
     for (par in total_pars) {
       if (par %in% pars) {
         str_nf <- gsub(paste0(par, "\\[\\]"), paste0(par, "[", group, "]"), str_nf)
@@ -416,18 +479,22 @@
     }
     nf <- as.formula(str_nf)
   } else {
-    nf <- as.formula(paste0(y, " ~ A*exp(B*", x, ")"))
+    nf <- as.formula(gsub("\\[|\\]", "", str_nf))
   }
   return(list("formula" = nf, "pars" = pars))
 }
 
-.nlrq_form_linear <- function(x, y, USEGROUP, group, pars) {
-  total_pars <- c("A")
+.nlrq_form_linear <- function(x, y, USEGROUP, group, pars, int = FALSE) {
+  if (int) {total_pars <- c("I", "A") } else {total_pars <- c("A")}
   if (is.null(pars)) {
     pars <- total_pars
   }
-  if (USEGROUP) {
+  if (int) {
+    str_nf <- paste0(y, " ~ I[] + A[]*", x)
+  } else{
     str_nf <- paste0(y, " ~ A[]*", x)
+  }
+  if (USEGROUP) {
     for (par in total_pars) {
       if (par %in% pars) {
         str_nf <- gsub(paste0(par, "\\[\\]"), paste0(par, "[", group, "]"), str_nf)
@@ -437,18 +504,22 @@
     }
     nf <- as.formula(str_nf)
   } else {
-    nf <- as.formula(paste0(y, " ~ A*", x))
+    nf <- as.formula(gsub("\\[|\\]", "", str_nf))
   }
   return(list("formula" = nf, "pars" = pars))
 }
 
-.nlrq_form_powerlaw <- function(x, y, USEGROUP, group, pars) {
-  total_pars <- c("A", "B")
+.nlrq_form_powerlaw <- function(x, y, USEGROUP, group, pars, int = FALSE) {
+  if (int) {total_pars <- c("I", "A", "B") } else {total_pars <- c("A", "B")}
   if (is.null(pars)) {
     pars <- total_pars
   }
-  if (USEGROUP) {
+  if (int) {
+    str_nf <- paste0(y, " ~ I[] + (A[]*", x, "^B[])")
+  } else{
     str_nf <- paste0(y, " ~ A[]*", x, "^B[]")
+  }
+  if (USEGROUP) {
     for (par in total_pars) {
       if (par %in% pars) {
         str_nf <- gsub(paste0(par, "\\[\\]"), paste0(par, "[", group, "]"), str_nf)
@@ -458,12 +529,12 @@
     }
     nf <- as.formula(str_nf)
   } else {
-    nf <- as.formula(paste0(y, " ~ A*", x, "^B"))
+    nf <- as.formula(gsub("\\[|\\]", "", str_nf))
   }
   return(list("formula" = nf, "pars" = pars))
 }
 
-.nlrq_form_gam <- function(x, y, USEGROUP, group, pars) {
+.nlrq_form_gam <- function(x, y, USEGROUP, group, pars, int = FALSE) {
   if (USEGROUP) {
     nf <- as.formula(paste0(y, " ~ bs(", x, ")*", group))
   } else {
@@ -477,13 +548,17 @@
   as.formula(paste0(chars[2], chars[1], "-(", chars[3], ")"))
 }
 
-.nlrq_form_frechet <- function(x, y, USEGROUP, group, pars) {
-  total_pars <- c("A", "B", "C")
+.nlrq_form_frechet <- function(x, y, USEGROUP, group, pars, int = FALSE) {
+  if (int) {total_pars <- c("I", "A", "B", "C") } else {total_pars <- c("A", "B", "C")}
   if (is.null(pars)) {
     pars <- total_pars
   }
-  if (USEGROUP) {
+  if (int) {
+    str_nf <- paste0(y, " ~ I[] + (A[] * exp(-((", x, "-0)/C[])^(-B[])))")
+  } else{
     str_nf <- paste0(y, " ~ A[] * exp(-((", x, "-0)/C[])^(-B[]))")
+  }
+  if (USEGROUP) {
     for (par in total_pars) {
       if (par %in% pars) {
         str_nf <- gsub(paste0(par, "\\[\\]"), paste0(par, "[", group, "]"), str_nf)
@@ -493,19 +568,23 @@
     }
     nf <- as.formula(str_nf)
   } else {
-    nf <- as.formula(paste0(y, " ~ A * exp(-((", x, "-0)/C)^(-B))"))
+    nf <- as.formula(gsub("\\[|\\]", "", str_nf))
   }
   return(list("formula" = nf, "pars" = pars))
 }
 
 
-.nlrq_form_weibull <- function(x, y, USEGROUP, group, pars) {
-  total_pars <- c("A", "B", "C")
+.nlrq_form_weibull <- function(x, y, USEGROUP, group, pars, int = FALSE) {
+  if (int) {total_pars <- c("I", "A", "B", "C") } else {total_pars <- c("A", "B", "C")}
   if (is.null(pars)) {
     pars <- total_pars
   }
-  if (USEGROUP) {
+  if (int) {
+    str_nf <- paste0(y, " ~ I[] + (A[] * (1-exp(-(", x, "/C[])^B[])))")
+  } else{
     str_nf <- paste0(y, " ~ A[] * (1-exp(-(", x, "/C[])^B[]))")
+  }
+  if (USEGROUP) {
     for (par in total_pars) {
       if (par %in% pars) {
         str_nf <- gsub(paste0(par, "\\[\\]"), paste0(par, "[", group, "]"), str_nf)
@@ -515,18 +594,22 @@
     }
     nf <- as.formula(str_nf)
   } else {
-    nf <- as.formula(paste0(y, " ~ A * (1-exp(-(", x, "/C)^B))"))
+    nf <- as.formula(gsub("\\[|\\]", "", str_nf))
   }
   return(list("formula" = nf, "pars" = pars))
 }
 
-.nlrq_form_gumbel <- function(x, y, USEGROUP, group, pars) {
-  total_pars <- c("A", "B", "C")
+.nlrq_form_gumbel <- function(x, y, USEGROUP, group, pars, int = FALSE) {
+  if (int) {total_pars <- c("I", "A", "B", "C") } else {total_pars <- c("A", "B", "C")}
   if (is.null(pars)) {
     pars <- total_pars
   }
-  if (USEGROUP) {
+  if (int) {
+    str_nf <- paste0(y, " ~ I[] + (A[] * exp(-exp(-(", x, "-B[])/C[])))")
+  } else{
     str_nf <- paste0(y, " ~ A[] * exp(-exp(-(", x, "-B[])/C[]))")
+  }
+  if (USEGROUP) {
     for (par in total_pars) {
       if (par %in% pars) {
         str_nf <- gsub(paste0(par, "\\[\\]"), paste0(par, "[", group, "]"), str_nf)
@@ -536,7 +619,7 @@
     }
     nf <- as.formula(str_nf)
   } else {
-    nf <- as.formula(paste0(y, " ~ A * exp(-exp(-(", x, "-B)/C))"))
+    nf <- as.formula(gsub("\\[|\\]", "", str_nf))
   }
   return(list("formula" = nf, "pars" = pars))
 }
