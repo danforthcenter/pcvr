@@ -14,6 +14,7 @@
 #' changepoints. If a changepoint is called "changePointX" with X being its position in the formula
 #' then it will be estimated as a parameter in the model, but if the changepoint is called
 #' "fixedChangePointX" then it will be passed as a numeric in the growth model.
+#' @param int logical, should an intercept be modeled?
 #'
 #' @examples
 #' df1 <- do.call(rbind, lapply(1:30, function(i) {
@@ -44,7 +45,8 @@
 #' @keywords internal
 #' @noRd
 
-.brmsChangePointHelper <- function(model, x, y, group, dpar = FALSE, nTimes = 25, useGroup, priors) {
+.brmsChangePointHelper <- function(model, x, y, group, dpar = FALSE,
+                                   nTimes = 25, useGroup, priors, int = FALSE) {
   component_models <- trimws(strsplit(model, "\\+")[[1]])
   models <- c(
     "logistic", "gompertz", "monomolecular", "exponential", "linear", "power law", "gam",
@@ -89,12 +91,9 @@
     }
 
     matched_iter_model <- match.arg(iter_model, models)
-    if (matched_iter_model == "homo") {
-      matched_iter_model <- "int"
-    } # recoding
-    if (matched_iter_model == "spline") {
-      matched_iter_model <- "gam"
-    }
+    matched_iter_model <- gsub("homo", "int", matched_iter_model) # recoding
+    matched_iter_model <- gsub("spline", "gam", matched_iter_model) # recoding
+
     chngptFormFun <- match.fun(paste0(".", gsub(" ", "", matched_iter_model), "ChngptForm"))
     iter <- chngptFormFun(x, i, dpar = prefix, priors)
     if (decay) {
@@ -103,7 +102,19 @@
     return(iter)
   })
 
-  growthForm <- paste0(y, " ~ ", formulae[[1]]$form, " * ", formulae[[1]]$cp)
+  params <- unique(unlist(lapply(formulae, function(f) {
+    f$params
+  })))
+  params <- params[-length(params)]
+
+  if (int) { # for changepoint models with an intercept add I term to formula and params
+    formula_starter_string <- paste0(y, " ~ ", prefix, "I + ")
+    params <- append(params, paste0(prefix, "I"))
+  } else {
+    formula_starter_string <- paste0(y, " ~ ")
+    }
+
+  growthForm <- paste0(formula_starter_string, formulae[[1]]$form, " * ", formulae[[1]]$cp)
   #* Make cpInt cumulative
   for (i in 2:length(formulae)) {
     cumulativeCpInt <- do.call(paste, list(lapply(1:i, function(o) {
@@ -124,11 +135,6 @@
   if (dpar) {
     growthForm <- brms::nlf(growthForm)
   }
-
-  params <- unique(unlist(lapply(formulae, function(f) {
-    f$params
-  })))
-  params <- params[-length(params)]
 
   splineSegments <- which(unlist(lapply(formulae, function(fml) {
     "splineVar" %in% names(fml)
