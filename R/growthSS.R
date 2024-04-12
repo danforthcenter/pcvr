@@ -327,10 +327,14 @@ growthSS <- function(model, form, sigma = NULL, df, start = NULL,
     "nlme", "mgcv", "survreg",
     "flexsurv"
   ))
-
+  # check for survival model
   surv <- .survModelParser(model)
   survivalBool <- surv$survival
   model <- surv$model
+  # check for intercept
+  int_res <- .intModelHelper(model)
+  int <- int_res$int
+  model <- int_res$model
 
   if (survivalBool) {
     if (type_matched == "brms") {
@@ -349,7 +353,7 @@ growthSS <- function(model, form, sigma = NULL, df, start = NULL,
     } else if (type_matched %in% c("nlrq", "nls")) {
       res <- .nlrqSS(
         model = model, form = form, tau = tau, df = df, start = start, pars = pars,
-        type = type
+        type = type, int = int
       )
     } else if (type_matched == "nlme") {
       if (is.null(sigma)) {
