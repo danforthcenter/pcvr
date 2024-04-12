@@ -349,7 +349,7 @@ growthSS <- function(model, form, sigma = NULL, df, start = NULL,
     }
   } else {
     if (type_matched == "brms") {
-      res <- .brmSS(model = model, form = form, sigma = sigma, df = df, priors = start)
+      res <- .brmSS(model = model, form = form, sigma = sigma, df = df, priors = start, int = int)
     } else if (type_matched %in% c("nlrq", "nls")) {
       res <- .nlrqSS(
         model = model, form = form, tau = tau, df = df, start = start, pars = pars,
