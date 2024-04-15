@@ -12,6 +12,11 @@
 #'  You can also specify decay models by including the "decay" keyword with the model name.
 #'  Note that in brms models the entire formula is negated for decay models so that lognormal priors can
 #'  still be used when at least some coefficients would be negative.
+#'  Additionally, the "int_" prefix may be added to a model name to specify that an intercept should
+#'  be included. By default these models are assumed to have intercepts at 0, which is often fine.
+#'  If you include an intercept in a brms model then you would specify the prior as you would for an
+#'  "A", "B", or "C" parameter but as "I". By default growthSS will make student T priors for intercept
+#'  parameters in the same way that it will for estimated changepoints (see below).
 #'  With type="brms" you can also specify segmented models by combining model names with a plus sign
 #'  such as "linear + linear". In a segmented model the names for parameters do not follow the normal
 #'  "A", "B", "C" notation, instead they are named for the type of model, the position in the formula,
@@ -327,10 +332,14 @@ growthSS <- function(model, form, sigma = NULL, df, start = NULL,
     "nlme", "mgcv", "survreg",
     "flexsurv"
   ))
-
+  # check for survival model
   surv <- .survModelParser(model)
   survivalBool <- surv$survival
   model <- surv$model
+  # check for intercept
+  int_res <- .intModelHelper(model)
+  int <- int_res$int
+  model <- int_res$model
 
   if (survivalBool) {
     if (type_matched == "brms") {
@@ -345,17 +354,18 @@ growthSS <- function(model, form, sigma = NULL, df, start = NULL,
     }
   } else {
     if (type_matched == "brms") {
-      res <- .brmSS(model = model, form = form, sigma = sigma, df = df, priors = start)
+      res <- .brmSS(model = model, form = form, sigma = sigma, df = df, priors = start, int = int)
     } else if (type_matched %in% c("nlrq", "nls")) {
       res <- .nlrqSS(
         model = model, form = form, tau = tau, df = df, start = start, pars = pars,
-        type = type
+        type = type, int = int
       )
     } else if (type_matched == "nlme") {
       if (is.null(sigma)) {
         sigma <- "power"
       }
-      res <- .nlmeSS(model = model, form = form, sigma = sigma, df = df, pars = pars, start = start)
+      res <- .nlmeSS(model = model, form = form, sigma = sigma, df = df, pars = pars,
+                     start = start, int = int)
     } else if (type_matched == "mgcv") {
       res <- .mgcvSS(model = model, form = form, df = df)
     } else {

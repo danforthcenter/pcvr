@@ -34,6 +34,7 @@
 #'   the necessary features are added to \code{brms}. For GAMs priors are not created by
 #'   this function but can still be provided as a \code{brmsprior} object.
 #'   See details for guidance.
+#' @param int Logical, should an intercept term be included?
 #' @keywords Bayesian, brms
 #'
 #' @importFrom stats as.formula rgamma
@@ -120,7 +121,7 @@
 #' @keywords internal
 #' @noRd
 
-.brmSS <- function(model, form, sigma = NULL, df, priors = NULL) {
+.brmSS <- function(model, form, sigma = NULL, df, priors = NULL, int = FALSE) {
   out <- list()
   models <- c(
     "int", "logistic", "gompertz", "monomolecular", "exponential", "linear", "power law",
@@ -172,7 +173,7 @@
   if (grepl("\\+", model)) {
     chngptHelperList <- .brmsChangePointHelper(model, x, y, group,
       dpar = FALSE, nTimes = nTimes,
-      useGroup = USEGROUP, priors = priors
+      useGroup = USEGROUP, priors = priors, int = int
     )
     growthForm <- chngptHelperList$growthForm
     pars <- chngptHelperList$pars
@@ -188,7 +189,7 @@
     brmsFormFun <- match.fun(stringBrmsFormFun)
     formRes <- brmsFormFun(x, y, group,
       dpar = FALSE, nTimes = nTimes,
-      useGroup = USEGROUP, prior = priors
+      useGroup = USEGROUP, prior = priors, int = int
     )
     if (decay) {
       formRes <- .brms_form_decay(formRes)
@@ -202,7 +203,10 @@
     dpar_res <- lapply(seq_along(sigma), function(i) {
       dpar <- names(sigma)[[i]]
       model <- sigma[[i]]
-      .brmDparHelper(dpar, model, x, group, nTimes, USEGROUP, priors)
+      intModelRes <- .intModelHelper(model)
+      model <- intModelRes$model
+      sigmaInt <- intModelRes$int
+      .brmDparHelper(dpar, model, x, group, nTimes, USEGROUP, priors, sigmaInt)
     })
     names(dpar_res) <- names(sigma)
     dparForm <- unlist(lapply(dpar_res, function(res) {

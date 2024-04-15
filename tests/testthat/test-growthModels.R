@@ -415,3 +415,73 @@ test_that("Test survreg", {
   p <- growthPlot(fit, form = ss$pcvrForm, df = ss$df)
   expect_s3_class(p, "ggplot")
 })
+
+
+#* ************************************************************
+#* *************** `Models with Intercepts` ***************
+#* ************************************************************
+
+set.seed(123)
+logistic_df <- growthSim("logistic",
+  n = 20, t = 25,
+  params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
+)
+logistic_df$y <- logistic_df$y + 20
+
+test_that("Test Intercept Logistic nls modeling", {
+  ss <- suppressMessages(growthSS(
+    model = "int_logistic", form = y ~ time | id / group,
+    df = logistic_df, type = "nls"
+  ))
+  fit <- fitGrowth(ss)
+  expect_s3_class(fit, "nls")
+
+  nls_p <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df) +
+    ggplot2::labs(title = "nls")
+  expect_s3_class(nls_p, "ggplot")
+
+  test_res <- testGrowth(ss, fit, test = "A")$anova
+  expect_s3_class(test_res, "anova")
+
+  test_res <- testGrowth(ss, fit, test = list("A1 - A2 *1.1", "(B1+1) - B2", "C1 - (C2-0.5)"))
+  expect_equal(dim(test_res), c(3, 5))
+})
+
+test_that("Test Intercept Logistic nlrq modeling", {
+  ss <- suppressMessages(growthSS(
+    model = "int_logistic", form = y ~ time | id / group,
+    df = logistic_df, type = "nlrq", tau = 0.5
+  ))
+
+  fit <- fitGrowth(ss)
+  expect_s3_class(fit, "nlrq")
+
+  nlrq_p <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df) +
+    ggplot2::labs(title = "nlrq")
+  expect_s3_class(nlrq_p, "ggplot")
+})
+
+test_that("Test Intercept Logistic nlme modeling", {
+  ss <- growthSS(
+    model = "int_logistic", form = y ~ time | id / group, sigma = "power",
+    df = logistic_df, type = "nlme"
+  )
+
+  fit <- suppressWarnings(fitGrowth(ss))
+  expect_s3_class(fit, "nlme")
+
+  nlme_p <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
+  nlme_p <- nlme_p +
+    ggplot2::labs(title = "nlme")
+  expect_s3_class(nlme_p, "ggplot")
+
+  test_res <- suppressWarnings(testGrowth(ss, fit, test = "A")$anova)
+  expect_s3_class(test_res, "anova.lme")
+
+  test_res <- testGrowth(fit = fit, test = list(
+    "A.groupa - A.groupb *1.1",
+    "(B.groupa+1) - B.groupb",
+    "C.groupa - (C.groupb-0.5)"
+  ))
+  expect_equal(dim(test_res), c(3, 5))
+})
