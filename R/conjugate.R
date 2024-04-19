@@ -507,7 +507,8 @@ conjugate <- function(s1 = NULL, s2 = NULL,
     }
 
     matched_arg <- match.arg(method[i], choices = c("t", "gaussian", "beta", "binomial",
-                                                    "lognormal", "poisson", "negbin"))
+                                                    "lognormal", "poisson", "negbin",
+                                                    "vonmises", "vonmises2"))
     vec_suffix <- if (vec) {"sv"} else {"mv"}
     matched_fun <- get(paste0(".conj_", matched_arg, "_", vec_suffix))
     qnts <- matched_fun(s1 = sample, priors = prior, calculatingSupport = TRUE)

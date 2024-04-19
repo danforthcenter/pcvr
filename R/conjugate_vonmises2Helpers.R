@@ -288,7 +288,7 @@
   kappa <- .bessel.inv(mean(cos(x - mean.dir)))
   if(n < 16) {
     kappa.biased <- kappa
-    if(kappa.ml < 2) {
+    if(kappa.biased < 2) {
       kappa <- max(kappa.biased - 2 * (n * kappa.biased)^-1, 0)
     } else {
       kappa <- ((n - 1)^3 * kappa.biased)/(n^3 + n)
