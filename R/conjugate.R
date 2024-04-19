@@ -684,6 +684,5 @@ conjugate <- function(s1 = NULL, s2 = NULL,
                      axis.text.y.left = ggplot2::element_blank()) +
       patchwork::plot_layout(widths = c(2, 1))
   }
-  plot(p)
   return(p)
 }
