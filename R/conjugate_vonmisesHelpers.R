@@ -71,7 +71,7 @@
   }
   out <- list()
   #* `Get weighted mean of data and prior for half tangent adjustment`
-  cm <- .circular.mean(c(X1, mu_radians), w = c(rep(1, length(X1)), priors$n) )
+  cm <- .circular.mean(c(X1, mu_radians), w = c(rep(nrow(s1)/length(X1), length(X1)), priors$n) )
   unitCircleAdj <- ifelse(abs(cm) <= pi/2, 0, pi)
   unitCircleAdj <- ifelse(cm > 0, 1, -1) * unitCircleAdj
   #* `Update prior parameters`
@@ -159,7 +159,7 @@
                               plot = FALSE, support = NULL, cred.int.level = NULL,
                               calculatingSupport = FALSE) {
   #* `make default prior if none provided`
-  default_prior <- list(mu = 0, kappa = 1,
+  default_prior <- list(mu = 0, kappa = 0.5,
                         boundary = c(-pi, pi),
                         known_kappa = 1, n = 1)
   if (is.null(priors)) {
