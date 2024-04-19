@@ -25,6 +25,7 @@
 .conj_vonmises_mv <- function(s1 = NULL, priors = NULL,
                               plot = FALSE, support = NULL, cred.int.level = NULL,
                               calculatingSupport = FALSE) {
+  support <- NULL
   #* `Standardize sample 1 class and names`
   if (is.null(colnames(s1))) {
     bins <- (seq_along(s1))
@@ -67,7 +68,8 @@
       return(priors$boundary) #* this would be [-pi, pi] if using radians, but plotting will be on
       #* the original scale so we can just return the boundary and use [-pi, pi] as support here
     }
-    support <- seq(-pi, pi, length.out = 100000)
+    support_boundary <- seq(min(priors$boundary), max(priors$boundary), by = 0.0005)
+    support <- seq(-pi, pi, length.out = length(support_boundary))
   }
   out <- list()
   #* `Get weighted mean of data and prior for half tangent adjustment`
@@ -98,11 +100,10 @@
   hdi[hdi>pi] <- hdi[hdi>pi] - (2 * pi) # if the second hdi was narrower then fix the part beyond pi
   #* `store highest density estimate`
   hde <- mu_prime
-  #* `Rescale HDI, HDE, draws, and support from radians to boundary units`
+  #* `Rescale HDI, HDE, and draws, from radians to boundary units`
   hdi_boundary <- .radians.to.boundary(hdi, target = priors$boundary)
   hde_boundary <- .radians.to.boundary(hde, target = priors$boundary)
   draws_boundary <- .radians.to.boundary(draws, target = priors$boundary)
-  support_boundary <- .radians.to.boundary(support, target = priors$boundary)
   #* `save summary and parameters`
   out$summary <- data.frame(HDE_1 = hde_boundary,
                             HDI_1_low = hdi_boundary[1],
@@ -158,6 +159,7 @@
 .conj_vonmises_sv <- function(s1 = NULL, priors = NULL,
                               plot = FALSE, support = NULL, cred.int.level = NULL,
                               calculatingSupport = FALSE) {
+  support <- NULL
   #* `make default prior if none provided`
   default_prior <- list(mu = 0, kappa = 0.5,
                         boundary = c(-pi, pi),
@@ -185,7 +187,8 @@
       return(priors$boundary) #* this would be [-pi, pi] if using radians, but plotting will be on
       #* the original scale so we can just return the boundary and use [-pi, pi] as support here
     }
-    support <- seq(-pi, pi, length.out = 100000)
+    support_boundary <- seq(min(priors$boundary), max(priors$boundary), by = 0.0005)
+    support <- seq(-pi, pi, length.out = length(support_boundary))
   }
   out <- list()
   #* `Get weighted mean of data and prior for half tangent adjustment`

@@ -85,7 +85,8 @@
 #'     for the total distribution, and n is the number of prior observations. This Von Mises option
 #'     updates the conjugate prior for the mean direction, which is itself Von-Mises distributed. This
 #'     in some ways is analogous to the T method, but assuming a fixed variance when the mean is
-#'     updated.
+#'     updated. Note that due to how the rescaling works larger circular boundaries can be slow to 
+#'     plot.
 #'     }
 #'     \item{\strong{"vonmises2": } \code{priors = list(mu = 0, kappa = 1,
 #'     boundary = c(-pi, pi), n = 1)}, where mu and kappa are mean direction and precision of the
