@@ -7,9 +7,9 @@
 #' @noRd
 
 .intModelHelper <- function(model) {
-  if (grepl("^int_", model)) {
+  if (grepl("int_", model)) {
     int <- TRUE
-    model <- gsub("^int_", "", model)
+    model <- gsub("int_", "", model)
   } else {
     int <- FALSE
   }

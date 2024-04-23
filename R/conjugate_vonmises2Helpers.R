@@ -82,7 +82,13 @@
   unitCircleAdj <- ifelse(abs(cm) <= pi / 2, 0, pi)
   unitCircleAdj <- ifelse(cm > 0, 1, -1) * unitCircleAdj
   #* `Update prior parameters`
-  a <- kappa_prime
+  a <- priors$kappa # kappa parameter can easily overwhelm mean in updating with low sample size
+  # I do not love this currently. It seems like a should be kappa prime, but that very easily
+  # overwhelms small samples in the follow formula to update mu, so instead of the sequential
+  # updating I am using separate updating.
+  # the formula below basically weighs the prior by kappa, so if I update kappa then weigh the prior
+  # by that then it is much more biased towards the prior, I think that is worth avoiding with this
+  # workaround
   b <- mu_radians
   mu_prime_atan_scale <- atan(((a * sin(b)) + sum(sin(s1))) / ((a * cos(b)) + sum(cos(s1))))
   mu_prime <- unitCircleAdj + mu_prime_atan_scale
@@ -220,7 +226,7 @@
   unitCircleAdj <- ifelse(abs(cm) <= pi / 2, 0, pi)
   unitCircleAdj <- ifelse(cm > 0, 1, -1) * unitCircleAdj
   #* `Update prior parameters`
-  a <- kappa_prime
+  a <- priors$kappa
   b <- mu_radians
   mu_prime_atan_scale <- atan(((a * sin(b)) + sum(sin(X1))) / ((a * cos(b)) + sum(cos(X1))))
   mu_prime <- unitCircleAdj + mu_prime_atan_scale

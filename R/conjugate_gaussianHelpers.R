@@ -143,7 +143,7 @@
   v1_n <- v1 + n1 # degrees of freedom including data
   s2_1_n <- ((n1 - 1) * s2_1 + v1 * priors$s2[1] + priors$n[1] * n1 * (priors$mu[1] - m1)^2 / n1_n) /
     v1_n # pooled variance
-  sigma_1 <- sqrt(s2_1_n) # standard error of the mean
+  sigma_1 <- sqrt(s2_1_n) # standard deviation
   #* `Define support if it is missing`
   if (is.null(support)) {
     quantiles <- qlst(c(0.0001, 0.9999), v1_n, m1_n, sigma_1)
