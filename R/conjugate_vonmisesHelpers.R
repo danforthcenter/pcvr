@@ -25,6 +25,7 @@
 .conj_vonmises_mv <- function(s1 = NULL, priors = NULL,
                               plot = FALSE, support = NULL, cred.int.level = NULL,
                               calculatingSupport = FALSE) {
+  #* `Turn off support for consistent rescaling between boundaries and to avoid default length of 10000`
   support <- NULL
   #* `Standardize sample 1 class and names`
   if (is.null(colnames(s1))) {
@@ -42,16 +43,21 @@
   #* `Turn s1 matrix into a vector`
   X1 <- rep(histColsBin[bins_order], as.numeric(round(colSums(s1))))
   #* `make default prior if none provided`
-  default_prior <- list(mu = 0, kappa = 1,
-                        boundary = c(-pi, pi),
-                        known_kappa = 1, n = 1)
+  default_prior <- list(
+    mu = 0, kappa = 1,
+    boundary = c(-pi, pi),
+    known_kappa = 1, n = 1
+  )
   if (is.null(priors)) {
     priors <- default_prior
   }
   #* `if any elements are missing from prior then use defaults`
   priors <- stats::setNames(lapply(names(default_prior), function(nm) {
-    if(nm %in% names(priors)) { return(priors[[nm]])
-    } else {return(default_prior[[nm]])}
+    if (nm %in% names(priors)) {
+      return(priors[[nm]])
+    } else {
+      return(default_prior[[nm]])
+    }
   }), names(default_prior))
   #* `rescale data to [-pi, pi] according to boundary`
   X1 <- .boundary.to.radians(x = X1, boundary = priors$boundary)
@@ -59,8 +65,10 @@
   mu_radians <- .boundary.to.radians(x = priors$mu, boundary = priors$boundary)
   #* `Raise error if the boundary is wrong and data is not on [-pi, pi]`
   if (any(abs(X1) > pi)) {
-    stop(paste0("Values must be on [-pi, pi] after rescaling. ",
-                "Does the boundary element in your prior include all your data?"))
+    stop(paste0(
+      "Values must be on [-pi, pi] after rescaling. ",
+      "Does the boundary element in your prior include all your data?"
+    ))
   }
   #* `Define dense Support`
   if (is.null(support)) {
@@ -73,31 +81,30 @@
   }
   out <- list()
   #* `Get weighted mean of data and prior for half tangent adjustment`
-  cm <- .circular.mean(c(X1, mu_radians), w = c(rep(nrow(s1)/length(X1), length(X1)), priors$n) )
-  unitCircleAdj <- ifelse(abs(cm) <= pi/2, 0, pi)
+  cm <- .circular.mean(c(X1, mu_radians), w = c(rep(nrow(s1) / length(X1), length(X1)), priors$n))
+  unitCircleAdj <- ifelse(abs(cm) <= pi / 2, 0, pi)
   unitCircleAdj <- ifelse(cm > 0, 1, -1) * unitCircleAdj
   #* `Update prior parameters`
   a <- priors$kappa
   b <- mu_radians
   kappa_known <- priors$known_kappa
-  kappa_prime <- kappa_known * ( (a * sin(b)) + sum(sin(s1)) )
-  mu_prime_atanScale <- atan( ( (a * sin(b) ) + sum(sin(s1)) )/
-                                ( (a * cos(b)) + sum(cos(s1)) ) )
-  mu_prime <- unitCircleAdj + mu_prime_atanScale
+  kappa_prime <- kappa_known * ((a * sin(b)) + sum(sin(s1)))
+  mu_prime_atan_scale <- atan(((a * sin(b)) + sum(sin(s1))) / ((a * cos(b)) + sum(cos(s1))))
+  mu_prime <- unitCircleAdj + mu_prime_atan_scale
   #* `calculate density over support`
   dens1 <- brms::dvon_mises(support, mu_prime, kappa_prime)
   pdf1 <- dens1 / sum(dens1)
   #* `calculate highest density interval`
-  #* note there is no qvon_mises function, so I am using bayestestR::hdi on 
+  #* note there is no qvon_mises function, so I am using bayestestR::hdi on
   #* posterior draws and rescaled posterior draws
   draws <- brms::rvon_mises(10000, mu_prime, kappa_prime)
   hdi_v1 <- as.numeric(bayestestR::hdi(draws, ci = cred.int.level))[2:3]
   draws2 <- draws
-  draws2[draws2 < 0] <- draws2[draws2 < 0] + 2*pi
+  draws2[draws2 < 0] <- draws2[draws2 < 0] + 2 * pi
   hdi_v2 <- as.numeric(bayestestR::hdi(draws2, ci = cred.int.level))[2:3]
   hdis <- list(hdi_v1, hdi_v2)
   hdi <- hdis[[which.min(c(diff(hdi_v1), diff(hdi_v2)))]]
-  hdi[hdi>pi] <- hdi[hdi>pi] - (2 * pi) # if the second hdi was narrower then fix the part beyond pi
+  hdi[hdi > pi] <- hdi[hdi > pi] - (2 * pi) # if the second hdi was narrower then fix the part beyond pi
   #* `store highest density estimate`
   hde <- mu_prime
   #* `Rescale HDI, HDE, and draws, from radians to boundary units`
@@ -105,9 +112,11 @@
   hde_boundary <- .radians.to.boundary(hde, target = priors$boundary)
   draws_boundary <- .radians.to.boundary(draws, target = priors$boundary)
   #* `save summary and parameters`
-  out$summary <- data.frame(HDE_1 = hde_boundary,
-                            HDI_1_low = hdi_boundary[1],
-                            HDI_1_high = hdi_boundary[2])
+  out$summary <- data.frame(
+    HDE_1 = hde_boundary,
+    HDI_1_low = hdi_boundary[1],
+    HDI_1_high = hdi_boundary[2]
+  )
   out$posterior$mu <- hde_boundary # rescaled mu_prime
   out$posterior$kappa <- kappa_prime
   out$posterior$known_kappa <- priors$known_kappa
@@ -118,8 +127,10 @@
   out$pdf <- pdf1
   #* `keep data for plotting`
   if (plot) {
-    out$plot_df <- data.frame("range" = support_boundary, "prob" = pdf1,
-                              "sample" = rep("Sample 1", length(support_boundary)))
+    out$plot_df <- data.frame(
+      "range" = support_boundary, "prob" = pdf1,
+      "sample" = rep("Sample 1", length(support_boundary))
+    )
   }
   return(out)
 }
@@ -136,7 +147,7 @@
 #'     cred.int.level = 0.95,
 #'     plot = FALSE
 #'   )
-#'   
+#'
 #'   set.seed(123)
 #'   x <- rnorm(20, 0, 5)
 #'   .conj_vonmises_sv(
@@ -144,7 +155,7 @@
 #'     cred.int.level = 0.95,
 #'     plot = FALSE
 #'   )
-#'   
+#'
 #'   set.seed(123)
 #'   x <- rnorm(20, 90, 20)
 #'   .conj_vonmises_sv(
@@ -159,18 +170,24 @@
 .conj_vonmises_sv <- function(s1 = NULL, priors = NULL,
                               plot = FALSE, support = NULL, cred.int.level = NULL,
                               calculatingSupport = FALSE) {
+  #* `to avoid default support length of 10000 which may not span boundary well`
   support <- NULL
   #* `make default prior if none provided`
-  default_prior <- list(mu = 0, kappa = 0.5,
-                        boundary = c(-pi, pi),
-                        known_kappa = 1, n = 1)
+  default_prior <- list(
+    mu = 0, kappa = 0.5,
+    boundary = c(-pi, pi),
+    known_kappa = 1, n = 1
+  )
   if (is.null(priors)) {
     priors <- default_prior
   }
   #* `if any elements are missing from prior then use defaults`
   priors <- stats::setNames(lapply(names(default_prior), function(nm) {
-    if(nm %in% names(priors)) { return(priors[[nm]])
-      } else {return(default_prior[[nm]])}
+    if (nm %in% names(priors)) {
+      return(priors[[nm]])
+    } else {
+      return(default_prior[[nm]])
+    }
   }), names(default_prior))
   #* `rescale data to [-pi, pi] according to boundary`
   s1 <- .boundary.to.radians(x = s1, boundary = priors$boundary)
@@ -178,8 +195,10 @@
   mu_radians <- .boundary.to.radians(x = priors$mu, boundary = priors$boundary)
   #* `Raise error if the boundary is wrong and data is not on [-pi, pi]`
   if (any(abs(s1) > pi)) {
-    stop(paste0("Values must be on [-pi, pi] after rescaling. ",
-         "Does the boundary element in your prior include all your data?"))
+    stop(paste0(
+      "Values must be on [-pi, pi] after rescaling. ",
+      "Does the boundary element in your prior include all your data?"
+    ))
   }
   #* `Define dense Support`
   if (is.null(support)) {
@@ -192,31 +211,30 @@
   }
   out <- list()
   #* `Get weighted mean of data and prior for half tangent adjustment`
-  cm <- .circular.mean(c(s1, mu_radians), w = c(rep(1, length(s1)), priors$n) )
-  unitCircleAdj <- ifelse(abs(cm) <= pi/2, 0, pi)
+  cm <- .circular.mean(c(s1, mu_radians), w = c(rep(1, length(s1)), priors$n))
+  unitCircleAdj <- ifelse(abs(cm) <= pi / 2, 0, pi)
   unitCircleAdj <- ifelse(cm > 0, 1, -1) * unitCircleAdj
   #* `Update prior parameters`
   a <- priors$kappa
   b <- mu_radians
   kappa_known <- priors$known_kappa
-  kappa_prime <- kappa_known * ( (a * sin(b)) + sum(sin(s1)) )
-  mu_prime_atanScale <- atan( ( (a * sin(b) ) + sum(sin(s1)) )/
-                               ( (a * cos(b)) + sum(cos(s1)) ) )
-  mu_prime <- unitCircleAdj + mu_prime_atanScale
+  kappa_prime <- kappa_known * ((a * sin(b)) + sum(sin(s1)))
+  mu_prime_atan_scale <- atan(((a * sin(b)) + sum(sin(s1))) / ((a * cos(b)) + sum(cos(s1))))
+  mu_prime <- unitCircleAdj + mu_prime_atan_scale
   #* `calculate density over support`
   dens1 <- brms::dvon_mises(support, mu_prime, kappa_prime)
   pdf1 <- dens1 / sum(dens1)
   #* `calculate highest density interval`
-  #* note there is no qvon_mises function, so I am using bayestestR::hdi on 
+  #* note there is no qvon_mises function, so I am using bayestestR::hdi on
   #* posterior draws and rescaled posterior draws
   draws <- brms::rvon_mises(10000, mu_prime, kappa_prime)
   hdi_v1 <- as.numeric(bayestestR::hdi(draws, ci = cred.int.level))[2:3]
   draws2 <- draws
-  draws2[draws2 < 0] <- draws2[draws2 < 0] + 2*pi
+  draws2[draws2 < 0] <- draws2[draws2 < 0] + 2 * pi
   hdi_v2 <- as.numeric(bayestestR::hdi(draws2, ci = cred.int.level))[2:3]
   hdis <- list(hdi_v1, hdi_v2)
   hdi <- hdis[[which.min(c(diff(hdi_v1), diff(hdi_v2)))]]
-  hdi[hdi>pi] <- hdi[hdi>pi] - (2 * pi) # if the second hdi was narrower then fix the part beyond pi
+  hdi[hdi > pi] <- hdi[hdi > pi] - (2 * pi) # if the second hdi was narrower then fix the part beyond pi
   #* `store highest density estimate`
   hde <- mu_prime
   #* `Rescale HDI, HDE, draws, and support from radians to boundary units`
@@ -225,9 +243,11 @@
   draws_boundary <- .radians.to.boundary(draws, target = priors$boundary)
   support_boundary <- .radians.to.boundary(support, target = priors$boundary)
   #* `save summary and parameters`
-  out$summary <- data.frame(HDE_1 = hde_boundary,
-                            HDI_1_low = hdi_boundary[1],
-                            HDI_1_high = hdi_boundary[2])
+  out$summary <- data.frame(
+    HDE_1 = hde_boundary,
+    HDI_1_low = hdi_boundary[1],
+    HDI_1_high = hdi_boundary[2]
+  )
   out$posterior$mu <- hde_boundary # rescaled mu_prime
   out$posterior$kappa <- kappa_prime
   out$posterior$known_kappa <- priors$known_kappa
@@ -238,8 +258,10 @@
   out$pdf <- pdf1
   #* `keep data for plotting`
   if (plot) {
-    out$plot_df <- data.frame("range" = support_boundary, "prob" = pdf1,
-                              "sample" = rep("Sample 1", length(support_boundary)))
+    out$plot_df <- data.frame(
+      "range" = support_boundary, "prob" = pdf1,
+      "sample" = rep("Sample 1", length(support_boundary))
+    )
   }
   return(out)
 }
@@ -255,8 +277,10 @@
 #' @keywords internal
 #' @noRd
 
-.circular.mean <- function (x, w = NULL) {
-  if(is.null(w)){w <- rep(1, length(x))}
+.circular.mean <- function(x, w = NULL) {
+  if (is.null(w)) {
+    w <- rep(1, length(x))
+  }
   sinr <- sum(sin(x * w))
   cosr <- sum(cos(x * w))
   circmean <- atan2(sinr, cosr)
@@ -270,10 +294,10 @@
 #' @param target the target circular space, should not be changed from radians (-pi, pi).
 #' @examples
 #' if (FALSE) {
-#'   x <- seq(-6, 6, length.out=20)
+#'   x <- seq(-6, 6, length.out = 20)
 #'   .boundary.to.radians(x, c(6.3, 6.3))
-#'   
-#'   x <- seq(0, 100, length.out=20)
+#'
+#'   x <- seq(0, 100, length.out = 20)
 #'   .boundary.to.radians(x, c(0, 100))
 #' }
 #' @keywords internal
@@ -293,8 +317,8 @@
 #' @examples
 #' if (FALSE) {
 #'   x <- brms::rvon_mises(20, 2, 3)
-#'   .radians.to.boundary(x, target=c(6.3, 6.3))
-#'   
+#'   .radians.to.boundary(x, target = c(6.3, 6.3))
+#'
 #'   x <- brms::rvon_mises(20, 3.1, 2)
 #'   .radians.to.boundary(x, target = c(0, 100))
 #' }
@@ -305,4 +329,3 @@
   x1 <- (target[2] - target[1]) / (boundary[2] - boundary[1]) * (x - boundary[2]) + target[2]
   return(x1)
 }
-
