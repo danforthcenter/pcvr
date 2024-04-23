@@ -88,8 +88,20 @@
   a <- priors$kappa
   b <- mu_radians
   kappa_known <- priors$known_kappa
-  kappa_prime <- kappa_known * ((a * sin(b)) + sum(sin(s1)))
-  mu_prime_atan_scale <- atan(((a * sin(b)) + sum(sin(s1))) / ((a * cos(b)) + sum(cos(s1))))
+  kappa_prime <- kappa_known * ((a * sin(b)) + sum(sin(s1))/nrow(s1) )
+  #* trig functions can run on data.frames then standardizing by nrow
+  if(kappa_prime < 0) {
+    kappa_prime <- kappa_known * .unbiased.kappa(X1)
+  }
+  #* workaround for samples where kappa becomes negative.
+  #* compendium and other sources I have read so far do not address this problem.
+  #* seems like this would come up a lot, only difference I have seen is using [-pi, pi] vs
+  #* the compendiums [0, 2pi], but I don't think that should make a difference.
+
+  # problem here with updating based on artificially too much information. Might need to update
+  # more methods too...
+  mu_prime_atan_scale <- atan(((a * sin(b)) + sum(sin(colMeans(s1)))) /
+                                ((a * cos(b)) + sum(cos(colMeans(s1)))))
   mu_prime <- unitCircleAdj + mu_prime_atan_scale
   #* `calculate density over support`
   dens1 <- brms::dvon_mises(support, mu_prime, kappa_prime)
@@ -218,7 +230,14 @@
   a <- priors$kappa
   b <- mu_radians
   kappa_known <- priors$known_kappa
-  kappa_prime <- kappa_known * ((a * sin(b)) + sum(sin(s1)))
+  kappa_prime <- kappa_known * ((a * sin(b)) + sum(sin(s1)) )
+  if(kappa_prime < 0) {
+    kappa_prime <- kappa_known * .unbiased.kappa(s1)
+  }
+  #* workaround for samples where kappa becomes negative.
+  #* compendium and other sources I have read so far do not address this problem.
+  #* seems like this would come up a lot, only difference I have seen is using [-pi, pi] vs
+  #* the compendiums [0, 2pi], but I don't think that should make a difference.
   mu_prime_atan_scale <- atan(((a * sin(b)) + sum(sin(s1))) / ((a * cos(b)) + sum(cos(s1))))
   mu_prime <- unitCircleAdj + mu_prime_atan_scale
   #* `calculate density over support`

@@ -160,7 +160,7 @@
   out$summary <- data.frame(HDE_1 = hde1_mean, HDI_1_low = hdi1_mean[1], HDI_1_high = hdi1_mean[2])
   out$posterior$mu <- m1_n
   out$posterior$n <- n1_n
-  out$posterior$s2 <- sigma_1
+  out$posterior$s2 <- s2_1_n
   #* `Make Posterior Draws`
   out$posteriorDraws <- extraDistr::rlst(10000, v1_n, m1_n, sigma_1)
   out$pdf <- pdf1
