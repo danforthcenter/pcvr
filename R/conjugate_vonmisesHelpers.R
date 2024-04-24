@@ -343,3 +343,30 @@
   x1 <- (target[2] - target[1]) / (boundary[2] - boundary[1]) * (x - boundary[2]) + target[2]
   return(x1)
 }
+
+#' @description
+#' Calculate difference in draws from posterior of a von-mises distribution that has been
+#' rescaled to exist on some circular space defined by the prior boundaries.
+#' @param draws1 draws from a distribution
+#' @param draws2 draws from another distribution
+#' @param boundary a boundary vector describing the circular space's edges. Should be from priors.
+#' @examples
+#' if (FALSE) {
+#'   draws1 <- brms::rvon_mises(10000, 3.1, 4)
+#'   draws2 <- brms::rvon_mises(10000, -3, 2)
+#'   x <- .conj_rope_circular_diff(draws1, draws2)
+#' }
+#' @keywords internal
+#' @noRd
+
+.conj_rope_circular_diff = function(draws1, draws2, boundary = c(-pi, pi)) {
+  draws1_radians <- .boundary.to.radians(draws1, boundary = boundary, target = c(-pi, pi))
+  draws2_radians <- .boundary.to.radians(draws2, boundary = boundary, target = c(-pi, pi))
+  span <- 2*pi
+  x <- draws1_radians + pi
+  y <- draws2_radians + pi
+  diff = (x - y) %% span
+  diff = ifelse(diff <= (span/2), diff, diff - span)
+  diff <- .radians.to.boundary(diff, target = boundary)
+  return(diff)
+}
