@@ -191,6 +191,26 @@ p
 ```
 
 
+```{r polar coord conj plot 2}
+coord_polar_linear <- function(theta = 'x', start = 0, direction = 1, clip = "on") {
+  theta <- match.arg(theta, c("x", "y"))
+  r <- if (theta == "x") {
+    "y"
+  } else {
+    "x"
+  }
+  ggproto(NULL, CoordPolar, theta = theta, r = r, start = start,
+          direction = sign(direction), clip = clip,
+          is_linear = function(){TRUE})
+}
+
+p <- vm_ex2$plot
+p[[1]] <- p[[1]] +
+  ggplot2::coord_polar_linear() +
+  ggplot2::scale_y_continuous(limits = c(-pi, pi))
+p
+```
+
 ## "vonmises2" method
 
 The "vonmises2" method updates $\mu$ and $\kappa$ of the complete Von-Mises distribution. This is done
