@@ -148,8 +148,8 @@ read.pcv.jsn <- function(file, dtSuffix = "datatype", valSuffix = "value",
     mvL <- do.call(rbind, lapply(colnames(mv)[grepl(val, colnames(mv))], function(c) {
       lng <- do.call(rbind, lapply(seq_len(nrow(mv)), function(i) {
         data.frame(
-          row = i, value = unlist(mv[1, c]),
-          label = unlist(mv[1, gsub(val, paste0(".", labSuffix), c)]),
+          row = i, value = unlist(mv[i, c]),
+          label = unlist(mv[i, gsub(val, paste0(".", labSuffix), c)]),
           trait = gsub(val, "", c)
         )
       }))

@@ -7,7 +7,8 @@
 conjugate(
   s1 = NULL,
   s2 = NULL,
-  method = c("t", "gaussian", "beta", "binomial", "lognormal", "poisson", "negbin"),
+  method = c("t", "gaussian", "beta", "binomial", "lognormal", "poisson", "negbin",
+    "vonmises", "vonmises2"),
   priors = NULL,
   plot = FALSE,
   rope_range = NULL,
@@ -21,15 +22,20 @@ conjugate(
 \item{s1}{A data.frame or matrix of multi value traits or a vector of single value traits.
 If a multi value trait is used then column names should include a number representing the "bin".}
 
-\item{s2}{An optional second sample of the same form as s2.}
+\item{s2}{An optional second sample.}
 
 \item{method}{The distribution/method to use.
 Currently "t", "gaussian", "beta", "binomial", "lognormal", "poisson",
-and "negbin" (negative binomial). are supported.
+"negbin" (negative binomial), "vonmises", and "vonmises2" are supported.
 The count distributions (binomial, poisson and negative binomial) are only implemented for
 single value traits.
 The "t" and "gaussian" methods both use a T distribution with "t" testing for a difference
-of means and "gaussian" testing for a difference in the distributions (similar to a Z test).}
+of means and "gaussian" testing for a difference in the distributions (similar to a Z test).
+Both Von Mises options are for use with circular data (for instance hue values when the circular
+quality of the data is relevant). Note that non-circular distributions can be compared to each other.
+This should only be done with caution. Make sure you understand the interpretation of any
+comparison you are doing if you specify two methods (c("gaussian", "lognormal") as an arbitrary
+example).}
 
 \item{priors}{Prior distributions described as a list of lists.
 If this is a single list then it will be duplicated for the second sample,
@@ -37,7 +43,7 @@ which is generally a good idea if both
 samples use the same distribution (method).
 Elements in the inner lists should be named for the parameter they represent (see examples).
 These names vary by method (see details).
- By default this is NULL and weak priors (jeffrey's prior where appropriate) are used.
+ By default this is NULL and weak priors (generally jeffrey's priors) are used.
  The \code{posterior} part of output can also be recycled as a new prior if Bayesian
  updating is appropriate for your use.}
 
@@ -109,6 +115,24 @@ Prior distributions default to be weakly informative and in some cases you may w
      Note that the r value is not updated.
       The conjugate beta prior is only valid when r is fixed and known,
       which is a limitation for this method.}
+    \item{\strong{"vonmises": } \code{list(mu = 0, kappa = 1, boundary = c(-pi, pi),
+    known_kappa = 1, n = 1)}, where mu is the direction of the circular distribution (the mean),
+    kappa is the precision of the mean, boundary is a vector including the two values that are the
+    where the circular data "wraps" around the circle, known_kappa is the fixed value of precision
+    for the total distribution, and n is the number of prior observations. This Von Mises option
+    updates the conjugate prior for the mean direction, which is itself Von-Mises distributed. This
+    in some ways is analogous to the T method, but assuming a fixed variance when the mean is
+    updated. Note that due to how the rescaling works larger circular boundaries can be slow to
+    plot.
+    }
+    \item{\strong{"vonmises2": } \code{priors = list(mu = 0, kappa = 1,
+    boundary = c(-pi, pi), n = 1)}, where mu and kappa are mean direction and precision of the
+    von mises distribution, boundary is a vector including the two values that are the
+    where the circular data "wraps" around the circle, and n is the number of prior observations.
+    This Von-Mises implementation does not assume constant variance and instead uses MLE to estimate
+    kappa from the data and updates the kappa prior as a weighted average of the data and the prior.
+    The mu parameter is then updated per Von-Mises conjugacy.
+    }
 }
 
 See examples for plots of these prior distributions.
@@ -237,8 +261,8 @@ beta_sv_ex <- conjugate(
 # and the number of trials will be recycled to the length of successes
 
 binomial_sv_ex <- conjugate(
-  s1 = list(successes = c(15,14,16,11), trials = c(20,20,20,20)),
-  s2 = list(successes = c(7,8,10,5), trials = c(20,20,20,20)), method = "binomial",
+  s1 = list(successes = c(15, 14, 16, 11), trials = c(20, 20, 20, 20)),
+  s2 = list(successes = c(7, 8, 10, 5), trials = c(20, 20, 20, 20)), method = "binomial",
   priors = list(a = 0.5, b = 0.5),
   plot = FALSE, rope_range = c(-0.1, 0.1), rope_ci = 0.89,
   cred.int.level = 0.89, hypothesis = "equal"
@@ -263,6 +287,35 @@ negbin_sv_ex <- conjugate(
   plot = FALSE, rope_range = c(-1, 1), rope_ci = 0.89,
   cred.int.level = 0.89, hypothesis = "equal"
 )
+
+# von mises mv example
+
+mv_gauss <- mvSim(
+  dists = list(
+    rnorm = list(mean = 50, sd = 10),
+    rnorm = list(mean = 60, sd = 12)
+  ),
+  n_samples = c(30, 40)
+)
+vm1_ex <- conjugate(
+  s1 = mv_gauss[1:30, -1],
+  s2 = mv_gauss[31:70, -1],
+  method = "vonmises",
+  priors = list(mu = 45, kappa = 1, boundary = c(0, 180), known_kappa = 1, n = 1),
+  plot = FALSE, rope_range = c(-1, 1), rope_ci = 0.89,
+  cred.int.level = 0.89, hypothesis = "equal"
+)
+
+# von mises 2 sv example
+vm2_ex <- conjugate(
+  s1 = brms::rvon_mises(10, 2, 2),
+  s2 = brms::rvon_mises(15, 3, 3),
+  method = "vonmises2",
+  priors = list(mu = 0, kappa = 0.5, boundary = c(-pi, pi), n = 1),
+  cred.int.level = 0.95,
+  plot = FALSE
+)
+
 
 # Example usage with plantCV data
 ## Not run:

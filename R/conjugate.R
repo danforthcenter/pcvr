@@ -6,21 +6,26 @@
 #'
 #' @param s1 A data.frame or matrix of multi value traits or a vector of single value traits.
 #' If a multi value trait is used then column names should include a number representing the "bin".
-#' @param s2 An optional second sample of the same form as s2.
+#' @param s2 An optional second sample.
 #' @param method The distribution/method to use.
 #' Currently "t", "gaussian", "beta", "binomial", "lognormal", "poisson",
-#' and "negbin" (negative binomial). are supported.
+#' "negbin" (negative binomial), "vonmises", and "vonmises2" are supported.
 #' The count distributions (binomial, poisson and negative binomial) are only implemented for
 #' single value traits.
 #' The "t" and "gaussian" methods both use a T distribution with "t" testing for a difference
 #' of means and "gaussian" testing for a difference in the distributions (similar to a Z test).
+#' Both Von Mises options are for use with circular data (for instance hue values when the circular
+#' quality of the data is relevant). Note that non-circular distributions can be compared to each other.
+#' This should only be done with caution. Make sure you understand the interpretation of any
+#' comparison you are doing if you specify two methods (c("gaussian", "lognormal") as an arbitrary
+#' example).
 #' @param priors Prior distributions described as a list of lists.
 #' If this is a single list then it will be duplicated for the second sample,
 #' which is generally a good idea if both
 #' samples use the same distribution (method).
 #' Elements in the inner lists should be named for the parameter they represent (see examples).
 #' These names vary by method (see details).
-#'  By default this is NULL and weak priors (jeffrey's prior where appropriate) are used.
+#'  By default this is NULL and weak priors (generally jeffrey's priors) are used.
 #'  The \code{posterior} part of output can also be recycled as a new prior if Bayesian
 #'  updating is appropriate for your use.
 #' @param plot Logical, should a ggplot be made and returned.
@@ -76,6 +81,24 @@
 #'      Note that the r value is not updated.
 #'       The conjugate beta prior is only valid when r is fixed and known,
 #'       which is a limitation for this method.}
+#'     \item{\strong{"vonmises": } \code{list(mu = 0, kappa = 1, boundary = c(-pi, pi),
+#'     known_kappa = 1, n = 1)}, where mu is the direction of the circular distribution (the mean),
+#'     kappa is the precision of the mean, boundary is a vector including the two values that are the
+#'     where the circular data "wraps" around the circle, known_kappa is the fixed value of precision
+#'     for the total distribution, and n is the number of prior observations. This Von Mises option
+#'     updates the conjugate prior for the mean direction, which is itself Von-Mises distributed. This
+#'     in some ways is analogous to the T method, but assuming a fixed variance when the mean is
+#'     updated. Note that due to how the rescaling works larger circular boundaries can be slow to
+#'     plot.
+#'     }
+#'     \item{\strong{"vonmises2": } \code{priors = list(mu = 0, kappa = 1,
+#'     boundary = c(-pi, pi), n = 1)}, where mu and kappa are mean direction and precision of the
+#'     von mises distribution, boundary is a vector including the two values that are the
+#'     where the circular data "wraps" around the circle, and n is the number of prior observations.
+#'     This Von-Mises implementation does not assume constant variance and instead uses MLE to estimate
+#'     kappa from the data and updates the kappa prior as a weighted average of the data and the prior.
+#'     The mu parameter is then updated per Von-Mises conjugacy.
+#'     }
 #' }
 #'
 #' See examples for plots of these prior distributions.
@@ -204,8 +227,8 @@
 #' # and the number of trials will be recycled to the length of successes
 #'
 #' binomial_sv_ex <- conjugate(
-#'   s1 = list(successes = c(15,14,16,11), trials = c(20,20,20,20)),
-#'   s2 = list(successes = c(7,8,10,5), trials = c(20,20,20,20)), method = "binomial",
+#'   s1 = list(successes = c(15, 14, 16, 11), trials = c(20, 20, 20, 20)),
+#'   s2 = list(successes = c(7, 8, 10, 5), trials = c(20, 20, 20, 20)), method = "binomial",
 #'   priors = list(a = 0.5, b = 0.5),
 #'   plot = FALSE, rope_range = c(-0.1, 0.1), rope_ci = 0.89,
 #'   cred.int.level = 0.89, hypothesis = "equal"
@@ -230,6 +253,35 @@
 #'   plot = FALSE, rope_range = c(-1, 1), rope_ci = 0.89,
 #'   cred.int.level = 0.89, hypothesis = "equal"
 #' )
+#'
+#' # von mises mv example
+#'
+#' mv_gauss <- mvSim(
+#'   dists = list(
+#'     rnorm = list(mean = 50, sd = 10),
+#'     rnorm = list(mean = 60, sd = 12)
+#'   ),
+#'   n_samples = c(30, 40)
+#' )
+#' vm1_ex <- conjugate(
+#'   s1 = mv_gauss[1:30, -1],
+#'   s2 = mv_gauss[31:70, -1],
+#'   method = "vonmises",
+#'   priors = list(mu = 45, kappa = 1, boundary = c(0, 180), known_kappa = 1, n = 1),
+#'   plot = FALSE, rope_range = c(-1, 1), rope_ci = 0.89,
+#'   cred.int.level = 0.89, hypothesis = "equal"
+#' )
+#'
+#' # von mises 2 sv example
+#' vm2_ex <- conjugate(
+#'   s1 = brms::rvon_mises(10, 2, 2),
+#'   s2 = brms::rvon_mises(15, 3, 3),
+#'   method = "vonmises2",
+#'   priors = list(mu = 0, kappa = 0.5, boundary = c(-pi, pi), n = 1),
+#'   cred.int.level = 0.95,
+#'   plot = FALSE
+#' )
+#'
 #'
 #' # Example usage with plantCV data
 #' ## Not run:
@@ -361,8 +413,10 @@
 #' @export
 
 conjugate <- function(s1 = NULL, s2 = NULL,
-                      method = c("t", "gaussian", "beta", "binomial",
-                                 "lognormal", "poisson", "negbin"),
+                      method = c(
+                        "t", "gaussian", "beta", "binomial",
+                        "lognormal", "poisson", "negbin", "vonmises", "vonmises2"
+                      ),
                       priors = NULL, plot = FALSE, rope_range = NULL,
                       rope_ci = 0.89, cred.int.level = 0.89, hypothesis = "equal",
                       support = NULL) {
@@ -393,11 +447,18 @@ conjugate <- function(s1 = NULL, s2 = NULL,
     } else {
       stop("samples must be a vector, data.frame, or matrix.")
     }
-    matched_arg <- match.arg(method[i], choices = c("t", "gaussian", "beta", "binomial",
-                                                    "lognormal", "poisson", "negbin"))
+    matched_arg <- match.arg(method[i], choices = c(
+      "t", "gaussian", "beta", "binomial",
+      "lognormal", "poisson", "negbin",
+      "vonmises", "vonmises2"
+    ))
     # turning off dirichlet until I decide on a new implementation that I like better
     # and a use case that isn't so ripe for abuse.
-    vec_suffix <- if (vec) { "sv" } else { "mv" }
+    vec_suffix <- if (vec) {
+      "sv"
+    } else {
+      "mv"
+    }
     matched_fun <- get(paste0(".conj_", matched_arg, "_", vec_suffix))
     res <- matched_fun(sample, prior, plot, support, cred.int.level)
     return(res)
@@ -411,15 +472,17 @@ conjugate <- function(s1 = NULL, s2 = NULL,
   if (!is.null(s2)) {
     colnames(out$summary) <- c("HDE_1", "HDI_1_low", "HDI_1_high", "HDE_2", "HDI_2_low", "HDI_2_high")
     postProbRes <- .post.prob.from.pdfs(sample_results[[1]]$pdf, sample_results[[2]]$pdf, hypothesis)
-    out$summary <- cbind(out$summary,
-                         data.frame("hyp" = hypothesis, "post.prob" = postProbRes$post.prob))
+    out$summary <- cbind(
+      out$summary,
+      data.frame("hyp" = hypothesis, "post.prob" = postProbRes$post.prob)
+    )
     dirSymbol <- postProbRes$direction
   } else {
     dirSymbol <- NULL
   }
   #* `parse output and do ROPE`
   if (!is.null(rope_range)) {
-    rope_res <- .conj_rope(sample_results, rope_range, rope_ci, plot)
+    rope_res <- .conj_rope(sample_results, rope_range, rope_ci, plot, method)
     out$summary <- cbind(out$summary, rope_res$summary)
   } else {
     rope_res <- NULL
@@ -428,8 +491,10 @@ conjugate <- function(s1 = NULL, s2 = NULL,
 
   #* `Make plot`
   if (plot) {
-    out$plot <- .conj_general_plot(sample_results, rope_res, res = out,
-                                   rope_range, rope_ci, dirSymbol, support)
+    out$plot <- .conj_general_plot(sample_results, rope_res,
+      res = out,
+      rope_range, rope_ci, dirSymbol, support
+    )
   }
   return(out)
 }
@@ -457,9 +522,16 @@ conjugate <- function(s1 = NULL, s2 = NULL,
       stop("samples must be a vector, data.frame, or matrix.")
     }
 
-    matched_arg <- match.arg(method[i], choices = c("t", "gaussian", "beta", "binomial",
-                                                    "lognormal", "poisson", "negbin"))
-    vec_suffix <- if (vec) {"sv"} else {"mv"}
+    matched_arg <- match.arg(method[i], choices = c(
+      "t", "gaussian", "beta", "binomial",
+      "lognormal", "poisson", "negbin",
+      "vonmises", "vonmises2"
+    ))
+    vec_suffix <- if (vec) {
+      "sv"
+    } else {
+      "mv"
+    }
     matched_fun <- get(paste0(".conj_", matched_arg, "_", vec_suffix))
     qnts <- matched_fun(s1 = sample, priors = prior, calculatingSupport = TRUE)
     return(qnts)
@@ -479,7 +551,8 @@ conjugate <- function(s1 = NULL, s2 = NULL,
 #' This requires me to decide how I want things to work between the loop over methods to here.
 #' @keywords internal
 #' @noRd
-.conj_rope <- function(sample_results, rope_range = c(-0.1, 0.1), rope_ci = 0.89, plot) {
+.conj_rope <- function(sample_results, rope_range = c(-0.1, 0.1),
+                       rope_ci = 0.89, plot, method) {
   #* `ROPE Comparison`
   rope_res <- list()
   if (!is.null(rope_range)) {
@@ -487,16 +560,25 @@ conjugate <- function(s1 = NULL, s2 = NULL,
       post1 <- sample_results[[1]]$posteriorDraws
       if (length(sample_results) == 2) {
         post2 <- sample_results[[2]]$posteriorDraws
-        posterior <- post1 - post2
+        if (any(grepl("vonmises", method))) {
+          boundary <- sample_results[[1]]$posterior$boundary
+          posterior <- .conj_rope_circular_diff(post1, post2, boundary = boundary)
+        } else {
+          posterior <- post1 - post2
+        }
       } else {
         posterior <- post1
       }
       hdi_diff <- as.numeric(bayestestR::hdi(posterior, ci = rope_ci))[2:3]
       hde_diff <- median(posterior)
-      rope_prob <- as.numeric(bayestestR::rope(posterior, range = rope_range,
-                                               ci_method = "HDI", ci = rope_ci))
-      rope_test <- data.frame(HDE_rope = hde_diff, HDI_rope_low = hdi_diff[1],
-                              HDI_rope_high = hdi_diff[2], rope_prob = rope_prob)
+      rope_prob <- as.numeric(bayestestR::rope(posterior,
+        range = rope_range,
+        ci_method = "HDI", ci = rope_ci
+      ))
+      rope_test <- data.frame(
+        HDE_rope = hde_diff, HDI_rope_low = hdi_diff[1],
+        HDI_rope_high = hdi_diff[2], rope_prob = rope_prob
+      )
       rope_res$summary <- rope_test
       if (plot) {
         rope_res$rope_df <- data.frame("X" = posterior)
@@ -524,13 +606,13 @@ conjugate <- function(s1 = NULL, s2 = NULL,
   } else if (hypothesis == "equal") {
     post.prob <- sum(apply(cbind(pdf1, pdf2), MARGIN = 1, function(i) min(i)), na.rm = TRUE)
     dirSymbol <- "="
-  } else if (hypothesis == "lesser") {
+  } else if (hypothesis == "lesser") { # note one sided testing is less tested generally
     direction <- pdf1 <= pdf2
-    post.prob <- 1 - sum(pdf1 * direction, na.rm = TRUE) # switch from compliment prob to prob
+    post.prob <- sum(pdf1 * direction, na.rm = TRUE)
     dirSymbol <- "<"
   } else if (hypothesis == "greater") {
     direction <- pdf1 >= pdf2
-    post.prob <- 1 - sum(pdf1 * direction, na.rm = TRUE) # switch from compliment prob to prob
+    post.prob <- sum(pdf1 * direction, na.rm = TRUE)
     dirSymbol <- ">"
   } else {
     stop("hypothesis must be either unequal, equal, lesser, or greater")
@@ -551,12 +633,17 @@ conjugate <- function(s1 = NULL, s2 = NULL,
 
   p <- ggplot2::ggplot(s1_plot_df, ggplot2::aes(x = .data$range, y = .data$prob)) +
     ggplot2::geom_area(data = s1_plot_df, fill = "red", alpha = 0.5) +
-    ggplot2::geom_vline(ggplot2::aes(xintercept = res$summary$HDI_1_low), color = "red",
-                        linewidth = 1.1) +
+    ggplot2::geom_vline(ggplot2::aes(xintercept = res$summary$HDI_1_low),
+      color = "red",
+      linewidth = 1.1
+    ) +
     ggplot2::geom_vline(ggplot2::aes(xintercept = res$summary$HDE_1),
-                        color = "red", linetype = "dashed", linewidth = 1.1) +
-    ggplot2::geom_vline(ggplot2::aes(xintercept = res$summary$HDI_1_high), color = "red",
-                        linewidth = 1.1) +
+      color = "red", linetype = "dashed", linewidth = 1.1
+    ) +
+    ggplot2::geom_vline(ggplot2::aes(xintercept = res$summary$HDI_1_high),
+      color = "red",
+      linewidth = 1.1
+    ) +
     ggplot2::labs(
       x = "Posterior Distribution of Random Variable", y = "Density", title = "Distribution of Samples",
       subtitle = paste0(
@@ -578,12 +665,18 @@ conjugate <- function(s1 = NULL, s2 = NULL,
 
     p <- p +
       ggplot2::geom_area(data = s2_plot_df, fill = "blue", alpha = 0.5) +
-      ggplot2::geom_vline(ggplot2::aes(xintercept = res$summary$HDI_2_low), color = "blue",
-                          linewidth = 1.1) +
-      ggplot2::geom_vline(ggplot2::aes(xintercept = res$summary$HDE_2), color = "blue",
-                          linetype = "dashed", linewidth = 1.1) +
-      ggplot2::geom_vline(ggplot2::aes(xintercept = res$summary$HDI_2_high), color = "blue",
-                          linewidth = 1.1) +
+      ggplot2::geom_vline(ggplot2::aes(xintercept = res$summary$HDI_2_low),
+        color = "blue",
+        linewidth = 1.1
+      ) +
+      ggplot2::geom_vline(ggplot2::aes(xintercept = res$summary$HDE_2),
+        color = "blue",
+        linetype = "dashed", linewidth = 1.1
+      ) +
+      ggplot2::geom_vline(ggplot2::aes(xintercept = res$summary$HDI_2_high),
+        color = "blue",
+        linewidth = 1.1
+      ) +
       ggplot2::labs(subtitle = paste0(
         "Sample 1:  ", round(res$summary$HDE_1, 2), " [", round(res$summary$HDI_1_low, 2), ", ",
         round(res$summary$HDI_1_high, 2), "]\n",
@@ -608,16 +701,22 @@ conjugate <- function(s1 = NULL, s2 = NULL,
     p <- p + ggplot2::ggplot(rdf, ggplot2::aes(x = .data$X)) +
       ggplot2::geom_histogram(bins = 100, fill = "purple", color = "purple", alpha = 0.7) +
       ggplot2::geom_histogram(
-        data = data.frame("X" = rdf[rdf$X > rope_range[1] & rdf$X < rope_range[2] &
-                                      rdf$X > res$summary$HDI_rope_low &
-                                      rdf$X < res$summary$HDI_rope_high, ]),
+        data = data.frame(
+          "X" = rdf[rdf$X > rope_range[1] & rdf$X < rope_range[2] &
+                      rdf$X > res$summary$HDI_rope_low &
+                      rdf$X < res$summary$HDI_rope_high, ]
+        ),
         bins = 100, fill = "gray30", color = "gray30"
       ) +
-      ggplot2::annotate("segment", x = rope_range[1], xend = rope_range[2], y = 0, yend = 0,
-                        linewidth = 2, color = "gray70") +
+      ggplot2::annotate("segment",
+        x = rope_range[1], xend = rope_range[2], y = 0, yend = 0,
+        linewidth = 2, color = "gray70"
+      ) +
       ggplot2::geom_vline(ggplot2::aes(xintercept = res$summary$HDI_rope_low), linewidth = 0.7) +
-      ggplot2::geom_vline(ggplot2::aes(xintercept = res$summary$HDE_rope), linetype = "dashed",
-                          linewidth = 0.7) +
+      ggplot2::geom_vline(ggplot2::aes(xintercept = res$summary$HDE_rope),
+        linetype = "dashed",
+        linewidth = 0.7
+      ) +
       ggplot2::geom_vline(ggplot2::aes(xintercept = res$summary$HDI_rope_high), linewidth = 0.7) +
       ggplot2::labs(
         x = "Posterior of Difference", y = "Frequency", title = "Distribution of Difference",
@@ -630,10 +729,11 @@ conjugate <- function(s1 = NULL, s2 = NULL,
         )
       ) +
       pcv_theme() +
-      ggplot2::theme(axis.title.y.left = ggplot2::element_blank(),
-                     axis.text.y.left = ggplot2::element_blank()) +
+      ggplot2::theme(
+        axis.title.y.left = ggplot2::element_blank(),
+        axis.text.y.left = ggplot2::element_blank()
+      ) +
       patchwork::plot_layout(widths = c(2, 1))
   }
-  plot(p)
   return(p)
 }
