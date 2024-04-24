@@ -96,7 +96,7 @@
   #* seems like this would come up a lot, only difference I have seen is using [-pi, pi] vs
   #* the compendiums [0, 2pi], but I don't think that should make a difference.
 
-  mu_prime_atan_scale <- atan(((a * sin(b)) + sum(sin(X1)) ) /
+  mu_prime_atan_scale <- atan(((a * sin(b)) + sum(sin(X1))) /
                                 ((a * cos(b)) + sum(cos(X1))))
   mu_prime <- unitCircleAdj + mu_prime_atan_scale
   #* `calculate density over support`
@@ -359,14 +359,14 @@
 #' @keywords internal
 #' @noRd
 
-.conj_rope_circular_diff = function(draws1, draws2, boundary = c(-pi, pi)) {
+.conj_rope_circular_diff <- function(draws1, draws2, boundary = c(-pi, pi)) {
   draws1_radians <- .boundary.to.radians(draws1, boundary = boundary, target = c(-pi, pi))
   draws2_radians <- .boundary.to.radians(draws2, boundary = boundary, target = c(-pi, pi))
-  span <- 2*pi
+  span <- 2 * pi
   x <- draws1_radians + pi
   y <- draws2_radians + pi
-  diff = (x - y) %% span
-  diff = ifelse(diff <= (span/2), diff, diff - span)
+  diff <- (x - y) %% span
+  diff <- ifelse(diff <= (span / 2), diff, diff - span)
   diff <- .radians.to.boundary(diff, target = boundary)
   return(diff)
 }

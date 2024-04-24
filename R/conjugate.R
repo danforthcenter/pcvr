@@ -482,7 +482,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
   }
   #* `parse output and do ROPE`
   if (!is.null(rope_range)) {
-    rope_res <- .conj_rope(sample_results, rope_range, rope_ci, plot, method, priors)
+    rope_res <- .conj_rope(sample_results, rope_range, rope_ci, plot, method)
     out$summary <- cbind(out$summary, rope_res$summary)
   } else {
     rope_res <- NULL
@@ -552,7 +552,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
 #' @keywords internal
 #' @noRd
 .conj_rope <- function(sample_results, rope_range = c(-0.1, 0.1),
-                       rope_ci = 0.89, plot, method, priors) {
+                       rope_ci = 0.89, plot, method) {
   #* `ROPE Comparison`
   rope_res <- list()
   if (!is.null(rope_range)) {
@@ -561,7 +561,8 @@ conjugate <- function(s1 = NULL, s2 = NULL,
       if (length(sample_results) == 2) {
         post2 <- sample_results[[2]]$posteriorDraws
         if (any(grepl("vonmises", method))) {
-          posterior <- .conj_rope_circular_diff(post1, post2, priors[[1]]$boundary)
+          boundary <- sample_results[[1]]$posterior$boundary
+          posterior <- .conj_rope_circular_diff(post1, post2, boundary = boundary)
         } else {
           posterior <- post1 - post2
         }
