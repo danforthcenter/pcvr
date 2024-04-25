@@ -61,7 +61,7 @@
   out[["family"]] <- form_ret$family
   out[["formula"]] <- form_ret$formula
   #* `make priors if none specified`
-  out[["priors"]] <- .brmsMakeSurvPriors(priors, out_df, makeSurvDataRet)
+  out[["priors"]] <- .brmsMakeSurvPriors(priors, out_df, makeSurvDataRet, form_ret)
   #* `set initialization to 0 for all chains`
   out[["initfun"]] <- 0
   out[["pcvrForm"]] <- form
