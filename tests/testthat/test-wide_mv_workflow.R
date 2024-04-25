@@ -1,8 +1,9 @@
+library(data.table)
 test_that("reading mv github data as long works", {
   mv <- read.pcv(paste0(
     "https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/",
     "main/pcv4-multi-value-traits.csv"
-  ), mode = "wide")
+  ), mode = "wide", reader = "fread")
   expect_equal(dim(mv), c(2854, 198))
 
   mv$genotype <- substr(mv$barcode, 3, 5)

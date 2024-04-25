@@ -4,8 +4,9 @@
 #' metabolized. Using image based phenotypes and watering data we can calculate pseudo-WUE (pwue) over
 #' time. Here area_pixels is used as a proxy for biomass and transpiration is approximated using
 #' watering data. The equation is then
-#' \eqn{\frac{P_{t} - P_{t-1}}{W_{t_{end-1}}-W_{t_{start}} }}
-#' {P_[t] - P_[t-1] / W_[t_(end-1)]-W_[t_start]},
+#' \eqn{
+#' \frac{P_{t} - P_{t-1}}{W_{t_{end-1}}-W_{t_{start}} }}{P_[t] - P_[t-1] / W_[t_(end-1)]-W_[t_start]
+#' },
 #' where P is the phenotype and W is the weight before watering.
 #'
 #' Absolute value based WUE is the amount of water used to sustain a plants biomass over a given period.
