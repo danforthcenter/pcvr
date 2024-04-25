@@ -1,0 +1,120 @@
+---
+title: "Directional Statistics in PCVR"
+author: "Josh Sumner, DDPSC Data Science Core Facility"
+subtitle: "pcvr v0.1.0"
+output: 
+  html_document:
+    toc: true
+    number_sections: false
+    code_folding: show
+date: "2024-04-22"
+vignette: >
+  %\VignetteIndexEntry{roots}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(pcvr)
+library(ggplot2)
+```
+
+## Root imaging data
+
+Minirhyzotrons exist, therefore we need to be able to model sparse uniform data.
+
+## Simulating data that looks like minirhyzotron data
+
+```{r}
+x <- read.pcv.jsn("~/scripts/fahlgren_lab/Silphium_roots_distribution_example.json", output="all")
+sv <- x$SV
+mv <- x$MV
+mv[which(unlist(lapply(mv, class)) == "list")] <- lapply(which(unlist(lapply(mv, class)) == "list"),
+                                                         function(i){ as.character(mv[[i]]) })
+mv$timestamp <- gsub(".*Silphium_", "", mv$image)
+mv$timestamp <- as.Date(gsub("_DM.*", "", mv$timestamp), format = "%m%d%Y")
+mv$coarse_time <- ifelse(mv$timestamp < as.Date("2023-09-07"),
+                         1, ifelse(mv$timestamp < as.Date("2023-10-31"),
+                                   2, 3))
+pcv.joyplot(mv, "x_frequencies", group = c("id", "coarse_time"), id = "row")
+```
+
+Thinking of this as
+
+N Guassians ~ Uniform(0, 1000)
+
+mu_i ~ Uniform(0, 5500)
+
+sd_i ~ Gamma(1,1)
+
+```{r}
+# distribution of areas is... half T?
+hist(aggregate(value ~ row + id + coarse_time, data = mv, mean, na.rm=TRUE)$value)
+
+x <- extraDistr::rhnorm(10000, 400)
+hist(x) # this will become N
+
+# sd?
+hist(rgamma(1000, 5, 1))
+
+rRhyzoDist <- function(n, u1_max = 1000, u2_max = 5500, g1 = 5, g2 = 1) {
+  n_gaussians <- runif(1, 1, u1_max)
+  mu_is <- lapply(seq_len(n_gaussians), function(i){
+    mu_i <- runif(1, 1, u2_max)
+  })
+  sd_is <- lapply(seq_len(n_gaussians), function(i){
+    sd_i <- rgamma(1, g1, g2)
+  })
+  index <- sample(seq_len(n_gaussians), size = n, replace = TRUE)
+  px_is <- lapply(seq_len(n_gaussians), function(i){
+    sum(index==i) # I think this should be zero inflated somehow.
+  })
+  d <- unlist(lapply(seq_len(n_gaussians), function(i){
+    rnorm(px_is[[i]], mu_is[[i]], sd_is[[i]])
+  }))
+  return(d)
+}
+
+hist(rRhyzoDist(1000), breaks = 550, freq = FALSE)
+
+
+
+```
+
+```{r}
+sv[which(unlist(lapply(sv, class)) == "list")] <- lapply(which(unlist(lapply(sv, class)) == "list"),
+                                                         function(i){ as.character(sv[[i]]) })
+sv$timestamp <- gsub(".*Silphium_", "", sv$image)
+sv$timestamp <- as.Date(gsub("_DM.*", "", sv$timestamp), format = "%m%d%Y")
+head(sv)
+
+ggplot(sv, aes(x = timestamp, y = x_distribution_mean.pixel, group = id))+
+  geom_line() # revolutionary
+
+ggplot(sv, aes(x = timestamp, y = x_distribution_median.pixel, group = id))+
+  geom_line()
+
+ggplot(sv, aes(x = timestamp, y = x_distribution_std.pixel, group = id))+
+  geom_line()
+
+sv$distribution_coef_var <- sv$x_distribution_std.pixel / abs(sv$x_distribution_mean.pixel)
+
+ggplot(sv, aes(x = timestamp, y = distribution_coef_var, group = id))+
+  geom_line()
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
