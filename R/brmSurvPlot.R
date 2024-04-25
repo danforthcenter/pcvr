@@ -269,7 +269,7 @@ brmSurvPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, f
     })
   } else {
     pal <- viridis::plasma(n = length(probs))
-    virList <- lapply(seq_along(unique(df[[group]])), function(i) {
+    virList <- lapply(seq_along(groups), function(i) {
       pal
     })
   }
