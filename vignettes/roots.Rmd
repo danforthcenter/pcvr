@@ -25,26 +25,13 @@ theme_set(pcv_theme())
 
 ## Root imaging data
 
-Minirhyzotrons exist, therefore we need to be able to model sparse uniform data.
+Root imaging is an emerging application of `PlantCV`. Due to the nature of available technologies for
+root imaging the output tends to be noisy and there are a different set of phenotypes that may be
+interesting for researchers. Fundamentally analysis should be very similar for most phenotypes, but in
+the interest of providing an example for root-focused researchers we will go over a few options for
+root data output from `PlantCV`. For this vignette we will work with simulated data based off of mini rhyzotron data collected from Fischer farms in the Fall of 2023.
 
-```{r, eval = FALSE}
-x <- read.pcv.jsn("~/scripts/fahlgren_lab/Silphium_roots_distribution_example.json", output="all")
-sv <- x$SV
-mv <- x$MV
-mv[which(unlist(lapply(mv, class)) == "list")] <- lapply(which(unlist(lapply(mv, class)) == "list"),
-                                                         function(i){ as.character(mv[[i]]) })
-mv$timestamp <- gsub(".*Silphium_", "", mv$image)
-mv$timestamp <- as.Date(gsub("_DM.*", "", mv$timestamp), format = "%m%d%Y")
-mv$coarse_time <- ifelse(mv$timestamp < as.Date("2023-09-07"),
-                         1, ifelse(mv$timestamp < as.Date("2023-10-31"),
-                                   2, 3))
-pcv.joyplot(mv, "x_frequencies", group = c("id", "coarse_time"), id = "row")
-```
-
-## Simulating data that looks like minirhyzotron data
-
-For this vignette we will work with simulated data based off of mini rhyzotron data collected from
-Fischer farms in the Fall of 2023.
+## Simulating Minirhyzotron data
 
 The data is simulated as a mixture between a Uniform background distribution and N gaussian
 distributions where N follows a uniform distribution and each gaussian is parameterized by mu and
@@ -475,14 +462,118 @@ conj_ex2$plot
 
 ### EMD
 
+Earth Mover's Distance measures how much work it takes to turn one histogram into another. Since multi-
+value traits are exported from `PlantCV` as histograms this can be useful for color or distribution
+analysis. In the following examples we make pairwise comparisons of all our rows and return a long dataframe of those distances. EMD can be computationally heavy with very large datasets since all the pairwise distances have to be calculated. The `mvAg` function may be useful if you need to summarize
+your data to make EMD faster. If you are only interested in a change of the mean then this is probably not the best way to use your data, but it is a reasonable option for comparing whether groups are more
+or less self-similar than other groups.
 
+Here is a fast example of EMD. In this simulated data we have five generating distributions.
+Normal, Log Normal, Bimodal, Trimodal, and Uniform. We could use some gaussian mixtures to characterize the multi-modal histograms but that will get clunky for comparing to the unimodal or uniform distributions. The `conjugate` function would not work here since these distributions do not share a common parameterization. Instead, we can use EMD.
 
+```{r}
+set.seed(123)
 
+simFreqs <- function(vec, group) {
+  s1 <- hist(vec, breaks = seq(1, 181, 1), plot = FALSE)$counts
+  s1d <- as.data.frame(cbind(data.frame(group), matrix(s1, nrow = 1)))
+  colnames(s1d) <- c("group", paste0("sim_", 1:180))
+  s1d
+}
 
+sim_df <- rbind(
+  do.call(rbind, lapply(1:10, function(i) {
+    simFreqs(rnorm(200, 50, 10), group = "normal")
+  })),
+  do.call(rbind, lapply(1:10, function(i) {
+    simFreqs(rlnorm(200, log(30), 0.25), group = "lognormal")
+  })),
+  do.call(rbind, lapply(1:10, function(i) {
+    simFreqs(c(rlnorm(125, log(15), 0.25), rnorm(75, 75, 5)), group = "bimodal")
+  })),
+  do.call(rbind, lapply(1:10, function(i) {
+    simFreqs(c(rlnorm(100, log(15), 0.25), rnorm(50, 50, 5), rnorm(50, 90, 5)), group = "trimodal")
+  })),
+  do.call(rbind, lapply(1:10, function(i) {
+    simFreqs(runif(200, 1, 180), group = "uniform")
+  }))
+)
 
+sim_df_long <- as.data.frame(data.table::melt(data.table::as.data.table(sim_df), id.vars = "group"))
+sim_df_long$bin <- as.numeric(sub("sim_", "", sim_df_long$variable))
 
+ggplot(sim_df_long, aes(x = bin, y = value, fill = group), alpha = 0.25) +
+  geom_col(position = "identity", show.legend = FALSE) +
+  pcv_theme() +
+  facet_wrap(~group)
+```
 
+Our plots show very different distributions, so we get EMD between our images and see that we do have some trends shown in the resulting heatmap.
 
+```{r,  class.source="simulated", class.output="simulated"}
+sim_emd <- pcv.emd(
+  df = sim_df, cols = "sim_", reorder = c("group"),
+  mat = FALSE, plot = TRUE, parallel = 1, raiseError = TRUE
+)
+sim_emd$plot
+```
 
+Arranging these distances into a network of dissimilarities shows the different distributions clustering
+well.
 
+```{r,  class.source="simulated", class.output="simulated"}
+n <- pcv.net(sim_emd$data, filter = "0.5")
+net.plot(n, fill = "group")
+```
+
+Using our simulated mini-rhyzotron data we can go through the same steps. Here we will show this with
+both simulated datasets (roots leaving the image and roots being stuck in the image once observed).
+
+First we check our distributions via joyplot.
+
+```{r}
+pcv.joyplot(df, "x_frequencies", group = c("rep","time"))
+```
+
+We calculate EMD between our observations. Note here we have long input data as opposed to wide in the
+previous example.
+
+```{r}
+df1_emd <- pcv.emd(
+  df = df, cols = "x_frequencies", reorder = c("rep", "time"),
+  id = c("rep", "time"),
+  mat = FALSE, plot = TRUE, parallel = 1, raiseError = FALSE
+)
+```
+
+And we arrange the distances as a network of dissimilarities. Here we are filtering for only those
+edges that are above the 75th percentile in strength and we see a pretty clear temporal clustering.
+
+```{r,  class.source="simulated", class.output="simulated"}
+n <- pcv.net(df1_emd$data, filter = "0.75")
+net.plot(n, fill = "time")
+```
+
+With our dataset that assumes roots cannot leave the image once observed we get similar results.
+
+```{r}
+pcv.joyplot(df2, "x_frequencies", group = c("rep","time"))
+
+df2_emd <- pcv.emd(
+  df = df2, cols = "x_frequencies", reorder = c("rep", "time"),
+  id = c("rep", "time"),
+  mat = FALSE, plot = TRUE, parallel = 1, raiseError = FALSE
+)
+n2 <- pcv.net(df2_emd$data, filter = "0.75")
+net.plot(n2, fill = "time")
+```
+
+## Conclusion
+
+Root imaging raises several potentially interesting problems around having new phenotypes to consider
+and noisy data before and after segmentation. It is always important to consider the generating process
+for your data but that may be especially true where it comes to minirhyzotron image data. Hopefully this
+vignette helps provide some examples for how these data can be used, but if you have ideas or questions
+please raise them in the `pcvr` [github issues](https://github.com/danforthcenter/pcvr) or in the
+`help-datascience` slack channel for Danforth Center users.
 
