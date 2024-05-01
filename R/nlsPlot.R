@@ -133,7 +133,82 @@ nlsPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL,
 
 gamPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facetGroups = TRUE,
                     groupFill = FALSE, virMaps = c("plasma")) {
-  nlsPlot(fit, form, df, groups, timeRange, facetGroups, groupFill, virMaps)
+  #* `get needed information from formula`
+  parsed_form <- .parsePcvrForm(form, df)
+  y <- parsed_form$y
+  x <- parsed_form$x
+  individual <- parsed_form$individual
+  if (individual == "dummyIndividual") {
+    individual <- NULL
+  }
+  group <- parsed_form$group
+  df <- parsed_form$data
+  #* `filter by groups if groups != NULL`
+  if (!is.null(groups)) {
+    df <- df[df[[group]] %in% groups, ]
+  }
+  #* `make new data if timerange is not NULL`
+  if (!is.null(timeRange)) {
+    new_data <- do.call(rbind, lapply(unique(df[[group]]), function(g) {
+      stats::setNames(data.frame(g, timeRange), c(group, x))
+    }))
+  } else {
+    # note this is the only change between this and nlsPlot
+    # this change is here because predict.nls sometimes acts strangely with the given data
+    # but predict.gam does not accept a NULL input for the newdata argument.
+    new_data <- df
+  }
+  #* `add predictions`
+  
+  preds <- data.frame(pred = stats::predict(fit, newdata = new_data))
+  keep <- which(!duplicated(preds$pred))
+  plotdf <- df[keep, ]
+  plotdf$pred <- preds[keep, "pred"]
+  
+  #* `when implemented SE can be added here, see ?predict.nls`
+  #*
+  #* `layer for individual lines if formula was complete`
+  if (!is.null(individual)) {
+    individual_lines <- ggplot2::geom_line(
+      data = df, ggplot2::aes(
+        x = .data[[x]], y = .data[[y]],
+        group = interaction(
+          .data[[individual]],
+          .data[[group]]
+        )
+      ),
+      linewidth = 0.25, color = "gray40"
+    )
+  } else {
+    individual_lines <- list()
+  }
+  #* `facetGroups`
+  if (facetGroups) {
+    facet_layer <- ggplot2::facet_wrap(stats::as.formula(paste0("~", group)))
+  } else {
+    facet_layer <- NULL
+  }
+  #* `groupFill`
+  if (groupFill) {
+    virVals <- unlist(lapply(rep(virMaps, length.out = length(unique(df[[group]]))), function(pal) {
+      viridis::viridis(1, begin = 0.5, option = pal)
+    }))
+    color_scale <- ggplot2::scale_color_manual(values = virVals)
+  } else {
+    color_scale <- ggplot2::scale_color_manual(values = rep("#CC4678FF", length(unique(df[[group]]))))
+  }
+  
+  #* `plot`
+  plot <- ggplot(plotdf, ggplot2::aes(group = interaction(.data[[group]]))) +
+    facet_layer +
+    individual_lines +
+    ggplot2::geom_line(ggplot2::aes(x = .data[[x]], y = .data[["pred"]], color = .data[[group]]),
+                       linewidth = 0.7) + # using middle of plasma pal
+    color_scale +
+    labs(x = x, y = as.character(form)[2]) +
+    pcv_theme()
+  
+  return(plot)
 }
 
 #' @rdname nlsPlot

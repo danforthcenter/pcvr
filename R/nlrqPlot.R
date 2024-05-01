@@ -102,7 +102,8 @@ nlrqPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL,
   if (groupFill) {
     virList <- lapply(rep(virMaps, length.out = length(unique(df[[group]]))), function(pal) {
       virpal_p1 <- viridis::viridis(ceiling(length(predCols) / 2), direction = 1, end = 1, option = pal)
-      virpal_p2 <- viridis::viridis(ceiling(length(predCols) / 2), direction = -1, end = 1, option = pal)[-1]
+      virpal_p2 <- viridis::viridis(ceiling(length(predCols) / 2),
+                                    direction = -1, end = 1, option = pal)[-1]
       c(virpal_p1, virpal_p2)
     })
   } else {
