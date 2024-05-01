@@ -159,12 +159,12 @@ gamPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
     new_data <- df
   }
   #* `add predictions`
-  
+
   preds <- data.frame(pred = stats::predict(fit, newdata = new_data))
   keep <- which(!duplicated(preds$pred))
   plotdf <- df[keep, ]
   plotdf$pred <- preds[keep, "pred"]
-  
+
   #* `when implemented SE can be added here, see ?predict.nls`
   #*
   #* `layer for individual lines if formula was complete`
@@ -197,7 +197,7 @@ gamPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
   } else {
     color_scale <- ggplot2::scale_color_manual(values = rep("#CC4678FF", length(unique(df[[group]]))))
   }
-  
+
   #* `plot`
   plot <- ggplot(plotdf, ggplot2::aes(group = interaction(.data[[group]]))) +
     facet_layer +
@@ -207,7 +207,7 @@ gamPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
     color_scale +
     labs(x = x, y = as.character(form)[2]) +
     pcv_theme()
-  
+
   return(plot)
 }
 
