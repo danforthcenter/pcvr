@@ -75,7 +75,7 @@ nlrqPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL,
       stats::setNames(data.frame(g, timeRange), c(group, x))
     }))
   } else {
-    new_data <- df
+    new_data <- NULL
   }
   #* `standardize fit class`
   if (methods::is(fit, "nlrq")) {
@@ -102,12 +102,12 @@ nlrqPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL,
   if (groupFill) {
     virList <- lapply(rep(virMaps, length.out = length(unique(df[[group]]))), function(pal) {
       virpal_p1 <- viridis::viridis(ceiling(length(predCols) / 2), direction = 1, end = 1, option = pal)
-      virpal_p2 <- viridis::viridis(floor(length(predCols) / 2), direction = -1, end = 1, option = pal)
+      virpal_p2 <- viridis::viridis(ceiling(length(predCols) / 2), direction = -1, end = 1, option = pal)[-1]
       c(virpal_p1, virpal_p2)
     })
   } else {
     virpal_p1 <- viridis::plasma(ceiling(length(predCols) / 2), direction = 1, end = 1)
-    virpal_p2 <- viridis::plasma(floor(length(predCols) / 2), direction = -1, end = 1)
+    virpal_p2 <- viridis::plasma(ceiling(length(predCols) / 2), direction = -1, end = 1)[-1]
     virpal <- c(virpal_p1, virpal_p2)
     virList <- lapply(seq_along(unique(df[[group]])), function(i) {
       virpal

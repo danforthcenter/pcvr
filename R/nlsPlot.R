@@ -73,7 +73,7 @@ nlsPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL,
       stats::setNames(data.frame(g, timeRange), c(group, x))
     }))
   } else {
-    new_data <- df
+    new_data <- NULL
   }
   #* `add predictions`
 
