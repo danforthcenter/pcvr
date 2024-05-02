@@ -367,6 +367,6 @@
   y <- draws2_radians + pi
   diff <- (x - y) %% span
   diff <- ifelse(diff <= (span / 2), diff, diff - span)
-  diff <- .radians.to.boundary(diff, target = boundary)
+  diff <- .radians.to.boundary(diff, target = boundary) - mean(boundary)
   return(diff)
 }
