@@ -44,6 +44,9 @@
     USEGROUP <- FALSE
     USEINDIVIDUAL <- FALSE
   }
+  if (!is.null(df)) {
+    df <- df[complete.cases(df[, c(x, y, individual, group)]), ]
+  }
   return(list(
     "y" = y, "x" = x, "individual" = individual, "group" = group,
     "USEG" = USEGROUP, "USEID" = USEINDIVIDUAL, "data" = df

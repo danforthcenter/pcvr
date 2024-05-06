@@ -7,8 +7,8 @@
 testGrowth(ss = NULL, fit, test = "A")
 }
 \arguments{
-\item{ss}{A list output from \link{growthSS}. This is not required if \code{test} is given
-in \code{brms::hypothesis} style as a written statement.}
+\item{ss}{A list output from \link{growthSS}. This is not required for nls and nlme models
+if \code{test} is given in \code{brms::hypothesis} style as a written statement.}
 
 \item{fit}{A non-brms model (or list of nlrq models) output from \link{fitGrowth}.}
 
@@ -52,6 +52,16 @@ ss <- suppressMessages(growthSS(
 ))
 fit <- fitGrowth(ss)
 testGrowth(ss, fit, "A")
+testGrowth(ss, fit, "a|0.5|A > b|0.5|A")
+
+ss2 <- suppressMessages(growthSS(
+  model = "logistic", form = y ~ time | id / group,
+  df = simdf, type = "nls"
+))
+fit2 <- fitGrowth(ss2)
+testGrowth(ss2, fit2, "A")$anova
+coef(fit2) # check options for contrast testing
+testGrowth(ss2, fit2, "A1 - A2*1.1")
 
 ## End(Not run)
 }

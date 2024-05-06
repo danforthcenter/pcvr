@@ -485,3 +485,34 @@ test_that("Test Intercept Logistic nlme modeling", {
   ))
   expect_equal(dim(test_res), c(3, 5))
 })
+
+test_that("Test Intercept Monomolecular nls modeling", {
+  set.seed(123)
+  simdf <- growthSim(
+    "monomolecular", n = 20, t = 25,
+    params = list("A" = c(200, 160), "B" = c(0.08, 0.1))
+  )
+  simdf$y <- simdf$y + ifelse(simdf$group == "a", 10, 15)
+  ss <- growthSS(
+    model = "int_monomolecular", form = y ~ time | id / group,
+    df = simdf, start = NULL, type = "nls"
+  )
+  fit <- fitGrowth(ss)
+  expect_s3_class(fit, "nls")
+})
+
+test_that("Test Intercept linear nls modeling", {
+  set.seed(123)
+  simdf <- growthSim(
+    "linear", n = 20, t = 25,
+    params = list("A" = c(3, 4))
+  )
+  simdf$y <- simdf$y + ifelse(simdf$group == "a", 10, 15)
+  ss <- growthSS(
+    model = "int_linear", form = y ~ time | id / group,
+    df = simdf, start = NULL, type = "nls"
+  )
+  fit <- fitGrowth(ss)
+  coef(fit)
+  expect_s3_class(fit, "nls")
+})

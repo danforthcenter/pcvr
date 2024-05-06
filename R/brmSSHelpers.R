@@ -578,10 +578,16 @@
 #' @keywords internal
 #' @noRd
 
-.brms_form_decay <- function(formList) {
+.brms_form_decay <- function(formList, int = FALSE) {
   modelForm <- formList$form
   chars <- as.character(modelForm)
-  formList$form <- as.formula(paste0(chars[2], chars[1], "-(", chars[3], ")"))
+  if (!int) {
+    formList$form <- as.formula(paste0(chars[2], chars[1], "-(", chars[3], ")"))
+  } else {
+    rhs <- chars[3]
+    rhs <- trimws(gsub("I\\s?\\+", "", rhs))
+    formList$form <- as.formula(paste0(chars[2], chars[1], "I - (", rhs, ")"))
+  }
   formList
 }
 

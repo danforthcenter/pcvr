@@ -29,11 +29,32 @@ if (file.exists("/home/josh/Desktop/") && interactive()) {
     expect_s3_class(plot, "ggplot")
   })
 
+  test_that("Logistic Decay brms Model with Intercept", {
+    set.seed(123)
+    logistic_df <- growthSim(
+      "logistic decay", n = 20, t = 25,
+      params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
+    )
+    logistic_df$y <- logistic_df$y + 300
+    ss <- growthSS(
+      model = "decay int_logistic", form = y ~ time | id / group, sigma = "int",
+      list("A" = 130, "B" = 10, "C" = 3, "I" = 150),
+      df = logistic_df, type = "brms"
+    )
+    fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1)
+    expect_s3_class(fit, "brmsfit")
+    plot <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
+    ggsave(
+      "~/scripts/fahlgren_lab/labMeetings/int_logistic_decay_fitGrowth.png", plot,
+      width = 10, height = 6, dpi = 300, bg = "#ffffff"
+    )
+    expect_s3_class(plot, "ggplot")
+  })
 
   test_that("Gompertz brms model pipeline", {
     set.seed(123)
-    simdf <- growthSim("gompertz",
-      n = 20, t = 25,
+    simdf <- growthSim(
+      "gompertz", n = 20, t = 25,
       params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(0.25, 0.25))
     )
     simdf$y <- simdf$y + 30

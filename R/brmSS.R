@@ -192,7 +192,7 @@
       useGroup = USEGROUP, prior = priors, int = int
     )
     if (decay) {
-      formRes <- .brms_form_decay(formRes)
+      formRes <- .brms_form_decay(formRes, int)
     }
     pars <- formRes$pars
     growthForm <- formRes$form
