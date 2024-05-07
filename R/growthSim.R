@@ -4,7 +4,7 @@
 #'  growth models to use in prior distributions or to simulate data for example models/plots.
 #'
 #' @param model One of "logistic", "gompertz", "weibull", "frechet", "gumbel", "monomolecular",
-#' "exponential", "linear", "power law", "double logistic", or "double gompertz".
+#' "exponential", "linear", "power law", "logarithmic", "double logistic", or "double gompertz".
 #' Alternatively this can be a pseudo formula to generate data from a segmented growth curve by
 #' specifying "model1 + model2", see examples and \code{\link{growthSS}}.
 #' Decay can be specified by including "decay" as part of the model such as "logistic decay" or
@@ -119,7 +119,15 @@
 #' ggplot(simdf, aes(time, y, group = interaction(group, id))) +
 #'   geom_line(aes(color = group)) +
 #'   labs(title = "Linear")
-#'
+#'   
+#' simdf <- growthSim("logarithmic",
+#'   n = 20, t = 25,
+#'   params = list("A" = c(2, 1.7))
+#' )
+#' ggplot(simdf, aes(time, y, group = interaction(group, id))) +
+#'   geom_line(aes(color = group)) +
+#'   labs(title = "Logarithmic")
+#'   
 #' simdf <- growthSim("power law",
 #'   n = 20, t = 25,
 #'   params = list("A" = c(16, 11), "B" = c(0.75, 0.7))
@@ -194,6 +202,8 @@
 #'     Where A is the scale parameter and B is the growth rate.
 #'     \item \bold{Linear}: `A * x`
 #'     Where A is the growth rate.
+#'     \item \bold{Logarithmic}: `A * log(x)`
+#'     Where A is the growth rate.
 #'     \item \bold{Power Law}: `A * x^(B)`
 #'     Where A is the scale parameter and B is the growth rate.
 #'     }
@@ -207,7 +217,7 @@
 
 growthSim <- function(model = c("logistic", "gompertz", "double logistic", "double gompertz",
                                 "monomolecular", "exponential", "linear", "power law", "frechet",
-                                "weibull", "gumbel"),
+                                "weibull", "gumbel", "logarithmic"),
                       n = 20, t = 25, params = list(), noise = NULL, D = 0) {
   if (grepl("count:", model)) {
     COUNT <- TRUE
@@ -382,7 +392,8 @@ growthSim <- function(model = c("logistic", "gompertz", "double logistic", "doub
 .singleGrowthSim <- function(model, n = 20, t = 25, params = list(), noise = NULL, D) {
   models <- c(
     "logistic", "gompertz", "double logistic", "double gompertz",
-    "monomolecular", "exponential", "linear", "power law", "frechet", "weibull", "gumbel"
+    "monomolecular", "exponential", "linear", "power law", "frechet", "weibull", "gumbel",
+    "logarithmic"
   )
 
   if (grepl("decay", model)) {
@@ -471,6 +482,10 @@ gsi_powerlaw <- function(x, pars, noise) {
   a_r <- pars[["A"]] + rnorm(1, mean = 0, sd = noise[["A"]])
   b_r <- pars[["B"]] + rnorm(1, mean = 0, sd = noise[["B"]])
   return(a_r * x^(b_r))
+}
+gsi_logarithmic <- function(x, pars, noise) {
+  a_r <- pars[["A"]] + rnorm(1, mean = 0, sd = noise[["A"]])
+  return(a_r * log(x))
 }
 gsi_frechet <- function(x, pars, noise) {
   a_r <- pars[["A"]] + rnorm(1, mean = 0, sd = noise[["A"]])
