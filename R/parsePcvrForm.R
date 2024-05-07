@@ -45,7 +45,8 @@
     USEINDIVIDUAL <- FALSE
   }
   if (!is.null(df)) {
-    df <- df[complete.cases(df[, c(x, y, individual, group)]), ]
+    tryCatch({df <- df[complete.cases(df[, c(x, y, individual, group)]), ]},
+             error = function(err) {})
   }
   return(list(
     "y" = y, "x" = x, "individual" = individual, "group" = group,
