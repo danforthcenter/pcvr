@@ -50,7 +50,7 @@
   component_models <- trimws(strsplit(model, "\\+")[[1]])
   models <- c(
     "logistic", "gompertz", "monomolecular", "exponential", "linear", "power law", "gam",
-    "spline", "int", "homo", "weibull", "frechet", "gumbel"
+    "spline", "int", "homo", "weibull", "frechet", "gumbel", "logarithmic"
   )
   if (is.null(priors)) {
     priors <- stats::setNames(
@@ -714,6 +714,91 @@
     )
   }
   pars <- paste0(prefix, "powerLaw", position, c("A", "B"))
+  if (!fixed) {
+    pars <- c(pars, paste0(chngptPrefix, "changePoint", position))
+  }
+  return(list(
+    "form" = form,
+    "cp" = cp,
+    "cpInt" = cpInt,
+    "params" = pars
+  ))
+}
+
+#* ****************************************
+#* ***** `Logarithmic Changepoint Phase` *****
+#* ****************************************
+
+#' Logarithmic changepoint section function
+#'
+#' @param x X variable name
+#' @param position Position in growth formula ("1" + "2" + "3"... etc)
+#' @param dpar string or NULL, if string should be the name of the distributional parameter
+#' @param priors a list of prior distributions (used for fixed vs estimated changepoints)
+#'
+#' @examples
+#'
+#' .logarithmicChngptForm(x = "time", 1)
+#' .logarithmicChngptForm(x = "time", 2)
+#' .logarithmicChngptForm(x = "time", 3)
+#'
+#' @return a list with form, cp, and cpInt elements. "form" is the growth formula
+#' for this phase of the model. "cp" is the inv_logit function defining when this
+#' phase should happen. "cpInt" is the value at the end of this growth phase and is
+#' used in starting the next growth phase from the right y value.
+#'
+#' @noRd
+
+.logarithmicChngptForm <- function(x, position = 1, dpar = NULL, priors) { # return f, cp, and cpInt
+  
+  prefix <- chngptPrefix <- dpar
+  
+  if (any(grepl(paste0("fixedChangePoint", position), names(priors)))) {
+    changePointObj <- as.numeric(priors[[paste0(prefix, "fixedChangePoint", position)]])[1]
+    fixed <- TRUE
+    chngptPrefix <- NULL # never a prefix if the changepoint is a fixed value
+  } else {
+    fixed <- FALSE
+  }
+  
+  if (position == 1) {
+    if (!fixed) {
+      changePointObj <- "changePoint1"
+    }
+    form <- paste0(prefix, "logarithmic", position, "A * log(", x, ")")
+    cp <- paste0("inv_logit((", chngptPrefix, changePointObj, " - ", x, ") * 5)")
+    cpInt <- paste0(
+      prefix, "logarithmic", position, "A * log(", chngptPrefix, changePointObj, ")"
+    )
+  } else {
+    all_chngpts <- names(priors)[grepl("fixedChangePoint*|changePoint*", names(priors))]
+    prevChangePoints <- all_chngpts[which(as.numeric(sub(".*hangePoint", "", all_chngpts)) < position)]
+    prevAndCurrentChangePoints <- all_chngpts[which(
+      as.numeric(sub(".*hangePoint", "", all_chngpts)) %in% c(position, position - 1)
+    )]
+    #* per location where "fixed" is in the prior name, replace the name with that number.
+    prev_fixed_index <- which(grepl("fixed", prevChangePoints))
+    if (length(prev_fixed_index) > 0) {
+      prevChangePoints[prev_fixed_index] <- as.numeric(priors[[prevChangePoints[prev_fixed_index]]])
+    }
+    pac_fixed_index <- which(grepl("fixed", prevAndCurrentChangePoints))
+    if (length(pac_fixed_index) > 0) {
+      prevAndCurrentChangePoints[pac_fixed_index] <- as.numeric(
+        priors[[prevAndCurrentChangePoints[pac_fixed_index]]]
+      )
+    }
+    
+    form <- paste0(
+      prefix, "logarithmic", position, "A * log(", x, "-",
+      paste0(prevChangePoints, collapse = "-"), ")"
+    )
+    cp <- paste0("inv_logit((", x, "-", paste0(prevChangePoints, collapse = "-"), ") * 5)")
+    cpInt <- paste0(
+      prefix, "logarithmic", position, "A * log(", paste0(rev(prevAndCurrentChangePoints), collapse = "-"),
+      ")"
+    )
+  }
+  pars <- paste0(prefix, "powerLaw", position, c("A"))
   if (!fixed) {
     pars <- c(pars, paste0(chngptPrefix, "changePoint", position))
   }
