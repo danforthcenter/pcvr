@@ -90,7 +90,7 @@ if (FALSE) {
 
   fit <- fitGrowth(ss)
 
-  nlsPlot(fit, form = ss$pcvrForm, df = ss$pcvrForm)
+  nlsPlot(fit, form = ss$pcvrForm, df = ss$df)
 }
 
 ## End(Not run)
