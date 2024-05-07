@@ -25,8 +25,10 @@ which is only used in brms (and is expected to only be used in threshold models 
 homoskedasticity.)
 See \code{\link{growthSim}} for examples of each type of single parameterized growth curve
 ("gam" is not supported in \code{growthSim}).
-You can also specify decay models by including the "decay" keyword with the model name.
-Note that in brms models the entire formula is negated for decay models so that lognormal priors can
+You can also specify decay models by including the "decay" keyword with the model name. Note that
+using "decay" is only necessary for the brms backend since otherwise the priors are strictly
+positive.
+In brms models the entire formula is negated for decay models so that lognormal priors can
 still be used when at least some coefficients would be negative.
 Additionally, the "int_" prefix may be added to a model name to specify that an intercept should
 be included. By default these models are assumed to have intercepts at 0, which is often fine.
