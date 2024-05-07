@@ -14,11 +14,6 @@
 #' future data if the available data has not reached some point (such as asymptotic size),
 #' although prediction using splines outside of the observed range is not necessarily reliable.
 #' @param facetGroups logical, should groups be separated in facets? Defaults to TRUE.
-#' @param groupFill logical, should groups have different colors? Defaults to FALSE.
-#' If TRUE then viridis colormaps are used in the order
-#' of virMaps
-#' @param virMaps order of viridis maps to use. Will be recycled to necessary length.
-#' Defaults to "plasma", but will generally be informed by growthPlot's default.
 #' @keywords growth-curve, logistic, gompertz, monomolecular, linear, exponential, power-law
 #' @import ggplot2
 #' @import viridis
@@ -57,21 +52,18 @@
 #'
 #' @export
 
-brmSurvPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facetGroups = TRUE,
-                        groupFill = FALSE, virMaps = c("plasma")) {
+brmSurvPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facetGroups = TRUE) {
   family <- as.character(fit$family)[1]
 
   if (family == "weibull") {
     p <- .weibullBrmSurvPlot(
       fit = fit, form = form, df = df, groups = groups,
-      timeRange = timeRange, facetGroups = facetGroups,
-      groupFill = groupFill, virMaps = c("plasma")
+      timeRange = timeRange, facetGroups = facetGroups
     )
   } else if (family == "binomial") {
     p <- .binomialBrmSurvPlot(
       fit = fit, form = form, df = df, groups = groups,
-      timeRange = timeRange, facetGroups = facetGroups,
-      groupFill = groupFill, virMaps = c("plasma")
+      timeRange = timeRange, facetGroups = facetGroups
     )
   }
   return(p)
@@ -83,8 +75,7 @@ brmSurvPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, f
 #' @noRd
 
 .binomialBrmSurvPlot <- function(fit, form, df = NULL, groups = NULL,
-                                 timeRange = NULL, facetGroups = TRUE,
-                                 groupFill = FALSE, virMaps = c("plasma")) {
+                                 timeRange = NULL, facetGroups = TRUE) {
   #* `pull model data`
   fitData <- fit$data
   #* `general pcvr formula parsing`
@@ -143,38 +134,46 @@ brmSurvPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, f
   } else {
     facetLayer <- NULL
   }
-  #* `Decide Fill Colors`
-  if (groupFill) {
-    virList <- lapply(rep(virMaps, length.out = length(groups)), function(pal) {
-      viridis::viridis(n = length(probs), option = pal)
-    })
-  } else {
-    pal <- viridis::plasma(n = length(probs))
-    virList <- lapply(seq_along(unique(df[[group]])), function(i) {
-      pal
-    })
-  }
+  #* `lengthen quantiles`
+  max_prime <- 0.99
+  min_prime <- 0.01
+  max_obs <- 49
+  min_obs <- 1
+  c1 <- (max_prime-min_prime) / (max_obs-min_obs)
+  
+  longPreds <- do.call(rbind, lapply(seq_len(nrow(quantiles)), function(r) {
+    sub <- quantiles[r, ]
+    do.call(rbind, lapply(seq(1, 49, 2), function(i) {
+      min <- paste0("Q", i)
+      max <- paste0("Q", 100 - i)
+      iter <- sub[,c(x, group)]
+      iter$q <- round(1 - (c1 * (i - max_obs) + max_prime), 2)
+      iter$min <- sub[[min]]
+      iter$max <- sub[[max]]
+      iter
+    }))
+  }))
+
   #* `Initialize Plot`
-  p <- ggplot2::ggplot(quantiles, ggplot2::aes(x = .data[[x]])) +
+  p <- ggplot2::ggplot(longPreds, ggplot2::aes(x = .data[[x]])) +
     facetLayer +
     ggplot2::labs(x = x, y = "Survival") +
     ggplot2::scale_y_continuous(labels = scales::label_percent()) +
     pcv_theme()
   #* `Add Ribbons`
-  for (g in seq_along(groups)) {
-    iteration_group <- groups[g]
-    sub <- quantiles[quantiles[[group]] == iteration_group, ]
-    p <- p +
-      lapply(seq(1, 49, 2), function(i) {
-        ggplot2::geom_ribbon(
-          data = sub, ggplot2::aes(
-            ymin = .data[[paste0("Q", i)]],
-            ymax = .data[[paste0("Q", 100 - i)]]
-          ),
-          fill = virList[[g]][i], alpha = 0.5
-        )
-      })
-  }
+  p <- p +
+    lapply(unique(longPreds$q), function(q) {
+      ggplot2::geom_ribbon(
+        data = longPreds[longPreds$q == q, ],
+        ggplot2::aes(
+          ymin = min,
+          ymax = max,
+          group = .data[[group]],
+          fill = q
+        ), alpha = 0.5)
+    }) +
+    viridis::scale_fill_viridis(direction = -1, option = "plasma")
+
   #* `Add KM Trend`
   if (!is.null(df)) {
     df$pct_surv <- (1 - df$pct_event)
@@ -196,8 +195,7 @@ brmSurvPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, f
 #' @noRd
 
 .weibullBrmSurvPlot <- function(fit, form, df = NULL, groups = NULL,
-                                timeRange = NULL, facetGroups = TRUE,
-                                groupFill = FALSE, virMaps = c("plasma")) {
+                                timeRange = NULL, facetGroups = TRUE) {
   #* `Transform draws`
   fitData <- fit$data
   fdf <- as.data.frame(fit)
@@ -262,38 +260,44 @@ brmSurvPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, f
   } else {
     facetLayer <- NULL
   }
-  #* `Decide Fill Colors`
-  if (groupFill) {
-    virList <- lapply(rep(virMaps, length.out = length(groups)), function(pal) {
-      viridis::viridis(n = length(probs), option = pal)
-    })
-  } else {
-    pal <- viridis::plasma(n = length(probs))
-    virList <- lapply(seq_along(groups), function(i) {
-      pal
-    })
-  }
+  #* `lengthen quantiles`
+  max_prime <- 0.99
+  min_prime <- 0.01
+  max_obs <- 49
+  min_obs <- 1
+  c1 <- (max_prime-min_prime) / (max_obs-min_obs)
+  
+  longPreds <- do.call(rbind, lapply(seq_len(nrow(quantiles)), function(r) {
+    sub <- quantiles[r, ]
+    do.call(rbind, lapply(seq(1, 49, 2), function(i) {
+      min <- paste0("Q", i)
+      max <- paste0("Q", 100 - i)
+      iter <- sub[,c("time", group)]
+      iter$q <- round(1 - (c1 * (i - max_obs) + max_prime), 2)
+      iter$min <- sub[[min]]
+      iter$max <- sub[[max]]
+      iter
+    }))
+  }))
   #* `Initialize Plot`
-  p <- ggplot2::ggplot(quantiles, ggplot2::aes(x = .data[["time"]])) +
+  p <- ggplot2::ggplot(longPreds, ggplot2::aes(x = .data[["time"]])) +
     facetLayer +
     ggplot2::labs(x = x, y = "Survival") +
     ggplot2::scale_y_continuous(labels = scales::label_percent()) +
     pcv_theme()
   #* `Add Ribbons`
-  for (g in seq_along(groups)) {
-    iteration_group <- groups[g]
-    sub <- quantiles[quantiles[[group]] == iteration_group, ]
-    p <- p +
-      lapply(seq(1, 49, 2), function(i) {
-        ggplot2::geom_ribbon(
-          data = sub, ggplot2::aes(
-            ymin = .data[[paste0("Q", i)]],
-            ymax = .data[[paste0("Q", 100 - i)]]
-          ),
-          fill = virList[[g]][i], alpha = 0.5
-        )
-      })
-  }
+  p <- p +
+    lapply(unique(longPreds$q), function(q) {
+      ggplot2::geom_ribbon(
+        data = longPreds[longPreds$q == q, ],
+        ggplot2::aes(
+          ymin = min,
+          ymax = max,
+          group = .data[[group]],
+          fill = q
+        ), alpha = 0.5)
+    }) +
+    viridis::scale_fill_viridis(direction = -1, option = "plasma")
   #* `Add KM Trend`
   if (!is.null(df)) {
     km_df <- do.call(rbind, lapply(groups, function(grp) {

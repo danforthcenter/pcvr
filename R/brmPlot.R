@@ -14,11 +14,6 @@
 #' future data if the available data has not reached some point (such as asymptotic size),
 #' although prediction using splines outside of the observed range is not necessarily reliable.
 #' @param facetGroups logical, should groups be separated in facets? Defaults to TRUE.
-#' @param groupFill logical, should groups have different colors? Defaults to FALSE.
-#' If TRUE then viridis colormaps are used in the order
-#' of virMaps
-#' @param virMaps order of viridis maps to use. Will be recycled to necessary length.
-#' Defaults to "plasma", but will generally be informed by growthPlot's default.
 #' @keywords growth-curve, logistic, gompertz, monomolecular, linear, exponential, power-law
 #' @import ggplot2
 #' @import viridis
@@ -43,8 +38,7 @@
 #'
 #' @export
 
-brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facetGroups = TRUE,
-                    groupFill = FALSE, virMaps = c("plasma")) {
+brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facetGroups = TRUE) {
   fitData <- fit$data
   parsed_form <- .parsePcvrForm(form, df)
   y <- parsed_form$y
@@ -92,38 +86,43 @@ brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
   } else {
     facetLayer <- NULL
   }
-  #* `groupFill`
-  if (groupFill) {
-    virList <- lapply(rep(virMaps, length.out = length(unique(df[[group]]))), function(pal) {
-      viridis::viridis(n = length(probs), option = pal)
-    })
-  } else {
-    pal <- viridis::plasma(n = length(probs))
-    virList <- lapply(seq_along(unique(df[[group]])), function(i) {
-      pal
-    })
-  }
+  #* `lengthen predictions`
+  max_prime <- 0.99
+  min_prime <- 0.01
+  max_obs <- 49
+  min_obs <- 1
+  c1 <- (max_prime-min_prime) / (max_obs-min_obs)
+  
+  longPreds <- do.call(rbind, lapply(seq_len(nrow(predictions)), function(r) {
+    sub <- predictions[r, ]
+    do.call(rbind, lapply(seq(1, 49, 2), function(i) {
+      min <- paste0("Q", i)
+      max <- paste0("Q", 100 - i)
+      iter <- sub[,c(x, group, individual, "Estimate")]
+      iter$q <- round(1 - (c1 * (i - max_obs) + max_prime), 2)
+      iter$min <- sub[[min]]
+      iter$max <- sub[[max]]
+      iter
+    }))
+  }))
 
-
-  p <- ggplot2::ggplot(predictions, ggplot2::aes(x = .data[[x]], y = .data$Estimate)) +
+  p <- ggplot2::ggplot(longPreds, ggplot2::aes(x = .data[[x]], y = .data$Estimate)) +
     facetLayer +
     ggplot2::labs(x = x, y = y) +
     pcv_theme()
 
-  for (g in seq_along(unique(predictions[[group]]))) {
-    iteration_group <- unique(predictions[[group]])[g]
-    sub <- predictions[predictions[[group]] == iteration_group, ]
-    p <- p +
-      lapply(seq(1, 49, 2), function(i) {
-        ggplot2::geom_ribbon(
-          data = sub, ggplot2::aes(
-            ymin = .data[[paste0("Q", i)]],
-            ymax = .data[[paste0("Q", 100 - i)]]
-          ),
-          fill = virList[[g]][i], alpha = 0.5
-        )
-      })
-  }
+  p <- p +
+    lapply(unique(longPreds$q), function(q) {
+      ggplot2::geom_ribbon(
+        data = longPreds[longPreds$q == q, ],
+        ggplot2::aes(
+          ymin = min,
+          ymax = max,
+          group = .data[[group]],
+          fill = q
+        ), alpha = 0.5)
+    }) +
+    viridis::scale_fill_viridis(direction = -1, option = "plasma")
 
   if (!is.null(df) && !is.null(individual)) {
     p <- p + ggplot2::geom_line(
