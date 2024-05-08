@@ -750,9 +750,9 @@
 #' @noRd
 
 .logarithmicChngptForm <- function(x, position = 1, dpar = NULL, priors) { # return f, cp, and cpInt
-  
+
   prefix <- chngptPrefix <- dpar
-  
+
   if (any(grepl(paste0("fixedChangePoint", position), names(priors)))) {
     changePointObj <- as.numeric(priors[[paste0(prefix, "fixedChangePoint", position)]])[1]
     fixed <- TRUE
@@ -760,7 +760,7 @@
   } else {
     fixed <- FALSE
   }
-  
+
   if (position == 1) {
     if (!fixed) {
       changePointObj <- "changePoint1"
@@ -787,14 +787,15 @@
         priors[[prevAndCurrentChangePoints[pac_fixed_index]]]
       )
     }
-    
+
     form <- paste0(
       prefix, "logarithmic", position, "A * log(", x, "-",
       paste0(prevChangePoints, collapse = "-"), ")"
     )
     cp <- paste0("inv_logit((", x, "-", paste0(prevChangePoints, collapse = "-"), ") * 5)")
     cpInt <- paste0(
-      prefix, "logarithmic", position, "A * log(", paste0(rev(prevAndCurrentChangePoints), collapse = "-"),
+      prefix, "logarithmic", position, "A * log(",
+      paste0(rev(prevAndCurrentChangePoints), collapse = "-"),
       ")"
     )
   }

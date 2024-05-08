@@ -499,7 +499,7 @@
 
 
 .brms_form_logarithmic <- function(x, y, group, dpar = FALSE, nTimes = NULL,
-                                useGroup = TRUE, prior = NULL, int) {
+                                   useGroup = TRUE, prior = NULL, int) {
   if (dpar) {
     if (int) {
       form <- brms::nlf(stats::as.formula(paste0(y, " ~ ", y, "I + (", y, "A*log(", x, ")")))

@@ -139,14 +139,14 @@ brmSurvPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, f
   min_prime <- 0.01
   max_obs <- 49
   min_obs <- 1
-  c1 <- (max_prime-min_prime) / (max_obs-min_obs)
-  
+  c1 <- (max_prime - min_prime) / (max_obs - min_obs)
+
   longPreds <- do.call(rbind, lapply(seq_len(nrow(quantiles)), function(r) {
     sub <- quantiles[r, ]
     do.call(rbind, lapply(seq(1, 49, 2), function(i) {
       min <- paste0("Q", i)
       max <- paste0("Q", 100 - i)
-      iter <- sub[,c(x, group)]
+      iter <- sub[, c(x, group)]
       iter$q <- round(1 - (c1 * (i - max_obs) + max_prime), 2)
       iter$min <- sub[[min]]
       iter$max <- sub[[max]]
@@ -170,7 +170,8 @@ brmSurvPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, f
           ymax = max,
           group = .data[[group]],
           fill = q
-        ), alpha = 0.5)
+        ), alpha = 0.5
+      )
     }) +
     viridis::scale_fill_viridis(direction = -1, option = "plasma")
 
@@ -265,14 +266,14 @@ brmSurvPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, f
   min_prime <- 0.01
   max_obs <- 49
   min_obs <- 1
-  c1 <- (max_prime-min_prime) / (max_obs-min_obs)
-  
+  c1 <- (max_prime - min_prime) / (max_obs - min_obs)
+
   longPreds <- do.call(rbind, lapply(seq_len(nrow(quantiles)), function(r) {
     sub <- quantiles[r, ]
     do.call(rbind, lapply(seq(1, 49, 2), function(i) {
       min <- paste0("Q", i)
       max <- paste0("Q", 100 - i)
-      iter <- sub[,c("time", group)]
+      iter <- sub[, c("time", group)]
       iter$q <- round(1 - (c1 * (i - max_obs) + max_prime), 2)
       iter$min <- sub[[min]]
       iter$max <- sub[[max]]
@@ -295,7 +296,8 @@ brmSurvPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, f
           ymax = max,
           group = .data[[group]],
           fill = q
-        ), alpha = 0.5)
+        ), alpha = 0.5
+      )
     }) +
     viridis::scale_fill_viridis(direction = -1, option = "plasma")
   #* `Add KM Trend`

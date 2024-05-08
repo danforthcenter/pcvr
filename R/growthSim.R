@@ -119,7 +119,7 @@
 #' ggplot(simdf, aes(time, y, group = interaction(group, id))) +
 #'   geom_line(aes(color = group)) +
 #'   labs(title = "Linear")
-#'   
+#'
 #' simdf <- growthSim("logarithmic",
 #'   n = 20, t = 25,
 #'   params = list("A" = c(2, 1.7))
@@ -127,7 +127,7 @@
 #' ggplot(simdf, aes(time, y, group = interaction(group, id))) +
 #'   geom_line(aes(color = group)) +
 #'   labs(title = "Logarithmic")
-#'   
+#'
 #' simdf <- growthSim("power law",
 #'   n = 20, t = 25,
 #'   params = list("A" = c(16, 11), "B" = c(0.75, 0.7))
@@ -215,10 +215,13 @@
 #'
 #'
 
-growthSim <- function(model = c("logistic", "gompertz", "double logistic", "double gompertz",
-                                "monomolecular", "exponential", "linear", "power law", "frechet",
-                                "weibull", "gumbel", "logarithmic"),
-                      n = 20, t = 25, params = list(), noise = NULL, D = 0) {
+growthSim <- function(
+    model = c(
+      "logistic", "gompertz", "double logistic", "double gompertz",
+      "monomolecular", "exponential", "linear", "power law", "frechet",
+      "weibull", "gumbel", "logarithmic"
+    ),
+    n = 20, t = 25, params = list(), noise = NULL, D = 0) {
   if (grepl("count:", model)) {
     COUNT <- TRUE
     model <- trimws(gsub("count:", "", model))

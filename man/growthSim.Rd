@@ -178,7 +178,7 @@ simdf <- growthSim("linear",
 ggplot(simdf, aes(time, y, group = interaction(group, id))) +
   geom_line(aes(color = group)) +
   labs(title = "Linear")
-  
+
 simdf <- growthSim("logarithmic",
   n = 20, t = 25,
   params = list("A" = c(2, 1.7))
@@ -186,7 +186,7 @@ simdf <- growthSim("logarithmic",
 ggplot(simdf, aes(time, y, group = interaction(group, id))) +
   geom_line(aes(color = group)) +
   labs(title = "Logarithmic")
-  
+
 simdf <- growthSim("power law",
   n = 20, t = 25,
   params = list("A" = c(16, 11), "B" = c(0.75, 0.7))
