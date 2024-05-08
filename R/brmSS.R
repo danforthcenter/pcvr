@@ -2,7 +2,7 @@
 #'
 #' @param model The name of a model as a character string.
 #' Supported options are "logistic", "gompertz", "frechet", "gumbel", "weibull",
-#' "monomolecular", "exponential", "linear",
+#' "monomolecular", "exponential", "linear", "logarithmic",
 #' "power law", "double logistic", "double gompertz", and "gam".
 #' See \code{\link{growthSim}} for examples of each type of growth curve.
 #' @param form A formula describing the model. The left hand side should only be
@@ -124,7 +124,7 @@
 .brmSS <- function(model, form, sigma = NULL, df, priors = NULL, int = FALSE) {
   out <- list()
   models <- c(
-    "int", "logistic", "gompertz", "monomolecular", "exponential", "linear", "power law",
+    "int", "logistic", "gompertz", "monomolecular", "exponential", "linear", "power law", "logarithmic",
     "double logistic", "double gompertz", "gam", "spline", "homo", "frechet", "gumbel", "weibull",
     "not_estimated"
   )
@@ -192,7 +192,7 @@
       useGroup = USEGROUP, prior = priors, int = int
     )
     if (decay) {
-      formRes <- .brms_form_decay(formRes)
+      formRes <- .brms_form_decay(formRes, int)
     }
     pars <- formRes$pars
     growthForm <- formRes$form

@@ -21,7 +21,7 @@
 #' @param groupFill logical, should groups have different colors? Defaults to FALSE. If TRUE then
 #' viridis colormaps are used in the order c('plasma', 'mako', 'viridis', 'inferno', 'cividis', 'magma',
 #' 'turbo', 'rocket'). Alternatively this can be given as a vector of
-#' viridis colormap names to use in a different order than above.
+#' viridis colormap names to use in a different order than above. Note this is ignored for brms models.
 #' @keywords growth-curve, logistic, gompertz, monomolecular, linear, exponential, power-law
 #' @importFrom methods is
 #' @examples
@@ -60,12 +60,12 @@ growthPlot <- function(fit, form, groups = NULL, df = NULL, timeRange = NULL,
     if (attr(fit$formula$formula, "nl")) { # non linear models are growth models
       plot <- brmPlot(
         fit = fit, form = form, groups = groups, df = df, timeRange = timeRange,
-        facetGroups = facetGroups, groupFill = groupFill, virMaps
+        facetGroups = facetGroups
       )
     } else {
       plot <- brmSurvPlot(
         fit = fit, form = form, groups = groups, df = df, timeRange = timeRange,
-        facetGroups = facetGroups, groupFill = groupFill, virMaps
+        facetGroups = facetGroups
       )
     }
   } else {

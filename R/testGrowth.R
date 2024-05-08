@@ -1,7 +1,7 @@
 #' Hypothesis testing for frequentist \code{fitGrowth} models.
 #'
-#' @param ss A list output from \link{growthSS}. This is not required if \code{test} is given
-#' in \code{brms::hypothesis} style as a written statement.
+#' @param ss A list output from \link{growthSS}. This is not required for nls and nlme models
+#' if \code{test} is given in \code{brms::hypothesis} style as a written statement.
 #' @param fit A non-brms model (or list of nlrq models) output from \link{fitGrowth}.
 #' @param test A description of the hypothesis to test. This can take two main forms,
 #' either the parameter names to vary before comparing a nested model ("A", "B", "C") using an anova
@@ -47,6 +47,16 @@
 #' ))
 #' fit <- fitGrowth(ss)
 #' testGrowth(ss, fit, "A")
+#' testGrowth(ss, fit, "a|0.5|A > b|0.5|A")
+#'
+#' ss2 <- suppressMessages(growthSS(
+#'   model = "logistic", form = y ~ time | id / group,
+#'   df = simdf, type = "nls"
+#' ))
+#' fit2 <- fitGrowth(ss2)
+#' testGrowth(ss2, fit2, "A")$anova
+#' coef(fit2) # check options for contrast testing
+#' testGrowth(ss2, fit2, "A1 - A2*1.1")
 #'
 #' ## End(Not run)
 #' @export
@@ -54,7 +64,7 @@
 testGrowth <- function(ss = NULL, fit, test = "A") {
   method <- .specifyTestType(ss, test)
   if (method == "contrast") {
-    res <- .nlhypothesis(fit, test)
+    res <- .nlhypothesis(fit, test, ss)
   } else if (method == "anova") {
     if (ss$model == "gam") {
       #* do gam things
@@ -74,8 +84,6 @@ testGrowth <- function(ss = NULL, fit, test = "A") {
     } else if (ss$type == "nlrq") {
       if (any(test %in% c("A", "B", "C"))) {
         res <- .nlrqTest(ss, fit, test_pars = test)
-      } else {
-        res <- .nlrqTest2(ss, fit, test_pars = test)
       }
     } else if (grepl("surv", ss$type)) {
       res <- .survTest(ss)
@@ -123,11 +131,14 @@ testGrowth <- function(ss = NULL, fit, test = "A") {
 #' @keywords internal
 #' @noRd
 
-.nlhypothesis <- function(fit, test) {
+.nlhypothesis <- function(fit, test, ss) {
   if (methods::is(fit, "nlme")) {
     coefs <- nlme::fixef(fit)
   } else if (methods::is(fit, "nls")) {
     coefs <- stats::coef(fit)
+  } else if (methods::is(fit, "nlrq") || is.list(fit)) {
+    out <- .nlrqTest2(ss, fit, test)
+    return(out)
   } else {
     stop(paste0("These hypotheses are only implemented for nls and nlme models.",
                 " For brms models see brms::hypothesis"))

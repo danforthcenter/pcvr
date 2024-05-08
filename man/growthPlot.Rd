@@ -38,7 +38,7 @@ future data if the avaiable data has not reached some point (such as asymptotic 
 \item{groupFill}{logical, should groups have different colors? Defaults to FALSE. If TRUE then
 viridis colormaps are used in the order c('plasma', 'mako', 'viridis', 'inferno', 'cividis', 'magma',
 'turbo', 'rocket'). Alternatively this can be given as a vector of
-viridis colormap names to use in a different order than above.}
+viridis colormap names to use in a different order than above. Note this is ignored for brms models.}
 }
 \value{
 Returns a ggplot showing a brms model's credible

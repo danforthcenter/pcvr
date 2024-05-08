@@ -1,4 +1,4 @@
-#' Ease of use nlrq starter function for standard growth model parameterizations
+#' Ease of use nlrq/nls starter function for standard growth model parameterizations
 #'
 #' Internal to growthSS
 #'
@@ -33,7 +33,7 @@
   out <- list()
   models <- c(
     "logistic", "gompertz", "monomolecular", "exponential", "linear", "power law",
-    "double logistic", "double gompertz", "gam", "frechet", "weibull", "gumbel"
+    "double logistic", "double gompertz", "gam", "frechet", "weibull", "gumbel", "logarithmic"
   )
   #* ***** `Make nlrq formula` *****
   #* `parse form argument`
@@ -243,6 +243,33 @@
   }
   pars <- stats::coef(stats::lm(y ~ x, xy))
   start <- stats::setNames(pars[c("x")], c("A"))
+  if (int) {
+    start <- stats::setNames(append(obs_min, start), c("I", "A"))
+  }
+  return(start)
+}
+
+#' `Logarithmic self starter`
+#' @examples
+#' ex <- growthSim("logarithmic",
+#'   n = 20, t = 25,
+#'   params = list("A" = c(1.1, 0.95))
+#' )
+#' .initlinear(ex, "time", "y")
+#' @keywords internal
+#' @noRd
+
+.initlogarithmic <- function(df, x, y, int) {
+  if (int) {
+    obs_min <- min(df[[y]], na.rm = TRUE)
+    df[[y]] <- df[[y]] - obs_min
+  }
+  xy <- stats::sortedXyData(df[[x]], df[[y]])
+  if (nrow(xy) < 2) {
+    stop("too few distinct input values to fit a logarithmic model")
+  }
+  pars <- stats::coef(stats::lm(y ~ log(x), xy))
+  start <- stats::setNames(pars[c("log(x)")], c("A"))
   if (int) {
     start <- stats::setNames(append(obs_min, start), c("I", "A"))
   }
@@ -679,6 +706,35 @@
     str_nf <- paste0(y, " ~ I[] + (A[] * exp(-exp(-(", x, "-B[])/C[])))")
   } else {
     str_nf <- paste0(y, " ~ A[] * exp(-exp(-(", x, "-B[])/C[]))")
+  }
+  if (USEGROUP) {
+    for (par in total_pars) {
+      if (par %in% pars) {
+        str_nf <- gsub(paste0(par, "\\[\\]"), paste0(par, "[", group, "]"), str_nf)
+      } else {
+        str_nf <- gsub(paste0(par, "\\[\\]"), par, str_nf)
+      }
+    }
+    nf <- as.formula(str_nf)
+  } else {
+    nf <- as.formula(gsub("\\[|\\]", "", str_nf))
+  }
+  return(list("formula" = nf, "pars" = pars))
+}
+
+.nlrq_form_logarithmic <- function(x, y, USEGROUP, group, pars, int = FALSE) {
+  if (int) {
+    total_pars <- c("I", "A")
+  } else {
+    total_pars <- c("A")
+  }
+  if (is.null(pars)) {
+    pars <- total_pars
+  }
+  if (int) {
+    str_nf <- paste0(y, " ~ I[] + A[] * log(", x, ")")
+  } else {
+    str_nf <- paste0(y, " ~ A[] * log(", x, ")")
   }
   if (USEGROUP) {
     for (par in total_pars) {

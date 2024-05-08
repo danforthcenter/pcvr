@@ -7,7 +7,7 @@
 growthSim(
   model = c("logistic", "gompertz", "double logistic", "double gompertz",
     "monomolecular", "exponential", "linear", "power law", "frechet", "weibull",
-    "gumbel"),
+    "gumbel", "logarithmic"),
   n = 20,
   t = 25,
   params = list(),
@@ -17,7 +17,7 @@ growthSim(
 }
 \arguments{
 \item{model}{One of "logistic", "gompertz", "weibull", "frechet", "gumbel", "monomolecular",
-"exponential", "linear", "power law", "double logistic", or "double gompertz".
+"exponential", "linear", "power law", "logarithmic", "double logistic", or "double gompertz".
 Alternatively this can be a pseudo formula to generate data from a segmented growth curve by
 specifying "model1 + model2", see examples and \code{\link{growthSS}}.
 Decay can be specified by including "decay" as part of the model such as "logistic decay" or
@@ -79,6 +79,8 @@ The \code{params} argument requires some understanding of how each growth model 
     \item \bold{Exponential}: `A * exp(B * x)`
     Where A is the scale parameter and B is the growth rate.
     \item \bold{Linear}: `A * x`
+    Where A is the growth rate.
+    \item \bold{Logarithmic}: `A * log(x)`
     Where A is the growth rate.
     \item \bold{Power Law}: `A * x^(B)`
     Where A is the scale parameter and B is the growth rate.
@@ -176,6 +178,14 @@ simdf <- growthSim("linear",
 ggplot(simdf, aes(time, y, group = interaction(group, id))) +
   geom_line(aes(color = group)) +
   labs(title = "Linear")
+
+simdf <- growthSim("logarithmic",
+  n = 20, t = 25,
+  params = list("A" = c(2, 1.7))
+)
+ggplot(simdf, aes(time, y, group = interaction(group, id))) +
+  geom_line(aes(color = group)) +
+  labs(title = "Logarithmic")
 
 simdf <- growthSim("power law",
   n = 20, t = 25,
