@@ -33,7 +33,7 @@
   out <- list()
   models <- c(
     "logistic", "gompertz", "monomolecular", "exponential", "linear", "power law",
-    "double logistic", "double gompertz", "gam", "frechet", "weibull", "gumbel"
+    "double logistic", "double gompertz", "gam", "frechet", "weibull", "gumbel", "logarithmic"
   )
   #* ***** `Make nlrq formula` *****
   #* `parse form argument`

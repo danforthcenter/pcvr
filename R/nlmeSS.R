@@ -97,7 +97,7 @@
     "logistic", "gompertz", "monomolecular",
     "exponential", "linear", "power law",
     "double logistic", "double gompertz", "gam",
-    "frechet", "weibull", "gumbel"
+    "frechet", "weibull", "gumbel", "logarithmic"
   )
   sigmas <- c("none", "int", "power", "exp")
   #* check if sigma is class "varFunc", if it is then return it as is?
@@ -555,7 +555,7 @@
   weights_form <- .nlme_sigma_form(matched_sigma, x, group)
   #* `correlation formula`
   correlation_form <- nlme::corAR1(0.8, form = as.formula(paste0("~ 1 |", group)))
-  
+
   formulas <- list(
     "model" = model_form, "random" = random_form,
     "fixed" = fixed_form, "groups" = groups_form,
