@@ -176,6 +176,31 @@ if (file.exists("/home/josh/Desktop/") && interactive()) {
     expect_s3_class(plot, "ggplot")
   })
 
+  test_that("logarithmic brms model pipeline", {
+    set.seed(123)
+    simdf <- growthSim("logarithmic",
+      n = 20, t = 25,
+      params = list("A" = c(15, 12))
+    )
+
+    ss <- growthSS(
+      model = "logarithmic", form = y ~ time | id / group, sigma = "int",
+      list("A" = 5),
+      df = simdf, type = "brms"
+    )
+    expect_equal(ss$prior$nlpar, c("", "A"))
+
+    fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1)
+    expect_s3_class(fit, "brmsfit")
+
+    plot <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
+    ggsave("~/scripts/fahlgren_lab/labMeetings/logarithmic_fitGrowth.png", plot,
+      width = 10,
+      height = 6, dpi = 300, bg = "#ffffff"
+    )
+    expect_s3_class(plot, "ggplot")
+  })
+
   test_that("linear sub model with prior brms model pipeline", {
     set.seed(123)
     simdf <- growthSim("linear",
