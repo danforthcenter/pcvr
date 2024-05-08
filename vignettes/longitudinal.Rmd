@@ -3,7 +3,7 @@ title: "Longitudinal Growth Modeling Options"
 author: "Josh Sumner, DDPSC Data Science Core Facility"
 subtitle: "pcvr v0.1.0"
 output: 
-  html_document:
+  html_vignette:
     toc: true
     number_sections: false
     code_folding: show
