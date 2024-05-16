@@ -240,6 +240,9 @@
       decay <- FALSE
     }
     matched_model <- match.arg(model, models)
+  } else {
+    matched_model <- model
+    decay <- FALSE
   }
   return(list("model" = matched_model, "decay" = decay))
 }

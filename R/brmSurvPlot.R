@@ -173,7 +173,8 @@ brmSurvPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, f
         ), alpha = 0.5
       )
     }) +
-    viridis::scale_fill_viridis(direction = -1, option = "plasma")
+    viridis::scale_fill_viridis(direction = -1, option = "plasma") +
+    ggplot2::labs(fill = "Credible\nInterval")
 
   #* `Add KM Trend`
   if (!is.null(df)) {
@@ -299,7 +300,8 @@ brmSurvPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, f
         ), alpha = 0.5
       )
     }) +
-    viridis::scale_fill_viridis(direction = -1, option = "plasma")
+    viridis::scale_fill_viridis(direction = -1, option = "plasma") +
+    ggplot2::labs(fill = "Credible\nInterval")
   #* `Add KM Trend`
   if (!is.null(df)) {
     km_df <- do.call(rbind, lapply(groups, function(grp) {

@@ -1,5 +1,5 @@
 ---
-title: "Bellwether Tutorial"
+title: "Bellwether"
 author: "Josh Sumner, DDPSC Data Science Core Facility"
 subtitle: "pcvr v0.1.0"
 output: 
@@ -9,7 +9,7 @@ output:
     code_folding: show
 date: "2023-10-16"
 vignette: >
-  %\VignetteIndexEntry{pcvr}
+  %\VignetteIndexEntry{Bellwether}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
