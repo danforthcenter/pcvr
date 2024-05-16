@@ -375,7 +375,7 @@ growthSim <- function(
       iter_data_sub <- iter_data[paste0(iter_data$id, iter_data$group) == int, ]
       y_end <- prev_data_sub[prev_data_sub$time == max(prev_data_sub$time), "y"]
       iter_data_sub$time <- iter_data_sub$time + max(prev_data_sub$time)
-      iter_data_sub$y <- iter_data_sub$y - min(iter_data_sub$y)
+      iter_data_sub$y <- iter_data_sub$y - iter_data_sub$y[1]
       iter_data_sub$y <- y_end + iter_data_sub$y
       iter_data_sub
     }))

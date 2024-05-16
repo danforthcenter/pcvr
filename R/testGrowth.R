@@ -1,8 +1,8 @@
-#' Hypothesis testing for frequentist \code{fitGrowth} models.
+#' Hypothesis testing for \code{fitGrowth} models.
 #'
-#' @param ss A list output from \link{growthSS}. This is not required for nls and nlme models
+#' @param ss A list output from \link{growthSS}. This is not required for nls, nlme, and brms models
 #' if \code{test} is given in \code{brms::hypothesis} style as a written statement.
-#' @param fit A non-brms model (or list of nlrq models) output from \link{fitGrowth}.
+#' @param fit A model (or list of nlrq models) output from \link{fitGrowth}.
 #' @param test A description of the hypothesis to test. This can take two main forms,
 #' either the parameter names to vary before comparing a nested model ("A", "B", "C") using an anova
 #' or a hypothesis test/list of hypothesis tests written as character strings.
@@ -14,7 +14,8 @@
 #' comparisons on the means of each quantile estimate. For GAMs these tests compare the model with
 #' splines either by group or interacting with group to a model that ignores the grouping in the data.
 #' If this is a list of hypothesis tests then they should describe tests similar to
-#' "A.group1 - A.group2*1.1" and can be thought of as contrasts.
+#' "A.group1 - A.group2*1.1" and can be thought of as contrasts. For brms models the "test" argument
+#' is passed to brms::hypothesis, which has extensive documentation and is very flexible.
 #' Note that for survreg the \code{survival::survdiff} function is used so fewer hypothesis testing
 #' options are available and flexsurv models are tested using contrasts via \code{flexsurv::standsurv}.
 #' @keywords hypothesis, nlme, nls, nlrq
@@ -24,6 +25,7 @@
 #' @importFrom methods is
 #' @importFrom car deltaMethod
 #' @importFrom survival survdiff
+#' @importFrom brms hypothesis
 #'
 #' @details
 #' For nls and nlme models an anova is run and returned as part of a list along with the null model.
@@ -88,7 +90,7 @@ testGrowth <- function(ss = NULL, fit, test = "A") {
     } else if (grepl("surv", ss$type)) {
       res <- .survTest(ss)
     } else if (ss$type == "brms") {
-      stop("For brms model tests use brms::hypothesis")
+      stop("For brms model tests use brms::hypothesis style syntax")
     }
   }
 
@@ -136,6 +138,9 @@ testGrowth <- function(ss = NULL, fit, test = "A") {
     coefs <- nlme::fixef(fit)
   } else if (methods::is(fit, "nls")) {
     coefs <- stats::coef(fit)
+  } else if (methods::is(fit, "brmsfit")) {
+    out <- brms::hypothesis(fit, test)
+    return(out)
   } else if (methods::is(fit, "nlrq") || is.list(fit)) {
     out <- .nlrqTest2(ss, fit, test)
     return(out)
