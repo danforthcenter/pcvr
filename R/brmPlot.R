@@ -123,7 +123,7 @@ brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
         ), alpha = 0.5
       )
     }) +
-    viridis::scale_fill_viridis(direction = -1, option = "plasma")+
+    viridis::scale_fill_viridis(direction = -1, option = "plasma") +
     ggplot2::labs(fill = "Credible\nInterval")
 
   if (!is.null(df) && !is.null(individual)) {

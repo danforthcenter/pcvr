@@ -2,15 +2,15 @@
 % Please edit documentation in R/testGrowth.R
 \name{testGrowth}
 \alias{testGrowth}
-\title{Hypothesis testing for frequentist \code{fitGrowth} models.}
+\title{Hypothesis testing for \code{fitGrowth} models.}
 \usage{
 testGrowth(ss = NULL, fit, test = "A")
 }
 \arguments{
-\item{ss}{A list output from \link{growthSS}. This is not required for nls and nlme models
+\item{ss}{A list output from \link{growthSS}. This is not required for nls, nlme, and brms models
 if \code{test} is given in \code{brms::hypothesis} style as a written statement.}
 
-\item{fit}{A non-brms model (or list of nlrq models) output from \link{fitGrowth}.}
+\item{fit}{A model (or list of nlrq models) output from \link{fitGrowth}.}
 
 \item{test}{A description of the hypothesis to test. This can take two main forms,
 either the parameter names to vary before comparing a nested model ("A", "B", "C") using an anova
@@ -23,7 +23,8 @@ written as \code{"group_X|tau|par - group_Y|tau|par"}, which uses a fat tailed T
 comparisons on the means of each quantile estimate. For GAMs these tests compare the model with
 splines either by group or interacting with group to a model that ignores the grouping in the data.
 If this is a list of hypothesis tests then they should describe tests similar to
-"A.group1 - A.group2*1.1" and can be thought of as contrasts.
+"A.group1 - A.group2*1.1" and can be thought of as contrasts. For brms models the "test" argument
+is passed to brms::hypothesis, which has extensive documentation and is very flexible.
 Note that for survreg the \code{survival::survdiff} function is used so fewer hypothesis testing
 options are available and flexsurv models are tested using contrasts via \code{flexsurv::standsurv}.}
 }
@@ -31,7 +32,7 @@ options are available and flexsurv models are tested using contrasts via \code{f
 A list containing an anova object comparing non-linear growth models and the null model.
 }
 \description{
-Hypothesis testing for frequentist \code{fitGrowth} models.
+Hypothesis testing for \code{fitGrowth} models.
 }
 \details{
 For nls and nlme models an anova is run and returned as part of a list along with the null model.

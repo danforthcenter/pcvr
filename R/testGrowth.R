@@ -25,7 +25,6 @@
 #' @importFrom methods is
 #' @importFrom car deltaMethod
 #' @importFrom survival survdiff
-#' @importFrom brms hypothesis
 #'
 #' @details
 #' For nls and nlme models an anova is run and returned as part of a list along with the null model.
