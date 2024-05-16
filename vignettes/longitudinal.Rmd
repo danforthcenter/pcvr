@@ -9,7 +9,7 @@ output:
     code_folding: show
 date: "2023-10-27"
 vignette: >
-  %\VignetteIndexEntry{longitudinalGrowth}
+  %\VignetteIndexEntry{Longitudinal Growth Modeling Options}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 ---

@@ -9,7 +9,7 @@ output:
     code_folding: show
 date: "2024-04-22"
 vignette: >
-  %\VignetteIndexEntry{roots}
+  %\VignetteIndexEntry{Directional Statistics in PCVR}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
