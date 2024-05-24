@@ -12,7 +12,9 @@ on subsets of the data for computational simplicity.}
 
 \item{ss}{The growthSS output used to specify the model. If fit is a list then this can either be one
 growthSS list in which case the priors are assumed to be the same for each model or it can be a list
-of the same length as fit.}
+of the same length as fit. Note that the only parts of this which are used are the \code{call$start}
+which is expected to be a call, and \code{formula} list elements,
+so if you have a list of brmsfit objects and no ss object you can specify a stand-in list.}
 }
 \value{
 A named list containing Rhat, ESS, NEFF, and Prior/Posterior Predictive plots.
@@ -95,10 +97,9 @@ if (FALSE) {
     control = list(adapt_delta = 0.999, max_treedepth = 20)
   )
   barg(fit_test, ss)
-  # fit_stable <- fit
   fit_stable2 <- fit_test
-  fit <- list(fit_stable, fit_stable2)
-  x <- barg(list(fit_stable, fit_stable2), ss)
+  fit <- list(fit_test, fit_stable)
+  x <- barg(list(fit_test, fit_stable), ss)
 }
 
 ## End(Not run:)
