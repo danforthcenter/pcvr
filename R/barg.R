@@ -11,7 +11,12 @@
 #' on subsets of the data for computational simplicity.
 #' @param ss The growthSS output used to specify the model. If fit is a list then this can either be one
 #' growthSS list in which case the priors are assumed to be the same for each model or it can be a list
-#' of the same length as fit.
+#' of the same length as fit. Note that the only parts of this which are used are the \code{call$start}
+#' which is expected to be a call, \code{pcvrForm}, and \code{df} list elements,
+#' so if you have a list of brmsfit objects and no ss object you can specify a stand-in list. This
+#' can also be left NULL (the default) and posterior predictive plots and prior predictive plots will
+#' not be made.
+#'
 #'
 #' @details
 #'
@@ -91,17 +96,16 @@
 #'     control = list(adapt_delta = 0.999, max_treedepth = 20)
 #'   )
 #'   barg(fit_test, ss)
-#'   # fit_stable <- fit
 #'   fit_stable2 <- fit_test
-#'   fit <- list(fit_stable, fit_stable2)
-#'   x <- barg(list(fit_stable, fit_stable2), ss)
+#'   fit <- list(fit_test, fit_stable)
+#'   x <- barg(list(fit_test, fit_stable), ss)
 #' }
 #'
 #' ## End(Not run:)
 #'
 #' @export
 
-barg <- function(fit, ss) {
+barg <- function(fit, ss = NULL) {
   out <- list()
   #* `format everything into lists`
   if (methods::is(fit, "brmsfit")) {
@@ -176,10 +180,11 @@ barg <- function(fit, ss) {
     out[["priorPredictive"]] <- pri_preds
   }
   #* `Posterior Predictive Check`
-  post_preds <- lapply(seq_along(fitList), function(i) {
-    brmPlot(fitList[[i]], form = ssList[[i]]$pcvrForm, df = ssList[[i]]$df)
-  })
-  out[["posteriorPredictive"]] <- post_preds
-
+  if (methods::is(eval(ssList[[1]]$pcvrForm), "formula")) {
+    post_preds <- lapply(seq_along(fitList), function(i) {
+      brmPlot(fitList[[i]], form = ssList[[i]]$pcvrForm, df = ssList[[i]]$df)
+    })
+    out[["posteriorPredictive"]] <- post_preds
+  }
   return(out)
 }
