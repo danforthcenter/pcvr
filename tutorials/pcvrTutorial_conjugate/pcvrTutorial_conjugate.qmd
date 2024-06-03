@@ -1,0 +1,213 @@
+---
+title: "Bayesian Conjugacy"
+subtitle: "DDPSC Data Science Core, July 2023"
+author: Josh Sumner
+format:
+  revealjs:
+    standalone: true
+    self-contained: true
+    theme: [moon, ../quartoSupport/solarizedDark.scss]
+    scrollable: true
+    title-slide-attributes: 
+      data-background-image: ../quartoSupport/datascience.png
+      data-background-size: 15%
+      data-background-position: 2% 2%
+editor: source
+---
+
+## Outline {.smaller}
+
+-   `pcvr` Goals
+-   Load Package
+-   Bayesian Statistics Intro
+-   Bayesian Conjugacy Theory
+-   Bayesian Conjugacy Example
+-   `pcvr::conjugate`
+-   Supported Distributions
+-   Reading `conjugate` output
+
+## `pcvr` Goals {.smaller}
+
+Currently `pcvr` aims to:
+
+-   Make common tasks easier and consistent
+-   Make select Bayesian statistics easier
+
+There is room for goals to evolve based on feedback and scientific needs.
+
+## Load package {.smaller}
+
+Pre-work was to install R, Rstudio, and `pcvr`.
+
+```{r}
+#| echo: false
+#| eval: true
+if(!"pcvr" %in% installed.packages()){
+  if(!"devtools" %in% installed.packages()){
+   install.packages("devtools") 
+  }
+  devtools::install_github("danforthcenter/pcvr")
+}
+```
+
+```{r}
+#| echo: true
+library(pcvr)
+library(ggplot2)
+library(patchwork)
+library(extraDistr)
+```
+
+## Bayesian Statistics Intro {.smaller}
+
+Talk about probability, compare to frequentist, introduce theorem.
+
+
+
+## Bayesian Conjugacy Theory {.smaller}
+
+Formal Definition as a starter
+
+## Bayesian Conjugacy Theory {.smaller}
+
+Intuitive language definition
+
+## Bayesian Conjugacy Theory {.smaller}
+
+Beta Binomial example written as model
+
+## Bayesian Conjugacy Theory {.smaller}
+
+Bayes Theorem
+
+## Bayesian Conjugacy Example {.smaller}
+
+Beta Binomial example plots
+
+## `pcvr::conjugate` {.smaller}
+
+In `pcvr` X types of data are supported in the `conjugate` functions.
+
+## `pcvr::conjugate` {.smaller}
+
+| Distribution | Data | Updating | Common Option |
+|-----------------|-----------------|-----------------|----------------------|
+| Gaussian | Normal | $\mu'$, $\sigma'$ ~ N($\mu$, $\sigma$) | Z-test |
+| T | Normal Means | $\mu'$, $\sigma_\mu'$ ~ T($\mu$, $\sigma$, $\nu$) | T-test |
+| Log-Normal | Positive Right Skewed | $\mu'$, $\sigma'$ ~ LN($\mu$, $\sigma$) | Wilcox |
+| Beta | Percentages | $\alpha'$, $\beta'$ ~ $\alpha$, $\beta$ + Counts | Wilcox|
+|Binomial | Successes/Failures | See Beta | Wilcox/logistic regression |
+| Poisson | Counts | $\lambda$ ~ Gamma(A, B) | Wilcox/glm |
+| Neg-Binom. | Counts | P ~ Beta($\alpha$, $\beta$ \| r) | Wilcox/glm |
+|Uniform| Flat | Upper ~ Pareto(A, B) | Wilcox |
+| Pareto | Heavy Tail | Shape ~ Gamma(A, B \| Location) | Wilcox|
+|Von Mises| Circular | $\mu'$, $\kappa'$* ~ VMf($\mu$, $\kappa$) | Watsons |
+
+
+[]{style="color:goldenrod;"}
+[]]{style="color:purple;"}
+## `pcvr::conjugate` {.smaller}
+
+plot of distributions
+
+```{r}
+methods<-c("lognormal","t","gaussian","beta","poisson","negbin", "binomial", "von mises"#,
+           #"uniform", "pareto"
+           )
+
+p1 <- ggplot(data.frame(x=seq(0, 250, 0.1),
+                        fill=factor("lognormal", levels = methods)),
+             aes(x=x, fill=fill))+
+  stat_function(geom="polygon", fun = dlnorm, args = list(meanlog=log(70), sdlog=log(1.5)))+
+  scale_fill_manual(values=viridis::viridis(8, 1, 0.1, 0.9), drop = F)+
+  pcv_theme()+
+  labs(title="lognormal")
+
+p2 <- ggplot(data.frame(x=seq(0, 20, 0.01), 
+                        fill=factor("t", levels =methods)),
+             aes(x=x, fill=fill))+
+  stat_function(geom="polygon", fun = dlst, args = list(df = 3, mu = 10, sigma = 2))+
+  scale_fill_manual(values=viridis::viridis(8, 1, 0.1, 0.9), drop = F)+
+  pcv_theme()+
+  labs(title="T")
+
+p3 <- ggplot(data.frame(x=seq(0, 20, 0.001),
+                        fill=factor("gaussian", levels = methods)),
+             aes(x=x, fill=fill))+
+  stat_function(geom="polygon", fun = dnorm, args = list(mean = 10, sd = 2))+
+  scale_fill_manual(values=viridis::viridis(8, 1, 0.1, 0.9), drop = F)+
+  pcv_theme()+
+  labs(title="gaussian")
+
+p4 <- ggplot(data.frame(x=seq(0, 1, 0.0001),
+                        fill=factor("beta", levels = methods)),
+             aes(x=x, fill=fill))+
+  stat_function(geom="polygon", fun = dbeta, args = list(shape1=10, shape2=5))+
+  scale_fill_manual(values=viridis::viridis(8, 1, 0.1, 0.9), drop = F)+
+  pcv_theme()+
+  labs(title="beta")
+
+set.seed(123)
+pois<-hist(rpois(100000, 12), breaks=seq(0,30,1), plot=F)
+p5 <- ggplot(data.frame(x=pois$breaks[-31], y=pois$counts, 
+                        fill=factor("poisson",levels = methods)),
+             aes(x=x, y=y, fill=fill))+
+  geom_col()+
+  scale_fill_manual(values=viridis::viridis(8, 1, 0.1, 0.9), drop = F)+
+  pcv_theme()+
+  labs(title="poisson")
+
+set.seed(123)
+nb<-hist(rnbinom(100000, 5, 0.2), breaks=seq(0,100,1), plot=F)
+p6 <- ggplot(data.frame(x=nb$breaks[-101], y=nb$counts,
+                        fill=factor("negbin", levels = methods)),
+             aes(x=x, y=y, fill=fill))+
+  geom_col()+
+  scale_fill_manual(values=viridis::viridis(8, 1, 0.1, 0.9), drop = F)+
+  pcv_theme()+
+  labs(title="negbin")
+
+set.seed(123)
+binomial<-hist(rbinom(100000, 20, 0.75), breaks=seq(0,20,1), plot=F)
+p7 <- ggplot(data.frame(x=binomial$breaks[-21], y=binomial$counts, 
+                        fill=factor("binomial",levels = methods)),
+             aes(x=x, y=y, fill=fill))+
+  geom_col()+
+  scale_fill_manual(values=viridis::viridis(8, 1, 0.1, 0.9), drop = F)+
+  pcv_theme()+
+  labs(title="binomial")
+p7
+
+p8 <- ggplot(data.frame(x= round(brms::rvon_mises(10000, 3, 2), 2), 
+                  fill=factor("von mises",levels = methods)),
+       aes(x=x, fill=fill))+
+  geom_bar()+
+  coord_polar()+
+  scale_x_continuous(limits = c(-pi, pi), breaks = seq(-pi, pi, pi/2), labels = ~round(., 1) )+
+  scale_fill_manual(values=viridis::viridis(8, 1, 0.1, 0.9), drop = F)+
+  pcv_theme()+
+  theme(axis.text.y = element_blank(),
+        axis.title.y = element_blank(),
+        aspect.ratio = 0.4)+
+  labs(title="von mises")
+p8
+
+design <- c(area(1,1,1,1), area(1,2,1,2), area(1,3,1,3),
+            area(2,1,2,1), area(2,2,2,2), area(2,3,2,3),
+            area(3,1,3,1), area(3,2,3,2)
+            )
+#plot(design)
+
+conjugate_patch <- (p1+p2+p3+p4+p5+p6+p7+p8)+
+  plot_layout(guides="collect", design = design, widths = 1) &
+  labs(fill="Distribution") & theme(legend.position = "none")
+conjugate_patch
+```
+
+
+
+
+
+
+
+
