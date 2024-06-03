@@ -18,8 +18,8 @@
 #' @keywords internal
 #' @noRd
 .conj_pareto_mv <- function(s1 = NULL, priors = NULL,
-                             plot = FALSE, support = NULL, cred.int.level = NULL,
-                             calculatingSupport = FALSE) {
+                            plot = FALSE, support = NULL, cred.int.level = NULL,
+                            calculatingSupport = FALSE) {
   out <- list()
   #* `Standardize sample 1 class and names`
   if (is.null(colnames(s1))) {
@@ -67,7 +67,7 @@
   n <- length(sv_draws)
   m <- prod(sv_draws)
   a_prime <- priors$a + n
-  b_prime <- 1 / (1/priors$b + log(m) - n*log(priors$known_location))
+  b_prime <- 1 / (1 / priors$b + log(m) - n * log(priors$known_location))
   #* `Define support if it is missing`
   if (is.null(support)) {
     quantiles <- qgamma(c(0.0001, 0.9999), a_prime, b_prime)
@@ -124,8 +124,8 @@
 #' @keywords internal
 #' @noRd
 .conj_pareto_sv <- function(s1 = NULL, priors = NULL,
-                             plot = FALSE, support = NULL, cred.int.level = NULL,
-                             calculatingSupport = FALSE) {
+                            plot = FALSE, support = NULL, cred.int.level = NULL,
+                            calculatingSupport = FALSE) {
   out <- list()
   #* `make default prior if none provided`
   if (is.null(priors)) {
@@ -135,7 +135,7 @@
   n <- length(s1)
   m <- prod(s1)
   a_prime <- priors$a + n
-  b_prime <- 1 / (1/priors$b + log(m) - n*log(priors$known_location))
+  b_prime <- 1 / (1 / priors$b + log(m) - n * log(priors$known_location))
   #* `Define support if it is missing`
   if (is.null(support)) {
     quantiles <- qgamma(c(0.0001, 0.9999), a_prime, b_prime)

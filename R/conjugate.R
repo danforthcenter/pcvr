@@ -6,7 +6,12 @@
 #'
 #' @param s1 A data.frame or matrix of multi value traits or a vector of single value traits.
 #' If a multi value trait is used then column names should include a number representing the "bin".
-#' @param s2 An optional second sample.
+#' Alternatively this can be a formula specifying \code{outcome ~ group} where group has exactly 2
+#' levels. If using wide MV trait data then the formula should specify column positions ~ grouping
+#' such as \code{1:180 ~ group}.
+#' This sample is shown in red if plotted.
+#' @param s2 An optional second sample, or if s1 is a formula then this should be a dataframe.
+#' This sample is shown in blue if plotted.
 #' @param method The distribution/method to use.
 #' Currently "t", "gaussian", "beta", "binomial", "lognormal", "poisson",
 #' "negbin" (negative binomial), "uniform", "pareto",
@@ -441,7 +446,11 @@ conjugate <- function(s1 = NULL, s2 = NULL,
                       priors = NULL, plot = FALSE, rope_range = NULL,
                       rope_ci = 0.89, cred.int.level = 0.89, hypothesis = "equal",
                       support = NULL) {
-  #* check length of method, replicate if there is a second sample
+  #* `Handle formula option in s1`
+  samples <- .formatSamples(s1, s2)
+  s1 <- samples$s1
+  s2 <- samples$s2
+  #* `check length of method, replicate if there is a second sample`
   if (length(method) == 1 && !is.null(s2)) {
     method <- rep(method, 2)
   }
@@ -519,6 +528,34 @@ conjugate <- function(s1 = NULL, s2 = NULL,
     )
   }
   return(out)
+}
+
+#' ***********************************************************************************************
+#' *************** `Formula Handling Helper function` ***********************************
+#' ***********************************************************************************************
+
+#' @keywords internal
+#' @noRd
+
+.formatSamples <- function(s1 = NULL, s2 = NULL) {
+  if (methods::is(s1, "formula")) {
+    if (!is.data.frame(s2)) {
+      stop("If s1 is a formula then s2 must be a data.frame")
+    }
+    rhs <- as.character(s1)[3]
+    lhs <- as.character(s1)[2]
+    if (lhs %in% colnames(s2)) { # handle SV traits
+      samples <- split(s2[[lhs]], s2[[rhs]])
+    } else { # handle MV traits
+      samples <- lapply(split(s2, s2[[rhs]]), function(d) {
+        d[, eval(str2lang(lhs))]
+      })
+    }
+    names(samples) <- c("s1", "s2")
+    return(samples)
+  } else {
+    return(list("s1" = s1, "s2" = s2))
+  }
 }
 
 
@@ -655,7 +692,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
   s1_plot_df <- sample_results[[1]]$plot_df
 
   p <- ggplot2::ggplot(s1_plot_df, ggplot2::aes(x = .data$range, y = .data$prob)) +
-    ggplot2::geom_area(data = s1_plot_df, fill = "red", alpha = 0.5) +
+    ggplot2::geom_area(data = s1_plot_df, alpha = 0.5, ggplot2::aes(fill = "s1")) +
     ggplot2::geom_vline(ggplot2::aes(xintercept = res$summary$HDI_1_low),
       color = "red",
       linewidth = 1.1
@@ -667,6 +704,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
       color = "red",
       linewidth = 1.1
     ) +
+    ggplot2::scale_fill_manual(values = "red") +
     ggplot2::labs(
       x = "Posterior Distribution of Random Variable", y = "Density", title = "Distribution of Samples",
       subtitle = paste0(
@@ -675,6 +713,9 @@ conjugate <- function(s1 = NULL, s2 = NULL,
         round(res$summary$HDI_1_high, 2), "]"
       )
     ) +
+    ggplot2::guides(fill = ggplot2::guide_legend(override.aes = list(alpha = 0.5))) +
+    ggplot2::theme(legend.title = ggplot2::element_blank(),
+                   legend.position = c(0.9, 0.9)) +
     pcv_theme()
 
   if (length(sample_results) == 2) {
@@ -686,8 +727,13 @@ conjugate <- function(s1 = NULL, s2 = NULL,
       post.prob.text <- round(res$summary$post.prob, 5)
     }
 
+    fill_scale <- which(sapply(p$scales$scales, function(x) {
+      "fill" %in% x$aesthetics # avoid "replacing scale" non-messages that suppress doesn't catch
+    }))
+
+    p$scales$scales[[fill_scale]] <- NULL
     p <- p +
-      ggplot2::geom_area(data = s2_plot_df, fill = "blue", alpha = 0.5) +
+      ggplot2::geom_area(data = s2_plot_df, ggplot2::aes(fill = "s2"), alpha = 0.5) +
       ggplot2::geom_vline(ggplot2::aes(xintercept = res$summary$HDI_2_low),
         color = "blue",
         linewidth = 1.1
@@ -700,6 +746,10 @@ conjugate <- function(s1 = NULL, s2 = NULL,
         color = "blue",
         linewidth = 1.1
       ) +
+      ggplot2::scale_fill_manual(values = c("red", "blue"), breaks = c("s1", "s2")) +
+      ggplot2::guides(fill = ggplot2::guide_legend(override.aes = list(alpha = 0.5))) +
+      ggplot2::theme(legend.title = ggplot2::element_blank(),
+                     legend.position = c(0.9, 0.9)) +
       ggplot2::labs(subtitle = paste0(
         "Sample 1:  ", round(res$summary$HDE_1, 2), " [", round(res$summary$HDI_1_low, 2), ", ",
         round(res$summary$HDI_1_high, 2), "]\n",
