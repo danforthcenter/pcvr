@@ -4,7 +4,7 @@
 \alias{barg}
 \title{Function to help fulfill elements of the Bayesian Analysis Reporting Guidelines.}
 \usage{
-barg(fit, ss)
+barg(fit, ss = NULL)
 }
 \arguments{
 \item{fit}{The brmsfit object or a list of brmsfit objects in the case that you split models to run
@@ -13,8 +13,10 @@ on subsets of the data for computational simplicity.}
 \item{ss}{The growthSS output used to specify the model. If fit is a list then this can either be one
 growthSS list in which case the priors are assumed to be the same for each model or it can be a list
 of the same length as fit. Note that the only parts of this which are used are the \code{call$start}
-which is expected to be a call, and \code{formula} list elements,
-so if you have a list of brmsfit objects and no ss object you can specify a stand-in list.}
+which is expected to be a call, \code{pcvrForm}, and \code{df} list elements,
+so if you have a list of brmsfit objects and no ss object you can specify a stand-in list. This
+can also be left NULL (the default) and posterior predictive plots and prior predictive plots will
+not be made.}
 }
 \value{
 A named list containing Rhat, ESS, NEFF, and Prior/Posterior Predictive plots.

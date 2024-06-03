@@ -8,7 +8,7 @@ conjugate(
   s1 = NULL,
   s2 = NULL,
   method = c("t", "gaussian", "beta", "binomial", "lognormal", "poisson", "negbin",
-    "vonmises", "vonmises2"),
+    "vonmises", "vonmises2", "uniform", "pareto"),
   priors = NULL,
   plot = FALSE,
   rope_range = NULL,
@@ -20,15 +20,21 @@ conjugate(
 }
 \arguments{
 \item{s1}{A data.frame or matrix of multi value traits or a vector of single value traits.
-If a multi value trait is used then column names should include a number representing the "bin".}
+If a multi value trait is used then column names should include a number representing the "bin".
+Alternatively this can be a formula specifying \code{outcome ~ group} where group has exactly 2
+levels. If using wide MV trait data then the formula should specify column positions ~ grouping
+such as \code{1:180 ~ group}.
+This sample is shown in red if plotted.}
 
-\item{s2}{An optional second sample.}
+\item{s2}{An optional second sample, or if s1 is a formula then this should be a dataframe.
+This sample is shown in blue if plotted.}
 
 \item{method}{The distribution/method to use.
 Currently "t", "gaussian", "beta", "binomial", "lognormal", "poisson",
-"negbin" (negative binomial), "vonmises", and "vonmises2" are supported.
-The count distributions (binomial, poisson and negative binomial) are only implemented for
-single value traits.
+"negbin" (negative binomial), "uniform", "pareto",
+"vonmises", and "vonmises2" are supported.
+The count distributions (binomial, poisson and negative binomial) and pareto distribution
+are only implemented for single value traits.
 The "t" and "gaussian" methods both use a T distribution with "t" testing for a difference
 of means and "gaussian" testing for a difference in the distributions (similar to a Z test).
 Both Von Mises options are for use with circular data (for instance hue values when the circular
@@ -115,6 +121,25 @@ Prior distributions default to be weakly informative and in some cases you may w
      Note that the r value is not updated.
       The conjugate beta prior is only valid when r is fixed and known,
       which is a limitation for this method.}
+    \item{\strong{"uniform": } \code{list(scale = 0.5, location = 0.5)}, where scale is the
+    scale parameter of the pareto distributed upper boundary and location is the location parameter
+    of the pareto distributed upper boundary. Note that different sources will use different
+    terminology for these parameters. These names were chosen for consistency with the
+    \code{extraDistr} implementation of the pareto distribution. On Wikipedia the parameters are
+    called shape and scale, corresponding to extraDistr's scale and location respecitvely, which
+    can be confusing. Note that the lower boundary of the uniform is assumed to be constant at 0.
+    There is a more complicated conjugate distribution to estimate both boundaries but that has
+    not seemed relevant so far in the author's plant phenotyping experience.
+    }
+    \item{\strong{"pareto": } \code{list(a = 1, b = 1, known_location = min(data))}, where
+    a and b are the shape and scale parameters of the gamma distribution of the pareto distribution's
+    scale parameter. In this case location is assumed to be constant and known, which is less of
+    a limitation than knowing r for the negative binomial method since location will generally be
+    right around/just under the minimum of the sample data. Note that the pareto method is only
+    implemented currently for single value traits since one of the statistics needed to update
+    the gamma distribution here is the product of the data and we do not currently have a method
+    to calculate a similar sufficient statistic from multi value traits.
+    }
     \item{\strong{"vonmises": } \code{list(mu = 0, kappa = 1, boundary = c(-pi, pi),
     known_kappa = 1, n = 1)}, where mu is the direction of the circular distribution (the mean),
     kappa is the precision of the mean, boundary is a vector including the two values that are the
