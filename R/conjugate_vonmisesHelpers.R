@@ -44,7 +44,7 @@
   X1 <- rep(histColsBin[bins_order], as.numeric(round(colSums(s1))))
   #* `make default prior if none provided`
   default_prior <- list(
-    mu = 0, kappa = 1,
+    mu = 0, kappa = 0.5,
     boundary = c(-pi, pi),
     known_kappa = 1, n = 1
   )

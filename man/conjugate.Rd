@@ -140,7 +140,7 @@ Prior distributions default to be weakly informative and in some cases you may w
     the gamma distribution here is the product of the data and we do not currently have a method
     to calculate a similar sufficient statistic from multi value traits.
     }
-    \item{\strong{"vonmises": } \code{list(mu = 0, kappa = 1, boundary = c(-pi, pi),
+    \item{\strong{"vonmises": } \code{list(mu = 0, kappa = 0.5, boundary = c(-pi, pi),
     known_kappa = 1, n = 1)}, where mu is the direction of the circular distribution (the mean),
     kappa is the precision of the mean, boundary is a vector including the two values that are the
     where the circular data "wraps" around the circle, known_kappa is the fixed value of precision
@@ -150,7 +150,7 @@ Prior distributions default to be weakly informative and in some cases you may w
     updated. Note that due to how the rescaling works larger circular boundaries can be slow to
     plot.
     }
-    \item{\strong{"vonmises2": } \code{priors = list(mu = 0, kappa = 1,
+    \item{\strong{"vonmises2": } \code{priors = list(mu = 0, kappa = 0.5,
     boundary = c(-pi, pi), n = 1)}, where mu and kappa are mean direction and precision of the
     von mises distribution, boundary is a vector including the two values that are the
     where the circular data "wraps" around the circle, and n is the number of prior observations.
