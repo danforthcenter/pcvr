@@ -79,6 +79,9 @@
 #'    where mu_log is the mean on log scale, n is the number of prior observations,
 #'    and sigma_log is the
 #'    standard deviation on log scale }
+#'    \item{\strong{"gamma": } \code{priors = list(shape = 0.5, scale = 0.5, known_shape = 1)},
+#'     where shape and scale are the respective parameters of the gamma distributed rate
+#'     (inverse of scale) parameter of gamma distributed data.}
 #'    \item{\strong{"poisson": } \code{priors = list(a=c(0.5,0.5),b=c(0.5,0.5))},
 #'     where a and b are shape parameters of the gamma distribution.}
 #'    \item{\strong{"negbin": } \code{priors = list(r=c(10,10), a=c(0.5,0.5),b=c(0.5,0.5))},
@@ -171,46 +174,6 @@
 #'   plot = FALSE, rope_range = c(-25, 25), rope_ci = 0.89,
 #'   cred.int.level = 0.89, hypothesis = "equal", support = NULL
 #' )
-#'
-#' # Z test sv example
-#' set.seed(123)
-#' gauss_sv_ex_bad <- conjugate(
-#'   s1 = rnorm(15, 50, 10), s2 = rnorm(15, 60, 12), method = "gaussian",
-#'   priors = list(mu = 30, n = 1, s2 = 100),
-#'   plot = FALSE, rope_range = c(-10, 10), rope_ci = 0.89,
-#'   cred.int.level = 0.89, hypothesis = "equal", support = NULL
-#' )
-#'
-#' # Here the plot clearly shows we have a problem with the default support, so we specify one
-#' # naturally the longer the support vector the more time this takes, but supports below 100k length
-#' # tend to be reasonably fast.
-#'
-#' gauss_sv_ex <- conjugate(
-#'   s1 = rnorm(15, 50, 10), s2 = rnorm(15, 60, 12), method = "gaussian",
-#'   priors = list(mu = 30, n = 1, s2 = 100),
-#'   plot = FALSE, rope_range = c(-10, 10), rope_ci = 0.89,
-#'   cred.int.level = 0.89, hypothesis = "equal", support = seq(-20, 120, 0.01)
-#' )
-#' # Note that the ROPE probability is somewhat unstable here since the distribution of differences
-#' # is much wider than the ROPE interval.
-#'
-#' # T test mv example
-#'
-#' mv_gauss <- mvSim(
-#'   dists = list(
-#'     rnorm = list(mean = 50, sd = 10),
-#'     rnorm = list(mean = 60, sd = 12)
-#'   ),
-#'   n_samples = 30
-#' )
-#'
-#' gaussianMeans_mv_ex <- conjugate(
-#'   s1 = mv_gauss[1:30, -1], s2 = mv_gauss[31:60, -1], method = "t",
-#'   priors = list(mu = 30, n = 1, s2 = 100),
-#'   plot = FALSE, rope_range = c(-5, 5), rope_ci = 0.89,
-#'   cred.int.level = 0.89, hypothesis = "equal", support = NULL
-#' )
-#'
 #'
 #' # T test sv example
 #'
@@ -442,7 +405,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
                       method = c(
                         "t", "gaussian", "beta", "binomial",
                         "lognormal", "poisson", "negbin", "vonmises", "vonmises2",
-                        "uniform", "pareto"
+                        "uniform", "pareto", "gamma"
                       ),
                       priors = NULL, plot = FALSE, rope_range = NULL,
                       rope_ci = 0.89, cred.int.level = 0.89, hypothesis = "equal",
@@ -482,7 +445,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
       "t", "gaussian", "beta", "binomial",
       "lognormal", "poisson", "negbin",
       "vonmises", "vonmises2",
-      "uniform", "pareto"
+      "uniform", "pareto", "gamma"
     ))
     # turning off dirichlet until I decide on a new implementation that I like better
     # and a use case that isn't so ripe for abuse.
@@ -586,7 +549,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
       "t", "gaussian", "beta", "binomial",
       "lognormal", "poisson", "negbin",
       "vonmises", "vonmises2",
-      "uniform", "pareto"
+      "uniform", "pareto", "gamma"
     ))
     vec_suffix <- if (vec) {
       "sv"
