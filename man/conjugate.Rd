@@ -8,7 +8,7 @@ conjugate(
   s1 = NULL,
   s2 = NULL,
   method = c("t", "gaussian", "beta", "binomial", "lognormal", "poisson", "negbin",
-    "vonmises", "vonmises2", "uniform", "pareto"),
+    "vonmises", "vonmises2", "uniform", "pareto", "gamma"),
   priors = NULL,
   plot = FALSE,
   rope_range = NULL,
@@ -113,6 +113,9 @@ Prior distributions default to be weakly informative and in some cases you may w
    where mu_log is the mean on log scale, n is the number of prior observations,
    and sigma_log is the
    standard deviation on log scale }
+   \item{\strong{"gamma": } \code{priors = list(shape = 0.5, scale = 0.5, known_shape = 1)},
+    where shape and scale are the respective parameters of the gamma distributed rate
+    (inverse of scale) parameter of gamma distributed data.}
    \item{\strong{"poisson": } \code{priors = list(a=c(0.5,0.5),b=c(0.5,0.5))},
     where a and b are shape parameters of the gamma distribution.}
    \item{\strong{"negbin": } \code{priors = list(r=c(10,10), a=c(0.5,0.5),b=c(0.5,0.5))},
