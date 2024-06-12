@@ -56,7 +56,7 @@
   #* `calculate highest density estimate``
   if (a1_prime <= 1 && b1_prime > 1) {
     hde1 <- 0
-  } else if (a1_prime > 1 && b1_prime <= 1) {
+  } else if (b1_prime == 0) {
     hde1 <- Inf
   } else {
     hde1 <- (a1_prime - 1) / b1_prime
