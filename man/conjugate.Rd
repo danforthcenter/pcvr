@@ -21,7 +21,8 @@ conjugate(
 \arguments{
 \item{s1}{A data.frame or matrix of multi value traits or a vector of single value traits.
 If a multi value trait is used then column names should include a number representing the "bin".
-Alternatively this can be a formula specifying \code{outcome ~ group} where group has exactly 2
+Alternatively for distributions other than "binomial" (which requires list data, see examples)
+this can be a formula specifying \code{outcome ~ group} where group has exactly 2
 levels. If using wide MV trait data then the formula should specify column positions ~ grouping
 such as \code{1:180 ~ group}.
 This sample is shown in red if plotted.}
@@ -204,46 +205,6 @@ gauss_mv_ex <- conjugate(
   plot = FALSE, rope_range = c(-25, 25), rope_ci = 0.89,
   cred.int.level = 0.89, hypothesis = "equal", support = NULL
 )
-
-# Z test sv example
-set.seed(123)
-gauss_sv_ex_bad <- conjugate(
-  s1 = rnorm(15, 50, 10), s2 = rnorm(15, 60, 12), method = "gaussian",
-  priors = list(mu = 30, n = 1, s2 = 100),
-  plot = FALSE, rope_range = c(-10, 10), rope_ci = 0.89,
-  cred.int.level = 0.89, hypothesis = "equal", support = NULL
-)
-
-# Here the plot clearly shows we have a problem with the default support, so we specify one
-# naturally the longer the support vector the more time this takes, but supports below 100k length
-# tend to be reasonably fast.
-
-gauss_sv_ex <- conjugate(
-  s1 = rnorm(15, 50, 10), s2 = rnorm(15, 60, 12), method = "gaussian",
-  priors = list(mu = 30, n = 1, s2 = 100),
-  plot = FALSE, rope_range = c(-10, 10), rope_ci = 0.89,
-  cred.int.level = 0.89, hypothesis = "equal", support = seq(-20, 120, 0.01)
-)
-# Note that the ROPE probability is somewhat unstable here since the distribution of differences
-# is much wider than the ROPE interval.
-
-# T test mv example
-
-mv_gauss <- mvSim(
-  dists = list(
-    rnorm = list(mean = 50, sd = 10),
-    rnorm = list(mean = 60, sd = 12)
-  ),
-  n_samples = 30
-)
-
-gaussianMeans_mv_ex <- conjugate(
-  s1 = mv_gauss[1:30, -1], s2 = mv_gauss[31:60, -1], method = "t",
-  priors = list(mu = 30, n = 1, s2 = 100),
-  plot = FALSE, rope_range = c(-5, 5), rope_ci = 0.89,
-  cred.int.level = 0.89, hypothesis = "equal", support = NULL
-)
-
 
 # T test sv example
 
