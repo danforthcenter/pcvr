@@ -8,8 +8,8 @@
 #' This is typically time  and design variables (DAS, genotype, treatment, etc).
 #' These are used as predictors for `phenotype` in a generalized linear model.
 #' @param cutoff Cutoff for something being an "outlier" expressed as a multiplier
-#'  on the mean of Cooks Distance for this data. This defaults to 3 which tends to be
-#'  a good value.
+#'  on the mean of Cooks Distance for this data. This defaults to 5, with higher values
+#'  being more conservative (removing less of the data).
 #' @param outlierMethod Method to be used in detecting outliers.
 #'  Currently "cooks" and "mahalanobis" distances are supported, with "mahalanobis" only
 #'  being supported for multi-value traits.
@@ -202,6 +202,19 @@ bw.outliers <- function(df = NULL,
   }))
 
   out <- df[which(!df$outlier), -which(grepl("outlier", colnames(df)))]
+
+  removedInteractions <- do.call(rbind, lapply(
+    resList,
+    function(d) {
+      tab <- as.data.frame(table(d$data[, c(separate, group)]))
+      colnames(tab) <- c(separate, group, "Freq")
+      return(tab[tab$Freq == 0, ])
+    }
+  ))
+  if (nrow(removedInteractions) > 0) {
+    warning(paste0(nrow(removedInteractions), " groupings had all observations removed"))
+    print(removedInteractions)
+  }
 
   if (plot) {
     p <- .outlierPlottingHelper(wide, mv, df, plotgroup, group, x, phenotype, traitCol, valueCol, pctRm)
@@ -425,8 +438,10 @@ bw.outliers <- function(df = NULL,
   if (naTo0) {
     df[df[[traitCol]] == phenotype, valueCol][is.na(df[df[[traitCol]] == phenotype, valueCol])] <- 0
   }
-  subdf <- df[complete.cases(df[df[[traitCol]] == phenotype, c(valueCol, traitCol, group)]) &
-                df[[traitCol]] == phenotype, ]
+  subdf <- df[complete.cases(df[
+    df[[traitCol]] == phenotype,
+    c(valueCol, traitCol, group)
+  ]) & df[[traitCol]] == phenotype, ]
   outlierForm <- paste("as.numeric(", valueCol, ")~", paste(paste0("as.factor(", group, ")"),
     collapse = ":"
   ))
