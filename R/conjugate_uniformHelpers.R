@@ -13,6 +13,7 @@
 #' )
 #' out <- .conj_uniform_mv(s1, cred.int.level = 0.95)
 #' lapply(out, head)
+#' @importFrom utils tail
 #'
 #' @keywords internal
 #' @noRd
@@ -42,7 +43,7 @@
   n_obs <- nrow(s1)
   #* `Max non-zero bin`
   max_obs <- max(unlist(lapply(seq_len(n_obs), function(i) {
-    col <- tail(colnames(s1)[which(s1[i, ] > 0)], 1)
+    col <- utils::tail(colnames(s1)[which(s1[i, ] > 0)], 1)
     as.numeric(gsub("[a-zA-Z]_*", "", col))
   })), na.rm = TRUE)
   #* `Update pareto prior with sufficient statistics`
