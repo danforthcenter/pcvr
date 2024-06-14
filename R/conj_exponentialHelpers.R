@@ -13,8 +13,8 @@
 #' @keywords internal
 #' @noRd
 .conj_exponential_sv <- function(s1 = NULL, priors = NULL,
-                            plot = FALSE, support = NULL, cred.int.level = NULL,
-                            calculatingSupport = FALSE) {
+                                 plot = FALSE, support = NULL, cred.int.level = NULL,
+                                 calculatingSupport = FALSE) {
   out <- list()
   #* `make default prior if none provided`
   if (is.null(priors)) {

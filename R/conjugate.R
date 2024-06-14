@@ -17,7 +17,7 @@
 #' Currently "t", "gaussian", "beta", "binomial", "lognormal", "poisson",
 #' "negbin" (negative binomial), "uniform", "pareto", "gamma", "bernoulli", "exponential",
 #' "vonmises", and "vonmises2" are supported.
-#' The count (binomial, poisson and negative binomial), bernoulli, exponential, 
+#' The count (binomial, poisson and negative binomial), bernoulli, exponential,
 #' and pareto distributions are only implemented for single value traits due to their updating
 #' and/or the nature of the input data.
 #' The "t" and "gaussian" methods both use a T distribution with "t" testing for a difference
