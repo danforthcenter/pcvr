@@ -220,7 +220,7 @@ conjugacy_ex_betaBinom
 
 ## `pcvr::conjugate` {.smaller}
 
-In `pcvr` 10 distributions are supported in the `conjugate` function.
+In `pcvr` 11 distributions are supported in the `conjugate` function.
 
 We'll go over those distributions, what they tend to represent, how they are updated, and what the common alternative tests would be for that kind of data.
 
@@ -229,7 +229,7 @@ We'll go over those distributions, what they tend to represent, how they are upd
 | Distribution | Data | Updating | Common Option |
 |-----------------|-----------------|-----------------|----------------------|
 | Gaussian | Normal | $\mu', \sigma' \sim N(\mu, \sigma)$ | Z-test |
-| T | Normal Means | $\mu', \sigma_\mu' \sim T(\mu, \sigma, \nu)$ | T-test |
+| T | Normal Means | $\mu', \sigma_\mu, \nu_\mu' \sim T(\mu, \sigma, \nu)$ | T-test |
 | Log-Normal | Positive Right Skewed | $\mu', \sigma' \sim LogN(\mu, \sigma)$ | Wilcox |
 | Beta | Percentages | $\alpha', \beta' \sim \alpha, \beta + Counts$ | Wilcox|
 |Binomial | Success/Failure Counts | $P \sim Beta(\alpha, \beta)$ | Wilcox/logistic regression |
@@ -238,6 +238,7 @@ We'll go over those distributions, what they tend to represent, how they are upd
 | Von Mises | Circular | $\mu', \kappa'^* \sim VMf(\mu, \kappa)$ | Watsons |
 |Uniform| Positive Flat | $Upper \sim Pareto(A, B)$ | Wilcox |
 | Pareto | Heavy Tail | $Shape \sim Gamma(A, B)| Loc.$ | Wilcox|
+| Gamma | Right Skew | $Rate \sim Gamma(A, B)| Shape$ | Wilcox|
 
 
 ## `pcvr::conjugate` {.smaller}
@@ -246,13 +247,15 @@ We'll go over those distributions, what they tend to represent, how they are upd
 #| echo: false
 methods<-c("gaussian","t", "lognormal",
            "beta", "binomial", "poisson",
-           "negbin", "von mises", "uniform", "pareto")
+           "negbin", "von mises", "uniform",
+           "pareto", "gamma")
 
+virPal <- viridis::viridis(length(methods), 1, 0.1, 0.9)
 p1 <- ggplot(data.frame(x=seq(0, 20, 0.001),
                         fill=factor("gaussian", levels = methods)),
              aes(x=x, fill=fill))+
   stat_function(geom="polygon", fun = dnorm, args = list(mean = 10, sd = 2))+
-  scale_fill_manual(values=viridis::viridis(10, 1, 0.1, 0.9), drop = F)+
+  scale_fill_manual(values=virPal, drop = F)+
   pcv_theme()+
   labs(title="gaussian")
 
@@ -260,7 +263,7 @@ p2 <- ggplot(data.frame(x=seq(0, 20, 0.01),
                         fill=factor("t", levels =methods)),
              aes(x=x, fill=fill))+
   stat_function(geom="polygon", fun = dlst, args = list(df = 3, mu = 10, sigma = 2))+
-  scale_fill_manual(values=viridis::viridis(10, 1, 0.1, 0.9), drop = F)+
+  scale_fill_manual(values=virPal, drop = F)+
   pcv_theme()+
   labs(title="T")
 
@@ -268,7 +271,7 @@ p3 <- ggplot(data.frame(x=seq(0, 250, 0.1),
                         fill=factor("lognormal", levels = methods)),
              aes(x=x, fill=fill))+
   stat_function(geom="polygon", fun = dlnorm, args = list(meanlog=log(70), sdlog=log(1.5)))+
-  scale_fill_manual(values=viridis::viridis(10, 1, 0.1, 0.9), drop = F)+
+  scale_fill_manual(values=virPal, drop = F)+
   pcv_theme()+
   labs(title="lognormal")
 
@@ -276,7 +279,7 @@ p4 <- ggplot(data.frame(x=seq(0, 1, 0.0001),
                         fill=factor("beta", levels = methods)),
              aes(x=x, fill=fill))+
   stat_function(geom="polygon", fun = dbeta, args = list(shape1=10, shape2=5))+
-  scale_fill_manual(values=viridis::viridis(10, 1, 0.1, 0.9), drop = F)+
+  scale_fill_manual(values=virPal, drop = F)+
   pcv_theme()+
   labs(title="beta")
 
@@ -286,7 +289,7 @@ p5 <- ggplot(data.frame(x=binomial$breaks[-21], y=binomial$counts,
                         fill=factor("binomial",levels = methods)),
              aes(x=x, y=y, fill=fill))+
   geom_col()+
-  scale_fill_manual(values=viridis::viridis(10, 1, 0.1, 0.9), drop = F)+
+  scale_fill_manual(values=virPal, drop = F)+
   pcv_theme()+
   labs(title="binomial")
 
@@ -296,7 +299,7 @@ p6 <- ggplot(data.frame(x=pois$breaks[-31], y=pois$counts,
                         fill=factor("poisson",levels = methods)),
              aes(x=x, y=y, fill=fill))+
   geom_col()+
-  scale_fill_manual(values=viridis::viridis(10, 1, 0.1, 0.9), drop = F)+
+  scale_fill_manual(values=virPal, drop = F)+
   pcv_theme()+
   labs(title="poisson")
 
@@ -306,7 +309,7 @@ p7 <- ggplot(data.frame(x=nb$breaks[-101], y=nb$counts,
                         fill=factor("negbin", levels = methods)),
              aes(x=x, y=y, fill=fill))+
   geom_col()+
-  scale_fill_manual(values=viridis::viridis(10, 1, 0.1, 0.9), drop = F)+
+  scale_fill_manual(values=virPal, drop = F)+
   pcv_theme()+
   labs(title="negbin")
 
@@ -316,7 +319,7 @@ p8 <- ggplot(data.frame(x= round(brms::rvon_mises(10000, 3, 2), 2),
   geom_bar()+
   coord_polar()+
   scale_x_continuous(limits = c(-pi, pi), breaks = seq(-pi, pi, pi/2), labels = ~round(., 1) )+
-  scale_fill_manual(values=viridis::viridis(10, 1, 0.1, 0.9), drop = F)+
+  scale_fill_manual(values=virPal, drop = F)+
   pcv_theme()+
   theme(axis.text.y = element_blank(),
         axis.title.y = element_blank(),
@@ -327,7 +330,7 @@ p9 <- ggplot(data.frame(x=seq(0, 11, 0.01),
                         fill=factor("uniform", levels = methods)),
              aes(x=x, fill=fill))+
   stat_function(geom="polygon", fun = dunif, args = list(min = 0.5, max = 10.5))+
-  scale_fill_manual(values=viridis::viridis(10, 1, 0.1, 0.9), drop = F)+
+  scale_fill_manual(values=virPal, drop = F)+
   coord_cartesian(xlim = c(1,10), ylim =c(0, 0.15))+
   pcv_theme()+
   labs(title="uniform")
@@ -336,18 +339,26 @@ p10 <- ggplot(data.frame(x=seq(0, 20, 0.1),
                         fill=factor("pareto", levels = methods)),
              aes(x=x, fill=fill))+
   stat_function(geom="polygon", fun = dpareto, args = list(a = 1, b = 1))+
-  scale_fill_manual(values=viridis::viridis(10, 1, 0.1, 0.9), drop = F)+
+  scale_fill_manual(values=virPal, drop = F)+
   pcv_theme()+
   labs(title="pareto")
+
+p11 <- ggplot(data.frame(x=seq(-1, 10, 0.1),
+                        fill=factor("gamma", levels = methods)),
+             aes(x=x, fill=fill))+
+  stat_function(geom="polygon", fun = dgamma, args = list(shape = 3, rate = 1))+
+  scale_fill_manual(values=virPal, drop = F)+
+  pcv_theme()+
+  labs(title="gamma")
 
 
 design <- c(area(1,1,1,1), area(1,2,1,2), area(1,3,1,3), #area(1,4,1,4),
             area(2,1,2,1), area(2,2,2,2), area(2,3,2,3), #area(2,4,2,4),
             area(3,1,3,1), area(3,2,4,2), area(3,3,3,3),
-            area(4,1,4,1)
+            area(4,1,4,1), area(4,3,4,3)
             )
 
-conjugate_patch <- (p1+p2+p3+p4+p5+p6+p7+p8+p9+p10)+
+conjugate_patch <- (p1+p2+p3+p4+p5+p6+p7+p8+p9+p10+p11)+
   plot_layout(guides="collect", design = design, widths = 1) &
   labs(fill="Distribution") & theme(legend.position = "none")
 conjugate_patch
@@ -428,13 +439,14 @@ pcvr::conjugate(
 #| echo: false
 methods<-c("gaussian","t", "lognormal",
            "beta", "binomial", "poisson",
-           "negbin", "von mises", "uniform", "pareto")
+           "negbin", "von mises", "uniform",
+           "pareto", "gamma")
 
 p1 <- ggplot(data.frame(x=seq(-20, 20, 0.001),
                         fill=factor("gaussian", levels = methods)),
              aes(x=x, fill=fill))+
   stat_function(geom="polygon", fun = dnorm, args = list(mean = 0, sd = sqrt(20)))+
-  scale_fill_manual(values=viridis::viridis(10, 1, 0.1, 0.9), drop = F)+
+  scale_fill_manual(values=virPal, drop = F)+
   pcv_theme()+
   labs(x="mu = 0, n = 1, s2 = 20", title = "gaussian")
 
@@ -442,7 +454,7 @@ p2 <- ggplot(data.frame(x=seq(-20, 20, 0.01),
                         fill=factor("t", levels =methods)),
              aes(x=x, fill=fill))+
   stat_function(geom="polygon", fun = dnorm, args = list(mean = 0, sd = sqrt(20)))+
-  scale_fill_manual(values=viridis::viridis(10, 1, 0.1, 0.9), drop = F)+
+  scale_fill_manual(values=virPal, drop = F)+
   pcv_theme()+
   labs(x="mu = 0, n = 1, s2 = 20", title = "t")
 
@@ -450,7 +462,7 @@ p3 <- ggplot(data.frame(x=seq(0, 150, 0.1),
                         fill=factor("lognormal", levels = methods)),
              aes(x=x, fill=fill))+
   stat_function(geom="polygon", fun = dlnorm, args = list(meanlog=log(10), sdlog=log(3)))+
-  scale_fill_manual(values=viridis::viridis(10, 1, 0.1, 0.9), drop = F)+
+  scale_fill_manual(values=virPal, drop = F)+
   pcv_theme()+
   labs(x="mu_log = 0, n = 1,\nsigma_log = 3", title = "lognormal")
 
@@ -458,7 +470,7 @@ p4 <- ggplot(data.frame(x=seq(0, 1, 0.0001),
                         fill=factor("beta", levels = methods)),
              aes(x=x, fill=fill))+
   stat_function(geom="polygon", fun = dbeta, args = list(shape1=0.5, shape2=0.5))+
-  scale_fill_manual(values=viridis::viridis(10, 1, 0.1, 0.9), drop = F)+
+  scale_fill_manual(values=virPal, drop = F)+
   pcv_theme()+
   labs(x="a = 0.5, b = 0.5", title = "beta")
 
@@ -466,7 +478,7 @@ p5 <- ggplot(data.frame(x=seq(0, 1, 0.0001),
                         fill=factor("binomial", levels = methods)),
              aes(x=x, fill=fill))+
   stat_function(geom="polygon", fun = dbeta, args = list(shape1=0.5, shape2=0.5))+
-  scale_fill_manual(values=viridis::viridis(10, 1, 0.1, 0.9), drop = F)+
+  scale_fill_manual(values=virPal, drop = F)+
   pcv_theme()+
   labs(x="a = 0.5, b = 0.5", title = "binomial")
 
@@ -474,7 +486,7 @@ p6 <- ggplot(data.frame(x=seq(0, 1, 0.0001),
                         fill=factor("poisson", levels = methods)),
              aes(x=x, fill=fill))+
   stat_function(geom="polygon", fun = dbeta, args = list(shape1=0.5, shape2=0.5))+
-  scale_fill_manual(values=viridis::viridis(10, 1, 0.1, 0.9), drop = F)+
+  scale_fill_manual(values=virPal, drop = F)+
   pcv_theme()+
   labs(x="a = 0.5, b = 0.5", title = "poisson")
 
@@ -482,7 +494,7 @@ p7 <- ggplot(data.frame(x=seq(0, 1, 0.0001),
                         fill=factor("negbin", levels = methods)),
              aes(x=x, fill=fill))+
   stat_function(geom="polygon", fun = dbeta, args = list(shape1=0.5, shape2=0.5))+
-  scale_fill_manual(values=viridis::viridis(10, 1, 0.1, 0.9), drop = F)+
+  scale_fill_manual(values=virPal, drop = F)+
   pcv_theme()+
   labs(x="a = 0.5, b = 0.5, r = 10", title = "negbin")
 
@@ -492,7 +504,7 @@ p8 <- ggplot(data.frame(x= round(brms::rvon_mises(10000, 0, 0.5), 2),
   geom_bar()+
   coord_polar()+
   scale_x_continuous(limits = c(-pi, pi), breaks = seq(-pi, pi, pi/2), labels = ~round(., 1) )+
-  scale_fill_manual(values=viridis::viridis(10, 1, 0.1, 0.9), drop = F)+
+  scale_fill_manual(values=virPal, drop = F)+
   pcv_theme()+
   theme(axis.text.y = element_blank(),
         axis.title.y = element_blank(),
@@ -503,7 +515,7 @@ p9 <- ggplot(data.frame(x=seq(0, 20, 0.1),
                         fill=factor("uniform", levels = methods)),
              aes(x=x, fill=fill))+
   stat_function(geom="polygon", fun = dpareto, args = list(a = 0.5, b = 0.5))+
-  scale_fill_manual(values=viridis::viridis(10, 1, 0.1, 0.9), drop = F)+
+  scale_fill_manual(values=virPal, drop = F)+
   pcv_theme()+
   labs(x="a = 0.5, b = 0.5", title = "uniform")
 
@@ -511,18 +523,26 @@ p10 <- ggplot(data.frame(x=seq(0, 20, 0.1),
                         fill=factor("pareto", levels = methods)),
              aes(x=x, fill=fill))+
   stat_function(geom="polygon", fun = dpareto, args = list(a = 1, b = 1))+
-  scale_fill_manual(values=viridis::viridis(10, 1, 0.1, 0.9), drop = F)+
+  scale_fill_manual(values=virPal, drop = F)+
   pcv_theme()+
   labs(x="a = 1, b = 1,\nknown_location = min(x)", title = "pareto")
+
+p11 <- ggplot(data.frame(x=seq(-0.1, 10, 0.1),
+                        fill=factor("gamma", levels = methods)),
+             aes(x=x, fill=fill))+
+  stat_function(geom="polygon", fun = dgamma, args = list(shape = 3, rate = 1))+
+  scale_fill_manual(values=virPal, drop = F)+
+  pcv_theme()+
+  labs(x="a = 0.5, b = 0.5,\nknown_location = 1", title = "gamma")
 
 
 design <- c(area(1,1,1,1), area(1,2,1,2), area(1,3,1,3), #area(1,4,1,4),
             area(2,1,2,1), area(2,2,2,2), area(2,3,2,3), #area(2,4,2,4),
             area(3,1,3,1), area(3,2,3,2), area(3,3,3,3),
-            area(4,1,4,1)
+            area(4,1,4,1), area(4,2,4,2)
             )
 
-default_priors_patch <- (p1+p2+p3+p4+p5+p6+p7+p8+p9+p10)+
+default_priors_patch <- (p1+p2+p3+p4+p5+p6+p7+p8+p9+p10+p11)+
   plot_layout(guides="collect", design = design, widths = 1) &
   labs(fill="Distribution") & theme(legend.position = "right",
                                     plot.title = element_text(size = 10),
