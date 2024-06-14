@@ -17,8 +17,9 @@
 #' Currently "t", "gaussian", "beta", "binomial", "lognormal", "poisson",
 #' "negbin" (negative binomial), "uniform", "pareto", "gamma", "bernoulli", "exponential",
 #' "vonmises", and "vonmises2" are supported.
-#' The count (binomial, poisson and negative binomial), bernoulli, and pareto distributions
-#' are only implemented for single value traits.
+#' The count (binomial, poisson and negative binomial), bernoulli, exponential, 
+#' and pareto distributions are only implemented for single value traits due to their updating
+#' and/or the nature of the input data.
 #' The "t" and "gaussian" methods both use a T distribution with "t" testing for a difference
 #' of means and "gaussian" testing for a difference in the distributions (similar to a Z test).
 #' Both Von Mises options are for use with circular data (for instance hue values when the circular
@@ -83,7 +84,7 @@
 #'    \item{\strong{"gamma": } \code{priors = list(shape = 0.5, scale = 0.5, known_shape = 1)},
 #'     where shape and scale are the respective parameters of the gamma distributed rate
 #'     (inverse of scale) parameter of gamma distributed data.}
-#'    \item{\strong{"poisson": } \code{priors = list(a=c(0.5,0.5),b=c(0.5,0.5))},
+#'    \item{\strong{"poisson" and "exponential": } \code{priors = list(a=c(0.5,0.5),b=c(0.5,0.5))},
 #'     where a and b are shape parameters of the gamma distribution.}
 #'    \item{\strong{"negbin": } \code{priors = list(r=c(10,10), a=c(0.5,0.5),b=c(0.5,0.5))},
 #'     where r is the r parameter of the negative binomial distribution
@@ -406,7 +407,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
                       method = c(
                         "t", "gaussian", "beta", "binomial",
                         "lognormal", "poisson", "negbin", "vonmises", "vonmises2",
-                        "uniform", "pareto", "gamma", "bernoulli"
+                        "uniform", "pareto", "gamma", "bernoulli", "exponential"
                       ),
                       priors = NULL, plot = FALSE, rope_range = NULL,
                       rope_ci = 0.89, cred.int.level = 0.89, hypothesis = "equal",
@@ -446,7 +447,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
       "t", "gaussian", "beta", "binomial",
       "lognormal", "poisson", "negbin",
       "vonmises", "vonmises2",
-      "uniform", "pareto", "gamma", "bernoulli"
+      "uniform", "pareto", "gamma", "bernoulli", "exponential"
     ))
     # turning off dirichlet until I decide on a new implementation that I like better
     # and a use case that isn't so ripe for abuse.
@@ -550,7 +551,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
       "t", "gaussian", "beta", "binomial",
       "lognormal", "poisson", "negbin",
       "vonmises", "vonmises2",
-      "uniform", "pareto", "gamma", "bernoulli"
+      "uniform", "pareto", "gamma", "bernoulli", "exponential"
     ))
     vec_suffix <- if (vec) {
       "sv"
