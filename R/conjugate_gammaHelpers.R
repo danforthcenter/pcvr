@@ -21,8 +21,8 @@
     priors <- list(shape = 0.5, scale = 0.5, known_shape = 1)
   }
   #* `Update gamma prior with sufficient statistics`
-  n <- length(x)
-  S <- sum(x)
+  n <- length(s1)
+  S <- sum(s1)
   shape_prime <- (priors$known_shape * n) + priors$shape
   scale_prime <- priors$scale / (1 + (priors$scale * S))
   #* `Define support if it is missing`
