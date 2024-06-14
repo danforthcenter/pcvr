@@ -15,9 +15,9 @@
 #' This sample is shown in blue if plotted.
 #' @param method The distribution/method to use.
 #' Currently "t", "gaussian", "beta", "binomial", "lognormal", "poisson",
-#' "negbin" (negative binomial), "uniform", "pareto",
+#' "negbin" (negative binomial), "uniform", "pareto", "gamma", "bernoulli", "exponential",
 #' "vonmises", and "vonmises2" are supported.
-#' The count distributions (binomial, poisson and negative binomial) and pareto distribution
+#' The count (binomial, poisson and negative binomial), bernoulli, and pareto distributions
 #' are only implemented for single value traits.
 #' The "t" and "gaussian" methods both use a T distribution with "t" testing for a difference
 #' of means and "gaussian" testing for a difference in the distributions (similar to a Z test).
@@ -70,7 +70,8 @@
 #' \itemize{
 #'    \item{\strong{"t" and "gaussian":} \code{priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ) },
 #'     where mu is the mean, n is the number of prior observations, and s2 is variance}
-#'    \item{\strong{"beta" and "binomial":} \code{priors = list( a=c(0.5, 0.5), b=c(0.5, 0.5) )},
+#'    \item{\strong{"beta", "bernoulli", and "binomial":}
+#'    \code{priors = list( a=c(0.5, 0.5), b=c(0.5, 0.5) )},
 #'     where a and b are shape parameters of the beta distribution. Note that for the binomial
 #'     distribution this is used as the prior for success probability P,
 #'     which is assumed to be beta distributed as in a beta-binomial distribution.}
@@ -405,7 +406,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
                       method = c(
                         "t", "gaussian", "beta", "binomial",
                         "lognormal", "poisson", "negbin", "vonmises", "vonmises2",
-                        "uniform", "pareto", "gamma"
+                        "uniform", "pareto", "gamma", "bernoulli"
                       ),
                       priors = NULL, plot = FALSE, rope_range = NULL,
                       rope_ci = 0.89, cred.int.level = 0.89, hypothesis = "equal",
@@ -445,7 +446,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
       "t", "gaussian", "beta", "binomial",
       "lognormal", "poisson", "negbin",
       "vonmises", "vonmises2",
-      "uniform", "pareto", "gamma"
+      "uniform", "pareto", "gamma", "bernoulli"
     ))
     # turning off dirichlet until I decide on a new implementation that I like better
     # and a use case that isn't so ripe for abuse.
@@ -549,7 +550,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
       "t", "gaussian", "beta", "binomial",
       "lognormal", "poisson", "negbin",
       "vonmises", "vonmises2",
-      "uniform", "pareto", "gamma"
+      "uniform", "pareto", "gamma", "bernoulli"
     ))
     vec_suffix <- if (vec) {
       "sv"
