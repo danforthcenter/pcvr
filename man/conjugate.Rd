@@ -8,7 +8,7 @@ conjugate(
   s1 = NULL,
   s2 = NULL,
   method = c("t", "gaussian", "beta", "binomial", "lognormal", "poisson", "negbin",
-    "vonmises", "vonmises2", "uniform", "pareto", "gamma"),
+    "vonmises", "vonmises2", "uniform", "pareto", "gamma", "bernoulli", "exponential"),
   priors = NULL,
   plot = FALSE,
   rope_range = NULL,
@@ -32,10 +32,11 @@ This sample is shown in blue if plotted.}
 
 \item{method}{The distribution/method to use.
 Currently "t", "gaussian", "beta", "binomial", "lognormal", "poisson",
-"negbin" (negative binomial), "uniform", "pareto",
+"negbin" (negative binomial), "uniform", "pareto", "gamma", "bernoulli", "exponential",
 "vonmises", and "vonmises2" are supported.
-The count distributions (binomial, poisson and negative binomial) and pareto distribution
-are only implemented for single value traits.
+The count (binomial, poisson and negative binomial), bernoulli, exponential,
+and pareto distributions are only implemented for single value traits due to their updating
+and/or the nature of the input data.
 The "t" and "gaussian" methods both use a T distribution with "t" testing for a difference
 of means and "gaussian" testing for a difference in the distributions (similar to a Z test).
 Both Von Mises options are for use with circular data (for instance hue values when the circular
@@ -104,7 +105,8 @@ Prior distributions default to be weakly informative and in some cases you may w
 \itemize{
    \item{\strong{"t" and "gaussian":} \code{priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ) },
     where mu is the mean, n is the number of prior observations, and s2 is variance}
-   \item{\strong{"beta" and "binomial":} \code{priors = list( a=c(0.5, 0.5), b=c(0.5, 0.5) )},
+   \item{\strong{"beta", "bernoulli", and "binomial":}
+   \code{priors = list( a=c(0.5, 0.5), b=c(0.5, 0.5) )},
     where a and b are shape parameters of the beta distribution. Note that for the binomial
     distribution this is used as the prior for success probability P,
     which is assumed to be beta distributed as in a beta-binomial distribution.}
@@ -116,7 +118,7 @@ Prior distributions default to be weakly informative and in some cases you may w
    \item{\strong{"gamma": } \code{priors = list(shape = 0.5, scale = 0.5, known_shape = 1)},
     where shape and scale are the respective parameters of the gamma distributed rate
     (inverse of scale) parameter of gamma distributed data.}
-   \item{\strong{"poisson": } \code{priors = list(a=c(0.5,0.5),b=c(0.5,0.5))},
+   \item{\strong{"poisson" and "exponential": } \code{priors = list(a=c(0.5,0.5),b=c(0.5,0.5))},
     where a and b are shape parameters of the gamma distribution.}
    \item{\strong{"negbin": } \code{priors = list(r=c(10,10), a=c(0.5,0.5),b=c(0.5,0.5))},
     where r is the r parameter of the negative binomial distribution

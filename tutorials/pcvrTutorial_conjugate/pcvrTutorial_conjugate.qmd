@@ -53,8 +53,7 @@ if(!"pcvr" %in% installed.packages()){
 
 ```{r}
 #| echo: true
-#library(pcvr)
-devtools::load_all("~/pcvr")
+library(pcvr)
 library(ggplot2)
 library(patchwork)
 library(extraDistr)
