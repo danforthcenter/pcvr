@@ -34,7 +34,7 @@
   models <- c(
     "logistic", "gompertz", "monomolecular", "exponential", "linear", "power law",
     "double logistic", "double gompertz", "gam", "frechet", "weibull", "gumbel", "logarithmic",
-    "bragg"
+    "bragg", "lorentz"
   )
   #* ***** `Make nlrq formula` *****
   #* `parse form argument`
@@ -377,9 +377,9 @@
 #' @examples
 #' ex <- growthSim("bragg",
 #'   n = 20, t = 25,
-#'   params = list("A" = c(15, 20), "B" = c(0.095, 0.095))
+#'   params = list("A" = c(10, 15), "B" = c(0.01, 0.02), "C" = c(50, 60))
 #' )
-#' .initexponential(ex, "time", "y")
+#' .initbragg(ex, "time", "y")
 #' @keywords internal
 #' @noRd
 
@@ -396,7 +396,38 @@
   pseudoY <- log((y + 1e-04)/A)
   pseudoX <- (x - C)^2
   coefs <- coef(lm(pseudoY ~ pseudoX - 1))
-  B <- -coefs[1] # pseudo precision, conventionally b
+  B <- -coefs[1] # pseudo precision/slope at inflection, conventionally b
+  start <- stats::setNames(c(B, A, C), c("B", "A", "C"))
+  if (int) {
+    start <- stats::setNames(append(obs_min, start), c("I", "A", "B", "C"))
+  }
+  return(start)
+}
+
+#' `lorentz DRC self starter`
+#' @examples
+#' ex <- growthSim("lorentz",
+#'   n = 20, t = 25,
+#'   params = list("A" = c(10, 15), "B" = c(0.01, 0.02), "C" = c(50, 60))
+#' )
+#' .initlorentz(ex, "time", "y")
+#' @keywords internal
+#' @noRd
+
+.initlorentz <- function(df, x, y, int) {
+  if (int) {
+    obs_min <- min(df[[y]], na.rm = TRUE)
+    df[[y]] <- df[[y]] - obs_min
+  }
+  xy <- stats::sortedXyData(df[[x]], df[[y]])
+  x <- xy[, "x"]
+  y <- xy[, "y"]
+  A <- max(y) # amplitude, conventionally d
+  C <- x[which.max(y)] # position of midpoint, conventionally e
+  pseudoY <- (d - y)/y
+  pseudoX <- (x - e)^2
+  coefs <- coef(lm(pseudoY ~ pseudoX - 1))
+  B <- coefs[1] # pseudo precision/slope at inflection, conventionally b
   start <- stats::setNames(c(B, A, C), c("B", "A", "C"))
   if (int) {
     start <- stats::setNames(append(obs_min, start), c("I", "A", "B", "C"))
@@ -813,3 +844,31 @@
   return(list("formula" = nf, "pars" = pars))
 }
 
+.nlrq_form_lorentz <- function(x, y, USEGROUP, group, pars, int = FALSE) {
+  if (int) {
+    total_pars <- c("I", "A", "B", "C")
+  } else {
+    total_pars <- c("A", "B", "C")
+  }
+  if (is.null(pars)) {
+    pars <- total_pars
+  }
+  if (int) {
+    str_nf <- paste0(y, " ~ I[] + A[] / (1 + B[] * (", x, " - C[]) ^ 2)")
+  } else {
+    str_nf <- paste0(y, " ~ A[] / (1 + B[] * (", x, " - C[]) ^ 2)")
+  }
+  if (USEGROUP) {
+    for (par in total_pars) {
+      if (par %in% pars) {
+        str_nf <- gsub(paste0(par, "\\[\\]"), paste0(par, "[", group, "]"), str_nf)
+      } else {
+        str_nf <- gsub(paste0(par, "\\[\\]"), par, str_nf)
+      }
+    }
+    nf <- as.formula(str_nf)
+  } else {
+    nf <- as.formula(gsub("\\[|\\]", "", str_nf))
+  }
+  return(list("formula" = nf, "pars" = pars))
+}
