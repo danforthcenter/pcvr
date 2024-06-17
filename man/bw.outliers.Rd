@@ -35,8 +35,8 @@ This is typically time  and design variables (DAS, genotype, treatment, etc).
 These are used as predictors for `phenotype` in a generalized linear model.}
 
 \item{cutoff}{Cutoff for something being an "outlier" expressed as a multiplier
-on the mean of Cooks Distance for this data. This defaults to 3 which tends to be
-a good value.}
+on the mean of Cooks Distance for this data. This defaults to 5, with higher values
+being more conservative (removing less of the data).}
 
 \item{outlierMethod}{Method to be used in detecting outliers.
 Currently "cooks" and "mahalanobis" distances are supported, with "mahalanobis" only

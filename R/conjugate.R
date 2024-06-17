@@ -6,12 +6,20 @@
 #'
 #' @param s1 A data.frame or matrix of multi value traits or a vector of single value traits.
 #' If a multi value trait is used then column names should include a number representing the "bin".
-#' @param s2 An optional second sample.
+#' Alternatively for distributions other than "binomial" (which requires list data, see examples)
+#' this can be a formula specifying \code{outcome ~ group} where group has exactly 2
+#' levels. If using wide MV trait data then the formula should specify column positions ~ grouping
+#' such as \code{1:180 ~ group}.
+#' This sample is shown in red if plotted.
+#' @param s2 An optional second sample, or if s1 is a formula then this should be a dataframe.
+#' This sample is shown in blue if plotted.
 #' @param method The distribution/method to use.
 #' Currently "t", "gaussian", "beta", "binomial", "lognormal", "poisson",
-#' "negbin" (negative binomial), "vonmises", and "vonmises2" are supported.
-#' The count distributions (binomial, poisson and negative binomial) are only implemented for
-#' single value traits.
+#' "negbin" (negative binomial), "uniform", "pareto", "gamma", "bernoulli", "exponential",
+#' "vonmises", and "vonmises2" are supported.
+#' The count (binomial, poisson and negative binomial), bernoulli, exponential,
+#' and pareto distributions are only implemented for single value traits due to their updating
+#' and/or the nature of the input data.
 #' The "t" and "gaussian" methods both use a T distribution with "t" testing for a difference
 #' of means and "gaussian" testing for a difference in the distributions (similar to a Z test).
 #' Both Von Mises options are for use with circular data (for instance hue values when the circular
@@ -63,7 +71,8 @@
 #' \itemize{
 #'    \item{\strong{"t" and "gaussian":} \code{priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ) },
 #'     where mu is the mean, n is the number of prior observations, and s2 is variance}
-#'    \item{\strong{"beta" and "binomial":} \code{priors = list( a=c(0.5, 0.5), b=c(0.5, 0.5) )},
+#'    \item{\strong{"beta", "bernoulli", and "binomial":}
+#'    \code{priors = list( a=c(0.5, 0.5), b=c(0.5, 0.5) )},
 #'     where a and b are shape parameters of the beta distribution. Note that for the binomial
 #'     distribution this is used as the prior for success probability P,
 #'     which is assumed to be beta distributed as in a beta-binomial distribution.}
@@ -72,7 +81,10 @@
 #'    where mu_log is the mean on log scale, n is the number of prior observations,
 #'    and sigma_log is the
 #'    standard deviation on log scale }
-#'    \item{\strong{"poisson": } \code{priors = list(a=c(0.5,0.5),b=c(0.5,0.5))},
+#'    \item{\strong{"gamma": } \code{priors = list(shape = 0.5, scale = 0.5, known_shape = 1)},
+#'     where shape and scale are the respective parameters of the gamma distributed rate
+#'     (inverse of scale) parameter of gamma distributed data.}
+#'    \item{\strong{"poisson" and "exponential": } \code{priors = list(a=c(0.5,0.5),b=c(0.5,0.5))},
 #'     where a and b are shape parameters of the gamma distribution.}
 #'    \item{\strong{"negbin": } \code{priors = list(r=c(10,10), a=c(0.5,0.5),b=c(0.5,0.5))},
 #'     where r is the r parameter of the negative binomial distribution
@@ -81,7 +93,26 @@
 #'      Note that the r value is not updated.
 #'       The conjugate beta prior is only valid when r is fixed and known,
 #'       which is a limitation for this method.}
-#'     \item{\strong{"vonmises": } \code{list(mu = 0, kappa = 1, boundary = c(-pi, pi),
+#'     \item{\strong{"uniform": } \code{list(scale = 0.5, location = 0.5)}, where scale is the
+#'     scale parameter of the pareto distributed upper boundary and location is the location parameter
+#'     of the pareto distributed upper boundary. Note that different sources will use different
+#'     terminology for these parameters. These names were chosen for consistency with the
+#'     \code{extraDistr} implementation of the pareto distribution. On Wikipedia the parameters are
+#'     called shape and scale, corresponding to extraDistr's scale and location respecitvely, which
+#'     can be confusing. Note that the lower boundary of the uniform is assumed to be constant at 0.
+#'     There is a more complicated conjugate distribution to estimate both boundaries but that has
+#'     not seemed relevant so far in the author's plant phenotyping experience.
+#'     }
+#'     \item{\strong{"pareto": } \code{list(a = 1, b = 1, known_location = min(data))}, where
+#'     a and b are the shape and scale parameters of the gamma distribution of the pareto distribution's
+#'     scale parameter. In this case location is assumed to be constant and known, which is less of
+#'     a limitation than knowing r for the negative binomial method since location will generally be
+#'     right around/just under the minimum of the sample data. Note that the pareto method is only
+#'     implemented currently for single value traits since one of the statistics needed to update
+#'     the gamma distribution here is the product of the data and we do not currently have a method
+#'     to calculate a similar sufficient statistic from multi value traits.
+#'     }
+#'     \item{\strong{"vonmises": } \code{list(mu = 0, kappa = 0.5, boundary = c(-pi, pi),
 #'     known_kappa = 1, n = 1)}, where mu is the direction of the circular distribution (the mean),
 #'     kappa is the precision of the mean, boundary is a vector including the two values that are the
 #'     where the circular data "wraps" around the circle, known_kappa is the fixed value of precision
@@ -91,7 +122,7 @@
 #'     updated. Note that due to how the rescaling works larger circular boundaries can be slow to
 #'     plot.
 #'     }
-#'     \item{\strong{"vonmises2": } \code{priors = list(mu = 0, kappa = 1,
+#'     \item{\strong{"vonmises2": } \code{priors = list(mu = 0, kappa = 0.5,
 #'     boundary = c(-pi, pi), n = 1)}, where mu and kappa are mean direction and precision of the
 #'     von mises distribution, boundary is a vector including the two values that are the
 #'     where the circular data "wraps" around the circle, and n is the number of prior observations.
@@ -145,46 +176,6 @@
 #'   plot = FALSE, rope_range = c(-25, 25), rope_ci = 0.89,
 #'   cred.int.level = 0.89, hypothesis = "equal", support = NULL
 #' )
-#'
-#' # Z test sv example
-#' set.seed(123)
-#' gauss_sv_ex_bad <- conjugate(
-#'   s1 = rnorm(15, 50, 10), s2 = rnorm(15, 60, 12), method = "gaussian",
-#'   priors = list(mu = 30, n = 1, s2 = 100),
-#'   plot = FALSE, rope_range = c(-10, 10), rope_ci = 0.89,
-#'   cred.int.level = 0.89, hypothesis = "equal", support = NULL
-#' )
-#'
-#' # Here the plot clearly shows we have a problem with the default support, so we specify one
-#' # naturally the longer the support vector the more time this takes, but supports below 100k length
-#' # tend to be reasonably fast.
-#'
-#' gauss_sv_ex <- conjugate(
-#'   s1 = rnorm(15, 50, 10), s2 = rnorm(15, 60, 12), method = "gaussian",
-#'   priors = list(mu = 30, n = 1, s2 = 100),
-#'   plot = FALSE, rope_range = c(-10, 10), rope_ci = 0.89,
-#'   cred.int.level = 0.89, hypothesis = "equal", support = seq(-20, 120, 0.01)
-#' )
-#' # Note that the ROPE probability is somewhat unstable here since the distribution of differences
-#' # is much wider than the ROPE interval.
-#'
-#' # T test mv example
-#'
-#' mv_gauss <- mvSim(
-#'   dists = list(
-#'     rnorm = list(mean = 50, sd = 10),
-#'     rnorm = list(mean = 60, sd = 12)
-#'   ),
-#'   n_samples = 30
-#' )
-#'
-#' gaussianMeans_mv_ex <- conjugate(
-#'   s1 = mv_gauss[1:30, -1], s2 = mv_gauss[31:60, -1], method = "t",
-#'   priors = list(mu = 30, n = 1, s2 = 100),
-#'   plot = FALSE, rope_range = c(-5, 5), rope_ci = 0.89,
-#'   cred.int.level = 0.89, hypothesis = "equal", support = NULL
-#' )
-#'
 #'
 #' # T test sv example
 #'
@@ -415,12 +406,17 @@
 conjugate <- function(s1 = NULL, s2 = NULL,
                       method = c(
                         "t", "gaussian", "beta", "binomial",
-                        "lognormal", "poisson", "negbin", "vonmises", "vonmises2"
+                        "lognormal", "poisson", "negbin", "vonmises", "vonmises2",
+                        "uniform", "pareto", "gamma", "bernoulli", "exponential"
                       ),
                       priors = NULL, plot = FALSE, rope_range = NULL,
                       rope_ci = 0.89, cred.int.level = 0.89, hypothesis = "equal",
                       support = NULL) {
-  #* check length of method, replicate if there is a second sample
+  #* `Handle formula option in s1`
+  samples <- .formatSamples(s1, s2)
+  s1 <- samples$s1
+  s2 <- samples$s2
+  #* `check length of method, replicate if there is a second sample`
   if (length(method) == 1 && !is.null(s2)) {
     method <- rep(method, 2)
   }
@@ -450,7 +446,8 @@ conjugate <- function(s1 = NULL, s2 = NULL,
     matched_arg <- match.arg(method[i], choices = c(
       "t", "gaussian", "beta", "binomial",
       "lognormal", "poisson", "negbin",
-      "vonmises", "vonmises2"
+      "vonmises", "vonmises2",
+      "uniform", "pareto", "gamma", "bernoulli", "exponential"
     ))
     # turning off dirichlet until I decide on a new implementation that I like better
     # and a use case that isn't so ripe for abuse.
@@ -499,6 +496,34 @@ conjugate <- function(s1 = NULL, s2 = NULL,
   return(out)
 }
 
+#' ***********************************************************************************************
+#' *************** `Formula Handling Helper function` ***********************************
+#' ***********************************************************************************************
+
+#' @keywords internal
+#' @noRd
+
+.formatSamples <- function(s1 = NULL, s2 = NULL) {
+  if (methods::is(s1, "formula")) {
+    if (!is.data.frame(s2)) {
+      stop("If s1 is a formula then s2 must be a data.frame")
+    }
+    rhs <- as.character(s1)[3]
+    lhs <- as.character(s1)[2]
+    if (lhs %in% colnames(s2)) { # handle SV traits
+      samples <- split(s2[[lhs]], s2[[rhs]])
+    } else { # handle MV traits
+      samples <- lapply(split(s2, s2[[rhs]]), function(d) {
+        d[, eval(str2lang(lhs))]
+      })
+    }
+    names(samples) <- c("s1", "s2")
+    return(samples)
+  } else {
+    return(list("s1" = s1, "s2" = s2))
+  }
+}
+
 
 #' ***********************************************************************************************
 #' *************** `Support Calculating function` ***********************************
@@ -525,7 +550,8 @@ conjugate <- function(s1 = NULL, s2 = NULL,
     matched_arg <- match.arg(method[i], choices = c(
       "t", "gaussian", "beta", "binomial",
       "lognormal", "poisson", "negbin",
-      "vonmises", "vonmises2"
+      "vonmises", "vonmises2",
+      "uniform", "pareto", "gamma", "bernoulli", "exponential"
     ))
     vec_suffix <- if (vec) {
       "sv"
@@ -632,7 +658,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
   s1_plot_df <- sample_results[[1]]$plot_df
 
   p <- ggplot2::ggplot(s1_plot_df, ggplot2::aes(x = .data$range, y = .data$prob)) +
-    ggplot2::geom_area(data = s1_plot_df, fill = "red", alpha = 0.5) +
+    ggplot2::geom_area(data = s1_plot_df, alpha = 0.5, ggplot2::aes(fill = "s1")) +
     ggplot2::geom_vline(ggplot2::aes(xintercept = res$summary$HDI_1_low),
       color = "red",
       linewidth = 1.1
@@ -644,6 +670,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
       color = "red",
       linewidth = 1.1
     ) +
+    ggplot2::scale_fill_manual(values = "red") +
     ggplot2::labs(
       x = "Posterior Distribution of Random Variable", y = "Density", title = "Distribution of Samples",
       subtitle = paste0(
@@ -652,6 +679,9 @@ conjugate <- function(s1 = NULL, s2 = NULL,
         round(res$summary$HDI_1_high, 2), "]"
       )
     ) +
+    ggplot2::guides(fill = ggplot2::guide_legend(override.aes = list(alpha = 0.5))) +
+    ggplot2::theme(legend.title = ggplot2::element_blank(),
+                   legend.position = c(0.9, 0.9)) +
     pcv_theme()
 
   if (length(sample_results) == 2) {
@@ -663,8 +693,13 @@ conjugate <- function(s1 = NULL, s2 = NULL,
       post.prob.text <- round(res$summary$post.prob, 5)
     }
 
+    fill_scale <- which(sapply(p$scales$scales, function(x) {
+      "fill" %in% x$aesthetics # avoid "replacing scale" non-messages that suppress doesn't catch
+    }))
+
+    p$scales$scales[[fill_scale]] <- NULL
     p <- p +
-      ggplot2::geom_area(data = s2_plot_df, fill = "blue", alpha = 0.5) +
+      ggplot2::geom_area(data = s2_plot_df, ggplot2::aes(fill = "s2"), alpha = 0.5) +
       ggplot2::geom_vline(ggplot2::aes(xintercept = res$summary$HDI_2_low),
         color = "blue",
         linewidth = 1.1
@@ -677,6 +712,10 @@ conjugate <- function(s1 = NULL, s2 = NULL,
         color = "blue",
         linewidth = 1.1
       ) +
+      ggplot2::scale_fill_manual(values = c("red", "blue"), breaks = c("s1", "s2")) +
+      ggplot2::guides(fill = ggplot2::guide_legend(override.aes = list(alpha = 0.5))) +
+      ggplot2::theme(legend.title = ggplot2::element_blank(),
+                     legend.position = c(0.9, 0.9)) +
       ggplot2::labs(subtitle = paste0(
         "Sample 1:  ", round(res$summary$HDE_1, 2), " [", round(res$summary$HDI_1_low, 2), ", ",
         round(res$summary$HDI_1_high, 2), "]\n",

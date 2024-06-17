@@ -8,7 +8,7 @@ conjugate(
   s1 = NULL,
   s2 = NULL,
   method = c("t", "gaussian", "beta", "binomial", "lognormal", "poisson", "negbin",
-    "vonmises", "vonmises2"),
+    "vonmises", "vonmises2", "uniform", "pareto", "gamma", "bernoulli", "exponential"),
   priors = NULL,
   plot = FALSE,
   rope_range = NULL,
@@ -20,15 +20,23 @@ conjugate(
 }
 \arguments{
 \item{s1}{A data.frame or matrix of multi value traits or a vector of single value traits.
-If a multi value trait is used then column names should include a number representing the "bin".}
+If a multi value trait is used then column names should include a number representing the "bin".
+Alternatively for distributions other than "binomial" (which requires list data, see examples)
+this can be a formula specifying \code{outcome ~ group} where group has exactly 2
+levels. If using wide MV trait data then the formula should specify column positions ~ grouping
+such as \code{1:180 ~ group}.
+This sample is shown in red if plotted.}
 
-\item{s2}{An optional second sample.}
+\item{s2}{An optional second sample, or if s1 is a formula then this should be a dataframe.
+This sample is shown in blue if plotted.}
 
 \item{method}{The distribution/method to use.
 Currently "t", "gaussian", "beta", "binomial", "lognormal", "poisson",
-"negbin" (negative binomial), "vonmises", and "vonmises2" are supported.
-The count distributions (binomial, poisson and negative binomial) are only implemented for
-single value traits.
+"negbin" (negative binomial), "uniform", "pareto", "gamma", "bernoulli", "exponential",
+"vonmises", and "vonmises2" are supported.
+The count (binomial, poisson and negative binomial), bernoulli, exponential,
+and pareto distributions are only implemented for single value traits due to their updating
+and/or the nature of the input data.
 The "t" and "gaussian" methods both use a T distribution with "t" testing for a difference
 of means and "gaussian" testing for a difference in the distributions (similar to a Z test).
 Both Von Mises options are for use with circular data (for instance hue values when the circular
@@ -97,7 +105,8 @@ Prior distributions default to be weakly informative and in some cases you may w
 \itemize{
    \item{\strong{"t" and "gaussian":} \code{priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ) },
     where mu is the mean, n is the number of prior observations, and s2 is variance}
-   \item{\strong{"beta" and "binomial":} \code{priors = list( a=c(0.5, 0.5), b=c(0.5, 0.5) )},
+   \item{\strong{"beta", "bernoulli", and "binomial":}
+   \code{priors = list( a=c(0.5, 0.5), b=c(0.5, 0.5) )},
     where a and b are shape parameters of the beta distribution. Note that for the binomial
     distribution this is used as the prior for success probability P,
     which is assumed to be beta distributed as in a beta-binomial distribution.}
@@ -106,7 +115,10 @@ Prior distributions default to be weakly informative and in some cases you may w
    where mu_log is the mean on log scale, n is the number of prior observations,
    and sigma_log is the
    standard deviation on log scale }
-   \item{\strong{"poisson": } \code{priors = list(a=c(0.5,0.5),b=c(0.5,0.5))},
+   \item{\strong{"gamma": } \code{priors = list(shape = 0.5, scale = 0.5, known_shape = 1)},
+    where shape and scale are the respective parameters of the gamma distributed rate
+    (inverse of scale) parameter of gamma distributed data.}
+   \item{\strong{"poisson" and "exponential": } \code{priors = list(a=c(0.5,0.5),b=c(0.5,0.5))},
     where a and b are shape parameters of the gamma distribution.}
    \item{\strong{"negbin": } \code{priors = list(r=c(10,10), a=c(0.5,0.5),b=c(0.5,0.5))},
     where r is the r parameter of the negative binomial distribution
@@ -115,7 +127,26 @@ Prior distributions default to be weakly informative and in some cases you may w
      Note that the r value is not updated.
       The conjugate beta prior is only valid when r is fixed and known,
       which is a limitation for this method.}
-    \item{\strong{"vonmises": } \code{list(mu = 0, kappa = 1, boundary = c(-pi, pi),
+    \item{\strong{"uniform": } \code{list(scale = 0.5, location = 0.5)}, where scale is the
+    scale parameter of the pareto distributed upper boundary and location is the location parameter
+    of the pareto distributed upper boundary. Note that different sources will use different
+    terminology for these parameters. These names were chosen for consistency with the
+    \code{extraDistr} implementation of the pareto distribution. On Wikipedia the parameters are
+    called shape and scale, corresponding to extraDistr's scale and location respecitvely, which
+    can be confusing. Note that the lower boundary of the uniform is assumed to be constant at 0.
+    There is a more complicated conjugate distribution to estimate both boundaries but that has
+    not seemed relevant so far in the author's plant phenotyping experience.
+    }
+    \item{\strong{"pareto": } \code{list(a = 1, b = 1, known_location = min(data))}, where
+    a and b are the shape and scale parameters of the gamma distribution of the pareto distribution's
+    scale parameter. In this case location is assumed to be constant and known, which is less of
+    a limitation than knowing r for the negative binomial method since location will generally be
+    right around/just under the minimum of the sample data. Note that the pareto method is only
+    implemented currently for single value traits since one of the statistics needed to update
+    the gamma distribution here is the product of the data and we do not currently have a method
+    to calculate a similar sufficient statistic from multi value traits.
+    }
+    \item{\strong{"vonmises": } \code{list(mu = 0, kappa = 0.5, boundary = c(-pi, pi),
     known_kappa = 1, n = 1)}, where mu is the direction of the circular distribution (the mean),
     kappa is the precision of the mean, boundary is a vector including the two values that are the
     where the circular data "wraps" around the circle, known_kappa is the fixed value of precision
@@ -125,7 +156,7 @@ Prior distributions default to be weakly informative and in some cases you may w
     updated. Note that due to how the rescaling works larger circular boundaries can be slow to
     plot.
     }
-    \item{\strong{"vonmises2": } \code{priors = list(mu = 0, kappa = 1,
+    \item{\strong{"vonmises2": } \code{priors = list(mu = 0, kappa = 0.5,
     boundary = c(-pi, pi), n = 1)}, where mu and kappa are mean direction and precision of the
     von mises distribution, boundary is a vector including the two values that are the
     where the circular data "wraps" around the circle, and n is the number of prior observations.
@@ -179,46 +210,6 @@ gauss_mv_ex <- conjugate(
   plot = FALSE, rope_range = c(-25, 25), rope_ci = 0.89,
   cred.int.level = 0.89, hypothesis = "equal", support = NULL
 )
-
-# Z test sv example
-set.seed(123)
-gauss_sv_ex_bad <- conjugate(
-  s1 = rnorm(15, 50, 10), s2 = rnorm(15, 60, 12), method = "gaussian",
-  priors = list(mu = 30, n = 1, s2 = 100),
-  plot = FALSE, rope_range = c(-10, 10), rope_ci = 0.89,
-  cred.int.level = 0.89, hypothesis = "equal", support = NULL
-)
-
-# Here the plot clearly shows we have a problem with the default support, so we specify one
-# naturally the longer the support vector the more time this takes, but supports below 100k length
-# tend to be reasonably fast.
-
-gauss_sv_ex <- conjugate(
-  s1 = rnorm(15, 50, 10), s2 = rnorm(15, 60, 12), method = "gaussian",
-  priors = list(mu = 30, n = 1, s2 = 100),
-  plot = FALSE, rope_range = c(-10, 10), rope_ci = 0.89,
-  cred.int.level = 0.89, hypothesis = "equal", support = seq(-20, 120, 0.01)
-)
-# Note that the ROPE probability is somewhat unstable here since the distribution of differences
-# is much wider than the ROPE interval.
-
-# T test mv example
-
-mv_gauss <- mvSim(
-  dists = list(
-    rnorm = list(mean = 50, sd = 10),
-    rnorm = list(mean = 60, sd = 12)
-  ),
-  n_samples = 30
-)
-
-gaussianMeans_mv_ex <- conjugate(
-  s1 = mv_gauss[1:30, -1], s2 = mv_gauss[31:60, -1], method = "t",
-  priors = list(mu = 30, n = 1, s2 = 100),
-  plot = FALSE, rope_range = c(-5, 5), rope_ci = 0.89,
-  cred.int.level = 0.89, hypothesis = "equal", support = NULL
-)
-
 
 # T test sv example
 
