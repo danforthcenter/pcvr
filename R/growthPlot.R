@@ -18,7 +18,8 @@
 #' @param timeRange An optional range of times to use. This can be used to view predictions for
 #' future data if the avaiable data has not reached some point (such as asymptotic size).
 #' @param facetGroups logical, should groups be separated in facets? Defaults to TRUE.
-#' @param groupFill logical, should groups have different colors? Defaults to FALSE. If TRUE then
+#' @param groupFill logical, should groups have different colors? Defaults to the opposite of
+#' facetGroups. If TRUE then
 #' viridis colormaps are used in the order c('plasma', 'mako', 'viridis', 'inferno', 'cividis', 'magma',
 #' 'turbo', 'rocket'). Alternatively this can be given as a vector of
 #' viridis colormap names to use in a different order than above. Note this is ignored for brms models.
@@ -45,7 +46,7 @@
 #' @export
 
 growthPlot <- function(fit, form, groups = NULL, df = NULL, timeRange = NULL,
-                       facetGroups = TRUE, groupFill = FALSE) {
+                       facetGroups = TRUE, groupFill = !facetGroups) {
   if (is.logical(groupFill)) {
     virMaps <- c("plasma", "mako", "viridis", "inferno", "cividis", "magma", "turbo", "rocket")
   } else {
