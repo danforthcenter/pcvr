@@ -83,11 +83,15 @@ The \code{params} argument requires some understanding of how each growth model 
     Where A is the growth rate.
     \item \bold{Logarithmic}: `A * log(x)`
     Where A is the growth rate.
-    \item \bold{Power Law}: `A * x^(B)`
+    \item \bold{Power Law}: `A * x ^ (B)`
     Where A is the scale parameter and B is the growth rate.
-    \item \bold{Bragg}: `A * exp(-B * (x - C)^2)`
+    \item \bold{Bragg}: `A * exp(-B * (x - C) ^ 2)`
     This models minima and maxima as a dose-response curve where A is the max response,
-    B is the "precision", and C is the x position of the max response.
+    B is the "precision" or slope at inflection, and C is the x position of the max response.
+    \item \bold{Lorentz}: `A / (1 + B * (x - C) ^ 2)`
+    This models minima and maxima as a dose-response curve where A is the max response,
+    B is the "precision" or slope at inflection, and C is the x position of the max response.
+    Generally Bragg is preferred to Lorentz for dose-response curves.
     }
     Note that for these distributions parameters generally do not exist in a vacuum.
     Changing one will make the others look different in the resulting data.

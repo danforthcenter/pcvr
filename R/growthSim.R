@@ -213,11 +213,15 @@
 #'     Where A is the growth rate.
 #'     \item \bold{Logarithmic}: `A * log(x)`
 #'     Where A is the growth rate.
-#'     \item \bold{Power Law}: `A * x^(B)`
+#'     \item \bold{Power Law}: `A * x ^ (B)`
 #'     Where A is the scale parameter and B is the growth rate.
-#'     \item \bold{Bragg}: `A * exp(-B * (x - C)^2)`
+#'     \item \bold{Bragg}: `A * exp(-B * (x - C) ^ 2)`
 #'     This models minima and maxima as a dose-response curve where A is the max response,
-#'     B is the "precision", and C is the x position of the max response.
+#'     B is the "precision" or slope at inflection, and C is the x position of the max response.
+#'     \item \bold{Lorentz}: `A / (1 + B * (x - C) ^ 2)`
+#'     This models minima and maxima as a dose-response curve where A is the max response,
+#'     B is the "precision" or slope at inflection, and C is the x position of the max response.
+#'     Generally Bragg is preferred to Lorentz for dose-response curves.
 #'     }
 #'     Note that for these distributions parameters generally do not exist in a vacuum.
 #'     Changing one will make the others look different in the resulting data.
@@ -531,4 +535,10 @@ gsi_bragg <- function(x, pars, noise) {
   # a is max response, b is precision, c is x position of max response
   return(a_r * exp(-b_r * (x - c_r)^2))
 }
-
+gsi_lorentz <- function(x, pars, noise) {
+  a_r <- pars[["A"]] + rnorm(1, mean = 0, sd = noise[["A"]])
+  b_r <- pars[["B"]] + rnorm(1, mean = 0, sd = noise[["B"]])
+  c_r <- pars[["C"]] + rnorm(1, mean = 0, sd = noise[["C"]])
+  # a is max response, b is precision, c is x position of max response
+  return(a_r / (1 + b_r * (x - c_r) ^ 2))
+}
