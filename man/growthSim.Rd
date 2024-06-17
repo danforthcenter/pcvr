@@ -7,7 +7,7 @@
 growthSim(
   model = c("logistic", "gompertz", "double logistic", "double gompertz",
     "monomolecular", "exponential", "linear", "power law", "frechet", "weibull",
-    "gumbel", "logarithmic"),
+    "gumbel", "logarithmic", "bragg"),
   n = 20,
   t = 25,
   params = list(),
@@ -17,7 +17,8 @@ growthSim(
 }
 \arguments{
 \item{model}{One of "logistic", "gompertz", "weibull", "frechet", "gumbel", "monomolecular",
-"exponential", "linear", "power law", "logarithmic", "double logistic", or "double gompertz".
+"exponential", "linear", "power law", "logarithmic", "bragg",
+"double logistic", or "double gompertz".
 Alternatively this can be a pseudo formula to generate data from a segmented growth curve by
 specifying "model1 + model2", see examples and \code{\link{growthSS}}.
 Decay can be specified by including "decay" as part of the model such as "logistic decay" or
@@ -84,8 +85,11 @@ The \code{params} argument requires some understanding of how each growth model 
     Where A is the growth rate.
     \item \bold{Power Law}: `A * x^(B)`
     Where A is the scale parameter and B is the growth rate.
+    \item \bold{Bragg}: `A * exp(-B * (x - C)^2)`
+    This models minima and maxima as a dose-response curve where A is the max response,
+    B is the "precision", and C is the x position of the max response.
     }
-    Note that for these distributions parameters do not exist in a vacuum.
+    Note that for these distributions parameters generally do not exist in a vacuum.
     Changing one will make the others look different in the resulting data.
     The examples are a good place to start if you are unsure what parameters to use.
 }
@@ -194,6 +198,14 @@ simdf <- growthSim("power law",
 ggplot(simdf, aes(time, y, group = interaction(group, id))) +
   geom_line(aes(color = group)) +
   labs(title = "Power Law")
+
+simdf <- growthSim("bragg",
+n = 20, t = 100,
+list("A" = c(10, 15), "B" = c(0.01, 0.02), "C" = c(50, 60))
+)
+ggplot(simdf, aes(time, y, group = interaction(group, id))) +
+geom_line(aes(color = group)) +
+labs(title = "bragg")
 
 # simulating models from segmented growth models
 
