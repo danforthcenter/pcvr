@@ -3,7 +3,7 @@
 #'
 #' @param model The name of a model as a character string.
 #'  Supported options are c("logistic", "gompertz", "weibull", "frechet", "gumbel", "monomolecular",
-#'  "exponential", "linear", "power law",
+#'  "exponential", "linear", "power law", "bragg", "lorentz",
 #'  "double logistic", "double gompertz", "gam", "int"), with "int" representing an intercept only model
 #'  which is only used in brms (and is expected to only be used in threshold models or to model
 #'  homoskedasticity.)
@@ -173,6 +173,13 @@
 #'  Where A is the growth rate.
 #'  \item \bold{Power Law}: `A * x^(B)`
 #'  Where A is the scale parameter and B is the growth rate.
+#'  \item \bold{Bragg}: `A * exp(-B * (x - C) ^ 2)`
+#'  This models minima and maxima as a dose-response curve where A is the max response,
+#'  B is the "precision" or slope at inflection, and C is the x position of the max response.
+#'  \item \bold{Lorentz}: `A / (1 + B * (x - C) ^ 2)`
+#'  This models minima and maxima as a dose-response curve where A is the max response,
+#'  B is the "precision" or slope at inflection, and C is the x position of the max response.
+#'  Generally Bragg is preferred to Lorentz for dose-response curves.
 #'  }
 #'  Note that for these distributions parameters do not exist in a vacuum.
 #'  Changing one will make the others look different in the resulting data.
