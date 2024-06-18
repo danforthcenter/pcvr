@@ -222,6 +222,13 @@
 #'     This models minima and maxima as a dose-response curve where A is the max response,
 #'     B is the "precision" or slope at inflection, and C is the x position of the max response.
 #'     Generally Bragg is preferred to Lorentz for dose-response curves.
+#'     \item \bold{Beta}: `A * (((x - D) / (C - D)) * ((E - x) / (E - C)) ^ ((E - C) / (C - D))) ^ B`
+#'     This models minima and maxima as a dose-response curve where A is the Maximum Value,
+#'     B is a shape/concavity exponent similar to the sum of alpha and beta in a Beta distribution,
+#'     C is the position of maximum value, D is the minimum position where distribution > 0,
+#'     E is the maximum position where distribution > 0.
+#'     This is a difficult model to fit but can model non-symmetric dose-response relationships which
+#'     may sometimes be worth the extra effort.
 #'     }
 #'     Note that for these distributions parameters generally do not exist in a vacuum.
 #'     Changing one will make the others look different in the resulting data.
@@ -235,7 +242,7 @@ growthSim <- function(
     model = c(
       "logistic", "gompertz", "double logistic", "double gompertz",
       "monomolecular", "exponential", "linear", "power law", "frechet",
-      "weibull", "gumbel", "logarithmic", "bragg"
+      "weibull", "gumbel", "logarithmic", "bragg", "lorentz", "beta"
     ),
     n = 20, t = 25, params = list(), noise = NULL, D = 0) {
   if (grepl("count:", model)) {
@@ -413,7 +420,7 @@ growthSim <- function(
   models <- c(
     "logistic", "gompertz", "double logistic", "double gompertz",
     "monomolecular", "exponential", "linear", "power law", "frechet", "weibull", "gumbel",
-    "logarithmic", "bragg"
+    "logarithmic", "bragg", "lorentz", "beta"
   )
 
   if (grepl("decay", model)) {
@@ -542,3 +549,13 @@ gsi_lorentz <- function(x, pars, noise) {
   # a is max response, b is precision, c is x position of max response
   return(a_r / (1 + b_r * (x - c_r) ^ 2))
 }
+gsi_beta <- function(x, pars, noise) {
+  a_r <- pars[["A"]] + rnorm(1, mean = 0, sd = noise[["A"]])
+  b_r <- pars[["B"]] + rnorm(1, mean = 0, sd = noise[["B"]])
+  c_r <- pars[["C"]] + rnorm(1, mean = 0, sd = noise[["C"]])
+  d_r <- pars[["D"]] + rnorm(1, mean = 0, sd = noise[["D"]])
+  e_r <- pars[["E"]] + rnorm(1, mean = 0, sd = noise[["E"]])
+  y <- a_r * (((x - d_r) / (c_r - d_r)) * ((e_r - x) / (e_r - c_r)) ^ ((e_r - c_r) / (c_r - d_r))) ^ b_r
+  return(y)
+}
+

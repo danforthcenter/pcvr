@@ -7,7 +7,7 @@
 growthSim(
   model = c("logistic", "gompertz", "double logistic", "double gompertz",
     "monomolecular", "exponential", "linear", "power law", "frechet", "weibull",
-    "gumbel", "logarithmic", "bragg"),
+    "gumbel", "logarithmic", "bragg", "lorentz", "beta"),
   n = 20,
   t = 25,
   params = list(),
@@ -92,6 +92,13 @@ The \code{params} argument requires some understanding of how each growth model 
     This models minima and maxima as a dose-response curve where A is the max response,
     B is the "precision" or slope at inflection, and C is the x position of the max response.
     Generally Bragg is preferred to Lorentz for dose-response curves.
+    \item \bold{Beta}: `A * (((x - D) / (C - D)) * ((E - x) / (E - C)) ^ ((E - C) / (C - D))) ^ B`
+    This models minima and maxima as a dose-response curve where A is the Maximum Value,
+    B is a shape/concavity exponent similar to the sum of alpha and beta in a Beta distribution,
+    C is the position of maximum value, D is the minimum position where distribution > 0,
+    E is the maximum position where distribution > 0.
+    This is a difficult model to fit but can model non-symmetric dose-response relationships which
+    may sometimes be worth the extra effort.
     }
     Note that for these distributions parameters generally do not exist in a vacuum.
     Changing one will make the others look different in the resulting data.
