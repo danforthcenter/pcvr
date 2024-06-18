@@ -19,7 +19,7 @@ growthSS(
 \arguments{
 \item{model}{The name of a model as a character string.
 Supported options are c("logistic", "gompertz", "weibull", "frechet", "gumbel", "monomolecular",
-"exponential", "linear", "power law", "bragg", "lorentz",
+"exponential", "linear", "power law", "bragg", "lorentz", "beta",
 "double logistic", "double gompertz", "gam", "int"), with "int" representing an intercept only model
 which is only used in brms (and is expected to only be used in threshold models or to model
 homoskedasticity.)
@@ -246,6 +246,13 @@ See details below about parameterization for each model option.
  This models minima and maxima as a dose-response curve where A is the max response,
  B is the "precision" or slope at inflection, and C is the x position of the max response.
  Generally Bragg is preferred to Lorentz for dose-response curves.
+ \item \bold{Beta}: `A * (((x - D) / (C - D)) * ((E - x) / (E - C)) ^ ((E - C) / (C - D))) ^ B`
+ This models minima and maxima as a dose-response curve where A is the Maximum Value,
+ B is a shape/concavity exponent similar to the sum of alpha and beta in a Beta distribution,
+ C is the position of maximum value, D is the minimum position where distribution > 0,
+ E is the maximum position where distribution > 0.
+ This is a difficult model to fit but can model non-symmetric dose-response relationships which
+ may sometimes be worth the extra effort.
  }
  Note that for these distributions parameters do not exist in a vacuum.
  Changing one will make the others look different in the resulting data.

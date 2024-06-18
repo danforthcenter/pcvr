@@ -463,7 +463,7 @@
   E <- ifelse(secidx == length(y),
               x[length(x)],
               (x[secidx] + x[(secidx + 1)]) / 2)
-  start <- stats::setNames(c(A, 1, C, D, E), c("A", "B", "C", "D", "E")
+  start <- stats::setNames(c(A, 1, C, D, E), c("A", "B", "C", "D", "E"))
   if (int) {
     start <- stats::setNames(append(obs_min, start), c("I", "A", "B", "C", "D", "E"))
   }
