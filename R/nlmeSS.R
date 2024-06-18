@@ -97,7 +97,7 @@
     "logistic", "gompertz", "monomolecular",
     "exponential", "linear", "power law",
     "double logistic", "double gompertz", "gam",
-    "frechet", "weibull", "gumbel", "logarithmic", "bragg", "lorentz"
+    "frechet", "weibull", "gumbel", "logarithmic", "bragg", "lorentz", "beta"
   )
   sigmas <- c("none", "int", "power", "exp")
   #* check if sigma is class "varFunc", if it is then return it as is?
@@ -803,6 +803,48 @@
   } else {
     total_pars <- c("A", "B", "C")
     model_form <- as.formula(paste0(y, " ~ A / (1 + B * (", x, " - C) ^ 2)"))
+  }
+  #* `random effects formula`
+  random_form <- as.formula(paste0(paste0(total_pars, collapse = " + "), "~ 1"))
+  #* `fixed effects formula`
+  if (is.null(pars)) {
+    pars <- total_pars
+  }
+  if (is.null(group) || group == "dummyGroup") {
+    pars <- ""
+  }
+  fixed_form <- lapply(total_pars, function(par) {
+    if (par %in% pars) {
+      stats::as.formula(paste0(par, " ~ 0 + ", group))
+    } else {
+      stats::as.formula(paste0(par, " ~ 1"))
+    }
+  })
+  #* `groups formula`
+  groups_form <- stats::as.formula(paste0("~", group))
+  #* `variance formula`
+  weights_form <- .nlme_sigma_form(matched_sigma, x, group)
+  #* `correlation formula`
+  correlation_form <- nlme::corAR1(0.8, form = as.formula(paste0("~ 1 |", group)))
+  
+  formulas <- list(
+    "model" = model_form, "random" = random_form,
+    "fixed" = fixed_form, "groups" = groups_form,
+    "weights" = weights_form, "cor_form" = correlation_form, "pars" = pars
+  )
+  return(formulas)
+}
+
+.nlme_form_beta <- function(x, y, group, individual, matched_sigma, pars, int) {
+  #* `Define parameters and main growth formula`
+  if (int) {
+    total_pars <- c("I", "A", "B", "C", "D", "E")
+    model_form <- as.formula(paste0(y, " ~ I + A * (((x - D) / (C - D)) * ((E - ", x,
+                                    ") / (E - C)) ^ ((E - C) / (C - D))) ^ B"))
+  } else {
+    total_pars <- c("A", "B", "C", "D", "E")
+    model_form <- as.formula(paste0(y, " ~ A * (((x - D) / (C - D)) * ((E - ", x,
+                                    ") / (E - C)) ^ ((E - C) / (C - D))) ^ B"))
   }
   #* `random effects formula`
   random_form <- as.formula(paste0(paste0(total_pars, collapse = " + "), "~ 1"))

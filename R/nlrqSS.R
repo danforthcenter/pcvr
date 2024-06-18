@@ -34,7 +34,7 @@
   models <- c(
     "logistic", "gompertz", "monomolecular", "exponential", "linear", "power law",
     "double logistic", "double gompertz", "gam", "frechet", "weibull", "gumbel", "logarithmic",
-    "bragg", "lorentz"
+    "bragg", "lorentz", "beta"
   )
   #* ***** `Make nlrq formula` *****
   #* `parse form argument`
@@ -431,6 +431,41 @@
   start <- stats::setNames(c(B, A, C), c("B", "A", "C"))
   if (int) {
     start <- stats::setNames(append(obs_min, start), c("I", "A", "B", "C"))
+  }
+  return(start)
+}
+
+#' `beta DRC self starter`
+#' @examples
+#' ex <- growthSim("beta",
+#'   n = 20, t = 25,
+#'   params = list("A" = 10, "B" = 1.2, "C" = 15, "D" = 8, "E" = 19)
+#' )
+#' .initbeta(ex, "time", "y")
+#' @keywords internal
+#' @noRd
+
+.initbeta <- function(df, x, y, int) {
+  if (int) {
+    obs_min <- min(df[[y]], na.rm = TRUE)
+    df[[y]] <- df[[y]] - obs_min
+  }
+  xy <- stats::sortedXyData(df[[x]], df[[y]])
+  x <- xy[, "x"]
+  y <- xy[, "y"]
+  A <- max(y)
+  C <- x[which.max(y)]
+  firstidx <- min(which(y != 0))
+  D <- ifelse(firstidx == 1,
+              x[1],
+              (x[firstidx] + x[(firstidx - 1)]) / 2)
+  secidx <- max(which(y != 0))
+  E <- ifelse(secidx == length(y),
+              x[length(x)],
+              (x[secidx] + x[(secidx + 1)]) / 2)
+  start <- stats::setNames(c(A, 1, C, D, E), c("A", "B", "C", "D", "E")
+  if (int) {
+    start <- stats::setNames(append(obs_min, start), c("I", "A", "B", "C", "D", "E"))
   }
   return(start)
 }
@@ -857,6 +892,37 @@
     str_nf <- paste0(y, " ~ I[] + A[] / (1 + B[] * (", x, " - C[]) ^ 2)")
   } else {
     str_nf <- paste0(y, " ~ A[] / (1 + B[] * (", x, " - C[]) ^ 2)")
+  }
+  if (USEGROUP) {
+    for (par in total_pars) {
+      if (par %in% pars) {
+        str_nf <- gsub(paste0(par, "\\[\\]"), paste0(par, "[", group, "]"), str_nf)
+      } else {
+        str_nf <- gsub(paste0(par, "\\[\\]"), par, str_nf)
+      }
+    }
+    nf <- as.formula(str_nf)
+  } else {
+    nf <- as.formula(gsub("\\[|\\]", "", str_nf))
+  }
+  return(list("formula" = nf, "pars" = pars))
+}
+# A * (((x - D) / (C - D)) * ((E - x) / (E - C)) ^ ((E - C) / (C - D))) ^ B
+.nlrq_form_beta  <- function(x, y, USEGROUP, group, pars, int = FALSE) {
+  if (int) {
+    total_pars <- c("I", "A", "B", "C", "D", "E")
+  } else {
+    total_pars <- c("A", "B", "C", "D", "E")
+  }
+  if (is.null(pars)) {
+    pars <- total_pars
+  }
+  if (int) {
+    str_nf <- paste0(y, " ~ I[] + A[] * (((x - D[]) / (C[] - D[])) * ((E[] - ", x,
+                     ") / (E[] - C[])) ^ ((E[] - C[]) / (C[] - D[]))) ^ B[]")
+  } else {
+    str_nf <- paste0(y, " ~ A[] * (((x - D[]) / (C[] - D[])) * ((E[] - ", x,
+                     ") / (E[] - C[])) ^ ((E[] - C[]) / (C[] - D[]))) ^ B[]")
   }
   if (USEGROUP) {
     for (par in total_pars) {
