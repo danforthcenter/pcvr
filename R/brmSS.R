@@ -126,7 +126,7 @@
   models <- c(
     "int", "logistic", "gompertz", "monomolecular", "exponential", "linear", "power law", "logarithmic",
     "double logistic", "double gompertz", "gam", "spline", "homo", "frechet", "gumbel", "weibull",
-    "not_estimated"
+    "not_estimated", "bragg", "lorentz", "beta"
   )
   #* ***** `Make bayesian formula` *****
   #* `parse form argument`

@@ -715,3 +715,101 @@
   }
   return(list(form = form, pars = pars))
 }
+
+#' Helper function for brms formulas
+#'
+#' @keywords internal
+#' @noRd
+
+.brms_form_bragg <- function(x, y, group, dpar = FALSE, nTimes = NULL,
+                              useGroup = TRUE, prior = NULL, int) {
+  if (dpar) {
+    if (int) {
+      form <- brms::nlf(stats::as.formula(paste0(
+        y , " ~ ", y, "I + ", y, "A * exp(-", y, "B * (", x, " - ", y, "C)^2)"
+      )))
+      pars <- paste0(y, LETTERS[c(1:3, 9)])
+    } else {
+      form <- brms::nlf(stats::as.formula(paste0(
+        y , " ~ ", y, "A * exp(-", y, "B * (", x, " - ", y, "C)^2)"
+      )))
+      pars <- paste0(y, LETTERS[1:3])
+    }
+  } else {
+    if (int) {
+      form <- stats::as.formula(paste0(y, " ~ I + A * exp(-B * (", x, " - C)^2)"))
+      pars <- LETTERS[c(1:3, 9)]
+    } else {
+      form <- stats::as.formula(paste0(y, " ~ A * exp(-B * (", x, " - C)^2)"))
+      pars <- LETTERS[1:3]
+    }
+  }
+  return(list(form = form, pars = pars))
+}
+
+#' Helper function for brms formulas
+#'
+#' @keywords internal
+#' @noRd
+
+.brms_form_lorentz <- function(x, y, group, dpar = FALSE, nTimes = NULL,
+                             useGroup = TRUE, prior = NULL, int) {
+  if (dpar) {
+    if (int) {
+      form <- brms::nlf(stats::as.formula(paste0(
+        y , " ~ ", y, "I + ", y, "A / (1 + ", y, "B * (", x, " - ", y, "C) ^ 2)"
+      )))
+      pars <- paste0(y, LETTERS[c(1:3, 9)])
+    } else {
+      form <- brms::nlf(stats::as.formula(paste0(
+        y , " ~ ", y, "A / (1 + ", y, "B * (", x, " - ", y, "C) ^ 2)"
+      )))
+      pars <- paste0(y, LETTERS[1:3])
+    }
+  } else {
+    if (int) {
+      form <- stats::as.formula(paste0(y, " ~ I + A / (1 + B * (", x, " - C) ^ 2)"))
+      pars <- LETTERS[c(1:3, 9)]
+    } else {
+      form <- stats::as.formula(paste0(y, " ~ A / (1 + B * (", x, " - C) ^ 2)"))
+      pars <- LETTERS[1:3]
+    }
+  }
+  return(list(form = form, pars = pars))
+}
+
+#' Helper function for brms formulas
+#'
+#' @keywords internal
+#' @noRd
+
+.brms_form_beta <- function(x, y, group, dpar = FALSE, nTimes = NULL,
+                               useGroup = TRUE, prior = NULL, int) {
+  if (dpar) {
+    if (int) {
+      form <- brms::nlf(stats::as.formula(paste0(
+        y , " ~ ", y, "I + ", y, "A * (((x - ", y, "D) / (", y, "C - ", y, "D)) * ((", y, "E - ", x,
+        ") / (", y, "E - ", y, "C)) ^ ((", y, "E - ", y, "C) / (", y, "C - ", y, "D))) ^ ", y, "B"
+      )))
+      pars <- paste0(y, LETTERS[c(1:5, 9)])
+    } else {
+      form <- brms::nlf(stats::as.formula(paste0(
+        y , " ~ ", y, "A * (((x - ", y, "D) / (", y, "C - ", y, "D)) * ((", y, "E - ", x,
+        ") / (", y, "E - ", y, "C)) ^ ((", y, "E - ", y, "C) / (", y, "C - ", y, "D))) ^ ", y, "B"
+      )))
+      pars <- paste0(y, LETTERS[1:5])
+    }
+  } else {
+    if (int) {
+      form <- stats::as.formula(paste0(y, " ~ I + A * (((x - D) / (C - D)) * ((E - ", x,
+                                       ") / (E - C)) ^ ((E - C) / (C - D))) ^ B"))
+      pars <- LETTERS[c(1:5, 9)]
+    } else {
+      form <- stats::as.formula(paste0(y, " ~ A * (((x - D) / (C - D)) * ((E - ", x,
+                                       ") / (E - C)) ^ ((E - C) / (C - D))) ^ B"))
+      pars <- LETTERS[1:5]
+    }
+  }
+  return(list(form = form, pars = pars))
+}
+
