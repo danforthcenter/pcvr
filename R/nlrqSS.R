@@ -393,9 +393,10 @@
   y <- xy[, "y"]
   A <- max(y) # amplitude, conventionally d
   C <- x[which.max(y)] # position of midpoint, conventionally e
-  pseudoY <- log((y + 1e-04)/A)
-  pseudoX <- (x - C)^2
-  coefs <- coef(lm(pseudoY ~ pseudoX - 1))
+  pseudoY <- log((y + 1e-04) / A)
+  pseudoX <- (x - C) ^ 2
+  dat <- data.frame(pseudoY = pseudoY, pseudoX = pseudoX)
+  coefs <- coef(lm(pseudoY ~ pseudoX - 1, data = dat))
   B <- -coefs[1] # pseudo precision/slope at inflection, conventionally b
   start <- stats::setNames(c(B, A, C), c("B", "A", "C"))
   if (int) {
@@ -424,9 +425,10 @@
   y <- xy[, "y"]
   A <- max(y) # amplitude, conventionally d
   C <- x[which.max(y)] # position of midpoint, conventionally e
-  pseudoY <- (d - y)/y
-  pseudoX <- (x - e)^2
-  coefs <- coef(lm(pseudoY ~ pseudoX - 1))
+  pseudoY <- (A - y) / y
+  pseudoX <- (x - C) ^ 2
+  dat <- data.frame(pseudoY = pseudoY, pseudoX = pseudoX)
+  coefs <- coef(lm(pseudoY ~ pseudoX - 1, data = dat))
   B <- coefs[1] # pseudo precision/slope at inflection, conventionally b
   start <- stats::setNames(c(B, A, C), c("B", "A", "C"))
   if (int) {
@@ -907,7 +909,7 @@
   }
   return(list("formula" = nf, "pars" = pars))
 }
-# A * (((x - D) / (C - D)) * ((E - x) / (E - C)) ^ ((E - C) / (C - D))) ^ B
+
 .nlrq_form_beta  <- function(x, y, USEGROUP, group, pars, int = FALSE) {
   if (int) {
     total_pars <- c("I", "A", "B", "C", "D", "E")

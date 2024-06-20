@@ -558,4 +558,3 @@ gsi_beta <- function(x, pars, noise) {
   y <- a_r * (((x - d_r) / (c_r - d_r)) * ((e_r - x) / (e_r - c_r)) ^ ((e_r - c_r) / (c_r - d_r))) ^ b_r
   return(y)
 }
-

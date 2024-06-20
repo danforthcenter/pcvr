@@ -786,7 +786,7 @@
   weights_form <- .nlme_sigma_form(matched_sigma, x, group)
   #* `correlation formula`
   correlation_form <- nlme::corAR1(0.8, form = as.formula(paste0("~ 1 |", group)))
-  
+
   formulas <- list(
     "model" = model_form, "random" = random_form,
     "fixed" = fixed_form, "groups" = groups_form,
@@ -826,7 +826,7 @@
   weights_form <- .nlme_sigma_form(matched_sigma, x, group)
   #* `correlation formula`
   correlation_form <- nlme::corAR1(0.8, form = as.formula(paste0("~ 1 |", group)))
-  
+
   formulas <- list(
     "model" = model_form, "random" = random_form,
     "fixed" = fixed_form, "groups" = groups_form,
@@ -868,7 +868,7 @@
   weights_form <- .nlme_sigma_form(matched_sigma, x, group)
   #* `correlation formula`
   correlation_form <- nlme::corAR1(0.8, form = as.formula(paste0("~ 1 |", group)))
-  
+
   formulas <- list(
     "model" = model_form, "random" = random_form,
     "fixed" = fixed_form, "groups" = groups_form,
