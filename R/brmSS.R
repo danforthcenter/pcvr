@@ -121,7 +121,7 @@
 #' @keywords internal
 #' @noRd
 
-.brmSS <- function(model, form, sigma = NULL, df, priors = NULL, int = FALSE) {
+.brmSS <- function(model, form, sigma = NULL, df, priors = NULL, int = FALSE, hierarchy = NULL) {
   out <- list()
   models <- c(
     "int", "logistic", "gompertz", "monomolecular", "exponential", "linear", "power law", "logarithmic",
@@ -145,6 +145,7 @@
   USEGROUP <- parsed_form$USEG
   USEINDIVIDUAL <- parsed_form$USEID
   df <- parsed_form$data
+  hierarchical_predictor <- parsed_form$hierarchical_predictor
 
   #* `convert group to character to avoid unexpected factor stuff`
   df[[group]] <- as.character(df[[group]])
@@ -224,10 +225,54 @@
     dparForm <- NULL
     dparSplineHelperForm <- NULL
   }
+  pars <- pars[!grepl("spline", pars)]
+
+  #* `Make hierarchical parameter model formulas`
+  if (!is.null(hierarchical_predictor)) {
+    if (is.null(hierarchy)) {
+      warning(paste0("hierarchy argument not provided, assuming linear models with intercepts ",
+                     "for all ", matched_model, " model parameters (",
+                     paste(pars, collapse = ", "),
+                     ")."))
+      hierarchy <- lapply(pars, function(p) {"int_linear"})
+      names(hierarchy) <- pars
+    }
+    
+    hrc_res <- lapply(names(hierarchy), function(pname) {
+      hrc_model <- hierarchy[[pname]]
+      intModelRes <- .intModelHelper(hrc_model)
+      hrc_model <- intModelRes$model
+      hrc_Int <- intModelRes$int
+      .brmDparHelper(dpar = pname, model = hrc_model, x = hierarchical_predictor,
+                     group, nTimes, USEGROUP, priors, int = hrc_Int)
+      #* here passing `pname` to the `dpar` argument of .brmDparHelper will make
+      #* .brmDparHelper add that name as a prefix on all of the existing model parameters.
+      #* Since all the parameter names are unique coming into this they will be unique coming
+      #* out of this as well.
+      #* I'm also passing hierarchical_predictor to the x argument
+    })
+    names(hrc_res) <- names(hierarchy)
+    hrcForm <- unlist(lapply(hrc_res, function(res) {
+      res$dparForm
+    }))
+    hrcSplineHelperForm <- unlist(lapply(hrc_res, function(res) {
+      res$dparSplineHelperForm
+    }))
+    hrc_pars <- unlist(lapply(hrc_res, function(res) {
+      res$dpar_pars
+    }))
+    names(hrc_pars) <- NULL
+    pars <- append(pars, hrc_pars)
+    pars <- pars[-which(pars %in% names(hierarchy))] #* remove pars that are now estimated by other
+    #* sub models from the later steps.
+  } else {
+    hrcForm <- NULL
+    hrcSplineHelperForm <- NULL
+  }
+  pars <- pars[!grepl("spline", pars)]
 
   #* `Make parameter grouping formulae`
 
-  pars <- pars[!grepl("spline", pars)]
   if (!is.null(pars)) {
     if (USEGROUP) {
       parForm <- as.formula(paste0(paste(pars, collapse = "+"), "~0+", group))
@@ -245,8 +290,9 @@
     NL <- TRUE
   }
   bf_args <- list(
-    "formula" = growthForm, dparForm, parForm,
-    dparSplineHelperForm, splineHelperForm, "autocor" = corForm, "nl" = NL
+    "formula" = growthForm, dparForm, hrcForm, parForm,
+    dparSplineHelperForm, hrcSplineHelperForm, splineHelperForm,
+    "autocor" = corForm, "nl" = NL
   )
   bf_args <- bf_args[!unlist(lapply(bf_args, is.null))]
   bayesForm <- do.call(brms::bf, args = bf_args)

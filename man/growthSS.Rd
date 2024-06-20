@@ -13,7 +13,8 @@ growthSS(
   start = NULL,
   pars = NULL,
   type = "brms",
-  tau = 0.5
+  tau = 0.5,
+  hierarchy = NULL
 )
 }
 \arguments{
@@ -68,7 +69,12 @@ The right hand side needs at least the x variable
  so autocorrelation using the "nlme" backend works at the group level, so will slightly underestimate
  the autocorrelation at the individual level. If group has only one level or is not included then
  it will be ignored in formulas for growth and variance (this may be the case if
- you split data before fitting models to be able to run more smaller models each more quickly).}
+ you split data before fitting models to be able to run more smaller models each more quickly).
+ Hierarchical models can be specified for the brms backend as
+ \code{y~time+other_covariate|individual/group} in which case the parameters of the main growth model
+ will themselves be estimated by models as specified in the \code{hierarchy} argument. For instance,
+ if normally "A" had an intercept for each \code{group}, now it would be predicted as
+ \code{A ~ AI + AA * covariate} where AI and AA now have an intercept for each \code{group}.}
 
 \item{sigma}{Other models for distributional parameters.
 This argument is only used with "brms" and "nlme" models and is handled differently for each.
@@ -129,6 +135,9 @@ and can be checked using:
 \code{table(ss$df$group, ss$df$group_numericLabel)}.}
 
 \item{tau}{A vector of quantiles to fit for nlrq models.}
+
+\item{hierarchy}{Optionally a list of model parameters that should themselves by modeled by another
+predictor variable. This is only used with the brms backend.}
 }
 \value{
 A named list of elements to make it easier to fit non linear growth models with several R

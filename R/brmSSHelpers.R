@@ -17,6 +17,15 @@
   formatListPriorsRes <- .formatListPriors(priors, pars, df, group, USEGROUP)
   priors <- formatListPriorsRes[["priors"]]
   groupedPriors <- formatListPriorsRes[["groupedPriors"]]
+  #* `Arrange priors to match pars explicitly`
+  if (length(setdiff(pars, names(priors))) > 0) {
+    specified_pars <- intersect(names(priors), pars)
+    unspecified_pars <- setdiff(pars, names(priors))
+    priors <- priors[specified_pars]
+    pars <- c(specified_pars, unspecified_pars)
+  } else {
+    priors <- priors[pars]
+  }
   #* `Make stan strings`
   priorStanStrings <- .stanStringHelper(priors, pars, USEGROUP)
   #* `get default priors for intercept only distributional parameters`
@@ -32,7 +41,8 @@
       # there is a clunky workaround but it wouldn't work with expected data types
       # https://github.com/paul-buerkner/brms/issues/86
     } else {
-      prior <- prior + brms::set_prior(dist, nlpar = pr, lb = 0)
+      lb <- ifelse(grepl("changePoint|I$", pr), NA, 0)
+      prior <- prior + brms::set_prior(dist, nlpar = pr, lb = lb)
     }
   }
   prior <- prior[-1, ] # remove flat prior on b
@@ -77,7 +87,7 @@
     }
     priors <- priors[!grepl("fixedChangePoint", names(priors))]
     if (!all(pars %in% names(priors))) {
-      stop(paste0(
+      warning(paste0(
         "Parameter names and prior names do not match. Priors include ",
         paste(setdiff(names(priors), pars), collapse = ", "),
         "... and parameters include ",
@@ -130,7 +140,7 @@
 .stanStringHelper <- function(priors, pars, USEGROUP) {
   priorStanStrings <- lapply(pars, function(par) {
     if (!grepl("changePoint|I$", par)) {
-      paste0("lognormal(log(", priors[[par]], "), 0.25)") # growth parameters ar LN
+      paste0("lognormal(log(", priors[[par]], "), 0.25)") # growth parameters are LN
     } else {
       paste0("student_t(5,", priors[[par]], ", 3)") # changepoints/intercepts are T_5(mu, 3)
     }
@@ -722,16 +732,16 @@
 #' @noRd
 
 .brms_form_bragg <- function(x, y, group, dpar = FALSE, nTimes = NULL,
-                              useGroup = TRUE, prior = NULL, int) {
+                             useGroup = TRUE, prior = NULL, int) {
   if (dpar) {
     if (int) {
       form <- brms::nlf(stats::as.formula(paste0(
-        y , " ~ ", y, "I + ", y, "A * exp(-", y, "B * (", x, " - ", y, "C)^2)"
+        y, " ~ ", y, "I + ", y, "A * exp(-", y, "B * (", x, " - ", y, "C)^2)"
       )))
       pars <- paste0(y, LETTERS[c(1:3, 9)])
     } else {
       form <- brms::nlf(stats::as.formula(paste0(
-        y , " ~ ", y, "A * exp(-", y, "B * (", x, " - ", y, "C)^2)"
+        y, " ~ ", y, "A * exp(-", y, "B * (", x, " - ", y, "C)^2)"
       )))
       pars <- paste0(y, LETTERS[1:3])
     }
@@ -753,16 +763,16 @@
 #' @noRd
 
 .brms_form_lorentz <- function(x, y, group, dpar = FALSE, nTimes = NULL,
-                             useGroup = TRUE, prior = NULL, int) {
+                               useGroup = TRUE, prior = NULL, int) {
   if (dpar) {
     if (int) {
       form <- brms::nlf(stats::as.formula(paste0(
-        y , " ~ ", y, "I + ", y, "A / (1 + ", y, "B * (", x, " - ", y, "C) ^ 2)"
+        y, " ~ ", y, "I + ", y, "A / (1 + ", y, "B * (", x, " - ", y, "C) ^ 2)"
       )))
       pars <- paste0(y, LETTERS[c(1:3, 9)])
     } else {
       form <- brms::nlf(stats::as.formula(paste0(
-        y , " ~ ", y, "A / (1 + ", y, "B * (", x, " - ", y, "C) ^ 2)"
+        y, " ~ ", y, "A / (1 + ", y, "B * (", x, " - ", y, "C) ^ 2)"
       )))
       pars <- paste0(y, LETTERS[1:3])
     }
@@ -784,17 +794,17 @@
 #' @noRd
 
 .brms_form_beta <- function(x, y, group, dpar = FALSE, nTimes = NULL,
-                               useGroup = TRUE, prior = NULL, int) {
+                            useGroup = TRUE, prior = NULL, int) {
   if (dpar) {
     if (int) {
       form <- brms::nlf(stats::as.formula(paste0(
-        y , " ~ ", y, "I + ", y, "A * (((x - ", y, "D) / (", y, "C - ", y, "D)) * ((", y, "E - ", x,
+        y, " ~ ", y, "I + ", y, "A * (((x - ", y, "D) / (", y, "C - ", y, "D)) * ((", y, "E - ", x,
         ") / (", y, "E - ", y, "C)) ^ ((", y, "E - ", y, "C) / (", y, "C - ", y, "D))) ^ ", y, "B"
       )))
       pars <- paste0(y, LETTERS[c(1:5, 9)])
     } else {
       form <- brms::nlf(stats::as.formula(paste0(
-        y , " ~ ", y, "A * (((x - ", y, "D) / (", y, "C - ", y, "D)) * ((", y, "E - ", x,
+        y, " ~ ", y, "A * (((x - ", y, "D) / (", y, "C - ", y, "D)) * ((", y, "E - ", x,
         ") / (", y, "E - ", y, "C)) ^ ((", y, "E - ", y, "C) / (", y, "C - ", y, "D))) ^ ", y, "B"
       )))
       pars <- paste0(y, LETTERS[1:5])
@@ -812,4 +822,3 @@
   }
   return(list(form = form, pars = pars))
 }
-
