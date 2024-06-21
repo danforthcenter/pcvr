@@ -138,7 +138,7 @@
       message("The original Error message is:")
       stop(conditionMessage(err))
     }
-    )
+  )
   growthForm <- stats::as.formula(growthForm)
 
   if (dpar) {

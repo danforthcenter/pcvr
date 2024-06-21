@@ -237,14 +237,14 @@
       hierarchy <- lapply(pars, function(p) {"int_linear"})
       names(hierarchy) <- pars
     }
-    
+
     hrc_res <- lapply(names(hierarchy), function(pname) {
       hrc_model <- hierarchy[[pname]]
       intModelRes <- .intModelHelper(hrc_model)
       hrc_model <- intModelRes$model
-      hrc_Int <- intModelRes$int
+      hrc_int <- intModelRes$int
       .brmDparHelper(dpar = pname, model = hrc_model, x = hierarchical_predictor,
-                     group, nTimes, USEGROUP, priors, int = hrc_Int)
+                     group, nTimes, USEGROUP, priors, int = hrc_int)
       #* here passing `pname` to the `dpar` argument of .brmDparHelper will make
       #* .brmDparHelper add that name as a prefix on all of the existing model parameters.
       #* Since all the parameter names are unique coming into this they will be unique coming

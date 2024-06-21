@@ -896,18 +896,20 @@ if (file.exists("/home/josh/Desktop/") && interactive()) {
     p <- growthPlot(fit, ss$pcvrForm, df = ss$df)
     expect_s3_class(p, "ggplot")
   })
-  
+
   test_that("Beta DRC Model", {
     set.seed(123)
     form <- y ~ time | id / group
-    df <- growthSim("beta",
-                    n = 20, t = 50,
-                    params = list("A" = c(10, 10),
-                                  "B" = c(1.25, 1.3),
-                                  "C" = c(20, 22),
-                                  "D" = c(5, 5),
-                                  "E" = c(30, 32)
-                                  )
+    df <- growthSim(
+      "beta",
+      n = 20, t = 50,
+      params = list(
+        "A" = c(10, 10),
+        "B" = c(1.25, 1.3),
+        "C" = c(20, 22),
+        "D" = c(5, 5),
+        "E" = c(30, 32)
+      )
     )
     #* consider using ss with nls to get ideas for parameters
     ss <- growthSS(
@@ -921,12 +923,13 @@ if (file.exists("/home/josh/Desktop/") && interactive()) {
     p <- growthPlot(fit, ss$pcvrForm, df = ss$df)
     expect_s3_class(p, "ggplot")
   })
-  
+
   test_that("Hierarchical Model", {
     set.seed(123)
-    simdf <- growthSim("logistic",
-                       n = 20, t = 25,
-                       params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
+    simdf <- growthSim(
+      "logistic",
+      n = 20, t = 25,
+      params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
     )
     simdf$covar <- rnorm(nrow(simdf), 10, 1)
     ss <- growthSS(
@@ -941,5 +944,4 @@ if (file.exists("/home/josh/Desktop/") && interactive()) {
     p <- growthPlot(fit, ss$pcvrForm, df = ss$df)
     expect_s3_class(p, "ggplot")
   })
-  
 }
