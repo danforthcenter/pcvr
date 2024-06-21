@@ -609,7 +609,7 @@ test_that("Test Bragg specification (not fitting) in nlme", {
     model = "bragg", form = y ~ time | id / group,
     df = simdf, start = NULL, type = "nlme"
   )
-  expect_s3_class(ss$formula, "list")
+  expect_type(ss$formula, "list")
 })
 
 test_that("Test lorentz in nls", {
@@ -639,5 +639,5 @@ test_that("Test lorentz specification (not fitting) in nlme", {
     model = "lorentz", form = y ~ time | id / group,
     df = simdf, start = NULL, type = "nlme"
   )
-  expect_s3_class(ss$formula, "list")
+  expect_type(ss$formula, "list")
 })
