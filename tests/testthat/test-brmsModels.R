@@ -896,4 +896,52 @@ if (file.exists("/home/josh/Desktop/") && interactive()) {
     p <- growthPlot(fit, ss$pcvrForm, df = ss$df)
     expect_s3_class(p, "ggplot")
   })
+
+  test_that("Beta DRC Model", {
+    set.seed(123)
+    form <- y ~ time | id / group
+    df <- growthSim(
+      "beta",
+      n = 20, t = 50,
+      params = list(
+        "A" = c(10, 10),
+        "B" = c(1.25, 1.3),
+        "C" = c(20, 22),
+        "D" = c(5, 5),
+        "E" = c(30, 32)
+      )
+    )
+    #* consider using ss with nls to get ideas for parameters
+    ss <- growthSS(
+      model = "beta", form = y ~ time | id / group, sigma = NULL,
+      df = df, start = list("A" = 10, "B" = 1, "C" = 15, "D" = 3, "E" = 25)
+    )
+    lapply(ss, head)
+    ss$initfun <- 0
+    fit <- fitGrowth(ss, iter = 600, cores = 1, chains = 1, backend = "cmdstanr")
+    expect_s3_class(fit, "brmsfit")
+    p <- growthPlot(fit, ss$pcvrForm, df = ss$df)
+    expect_s3_class(p, "ggplot")
+  })
+
+  test_that("Hierarchical Model", {
+    set.seed(123)
+    simdf <- growthSim(
+      "logistic",
+      n = 20, t = 25,
+      params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
+    )
+    simdf$covar <- rnorm(nrow(simdf), 10, 1)
+    ss <- growthSS(
+      model = "logistic", form = y ~ time + covar | id / group, sigma = "spline",
+      list("AI" = 100, "AA" = 5, "B" = 10, "C" = 3),
+      df = simdf, type = "brms",
+      hierarchy = list("A" = "int_linear")
+    )
+    lapply(ss, head)
+    fit <- fitGrowth(ss, iter = 600, cores = 1, chains = 1, backend = "cmdstanr")
+    expect_s3_class(fit, "brmsfit")
+    p <- growthPlot(fit, ss$pcvrForm, df = ss$df)
+    expect_s3_class(p, "ggplot")
+  })
 }

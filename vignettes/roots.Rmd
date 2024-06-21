@@ -1,5 +1,5 @@
 ---
-title: "Directional Statistics in PCVR"
+title: "Root Traits"
 author: "Josh Sumner, DDPSC Data Science Core Facility"
 subtitle: "pcvr v0.1.0"
 output: 
@@ -9,7 +9,7 @@ output:
     code_folding: show
 date: "2024-04-22"
 vignette: >
-  %\VignetteIndexEntry{Directional Statistics in PCVR}
+  %\VignetteIndexEntry{Root Traits}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

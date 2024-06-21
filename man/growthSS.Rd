@@ -13,16 +13,18 @@ growthSS(
   start = NULL,
   pars = NULL,
   type = "brms",
-  tau = 0.5
+  tau = 0.5,
+  hierarchy = NULL
 )
 }
 \arguments{
 \item{model}{The name of a model as a character string.
 Supported options are c("logistic", "gompertz", "weibull", "frechet", "gumbel", "monomolecular",
-"exponential", "linear", "power law",
+"exponential", "linear", "power law", "bragg", "lorentz", "beta",
 "double logistic", "double gompertz", "gam", "int"), with "int" representing an intercept only model
 which is only used in brms (and is expected to only be used in threshold models or to model
-homoskedasticity.)
+homoskedasticity). Note that the dose response curves (bragg, lorentz, and beta) may be difficult
+to fit using the \code{nlme} backend but should work well using other options.
 See \code{\link{growthSim}} for examples of each type of single parameterized growth curve
 ("gam" is not supported in \code{growthSim}).
 You can also specify decay models by including the "decay" keyword with the model name. Note that
@@ -68,7 +70,12 @@ The right hand side needs at least the x variable
  so autocorrelation using the "nlme" backend works at the group level, so will slightly underestimate
  the autocorrelation at the individual level. If group has only one level or is not included then
  it will be ignored in formulas for growth and variance (this may be the case if
- you split data before fitting models to be able to run more smaller models each more quickly).}
+ you split data before fitting models to be able to run more smaller models each more quickly).
+ Hierarchical models can be specified for the brms backend as
+ \code{y~time+other_covariate|individual/group} in which case the parameters of the main growth model
+ will themselves be estimated by models as specified in the \code{hierarchy} argument. For instance,
+ if normally "A" had an intercept for each \code{group}, now it would be predicted as
+ \code{A ~ AI + AA * covariate} where AI and AA now have an intercept for each \code{group}.}
 
 \item{sigma}{Other models for distributional parameters.
 This argument is only used with "brms" and "nlme" models and is handled differently for each.
@@ -129,6 +136,9 @@ and can be checked using:
 \code{table(ss$df$group, ss$df$group_numericLabel)}.}
 
 \item{tau}{A vector of quantiles to fit for nlrq models.}
+
+\item{hierarchy}{Optionally a list of model parameters that should themselves by modeled by another
+predictor variable. This is only used with the brms backend.}
 }
 \value{
 A named list of elements to make it easier to fit non linear growth models with several R
@@ -239,6 +249,20 @@ See details below about parameterization for each model option.
  Where A is the growth rate.
  \item \bold{Power Law}: `A * x^(B)`
  Where A is the scale parameter and B is the growth rate.
+ \item \bold{Bragg}: `A * exp(-B * (x - C) ^ 2)`
+ This models minima and maxima as a dose-response curve where A is the max response,
+ B is the "precision" or slope at inflection, and C is the x position of the max response.
+ \item \bold{Lorentz}: `A / (1 + B * (x - C) ^ 2)`
+ This models minima and maxima as a dose-response curve where A is the max response,
+ B is the "precision" or slope at inflection, and C is the x position of the max response.
+ Generally Bragg is preferred to Lorentz for dose-response curves.
+ \item \bold{Beta}: `A * (((x - D) / (C - D)) * ((E - x) / (E - C)) ^ ((E - C) / (C - D))) ^ B`
+ This models minima and maxima as a dose-response curve where A is the Maximum Value,
+ B is a shape/concavity exponent similar to the sum of alpha and beta in a Beta distribution,
+ C is the position of maximum value, D is the minimum position where distribution > 0,
+ E is the maximum position where distribution > 0.
+ This is a difficult model to fit but can model non-symmetric dose-response relationships which
+ may sometimes be worth the extra effort.
  }
  Note that for these distributions parameters do not exist in a vacuum.
  Changing one will make the others look different in the resulting data.

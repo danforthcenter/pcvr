@@ -130,6 +130,15 @@
     )
     growthForm <- paste0(growthForm, nextPhase)
   }
+  tryCatch(
+    expr = { growthForm <- stats::as.formula(growthForm) },
+    error = function(err) {
+      message(paste0("Error while assembling changepoint formula, did you specify priors for ",
+                     paste(params, collapse = ", "), "? Changepoint priors must be named."))
+      message("The original Error message is:")
+      stop(conditionMessage(err))
+    }
+  )
   growthForm <- stats::as.formula(growthForm)
 
   if (dpar) {

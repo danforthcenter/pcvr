@@ -3,10 +3,11 @@
 #'
 #' @param model The name of a model as a character string.
 #'  Supported options are c("logistic", "gompertz", "weibull", "frechet", "gumbel", "monomolecular",
-#'  "exponential", "linear", "power law",
+#'  "exponential", "linear", "power law", "bragg", "lorentz", "beta",
 #'  "double logistic", "double gompertz", "gam", "int"), with "int" representing an intercept only model
 #'  which is only used in brms (and is expected to only be used in threshold models or to model
-#'  homoskedasticity.)
+#'  homoskedasticity). Note that the dose response curves (bragg, lorentz, and beta) may be difficult
+#'  to fit using the \code{nlme} backend but should work well using other options.
 #'  See \code{\link{growthSim}} for examples of each type of single parameterized growth curve
 #'  ("gam" is not supported in \code{growthSim}).
 #'  You can also specify decay models by including the "decay" keyword with the model name. Note that
@@ -52,6 +53,11 @@
 #'  the autocorrelation at the individual level. If group has only one level or is not included then
 #'  it will be ignored in formulas for growth and variance (this may be the case if
 #'  you split data before fitting models to be able to run more smaller models each more quickly).
+#'  Hierarchical models can be specified for the brms backend as
+#'  \code{y~time+other_covariate|individual/group} in which case the parameters of the main growth model
+#'  will themselves be estimated by models as specified in the \code{hierarchy} argument. For instance,
+#'  if normally "A" had an intercept for each \code{group}, now it would be predicted as
+#'  \code{A ~ AI + AA * covariate} where AI and AA now have an intercept for each \code{group}.
 #' @param sigma Other models for distributional parameters.
 #' This argument is only used with "brms" and "nlme" models and is handled differently for each.
 #' When type="brms" this can be supplied as a model or as a list of models.
@@ -106,6 +112,8 @@
 #' and can be checked using:
 #' \code{table(ss$df$group, ss$df$group_numericLabel)}.
 #' @param tau A vector of quantiles to fit for nlrq models.
+#' @param hierarchy Optionally a list of model parameters that should themselves by modeled by another
+#' predictor variable. This is only used with the brms backend.
 #' @keywords Bayesian, brms
 #'
 #' @importFrom stats as.formula rgamma
@@ -173,6 +181,20 @@
 #'  Where A is the growth rate.
 #'  \item \bold{Power Law}: `A * x^(B)`
 #'  Where A is the scale parameter and B is the growth rate.
+#'  \item \bold{Bragg}: `A * exp(-B * (x - C) ^ 2)`
+#'  This models minima and maxima as a dose-response curve where A is the max response,
+#'  B is the "precision" or slope at inflection, and C is the x position of the max response.
+#'  \item \bold{Lorentz}: `A / (1 + B * (x - C) ^ 2)`
+#'  This models minima and maxima as a dose-response curve where A is the max response,
+#'  B is the "precision" or slope at inflection, and C is the x position of the max response.
+#'  Generally Bragg is preferred to Lorentz for dose-response curves.
+#'  \item \bold{Beta}: `A * (((x - D) / (C - D)) * ((E - x) / (E - C)) ^ ((E - C) / (C - D))) ^ B`
+#'  This models minima and maxima as a dose-response curve where A is the Maximum Value,
+#'  B is a shape/concavity exponent similar to the sum of alpha and beta in a Beta distribution,
+#'  C is the position of maximum value, D is the minimum position where distribution > 0,
+#'  E is the maximum position where distribution > 0.
+#'  This is a difficult model to fit but can model non-symmetric dose-response relationships which
+#'  may sometimes be worth the extra effort.
 #'  }
 #'  Note that for these distributions parameters do not exist in a vacuum.
 #'  Changing one will make the others look different in the resulting data.
@@ -328,7 +350,7 @@
 #' @export
 
 growthSS <- function(model, form, sigma = NULL, df, start = NULL,
-                     pars = NULL, type = "brms", tau = 0.5) {
+                     pars = NULL, type = "brms", tau = 0.5, hierarchy = NULL) {
   type_matched <- match.arg(type, choices = c(
     "brms", "nlrq", "nls",
     "nlme", "mgcv", "survreg",
@@ -356,7 +378,8 @@ growthSS <- function(model, form, sigma = NULL, df, start = NULL,
     }
   } else {
     if (type_matched == "brms") {
-      res <- .brmSS(model = model, form = form, sigma = sigma, df = df, priors = start, int = int)
+      res <- .brmSS(model = model, form = form, sigma = sigma, df = df, priors = start, int = int,
+                    hierarchy = hierarchy)
     } else if (type_matched %in% c("nlrq", "nls")) {
       res <- .nlrqSS(
         model = model, form = form, tau = tau, df = df, start = start, pars = pars,

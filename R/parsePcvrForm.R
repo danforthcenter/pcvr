@@ -44,12 +44,20 @@
     USEGROUP <- FALSE
     USEINDIVIDUAL <- FALSE
   }
+  if (grepl("\\+", x)) {
+    x_components <- lapply(strsplit(x, "\\+"), trimws)
+    x <- x_components[[1]][1]
+    hierarchical_predictor <- x_components[[1]][2]
+  } else {
+    hierarchical_predictor <- NULL
+  }
   if (!is.null(df)) {
     tryCatch({df <- df[complete.cases(df[, c(x, y, individual, group)]), ]},
              error = function(err) {})
   }
   return(list(
     "y" = y, "x" = x, "individual" = individual, "group" = group,
-    "USEG" = USEGROUP, "USEID" = USEINDIVIDUAL, "data" = df
+    "USEG" = USEGROUP, "USEID" = USEINDIVIDUAL, "data" = df,
+    "hierarchical_predictor" = hierarchical_predictor
   ))
 }

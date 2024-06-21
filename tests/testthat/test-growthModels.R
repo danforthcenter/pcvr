@@ -577,3 +577,67 @@ test_that("Test Intercept linear nls modeling", {
   coef(fit)
   expect_s3_class(fit, "nls")
 })
+
+#* ************************************************************
+#* *************** `Dose-Response modeling` ***************
+#* ************************************************************
+
+test_that("Test Bragg in nls", {
+  set.seed(123)
+  simdf <- growthSim(
+    "bragg",
+    n = 20, t = 100,
+    list("A" = c(10, 15), "B" = c(0.01, 0.02), "C" = c(50, 60))
+  )
+  ss <- growthSS(
+    model = "bragg", form = y ~ time | id / group,
+    df = simdf, start = NULL, type = "nls"
+  )
+  fit <- fitGrowth(ss)
+  coef(fit)
+  expect_s3_class(fit, "nls")
+})
+
+test_that("Test Bragg specification (not fitting) in nlme", {
+  set.seed(123)
+  simdf <- growthSim(
+    "bragg",
+    n = 20, t = 100,
+    list("A" = c(10, 15), "B" = c(0.01, 0.02), "C" = c(50, 60))
+  )
+  ss <- growthSS(
+    model = "bragg", form = y ~ time | id / group,
+    df = simdf, start = NULL, type = "nlme"
+  )
+  expect_type(ss$formula, "list")
+})
+
+test_that("Test lorentz in nls", {
+  set.seed(123)
+  simdf <- growthSim(
+    "lorentz",
+    n = 20, t = 100,
+    list("A" = c(10, 15), "B" = c(0.01, 0.02), "C" = c(50, 60))
+  )
+  ss <- growthSS(
+    model = "lorentz", form = y ~ time | id / group,
+    df = simdf, start = NULL, type = "nls"
+  )
+  fit <- fitGrowth(ss)
+  coef(fit)
+  expect_s3_class(fit, "nls")
+})
+
+test_that("Test lorentz specification (not fitting) in nlme", {
+  set.seed(123)
+  simdf <- growthSim(
+    "lorentz",
+    n = 20, t = 100,
+    list("A" = c(10, 15), "B" = c(0.01, 0.02), "C" = c(50, 60))
+  )
+  ss <- growthSS(
+    model = "lorentz", form = y ~ time | id / group,
+    df = simdf, start = NULL, type = "nlme"
+  )
+  expect_type(ss$formula, "list")
+})
