@@ -839,11 +839,11 @@
   #* `Define parameters and main growth formula`
   if (int) {
     total_pars <- c("I", "A", "B", "C", "D", "E")
-    model_form <- as.formula(paste0(y, " ~ I + A * (((x - D) / (C - D)) * ((E - ", x,
+    model_form <- as.formula(paste0(y, " ~ I + A * (((", x, " - D) / (C - D)) * ((E - ", x,
                                     ") / (E - C)) ^ ((E - C) / (C - D))) ^ B"))
   } else {
     total_pars <- c("A", "B", "C", "D", "E")
-    model_form <- as.formula(paste0(y, " ~ A * (((x - D) / (C - D)) * ((E - ", x,
+    model_form <- as.formula(paste0(y, " ~ A * (((", x, " - D) / (C - D)) * ((E - ", x,
                                     ") / (E - C)) ^ ((E - C) / (C - D))) ^ B"))
   }
   #* `random effects formula`

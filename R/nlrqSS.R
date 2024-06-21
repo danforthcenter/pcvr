@@ -920,10 +920,10 @@
     pars <- total_pars
   }
   if (int) {
-    str_nf <- paste0(y, " ~ I[] + A[] * (((x - D[]) / (C[] - D[])) * ((E[] - ", x,
+    str_nf <- paste0(y, " ~ I[] + A[] * (((", x, " - D[]) / (C[] - D[])) * ((E[] - ", x,
                      ") / (E[] - C[])) ^ ((E[] - C[]) / (C[] - D[]))) ^ B[]")
   } else {
-    str_nf <- paste0(y, " ~ A[] * (((x - D[]) / (C[] - D[])) * ((E[] - ", x,
+    str_nf <- paste0(y, " ~ A[] * (((", x, " - D[]) / (C[] - D[])) * ((E[] - ", x,
                      ") / (E[] - C[])) ^ ((E[] - C[]) / (C[] - D[]))) ^ B[]")
   }
   if (USEGROUP) {
