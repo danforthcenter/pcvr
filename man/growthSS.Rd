@@ -23,7 +23,8 @@ Supported options are c("logistic", "gompertz", "weibull", "frechet", "gumbel", 
 "exponential", "linear", "power law", "bragg", "lorentz", "beta",
 "double logistic", "double gompertz", "gam", "int"), with "int" representing an intercept only model
 which is only used in brms (and is expected to only be used in threshold models or to model
-homoskedasticity.)
+homoskedasticity). Note that the dose response curves (bragg, lorentz, and beta) may be difficult
+to fit using the \code{nlme} backend but should work well using other options.
 See \code{\link{growthSim}} for examples of each type of single parameterized growth curve
 ("gam" is not supported in \code{growthSim}).
 You can also specify decay models by including the "decay" keyword with the model name. Note that
