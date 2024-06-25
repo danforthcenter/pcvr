@@ -8,7 +8,12 @@ plotPrior(priors, type = "density", n = 200, t = 25)
 }
 \arguments{
 \item{priors}{A named list of means for prior distributions.
-This takes the same input as the prior argument of \code{\link{growthSS}}.}
+This takes the same input as the prior argument of \code{\link{growthSS}}.
+Alternatively, if given the output of growthSS this will preform a prior predictive check
+and return a plot from \code{\link{growthPlot}} of that check ignoring all other arguments.
+Note that all priors must be
+proper in that case (non-flat) and the fit is likely to be strange looking due to how thick
+tailed the default priors from \code{\link{growthSS}} are.}
 
 \item{type}{Either "density", the default, or a model as would be specified in \code{growthSS}
 or \code{growthSim} such as "logistic", "gompertz", "monomolecular", "exponential",
