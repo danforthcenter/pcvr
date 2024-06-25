@@ -2,6 +2,11 @@
 #'
 #' @param priors A named list of means for prior distributions.
 #' This takes the same input as the prior argument of \code{\link{growthSS}}.
+#' Alternatively, if given the output of growthSS this will preform a prior predictive check
+#' and return a plot from \code{\link{growthPlot}} of that check ignoring all other arguments.
+#' Note that all priors must be
+#' proper in that case (non-flat) and the fit is likely to be strange looking due to how thick
+#' tailed the default priors from \code{\link{growthSS}} are.
 #' @param type Either "density", the default, or a model as would be specified in \code{growthSS}
 #' or \code{growthSim} such as "logistic", "gompertz", "monomolecular", "exponential",
 #' "linear", "power law", "double logistic", or "double gompertz".
@@ -30,6 +35,10 @@
 #' @export
 
 plotPrior <- function(priors, type = "density", n = 200, t = 25) {
+  if ("prior" %in% names(priors)) {
+    p <- .brms_prior_predictive(priors)
+    return(p)
+  }
   densPlots <- lapply(seq_along(priors), function(i) {
     pri <- priors[[i]]
     nm <- names(priors)[i]
@@ -188,4 +197,42 @@ plotPrior <- function(priors, type = "density", n = 200, t = 25) {
       rlnorm(1, log(mu), 0.25)
     }))
   })
+}
+
+#' @description
+#' Internal function for sampling a growthSS model's priors only
+#' @param priors a list returned by growthSS
+#' @keywords internal
+#' @noRd
+
+.brms_prior_predictive <- function(priors = NULL) {
+  dp <- brms::get_prior(priors$formula, priors$df, priors$family)
+  ssp <- priors$prior
+  dpi <- as.character(interaction(dp$coef, dp$dpar, dp$nlpar))
+  sspi <- as.character(interaction(ssp$coef, ssp$dpar, ssp$nlpar))
+  priors$prior <- rbind(ssp, dp[-which(dpi %in% sspi), ])
+  tryCatch(
+    {
+      m <- suppressMessages(
+        fitGrowth(priors,
+          iter = 1000,
+          chains = 1,
+          cores = 1,
+          sample_prior = "only",
+          silent = 2
+        )
+      )
+    },
+    error = function(err) {
+      message(paste0(
+        "Error trying to sample from priors distributions.",
+        "All priors must be proper (non-flat).\nAttempting to sample from: "
+      ))
+      print(priors$prior)
+      message("The original Error message is:")
+      stop(conditionMessage(err))
+    }
+  )
+  p <- growthPlot(m, form = priors$pcvrForm, df = priors$df)
+  return(p)
 }
