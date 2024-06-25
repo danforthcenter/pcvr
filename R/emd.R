@@ -101,8 +101,10 @@
 #'   ) # benchmarked test data
 #'   lines(x = 1:150, y = emdTime(1:150)) # exponential function
 #'
-#'   plot(x = 1:1000, y = emdTime(1:1000), type = "l",
-#'   xlab = "N Input Images", ylab = "time (seconds)")
+#'   plot(
+#'     x = 1:1000, y = emdTime(1:1000), type = "l",
+#'     xlab = "N Input Images", ylab = "time (seconds)"
+#'   )
 #' }
 #' ## End(Not run)
 #'
@@ -154,9 +156,10 @@ pcv.emd <- function(df, cols = NULL, reorder = NULL, include = reorder, mat = FA
 #' @keywords internal
 #' @noRd
 
-.emdRaiseError <- function(raiseError, df, parallel) {
+.emdRaiseError <- function(raiseError, df, parallel, trait = NULL) {
+  n <- ifelse(is.null(trait), nrow(df) / length(unique(df[[trait]])), nrow(df))
   if (raiseError) {
-    et_sec <- 0.00125 * ((nrow(df) / parallel)^2)
+    et_sec <- 0.00125 * ((n / parallel)^2)
     et_min <- et_sec / 60
     et_hour <- et_min / 60
     if (et_sec <= 300) {
@@ -188,7 +191,7 @@ pcv.emd <- function(df, cols = NULL, reorder = NULL, include = reorder, mat = FA
   dist_1d <- match.fun(paste0(method, "1d"))
   df <- df[grepl(cols, df[[traitCol]]), ]
   #* `raise error`
-  .emdRaiseError(raiseError, df, parallel)
+  .emdRaiseError(raiseError, df, parallel, trait = traitCol)
   #* `calculate emd`
   df$INNER_ID_EMD <- interaction(df[, id], drop = TRUE)
   if (mat) { # make dist matrix
@@ -263,7 +266,7 @@ pcv.emd <- function(df, cols = NULL, reorder = NULL, include = reorder, mat = FA
     cols <- grepl(cols, colnames(df))
   }
   #* `raise error`
-  .emdRaiseError(raiseError, df, parallel)
+  .emdRaiseError(raiseError, df, parallel, trait = NULL)
   #* `calculate emd`
   if (mat) { # make dist matrix
     mat_obj <- matrix(0, nrow = nrow(df), ncol = nrow(df))
