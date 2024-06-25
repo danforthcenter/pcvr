@@ -54,40 +54,61 @@
   bins_order <- sort(histColsBin, index.return = TRUE)$ix
   s1 <- s1[, bins_order]
 
-  #* `Turn s1 matrix into a vector`
-  X1 <- rep(histColsBin[bins_order], as.numeric(round(colSums(s1))))
+  #* `Loop over reps, get moments for each histogram`
 
-  #* `Get mean and variance from s1`
-  xbar_1 <- mean(X1)
-  s2_1 <- var(X1) / (nrow(s1) - 1)
+  rep_distributions <- lapply(seq_len(nrow(s1)), function(i) {
+    X1 <- rep(histColsBin[bins_order], as.numeric(s1[i, ]))
+    xbar_1 <- mean(X1)
+    s2_1 <- var(X1) / (nrow(s1) - 1)
+    #* `Add prior distribution and lognormal method of moments`
+    mu_ls <- log(xbar_1 / sqrt((s2_1 / xbar_1^2) + 1))
+    sigma_ls <- sqrt(log((s2_1 / xbar_1^2) + 1))
+    return(list("mu_log" = mu_ls, "sigma_log" = sigma_ls))
+  })
   n1 <- nrow(s1)
-  #* `Add prior distribution and lognormal method of moments`
-  mu_ls <- log(xbar_1 / sqrt((s2_1 / xbar_1^2) + 1))
-  sigma_ls <- sqrt(log((s2_1 / xbar_1^2) + 1))
+  mu_ls <- unlist(lapply(rep_distributions, function(i) {i$mu_log}))
+  sigma_ls <- unlist(lapply(rep_distributions, function(i) {i$sigma_log}))
 
-  n1_n <- n1 + priors$n[1]
-  mu_ls_n <- ((mu_ls * n1) + (priors$mu_log[1] * priors$n[1])) / n1_n
-  sigma_ls_n <- ((sigma_ls * n1) + (priors$sigma_log[1] * priors$n[1])) / n1_n
+  n_prime <- n1 + priors$n[1]
+  mu_ls_prime <- (sum(mu_ls) + (priors$mu_log[1] * priors$n[1])) / n_prime
+  sigma_ls_prime <- (sum(sigma_ls) + (priors$sigma_log[1] * priors$n[1])) / n_prime
+
+  # #* `Turn s1 matrix into a vector`
+  # X1 <- rep(histColsBin[bins_order], as.numeric(round(colSums(s1))))
+  # 
+  # #* `Get mean and variance from s1`
+  # xbar_1 <- mean(X1)
+  # s2_1 <- var(X1) / (nrow(s1) - 1)
+  # n1 <- nrow(s1)
+  # #* `Add prior distribution and lognormal method of moments`
+  # mu_ls <- log(xbar_1 / sqrt((s2_1 / xbar_1^2) + 1))
+  # sigma_ls <- sqrt(log((s2_1 / xbar_1^2) + 1))
+  # 
+  # n_prime <- n1 + priors$n[1]
+  # mu_ls_prime <- ((mu_ls * n1) + (priors$mu_log[1] * priors$n[1])) / n1_n
+  # sigma_ls_prime <- ((sigma_ls * n1) + (priors$sigma_log[1] * priors$n[1])) / n1_n
   #* `Define support if it is missing`
   if (is.null(support)) {
-    quantiles <- qlnorm(c(0.0001, 0.9999), mu_ls_n, sigma_ls_n)
+    quantiles <- qlnorm(c(0.0001, 0.9999), mu_ls_prime, sigma_ls_prime)
     if (calculatingSupport) {
       return(quantiles)
     }
     support <- seq(quantiles[1], quantiles[2], length.out = 10000)
   }
   #* `posterior`
-  dens1 <- dlnorm(support, mu_ls_n, sigma_ls_n)
+  dens1 <- dlnorm(support, mu_ls_prime, sigma_ls_prime)
   pdf1 <- dens1 / sum(dens1)
-  hde1 <- exp(mu_ls_n)
-  hdi1 <- qlnorm(c((1 - cred.int.level) / 2, (1 - ((1 - cred.int.level) / 2))), mu_ls_n, sigma_ls_n)
+  hde1 <- exp(mu_ls_prime)
+  hdi1 <- qlnorm(c((1 - cred.int.level) / 2,
+                   (1 - ((1 - cred.int.level) / 2))),
+                 mu_ls_prime, sigma_ls_prime)
   #* `Store summary`
   out$summary <- data.frame(HDE_1 = hde1, HDI_1_low = hdi1[1], HDI_1_high = hdi1[2])
-  out$posterior$mu_log <- mu_ls_n
-  out$posterior$n <- n1_n
-  out$posterior$sigma_log <- sigma_ls_n
+  out$posterior$mu_log <- mu_ls_prime
+  out$posterior$n <- n1_prime
+  out$posterior$sigma_log <- sigma_ls_prime
   #* `Make Posterior Draws`
-  out$posteriorDraws <- rlnorm(10000, mu_ls_n, sigma_ls_n)
+  out$posteriorDraws <- rlnorm(10000, mu_ls_prime, sigma_ls_prime)
   out$pdf <- pdf1
   #* `save s1 data for plotting`
   if (plot) {
