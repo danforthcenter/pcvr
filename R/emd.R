@@ -157,7 +157,7 @@ pcv.emd <- function(df, cols = NULL, reorder = NULL, include = reorder, mat = FA
 #' @noRd
 
 .emdRaiseError <- function(raiseError, df, parallel, trait = NULL) {
-  n <- ifelse(is.null(trait), nrow(df) / length(unique(df[[trait]])), nrow(df))
+  n <- ifelse(is.null(trait), nrow(df), nrow(df) / length(unique(df[[trait]])))
   if (raiseError) {
     et_sec <- 0.00125 * ((n / parallel)^2)
     et_min <- et_sec / 60
