@@ -218,3 +218,71 @@ test_that("conjugate lognormal method is consistent for SV and MV", {
     tolerance = 0.25
   )
 })
+
+#* for local testing on different distributions to get a better
+#* evaluation of any bias that exists between the mv and sv methods
+#* Sometimes the apparent bias is more related to how mvSim works
+#* than the actual updating though.
+if (FALSE) {
+  library(brms)
+  library(ggplot2)
+  res_main <- do.call(rbind, lapply(c(10, 25, 50), function(n) {
+    do.call(rbind, parallel::mclapply(1:1000, function(i) {
+      sv_vm <- rvon_mises(1000 * n, 1, 4)
+      mv_vm <- mvSim(
+        dists = list(
+          rvon_mises = list(mu = 1, kappa = 4)
+        ),
+        n_samples = n,
+        min_bin = -3.14,
+        max_bin = 3.14,
+        binwidth = 0.01
+      )
+      vm2_sv <- conjugate(
+        s1 = sv_vm,
+        method = "vonmises2",
+        priors = list(mu = 0, kappa = 0.1, boundary = c(-pi, pi), n = 1),
+        cred.int.level = 0.95,
+        plot = FALSE
+      )
+
+      vm2_mv <- conjugate(
+        s1 = mv_vm[, -1],
+        method = "vonmises2",
+        priors = list(mu = 0, kappa = 0.1, boundary = c(-pi, pi), n = 1),
+        cred.int.level = 0.95,
+        plot = FALSE
+      )
+
+      out <- data.frame(
+        data = c(rep(c("sv", "mv"), each = 3), "sv", "mv"),
+        quantity = c(rep(c("hde", "hdi_low", "hdi_high"), 2), "hde", "hde"),
+        param = c(rep("mu", 6), "kappa", "kappa"),
+        value = c(
+          as.numeric(vm2_sv$summary),
+          as.numeric(vm2_mv$summary),
+          vm2_sv$posterior[[1]]$kappa,
+          vm2_mv$posterior[[1]]$kappa
+        ),
+        i = i,
+        n = n,
+        conjugate = "main"
+      )
+      return(out)
+    }, mc.cores = 10))
+  }))
+
+  ggplot(res_main[res_main$param == "kappa", ],
+         aes(x = value, group = data, fill = data)) +
+    facet_wrap(~n) +
+    geom_histogram(alpha = 0.75, position = "identity") +
+    pcv_theme() +
+    labs(title = "kappa")
+
+  ggplot(res_main[res_main$param == "mu" & res_main$quantity == "hde", ],
+         aes(x = value, group = data, fill = data)) +
+    facet_wrap(~n) +
+    geom_histogram(alpha = 0.75, position = "identity") +
+    pcv_theme() +
+    labs(title = "mu")
+}
