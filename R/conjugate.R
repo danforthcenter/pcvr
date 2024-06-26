@@ -683,7 +683,8 @@ conjugate <- function(s1 = NULL, s2 = NULL,
     ) +
     ggplot2::guides(fill = ggplot2::guide_legend(override.aes = list(alpha = 0.5))) +
     ggplot2::theme(legend.title = ggplot2::element_blank(),
-                   legend.position = c(0.9, 0.9)) +
+                   legend.position = "inside",
+                   legend.position.inside = c(0.9, 0.9)) +
     pcv_theme()
 
   if (length(sample_results) == 2) {
