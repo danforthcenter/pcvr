@@ -185,7 +185,7 @@ test_that("conjugate Beta method is consistent for SV and MV", {
 test_that("conjugate lognormal method is consistent for SV and MV", {
   set.seed(324)
   method <- "lognormal"
-  prior <- list(mu_log = c(log(10), log(10)), n = c(1, 1), sigma_log = c(log(3), log(3)))
+  prior <- list(mu = c(3, 3), sd = c(2, 2))
   generating <- list(
     s1 = list(f = "rlnorm", n = 20, meanlog = 3.5, sdlog = log(3)),
     s2 = list(f = "rlnorm", n = 20, meanlog = 3, sdlog = log(4))
@@ -193,8 +193,8 @@ test_that("conjugate lognormal method is consistent for SV and MV", {
   out <- .conjugate.mv.sv.testing(method, prior, generating)
   out$posteriors
   out$summaries
-  mu1 <- as.numeric(out$posteriors[c(1, 3), "mu_log"])
-  mu2 <- as.numeric(out$posteriors[c(2, 4), "mu_log"])
+  mu1 <- as.numeric(out$posteriors[c(1, 3), "mu"])
+  mu2 <- as.numeric(out$posteriors[c(2, 4), "mu"])
   expect_equal(
     abs(diff(mu1) / mean(mu1)),
     0, # diff should be 0, scaled or not
