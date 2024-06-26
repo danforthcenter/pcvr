@@ -218,7 +218,7 @@
   out <- list()
   #* ***** `Updating Kappa`
   n1 <- nrow(s1)
-  obs_kappa <- .unbiased.kappa(X1, n1)
+  obs_kappa <- .unbiased.kappa(X1, length(X1))
   kappa_prime <- ((obs_kappa * n1) + (priors$kappa * priors$n)) / (n1 + priors$n)
   #* ***** `Updating vMF for mu using kappa prime`
   #* `Get weighted mean of data and prior for half tangent adjustment`
