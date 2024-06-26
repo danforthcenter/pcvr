@@ -34,8 +34,8 @@
 #' @noRd
 
 .conj_lognormal2_mv <- function(s1 = NULL, priors = NULL,
-                               plot = FALSE, support = NULL, cred.int.level = NULL,
-                               calculatingSupport = FALSE) {
+                                plot = FALSE, support = NULL, cred.int.level = NULL,
+                                calculatingSupport = FALSE) {
   out <- list()
   #* `make default prior if none provided`
   if (is.null(priors)) {
@@ -59,10 +59,7 @@
     X1 <- rep(histColsBin[bins_order], as.numeric(s1[i, ]))
     #* `Get mean of x1`
     x_bar <- mean(X1)
-    mu_s1 <- log(x_bar / (sqrt(var(X1) / x_bar^2) +1) )
-    #* `Get sigma of s1`
-    sigma_s1 <- sqrt(log((var(X1)) / (x_bar ^ 2) + 1))
-    prec_s1 <- 1 / (sigma_s1 ^ 2)
+    mu_s1 <- log(x_bar / (sqrt(var(X1) / x_bar^2) + 1))
     #* `Update Gamma Distribution of precision`
     #* sufficient stats: n, ss
     ss <- nrow(s1) * mean((log(X1) - mu_s1)^2) # mean * nrow instead of sum for MV traits
@@ -72,7 +69,6 @@
     return(list("a_prime" = a_prime, "b_prime" = b_prime, "ln_mu" = mu_s1))
   })
   #* `Unlist parameters`
-  n1 <- nrow(s1)
   a_prime <- mean(unlist(lapply(rep_distributions, function(i) {
     i$a_prime
   })))
@@ -101,7 +97,8 @@
     hde1 <- (b_prime - 1) * a_prime # note, using shape instead of rate (inverse) HDE
   }
   hdi1 <- qgamma(c((1 - cred.int.level) / 2, (1 - ((1 - cred.int.level) / 2))),
-                 shape = a_prime, scale = b_prime)
+    shape = a_prime, scale = b_prime
+  )
   #* `Store summary`
   out$summary <- data.frame(HDE_1 = hde1, HDI_1_low = hdi1[1], HDI_1_high = hdi1[2])
   out$posterior$a <- a_prime
@@ -142,8 +139,8 @@
 #' @noRd
 
 .conj_lognormal2_sv <- function(s1 = NULL, priors = NULL,
-                               plot = FALSE, support = NULL, cred.int.level = NULL,
-                               calculatingSupport = FALSE) {
+                                plot = FALSE, support = NULL, cred.int.level = NULL,
+                                calculatingSupport = FALSE) {
   out <- list()
   #* `make default prior if none provided`
   if (is.null(priors)) {
@@ -152,10 +149,7 @@
   if (length(s1) > 1) {
     #* `Get mean of s1`
     x_bar <- mean(s1)
-    mu_s1 <- log(x_bar / (sqrt(var(s1) / x_bar^2) +1) )
-    #* `Get sigma of s1`
-    sigma_s1 <- sqrt(log((var(s1)) / (x_bar ^ 2) + 1))
-    prec_s1 <- 1 / (sigma_s1 ^ 2)
+    mu_s1 <- log(x_bar / (sqrt(var(s1) / x_bar^2) + 1))
     #* `Update Gamma Distribution of precision`
     #* sufficient stats: n, ss
     ss <- sum((log(s1) - mu_s1)^2)
@@ -181,7 +175,8 @@
       hde1 <- (b_prime - 1) * a_prime # note, using shape instead of rate (inverse) HDE
     }
     hdi1 <- qgamma(c((1 - cred.int.level) / 2, (1 - ((1 - cred.int.level) / 2))),
-                  shape = a_prime, scale = b_prime)
+      shape = a_prime, scale = b_prime
+    )
     #* `Store summary`
     out$summary <- data.frame(HDE_1 = hde1, HDI_1_low = hdi1[1], HDI_1_high = hdi1[2])
     out$posterior$a <- a_prime

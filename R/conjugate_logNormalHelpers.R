@@ -62,7 +62,7 @@
     X1 <- rep(histColsBin[bins_order], as.numeric(s1[i, ]))
     #* `Get mean of X1`
     x_bar <- mean(X1)
-    mu_x1 <- log(x_bar / (sqrt(var(X1) / x_bar^2) +1) )
+    mu_x1 <- log(x_bar / (sqrt(var(X1) / x_bar^2) + 1))
     #* `Get sigma of X1`
     sigma_x1 <- sqrt(log((var(X1)) / (x_bar ^ 2) + 1))
     #* `Update Normal Distribution of Mu`
@@ -77,7 +77,6 @@
     return(list("mu" = mu_prime, "sd" = sd_prime, "ln_sd" = sigma_x1))
   })
   #* `Unlist parameters`
-  n1 <- nrow(s1)
   mu_ls_prime <- mean(unlist(lapply(rep_distributions, function(i) {
     i$mu
   })))
@@ -157,7 +156,7 @@
   if (length(s1) > 1) {
     #* `Get mean of s1`
     x_bar <- mean(s1)
-    mu_s1 <- log(x_bar / (sqrt(var(s1) / x_bar^2) +1) )
+    mu_s1 <- log(x_bar / (sqrt(var(s1) / x_bar^2) + 1))
     #* `Get sigma of s1`
     sigma_s1 <- sqrt(log((var(s1)) / (x_bar ^ 2) + 1))
     #* `Update Normal Distribution of Mu`
