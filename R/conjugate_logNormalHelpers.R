@@ -89,17 +89,17 @@
 
   #* `Define support if it is missing`
   if (is.null(support)) {
-    quantiles <- qnorm(c(0.0001, 0.9999), mu_ls_prime, sigma_ls_prime)
+    quantiles <- stats::qnorm(c(0.0001, 0.9999), mu_ls_prime, sigma_ls_prime)
     if (calculatingSupport) {
       return(quantiles)
     }
     support <- seq(quantiles[1], quantiles[2], length.out = 10000)
   }
   #* `posterior`
-  dens1 <- dnorm(support, mu_ls_prime, sigma_ls_prime)
+  dens1 <- stats::dnorm(support, mu_ls_prime, sigma_ls_prime)
   pdf1 <- dens1 / sum(dens1)
   hde1 <- mu_ls_prime
-  hdi1 <- qnorm(
+  hdi1 <- stats::qnorm(
     c(
       (1 - cred.int.level) / 2,
       (1 - ((1 - cred.int.level) / 2))
@@ -112,7 +112,7 @@
   out$posterior$sd <- sigma_ls_prime
   out$posterior$lognormal_sigma <- ln_sigma_prime
   #* `Make Posterior Draws`
-  out$posteriorDraws <- rnorm(10000, mu_ls_prime, sigma_ls_prime)
+  out$posteriorDraws <- stats::rnorm(10000, mu_ls_prime, sigma_ls_prime)
   out$pdf <- pdf1
   #* `save s1 data for plotting`
   if (plot) {
