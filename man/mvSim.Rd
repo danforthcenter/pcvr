@@ -10,7 +10,8 @@ mvSim(
   counts = 1000,
   min_bin = 1,
   max_bin = 180,
-  wide = TRUE
+  wide = TRUE,
+  binwidth = 1
 )
 }
 \arguments{
@@ -32,6 +33,8 @@ Defaults to 180.}
 
 \item{wide}{Boolean, should data be returned in wide format (the default)?
 If FALSE then long data is returned.}
+
+\item{binwidth}{How wide should bins be? Defaults to 1.}
 }
 \value{
 Returns a dataframe of example multi-value trait data simulated from specified distributions.

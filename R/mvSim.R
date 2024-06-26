@@ -15,6 +15,7 @@
 #' does not need to be provided.
 #' @param wide Boolean, should data be returned in wide format (the default)?
 #' If FALSE then long data is returned.
+#' @param binwidth How wide should bins be? Defaults to 1.
 #' @keywords multi-value
 #' @return Returns a dataframe of example multi-value trait data simulated from specified distributions.
 #'
@@ -73,12 +74,13 @@
 #' @export
 
 mvSim <- function(dists = list(rnorm = list(mean = 100, sd = 15)),
-                  n_samples = 10, counts = 1000, min_bin = 1, max_bin = 180, wide = TRUE) {
+                  n_samples = 10, counts = 1000, min_bin = 1, max_bin = 180, wide = TRUE,
+                  binwidth = 1) {
   if (length(n_samples) == 1) {
     n_samples <- rep(n_samples, length(dists))
   }
   vecs <- .makeVecs(dists, counts, n_samples)
-  out <- .simFreqs(vecs, max_bin, min_bin)
+  out <- .simFreqs(vecs, max_bin, min_bin, binwidth)
   if (!wide) {
     out$id <- seq_len(nrow(out))
     out <- as.data.frame(data.table::melt(data.table::as.data.table(out), id.vars = c("group", "id")))
@@ -108,7 +110,7 @@ mvSim <- function(dists = list(rnorm = list(mean = 100, sd = 15)),
 #' @keywords internal
 #' @noRd
 
-.simFreqs <- function(vecs, max_bin, min_bin) {
+.simFreqs <- function(vecs, max_bin, min_bin, binwidth) {
   do.call(rbind, lapply(seq_along(vecs), function(i) {
     vecName <- names(vecs)[i]
     vec <- vecs[[i]]
@@ -122,9 +124,9 @@ mvSim <- function(dists = list(rnorm = list(mean = 100, sd = 15)),
       } else {
         v[v > max_bin] <- max_bin
         v[v < min_bin] <- min_bin
-        s1 <- hist(v, breaks = seq(min_bin, (max_bin + 1), 1), plot = FALSE)$counts
+        s1 <- hist(v, breaks = seq(min_bin, (max_bin + binwidth), binwidth), plot = FALSE)$counts
         s1d <- as.data.frame(cbind(data.frame(vecName), matrix(s1, nrow = 1)))
-        colnames(s1d) <- c("group", paste0("sim_", min_bin:max_bin))
+        colnames(s1d) <- c("group", paste0("sim_", seq(min_bin, max_bin, binwidth)))
       }
       s1d
     }))
