@@ -23,6 +23,8 @@
 #' viridis colormaps are used in the order c('plasma', 'mako', 'viridis', 'inferno', 'cividis', 'magma',
 #' 'turbo', 'rocket'). Alternatively this can be given as a vector of
 #' viridis colormap names to use in a different order than above. Note this is ignored for brms models.
+#' @param hierarchy_value If a hierarchical model is being plotted, what value should the
+#' hiearchical predictor be? If left NULL (the default) the mean value is used.
 #' @keywords growth-curve, logistic, gompertz, monomolecular, linear, exponential, power-law
 #' @importFrom methods is
 #' @examples
@@ -46,7 +48,7 @@
 #' @export
 
 growthPlot <- function(fit, form, groups = NULL, df = NULL, timeRange = NULL,
-                       facetGroups = TRUE, groupFill = !facetGroups) {
+                       facetGroups = TRUE, groupFill = !facetGroups, hierarchy_value = NULL) {
   if (is.logical(groupFill)) {
     virMaps <- c("plasma", "mako", "viridis", "inferno", "cividis", "magma", "turbo", "rocket")
   } else {
@@ -61,7 +63,7 @@ growthPlot <- function(fit, form, groups = NULL, df = NULL, timeRange = NULL,
     if (attr(fit$formula$formula, "nl")) { # non linear models are growth models
       plot <- brmPlot(
         fit = fit, form = form, groups = groups, df = df, timeRange = timeRange,
-        facetGroups = facetGroups
+        facetGroups = facetGroups, hierarchy_value = hierarchy_value
       )
     } else {
       plot <- brmSurvPlot(

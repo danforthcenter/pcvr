@@ -14,6 +14,8 @@
 #' future data if the available data has not reached some point (such as asymptotic size),
 #' although prediction using splines outside of the observed range is not necessarily reliable.
 #' @param facetGroups logical, should groups be separated in facets? Defaults to TRUE.
+#' @param hierarchy_value If a hierarchical model is being plotted, what value should the
+#' hiearchical predictor be? If left NULL (the default) the mean value is used.
 #' @keywords growth-curve, logistic, gompertz, monomolecular, linear, exponential, power-law
 #' @import ggplot2
 #' @import viridis
@@ -38,12 +40,14 @@
 #'
 #' @export
 
-brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facetGroups = TRUE) {
+brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facetGroups = TRUE,
+                    hierarchy_value = NULL) {
   fitData <- fit$data
   parsed_form <- .parsePcvrForm(form, df)
   y <- parsed_form$y
   x <- parsed_form$x
   individual <- parsed_form$individual
+  hierarchical_predictor <- parsed_form$hierarchical_predictor
   if (individual == "dummyIndividual") {
     individual <- NULL
   }
@@ -67,6 +71,12 @@ brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
     individual = rep(paste0("new_", seq_along(unique(fitData[[group]]))), each = length(timeRange))
   )
   colnames(newData) <- c(x, group, individual)
+  if (!is.null(hierarchical_predictor)) {
+    if (is.null(hierarchy_value)) {
+      hierarchy_value <- mean(fitData[[hierarchical_predictor]])
+    }
+    newData[[hierarchical_predictor]] <- hierarchy_value
+  }
   predictions <- cbind(newData, predict(fit, newData, probs = probs))
 
   if (!is.null(groups)) {
