@@ -1,5 +1,7 @@
 #' @description
-#' Internal function for Bayesian comparison of log-normal data represented by multi value traits.
+#' Internal function for calculating \mu and \sigma of the normally distributed mean of lognormal data
+#' given an estimate of the lognormal \sigma obtained via the method of moments using multi value
+#' traits.
 #' @param s1 A data.frame or matrix of multi value traits. The column names should include a number
 #' representing the "bin".
 #'
@@ -37,7 +39,7 @@
   out <- list()
   #* `make default prior if none provided`
   if (is.null(priors)) {
-    priors <- list(mu_log = log(10), n = 1, sigma_log = log(3))
+    priors <- list(mu = 0, sd = 5)
   }
   #* `Standardize sample 1 class and names`
   if (is.null(colnames(s1))) {
@@ -58,38 +60,47 @@
 
   rep_distributions <- lapply(seq_len(nrow(s1)), function(i) {
     X1 <- rep(histColsBin[bins_order], as.numeric(s1[i, ]))
-    xbar_1 <- mean(X1)
-    s2_1 <- var(X1) / (nrow(s1) - 1)
-    #* `Add prior distribution and lognormal method of moments`
-    mu_ls <- log(xbar_1 / sqrt((s2_1 / xbar_1^2) + 1))
-    sigma_ls <- sqrt(log((s2_1 / xbar_1^2) + 1))
-    return(list("mu_log" = mu_ls, "sigma_log" = sigma_ls))
+    #* `Get mean of X1`
+    x_bar <- mean(X1)
+    mu_x1 <- log(x_bar / (sqrt(var(X1) / x_bar^2) +1) )
+    #* `Get sigma of X1`
+    sigma_x1 <- sqrt(log((var(X1)) / (x_bar ^ 2) + 1))
+    #* `Update Normal Distribution of Mu`
+    #* sufficient stats: n, mean of log data | precision
+    n <- length(X1)
+    m <- priors$mu
+    p <- 1 / (priors$sd ^ 2) # precision
+    mu_prime <- ((m * p) + (n * p * mu_x1)) / (p + (n * p))
+    precision_prime <- (p + (n * p))
+    var_prime <- 1 / precision_prime
+    sd_prime <- sqrt(var_prime)
+    return(list("mu" = mu_prime, "sd" = sd_prime, "ln_sd" = sigma_x1))
   })
+  #* `Unlist parameters`
   n1 <- nrow(s1)
-  mu_ls <- unlist(lapply(rep_distributions, function(i) {
-    i$mu_log
-  }))
-  sigma_ls <- unlist(lapply(rep_distributions, function(i) {
-    i$sigma_log
-  }))
-
-  n_prime <- n1 + priors$n[1]
-  mu_ls_prime <- (sum(mu_ls) + (priors$mu_log[1] * priors$n[1])) / n_prime
-  sigma_ls_prime <- (sum(sigma_ls) + (priors$sigma_log[1] * priors$n[1])) / n_prime
+  mu_ls_prime <- mean(unlist(lapply(rep_distributions, function(i) {
+    i$mu
+  })))
+  sigma_ls_prime <- mean(unlist(lapply(rep_distributions, function(i) {
+    i$sd
+  })))
+  ln_sigma_prime <- mean(unlist(lapply(rep_distributions, function(i) {
+    i$ln_sd
+  })))
 
   #* `Define support if it is missing`
   if (is.null(support)) {
-    quantiles <- qlnorm(c(0.0001, 0.9999), mu_ls_prime, sigma_ls_prime)
+    quantiles <- qnorm(c(0.0001, 0.9999), mu_ls_prime, sigma_ls_prime)
     if (calculatingSupport) {
       return(quantiles)
     }
     support <- seq(quantiles[1], quantiles[2], length.out = 10000)
   }
   #* `posterior`
-  dens1 <- dlnorm(support, mu_ls_prime, sigma_ls_prime)
+  dens1 <- dnorm(support, mu_ls_prime, sigma_ls_prime)
   pdf1 <- dens1 / sum(dens1)
-  hde1 <- exp(mu_ls_prime)
-  hdi1 <- qlnorm(
+  hde1 <- mu_ls_prime
+  hdi1 <- qnorm(
     c(
       (1 - cred.int.level) / 2,
       (1 - ((1 - cred.int.level) / 2))
@@ -98,11 +109,11 @@
   )
   #* `Store summary`
   out$summary <- data.frame(HDE_1 = hde1, HDI_1_low = hdi1[1], HDI_1_high = hdi1[2])
-  out$posterior$mu_log <- mu_ls_prime
-  out$posterior$n <- n_prime
-  out$posterior$sigma_log <- sigma_ls_prime
+  out$posterior$mu <- mu_ls_prime
+  out$posterior$sd <- sigma_ls_prime
+  out$posterior$lognormal_sigma <- ln_sigma_prime
   #* `Make Posterior Draws`
-  out$posteriorDraws <- rlnorm(10000, mu_ls_prime, sigma_ls_prime)
+  out$posteriorDraws <- rnorm(10000, mu_ls_prime, sigma_ls_prime)
   out$pdf <- pdf1
   #* `save s1 data for plotting`
   if (plot) {
@@ -117,38 +128,17 @@
 
 
 
-
-
-
-
-
 #' @description
-#' Internal function for Bayesian comparison of log-normal data represented by single value traits.
-#' Lognormal method of moments
-#'
-#' \bar{x} \sim e^{\mu + \sigma^2 / 2}
-#' \s^2 \sim (e^{\alpha^2} -1) \cdot e^{2 \cdot \mu + \sigma^2}
-#'
-#' Calculate Sigma:
-#'
-#' \bar{x}^2 \sim e^{2 \cdot \mu + \sigma^2}
-#' s^2 \sim (e^\alpha^2 -1) \cdot \bar{x}^2
-#' (s^2 / \bar{x}^2) +1 \sim e^\alpha^2
-#' \alpha^2 \sim ln((s^2 / \bar{x}^2) +1 )
-#' \alpha \sim \sqrt{ln((s^2 / \bar{x}^2) +1 )}
-#'
-#' Calculate Mu:
-#'
-#' \bar{x}^2 \sim e^{2 \cdot \mu + \sigma^2}
-#' 2 \cdot ln(\bar{x}) \sim 2 \cdot \mu + \sigma^2
-#' \mu \sim ln(\bar{x} / \sqrt{(s^2 / \bar{x}^2) +1 })
+#' Internal function for calculating \mu and \sigma of the normally distributed mean of lognormal data
+#' given an estimate of the lognormal \sigma obtained via the method of moments using single value
+#' traits.
 #'
 #' @param s1 A vector of numerics drawn from a gaussian distribution.
 #' @examples
 #' if (FALSE) {
 #'   .conj_lognormal_sv(
 #'     s1 = rlnorm(100, log(130), log(1.3)), s2 = rlnorm(100, log(100), log(1.6)),
-#'     priors = list(mu_log = c(log(10), log(10)), n = c(1, 1), sigma_log = c(log(3), log(3))),
+#'     priors = list(mu = 5, sd = 5),
 #'     plot = FALSE, rope_range = c(-0.1, 0.1), rope_ci = 0.89,
 #'     cred.int.level = 0.89, hypothesis = "equal", support = NULL
 #'   )
@@ -162,39 +152,43 @@
   out <- list()
   #* `make default prior if none provided`
   if (is.null(priors)) {
-    priors <- list(mu_log = log(10), n = 1, sigma_log = log(3))
+    priors <- list(mu = 0, sd = 5)
   }
-  #* `Get mean and variance from s1`
   if (length(s1) > 1) {
-    xbar_1 <- mean(s1)
-    s2_1 <- var(s1) / (length(s1) - 1)
-    n1 <- length(s1)
-    #* `Add prior distribution and lognormal method of moments`
-    mu_ls <- log(xbar_1 / sqrt((s2_1 / xbar_1^2) + 1))
-    sigma_ls <- sqrt(log((s2_1 / xbar_1^2) + 1))
-    n1_n <- n1 + priors$n[1]
-    mu_ls_n <- ((mu_ls * n1) + (priors$mu_log[1] * priors$n[1])) / n1_n
-    sigma_ls_n <- ((sigma_ls * n1) + (priors$sigma_log[1] * priors$n[1])) / n1_n
+    #* `Get mean of s1`
+    x_bar <- mean(s1)
+    mu_s1 <- log(x_bar / (sqrt(var(s1) / x_bar^2) +1) )
+    #* `Get sigma of s1`
+    sigma_s1 <- sqrt(log((var(s1)) / (x_bar ^ 2) + 1))
+    #* `Update Normal Distribution of Mu`
+    #* sufficient stats: n, mean of log data | precision
+    n <- length(s1)
+    m <- priors$mu
+    p <- 1 / (priors$sd ^ 2) # precision
+    mu_prime <- ((m * p) + (n * p * mu_s1)) / (p + (n * p))
+    precision_prime <- (p + (n * p))
+    var_prime <- 1 / precision_prime
+    sd_prime <- sqrt(var_prime)
     #* `Define support if it is missing`
     if (is.null(support)) {
-      quantiles <- qlnorm(c(0.0001, 0.9999), mu_ls_n, sigma_ls_n)
+      quantiles <- qnorm(c(0.0001, 0.9999), mu_prime, sd_prime)
       if (calculatingSupport) {
         return(quantiles)
       }
       support <- seq(quantiles[1], quantiles[2], length.out = 10000)
     }
     #* `posterior`
-    dens1 <- dlnorm(support, mu_ls_n, sigma_ls_n)
+    dens1 <- dnorm(support, mu_prime, sd_prime)
     pdf1 <- dens1 / sum(dens1)
-    hde1 <- exp(mu_ls_n)
-    hdi1 <- qlnorm(c((1 - cred.int.level) / 2, (1 - ((1 - cred.int.level) / 2))), mu_ls_n, sigma_ls_n)
+    hde1 <- mu_prime
+    hdi1 <- qnorm(c((1 - cred.int.level) / 2, (1 - ((1 - cred.int.level) / 2))), mu_prime, sd_prime)
     #* `Store summary`
     out$summary <- data.frame(HDE_1 = hde1, HDI_1_low = hdi1[1], HDI_1_high = hdi1[2])
-    out$posterior$mu_log <- mu_ls_n
-    out$posterior$n <- n1_n
-    out$posterior$sigma_log <- sigma_ls_n
+    out$posterior$mu <- mu_prime
+    out$posterior$sd <- sd_prime
+    out$posterior$lognormal_sigma <- sigma_s1 # returning this as a number, not a distribution
     #* `Make Posterior Draws`
-    out$posteriorDraws <- rlnorm(10000, mu_ls_n, sigma_ls_n)
+    out$posteriorDraws <- rnorm(10000, mu_prime, sd_prime)
     out$pdf <- pdf1
     #* `save s1 data for plotting`
     if (plot) {
