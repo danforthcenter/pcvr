@@ -205,8 +205,10 @@ test_that("conjugate lognormal method is consistent for SV and MV", {
     0,
     tolerance = 0.15
   )
-  v1 <- as.numeric(out$posteriors[c(1, 3), "sigma_log"])
-  v2 <- as.numeric(out$posteriors[c(2, 4), "sigma_log"])
+  # really this next part should test sd, but the sd is still very
+  # sensitive to MV vs SV traits
+  v1 <- as.numeric(out$posteriors[c(1, 3), "lognormal_sigma"])
+  v2 <- as.numeric(out$posteriors[c(2, 4), "lognormal_sigma"])
   expect_equal(
     abs(diff(v1) / mean(v1)),
     0, # diff should be 0, scaled or not

@@ -64,8 +64,8 @@
     #* sufficient stats: n, ss
     ss <- nrow(s1) * mean((log(X1) - mu_s1)^2) # mean * nrow instead of sum for MV traits
     n1 <- nrow(s1)
-    a_prime <- priors$a + (n1 / 2)
-    b_prime <- priors$b + (ss / 2)
+    a_prime <- priors$a[1] + (n1 / 2)
+    b_prime <- priors$b[1] + (ss / 2)
     return(list("a_prime" = a_prime, "b_prime" = b_prime, "ln_mu" = mu_s1))
   })
   #* `Unlist parameters`
@@ -154,8 +154,8 @@
     #* sufficient stats: n, ss
     ss <- sum((log(s1) - mu_s1)^2)
     n1 <- length(s1)
-    a_prime <- priors$a + (n1 / 2)
-    b_prime <- priors$b + (ss / 2)
+    a_prime <- priors$a[1] + (n1 / 2)
+    b_prime <- priors$b[1] + (ss / 2)
     #* `Define support if it is missing`
     if (is.null(support)) {
       quantiles <- qgamma(c(0.0001, 0.9999), shape = a_prime, scale = b_prime)

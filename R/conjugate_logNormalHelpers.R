@@ -30,6 +30,7 @@
 #'     cred.int.level = 0.89, hypothesis = "equal", support = NULL
 #'   )
 #' }
+#' @importFrom stats qnorm
 #' @keywords internal
 #' @noRd
 
@@ -68,8 +69,8 @@
     #* `Update Normal Distribution of Mu`
     #* sufficient stats: n, mean of log data | precision
     n <- length(X1)
-    m <- priors$mu
-    p <- 1 / (priors$sd ^ 2) # precision
+    m <- priors$mu[1]
+    p <- 1 / (priors$sd[1] ^ 2) # precision
     mu_prime <- ((m * p) + (n * p * mu_x1)) / (p + (n * p))
     precision_prime <- (p + (n * p))
     var_prime <- 1 / precision_prime
@@ -162,8 +163,8 @@
     #* `Update Normal Distribution of Mu`
     #* sufficient stats: n, mean of log data | precision
     n <- length(s1)
-    m <- priors$mu
-    p <- 1 / (priors$sd ^ 2) # precision
+    m <- priors$mu[1]
+    p <- 1 / (priors$sd[1] ^ 2) # precision
     mu_prime <- ((m * p) + (n * p * mu_s1)) / (p + (n * p))
     precision_prime <- (p + (n * p))
     var_prime <- 1 / precision_prime
