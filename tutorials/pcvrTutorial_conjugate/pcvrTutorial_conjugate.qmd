@@ -229,7 +229,8 @@ We'll go over those distributions, what they tend to represent, how they are upd
 |-----------------|-----------------|-----------------|----------------------|
 | Gaussian | Normal | $\mu', \sigma' \sim N(\mu, \sigma)$ | Z-test |
 | T | Normal Means | $\mu', \sigma_\mu, \nu_\mu' \sim T(\mu, \sigma, \nu)$ | T-test |
-| Log-Normal | Positive Right Skewed | $\mu', \sigma' \sim LogN(\mu, \sigma)$ | Wilcox |
+| Lognormal | Positive Right Skewed | $\mu' \sim N(\mu, \sigma)$ | Wilcox |
+| Lognormal2 | Positive Right Skewed | $\rho' \sim \Gamma(A, B)$ | Wilcox |
 | Beta | Percentages | $\alpha', \beta' \sim \alpha, \beta + Counts$ | Wilcox|
 |Binomial | Success/Failure Counts | $P \sim Beta(\alpha, \beta)$ | Wilcox/logistic regression |
 | Poisson | Counts | $\lambda \sim Gamma(A, B)$ | Wilcox/glm |
@@ -392,7 +393,7 @@ conjugate_patch
 pcvr::conjugate(
   s1 = NULL, s2 = NULL,
   method = c("t", "gaussian", "beta",
-             "binomial", "lognormal",
+             "binomial", "lognormal", "lognormal2",
              "poisson", "negbin",
              "uniform", "pareto",
              "vonmises", "vonmises2"),
@@ -415,7 +416,7 @@ The `method` argument specifies the distribution to be used. See `?conjugate` fo
 pcvr::conjugate(
   s1 = NULL, s2 = NULL,
   method = c("t", "gaussian", "beta",
-             "binomial", "lognormal",
+             "binomial", "lognormal", "lognormal2",
              "poisson", "negbin",
              "uniform", "pareto",
              "vonmises", "vonmises2"),
@@ -438,7 +439,7 @@ The `priors` argument allows you to specify the prior distribution. If left NULL
 pcvr::conjugate(
   s1 = NULL, s2 = NULL,
   method = c("t", "gaussian", "beta",
-             "binomial", "lognormal",
+             "binomial", "lognormal", "lognormal2",
              "poisson", "negbin",
              "uniform", "pareto",
              "vonmises", "vonmises2"),
@@ -478,10 +479,10 @@ p2 <- ggplot(data.frame(x=seq(-20, 20, 0.01),
 p3 <- ggplot(data.frame(x=seq(0, 150, 0.1),
                         fill=factor("lognormal", levels = methods)),
              aes(x=x, fill=fill))+
-  stat_function(geom="polygon", fun = dlnorm, args = list(meanlog=log(10), sdlog=log(3)))+
+  stat_function(geom="polygon", fun = dnorm, args = list(mean = 0, sd = 3))+
   scale_fill_manual(values=virPal, drop = F)+
   pcv_theme()+
-  labs(x="mu_log = 0, n = 1,\nsigma_log = 3", title = "lognormal")
+  labs(x="mu = 0, sd = 3", title = "lognormal")
 
 p4 <- ggplot(data.frame(x=seq(0, 1, 0.0001),
                         fill=factor("beta", levels = methods)),
@@ -594,7 +595,7 @@ The `plot` argument controls whether or not a ggplot is made of the results. See
 pcvr::conjugate(
   s1 = NULL, s2 = NULL,
   method = c("t", "gaussian", "beta",
-             "binomial", "lognormal",
+             "binomial", "lognormal", "lognormal2",
              "poisson", "negbin",
              "uniform", "pareto",
              "vonmises", "vonmises2"),
@@ -617,7 +618,7 @@ The `rope_range` and `rope_ci` arguments allow region-of-practical-equivalence (
 pcvr::conjugate(
   s1 = NULL, s2 = NULL,
   method = c("t", "gaussian", "beta",
-             "binomial", "lognormal",
+             "binomial", "lognormal", "lognormal2",
              "poisson", "negbin",
              "uniform", "pareto",
              "vonmises", "vonmises2"),
@@ -641,7 +642,7 @@ pcvr::conjugate(
 pcvr::conjugate(
   s1 = NULL, s2 = NULL,
   method = c("t", "gaussian", "beta",
-             "binomial", "lognormal",
+             "binomial", "lognormal", "lognormal2",
              "poisson", "negbin",
              "uniform", "pareto",
              "vonmises", "vonmises2"),
@@ -664,7 +665,7 @@ The `hypothesis` argument sets which hypothesis is tested out of "greater", "les
 pcvr::conjugate(
   s1 = NULL, s2 = NULL,
   method = c("t", "gaussian", "beta",
-             "binomial", "lognormal",
+             "binomial", "lognormal", "lognormal2",
              "poisson", "negbin",
              "uniform", "pareto",
              "vonmises", "vonmises2"),
@@ -687,7 +688,7 @@ The `support` argument optionally lets you set the support range for the distrib
 pcvr::conjugate(
   s1 = NULL, s2 = NULL,
   method = c("t", "gaussian", "beta",
-             "binomial", "lognormal",
+             "binomial", "lognormal", "lognormal2",
              "poisson", "negbin",
              "uniform", "pareto",
              "vonmises", "vonmises2"),

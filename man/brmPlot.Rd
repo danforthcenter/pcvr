@@ -10,7 +10,8 @@ brmPlot(
   df = NULL,
   groups = NULL,
   timeRange = NULL,
-  facetGroups = TRUE
+  facetGroups = TRUE,
+  hierarchy_value = NULL
 )
 }
 \arguments{
@@ -29,6 +30,9 @@ future data if the available data has not reached some point (such as asymptotic
 although prediction using splines outside of the observed range is not necessarily reliable.}
 
 \item{facetGroups}{logical, should groups be separated in facets? Defaults to TRUE.}
+
+\item{hierarchy_value}{If a hierarchical model is being plotted, what value should the
+hiearchical predictor be? If left NULL (the default) the mean value is used.}
 }
 \value{
 Returns a ggplot showing a brms model's credible

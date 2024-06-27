@@ -11,7 +11,8 @@ growthPlot(
   df = NULL,
   timeRange = NULL,
   facetGroups = TRUE,
-  groupFill = !facetGroups
+  groupFill = !facetGroups,
+  hierarchy_value = NULL
 )
 }
 \arguments{
@@ -40,6 +41,9 @@ facetGroups. If TRUE then
 viridis colormaps are used in the order c('plasma', 'mako', 'viridis', 'inferno', 'cividis', 'magma',
 'turbo', 'rocket'). Alternatively this can be given as a vector of
 viridis colormap names to use in a different order than above. Note this is ignored for brms models.}
+
+\item{hierarchy_value}{If a hierarchical model is being plotted, what value should the
+hiearchical predictor be? If left NULL (the default) the mean value is used.}
 }
 \value{
 Returns a ggplot showing a brms model's credible

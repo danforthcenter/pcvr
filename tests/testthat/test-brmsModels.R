@@ -933,8 +933,9 @@ if (file.exists("/home/josh/Desktop/") && interactive()) {
     )
     simdf$covar <- rnorm(nrow(simdf), 10, 1)
     ss <- growthSS(
-      model = "logistic", form = y ~ time + covar | id / group, sigma = "spline",
-      list("AI" = 100, "AA" = 5, "B" = 10, "C" = 3),
+      model = "logistic", form = y ~ time + covar | id / group, sigma = "logistic",
+      list("AI" = 100, "AA" = 5, "B" = 10, "C" = 3,
+           "sigmaA" = 10, "sigmaB" = 10, "sigmaC" = 3),
       df = simdf, type = "brms",
       hierarchy = list("A" = "int_linear")
     )

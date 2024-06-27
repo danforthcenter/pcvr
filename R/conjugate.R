@@ -14,7 +14,7 @@
 #' @param s2 An optional second sample, or if s1 is a formula then this should be a dataframe.
 #' This sample is shown in blue if plotted.
 #' @param method The distribution/method to use.
-#' Currently "t", "gaussian", "beta", "binomial", "lognormal", "poisson",
+#' Currently "t", "gaussian", "beta", "binomial", "lognormal", "lognormal2", "poisson",
 #' "negbin" (negative binomial), "uniform", "pareto", "gamma", "bernoulli", "exponential",
 #' "vonmises", and "vonmises2" are supported.
 #' The count (binomial, poisson and negative binomial), bernoulli, exponential,
@@ -76,11 +76,13 @@
 #'     where a and b are shape parameters of the beta distribution. Note that for the binomial
 #'     distribution this is used as the prior for success probability P,
 #'     which is assumed to be beta distributed as in a beta-binomial distribution.}
-#'    \item{\strong{"lognormal": } \code{priors = list( mu_log=c(log(10),log(10)),n=c(1,1),
-#'    sigma_log=c(log(3),log(3)) ) },
-#'    where mu_log is the mean on log scale, n is the number of prior observations,
-#'    and sigma_log is the
-#'    standard deviation on log scale }
+#'    \item{\strong{"lognormal": } \code{priors = list(mu = 0, sd = 5) },
+#'    where mu and sd describe the normal distribution of the mean parameter for lognormal data.
+#'    Note that these values are on the log scale.}
+#'    \item{\strong{"lognormal2": } \code{priors = list(a = 1, b = 1) },
+#'    where a and b are the shape and scale parameters of the gamma distribution of lognormal data's
+#'    precision parameter (using the alternative mu, precision paramterization).
+#'    }
 #'    \item{\strong{"gamma": } \code{priors = list(shape = 0.5, scale = 0.5, known_shape = 1)},
 #'     where shape and scale are the respective parameters of the gamma distributed rate
 #'     (inverse of scale) parameter of gamma distributed data.}
@@ -146,7 +148,7 @@
 #' # lognormal mv
 #' ln_mv_ex <- conjugate(
 #'   s1 = mv_ln[1:30, -1], s2 = mv_ln[31:60, -1], method = "lognormal",
-#'   priors = list(mu_log = log(10), n = 1, sigma_log = log(3)),
+#'   priors = list(mu = 5, sd = 2),
 #'   plot = FALSE, rope_range = c(-40, 40), rope_ci = 0.89,
 #'   cred.int.level = 0.89, hypothesis = "equal", support = NULL
 #' )
@@ -155,7 +157,7 @@
 #' ln_sv_ex <- conjugate(
 #'   s1 = rlnorm(100, log(130), log(1.3)), s2 = rlnorm(100, log(100), log(1.6)),
 #'   method = "lognormal",
-#'   priors = list(mu_log = log(10), n = 1, sigma_log = log(3)),
+#'   priors = list(mu = 5, sd = 2),
 #'   plot = FALSE, rope_range = NULL, rope_ci = 0.89,
 #'   cred.int.level = 0.89, hypothesis = "equal", support = NULL
 #' )
@@ -406,7 +408,7 @@
 conjugate <- function(s1 = NULL, s2 = NULL,
                       method = c(
                         "t", "gaussian", "beta", "binomial",
-                        "lognormal", "poisson", "negbin", "vonmises", "vonmises2",
+                        "lognormal", "lognormal2", "poisson", "negbin", "vonmises", "vonmises2",
                         "uniform", "pareto", "gamma", "bernoulli", "exponential"
                       ),
                       priors = NULL, plot = FALSE, rope_range = NULL,
@@ -445,7 +447,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
     }
     matched_arg <- match.arg(method[i], choices = c(
       "t", "gaussian", "beta", "binomial",
-      "lognormal", "poisson", "negbin",
+      "lognormal", "lognormal2", "poisson", "negbin",
       "vonmises", "vonmises2",
       "uniform", "pareto", "gamma", "bernoulli", "exponential"
     ))
@@ -549,7 +551,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
 
     matched_arg <- match.arg(method[i], choices = c(
       "t", "gaussian", "beta", "binomial",
-      "lognormal", "poisson", "negbin",
+      "lognormal", "lognormal2", "poisson", "negbin",
       "vonmises", "vonmises2",
       "uniform", "pareto", "gamma", "bernoulli", "exponential"
     ))
@@ -681,7 +683,8 @@ conjugate <- function(s1 = NULL, s2 = NULL,
     ) +
     ggplot2::guides(fill = ggplot2::guide_legend(override.aes = list(alpha = 0.5))) +
     ggplot2::theme(legend.title = ggplot2::element_blank(),
-                   legend.position = c(0.9, 0.9)) +
+                   legend.position = "inside",
+                   legend.position.inside = c(0.9, 0.9)) +
     pcv_theme()
 
   if (length(sample_results) == 2) {
