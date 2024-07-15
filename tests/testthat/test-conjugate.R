@@ -322,3 +322,55 @@ test_that("conjugate multi value lognormal vs gaussian", {
 
   expect_equal(names(out), c("summary", "posterior"))
 })
+
+test_that("bivariate conjugate uniform works", {
+  set.seed(123)
+  s1 <- runif(10, -50, 10)
+  s2 <- runif(10, -30, 15)
+  out <- conjugate(
+    s1 = s1, s2 = s2,
+    method = "bivariate_uniform", priors = list(location_l = 0, location_u = 1, scale = 1),
+    plot = TRUE, rope_range = c(-1, 1), rope_ci = 0.89, cred.int.level = 0.89,
+    hypothesis = "equal", support = NULL
+  )
+  expect_s3_class(out$plot, "ggplot")
+  expect_equal(nrow(out$summary), 2)
+  expect_equal(length(out$posterior), 2)
+  expect_equal(names(out$posterior[[1]]), c("scale", "location_l", "location_u"))
+  expect_equal(names(out), c("summary", "posterior", "plot"))
+})
+
+test_that("bivariate conjugate gaussian works", {
+  set.seed(123)
+  s1 <- rnorm(10, 20, 5)
+  s2 <- rnorm(10, 25, 5)
+  out <- conjugate(
+    s1 = s1, s2 = s2,
+    method = "bivariate_gaussian", priors = list(mu = 20, sd = 10, a = 1, b = 1),
+    plot = TRUE, rope_range = c(-1, 1), rope_ci = 0.89, cred.int.level = 0.89,
+    hypothesis = "equal", support = NULL
+  )
+  expect_s3_class(out$plot, "ggplot")
+  expect_equal(nrow(out$summary), 2)
+  expect_equal(length(out$posterior), 2)
+  expect_equal(names(out$posterior[[1]]), c("mu", "sd", "a", "b"))
+  expect_equal(names(out), c("summary", "posterior", "plot"))
+})
+
+test_that("bivariate conjugate lognormal works", {
+  devtools::load_all("~/pcvr")
+  set.seed(123)
+  s1 <- rlnorm(10, log(20), 0.25)
+  s2 <- rlnorm(10, log(25), 0.4)
+  out <- conjugate(
+    s1 = s1, s2 = s2,
+    method = "bivariate_lognormal", priors = list(mu = 20, sd = 10, a = 1, b = 1),
+    plot = TRUE, rope_range = c(-1, 1), rope_ci = 0.89, cred.int.level = 0.89,
+    hypothesis = "equal", support = NULL
+  )
+  expect_s3_class(out$plot, "ggplot")
+  expect_equal(nrow(out$summary), 2)
+  expect_equal(length(out$posterior), 2)
+  expect_equal(names(out$posterior[[1]]), c("mu", "sd", "a", "b"))
+  expect_equal(names(out), c("summary", "posterior", "plot"))
+})
