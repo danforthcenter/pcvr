@@ -4,22 +4,18 @@
 #' @param s1 A vector of numerics drawn from a uniform distribution.
 #' @examples
 #' if (FALSE) {
-#'   out <- .conj_bivariate_uniform_sv(
-#'     s1 = runif(10, -20, 100), cred.int.level = 0.95,
+#'   out <- .conj_bivariate_lognormal_sv(
+#'     s1 = rnorm(10, 50, 10), cred.int.level = 0.95,
 #'     plot = FALSE
 #'   )
 #'   lapply(out, head)
 #' }
 #' @keywords internal
 #' @noRd
-priors <- support <- NULL
-plot <- calculatingSupport <- FALSE
-s1 <- rnorm(20, 10, 3)
 
 .conj_bivariate_gaussian_sv <- function(s1 = NULL, priors = NULL,
                                        plot = FALSE, support = NULL, cred.int.level = NULL,
                                        calculatingSupport = FALSE) {
-  support <- NULL
   out <- list()
   #* `make default prior if none provided`
   #* conjugate prior needs alpha, beta, mu, prec (or var or sd)
@@ -54,6 +50,9 @@ s1 <- rnorm(20, 10, 3)
     if (calculatingSupport) {
       return(list("Mu" = quantiles_mu, "Prec" = quantiles_prec))
     }
+  } else {
+    support_mu <- support$Mu
+    support_prec <- support$Prec
   }
   #* `Make Posterior Draws`
   out$posteriorDraws <- .conj_biv_rough_sampling(10000, alpha_prime, beta_prime,
@@ -104,8 +103,9 @@ s1 <- rnorm(20, 10, 3)
 }
 
 .conj_biv_rough_sampling <- function(n, alpha, beta, mu, sigma, df) {
-  #* should turn this into conditional inverse sampling (but that doesn't seem like an option)
-  #* alternatively could make this work by accept/reject or MCMC
+  #* I wanted this to be conditional inverse sampling 
+  #* but that doesn't work due to the t distribution
+  #* this isn't used for hypothesis testing though, just visualization.
   x1 <- extraDistr::rlst(n, df, mu, sigma)
   x2 <- stats::rgamma(n, shape = alpha, scale = beta)
   return(cbind.data.frame("Mu" = x1, "Prec" = x2))
