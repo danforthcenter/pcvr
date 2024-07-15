@@ -409,7 +409,8 @@ conjugate <- function(s1 = NULL, s2 = NULL,
                       method = c(
                         "t", "gaussian", "beta", "binomial",
                         "lognormal", "lognormal2", "poisson", "negbin", "vonmises", "vonmises2",
-                        "uniform", "pareto", "gamma", "bernoulli", "exponential"
+                        "uniform", "pareto", "gamma", "bernoulli", "exponential", "bivariate_uniform",
+                        "bivariate_gaussian", "bivariate_lognormal"
                       ),
                       priors = NULL, plot = FALSE, rope_range = NULL,
                       rope_ci = 0.89, cred.int.level = 0.89, hypothesis = "equal",
@@ -450,7 +451,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
       "lognormal", "lognormal2", "poisson", "negbin",
       "vonmises", "vonmises2",
       "uniform", "pareto", "gamma", "bernoulli", "exponential",
-      "bivariate_uniform", "bivariate_gaussian"
+      "bivariate_uniform", "bivariate_gaussian", "bivariate_lognormal"
     ))
     # turning off dirichlet until I decide on a new implementation that I like better
     # and a use case that isn't so ripe for abuse.
@@ -466,15 +467,19 @@ conjugate <- function(s1 = NULL, s2 = NULL,
 
   #* `combine results into an object to return`
   out <- list()
-  out$summary <- do.call(cbind, lapply(sample_results, function(s) {
-    s$summary
+  out$summary <- do.call(cbind, lapply(seq_along(sample_results), function(i) {
+    s <- sample_results[[i]]$summary
+    if (i == 2) {
+      s <- s[, -which(grepl("param", colnames(s)))]
+      colnames(s) <- gsub("1", "2", colnames(s))
+    }
+    s
   }))
   if (!is.null(s2)) {
-    colnames(out$summary) <- c("HDE_1", "HDI_1_low", "HDI_1_high", "HDE_2", "HDI_2_low", "HDI_2_high")
-    postProbRes <- .post.prob.from.pdfs(sample_results[[1]]$pdf, sample_results[[2]]$pdf, hypothesis)
+    postProbRes <- .pdf.handling(sample_results[[1]]$pdf, sample_results[[2]]$pdf, hypothesis)
     out$summary <- cbind(
       out$summary,
-      data.frame("hyp" = hypothesis, "post.prob" = postProbRes$post.prob)
+      data.frame("hyp" = hypothesis, "post.prob" = as.numeric(postProbRes$post.prob))
     )
     dirSymbol <- postProbRes$direction
   } else {
@@ -491,9 +496,9 @@ conjugate <- function(s1 = NULL, s2 = NULL,
 
   #* `Make plot`
   if (plot) {
-    out$plot <- .conj_general_plot(sample_results, rope_res,
+    out$plot <- .conj_plot(sample_results, rope_res,
       res = out,
-      rope_range, rope_ci, dirSymbol, support
+      rope_range, rope_ci, dirSymbol, support, method
     )
   }
   return(out)
@@ -538,6 +543,12 @@ conjugate <- function(s1 = NULL, s2 = NULL,
 
 
 .getSupport <- function(samplesList, method, priors) {
+  #* `Check for bivarate`
+  if (any(grepl("bivariate", method[1]))) {
+    biv <- TRUE
+  } else {
+    biv <- FALSE
+  }
   support_quantiles <- lapply(seq_along(samplesList), function(i) {
     sample <- samplesList[[i]]
     prior <- priors[[i]]
@@ -549,25 +560,28 @@ conjugate <- function(s1 = NULL, s2 = NULL,
     } else {
       stop("samples must be a vector, data.frame, or matrix.")
     }
-
-    matched_arg <- match.arg(method[i], choices = c(
-      "t", "gaussian", "beta", "binomial",
-      "lognormal", "lognormal2", "poisson", "negbin",
-      "vonmises", "vonmises2",
-      "uniform", "pareto", "gamma", "bernoulli", "exponential",
-      "bivariate_uniform", "bivariate_gaussian"
-    ))
     vec_suffix <- if (vec) {
       "sv"
     } else {
       "mv"
     }
-    matched_fun <- get(paste0(".conj_", matched_arg, "_", vec_suffix))
+    matched_fun <- get(paste0(".conj_", method[i], "_", vec_suffix))
     qnts <- matched_fun(s1 = sample, priors = prior, calculatingSupport = TRUE)
     return(qnts)
   })
-  qnts <- range(unlist(support_quantiles))
-  support <- seq(qnts[1], qnts[2], length.out = 10000)
+  if (biv) {
+    pars <- names(support_quantiles[[1]])
+    support <- lapply(pars, function(param) {
+      qnts <- range(unlist(lapply(support_quantiles, function(sq) {
+        sq[[param]]
+      })))
+      seq(qnts[1], qnts[2], length.out = 10000)
+    })
+    names(support) <- pars
+  } else {
+    qnts <- range(unlist(support_quantiles))
+    support <- seq(qnts[1], qnts[2], length.out = 10000)
+  }
   return(support)
 }
 
@@ -584,7 +598,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
                        rope_ci = 0.89, plot, method) {
   #* `if bivariate then call the bivariate option`
   #* note this will return to .conj_rope but with a non-bivariate method
-  if (grepl("bivariate", method)) {
+  if (any(grepl("bivariate", method))) {
     rope_res <- .conj_bivariate_rope(sample_results, rope_range,
                          rope_ci, plot, method)
     return(rope_res)
@@ -656,14 +670,32 @@ conjugate <- function(s1 = NULL, s2 = NULL,
     .conj_rope(sample_results_param, rope_range = iter_rope_range,
                rope_ci = rope_ci, plot, method = "NONE")
   })
+  rope_res$summary <- do.call(rbind, lapply(rope_res, function(r) {
+    r$summary
+  }))
   return(rope_res)
 }
 
+#' ***********************************************************************************************
+#' *************** `Handle PDFs for testing` ***********************************
+#' ***********************************************************************************************
+#' @keywords internal
+#' @noRd
+
+.pdf.handling <- function(pdf1, pdf2, hypothesis) {
+  if(is.list(pdf1) & is.list(pdf2)) {
+    pdf.handling.output <- as.data.frame(do.call(rbind, lapply(seq_along(pdf1), function(i) {
+      .post.prob.from.pdfs(pdf1[[i]], pdf2[[i]], hypothesis)
+    })))
+  } else {
+    pdf.handling.output <- as.data.frame(.post.prob.from.pdfs(pdf1, pdf2, hypothesis))
+  }
+  return(pdf.handling.output)
+}
 
 #' ***********************************************************************************************
 #' *************** `Calculate Posterior Probability given PDFs` ***********************************
 #' ***********************************************************************************************
-
 
 #' @keywords internal
 #' @noRd
@@ -686,6 +718,23 @@ conjugate <- function(s1 = NULL, s2 = NULL,
     stop("hypothesis must be either unequal, equal, lesser, or greater")
   }
   return(list("post.prob" = post.prob, "direction" = dirSymbol))
+}
+
+#' ***********************************************************************************************
+#' *************** `General Plotting Function` ***********************************
+#' ***********************************************************************************************
+#' Used to pick which kind of plotting function to use.
+#' @keywords internal
+#' @noRd
+
+.conj_plot <- function(sample_results, rope_res = NULL, res,
+                       rope_range, rope_ci, dirSymbol = NULL, support, method) {
+  if (any(grepl("bivariate", method))) {
+    .conj_bivariate_plot(sample_results, rope_res, res, rope_range, rope_ci, dirSymbol)
+  } else {
+    .conj_general_plot(sample_results, rope_res, res, rope_range, rope_ci, dirSymbol)
+  }
+  
 }
 
 #' ***********************************************************************************************
@@ -829,7 +878,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
 #' @noRd
 
 .conj_bivariate_plot <- function(sample_results, rope_res = NULL, res,
-                                 rope_range, rope_ci, dirSymbol = NULL) {
+                                 rope_range, rope_ci, dirSymbol = NULL, support) {
   TITLE = "Joint Posterior Distribution"
   if (length(sample_results) == 1) {
     margin_plot_df <- sample_results[[1]]$plot_df
@@ -1018,7 +1067,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
     
     #* `Write title if there are 2 samples`
     SUBTITLE <- paste(lapply(params, function(par) {
-      paste0(par, ": P[s1", dirSymbol, "s2] = ", post.probs[[par]])
+      paste0(par, ": P[s1", dirSymbol[[1]], "s2] = ", post.probs[[par]])
       }), collapse = "\n")
   }
   #* `Assemble Patchwork`
