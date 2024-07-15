@@ -16,7 +16,6 @@
 .conj_bivariate_uniform_sv <- function(s1 = NULL, priors = NULL,
                              plot = FALSE, support = NULL, cred.int.level = NULL,
                              calculatingSupport = FALSE) {
-  support <- NULL
   out <- list()
   #* `make default prior if none provided`
   #* conjugate prior needs r1, r2, and alpha
@@ -52,6 +51,9 @@
     if (calculatingSupport) {
       return(list("A" = quantiles_l, "B" = quantiles_u))
     }
+  } else {
+    support_l <- support$A
+    support_u <- support$B
   }
   #* `Make Posterior Draws`
   out$posteriorDraws <- .conj_cond_inv_rpareto(10000, location_l_prime, location_u_prime,
