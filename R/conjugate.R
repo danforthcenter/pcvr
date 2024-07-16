@@ -65,7 +65,7 @@
 #' @import patchwork
 #' @import extraDistr
 #' @importFrom stats var median rnorm dnorm qbeta rbeta dbeta qbeta rlnorm
-#' dlnorm qlnorm qt rgamma qgamma dgamma rpois
+#' dlnorm qlnorm qt rgamma qgamma dgamma rpois runif
 #'
 #' @details
 #'

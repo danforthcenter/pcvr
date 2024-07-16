@@ -5,7 +5,7 @@
 #' @examples
 #' if (FALSE) {
 #'   set.seed(123)
-#'   s1 = runif(10, -1, 10)
+#'   s1 = stats::runif(10, -1, 10)
 #'   out <- .conj_bivariate_uniform_sv(
 #'     s1 = s1, cred.int.level = 0.95,
 #'     plot = TRUE
@@ -132,10 +132,10 @@
 }
 
 .conj_cond_inv_rpareto <- function(n, r1, r2, scale) {
-  u <- runif(n, min = 0, max = 1)
+  u <- stats::runif(n, min = 0, max = 1)
   # pareto quantile function
   x2 <- r2 / (u^(1 / scale))
-  u <- runif(n, min = 0, max = 1)
+  u <- stats::runif(n, min = 0, max = 1)
   # this is a displaced origin pareto
   # also using quantile function of the marginal x1 | x2
   x1 <- r1 + (r1 / r2) * x2 * (1 / (u^(1 / (scale + 1))) - 1)
