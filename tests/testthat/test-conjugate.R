@@ -398,7 +398,6 @@ test_that("bivariate conjugate gaussian works", {
 })
 
 test_that("bivariate conjugate lognormal works", {
-  devtools::load_all("~/pcvr")
   set.seed(123)
   s1 <- rlnorm(10, log(20), 0.25)
   s2 <- rlnorm(10, log(25), 0.4)
