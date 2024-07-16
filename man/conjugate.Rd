@@ -168,7 +168,7 @@ Prior distributions default to be weakly informative and in some cases you may w
     The mu parameter is then updated per Von-Mises conjugacy.
     }
     \item{\strong{"bivariate_uniform": }
-    \code{list(location_l = 0, location_u = 1, scale = 1)}, where scale is the
+    \code{list(location_l = 1, location_u = 2, scale = 1)}, where scale is the
     shared scale parameter of the pareto distributed upper and lower boundaries and location l and u
     are the location parameters for the Lower (l) and Upper (u) boundaries of the uniform
     distribution. Note this uses the same terminology for the pareto distribution's parameters
