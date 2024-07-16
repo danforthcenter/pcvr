@@ -60,7 +60,6 @@
     mu_prime, sigma_prime, df_prime
   )
   #* `posterior`
-  #* this also needs to handle the possibility of negative locations
   dens_mu <- extraDistr::dlst(support_mu, df_prime, mu_prime, sigma_prime)
   dens_prec <- stats::dgamma(support_prec, shape = alpha_prime, scale = beta_prime)
 
