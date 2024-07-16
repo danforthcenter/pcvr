@@ -476,7 +476,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
   out$summary <- do.call(cbind, lapply(seq_along(sample_results), function(i) {
     s <- sample_results[[i]]$summary
     if (i == 2) {
-      s <- s[, -which(grepl("param", colnames(s)))]
+      s <- s[, !grepl("param", colnames(s))]
       colnames(s) <- gsub("1", "2", colnames(s))
     }
     s
@@ -742,7 +742,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
   if (any(grepl("bivariate", method))) {
     .conj_bivariate_plot(sample_results, rope_res, res, rope_range, rope_ci, dirSymbol)
   } else {
-    .conj_general_plot(sample_results, rope_res, res, rope_range, rope_ci, dirSymbol)
+    .conj_general_plot(sample_results, rope_res, res, rope_range, rope_ci, dirSymbol, support)
   }
 }
 
@@ -819,7 +819,8 @@ conjugate <- function(s1 = NULL, s2 = NULL,
       ggplot2::guides(fill = ggplot2::guide_legend(override.aes = list(alpha = 0.5))) +
       ggplot2::theme(
         legend.title = ggplot2::element_blank(),
-        legend.position = c(0.9, 0.9)
+        legend.position = "inside",
+        legend.position.inside = c(0.9, 0.9)
       ) +
       ggplot2::labs(subtitle = paste0(
         "Sample 1:  ", round(res$summary$HDE_1, 2), " [", round(res$summary$HDI_1_low, 2), ", ",
