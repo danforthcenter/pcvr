@@ -9,7 +9,7 @@ conjugate(
   s2 = NULL,
   method = c("t", "gaussian", "beta", "binomial", "lognormal", "lognormal2", "poisson",
     "negbin", "vonmises", "vonmises2", "uniform", "pareto", "gamma", "bernoulli",
-    "exponential"),
+    "exponential", "bivariate_uniform", "bivariate_gaussian", "bivariate_lognormal"),
   priors = NULL,
   plot = FALSE,
   rope_range = NULL,
@@ -44,7 +44,9 @@ Both Von Mises options are for use with circular data (for instance hue values w
 quality of the data is relevant). Note that non-circular distributions can be compared to each other.
 This should only be done with caution. Make sure you understand the interpretation of any
 comparison you are doing if you specify two methods (c("gaussian", "lognormal") as an arbitrary
-example).}
+example).
+There are also 3 bivariate conjugate priors that are supported for use with single value data.
+Those are "bivariate_uniform", "bivariate_gaussian" and "bivariate_lognormal".}
 
 \item{priors}{Prior distributions described as a list of lists.
 If this is a single list then it will be duplicated for the second sample,
@@ -136,9 +138,7 @@ Prior distributions default to be weakly informative and in some cases you may w
     terminology for these parameters. These names were chosen for consistency with the
     \code{extraDistr} implementation of the pareto distribution. On Wikipedia the parameters are
     called shape and scale, corresponding to extraDistr's scale and location respecitvely, which
-    can be confusing. Note that the lower boundary of the uniform is assumed to be constant at 0.
-    There is a more complicated conjugate distribution to estimate both boundaries but that has
-    not seemed relevant so far in the author's plant phenotyping experience.
+    can be confusing. Note that the lower boundary of the uniform is assumed to be 0.
     }
     \item{\strong{"pareto": } \code{list(a = 1, b = 1, known_location = min(data))}, where
     a and b are the shape and scale parameters of the gamma distribution of the pareto distribution's
@@ -166,6 +166,20 @@ Prior distributions default to be weakly informative and in some cases you may w
     This Von-Mises implementation does not assume constant variance and instead uses MLE to estimate
     kappa from the data and updates the kappa prior as a weighted average of the data and the prior.
     The mu parameter is then updated per Von-Mises conjugacy.
+    }
+    \item{\strong{"bivariate_uniform": }
+    \code{list(location_l = 1, location_u = 2, scale = 1)}, where scale is the
+    shared scale parameter of the pareto distributed upper and lower boundaries and location l and u
+    are the location parameters for the Lower (l) and Upper (u) boundaries of the uniform
+    distribution. Note this uses the same terminology for the pareto distribution's parameters
+    as the "uniform" method.
+    }
+    \item{\strong{"bivariate_gaussian" and "bivariate_lognormal": }
+    \code{list(mu = 0, sd = 10, a = 1, b = 1)}, where mu and sd
+    are the mean and standard deviation of the Normal distribution of the data's mean and a and b
+    are the shape and scale of the gamma distribution on precision. Note that internally this uses
+    the Mu and Precision parameterization of the normal distribution and those are the parameters
+    shown in the plot and tested, but priors use Mu and SD for the normal distribution of the mean.
     }
 }
 

@@ -148,8 +148,10 @@ if (FALSE) {
   ) # benchmarked test data
   lines(x = 1:150, y = emdTime(1:150)) # exponential function
 
-  plot(x = 1:1000, y = emdTime(1:1000), type = "l",
-  xlab = "N Input Images", ylab = "time (seconds)")
+  plot(
+    x = 1:1000, y = emdTime(1:1000), type = "l",
+    xlab = "N Input Images", ylab = "time (seconds)"
+  )
 }
 ## End(Not run)
 
