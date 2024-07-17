@@ -366,20 +366,8 @@ ggplot(sv_ag, aes(
 
 ### Single day comparisons
 
-Non-longitudinal data (or single day data from larger longitudinal data) can be compared with frequentist or Bayesian options.
-
-The `pcvBox` function is a simple wrapper around ggplot and ggpubr functions that compares data with either T tests (the default) or Wilcox tests.
-
-```{r}
-pcvBox(sv_ag[sv_ag$genotype == "MM" & sv_ag$DAS == 15, ],
-  x = "fertilizer", y = "area_cm2",
-  compare = "0", showPoints = TRUE
-) +
-  labs(y = expression("Area" ~ "(cm"^2 ~ ")"), fill = "Soil Fertilizer") +
-  scale_x_discrete(limits = c("0", "50", "100"))
-```
-
-Alternatively the `conjugate` function compares several types of distributions using a Bayesian test and optionally evaluates a region of practical equivalence (ROPE). This function can be used with either wide or long single value data or wide multi-value data. See `?pcvr::conjugate` for details on usage and available options.
+Non-longitudinal data (or single day data from larger longitudinal data) can be compared using the `conjugate` function.
+`conjugate` uses conjugate priors to make simple Bayesian comparisons for several types of data. Optionally, region of practical equivalence (ROPE) testing is also supported. Most distirubtions supported by this function can be used with either wide or long single value data or wide multi-value data. See `?pcvr::conjugate` or the [conjugate tutorial](https://github.com/danforthcenter/pcvr/tree/main/tutorials/pcvrTutorial_conjugate) for details on usage and available options.
 
 ```{r}
 mo17_area <- sv_ag[sv_ag$genotype == "Mo17" & sv_ag$DAS > 18 & sv_ag$fertilizer == 100, "area_cm2"]
@@ -388,11 +376,11 @@ b73_area <- sv_ag[sv_ag$genotype == "B73" & sv_ag$DAS > 18 & sv_ag$fertilizer ==
 area_res_t <- conjugate(s1 = mo17_area, s2 = b73_area, method = "t", plot = TRUE, rope_range = c(-5, 5))
 ```
 
-Here we can see a dramatic difference in our posterior distributions between genotypes and the distribution of differences between these samples is entirely outside of our ROPE which.
+Here we can see a dramatic difference in our posterior distributions between genotypes and the distribution of differences between these samples is entirely outside of our ROPE range.
 
 ### Relative Tolerance
 
-Often bellwether experiments involve comparing stress tolerance between groups. For example in this dataset we might want to know which genotype shows the most resilience to reduced fertilizer. To easily check this we can change out data with `relativeTolerance`. Details on this function can be read with `?pcvr::relativeTolerance`.
+Often bellwether experiments involve comparing stress tolerance between groups. For example in this dataset we might want to know which genotype shows the most resilience to reduced fertilizer. To easily check this we can change out data with `relativeTolerance`. Details on this function can be read with `?pcvr::relativeTolerance`. Note that if you are going to be making a longitudinal model anyway then it makes more sense to use the model to assess relative tolerance rather than transforming data into a different unit.
 
 ```{r}
 rt <- relativeTolerance(sv_ag,
@@ -466,11 +454,11 @@ pcvBox(cp[cp$DAS == 19, ], x = "fertilizer", y = "area_cm2_csum", showPoints = T
 
 ### Longitudinal Modeling
 
-Longitudinal modeling is the most comprehensive way to use the single value traits from a bellwether experiment. Longitudinal modeling can also be complicated compared to single timepoint analyses. Statistical complications including changes in variance, non-linearity, and autocorrelation present potential problems in analyses. To address these we recommend using hierarchical models. `pcvr` attempts to lower the barrier to entry for these models with helper functions for use with `brms`, `nlme`, `nlrq`, and `nls`. Here we focus only on `brms` models, but there are [tutorials](https://github.com/danforthcenter/pcvr/tree/main/tutorials) that cover more options.
+Longitudinal modeling is the most comprehensive way to use the single value traits from a bellwether experiment. Longitudinal modeling can also be complicated compared to single timepoint analyses. Statistical complications including changes in variance, non-linearity, and autocorrelation present potential problems in analyses. To address these we recommend using hierarchical models. `pcvr` attempts to lower the barrier to entry for these models with helper functions for use with `brms`, `nlme`, `nlrq`, `mgcv`, and `nls`. Here we focus only on `brms` models, but there are [tutorials](https://github.com/danforthcenter/pcvr/tree/main/tutorials) that cover more options.
 
 #### Growth Model Forms
 
-Based on literature and observed trends there are 6 common growth models that `pcvr` supports. Those are shown here using the `growthSim` function.
+Based on literature and observed trends there are 13 growth models that `pcvr` supports. The six most common of those are shown here using the `growthSim` function but the remaining options could be visualized in the same way.
 
 ```{r,  class.source="simulated", class.output="simulated"}
 simdf <- growthSim("logistic",
@@ -535,23 +523,22 @@ Typically at least one of these models will be a good fit to your bellwether dat
 
 #### Model setup 
 
-Coding a multilevel bayesian model can be a difficult and time consuming process. Even with the greatly simplified syntax used by `brms` this can present a barrier to entry for some people who could benefit from using very robust models. To help get around this potential issue for the specific case of measuring growth over time `pcvr` includes several functions to work with `brms`, the first of which is `growthSS`, a self-starter helper function for use with `brms::brm`.
+Coding a multilevel Bayesian model can be a difficult and time consuming process. Even with the greatly simplified syntax used by `brms` this can present a barrier to entry for some people who could benefit from using very robust models. To help get around this potential issue for the specific case of measuring growth over time `pcvr` includes several functions to work with `brms`, the first of which is `growthSS`, a self-starter helper function for use with `brms::brm`.
 
 ##### submodel options
 
-For the purposes of this vignette we will only consider the default Student T model family, for examples of other model families see the [Advanced Growth Modeling tutorial on github](https://github.com/danforthcenter/pcvr/tree/main/tutorials/pcvrTutorial_advancedGrowthModeling) or the longitudinalGrowth vignette.
+For the purposes of this vignette we will only consider the default Student T model family, for examples of other model families (useful for count or circular data especially) see the [Advanced Growth Modeling tutorial on github](https://github.com/danforthcenter/pcvr/tree/main/tutorials/pcvrTutorial_advancedGrowthModeling) or the longitudinal growth vignette.
 
-There are several ways to consider variance over time. By default almost all modeling assumes homoscedasticity, that is constant variance across predictor variables (time here). That assumption is very unrealistic in biological settings since all seeds/seedlings will start from a very low area but will grow differently through the experiment. The `growthSS` function has three options for modeling variance: homo, linear, spline. There are many ways that we could model variance, but these three are implemented for general use. Splines will almost always yield the best fit to your data.
+There are several ways to consider variance over time. By default almost all modeling assumes homoscedasticity, that is constant variance across predictor variables (time here). That assumption is very unrealistic in biological settings since all seeds/seedlings will start from a very low area but will grow differently through the experiment. The `growthSS` function can use any of the main growth model options as a model for distributional parameters (here being sigma). Splines or asymptotic models will often yield the best fit to your data's variance.
 
-![Different sub model options shown and compared with LOO Information Criterion](subModelComparisons.png)
 
 ##### Prior Distributions
 
-An important part of bayesian statistics is setting an appropriate prior. These represent your knowledge about the field and are used along with your collected data to yield results. Priors should generally be weak relative to your data, meaning that if your prior belief is wrong then your experiment can move the posterior distribution away from the prior in a meaningful way.
+An important part of Bayesian statistics is setting an appropriate prior. These represent your knowledge about the field and are used along with your collected data to yield results. Priors should generally be weak relative to your data, meaning that if your prior belief is wrong then your experiment can move the posterior distribution away from the prior in a meaningful way.
 
 In `growthSS` priors can be specified as a brmsprior object (in which case it is used as is), a named list (names representing parameters), or a numeric vector, where values will be used to generate lognormal priors with a long right tail. Lognormal priors with long right tails are used because the values for our growth curves are strictly positive and the lognormal distribution is easily interpreted. The tail is a product of the variance, which is assumed to be 0.25 for simplicity and to ensure priors are wide. This means that only a location parameter needs to be provided. If a list is used then each element of the list can be length 1 in which case each group will use the same prior or it can be a vector of the same length as `unique(data$group)` where `group` is your grouping variable from the form argument to `growthSS`. If a vector is used then a warning will be printed to check that the assumed order of groups is correct. The `growthSim` function can be useful in thinking about what a reasonable prior distribution might be, although priors should not be picked by trying to get a great fit by eye to your collected data.
 
-We can check the priors made by `growthSS` with the `plotPrior` function.
+We can check the priors made by `growthSS` with the `plotPrior` function, which can take a list of priors or the `growthSS` output.
 
 ```{r}
 priors <- list("A" = 130, "B" = 10, "C" = 0.2)
@@ -575,7 +562,7 @@ Now we're ready to define the necessary variables in our data and use the `growt
 sv_ag$group <- interaction(sv_ag$fertilizer, sv_ag$genotype)
 ```
 
-The `brms` package is not automatically imported by `pcvr`, so before fitting models we would need to load that package. For details on installing [`brms`](https://github.com/paul-buerkner/brms) and either [`rstan`](https://mc-stan.org/rstan/) or [`cmdstanr`](https://mc-stan.org/cmdstanr/) (with `cmdstanr` being recommended), see those packages linked documentation. Note that if you install `pcvr` from github with `dependencies=T` then `cmdstanr` and `brms` will be installed.
+The `brms` package is not always imported by `pcvr` (since `dependencies` is NA by default when installing from github), so before fitting models you may need to install that package. For details on installing [`brms`](https://github.com/paul-buerkner/brms) and either [`rstan`](https://mc-stan.org/rstan/) or [`cmdstanr`](https://mc-stan.org/cmdstanr/) (with `cmdstanr` being recommended), see those packages linked documentation. Note that if you install `pcvr` from github with `dependencies=T` then `cmdstanr` and `brms` will be installed and ready to use.
 
 ```{r, eval=FALSE}
 library(brms)
@@ -611,7 +598,7 @@ This looks okay, there are no strange jumps in the data or glaring problems.
 
 #### Running Models
 
-The `fitGrowth` function is a wrapper around `brms::brm` which automatically uses the output from `growthSS`. Any additional arguments to `brms::brm` can still be specified, a few examples of which are shown here. 
+The `fitGrowth` function in this case will call `brms::brm` which automatically uses the output from `growthSS`. Any additional arguments to `brms::brm` can still be specified, a few examples of which are shown here.
 
 ```{r, class.source="static-code", eval=FALSE}
 fit <- fitGrowth(ss,
@@ -632,21 +619,9 @@ brmPlot(fit, form = area_cm2 ~ DAS | barcode / group, df = ss$df) +
 
 ![](brmPlot1.png)
 
-In this case our model has 12 groups (3 soil conditions in each of 4 genotypes), so we might want to pull out only a few groups to look at. 
-
-```{r, eval=FALSE}
-brmPlot(fit,
-  form = area_cm2 ~ DAS | barcode / group, df = ss$df,
-  groups = c("0.B73", "50.B73", "100.B73")
-) +
-  labs(y = expression("Area" ~ "(cm"^2 ~ ")"))
-```
-
-![](brmPlot2.png)
-
 #### Test Hypotheses
 
-Now we probably have some ideas about what we want to test in our data. The `brms::hypothesis` function offers incredible flexibility to test all kinds of hypotheses. For some comparisons `pcvr` has a helper function called `brmViolin` to visualize posterior distributions and the posterior probability of some hypotheses associated with them.
+Now we probably have some ideas about what we want to test in our data. The `brms::hypothesis` function offers incredible flexibility to test all kinds of hypotheses. For consistency with other backends the `testGrowth` function calls `brms::hypothesis` to evaluate hypotheses. For some comparisons `pcvr` has a helper function called `brmViolin` to visualize posterior distributions and the posterior probability of some hypotheses associated with them.
 
 ```{r, eval=FALSE}
 brmViolin(
@@ -657,28 +632,10 @@ brmViolin(
 )
 ```
 
-![](brmViolin_vigPlot.png)
 
 This shows that we have a posterior probability greater than 99 percent of an asymptotic size at least 5 percent higher with the 100 type soil when compared against the 0 type soil. Note that this data does not have any plants that reached asymptotic size, so the model uses the incomplete data to estimate where an asymptote would be. In a normal experiment the plants would be more mature but here the asymptote parameter is artificially inflated for the 100 soil treatment group due to their slower growth rate. 
 
 There are a lot of options for how to use this function and even more ways to use `brms::hypothesis`, so this example should not be seen as the only way to compare your models.
-
-#### Comparing Models Over Time
-
-As a final note on `brms`, there is a possiblity of making interesting early stopping rules in a Bayesian framework. Currently this does not have an obvious Bellwether implementation but it should be noted as a benefit of the method. If you have models fit to subsets of your data then the `distPlot` function will show changes in the posterior distribution for some or all of your parameters over time or over another subset variable. Here the growth trend plots are also a legend for the time of each posterior distribution.
-
-```{r, eval=FALSE}
-print(load(url(paste0(base_url, "brmsFits.rdata"))))
-from3to25 <- list(
-  fit_3, fit_5, fit_7, fit_9, fit_11, fit_13,
-  fit_15, fit_17, fit_19, fit_21, fit_23, fit_25
-)
-
-distributionPlot(fits = from3to25, form = y ~ time | id / group, params = c("A", "B", "C"), d = simdf)
-```
-
-
-![](distPlot_vigPlot.png)
 
 ## Multi Value Traits
 
@@ -762,7 +719,7 @@ b73_sample <- hue_wide[
 
 hue_res_ln <- conjugate(
   s1 = mo17_sample, s2 = b73_sample, method = "lognormal",
-  plot = TRUE, rope_range = c(-20, 20), hypothesis = "equal"
+  plot = TRUE, rope_range = c(-10, 10), hypothesis = "equal"
 )
 ```
 
@@ -843,11 +800,7 @@ ggplot(sim_df_long, aes(x = bin, y = value, fill = group), alpha = 0.25) +
   facet_wrap(~group)
 ```
 
-
-
 Our plots show very different distributions, so we get EMD between our images and see that we do have some trends shown in the resulting heatmap.
-
-
 
 ```{r,  class.source="simulated", class.output="simulated"}
 sim_emd <- pcv.emd(
@@ -857,21 +810,14 @@ sim_emd <- pcv.emd(
 sim_emd$plot
 ```
 
-
-
 Now we can filter edge strength during our network building step for EMD > 0.5, and plot our network.
-
-
 
 ```{r,  class.source="simulated", class.output="simulated"}
 n <- pcv.net(sim_emd$data, filter = 0.5)
 net.plot(n, fill = "group")
 ```
 
-
 The distributions separate very well from each other, but we don't actually see our uniform distribution here. That is because the uniform distribution does not have self-similar replicates and is also not very similar to the other distributions. If we change our filtering then we can even see which generating distributions are most similar to each other. Here we pass 0.5 as a string, which tells `pcv.net` to use the top 50 percent of EMD values instead of EMD values > 0.5.
-
-
 
 ```{r,  class.source="simulated", class.output="simulated"}
 n <- pcv.net(sim_emd$data, filter = "0.5")
@@ -930,7 +876,7 @@ This is a much more complicated network! Parsing biological meaning out of this 
 
 ## Conclusion
 
-This vignette will be periodically updated as `pcvr` changes. Once again if your goal or experiment has some set of questions or needs that are not met so far please consider making an [issue on github](https://github.com/joshqsumner/pcvr/issues/new/choose) to help the Data Science Core continue to work on this project in ways that will help the plantCV community.
+This vignette will be periodically updated as `pcvr` changes. Generally the [tutorials](https://github.com/danforthcenter/pcvr/tree/main/tutorials) are updated more frequently and can be a good resource. Once again if your goal or experiment has some set of questions or needs that are not met so far please consider making an [issue on github](https://github.com/joshqsumner/pcvr/issues/new/choose) to help the Data Science Core continue to work on this project in ways that will help the plantCV community.
 
 
 

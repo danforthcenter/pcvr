@@ -36,7 +36,7 @@
 #'     to phenotype data with new columns for change in the phenotype,
 #'     change in the pre-watering weight, and pseudo-water use efficiency (pWUE).
 #' @examples
-#'
+#' if (FALSE) {
 #' library(data.table)
 #' sv <- read.pcv(
 #'   "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv",
@@ -72,7 +72,7 @@
 #'   time = "timestamp", id = "barcode", offset = 0,
 #'   waterCol = "water_amount", method = "rate"
 #' )
-#'
+#' }
 #' @export
 
 pwue <- function(df, w, pheno = "area_pixels", time = "timestamp", id = "barcode",

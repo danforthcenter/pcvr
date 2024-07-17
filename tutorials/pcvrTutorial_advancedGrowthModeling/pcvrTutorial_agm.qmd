@@ -32,7 +32,7 @@ editor: source
 -   Using `brms` directly
 -   Resources
 
-## `pcvr` Goals
+## `pcvr` Goals {.smaller}
 
 Currently `pcvr` aims to:
 
@@ -65,7 +65,7 @@ library(ggplot2) # for plotting
 library(patchwork) # to arrange ggplots
 ```
 
-## Why Longitudinal Modeling?
+## Why Longitudinal Modeling? {.smaller}
 
 `plantCV` allows for user friendly high throughput image based phenotyping
 
@@ -73,7 +73,7 @@ library(patchwork) # to arrange ggplots
 
 Resulting data follows individuals over time, which changes our statistical needs.
 
-## Why Longitudinal Modeling? 2
+## Why Longitudinal Modeling? 2 {.smaller}
 
 Longitudinal Data is:
 
@@ -81,7 +81,7 @@ Longitudinal Data is:
 -   Often non-linear
 -   Heteroskedastic
 
-## Why Longitudinal Modeling? 3
+## Why Longitudinal Modeling? 3 {.smaller}
 
 ```{r}
 #| echo: false
@@ -110,7 +110,7 @@ ggplot(simdf,aes(time, y, group=interaction(group,id)))+
 #* aka add rise/run segments to some line from the data from a day to the next day
 ```
 
-## Why Longitudinal Modeling? 4
+## Why Longitudinal Modeling? 4 {.smaller}
 
 ```{r}
 #| echo: false
@@ -140,7 +140,7 @@ nlPatch
 
 ```
 
-## Why Longitudinal Modeling? 5
+## Why Longitudinal Modeling? 5 {.smaller}
 
 ```{r}
 
@@ -174,7 +174,7 @@ hetPatch <- main/sigmaPlot+plot_layout(design=design)
 hetPatch
 ```
 
-## Why Bayesian Modeling?
+## Why Bayesian Modeling? {.smaller}
 
 Bayesian modeling allows us to account for all these problems via a more flexible interface than frequentist methods.
 
@@ -199,9 +199,9 @@ It's generally been easier for the authors to fit 50 models each with 4 groups i
 
 ## Supported Growth Models {.smaller}
 
-There are 6 main growth models supported in `pcvr`.
+There are 13 main growth models supported in `pcvr`.
 
-3 are asymptotic, 3 are non-asympototic.
+Several are shown next, including asymptotic and non-asymptotic options.
 
 ## Supported Growth Models {.smaller}
 
@@ -347,7 +347,13 @@ For now we will focus on single models but there will be examples of segmented m
 
 ## Supported Growth Models 6 {.smaller}
 
-Finally, the "decay" keyword can be used to specify a decay model instead. For now we will focus on growth models as these constitute the large majority of models used in plant phenotyping.
+The "decay" keyword can be used to specify a decay model instead. For now we will focus on growth models as these constitute the large majority of models used in plant phenotyping.
+
+## Supported Growth Models 7 {.smaller}
+
+Hierarchical models can be specified by adding covariates to the model formula and specifying models for those covariates in the `hierarchy` argument.
+
+A hierarchical formula would then be written as `y ~ time + covar | id / group` and we could specify to only model the `A` parameter as being modeled by `covar` by adding `hierarchy = list("A" = "int_linear")`.
 
 ## Survival Models {.smaller}
 
@@ -355,11 +361,15 @@ Survival models can also be specified using the "survival" keyword. Using the br
 
 For details please see the `growthSS` documentation.
 
-## `growthSS`
+## Maxima/Minima Models {.smaller}
+
+bragg, lorentz, and beta Maxima/Minima models are available in `growthSS`, but should only be used for biologically appropriate settings. For general trends where data may increase then decrease some consider changepoint models or splines before using these.
+
+## `growthSS` {.smaller}
 
 Any of the aforementioned models can be specified easily using `growthSS`.
 
-## `growthSS` - form
+## `growthSS` - form {.smaller}
 
 With a model specified a rough formula is required to parse your data to fit the model.
 
@@ -367,7 +377,7 @@ The layout of that formula is:
 
 `outcome ~ time|individual/group`
 
-## `growthSS` - form 2
+## `growthSS` - form 2 {.smaller}
 
 Here we would use `y~time|id/group`
 
@@ -381,7 +391,7 @@ simdf<-growthSim("gompertz", n=20, t=25,
 head(simdf)
 ```
 
-## `growthSS` - form 3
+## `growthSS` - form 3 {.smaller}
 
 Generally it makes sense to visually check that your formula covers your experimental design.
 
@@ -502,10 +512,10 @@ p
 
 ## `growthSS` - Spline sigma {.smaller}
 
-| Pros                                                                     | Cons                                                                  |
+| Pros | Cons |
 |-------------------------------------|-----------------------------------|
 | [**Very**]{style="color:#FF007B;"} flexible and accurate model for sigma | [**Significantly**]{style="color:#FFD900;"} slower than other options |
-| Fewer priors                                                             | Splines can be a black-box                                            |
+| Fewer priors | Splines can be a black-box |
 
 ```{r}
 p<-ggplot(sigma_df, aes(x=time, y=y, group=group))+
@@ -563,7 +573,7 @@ Y \~ T(mu \~ main growth formula, [sigma \~ sigma formula]{style="color:#FF007B;
 
 In `pcvr` the Student T family is the default for these models, but other distributions are supported through `"distribution: model"` syntax.
 
-In general this is only for special cases where the Gaussian/T does not capture some important quality of the data. An obvious example could be leaf counts, which might be modelled as `"poisson: monomolecular"`, for instance.
+In general this is only for special cases where the Gaussian/T does not capture some important quality of the data. An obvious example could be leaf counts, which might be modeled as `"poisson: monomolecular"`, for instance.
 
 ## `growthSS` - Distributional Models 3 {.smaller}
 
@@ -571,7 +581,7 @@ You can specify sigma as a list of formulas to model different distributional pa
 
 For details on supported families and their parameterization try running `growthSS(..., sigma=NULL,...)` and examining the priors, or checking `?brmfamily`.
 
-## `growthSS` - priors
+## `growthSS` - priors {.smaller}
 
 Bayesian statistics combine prior distributions and collected data to form a posterior distribution.
 
@@ -579,19 +589,19 @@ Bayesian statistics combine prior distributions and collected data to form a pos
 
 Luckily, in the growth model context it is pretty easy to set "good priors".
 
-## `growthSS` - priors
+## `growthSS` - priors {.smaller}
 
 "Good priors" are generally mildly informative, but not very strong.
 
 They provide some well vetted evidence, but do not overpower the data.
 
-## `growthSS` - priors
+## `growthSS` - priors {.smaller}
 
 For our setting we know growth is positive and we should have basic impressions of what sizes are possible.
 
 At the "weakest" side of these priors we at least know growth is positive and the camera only can measure some finite space.
 
-## `growthSS` - priors 2
+## `growthSS` - priors 2 {.smaller}
 
 Default priors in `growthSS` are log-normal
 
@@ -599,7 +609,7 @@ $\text{log}~N(\mu, 0.25)$
 
 This has the benefit of giving a long right tail and strictly positive values while only requiring us to provide $\mu$.
 
-## `growthSS` - priors 3
+## `growthSS` - priors 3 {.smaller}
 
 We can see what those log-normal distributions look like with `plotPrior`.
 
@@ -611,7 +621,7 @@ priorPlots<-plotPrior(priors)
 priorPlots[[1]]/priorPlots[[2]]/priorPlots[[3]]
 ```
 
-## `growthSS` - priors 4
+## `growthSS` - priors 4 {.smaller}
 
 Those distributions can still be somewhat abstract, so we can simulate draws from the priors and see what those values yield in our growth model.
 
@@ -622,7 +632,7 @@ twoPriors = list("A" = c(100, 130), "B" = c(6, 12), "C" = c(0.5, 0.25))
 plotPrior(twoPriors, "gompertz",n=100)[[1]]
 ```
 
-## `growthSS` - priors 5
+## `growthSS` - priors 5 {.smaller}
 
 Our final call to `growthSS` will look like this for our sample data.
 
@@ -634,15 +644,15 @@ ss<-growthSS(model="gompertz", form =  y~time|id/group,
                           "sigmaA"=20, "sigmaB"=10, "sigmaC"=0.25))
 ```
 
-## `fitGrowth`
+## `fitGrowth` {.smaller}
 
 Now that we have the components for our model from `growthSS` we can fit the model with `fitGrowth`.
 
-## `fitGrowth` 2
+## `fitGrowth` 2 {.smaller}
 
 This will call `Stan` outside of R to run Markov Chain Monte Carlo (MCMC) to get draws from the posterior distributions. We can control how `Stan` runs with additional arguments to `fitGrowth`, although the only required argument is the output from `growthSS`.
 
-## `fitGrowth` 2
+## `fitGrowth` 2 {.smaller}
 
 Here we specify our `ss` argument to be the output from `growthSS` and tell the model to use 4 cores so that the chains run entirely in parallel, but the rest of this model is using defaults.
 
@@ -655,7 +665,7 @@ fit <- fitGrowth(
   iter = 2000, chains = 4, backend = "cmdstanr")
 ```
 
-## `fitGrowth` 2
+## `fitGrowth` 2 {.smaller}
 
 Note that there are lots of arguments that can be passed to `brms::brm` via `fitGrowth`.
 
@@ -663,7 +673,7 @@ Note that there are lots of arguments that can be passed to `brms::brm` via `fit
 
 One that can be very helpful for fitting complex models is the `control` argument, where we can control the sampler's behavior.
 
-## `fitGrowth` 2
+## `fitGrowth` 2 {.smaller}
 
 `adapt_delta` and `tree_depth` are both used to reduce the number of "divergent transitions" which are times that the sampler has some departure from the True path and which can compromise the results.
 
@@ -676,7 +686,7 @@ fit <- fitGrowth(ss, cores = 4,
                  control = list(adapt_delta = 0.999, max_treedepth = 20) )
 ```
 
-## `fitGrowth` 3
+## `fitGrowth` 3 {.smaller}
 
 `fitGrowth` returns a `brmsfit` object, see `?brmsfit` and `methods(class="brmsfit")` for general information.
 
@@ -695,7 +705,7 @@ fit_spline <- fitGrowth(ss_spline, cores = 2,
 save(fit, ss, fit_spline, ss_spline, file="agm_sim_fit.rdata")
 ```
 
-## `growthPlot`
+## `growthPlot` {.smaller}
 
 ```{r}
 #| echo: false
@@ -742,7 +752,7 @@ brmViolin(fit, hyp="num/denom>1.05",
           compareX = "a", againstY = "b", x = "group")
 ```
 
-## Hypothesis Testing
+## Hypothesis Testing {.smaller}
 
 `brms::hypothesis` allows for incredibly flexible hypothesis testing.
 
@@ -753,29 +763,17 @@ Here we test for an asymptote for group A at least 20% larger than that of group
 brms::hypothesis(fit, "A_groupa > 1.2 * A_groupb")$hyp
 ```
 
-## Hypothesis Testing 2
-
-Here we test the model of our bellwether data to see if the ratio of two genotypes is 10% larger when fertilizer is added.
-
-```{r}
-#| echo: true
-#| eval: true
-#| code-line-numbers: "2"
-data(bw_vignette_fit)
-brms::hypothesis(bw_vignette_fit, "(A_group0.B73 / A_group0.MM) > 1.1 * (A_group50.B73 / A_group50.MM)")$hyp
-```
-
-## Threshold models
+## Threshold models {.smaller}
 
 Segmented Models are specified using "model1 + model2" syntax, with "+" representing a change point.
 
 . . .
 
-Currently only two phases (one changepoint) are recommended. While more will work they will slow down significantly and may require more fine tuning.
+Currently only two phases (one changepoint) are recommended. More will work but they will slow down the MCMC and may require more fine tuning.
 
 . . .
 
-These segmented models can also be used to specify sub-models of sigma.
+These segmented models can also be used to specify sub-models of distributional parameters.
 
 ## linear + linear {.smaller}
 
@@ -1021,12 +1019,56 @@ ss <- growthSS(model = "poisson: logistic", # specify poisson family
                df = df, start=list("A"=8, "B"=10, "C"=3) )
 fit <- fitGrowth(ss,iter = 2000, cores = 4, chains = 4)
 plot <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
+```
+
+```{r}
+#| eval: false
+#| echo: false
 ggsave("~/pcvr/tutorials/pcvrTutorial_advancedGrowthModeling/exCountModel.png", plot, width=6,height=4, dpi=300, bg="#ffffff")
 ```
+
 
 ## Example count model {.smaller}
 
 ![](exCountModel.png)
+
+## Example hierarchical model {.smaller}
+
+```{r}
+#| eval: false
+#| echo: true
+#| code-line-numbers: "5, 8, 11, 15"
+simdf <- growthSim(
+  "logistic", n = 20, t = 25,
+  params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
+)
+simdf$covar <- stats::rnorm(nrow(simdf), 10, 1)
+ss <- growthSS(
+  model = "logistic",
+  form = y ~ time + covar | id / group,
+  sigma = "logistic",
+  list(
+    "AI" = 100, "AA" = 5,
+    "B" = 10, "C" = 3,
+    "sigmaA" = 10, "sigmaB" = 10, "sigmaC" = 3),
+  df = simdf, type = "brms",
+  hierarchy = list("A" = "int_linear")
+)
+fit <- fitGrowth(ss,iter = 1000, cores = 4, chains = 4)
+plot <- growthPlot(fit=fit, form=ss$pcvrForm, df = ss$df)
+```
+
+```{r}
+#| eval: false
+#| echo: false
+ggsave("~/pcvr/tutorials/pcvrTutorial_advancedGrowthModeling/exHierarchyModel.png", plot, width=6,height=4, dpi=300, bg="#ffffff")
+```
+
+## Example hierarchical model {.smaller}
+
+Note for plotting hierarchical models a `hierarchy_value` can be specified and defaults to the mean of the `covar` in this case.
+
+![](exHierarchyModel.png)
 
 ## Evaluating your models {.smaller}
 
@@ -1034,13 +1076,13 @@ John Kruschke wrote a paper on the [Bayesian Analysis and Reporting Guidelines](
 
 In pcvr some of what Kruschke recommends can be accessed from a model/list of models using the `barg` function, see `?barg` for details on what that entails.
 
-## Using `brms` directly
+## Using `brms` directly {.smaller}
 
 These functions are all to help use common growth models more easily.
 
 The choices in `pcvr` are a small subset of what is possible with `brms`, which itself is more limited than `Stan`.
 
-## Using `brms` directly
+## Using `brms` directly {.smaller}
 
 Our gompertz sigma model looks like this in `brms`:
 
@@ -1067,11 +1109,11 @@ fit_g2 <- brm(form_b, family = student, prior = prior1, data = simdf,
              init = 0 ) # chain initialization at 0 for simplicity
 ```
 
-## Using `brms` directly
+## Using `brms` directly {.smaller}
 
 It can be more work to try new options in `brms` or `Stan`, but if you have a situation not well represented by the existing models then it may be necessary.
 
-## Resources
+## Resources {.smaller}
 
 If you run into a novel situation please reach out and we will try to come up with a solution and add it to `pcvr` if possible.
 

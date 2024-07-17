@@ -61,7 +61,7 @@ The equation is then
 \eqn{\frac{P_{t}}{W_{t_{end-1}}-W_{t_{start}} }}{P_[t] / W_[t_(end-1)]-W_[t_start]}
 }
 \examples{
-
+if (FALSE) {
 library(data.table)
 sv <- read.pcv(
   "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv",
@@ -97,6 +97,6 @@ x <- pwue(
   time = "timestamp", id = "barcode", offset = 0,
   waterCol = "water_amount", method = "rate"
 )
-
+}
 }
 \keyword{WUE}
