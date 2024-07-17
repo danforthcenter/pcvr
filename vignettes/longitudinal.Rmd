@@ -53,9 +53,7 @@ cmdstanr::install_cmdstan()
 
 ## Available Growth Models
 
-Based on [literature](https://doi.org/10.1111/j.2041-210X.2011.00155.x) and experience there are six common plant growth models. Those main six growth models are supported in `pcvr` across each of four available backend functions (`nls`, `nlrq`, `nlme`, and `brms`). The `mgcv` backend can also be used to fit generalized additive models (GAMS) to any of these growth curves as well. In addition to these six main models GAMs, double logistic, and double gompertz models are supported across the four available parameter based backends. The parameterizations of these models are explained below.
-
-![](pcvr_longitudinal_patch.png)
+Based on [literature](https://doi.org/10.1111/j.2041-210X.2011.00155.x) and experience there are six common plant growth models that make up the "main" models in `growthSS`, although 13 are supported. Those main six growth models are supported in `pcvr` across each of four available backend functions (`nls`, `nlrq`, `nlme`, and `brms`). The `mgcv` backend can also be used to fit generalized additive models (GAMS) to any of these growth curves as well. In addition to these six main models GAMs, double logistic, and double gompertz models are supported across the four available parameter based backends. The parameterizations of these models are explained below.
 
 ### Logistic
 
@@ -306,9 +304,6 @@ fit_h <- fitGrowth(ss, iter = 1000, cores = 4, chains = 4, silent = 0)
 brmPlot(fit_h, form = ss$pcvrForm, df = ss$df)
 ```
 
-![Credible intervals show the unrealistic homoskedasticity assumption](homosked_brm.png)
-
-
 We can relax this assumption and model sigma separately from the main growth trend. To show an example of the options in `pcvr`, here we repeat the example from above using a linear submodel. Note that here we add some extra controls to the model fitting algorithm to help the model fit well with the added complexity at the cost of being slower.
 
 ```{r}
@@ -330,7 +325,6 @@ p <- p1 / p2
 p
 ```
 
-![Linear sub models change variance over time, but do not fit this data well](linear_brm.png)
 
 This model is also a poor fit, but it has a different problem. It accurately models the low variability at the beginning of the experiment, but the linear model is not flexible enough to adapt to the changes in variance even in this simulated data.
 
@@ -353,7 +347,6 @@ fit_s <- fitGrowth(ss,
 brmPlot(fit_s, form = ss$pcvrForm, df = ss$df)
 ```
 
-![Spline sub models allow for taking heteroskedasticity into account without complex formulae](spline_brm.png)
 Here we try applying a gompertz function to the variance submodel. While this is much less flexible than splines it tends to describe the variance of a sigmoid growth model quite well and allows for easier hypothesis testing between groups. A fringe benefit can also be the predictability of the gompertz formula in extrapolating future data. Splines can have unexpected behavior when trying to predict timepoints outside of your initial data, but the gompertz formula is more predictable. Additionally, since the spline sub model will fit many basis functions this will generally be **significantly** faster since it only needs to find 3 parameters to complete the sub model, and each can have a mildly informative prior. As a single reference point, the model below fit in about 6 minutes while the spline model above took slightly over an hour to fit. These example models have three groups and the model with a gompertz sub model contains 21 total parameters while the spline sub model version contains 43 total parameters.
 
 When setting priors for the gompertz sub-model it is generally reasonable to expect a similar growth rate and inflection point as in the main model (assuming the main model is gompertz as well).
@@ -378,7 +371,6 @@ fit_g <- fitGrowth(ss,
 brmPlot(fit_g, form = ss$pcvrForm, df = ss$df)
 ```
 
-![Using a Gompertz formula for both growth and for increasing variance](gompSubModel.png)
 
 A few other options are shown here as further examples. There are as many ways to model variance as there are to model growth using the `brms` backend, but other options are more limited.
 
@@ -445,7 +437,6 @@ ggplot(
   theme(legend.position = "none")
 ```
 
-![LOO Information Criterion can be used to compare these models, with lower values indicating a better model fit](pcvr_submodel_loo.png)
 
 The spline sub-model tends to have the best LOO IC, but comparing credible intervals while taking speed and interpretability into account may change which model is the best option for your situation. For this particular data the gompertz submodel does seem to perform very well despite the LOO IC difference from using splines.
 
@@ -480,7 +471,6 @@ brmPlot(fit, form = ss$pcvrForm, df = ss$df) +
   coord_cartesian(ylim = c(0, 100))
 ```
 
-![Credible intervals from strong priors](strongPrior.png)
 
 Setting a prior as narrow as `N(10, 0.05)` intuitively does feel too strong, as though we are so sure already that we can't expect to learn much more, but another way that a prior can be too strong is in providing too much unrealistic information. Specifically the flat prior can also be thought of as too strong given that it will weigh all numbers equally, which is almost never a reasonable assumption. In our growth model examples there should be no probability given to negative growth rates when plants start from seed. Even if the flat prior is constricted to be positive there is no parameterization where a parameter value in the thousands or millions makes sense as being biologically plausible.
 
@@ -508,7 +498,6 @@ brmPlot(fit, form = ss$pcvrForm, df = ss$df) +
   coord_cartesian(ylim = c(0, 100))
 ```
 
-![Using weak priors our mean lines make sense](weakPrior.png)
 
 As you can see the weak priors moved to meet our data and now we have usable posterior distributions. The variance is large but that is natural with 5 reps per condition when looking at 99% credible intervals.
 
@@ -728,10 +717,8 @@ ss <- growthSS(
 )
 
 fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1)
-growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
+# growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
 ```
-
-![](linearPlusLinear_fitGrowth.png)
 
 Here we look at a "linear + logistic" model using a gam submodel.
 
@@ -755,10 +742,9 @@ ss <- growthSS(
 )
 
 fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1)
-growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
+# growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
 ```
 
-![](linearPlusLogistic_fitGrowth.png)
 
 Here we fit a "linear + gam" model with a homoskedastic sub model.
 
@@ -770,10 +756,9 @@ ss <- growthSS(
 )
 
 fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1)
-growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
+# growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
 ```
 
-![](linearPlusGAM_fitGrowth.png)
 
 Here we fit a three part linear model with a gam to model variance. In this case we only used 500 iterations on one chain but the model still fits reasonably well.
 
@@ -797,10 +782,9 @@ ss <- growthSS(
 
 fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1)
 
-plot <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
+# growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
 ```
 
-![](linearPlusLinearPlusLinear_fitGrowth.png)
 
 We can also fit thresholded models to the variance. Here we fit two part intercept only models to both the data and the variance. This is not a growth model exactly, but shows some of the available options well.
 
@@ -848,10 +832,9 @@ ss <- growthSS(
 
 fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1)
 
-plot <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
+# growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
 ```
 
-![](intPlusInt_heteroskedastic_fitGrowth.png)
 
 Here we fit int + linear models to the overall trend and the variance
 
@@ -896,10 +879,8 @@ ss <- growthSS(
   df = simdf, type = "brms"
 )
 fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1)
-plot <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df, timeRange = 1:40)
+# growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df, timeRange = 1:40)
 ```
-
-![](intPlusLinear_heteroskedasticIntPlusLinear_fitGrowth.png)
 
 
 Finally we fit a model of "int + logistic" for the main growth trend and "int + gam" for the variance. The benefit here over a pure "gam" model of variance is that we can test the intercept and changepoint parameters of the variance now.
@@ -946,10 +927,10 @@ ss <- growthSS(
   df = simdf, type = "brms"
 )
 fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1)
-plot <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
+# growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
 ```
 
-![](intPluslogistic_intPlusGAMSubModel.png)
+
 
 ## Bayesian Analysis and Reporting Guidelines
 
@@ -969,7 +950,6 @@ from3to25 <- list(
 
 distributionPlot(fits = from3to25, form = y ~ time | id / group, params = c("A", "B", "C"), d = simdf)
 ```
-
 
 ![](distPlot_vigPlot.png)
 
