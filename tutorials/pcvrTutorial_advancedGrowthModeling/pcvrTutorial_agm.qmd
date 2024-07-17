@@ -769,11 +769,11 @@ Segmented Models are specified using "model1 + model2" syntax, with "+" represen
 
 . . .
 
-Currently only two phases (one changepoint) are recommended. While more will work they will slow down significantly and may require more fine tuning.
+Currently only two phases (one changepoint) are recommended. More will work but they will slow down the MCMC and may require more fine tuning.
 
 . . .
 
-These segmented models can also be used to specify sub-models of sigma.
+These segmented models can also be used to specify sub-models of distributional parameters.
 
 ## linear + linear {.smaller}
 
