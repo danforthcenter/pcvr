@@ -14,54 +14,6 @@
 #'
 #' @examples
 #'
-#' if (FALSE) {
-#'   ex <- growthSim("logistic",
-#'     n = 20, t = 25,
-#'     params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
-#'   )
-#'   ex$group <- factor(ex$group) # group MUST be a factor for nlme (typical)
-#'   nl1 <- nlme::nlme(
-#'     model = y ~ A / (1 + exp((B - time) / C)),
-#'     data = ex,
-#'     fixed = list(
-#'       A ~ 0 + group,
-#'       B ~ 0 + group,
-#'       C ~ 0 + group
-#'     ),
-#'     random = A + B + C ~ 1,
-#'     groups = ~group,
-#'     weights = nlme::varIdent(form = ~ 1 | group),
-#'     start = c(150, 150, 10, 10, 3, 3)
-#'   )
-#'   # linear sigma using power
-#'   nl2 <- nlme::nlme(
-#'     model = y ~ A / (1 + exp((B - time) / C)),
-#'     data = ex,
-#'     fixed = list(
-#'       A ~ 0 + group,
-#'       B ~ 0 + group,
-#'       C ~ 0 + group
-#'     ),
-#'     random = A ~ 1,
-#'     groups = ~group,
-#'     weights = nlme::varPower(form = ~ time | group),
-#'     start = c(150, 150, 10, 10, 3, 3)
-#'   )
-#'   # linear sigma using exp
-#'   nl3 <- nlme::nlme(
-#'     model = y ~ A / (1 + exp((B - time) / C)),
-#'     data = ex,
-#'     fixed = list(
-#'       A ~ 0 + group,
-#'       B ~ 0 + group,
-#'       C ~ 0 + group
-#'     ),
-#'     random = A ~ 1,
-#'     groups = ~group,
-#'     weights = nlme::varExp(form = ~ time | group),
-#'     start = c(150, 150, 10, 10, 3, 3)
-#'   )
-#' }
 #' simdf <- growthSim("logistic",
 #'   n = 20, t = 25,
 #'   params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))

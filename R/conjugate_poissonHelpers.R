@@ -12,12 +12,12 @@
 #' via MoM \hat(\labmda) =  = 1/n +sum^1_n(x)
 #' @param s1 A vector of numerics drawn from a beta distribution.
 #' @examples
-#' if (FALSE) {
-#'   .conj_poisson_sv(
-#'     s1 = rpois(20, 10), priors = list(a = c(0.5, 0.5), b = c(0.5, 0.5)),
-#'     plot = FALSE
-#'   )
-#' }
+#'
+#' .conj_poisson_sv(
+#'  s1 = rpois(20, 10), priors = list(a = c(0.5, 0.5), b = c(0.5, 0.5)),
+#'  plot = FALSE
+#' )
+#'
 #' @keywords internal
 #' @noRd
 
