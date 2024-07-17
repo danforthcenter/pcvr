@@ -512,10 +512,10 @@ p
 
 ## `growthSS` - Spline sigma {.smaller}
 
-| Pros                                                                     | Cons                                                                  |
+| Pros | Cons |
 |-------------------------------------|-----------------------------------|
 | [**Very**]{style="color:#FF007B;"} flexible and accurate model for sigma | [**Significantly**]{style="color:#FFD900;"} slower than other options |
-| Fewer priors                                                             | Splines can be a black-box                                            |
+| Fewer priors | Splines can be a black-box |
 
 ```{r}
 p<-ggplot(sigma_df, aes(x=time, y=y, group=group))+
@@ -573,7 +573,7 @@ Y \~ T(mu \~ main growth formula, [sigma \~ sigma formula]{style="color:#FF007B;
 
 In `pcvr` the Student T family is the default for these models, but other distributions are supported through `"distribution: model"` syntax.
 
-In general this is only for special cases where the Gaussian/T does not capture some important quality of the data. An obvious example could be leaf counts, which might be modelled as `"poisson: monomolecular"`, for instance.
+In general this is only for special cases where the Gaussian/T does not capture some important quality of the data. An obvious example could be leaf counts, which might be modeled as `"poisson: monomolecular"`, for instance.
 
 ## `growthSS` - Distributional Models 3 {.smaller}
 
