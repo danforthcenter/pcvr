@@ -115,6 +115,30 @@ Here the parameters have the same interpretation as those in the gompertz curve,
 
 All the same points as with the double logistic curve apply here as well.
 
+### Weibull
+
+The weibull growth curve is derived from the generalized extreme value distribution and is comparable to the gompertz growth model option, but may be slightly easier to fit/faster moving in some cases.
+
+### Gumbel
+
+The gumbel growth curve is also derived from the generalized EVD and would be used in similar contexts as the weibull or gompertz model options. The choice of which to use is left to individual users and the conventions of your field.
+
+### Frechet
+
+This is the final option derived from the generalized EVD. Note that here a 3 parameter version is used with the location (m) set to 0 by default.
+
+### Bragg
+
+The Bragg model is a dose-response curve that models the minima and maxima using 3 parameters.
+
+### Lorentz
+
+The Lorentz model is a dose-response curve that models the minima and maxima using 3 parameters. This parameterization may has a slightly more intuitive formula than Bragg for some people but has worse statistical qualities.
+
+### Beta
+
+The Beta model is based on the PDF of the beta distribution and models minima/maxima as a dose-response curve using 5 parameters. This can be a difficult model to fit but can describe non-symmetric dose-response relationships well.
+
 ### GAM
 
 Finally, all backends can fit GAMs. These are unparameterized functions that use a series of splines to fit a variety of trends.
@@ -524,6 +548,34 @@ plotPrior(twoPriors, "gompertz", n = 100)[[1]]
 
 For `nlrq` models the "tau" argument determines which quantiles are fit. By default this uses the median (0.5), but can be any quantile or vector of quantiles between 0 and 1. In the next section we fit an nlrq model with many quantiles shown.
 
+#### `growthSS(..., hierarchy, ...)`
+
+Hierarchical models can be specified by adding covariates to the model formula and specifying models for those covariates in the `hierarchy` argument.
+
+A hierarchical formula would be written as `y ~ time + covar | id / group` and we could specify to only model the `A` parameter as being modeled by `covar` by adding `hierarchy = list("A" = "int_linear")`.
+
+This would change a logistic model from something like:
+
+$$
+Y \sim \frac{A}{(1 + \text{e}^{( (B-x)/C)})}\\
+A \sim 0 + \text{group}\\
+B \sim 0 + \text{group}\\
+C \sim 0 + \text{group}
+$$
+
+to being something like:
+
+$$
+Y \sim \frac{A}{(1 + \text{e}^{( (B-x)/C)})}\\
+A \sim AI + AA \cdot \text{covariate}\\
+B \sim 0 + \text{group}\\
+C \sim 0 + \text{group}\\
+AI \sim 0 + \text{group}\\
+AA \sim 0 + \text{group}
+$$
+
+This can be helpful in modeling the effect of time on one phenotype given another or in including watering data, etc.
+
 ### Using `fitGrowth`
 
 The output from `growthSS` is passed to `fitGrowth` which fits the growth model using the specified backend.
@@ -717,7 +769,6 @@ ss <- growthSS(
 )
 
 fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1)
-# growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
 ```
 
 Here we look at a "linear + logistic" model using a gam submodel.
@@ -742,7 +793,6 @@ ss <- growthSS(
 )
 
 fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1)
-# growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
 ```
 
 
@@ -756,7 +806,6 @@ ss <- growthSS(
 )
 
 fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1)
-# growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
 ```
 
 
@@ -781,8 +830,6 @@ ss <- growthSS(
 )
 
 fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1)
-
-# growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
 ```
 
 
@@ -831,8 +878,6 @@ ss <- growthSS(
 )
 
 fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1)
-
-# growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
 ```
 
 
@@ -879,7 +924,6 @@ ss <- growthSS(
   df = simdf, type = "brms"
 )
 fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1)
-# growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df, timeRange = 1:40)
 ```
 
 
@@ -927,7 +971,6 @@ ss <- growthSS(
   df = simdf, type = "brms"
 )
 fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1)
-# growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
 ```
 
 
