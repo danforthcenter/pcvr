@@ -31,14 +31,16 @@
 #'
 #' ## Not run:
 #'
-#' if (FALSE) {
-#'   data(bw_vignette_fit)
-#'   brmPlot(bw_vignette_fit, y ~ time | id / group, df = NULL)
-#'   print(load(url("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/brmsFits.rdata")))
-#'   brmPlot(fit_25, form = y ~ time | id / group)
-#'   brmPlot(fit_9, form = y ~ time | id / group)
-#'   brmPlot(fit_15, form = y ~ time | id / group)
-#' }
+#' simdf <- growthSim("logistic",
+#'   n = 20, t = 25,
+#'   params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
+#' )
+#' ss <- growthSS(
+#'   model = "logistic", form = y ~ time | id / group,
+#'   df = simdf, type = "nls"
+#' )
+#' fit <- fitGrowth(ss)
+#' growthPlot(fit, form = ss$pcvrForm, df = ss$df)
 #'
 #' ## End(Not run)
 #'
@@ -65,7 +67,7 @@ growthPlot <- function(fit, form, groups = NULL, df = NULL, timeRange = NULL,
         fit = fit, form = form, groups = groups, df = df, timeRange = timeRange,
         facetGroups = facetGroups, hierarchy_value = hierarchy_value
       )
-    } else {
+    } else { # linear models are survival models
       plot <- brmSurvPlot(
         fit = fit, form = form, groups = groups, df = df, timeRange = timeRange,
         facetGroups = facetGroups

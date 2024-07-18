@@ -3,13 +3,12 @@
 #' distribution represented by single value traits.
 #' @param s1 A vector of numerics drawn from a uniform distribution.
 #' @examples
-#' if (FALSE) {
-#'   out <- .conj_bivariate_lognormal_sv(
-#'     s1 = rlnorm(10, log(20), 1), cred.int.level = 0.95,
-#'     plot = FALSE
-#'   )
-#'   lapply(out, head)
-#' }
+#' out <- .conj_bivariate_lognormal_sv(
+#'  s1 = rlnorm(10, log(20), 1), cred.int.level = 0.95,
+#'  plot = FALSE
+#' )
+#' lapply(out, head)
+#' 
 #' @keywords internal
 #' @noRd
 

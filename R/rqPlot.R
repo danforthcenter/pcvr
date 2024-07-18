@@ -30,22 +30,18 @@
 #'
 #' ## Not run:
 #'
-#' if (FALSE) {
-#'   simdf <- growthSim("logistic",
-#'     n = 20, t = 25,
-#'     params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
-#'   )
 #'
-#'   ss <- growthSS(
-#'     model = "gam", form = y ~ time | id / group,
-#'     tau = c(0.25, 0.5, 0.75), df = simdf, start = NULL, type = "nlrq"
-#'   )
-#'   dim(ss$df)
+#' simdf <- growthSim("logistic",
+#'   n = 20, t = 25,
+#'   params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
+#' )
+#' ss <- growthSS(
+#'   model = "gam", form = y ~ time | id / group,
+#'   tau = c(0.25, 0.5, 0.75), df = simdf, start = NULL, type = "nlrq"
+#' )
+#' fits <- fitGrowth(ss)
+#' rqPlot(fits, form = ss$pcvrForm, df = ss$df)
 #'
-#'   fits <- fitGrowth(ss)
-#'
-#'   rqPlot(fits, form = ss$pcvrForm, df = ss$pcvrForm)
-#' }
 #'
 #' ## End(Not run)
 #'
@@ -81,11 +77,11 @@ rqPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facetG
   #* `standardize fit class`
   if (methods::is(fit, "rq")) {
     fit <- list(fit)
-    names(fit) <- fit[[1]]$m$tau
+    names(fit) <- fit$tau
   }
   #* `add predictions and record taus`
   preds <- do.call(cbind, lapply(fit, function(f) {
-    tau <- f$m$tau
+    tau <- f$tau
     stats::setNames(data.frame(stats::predict(f, newdata = new_data)), paste0("Q_", tau))
   }))
   predCols <- colnames(preds)
@@ -120,16 +116,17 @@ rqPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facetG
   #* `groupFill`
   if (groupFill) {
     virList <- lapply(rep(virMaps, length.out = length(unique(df[[group]]))), function(pal) {
-      virPalP1 <- viridis::viridis(ceiling(length(predCols) / 2), direction = 1, end = 1, option = pal)
-      virPalP2 <- viridis::viridis(floor(length(predCols) / 2), direction = -1, end = 1, option = pal)
-      c(virPalP1, virPalP2)
+      virpal_p1 <- viridis::viridis(ceiling(length(predCols) / 2), direction = 1, end = 1, option = pal)
+      virpal_p2 <- viridis::viridis(ceiling(length(predCols) / 2),
+                                    direction = -1, end = 1, option = pal)[-1]
+      c(virpal_p1, virpal_p2)
     })
   } else {
-    virPalP1 <- viridis::plasma(ceiling(length(predCols) / 2), direction = 1, end = 1)
-    virPalP2 <- viridis::plasma(floor(length(predCols) / 2), direction = -1, end = 1)
-    virPal <- c(virPalP1, virPalP2)
+    virpal_p1 <- viridis::plasma(ceiling(length(predCols) / 2), direction = 1, end = 1)
+    virpal_p2 <- viridis::plasma(ceiling(length(predCols) / 2), direction = -1, end = 1)[-1]
+    virpal <- c(virpal_p1, virpal_p2)
     virList <- lapply(seq_along(unique(df[[group]])), function(i) {
-      virPal
+      virpal
     })
   }
   #* `plot`

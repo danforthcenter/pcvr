@@ -53,47 +53,24 @@
 #'
 #' ## Not run:
 #'
-#' df <- read.pcv(
-#'   "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest2.csv", "long"
+#' library(extraDistr)
+#' dists <- list(
+#'   rmixnorm = list(mean = c(70, 150), sd = c(15, 5), alpha = c(0.3, 0.7)),
+#'   rnorm = list(mean = 90, sd = 20),
+#'   rlnorm = list(meanlog = log(40), sdlog = 0.5)
 #' )
-#'
-#' x <- pcv.joyplot(df,
-#'   index = "index_frequencies_index_ndvi",
-#'   group = c("genotype", "timepoint"), method = "pdf"
-#' )
-#'
-#' if (FALSE) {
-#'   wide <- read.pcv(
-#'     paste0(
-#'       "https://media.githubusercontent.com/media/joshqsumner/",
-#'       "pcvrTestData/main/pcv4-multi-value-traits.csv"
-#'     ),
-#'     mode = "wide"
-#'   )
-#'   wide <- bw.time(wide, mode = "DAS", plot = FALSE)
-#'   wide$genotype <- substr(wide$barcode, 3, 5)
-#'   wide$genotype <- ifelse(wide$genotype == "002", "B73",
-#'     ifelse(wide$genotype == "003", "W605S",
-#'       ifelse(wide$genotype == "004", "MM", "Mo17")
-#'     )
-#'   )
-#'   wide$fertilizer <- substr(wide$barcode, 8, 8)
-#'   wide$fertilizer <- ifelse(wide$fertilizer == "A", "100",
-#'     ifelse(wide$fertilizer == "B", "50", "0")
-#'   )
-#'   p <- pcv.joyplot(wide[wide$DAS > 15, ],
-#'     index = "hue_frequencies",
-#'     group = c("genotype", "fertilizer"), y = "DAS"
-#'   )
-#'
-#'   # For some color traits it makes sense to show the actual
-#'   # represented color, which can be done easily by adding new fill scales.
-#'   p + ggplot2::scale_fill_gradientn(colors = scales::hue_pal(l = 65)(360))
-#' }
+#' x_wide <- mvSim(dists = dists, n_samples = 5, counts = 1000,
+#'                 min_bin = 1, max_bin = 180, wide = TRUE)
+#' pcv.joyplot(x_wide, index = "sim", group = "group")
+#' x_long <- mvSim(dists = dists, n_samples = 5, counts = 1000,
+#'                 min_bin = 1, max_bin = 180, wide = FALSE)
+#' x_long$trait <- "x"
+#' p <- pcv.joyplot(x_long, bin = "variable", group = "group")
+#' # we might want to display hues as their hue
+#' p + ggplot2::scale_fill_gradientn(colors = scales::hue_pal(l = 65)(360))
 #' ## End(Not run)
 #'
 #' @export
-
 
 pcv.joyplot <- function(df = NULL, index = NULL, group = NULL, y = NULL, id = NULL,
                         method = NULL, hypothesis = "unequal", compare = NULL,

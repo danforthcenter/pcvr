@@ -53,22 +53,16 @@ can be visualized easily using this function. This will generally be called by \
 
 ## Not run:
 
-if (FALSE) {
-  simdf <- growthSim("logistic",
-    n = 20, t = 25,
-    params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
-  )
-
-  ss <- growthSS(
-    model = "logistic", form = y ~ time | id / group,
-    tau = c(0.25, 0.5, 0.75), df = simdf, start = NULL, type = "nlrq"
-  )
-  dim(ss$df)
-
-  fits <- fitGrowth(ss)
-
-  nlrqPlot(fits, form = ss$pcvrForm, df = ss$pcvrForm)
-}
+simdf <- growthSim("logistic",
+  n = 20, t = 25,
+  params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
+)
+ss <- growthSS(
+  model = "logistic", form = y ~ time | id / group,
+  tau = 0.5, df = simdf, start = NULL, type = "nlrq"
+)
+fit <- fitGrowth(ss)
+nlrqPlot(fit, form = ss$pcvrForm, df = ss$df)
 
 ## End(Not run)
 

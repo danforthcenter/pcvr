@@ -3,13 +3,11 @@
 #' data represented by single value traits.
 #' @param s1 A vector of numerics drawn from a uniform distribution.
 #' @examples
-#' if (FALSE) {
-#'   out <- .conj_gamma_sv(
-#'     s1 = rgamma(10, 1, 2), cred.int.level = 0.95,
-#'     plot = FALSE
-#'   )
-#'   lapply(out, head)
-#' }
+#' out <- .conj_gamma_sv(
+#'   s1 = rgamma(10, 1, 2), cred.int.level = 0.95,
+#'   plot = FALSE
+#' )
+#' lapply(out, head)
 #' @keywords internal
 #' @noRd
 .conj_gamma_sv <- function(s1 = NULL, priors = NULL,

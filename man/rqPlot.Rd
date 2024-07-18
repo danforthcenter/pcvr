@@ -54,22 +54,18 @@ This will generally be called by \code{growthPlot}.
 
 ## Not run:
 
-if (FALSE) {
-  simdf <- growthSim("logistic",
-    n = 20, t = 25,
-    params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
-  )
 
-  ss <- growthSS(
-    model = "gam", form = y ~ time | id / group,
-    tau = c(0.25, 0.5, 0.75), df = simdf, start = NULL, type = "nlrq"
-  )
-  dim(ss$df)
+simdf <- growthSim("logistic",
+  n = 20, t = 25,
+  params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
+)
+ss <- growthSS(
+  model = "gam", form = y ~ time | id / group,
+  tau = c(0.25, 0.5, 0.75), df = simdf, start = NULL, type = "nlrq"
+)
+fits <- fitGrowth(ss)
+rqPlot(fits, form = ss$pcvrForm, df = ss$df)
 
-  fits <- fitGrowth(ss)
-
-  rqPlot(fits, form = ss$pcvrForm, df = ss$pcvrForm)
-}
 
 ## End(Not run)
 

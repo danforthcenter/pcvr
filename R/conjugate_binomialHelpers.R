@@ -4,13 +4,11 @@
 #'
 #' @param s1 A named list of integer data containing number of successes and number of trials.
 #' @examples
-#' if (FALSE) {
-#'   .conj_binomial_sv(
-#'     s1 = list(successes = c(15, 14, 16, 11), trials = 20),
-#'     priors = list(a = c(0.5, 0.5), b = c(0.5, 0.5)),
-#'     plot = FALSE, cred.int.level = 0.95
-#'   )
-#' }
+#' .conj_binomial_sv(
+#'   s1 = list(successes = c(15, 14, 16, 11), trials = 20),
+#'   priors = list(a = c(0.5, 0.5), b = c(0.5, 0.5)),
+#'   plot = FALSE, cred.int.level = 0.95
+#' )
 #' @keywords internal
 #' @noRd
 

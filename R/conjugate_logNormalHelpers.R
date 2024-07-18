@@ -6,30 +6,19 @@
 #' representing the "bin".
 #'
 #' @examples
-#' if (FALSE) {
-#'   makeMvLn <- function(bins = 500, mu_log, sigma_log) {
-#'     setNames(data.frame(matrix(hist(rlnorm(2000, mu_log, sigma_log),
-#'       breaks = seq(1, bins, 5),
-#'       plot = FALSE
-#'     )$counts, nrow = 1)), paste0("b", seq(1, bins, 5))[-1])
-#'   }
-#'   set.seed(123)
-#'   mv_ln <- rbind(
-#'     do.call(rbind, lapply(1:30, function(i) {
-#'       makeMvLn(mu_log = log(130), sigma_log = log(1.3))
-#'     })),
-#'     do.call(rbind, lapply(1:30, function(i) {
-#'       makeMvLn(mu_log = log(100), sigma_log = log(1.2))
-#'     }))
-#'   )
+#' 
+#' mv_ln <- mvSim(
+#'   dists = list(
+#'     rlnorm = list(meanlog = log(130), sdlog = log(1.2))
+#'   ),
+#'   n_samples = 30
+#' )
+#' .conj_lognormal_mv(
+#'   s1 = mv_ln[1:30, -1],
+#'   priors = list(mu_log = c(log(10)), n = c(1), sigma_log = c(log(3))),
+#'   plot = FALSE, cred.int.level = 0.9
+#' )
 #'
-#'   .conj_lognormal_mv(
-#'     s1 = mv_ln[1:30, ], s2 = mv_ln[31:60, ],
-#'     priors = list(mu_log = c(log(10), log(10)), n = c(1, 1), sigma_log = c(log(3), log(3))),
-#'     plot = FALSE, rope_range = NULL, rope_ci = 0.89,
-#'     cred.int.level = 0.89, hypothesis = "equal", support = NULL
-#'   )
-#' }
 #' @importFrom stats qnorm
 #' @keywords internal
 #' @noRd
@@ -135,14 +124,12 @@
 #'
 #' @param s1 A vector of numerics drawn from a gaussian distribution.
 #' @examples
-#' if (FALSE) {
-#'   .conj_lognormal_sv(
-#'     s1 = rlnorm(100, log(130), log(1.3)), s2 = rlnorm(100, log(100), log(1.6)),
-#'     priors = list(mu = 5, sd = 5),
-#'     plot = FALSE, rope_range = c(-0.1, 0.1), rope_ci = 0.89,
-#'     cred.int.level = 0.89, hypothesis = "equal", support = NULL
-#'   )
-#' }
+#' .conj_lognormal_sv(
+#'   s1 = rlnorm(100, log(130), log(1.3)),
+#'   priors = list(mu = 5, sd = 5),
+#'   plot = FALSE,
+#'   cred.int.level = 0.89
+#' )
 #' @keywords internal
 #' @noRd
 

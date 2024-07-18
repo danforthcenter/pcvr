@@ -52,30 +52,14 @@ If data is returned then it will contain the coordinates from the
 
 ## Not run:
 
-if (FALSE) {
-  hue_wide <- read.pcv(
-    paste0(
-      "https://media.githubusercontent.com/media/joshqsumner/",
-      "pcvrTestData/main/pcv4-multi-value-traits.csv"
-    ),
-    mode = "wide", reader = "fread"
-  )
-  hue_wide$genotype <- substr(hue_wide$barcode, 3, 5)
-  hue_wide$genotype <- ifelse(hue_wide$genotype == "002", "B73",
-    ifelse(hue_wide$genotype == "003", "W605S",
-      ifelse(hue_wide$genotype == "004", "MM", "Mo17")
-    )
-  )
-  hue_wide$fertilizer <- substr(hue_wide$barcode, 8, 8)
-  hue_wide$fertilizer <- ifelse(hue_wide$fertilizer == "A", "100",
-    ifelse(hue_wide$fertilizer == "B", "50", "0")
-  )
-  hue_wide <- bw.time(hue_wide, timeCol = "timestamp", group = "barcode")
-
-  hue_wide$geno_fertilizer <- interaction(hue_wide$fertilizer, hue_wide$genotype)
-
-  pcadf(hue_wide, cols = "hue_frequencies", color = "geno_fertilizer", returnData = FALSE)
-}
+dists <- list(
+  rlnorm = list(meanlog = log(40), sdlog = 0.5),
+  rnorm = list(mean = 60, sd = 10)
+)
+mv <- mvSim(dists = dists, n_samples = 100, counts = 1000,
+            min_bin = 1, max_bin = 180, wide = TRUE)
+pcadf(mv, cols = "sim_", returnData = TRUE)
+pcadf(mv, cols = "sim_", color = c("group"), returnData = TRUE)
 
 ## End(Not run)
 

@@ -20,42 +20,12 @@
 #'
 #' @param s1 A vector of numerics drawn from a negative binomial distribution.
 #' @examples
-#' if (FALSE) {
-#'   set.seed(123)
-#'   true_p1 = 0.7
-#'   true_p2 = 0.25
-#'   true_r1 = 10
-#'   true_r2 = 10
-#'   s1 <- rnbinom(10, true_r1, true_p1)
-#'   s2 <- rnbinom(10, true_r2, true_p2)
-#'   priors = list(a = c(0.5, 0.5), b = c(0.5, 0.5))
-#'   s1
-#'   s2
-#'   xbar1 <- (true_r1 * (1 - true_p1)) / true_p1 # MoM Mean1: 10
-#'   xbar2 <- (true_r2 * (1 - true_p2)) / true_p2 # MoM Mean2: 30
-#'
-#'   var1 <- (true_r1 * (1 - true_p1)) / true_p1 / true_p1 # MoM var1: 20
-#'   var2 <- (true_r2 * (1 - true_p2)) / true_p2 / true_p2 # MoM var2: 120
-#'
-#'   (obs_xbar1 = mean(s1))
-#'   (obs_var1 = var(s1))
-#'   (f1 = xbar1^2 / (var1 - xbar1)) # number of failures in getting r trials
-#'   (p1 = xbar1 / var1)
-#'   (a1_prime <- 0.5 + true_r1 * length(s1))
-#'   (b1_prime_wiki <- 0.5 + sum(s1))
-#'   # (b1_prime_comp <- 0.5 + sum(s1) - (true_r1 * length(s1))) # -0.5
-#'
-#'   plot(density(rbeta(1000, a1_prime, b1_prime_wiki)), xlim = c(0, 1))
-#'   # lines(density(rbeta(1000,a1_prime, b1_prime_comp)), xlim=c(0,1), col="blue")
-#'   abline(v = p1, col = "red")
-#'
-#'   .conj_negbin_sv(
-#'     s1 = rnbinom(10, 10, 0.5), s2 = rnbinom(100, 10, 0.25),
-#'     priors = list(r = c(10, 10), a = c(0.5, 0.5), b = c(0.5, 0.5)),
-#'     plot = FALSE, rope_range = c(-0.1, 0.1), rope_ci = 0.89,
-#'     cred.int.level = 0.89, hypothesis = "equal"
-#'   )
-#' }
+#' .conj_negbin_sv(
+#'   s1 = rnbinom(10, 10, 0.5),
+#'   priors = NULL,
+#'   plot = FALSE,
+#'   cred.int.level = 0.89
+#' )
 #' @keywords internal
 #' @noRd
 

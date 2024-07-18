@@ -301,8 +301,6 @@ testGrowth <- function(ss = NULL, fit, test = "A") {
   return(res)
 }
 
-
-
 #' lm gam testing function
 #' @examples
 #'
@@ -536,6 +534,9 @@ testGrowth <- function(ss = NULL, fit, test = "A") {
 
 #' Chisq based test for survreg and flexsurv models using SE
 #' @examples
+#'
+#' ## Not run:
+#'
 #' df <- growthSim("logistic",
 #'  n = 20, t = 25,
 #'  params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
@@ -547,7 +548,9 @@ testGrowth <- function(ss = NULL, fit, test = "A") {
 #' ss <- growthSS("survival weibull", y > 100 ~ time | id / group, df = df, type = "flexsurv")
 #' fit <- fitGrowth(ss)
 #' .survTest(ss, fit)
-#' }
+#'
+#' ## End(Not run)
+#'
 #' @keywords internal
 #' @noRd
 

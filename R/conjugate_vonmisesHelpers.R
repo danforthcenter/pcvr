@@ -4,21 +4,17 @@
 #' @param s1 A data.frame or matrix of multi value traits. The column names should include a number
 #' between 0.0001 and 0.9999 representing the "bin".
 #' @examples
-#' if (FALSE) {
-#'   set.seed(123)
-#'   mv_gauss <- mvSim(
-#'     dists = list(
-#'       rnorm = list(mean = 50, sd = 10),
-#'       rnorm = list(mean = 60, sd = 12)
-#'     ),
-#'     n_samples = c(30, 40)
-#'   )
-#'   .conj_vonmises_mv(
-#'     s1 = mv_gauss[1:30, -1], priors = list(mu = 30, kappa = 1, boundary = c(0, 180)),
-#'     cred.int.level = 0.95,
-#'     plot = FALSE
-#'   )
-#' }
+#' mv_gauss <- mvSim(
+#'   dists = list(
+#'     rnorm = list(mean = 50, sd = 10)
+#'   ),
+#'   n_samples = 30
+#' )
+#' .conj_vonmises_mv(
+#'   s1 = mv_gauss[, -1], priors = list(mu = 30, kappa = 1, boundary = c(0, 180)),
+#'   cred.int.level = 0.95,
+#'   plot = TRUE
+#' )
 #' @keywords internal
 #' @noRd
 
@@ -149,29 +145,17 @@
 #' traits.
 #' @param s1 A vector of numerics drawn from a beta distribution.
 #' @examples
-#' if (FALSE) {
-#'   .conj_vonmises_sv(
-#'     s1 = brms::rvon_mises(100, 2, 2), priors = list(mu = 0.5, kappa = 0.5),
-#'     cred.int.level = 0.95,
-#'     plot = FALSE
-#'   )
-#'
-#'   set.seed(123)
-#'   x <- rnorm(20, 0, 5)
-#'   .conj_vonmises_sv(
-#'     s1 = x, priors = list(mu = 0.5, kappa = 0.5, boundary = c(-10, 10), known_kappa = 2),
-#'     cred.int.level = 0.95,
-#'     plot = FALSE
-#'   )
-#'
-#'   set.seed(123)
-#'   x <- rnorm(20, 90, 20)
-#'   .conj_vonmises_sv(
-#'     s1 = x, priors = list(mu = 75, kappa = 0.5, boundary = c(0, 180), known_kappa = 2),
-#'     cred.int.level = 0.95,
-#'     plot = FALSE
-#'   )
-#' }
+#' .conj_vonmises_sv(
+#'   s1 = brms::rvon_mises(100, 2, 2), priors = list(mu = 0.5, kappa = 0.5),
+#'   cred.int.level = 0.95,
+#'   plot = FALSE
+#' )
+#' .conj_vonmises_sv(
+#'   s1 = rnorm(20, 90, 20),
+#'   priors = list(mu = 75, kappa = 0.5, boundary = c(0, 180), known_kappa = 2),
+#'   cred.int.level = 0.95,
+#'   plot = TRUE
+#' )
 #' @keywords internal
 #' @noRd
 

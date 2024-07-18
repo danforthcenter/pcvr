@@ -44,108 +44,17 @@
 #'
 #' ## Not run:
 #'
-#' sv <- read.pcv(
-#'   "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv",
-#'   reader = "fread"
+#' sv <- growthSim("logistic",
+#'                 n = 5, t = 20,
+#'                 params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
 #' )
-#' sv$genotype <- substr(sv$barcode, 3, 5)
-#' sv$genotype <- ifelse(sv$genotype == "002", "B73",
-#'   ifelse(sv$genotype == "003", "W605S",
-#'     ifelse(sv$genotype == "004", "MM", "Mo17")
-#'   )
+#' sv[130, ]$y <- 500
+#' sv_res <- bw.outliers(
+#'   df = sv, phenotype = "y", naTo0 = FALSE, cutoff = 15,
+#'   group = c("time", "group"), outlierMethod = "cooks",
+#'   plotgroup = "id", plot = TRUE
 #' )
-#' sv$fertilizer <- substr(sv$barcode, 8, 8)
-#' sv$fertilizer <- ifelse(sv$fertilizer == "A", "100",
-#'   ifelse(sv$fertilizer == "B", "50", "0")
-#' )
-#' sv <- bw.time(sv,
-#'   plantingDelay = 0, phenotype = "area_pixels", cutoff = 10, timeCol = "timestamp",
-#'   group = c("barcode", "rotation"), plot = FALSE
-#' )
-#'
-#' res1 <- bw.outliers(
-#'   df = sv, phenotype = "area_pixels", naTo0 = FALSE,
-#'   group = c("DAS", "genotype", "fertilizer"), outlierMethod = "cooks",
-#'   plotgroup = c("barcode", "rotation"), plot = TRUE
-#' )
-#'
-#' res2 <- bw.outliers(
-#'   df = sv, phenotype = "area_pixels", naTo0 = FALSE,
-#'   group = c("DAS", "genotype", "fertilizer"), outlierMethod = "cooks",
-#'   plotgroup = c("barcode", "rotation"), plot = TRUE, separate = "genotype"
-#' )
-#'
-#' if (FALSE) {
-#'   svl <- read.pcv(
-#'     "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv",
-#'     mode = "long", reader = "fread"
-#'   )
-#'   svl$genotype <- substr(svl$barcode, 3, 5)
-#'   svl$genotype <- ifelse(svl$genotype == "002", "B73",
-#'     ifelse(svl$genotype == "003", "W605S",
-#'       ifelse(svl$genotype == "004", "MM", "Mo17")
-#'     )
-#'   )
-#'   svl$fertilizer <- substr(svl$barcode, 8, 8)
-#'   svl$fertilizer <- ifelse(svl$fertilizer == "A", "100",
-#'     ifelse(svl$fertilizer == "B", "50", "0")
-#'   )
-#'   svl <- bw.time(svl,
-#'     plantingDelay = 0, phenotype = "area_pixels", cutoff = 10, timeCol = "timestamp",
-#'     group = c("barcode", "rotation"), plot = FALSE
-#'   )
-#'
-#'   svl <- bw.outliers(
-#'     df = svl, phenotype = "area_pixels", naTo0 = FALSE,
-#'     group = c("DAS", "genotype", "fertilizer"),
-#'     plotgroup = c("barcode", "rotation"), plot = TRUE
-#'   )
-#'
-#'   mvw <- read.pcv(paste0(
-#'     "https://media.githubusercontent.com/media/joshqsumner/",
-#'     "pcvrTestData/main/pcv4-multi-value-traits.csv"
-#'   ), mode = "wide")
-#'   mvw$genotype <- substr(mvw$barcode, 3, 5)
-#'   mvw$genotype <- ifelse(mvw$genotype == "002", "B73",
-#'     ifelse(mvw$genotype == "003", "W605S",
-#'       ifelse(mvw$genotype == "004", "MM", "Mo17")
-#'     )
-#'   )
-#'   mvw$fertilizer <- substr(mvw$barcode, 8, 8)
-#'   mvw$fertilizer <- ifelse(mvw$fertilizer == "A", "100",
-#'     ifelse(mvw$fertilizer == "B", "50", "0")
-#'   )
-#'   mvw <- bw.time(mvw, timeCol = "timestamp", group = "barcode", plot = FALSE)
-#'
-#'   phenotypes <- which(grepl("hue_freq", colnames(mvw)))
-#'
-#'   mvw2 <- bw.outliers(
-#'     df = mvw, phenotype = phenotypes, naTo0 = FALSE, outlierMethod = "cooks",
-#'     group = c("DAS", "genotype", "fertilizer"), cutoff = 3, plotgroup = c("barcode", "rotation")
-#'   )
-#'
-#'
-#'   mvl <- read.pcv(paste0(
-#'     "https://media.githubusercontent.com/media/joshqsumner/",
-#'     "pcvrTestData/main/pcv4-multi-value-traits.csv"
-#'   ), mode = "long")
-#'   mvl$genotype <- substr(mvl$barcode, 3, 5)
-#'   mvl$genotype <- ifelse(mvl$genotype == "002", "B73",
-#'     ifelse(mvl$genotype == "003", "W605S",
-#'       ifelse(mvl$genotype == "004", "MM", "Mo17")
-#'     )
-#'   )
-#'   mvl$fertilizer <- substr(mvl$barcode, 8, 8)
-#'   mvl$fertilizer <- ifelse(mvl$fertilizer == "A", "100",
-#'     ifelse(mvl$fertilizer == "B", "50", "0")
-#'   )
-#'   mvl <- bw.time(mvl, timeCol = "timestamp", group = "barcode", plot = FALSE)
-#'
-#'   mvl2 <- bw.outliers(
-#'     df = mvl, phenotype = "hue_frequencies", naTo0 = FALSE, outlierMethod = "cooks",
-#'     group = c("DAS", "genotype", "fertilizer"), cutoff = 3, plotgroup = c("barcode", "rotation")
-#'   )
-#' }
+#' sv_res$plot
 #'
 #' ## End(Not run)
 #'

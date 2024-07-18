@@ -78,27 +78,19 @@
 #' @param s1 A data.frame or matrix of multi value traits. The column names should include a number
 #' representing the "bin".
 #' @examples
-#' if (FALSE) {
-#'   makeMvGauss <- function(bins = 180, mu, sigma) {
-#'     setNames(data.frame(matrix(hist(rnorm(2000, mu, sigma),
-#'       breaks = seq(1, bins, 1), plot = FALSE
-#'     )$counts, nrow = 1)), paste0("b", 1:(bins - 1)))
-#'   }
-#'   mv_gauss <- rbind(
-#'     do.call(rbind, lapply(1:30, function(i) {
-#'       makeMvGauss(bins = 180, mu = 50, sigma = 10)
-#'     })),
-#'     do.call(rbind, lapply(1:30, function(i) {
-#'       makeMvGauss(bins = 180, mu = 60, sigma = 12)
-#'     }))
-#'   )
-#'   .conj_t_mv(
-#'     s1 = mv_gauss[1:30, ], s2 = mv_gauss[31:60, ],
-#'     priors = list(mu = c(0, 0), n = c(1, 1), s2 = c(20, 20)),
-#'     plot = FALSE, rope_range = c(-0.1, 0.1), rope_ci = 0.89,
-#'     cred.int.level = 0.89, hypothesis = "equal", support = NULL
-#'   )
-#' }
+#' mv_gauss <- mvSim(
+#'   dists = list(
+#'     rnorm = list(mean = 50, sd = 10)
+#'     ),
+#'   n_samples = 30
+#' )
+#' .conj_t_mv(
+#'   s1 = mv_gauss[1:30, -1],
+#'   priors = NULL,
+#'   plot = TRUE,
+#'   cred.int.level = 0.89
+#' )
+#'
 #' @keywords internal
 #' @noRd
 

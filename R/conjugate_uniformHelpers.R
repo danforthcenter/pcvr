@@ -91,13 +91,11 @@
 #' distribution represented by single value traits.
 #' @param s1 A vector of numerics drawn from a uniform distribution.
 #' @examples
-#' if (FALSE) {
-#'   out <- .conj_uniform_sv(
-#'     s1 = runif(10, 0, 100), cred.int.level = 0.95,
-#'     plot = FALSE
-#'   )
-#'   lapply(out, head)
-#' }
+#' out <- .conj_uniform_sv(
+#'   s1 = runif(10, 0, 100), cred.int.level = 0.95,
+#'   plot = FALSE
+#' )
+#' lapply(out, head)
 #' @keywords internal
 #' @noRd
 .conj_uniform_sv <- function(s1 = NULL, priors = NULL,

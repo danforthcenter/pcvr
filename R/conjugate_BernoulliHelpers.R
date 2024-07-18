@@ -3,14 +3,12 @@
 #' distribution represented by single value traits.
 #' @param s1 A vector of numerics drawn from a uniform distribution.
 #' @examples
-#' if (FALSE) {
-#'   out <- .conj_bernoulli_sv(
-#'     s1 = sample(c(TRUE, FALSE), 10, prob = c(0.3, 0.7), replace = TRUE),
-#'     cred.int.level = 0.95,
-#'     plot = FALSE
-#'   )
-#'   lapply(out, head)
-#' }
+#' out <- .conj_bernoulli_sv(
+#'   s1 = sample(c(TRUE, FALSE), 10, prob = c(0.3, 0.7), replace = TRUE),
+#'   cred.int.level = 0.95,
+#'   plot = TRUE
+#' )
+#' lapply(out, head)
 #' @keywords internal
 #' @noRd
 .conj_bernoulli_sv <- function(s1 = NULL, priors = NULL,

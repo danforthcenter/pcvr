@@ -27,19 +27,14 @@
 #'
 #' ## Not run:
 #'
-#' if (FALSE) {
-#'   set.seed(123)
-#'   model = "survival weibull"
-#'   form <- y > 100 ~ time | id / group
-#'   df <- growthSim("logistic",
-#'     n = 20, t = 25,
-#'     params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
-#'   )
-#'   ss <- growthSS(model = model, form = form, df = df, type = "survreg")
-#'   lapply(ss, head)
-#'   fit <- fitGrowth(ss)
-#'   survregPlot(fit, form = ss$pcvrForm, df = ss$df)
-#' }
+#' df <- growthSim("logistic",
+#'   n = 20, t = 25,
+#'   params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
+#' )
+#' ss <- growthSS(model = "survival weibull", form = y > 100 ~ time | id / group,
+#'                df = df, type = "survreg")
+#' fit <- fitGrowth(ss)
+#' survregPlot(fit, form = ss$pcvrForm, df = ss$df)
 #'
 #' ## End(Not run)
 #'
@@ -47,7 +42,7 @@
 #'
 #' @export
 
-survregPlot <- function(fit, form, groups, df = NULL, timeRange = NULL, facetGroups = TRUE,
+survregPlot <- function(fit, form, groups = NULL, df = NULL, timeRange = NULL, facetGroups = TRUE,
                         groupFill = FALSE, virMaps = c("plasma")) {
   #* `parse formula`
   parsed_form <- .parsePcvrForm(form, df)

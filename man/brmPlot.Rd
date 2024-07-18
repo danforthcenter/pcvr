@@ -48,8 +48,6 @@ means) can be visualized easily using this function. This will generally be call
 ## Not run:
 
 if (FALSE) {
-  data(bw_vignette_fit)
-  brmPlot(bw_vignette_fit, y ~ time | id / group, df = NULL)
   print(load(url("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/brmsFits.rdata")))
   brmPlot(fit_25, form = y ~ time | id / group)
   brmPlot(fit_9, form = y ~ time | id / group)

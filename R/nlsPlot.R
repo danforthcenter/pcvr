@@ -28,22 +28,16 @@
 #'
 #' ## Not run:
 #'
-#' if (FALSE) {
-#'   simdf <- growthSim("logistic",
-#'     n = 20, t = 25,
-#'     params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
-#'   )
-#'
-#'   ss <- growthSS(
-#'     model = "logistic", form = y ~ time | id / group,
-#'     df = simdf, start = NULL, type = "nls"
-#'   )
-#'   dim(ss$df)
-#'
-#'   fit <- fitGrowth(ss)
-#'
-#'   nlsPlot(fit, form = ss$pcvrForm, df = ss$df)
-#' }
+#' simdf <- growthSim("logistic",
+#'   n = 20, t = 25,
+#'   params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
+#' )
+#' ss <- growthSS(
+#'   model = "logistic", form = y ~ time | id / group,
+#'   df = simdf, start = NULL, type = "nls"
+#' )
+#' fit <- fitGrowth(ss)
+#' nlsPlot(fit, form = ss$pcvrForm, df = ss$df)
 #'
 #' ## End(Not run)
 #'
@@ -129,6 +123,18 @@ nlsPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL,
 }
 
 #' @rdname nlsPlot
+#' @examples
+#' simdf <- growthSim("logistic",
+#'   n = 20, t = 25,
+#'   params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
+#' )
+#' ss <- growthSS(
+#'   model = "gam", form = y ~ time | id / group,
+#'   df = simdf, start = NULL, type = "nls"
+#' )
+#' fit <- fitGrowth(ss)
+#' gamPlot(fit, form = ss$pcvrForm, df = ss$df)
+#' 
 #' @export
 
 gamPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facetGroups = TRUE,
@@ -212,9 +218,21 @@ gamPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
 }
 
 #' @rdname nlsPlot
+#' @examples
+#' simdf <- growthSim("logistic",
+#'   n = 20, t = 25,
+#'   params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
+#' )
+#' ss <- growthSS(
+#'   model = "gam", form = y ~ time | id / group,
+#'   df = simdf, start = NULL, type = "nls"
+#' )
+#' fit <- fitGrowth(ss)
+#' lmPlot(fit, form = ss$pcvrForm, df = ss$df)
 #' @export
 
 lmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facetGroups = TRUE,
                    groupFill = FALSE, virMaps = c("plasma")) {
   nlsPlot(fit, form, df, groups, timeRange, facetGroups, groupFill, virMaps)
 }
+
