@@ -63,7 +63,7 @@ pcadf <- function(df = NULL, cols = NULL, color = NULL, trace = NULL,
     cols <- which(colnames(df) %in% cols)
   }
   pca.df <- cbind(as.data.frame(df[, -cols]), coords)
-  colnames(pca.df)[length(colnames(df)) - length(cols)] <- colnames(df)[-cols]
+  colnames(pca.df)[1:(length(colnames(df)) - length(cols))] <- colnames(df)[-cols]
   if (!is.null(trace)) {
     pca.df <- pca.df[sort(pca.df[[trace]], index.return = TRUE)$ix, ]
   }
