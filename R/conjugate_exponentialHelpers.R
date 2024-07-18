@@ -3,13 +3,11 @@
 #' represented by single value traits.
 #' @param s1 A vector of numerics drawn from a pareto distribution.
 #' @examples
-#' if (FALSE) {
-#'   out <- .conj_exponential_sv(
-#'     s1 = rexp(10, 3), cred.int.level = 0.95,
-#'     plot = FALSE
-#'   )
-#'   lapply(out, head)
-#' }
+#' out <- .conj_exponential_sv(
+#'   s1 = rexp(10, 3), cred.int.level = 0.95,
+#'   plot = FALSE
+#' )
+#' lapply(out, head)
 #' @keywords internal
 #' @noRd
 .conj_exponential_sv <- function(s1 = NULL, priors = NULL,
