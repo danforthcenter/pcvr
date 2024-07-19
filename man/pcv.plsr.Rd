@@ -32,6 +32,7 @@ This function also uses the 'pls' method from the pls package.
 
 ## Not run:
 
+if (FALSE) {
 dists <- list(
   rlnorm = list(meanlog = log(40), sdlog = 0.5),
   rlnorm = list(meanlog = log(60), sdlog = 0.35)
@@ -43,8 +44,9 @@ sv <- growthSim("logistic",
                 params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
 )
 d <- cbind(sv, mv[, -1])
+# note that this requires the "pls" package to be installed.
 x <- pcv.plsr(df = d, resps = "y", spectra = grepl("^sim_", colnames(d)))
-
+}
 ## End(Not run)
 
 }

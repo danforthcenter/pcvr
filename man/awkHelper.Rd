@@ -27,6 +27,16 @@ Currently when filters are supplied the input file has quotes removed by `sed`
 then is piped into awk, so an equivalent command line statement may be:
 \code{sed 's/\"//g' pcvrTest2.csv | awk -F ','  '{ if (NR==1 || $18=="area") { print } }'}
 }
+\examples{
+link1 <- "https://gist.githubusercontent.com/seankross/"
+link2 <- "a412dfbd88b3db70b74b/raw/5f23f993cd87c283ce766e7ac6b329ee7cc2e1d1/mtcars.csv"
+file <- paste0(link1, link2)
+awkHelper(file, list("gear in 4, 3"), awk = NULL)
+# note that to be filtered the file has to exist on your local system, this example is only to show
+# the output of awkHelper, which would then be executed by read.pcv
+awkHelper(file, list("gear in 4, 3"), awk = "existing_command")
+
+}
 \keyword{long}
 \keyword{pcv,}
 \keyword{read.csv,}
