@@ -223,6 +223,9 @@ distributionPlot <- function(fits, form, priors = NULL,
 #' @noRd
 
 .distPlotPriorExtraction <- function(fits, priors, d, group, params, x) {
+  if (is.null(priors)) {
+    return(list("prior_df" = NULL, "UP" = FALSE))
+  }
   if (all(unlist(lapply(fits, function(fit) nrow(brms::prior_draws(fit)) < 1)))) {
     # if no models were fit with sample_prior
     if (!is.null(priors)) { # if prior is supplied as argument

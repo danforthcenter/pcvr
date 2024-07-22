@@ -302,7 +302,7 @@ test_that("conjugate single value pareto works", {
   expect_equal(names(out), c("summary", "posterior"))
 })
 
-test_that("conjugate multi value uniform works", {
+test_that("conjugate multi value pareto works", {
   set.seed(123)
   library(extraDistr)
   mv <- mvSim(

@@ -2,8 +2,8 @@
 #'
 #'
 #'
-#' @param model A brmsfit object or a list of brmsfit objects
-#' @param params A list of parameters to use from the model.
+#' @param fit A brmsfit object or a list of brmsfit objects
+#' @param params A list of parameters to use from the fit.
 #' Defaults to NULL in which case all growth model parameters are used.
 #' @param hyp A character string defining the hypothesis to be tested.
 #' Defaults to "num/denom > 1.05". The "num" and "denom" names should be kept,
@@ -45,7 +45,7 @@
 #' if (FALSE) {
 #'   data(bw_vignette_fit)
 #'   brmViolin(
-#'     model = bw_vignette_fit, params = NULL,
+#'     fit = bw_vignette_fit, params = NULL,
 #'     hyp = "num/denom>1.05", compareX = c("0.B73", "50.B73", "100.B73"), againstY = "0.B73",
 #'     group_sep = "[.]", groups_into = c("soil", "genotype"), x = "soil", facet = "genotype",
 #'     returnData = FALSE
@@ -58,10 +58,11 @@
 #'
 #' @export
 
-brmViolin <- function(model, params = NULL, hyp = "num/denom>1.05", compareX = NULL, againstY = NULL,
-                      group_sep = "[.]", groups_into = c(), x = NULL, facet = NULL,
+brmViolin <- function(fit, params = NULL, hyp = "num/denom>1.05", compareX = "a", againstY = "b",
+                      group_sep = "[.]", groups_into = c("group2"), x = NULL, facet = NULL,
                       cores = getOption("mc.cores", 1), returnData = FALSE) {
   #* `parse arguments`
+  model <- fit
   brmViolinParseArgumentsRes <- .brmViolinParseArguments(
     compareX, againstY,
     model, params, group_sep,
@@ -72,6 +73,9 @@ brmViolin <- function(model, params = NULL, hyp = "num/denom>1.05", compareX = N
   model <- brmViolinParseArgumentsRes[["model"]]
   params <- brmViolinParseArgumentsRes[["params"]]
   useGroups <- brmViolinParseArgumentsRes[["useGroups"]]
+  if (is.null(x)) {
+    x <- groups_into[1]
+  }
   #* `get draws`
   draws <- do.call(cbind, lapply(model, function(mod) { # extract draws for relevant parameters
     mdf <- as.data.frame(mod[["fit"]])
@@ -187,7 +191,7 @@ brmViolin <- function(model, params = NULL, hyp = "num/denom>1.05", compareX = N
     }) +
     ggplot2::scale_fill_manual(
       values = virPal, breaks = c("A", "B", "C", "D", "E"),
-      labels = c(">99%", ">95%", ">85%", ">75%", "<75%"), drop = FALSE
+      labels = c(">99%", ">95%", ">85%", ">75%", "<75%"), drop = TRUE
     ) +
     ggplot2::labs(y = "Posterior Distribution", x = x, fill = "Discrete Posterior Probability") +
     pcv_theme() +
@@ -196,7 +200,7 @@ brmViolin <- function(model, params = NULL, hyp = "num/denom>1.05", compareX = N
       panel.border = ggplot2::element_rect(fill = NA)
     )
   if (returnData) {
-    return(list(violinPlot, ldj))
+    return(list("plot" = violinPlot, "data" = ldj))
   } else {
     return(violinPlot)
   }
@@ -219,7 +223,7 @@ brmViolin <- function(model, params = NULL, hyp = "num/denom>1.05", compareX = N
 
   if (is.null(params)) { # if params aren't given then grab all
     nlPars <- names(model[[1]]$formula$pforms)
-    params <- nlPars[-which(grepl("sigma", nlPars))]
+    params <- nlPars[-which(grepl("sigma|nu", nlPars))]
   }
 
   if (is.null(group_sep) || is.null(groups_into)) {

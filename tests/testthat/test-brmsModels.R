@@ -9,7 +9,6 @@ test_that("Logistic brms model pipeline", {
     "logistic", n = 20, t = 25,
     params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
   )
-
   ss <- growthSS(
     model = "logistic", form = y ~ time | id / group, sigma = "spline",
     list("A" = 130, "B" = 10, "C" = 3),
@@ -22,6 +21,52 @@ test_that("Logistic brms model pipeline", {
 
   plot <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
   expect_s3_class(plot, "ggplot")
+
+  plot2 <- brmViolin(fit, hyp = "num/denom>1.05",
+                     compareX = "a",
+                     againstY = "b", returnData = TRUE)
+  expect_s3_class(plot2$plot, "ggplot")
+  cd <- combineDraws(fit, fit)
+  expect_equal(dim(cd), c(250, 16))
+  fit2 <- fit1 <- fit
+  fit1$data <- fit1$data[fit1$data$time < 10, ]
+  plot3 <- distributionPlot(list(fit1, fit2), form = ss$pcvrForm, d = ss$df)
+  expect_s3_class(plot3, "ggplot")
+})
+
+test_that("weibull survival", {
+  set.seed(123)
+  model <- "survival weibull"
+  form <- y > 100 ~ time | id / group
+  df <- growthSim(
+    "logistic", n = 20, t = 25,
+    params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
+  )
+  prior <- c(0, 5)
+  ss <- growthSS(model = model, form = form, df = df, start = prior)
+  expect_equal(ss$prior$coef, c("groupa", "groupb"))
+  fit <- fitGrowth(ss, iter = 600, cores = 1, chains = 1, backend = "cmdstanr")
+  expect_s3_class(fit, "brmsfit")
+  plot <- growthPlot(fit, form = ss$pcvrForm, df = ss$df)
+  expect_s3_class(plot, "ggplot")
+  # need to still check plotting/testing, those are pending.
+})
+
+test_that("binomial survival", {
+  set.seed(123)
+  model <- "survival binomial"
+  form <- y > 100 ~ time | id / group
+  df <- growthSim(
+    "logistic", n = 20, t = 25,
+    params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
+  )
+  prior <- c(0, 5)
+  ss <- growthSS(model = model, form = form, df = df, start = prior)
+  fit <- fitGrowth(ss, iter = 600, cores = 1, chains = 1, backend = "cmdstanr")
+  expect_s3_class(fit, "brmsfit")
+  plot <- growthPlot(fit, form = ss$pcvrForm, df = ss$df)
+  expect_s3_class(plot, "ggplot")
+  # need to still check plotting/testing, those are pending.
 })
 
 if (file.exists("/home/josh/Desktop/") && interactive()) {
@@ -768,37 +813,6 @@ if (file.exists("/home/josh/Desktop/") && interactive()) {
       width = 10, height = 6, dpi = 300, bg = "#ffffff"
     )
     expect_s3_class(plot, "ggplot")
-  })
-
-  test_that("weibull survival", {
-    set.seed(123)
-    model <- "survival weibull"
-    form <- y > 100 ~ time | id / group
-    df <- growthSim("logistic",
-      n = 20, t = 25,
-      params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
-    )
-    prior <- c(0, 5)
-    ss <- growthSS(model = model, form = form, df = df, start = prior)
-    expect_equal(ss$prior$coef, c("groupa", "groupb"))
-    fit <- fitGrowth(ss, iter = 600, cores = 1, chains = 1, backend = "cmdstanr")
-    expect_s3_class(fit, "brmsfit")
-    # need to still check plotting/testing, those are pending.
-  })
-
-  test_that("binomial survival", {
-    set.seed(123)
-    model <- "survival binomial"
-    form <- y > 100 ~ time | id / group
-    df <- growthSim("logistic",
-      n = 20, t = 25,
-      params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
-    )
-    prior <- c(0, 5)
-    ss <- growthSS(model = model, form = form, df = df, start = prior)
-    test <- fitGrowth(ss, iter = 600, cores = 1, chains = 1, backend = "cmdstanr")
-    expect_s3_class(test, "brmsfit")
-    # need to still check plotting/testing, those are pending.
   })
 
   test_that("Test flexsurv model", {

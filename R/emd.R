@@ -46,24 +46,29 @@
 #'
 #' ## Not run:
 #'
-#' makeHist <- function(mu, sd) {
-#'   hist(rnorm(10000, mu, sd), breaks = seq(1, 100, 1), plot = FALSE)$counts
-#' }
-#' test <- as.data.frame(do.call(rbind, lapply(seq(30, 54, 6), function(d) {
-#'   x <- as.data.frame(do.call(rbind, lapply(1:5, function(i) makeHist(mu = d, sd = 5))))
-#'   x$Mu <- round(d, -1)
-#'   x
-#' })))
-#' test <- test[sample(rownames(test), nrow(test), replace = FALSE), ]
+#' set.seed(123)
+#' test <- mvSim(
+#'   dists = list(
+#'     runif = list(min = 0, max = 100),
+#'     rnorm = list(mean = 90, sd = 20)
+#'   ),
+#'   n_samples = 10
+#' )
 #' test$meta1 <- rep(LETTERS[1:3], length.out = nrow(test))
 #' test$meta2 <- rep(LETTERS[4:5], length.out = nrow(test))
 #'
 #' x <- pcv.emd(
-#'   df = test, cols = "V", reorder = "Mu",
+#'   df = test, cols = "sim", reorder = "group",
 #'   include = c("meta1", "meta2"), mat = FALSE,
 #'   plot = FALSE, parallel = 1
 #' )
 #' head(x)
+#' x2 <- pcv.emd(
+#'   df = test, cols = "sim", reorder = "group",
+#'   include = c("meta1", "meta2"), mat = FALSE,
+#'   plot = FALSE, parallel = 1, method = "euc"
+#' )
+#' head(x2)
 #'
 #' if (FALSE) {
 #'   file <- paste0(
