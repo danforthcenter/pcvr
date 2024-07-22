@@ -3,7 +3,7 @@
   [![R-CMD-check](https://github.com/danforthcenter/pcvr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/danforthcenter/pcvr/actions/workflows/R-CMD-check.yaml)
   [![Coverage
 Status](https://codecov.io/github/danforthcenter/pcvr/coverage.svg?branch=master)](https://app.codecov.io/github/danforthcenter/pcvr)
-  <!-- badges: end -->
+<!-- badges: end -->
 
 R functions for use with plantCV output
 
