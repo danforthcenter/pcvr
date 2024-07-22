@@ -53,15 +53,14 @@ Models fit using \link{growthSS} inputs by \link{fitGrowth}
 ## Not run:
 
 simdf <- growthSim("logistic",
-  n = 20, t = 25,
+  n = 10, t = 25,
   params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
 )
 
 ss <- growthSS(
-  model = "logistic", form = y ~ time | id / group,
+  model = "logistic", form = y ~ time | id / group, sigma = "none",
   df = simdf, start = NULL, type = "nlme"
 )
-dim(ss$df)
 
 fit <- fitGrowth(ss)
 
