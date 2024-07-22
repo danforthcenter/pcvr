@@ -37,6 +37,12 @@ jobs:
           extra-packages: any::covr
           needs: coverage
 
+      - name: Build Cmdstan
+        run: |
+          cmdstanr::check_cmdstan_toolchain(fix = TRUE)
+          cmdstanr::install_cmdstan(cores = parallel::detectCores())
+        shell: Rscript {0}
+
       - name: Test coverage
         run: |
           covr::codecov(
