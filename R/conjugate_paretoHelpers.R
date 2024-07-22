@@ -30,6 +30,8 @@
   if (is.matrix(s1)) {
     s1 <- as.data.frame(s1)
   }
+  #* `N observations`
+  n_obs <- nrow(s1)
   #* `Reorder columns if they are not in the numeric order`
   histColsBin <- as.numeric(sub("[a-zA-Z_.]+", "", colnames(s1)))
   bins_order <- sort(histColsBin, index.return = TRUE)$ix
@@ -49,8 +51,6 @@
   #* `Calculate Sufficient Statistics`
   #* This is abnormal because one of the sufficient statistics is the product of the data.
   #* That quantity does not translate well to the MV trait setting.
-  #* `N observations`
-  n_obs <- nrow(s1)
   #* `MLE Estimates of Pareto Parameters`
   #* Note this is being done per row of the MV data
   row_scales <- unlist(lapply(seq_len(n_obs), function(i) {

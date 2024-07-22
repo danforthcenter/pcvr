@@ -200,6 +200,40 @@ test_that("conjugate multi value lognormal works", {
   expect_equal(names(out), c("summary", "posterior"))
 })
 
+test_that("conjugate single value lognormal2 works", {
+  set.seed(123)
+  s1 <- rlnorm(100, log(130), log(1.3))
+  s2 <- rlnorm(100, log(100), log(2))
+  out <- conjugate(
+    s1 = s1, s2 = s2,
+    method = "lognormal2", priors = list(a = 1, b = 1),
+    plot = FALSE, rope_range = c(-1, 1), rope_ci = 0.89, cred.int.level = 0.89,
+    hypothesis = "equal", support = NULL
+  )
+  expect_equal(out$summary$post.prob, 1.069935e-09, tolerance = 1e-6)
+  expect_equal(out$summary$rope_prob, 0, tolerance = 1e-6)
+  expect_equal(names(out), c("summary", "posterior"))
+})
+
+test_that("conjugate multi value lognormal2 works", {
+  set.seed(123)
+  mv_ln <- mvSim(
+    dists = list(
+      rlnorm = list(meanlog = log(50), sdlog = log(1.7)),
+      rlnorm = list(meanlog = log(30), sdlog = log(2.1))
+    ),
+    n_samples = 30
+  )
+  out <- conjugate(
+    s1 = mv_ln[1:30, -1], s2 = mv_ln[31:60, -1], method = "lognormal2",
+    priors = list(a = 1, b = 1),
+    plot = FALSE, rope_range = c(-1, 1), rope_ci = 0.89,
+    cred.int.level = 0.89, hypothesis = "equal", support = NULL
+  )
+  expect_equal(out$summary$post.prob, 0.3054448, tolerance = 1e-6)
+  expect_equal(out$summary$rope_prob, 0.007976632, tolerance = 0.0001)
+  expect_equal(names(out), c("summary", "posterior"))
+})
 
 test_that("conjugate single value poisson works", {
   set.seed(123)
@@ -268,6 +302,27 @@ test_that("conjugate single value pareto works", {
   expect_equal(names(out), c("summary", "posterior"))
 })
 
+test_that("conjugate multi value uniform works", {
+  set.seed(123)
+  library(extraDistr)
+  mv <- mvSim(
+    dists = list(
+      rpareto = list(a = 1, b = 1),
+      rpareto = list(a = 1, b = 1)
+    ),
+    n_samples = 30, counts = 100
+  )
+  out <- conjugate(
+    s1 = mv[1:30, -1], s2 = mv[31:60, -1], method = "pareto",
+    priors = list(a = 1, b = 1, known_location = 1),
+    plot = FALSE, rope_range = c(-0.5, 0.5), rope_ci = 0.89,
+    cred.int.level = 0.89, hypothesis = "equal"
+  )
+  expect_equal(out$summary$post.prob, 0.7988257, tolerance = 1e-6)
+  expect_equal(out$summary$rope_prob, 0.002583979, tolerance = 1e-6)
+  expect_equal(names(out), c("summary", "posterior"))
+})
+
 test_that("conjugate single value uniform works", {
   set.seed(123)
   s1 <- runif(10, 0, 10)
@@ -279,6 +334,26 @@ test_that("conjugate single value uniform works", {
     cred.int.level = 0.89, hypothesis = "equal"
   )
   expect_equal(out$summary$post.prob, 0.05305783, tolerance = 1e-6)
+  expect_equal(out$summary$rope_prob, 0, tolerance = 1e-6)
+  expect_equal(names(out), c("summary", "posterior"))
+})
+
+test_that("conjugate multi value uniform works", {
+  set.seed(123)
+  mvu <- mvSim(
+    dists = list(
+      runif = list(min = 0, max = 100),
+      runif = list(min = 0, max = 90)
+    ),
+    n_samples = 30
+  )
+  out <- conjugate(
+    s1 = mvu[1:30, -1], s2 = mvu[31:60, -1], method = "uniform",
+    priors = list(scale = 0.5, location = 0.5),
+    plot = FALSE, rope_range = c(-0.5, 0.5), rope_ci = 0.89,
+    cred.int.level = 0.89, hypothesis = "equal"
+  )
+  expect_equal(out$summary$post.prob, 0.03885159, tolerance = 1e-6)
   expect_equal(out$summary$rope_prob, 0, tolerance = 1e-6)
   expect_equal(names(out), c("summary", "posterior"))
 })
