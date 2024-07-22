@@ -45,12 +45,6 @@ jobs:
           writeLines('options(repos = c(INLA = "https://mc-stan.org/r-packages/", getOption(\"repos\")))', file("~/.Rprofile", "ab"))
         shell: Rscript {0}
         
-      - name: Build Cmdstan
-        run: |
-          cmdstanr::check_cmdstan_toolchain(fix = TRUE)
-          cmdstanr::install_cmdstan(cores = parallel::detectCores())
-        shell: Rscript {0}
-        
       - name: Create and populate check.Renviron file
         run: |
           echo R_CHECK_DONTTEST_EXAMPLES=false >> ~/check.Renviron
@@ -61,7 +55,13 @@ jobs:
         with:
           extra-packages: any::rcmdcheck
           needs: check
-
+          
+      - name: Build Cmdstan
+        run: |
+          cmdstanr::check_cmdstan_toolchain(fix = TRUE)
+          cmdstanr::install_cmdstan(cores = parallel::detectCores())
+        shell: Rscript {0}
+        
       - uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
