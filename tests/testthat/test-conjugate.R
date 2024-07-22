@@ -1,4 +1,5 @@
 if (!interactive()) pdf(NULL)
+
 test_that("conjugate single value T works", {
   s1 <- c(
     43.8008289810423, 44.6084228775479, 68.9524219823026, 77.442231894233,
@@ -237,7 +238,111 @@ test_that("conjugate single value negative binomial works", {
   expect_equal(names(out), c("summary", "posterior"))
 })
 
+test_that("conjugate single value bernoulli works", {
+  set.seed(123)
+  s1 <- sample(c(TRUE, FALSE), 10, replace = TRUE, prob = c(0.4, 0.6))
+  s2 <- sample(c(TRUE, FALSE), 10, replace = TRUE, prob = c(0.7, 0.3))
+  out <- conjugate(
+    s1 = s1, s2 = s2, method = "bernoulli",
+    priors = list(a = 0.5, b = 0.5),
+    plot = FALSE, rope_range = c(-0.5, 0.5), rope_ci = 0.89,
+    cred.int.level = 0.89, hypothesis = "equal"
+  )
+  expect_equal(out$summary$post.prob, 0.3412209, tolerance = 1e-6)
+  expect_equal(out$summary$rope_prob, 0.914504, tolerance = 1e-6)
+  expect_equal(names(out), c("summary", "posterior"))
+})
 
+test_that("conjugate single value pareto works", {
+  set.seed(123)
+  s1 <- extraDistr::rpareto(10, 2, 1)
+  s2 <- extraDistr::rpareto(10, 3, 1)
+  out <- conjugate(
+    s1 = s1, s2 = s2, method = "pareto",
+    priors = list(a = 1, b = 1, known_location = min(c(s1, s2))),
+    plot = FALSE, rope_range = c(-0.5, 0.5), rope_ci = 0.89,
+    cred.int.level = 0.89, hypothesis = "equal"
+  )
+  expect_equal(out$summary$post.prob, 0.8257879, tolerance = 1e-6)
+  expect_equal(out$summary$rope_prob, 0.02213234, tolerance = 1e-6)
+  expect_equal(names(out), c("summary", "posterior"))
+})
+
+test_that("conjugate single value uniform works", {
+  set.seed(123)
+  s1 <- runif(10, 0, 10)
+  s2 <- runif(10, 0, 13)
+  out <- conjugate(
+    s1 = s1, s2 = s2, method = "uniform",
+    priors = list(scale = 0.5, location = 0.5),
+    plot = FALSE, rope_range = c(-0.5, 0.5), rope_ci = 0.89,
+    cred.int.level = 0.89, hypothesis = "equal"
+  )
+  expect_equal(out$summary$post.prob, 0.05305783, tolerance = 1e-6)
+  expect_equal(out$summary$rope_prob, 0, tolerance = 1e-6)
+  expect_equal(names(out), c("summary", "posterior"))
+})
+
+
+test_that("conjugate single value von mises (1) works", {
+  set.seed(123)
+  s1 <- brms::rvon_mises(10, 0, 2)
+  s2 <- brms::rvon_mises(10, 0, 2)
+  out <- conjugate(
+    s1 = s1, s2 = s2, method = "vonmises",
+    priors = list(mu = 0, kappa = 0.5, boundary = c(-pi, pi)),
+    plot = TRUE, rope_range = c(-0.5, 0.5), rope_ci = 0.89,
+    cred.int.level = 0.89, hypothesis = "equal"
+  )
+  expect_equal(out$summary$post.prob, 0.4736915, tolerance = 1e-6)
+  expect_equal(out$summary$rope_prob, 0.255814, tolerance = 1e-6)
+  expect_equal(names(out), c("summary", "posterior", "plot"))
+})
+
+test_that("conjugate single value von mises (2) works", {
+  set.seed(123)
+  s1 <- rnorm(10, 50, 6)
+  s2 <- rnorm(10, 60, 10)
+  out <- conjugate(
+    s1 = s1, s2 = s2, method = "vonmises",
+    priors = list(mu = 0, kappa = 0.5, boundary = c(0, 110)),
+    plot = FALSE, rope_range = c(-0.5, 0.5), rope_ci = 0.89,
+    cred.int.level = 0.89, hypothesis = "equal"
+  )
+  expect_equal(out$summary$post.prob, 0.4364471, tolerance = 1e-6)
+  expect_equal(out$summary$rope_prob, 0.01955, tolerance = 1e-3)
+  expect_equal(names(out), c("summary", "posterior"))
+})
+
+test_that("conjugate single value gamma works", {
+  set.seed(123)
+  s1 <- rgamma(10, 2, 1)
+  s2 <- rgamma(10, 1, 1)
+  out <- conjugate(
+    s1 = s1, s2 = s2, method = "gamma",
+    priors = list(shape = 0.5, scale = 0.5, known_shape = 1),
+    plot = FALSE, rope_range = c(-0.5, 0.5), rope_ci = 0.89,
+    cred.int.level = 0.89, hypothesis = "equal"
+  )
+  expect_equal(out$summary$post.prob, 0.1474759, tolerance = 1e-6)
+  expect_equal(out$summary$rope_prob, 0.2627795, tolerance = 1e-6)
+  expect_equal(names(out), c("summary", "posterior"))
+})
+
+test_that("conjugate single value exponential works", {
+  set.seed(123)
+  s1 <- rexp(10, 1.2)
+  s2 <- rexp(10, 1)
+  out <- conjugate(
+    s1 = s1, s2 = s2, method = "exponential",
+    priors = list(a = 0.5, b = 0.5),
+    plot = FALSE, rope_range = c(-0.5, 0.5), rope_ci = 0.89,
+    cred.int.level = 0.89, hypothesis = "equal"
+  )
+  expect_equal(out$summary$post.prob, 0.3536306, tolerance = 1e-6)
+  expect_equal(out$summary$rope_prob, 0.3370408, tolerance = 1e-6)
+  expect_equal(names(out), c("summary", "posterior"))
+})
 
 test_that("generic conjugate plotting works", {
   s1 <- c(
