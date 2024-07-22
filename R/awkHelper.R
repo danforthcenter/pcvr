@@ -22,7 +22,7 @@
 #' # note that to be filtered the file has to exist on your local system, this example is only to show
 #' # the output of awkHelper, which would then be executed by read.pcv
 #' awkHelper(file, list("gear in 4, 3"), awk = "existing_command")
-#' 
+#'
 #' @export
 awkHelper <- function(inputFile, filters, awk = NULL) {
   if (is.null(awk)) {

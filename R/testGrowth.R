@@ -220,7 +220,7 @@ testGrowth <- function(ss = NULL, fit, test = "A") {
 #'  )
 #' fit <- fitGrowth(ss)
 #' .lmeGamAnova(ss, fit)$anova
-#' 
+#'
 #' @keywords internal
 #' @noRd
 
@@ -354,7 +354,7 @@ testGrowth <- function(ss = NULL, fit, test = "A") {
 #' )
 #' fit <- fitGrowth(ss)
 #' .nlsAnova(ss, fit, test_pars = "A")$anova
-#' 
+#'
 #' @keywords internal
 #' @noRd
 
@@ -391,7 +391,7 @@ testGrowth <- function(ss = NULL, fit, test = "A") {
 #' )
 #' fit <- fitGrowth(ss)
 #' .nlrqTest(ss, fit, test_pars = "A")$anova
-#' 
+#'
 #' @keywords internal
 #' @noRd
 
@@ -544,7 +544,7 @@ testGrowth <- function(ss = NULL, fit, test = "A") {
 #' ss <- growthSS("survival weibull", y > 100 ~ time | id / group, df = df, type = "survreg")
 #' fit <- fitGrowth(ss)
 #' .survTest(ss, fit)
-#' 
+#'
 #' ss <- growthSS("survival weibull", y > 100 ~ time | id / group, df = df, type = "flexsurv")
 #' fit <- fitGrowth(ss)
 #' .survTest(ss, fit)

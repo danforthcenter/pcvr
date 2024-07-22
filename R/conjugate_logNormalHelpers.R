@@ -6,7 +6,7 @@
 #' representing the "bin".
 #'
 #' @examples
-#' 
+#'
 #' mv_ln <- mvSim(
 #'   dists = list(
 #'     rlnorm = list(meanlog = log(130), sdlog = log(1.2))

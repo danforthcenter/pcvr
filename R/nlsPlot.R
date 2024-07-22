@@ -134,7 +134,7 @@ nlsPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL,
 #' )
 #' fit <- fitGrowth(ss)
 #' gamPlot(fit, form = ss$pcvrForm, df = ss$df)
-#' 
+#'
 #' @export
 
 gamPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facetGroups = TRUE,
@@ -235,4 +235,3 @@ lmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facetG
                    groupFill = FALSE, virMaps = c("plasma")) {
   nlsPlot(fit, form, df, groups, timeRange, facetGroups, groupFill, virMaps)
 }
-

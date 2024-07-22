@@ -55,7 +55,7 @@
 #'   time = "timestamp", id = "barcode", offset = 0,
 #'   waterCol = "water_amount", method = "rate"
 #' )
-#' 
+#'
 #' @export
 
 pwue <- function(df, w, pheno = "area_pixels", time = "timestamp", id = "barcode",

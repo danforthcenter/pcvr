@@ -10,7 +10,7 @@
 #'  plot = TRUE
 #' )
 #' lapply(out, head)
-#' 
+#'
 #' @keywords internal
 #' @noRd
 
@@ -132,7 +132,7 @@
 #' Internal function for calculating conditional inverse sampling from bivariate pareto
 #' @examples
 #' .conj_cond_inv_rpareto(10, 1, 2, 10)
-#' 
+#'
 #' @keywords internal
 #' @noRd
 

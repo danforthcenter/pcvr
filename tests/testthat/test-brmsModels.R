@@ -5,21 +5,21 @@ library(ggplot2)
 library(pcvr)
 test_that("Logistic brms model pipeline", {
   set.seed(123)
-  simdf <- growthSim("logistic",
-                     n = 20, t = 25,
-                     params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
+  simdf <- growthSim(
+    "logistic", n = 20, t = 25,
+    params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
   )
-  
+
   ss <- growthSS(
     model = "logistic", form = y ~ time | id / group, sigma = "spline",
     list("A" = 130, "B" = 10, "C" = 3),
     df = simdf, type = "brms"
   )
   expect_equal(ss$prior$nlpar, c("", "", "A", "B", "C"))
-  
+
   fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1)
   expect_s3_class(fit, "brmsfit")
-  
+
   plot <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
   expect_s3_class(plot, "ggplot")
 })

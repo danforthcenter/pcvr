@@ -8,7 +8,7 @@
 #'  plot = FALSE
 #' )
 #' lapply(out, head)
-#' 
+#'
 #' @keywords internal
 #' @noRd
 

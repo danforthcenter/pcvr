@@ -88,10 +88,6 @@ rqPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facetG
   keep <- which(!duplicated(preds))
   plotdf <- cbind(df[keep, ], preds[keep, ])
   colnames(plotdf) <- c(colnames(df), colnames(preds))
-  #* `define colors`
-  virPalP1 <- viridis::plasma(ceiling(length(predCols) / 2), direction = 1, end = 1)
-  virPalP2 <- viridis::plasma(floor(length(predCols) / 2), direction = -1, end = 1)
-  virPal <- c(virPalP1, virPalP2)
   #* `layer for individual lines if formula was complete`
   if (!is.null(individual)) {
     individual_lines <- ggplot2::geom_line(

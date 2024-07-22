@@ -68,7 +68,7 @@ fitGrowth <- function(ss, ...) {
 #' @export
 
 fitGrowthbrms <- function(ss, iter = 2000, cores = getOption("mc.cores", 1), chains = 4, prior = NULL,
-                         backend = "cmdstanr", silent = 0, ...) {
+                          backend = "cmdstanr", silent = 0, ...) {
   if (!"prior" %in% names(ss) && is.null(prior)) {
     warning(
       paste0(
