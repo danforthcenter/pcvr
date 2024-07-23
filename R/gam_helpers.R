@@ -20,8 +20,6 @@
 #' @param unconditional Logical, should unconditional variance-covariance be used in calculating
 #' standard errors. Defaults to TRUE.
 #' @param plot Logical, should a plot of the difference be returned? Defaults to TRUE.
-#' @param patch Logical, should plots be assembled by patchwork (TRUE, the default) or
-#' returned individually (FALSE)?
 #'
 #' @keywords gam, growth, mgcv, spline
 #' @importFrom mgcv gam s
@@ -49,14 +47,18 @@
 #'
 #' out <- gam_diff(
 #'   model = m, newdata = support, g1 = "a", g2 = "b",
-#'   byVar = "group", smoothVar = "time", plot = TRUE, patch = TRUE
+#'   byVar = "group", smoothVar = "time", plot = TRUE
 #' )
 #' dim(out$data)
 #' out$plot
+#' out2 <- gam_diff(
+#'   model = m, g1 = "a", g2 = "b",
+#'   byVar = "group", smoothVar = "time", plot = TRUE
+#' )
 #' @export
 
 gam_diff <- function(model, newdata = NULL, g1, g2, byVar = NULL, smoothVar = NULL,
-                     cis = seq(0.05, 0.95, 0.05), unconditional = TRUE, plot = TRUE, patch = TRUE) {
+                     cis = seq(0.05, 0.95, 0.05), unconditional = TRUE, plot = TRUE) {
   form <- model$formula
   rhs <- as.character(form)[3]
   rg <- regexpr("s\\([a-zA-Z0-9.]+", rhs)
@@ -150,7 +152,7 @@ gam_diff <- function(model, newdata = NULL, g1, g2, byVar = NULL, smoothVar = NU
   smoothVarRange <- range(newdata[[smoothVar]], na.rm = TRUE)
   smoothVarOut <- seq(min(smoothVarRange), max(smoothVarRange), length.out = length(dif))
   out_df[[smoothVar]] <- smoothVarOut
-
+  out <- out_df
   if (plot) {
     p_diff <- .plot_gam_diff(out_df, name_pattern = "Q_diff_") +
       ggplot2::theme(
@@ -161,15 +163,9 @@ gam_diff <- function(model, newdata = NULL, g1, g2, byVar = NULL, smoothVar = NU
       name_pattern = "Q_g1_",
       name_pattern2 = "Q_g2_"
     )
-    if (patch) {
-      layout_obj <- patchwork::plot_layout(design = c(area(1, 1, 4, 6), area(5, 1, 6, 6)))
-      patchPlot <- p_model / p_diff + layout_obj
-      out <- list("data" = out_df, "plot" = patchPlot)
-    } else {
-      out <- list("data" = out_df, "plot" = list("plot_diff" = p_diff, "plot_preds" = p_model))
-    }
-  } else {
-    out <- out_df
+    layout_obj <- patchwork::plot_layout(design = c(area(1, 1, 4, 6), area(5, 1, 6, 6)))
+    patchPlot <- p_model / p_diff + layout_obj
+    out <- list("data" = out_df, "plot" = patchPlot)
   }
   return(out)
 }

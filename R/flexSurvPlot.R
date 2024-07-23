@@ -34,7 +34,9 @@
 #' ss <- growthSS(model = "survival weibull", form = y > 100 ~ time | id / group,
 #'                df = df, type = "flexsurv")
 #' fit <- fitGrowth(ss)
-#' flexsurvregPlot(fit, form = ss$pcvrForm, df = ss$df)
+#' flexsurvregPlot(fit, form = ss$pcvrForm, df = ss$df, groups = "a")
+#' flexsurvregPlot(fit, form = ss$pcvrForm, df = ss$df,
+#'   facetGroups = FALSE, groupFill = TRUE)
 #'
 #' ## End(Not run)
 #'

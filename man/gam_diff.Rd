@@ -13,8 +13,7 @@ gam_diff(
   smoothVar = NULL,
   cis = seq(0.05, 0.95, 0.05),
   unconditional = TRUE,
-  plot = TRUE,
-  patch = TRUE
+  plot = TRUE
 )
 }
 \arguments{
@@ -43,9 +42,6 @@ Defaults to \code{seq(0.05, 0.95, 0.05)}}
 standard errors. Defaults to TRUE.}
 
 \item{plot}{Logical, should a plot of the difference be returned? Defaults to TRUE.}
-
-\item{patch}{Logical, should plots be assembled by patchwork (TRUE, the default) or
-returned individually (FALSE)?}
 }
 \description{
 Note that using GAMs will be less useful than fitting parameterized models as supported by
@@ -71,10 +67,14 @@ support <- expand.grid(
 
 out <- gam_diff(
   model = m, newdata = support, g1 = "a", g2 = "b",
-  byVar = "group", smoothVar = "time", plot = TRUE, patch = TRUE
+  byVar = "group", smoothVar = "time", plot = TRUE
 )
 dim(out$data)
 out$plot
+out2 <- gam_diff(
+  model = m, g1 = "a", g2 = "b",
+  byVar = "group", smoothVar = "time", plot = TRUE
+)
 }
 \keyword{gam,}
 \keyword{growth,}

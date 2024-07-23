@@ -42,6 +42,7 @@
 #'                   plot = FALSE, parallel = 1
 #' )
 #' net <- pcv.net(emd_df, meta = "group")
+#' net2 <- pcv.net(emd_df, meta = "group", filter = "0.9", direction = "lesser")
 #'
 #' ## End(Not run)
 #'

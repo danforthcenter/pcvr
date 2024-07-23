@@ -58,7 +58,8 @@ df <- growthSim("logistic",
 ss <- growthSS(model = "survival weibull", form = y > 100 ~ time | id / group,
                df = df, type = "survreg")
 fit <- fitGrowth(ss)
-survregPlot(fit, form = ss$pcvrForm, df = ss$df)
+survregPlot(fit, form = ss$pcvrForm, df = ss$df, groups = "a")
+survregPlot(fit, form = ss$pcvrForm, df = ss$df, facetGroups = FALSE, groupFill = TRUE)
 
 ## End(Not run)
 

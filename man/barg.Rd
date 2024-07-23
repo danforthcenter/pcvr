@@ -100,7 +100,7 @@ fit_test <- fitGrowth(ss,
 barg(fit_test, ss)
 fit_2 <- fit_test
 fit_list <- list(fit_test, fit_2)
-x <- barg(fit_list, ss)
+x <- barg(fit_list, list(ss, ss))
 
 ## End(Not run:)
 

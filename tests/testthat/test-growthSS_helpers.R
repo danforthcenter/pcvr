@@ -1,6 +1,18 @@
 library(testthat)
 library(pcvr)
 
+test_that("Error is raised with bad backend", {
+  set.seed(123)
+  df <- growthSim(
+    "logistic", n = 20, t = 25,
+    params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
+  )
+  expect_error(growthSS(
+    model = "logistic", form = y ~ time | id / group,
+    df = df, type = "bad_option"
+  ))
+})
+
 test_that("GrowthSS Helpers for Logistic Data work", {
   set.seed(123)
   df <- growthSim("logistic",
@@ -315,6 +327,16 @@ test_that("GrowthSS Helpers for gams work", {
   ss <- suppressMessages(growthSS(
     model = "gam", form = y ~ time | id / group,
     df = df, type = "brms"
+  ))
+  expect_type(ss, "list")
+  ss <- suppressMessages(growthSS(
+    model = "gam", form = y ~ time | id / group,
+    df = df, type = "mgcv"
+  ))
+  expect_type(ss, "list")
+  ss <- suppressMessages(growthSS(
+    model = "gam", form = y ~ time,
+    df = df, type = "mgcv"
   ))
   expect_type(ss, "list")
 })

@@ -73,6 +73,7 @@ test_that("reading mv github data as long works", {
 
   #* test network
   net <- pcv.net(emd$data)
+  expect_error(pcv.net(c(1, 2, 3)))
   expect_s3_class(net[[3]], "igraph")
   expect_equal(dim(net$nodes), c(8, 12))
   expect_equal(dim(net$edges), c(44, 11))

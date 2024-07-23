@@ -507,7 +507,7 @@ test_that("bivariate conjugate uniform works", {
   s2 <- runif(10, -1, 15)
   out <- conjugate(
     s1 = s1, s2 = s2,
-    method = "bivariate_uniform", priors = list(location_l = 1, location_u = 1.1, scale = 1),
+    method = "bivariate_uniform", priors = NULL,
     plot = TRUE, rope_range = c(-1, 1), rope_ci = 0.89, cred.int.level = 0.89,
     hypothesis = "equal", support = NULL
   )
@@ -566,7 +566,7 @@ test_that("bivariate conjugate gaussian works", {
   s2 <- rnorm(10, 25, 5)
   out <- conjugate(
     s1 = s1, s2 = s2,
-    method = "bivariate_gaussian", priors = list(mu = 20, sd = 10, a = 1, b = 1),
+    method = "bivariate_gaussian", priors = NULL,
     plot = TRUE, rope_range = c(-1, 1), rope_ci = 0.89, cred.int.level = 0.89,
     hypothesis = "equal", support = NULL
   )
@@ -583,7 +583,7 @@ test_that("bivariate conjugate lognormal works", {
   s2 <- rlnorm(10, log(25), 0.4)
   out <- conjugate(
     s1 = s1, s2 = s2,
-    method = "bivariate_lognormal", priors = list(mu = 20, sd = 10, a = 1, b = 1),
+    method = "bivariate_lognormal", priors = NULL,
     plot = TRUE, rope_range = c(-1, 1), rope_ci = 0.89, cred.int.level = 0.89,
     hypothesis = "equal", support = NULL
   )

@@ -26,6 +26,10 @@ test_that("Logistic brms model pipeline", {
                      compareX = "a",
                      againstY = "b", returnData = TRUE)
   expect_s3_class(plot2$plot, "ggplot")
+  plot2.5 <- brmViolin(fit, hyp = "num/denom>1.05",
+                       compareX = "a", facet = "group",
+                       againstY = "b", returnData = FALSE)
+  expect_s3_class(plot2.5, "ggplot")
   cd <- combineDraws(fit, fit)
   expect_equal(dim(cd), c(250, 16))
   fit2 <- fit1 <- fit
@@ -34,9 +38,31 @@ test_that("Logistic brms model pipeline", {
   expect_s3_class(plot3, "ggplot")
 })
 
+test_that("Hierarchical Model Works", {
+  set.seed(123)
+  simdf <- growthSim(
+    "logistic",
+    n = 20, t = 25,
+    params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
+  )
+  simdf$covar <- rnorm(nrow(simdf), 10, 1)
+  ss <- growthSS(
+    model = "logistic", form = y ~ time + covar | id / group, sigma = "logistic",
+    list("AI" = 100, "AA" = 5, "B" = 10, "C" = 3,
+         "sigmaA" = 10, "sigmaB" = 10, "sigmaC" = 3),
+    df = simdf, type = "brms",
+    hierarchy = list("A" = "int_linear")
+  )
+  lapply(ss, head)
+  fit <- fitGrowth(ss, iter = 600, cores = 1, chains = 1, backend = "cmdstanr")
+  expect_s3_class(fit, "brmsfit")
+  p <- growthPlot(fit, ss$pcvrForm, df = ss$df)
+  expect_s3_class(p, "ggplot")
+})
+
 test_that("weibull survival", {
   set.seed(123)
-  model <- "survival weibull"
+  model <- "survival"
   form <- y > 100 ~ time | id / group
   df <- growthSim(
     "logistic", n = 20, t = 25,
@@ -869,28 +895,6 @@ if (file.exists("/home/josh/Desktop/") && interactive()) {
     )
     lapply(ss, head)
     ss$initfun <- 0
-    fit <- fitGrowth(ss, iter = 600, cores = 1, chains = 1, backend = "cmdstanr")
-    expect_s3_class(fit, "brmsfit")
-    p <- growthPlot(fit, ss$pcvrForm, df = ss$df)
-    expect_s3_class(p, "ggplot")
-  })
-
-  test_that("Hierarchical Model", {
-    set.seed(123)
-    simdf <- growthSim(
-      "logistic",
-      n = 20, t = 25,
-      params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
-    )
-    simdf$covar <- rnorm(nrow(simdf), 10, 1)
-    ss <- growthSS(
-      model = "logistic", form = y ~ time + covar | id / group, sigma = "logistic",
-      list("AI" = 100, "AA" = 5, "B" = 10, "C" = 3,
-           "sigmaA" = 10, "sigmaB" = 10, "sigmaC" = 3),
-      df = simdf, type = "brms",
-      hierarchy = list("A" = "int_linear")
-    )
-    lapply(ss, head)
     fit <- fitGrowth(ss, iter = 600, cores = 1, chains = 1, backend = "cmdstanr")
     expect_s3_class(fit, "brmsfit")
     p <- growthPlot(fit, ss$pcvrForm, df = ss$df)

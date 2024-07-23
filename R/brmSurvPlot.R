@@ -125,14 +125,9 @@ brmSurvPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, f
   )
   quantiles <- quantiles[quantiles[[group]] %in% groups, ]
   #* `Decide faceting`
-  if (facetGroups) {
-    if (!all(fitData[[group]] == "a")) {
-      facetLayer <- ggplot2::facet_wrap(as.formula(paste0("~", group)))
-    } else {
-      facetLayer <- NULL
-    }
-  } else {
-    facetLayer <- NULL
+  facetLayer <- NULL
+  if (facetGroups && length(unique(fitData[[group]])) > 1) {
+    facetLayer <- ggplot2::facet_wrap(as.formula(paste0("~", group)))
   }
   #* `lengthen quantiles`
   max_prime <- 0.99
@@ -253,14 +248,9 @@ brmSurvPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, f
     wide_metrics
   }))
   #* `Decide faceting`
-  if (facetGroups) {
-    if (!all(fitData[[group]] == "a")) {
-      facetLayer <- ggplot2::facet_wrap(as.formula(paste0("~", group)))
-    } else {
-      facetLayer <- NULL
-    }
-  } else {
-    facetLayer <- NULL
+  facetLayer <- NULL
+  if (facetGroups && length(unique(fitData[[group]])) > 1) {
+    facetLayer <- ggplot2::facet_wrap(as.formula(paste0("~", group)))
   }
   #* `lengthen quantiles`
   max_prime <- 0.99
