@@ -25,18 +25,18 @@ test_that("reading mv github data as long works", {
 
   phenotypes <- which(grepl("hue_freq", colnames(mv)))
 
-  mvNoOutliers <- bw.outliers(
+  mvNoOutliers <- suppressWarnings(bw.outliers(
     df = mv, phenotype = phenotypes, naTo0 = FALSE, plot = FALSE,
     group = c("DAS", "genotype", "fertilizer"), cutoff = 3, plotgroup = c("barcode", "rotation")
-  )
+  ))
 
   pct_removed <- nrow(mvNoOutliers) / nrow(mv)
   expect_equal(pct_removed, 0.93, tolerance = 0.015)
 
-  mvNoOutliers <- bw.outliers(
+  mvNoOutliers <- suppressWarnings(bw.outliers(
     df = mv, phenotype = phenotypes, naTo0 = FALSE, plot = FALSE, outlierMethod = "mahalanobis",
     group = c("DAS", "genotype", "fertilizer"), cutoff = 3, plotgroup = c("barcode", "rotation")
-  )
+  ))
 
   pct_removed <- nrow(mvNoOutliers) / nrow(mv)
   expect_equal(pct_removed, 0.945, tolerance = 0.015)

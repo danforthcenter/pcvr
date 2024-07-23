@@ -44,10 +44,10 @@ test_that("reading sv github data as wide works", {
   )
 
   #* see notes from 9/6/2023 on why this is done differently, also see test-long_sv_workflow.R
-  svNoOutliers <- bw.outliers(
+  svNoOutliers <- suppressWarnings(bw.outliers(
     df = sv, phenotype = "area_pixels", group = c("DAS", "genotype", "fertilizer"),
     cutoff = 3, plot = FALSE
-  )
+  ))
   pct_removed <- nrow(svNoOutliers) / nrow(sv)
   expect_equal(pct_removed, 0.997, tolerance = 0.0015)
 

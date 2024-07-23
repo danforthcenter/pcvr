@@ -35,10 +35,10 @@ test_that("reading sv github data as long works", {
     ifelse(sv$fertilizer == "B", "50", "0")
   )
 
-  svNoOutliers <- bw.outliers(
+  svNoOutliers <- suppressWarnings(bw.outliers(
     df = sv, phenotype = "area_pixels", group = c("DAS", "genotype", "fertilizer"),
     cutoff = 3, plot = FALSE
-  )
+  ))
   pct_removed <- nrow(svNoOutliers) / nrow(sv)
   expect_equal(pct_removed, 0.997, tolerance = 0.0015)
 
