@@ -62,8 +62,8 @@ gam_diff <- function(model, newdata = NULL, g1, g2, byVar = NULL, smoothVar = NU
   rhs <- as.character(form)[3]
   rg <- regexpr("s\\([a-zA-Z0-9.]+", rhs)
   xTerm <- sub("s\\(", "", regmatches(rhs, rg)[1])
-  rg2 <- regexpr("by\\s?=\\s?.*\\([a-zA-Z0-9.]+", rhs)
-  byTerm <- sub("by\\s?=\\s?.*\\(", "", regmatches(rhs, rg2)[1])
+  rg2 <- regexpr("by\\s?=\\s?.*[a-zA-Z0-9.]+", rhs)
+  byTerm <- sub(".*\\(", "", sub("by\\s?=\\s?", "", regmatches(rhs, rg2)[1]))
   mdf <- model$model
 
   if (is.null(newdata)) {
@@ -162,7 +162,10 @@ gam_diff <- function(model, newdata = NULL, g1, g2, byVar = NULL, smoothVar = NU
       name_pattern = "Q_g1_",
       name_pattern2 = "Q_g2_"
     )
-    layout_obj <- patchwork::plot_layout(design = c(area(1, 1, 4, 6), area(5, 1, 6, 6)))
+    layout_obj <- patchwork::plot_layout(
+      design = c(patchwork::area(1, 1, 4, 6),
+                 patchwork::area(5, 1, 6, 6))
+    )
     patchPlot <- p_model / p_diff + layout_obj
     out <- list("data" = out_df, "plot" = patchPlot)
   }
