@@ -52,8 +52,7 @@
 #' dim(out$data)
 #' out$plot
 #' out2 <- gam_diff(
-#'   model = m, g1 = "a", g2 = "b",
-#'   byVar = "group", smoothVar = "time", plot = TRUE
+#'   model = m, g1 = "a", g2 = "b", byVar = NULL, smoothVar = NULL, plot = TRUE
 #' )
 #' @export
 

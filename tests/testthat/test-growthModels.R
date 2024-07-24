@@ -413,6 +413,10 @@ test_that("Test mgcv gam", {
 
   p <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
   expect_s3_class(p, "ggplot")
+  p2 <- gam_diff(
+    model = m, g1 = "a", g2 = "b", byVar = NULL, smoothVar = NULL, plot = TRUE
+  )
+  expect_s3_class(p2$plot, "ggplot")
 })
 
 

@@ -159,16 +159,8 @@ brmViolin <- function(fit, params = NULL, hyp = "num/denom>1.05", compareX = "a"
       mc.cores = cores
     ))
     for (col in groups_into) {
-      if (suppressWarnings(any(is.na(as.numeric(group_meta[[col]]))))) {
-        group_meta[[col]] <- factor(group_meta[[col]])
-      } else {
-        group_meta[[col]] <- factor(group_meta[[col]],
-          levels = sort(as.numeric(unique(group_meta[[col]]))),
-          ordered = TRUE
-        )
-      }
+      group_meta[[col]] <- factor(group_meta[[col]])
     }
-
     longdraw <- cbind(longdraw, group_meta)
   }
   ldj <- merge(longdraw, hyps_df, by.x = c("group", "param"), by.y = c("num", "param"))
@@ -233,9 +225,9 @@ brmViolin <- function(fit, params = NULL, hyp = "num/denom>1.05", compareX = "a"
     nlPars <- names(model[[1]]$formula$pforms)
     params <- nlPars[-which(grepl("sigma|nu", nlPars))]
   }
-  useGroups <- TRUE
-  if (is.null(group_sep) || is.null(groups_into)) {
-    useGroups <- FALSE
+  useGroups <- FALSE
+  if (!is.null(group_sep) || !is.null(groups_into)) {
+    useGroups <- TRUE
   }
   return(list(
     "compareFew" = compareFew,

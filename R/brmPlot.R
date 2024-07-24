@@ -52,11 +52,6 @@ brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
   group <- parsed_form$group
   df <- parsed_form$data
 
-  #* if no group in fitdata then add a dummy group
-  if (!group %in% colnames(fitData)) {
-    fitData[[group]] <- "a"
-  }
-
   probs <- seq(from = 99, to = 1, by = -2) / 100
 
   if (is.null(timeRange)) {
@@ -85,14 +80,9 @@ brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
   }
 
   #* `facetGroups`
-  if (facetGroups) {
-    if (!all(fitData[[group]] == "a")) {
-      facetLayer <- ggplot2::facet_wrap(as.formula(paste0("~", group)))
-    } else {
-      facetLayer <- NULL
-    }
-  } else {
-    facetLayer <- NULL
+  facetLayer <- NULL
+  if (facetGroups && length(unique(fitData[[group]])) > 1) {
+    facetLayer <- ggplot2::facet_wrap(as.formula(paste0("~", group)))
   }
   #* `lengthen predictions`
   max_prime <- 0.99

@@ -21,15 +21,18 @@ test_that("Logistic brms model pipeline", {
 
   plot <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
   expect_s3_class(plot, "ggplot")
-
+  plot1.5 <- growthPlot(fit = fit, form = y ~ time | group, df = ss$df)
+  expect_s3_class(plot1.5, "ggplot")
   plot2 <- brmViolin(fit, hyp = "num/denom>1.05",
                      compareX = "a",
                      againstY = "b", returnData = TRUE)
   expect_s3_class(plot2$plot, "ggplot")
   plot2.5 <- brmViolin(fit, hyp = "num/denom>1.05",
-                       compareX = "a", facet = "group",
-                       againstY = "b", returnData = FALSE)
+                       facet = "group", returnData = FALSE)
+  d3 <- brmViolin(fit, hyp = "num/denom>1.05", compareX = NULL, againstY = NULL,
+                       facet = "group", returnData = FALSE)
   expect_s3_class(plot2.5, "ggplot")
+  expect_equal(nrow(d3), 3000)
   cd <- combineDraws(fit, fit)
   expect_equal(dim(cd), c(250, 16))
   fit2 <- fit1 <- fit
