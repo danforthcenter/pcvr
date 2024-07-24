@@ -170,7 +170,8 @@
 
 #' @description
 #' Internal function for calculating the HDE of a beta distribution
-#' @param 
+#' @param alpha alpha parameter
+#' @param beta beta parameter
 #' @examples
 #' .betaHDE(1, 2)
 #' .betaHDE(2, 1)

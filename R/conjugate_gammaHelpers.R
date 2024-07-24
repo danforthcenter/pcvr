@@ -59,7 +59,8 @@
 
 #' @description
 #' Internal function for calculating the HDE of a gamma distribution
-#' @param 
+#' @param shape shape parameter
+#' @param scale scale parameter
 #' @examples
 #' .gammaHDE(1, 2)
 #' .gammaHDE(0, 1)
