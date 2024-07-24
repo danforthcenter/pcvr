@@ -21,7 +21,7 @@ test_that("Logistic brms model pipeline", {
 
   plot <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
   expect_s3_class(plot, "ggplot")
-  plot1.5 <- growthPlot(fit = fit, form = y ~ time | group, df = ss$df)
+  plot1.5 <- growthPlot(fit = fit, form = y ~ time | group, groups = "a", df = ss$df)
   expect_s3_class(plot1.5, "ggplot")
   plot2 <- brmViolin(fit, hyp = "num/denom>1.05",
                      compareX = "a",
