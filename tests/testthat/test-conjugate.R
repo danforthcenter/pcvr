@@ -1,5 +1,13 @@
 if (!interactive()) pdf(NULL)
 
+test_that("conjugate HDE helpers work", {
+  expect_equal(.betaHDE(1, 2), 0)
+  expect_equal(.betaHDE(2, 1), 1)
+  expect_equal(.betaHDE(10, 10), 0.5)
+  expect_equal(.gammaHDE(1, 1), 0)
+  expect_equal(.gammaHDE(10, 10), 90)
+})
+
 test_that("conjugate single value T works", {
   s1 <- c(
     43.8008289810423, 44.6084228775479, 68.9524219823026, 77.442231894233,
