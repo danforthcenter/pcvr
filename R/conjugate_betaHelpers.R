@@ -77,14 +77,8 @@
   #* `calculate highest density interval`
   hdi1 <- qbeta(c((1 - cred.int.level) / 2, (1 - ((1 - cred.int.level) / 2))), a1_prime, b1_prime)
 
-  #* `calculate highest density estimate``
-  if (a1_prime <= 1 && b1_prime > 1) {
-    hde1 <- 0
-  } else if (a1_prime > 1 && b1_prime <= 1) {
-    hde1 <- 1
-  } else {
-    hde1 <- (a1_prime - 1) / (a1_prime + b1_prime - 2)
-  }
+  #* `calculate highest density estimate`
+  hde1 <- .betaHDE(a1_prime, b1_prime)
 
   #* `save summary and parameters`
   out$summary <- data.frame(HDE_1 = hde1, HDI_1_low = hdi1[1], HDI_1_high = hdi1[2])
@@ -156,14 +150,8 @@
   #* `calculate highest density interval`
   hdi1 <- qbeta(c((1 - cred.int.level) / 2, (1 - ((1 - cred.int.level) / 2))), a1_prime, b1_prime)
 
-  #* `calculate highest density estimate``
-  if (a1_prime <= 1 && b1_prime > 1) {
-    hde1 <- 0
-  } else if (a1_prime > 1 && b1_prime <= 1) {
-    hde1 <- 1
-  } else {
-    hde1 <- (a1_prime - 1) / (a1_prime + b1_prime - 2)
-  }
+  #* `calculate highest density estimate`
+  hde1 <- .betaHDE(a1_prime, b1_prime)
 
   #* `save summary and parameters`
   out$summary <- data.frame(HDE_1 = hde1, HDI_1_low = hdi1[1], HDI_1_high = hdi1[2])
@@ -178,4 +166,25 @@
                               "sample" = rep("Sample 1", length(support)))
   }
   return(out)
+}
+
+#' @description
+#' Internal function for calculating the HDE of a beta distribution
+#' @param 
+#' @examples
+#' .betaHDE(1, 2)
+#' .betaHDE(2, 1)
+#' .betaHDE(10, 10)
+#' @keywords internal
+#' @noRd
+
+.betaHDE <- function(alpha, beta) {
+  if (alpha <= 1 && beta > 1) {
+    hde <- 0
+  } else if (alpha > 1 && beta <= 1) {
+    hde <- 1
+  } else {
+    hde <- (alpha - 1) / (alpha + beta - 2)
+  }
+  return(hde)
 }

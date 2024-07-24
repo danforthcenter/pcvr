@@ -68,13 +68,7 @@
   out$pdf <- list("Mu" = pdf_mu, "Prec" = pdf_prec)
 
   hde_mu <- mu_prime
-  if (beta_prime <= 1 && alpha_prime > 1) {
-    hde_prec <- qgamma(0.5, shape = alpha_prime, scale = beta_prime)
-  } else if (alpha_prime == 0) {
-    hde_prec <- qgamma(0.5, shape = alpha_prime, scale = beta_prime)
-  } else {
-    hde_prec <- (beta_prime - 1) * alpha_prime
-  }
+  hde_prec <- .gammaHDE(shape = alpha_prime, scale = beta_prime)
   hdi_mu <- -1 * rev(extraDistr::qlst(
     c((1 - cred.int.level) / 2, (1 - ((1 - cred.int.level) / 2))),
     df_prime, mu_prime, sigma_prime

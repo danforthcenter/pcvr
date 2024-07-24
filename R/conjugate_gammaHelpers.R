@@ -37,13 +37,7 @@
   dens1 <- dgamma(support, shape = shape_prime, scale = scale_prime)
   pdf1 <- dens1 / sum(dens1)
   out$pdf <- pdf1
-  if (scale_prime <= 1 && shape_prime > 1) {
-    hde1 <- qgamma(0.5, shape = shape_prime, scale = scale_prime)
-  } else if (shape_prime == 0) {
-    hde1 <- qgamma(0.5, shape = shape_prime, scale = scale_prime)
-  } else {
-    hde1 <- (scale_prime - 1) * shape_prime # note, using shape instead of rate (inverse) HDE
-  }
+  hde1 <- .gammaHDE(shape_prime, scale_prime)
   hdi1 <- qgamma(
     c((1 - cred.int.level) / 2, (1 - ((1 - cred.int.level) / 2))),
     shape = shape_prime, scale = scale_prime
@@ -61,4 +55,23 @@
     )
   }
   return(out)
+}
+
+#' @description
+#' Internal function for calculating the HDE of a gamma distribution
+#' @param 
+#' @examples
+#' .gammaHDE(1, 2)
+#' .gammaHDE(0, 1)
+#' .gammaHDE(10, 10)
+#' @keywords internal
+#' @noRd
+
+.gammaHDE <- function(shape, scale) {
+  if (shape >= 1) {
+    hde <- (shape - 1) * scale
+  } else {
+    hde <- 0
+  }
+  return(hde)
 }

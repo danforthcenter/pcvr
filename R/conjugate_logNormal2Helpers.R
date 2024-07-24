@@ -77,13 +77,7 @@
   #* `posterior`
   dens1 <- dgamma(support, shape = a_prime, scale = b_prime)
   pdf1 <- dens1 / sum(dens1)
-  if (b_prime <= 1 && a_prime > 1) {
-    hde1 <- qgamma(0.5, shape = a_prime, scale = b_prime)
-  } else if (b_prime == 0) {
-    hde1 <- qgamma(0.5, shape = a_prime, scale = b_prime)
-  } else {
-    hde1 <- (b_prime - 1) * a_prime # note, using shape instead of rate (inverse) HDE
-  }
+  hde1 <- .gammaHDE(shape = a_prime, scale = b_prime)
   hdi1 <- qgamma(c((1 - cred.int.level) / 2, (1 - ((1 - cred.int.level) / 2))),
     shape = a_prime, scale = b_prime
   )
@@ -153,13 +147,7 @@
     #* `posterior`
     dens1 <- dgamma(support, shape = a_prime, scale = b_prime)
     pdf1 <- dens1 / sum(dens1)
-    if (b_prime <= 1 && a_prime > 1) {
-      hde1 <- qgamma(0.5, shape = a_prime, scale = b_prime)
-    } else if (b_prime == 0) {
-      hde1 <- qgamma(0.5, shape = a_prime, scale = b_prime)
-    } else {
-      hde1 <- (b_prime - 1) * a_prime # note, using shape instead of rate (inverse) HDE
-    }
+    hde1 <- .gammaHDE(shape = a_prime, scale = b_prime)
     hdi1 <- qgamma(c((1 - cred.int.level) / 2, (1 - ((1 - cred.int.level) / 2))),
       shape = a_prime, scale = b_prime
     )

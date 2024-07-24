@@ -37,13 +37,7 @@
   dens1 <- dgamma(support, a_prime, b_prime)
   pdf1 <- dens1 / sum(dens1)
   out$pdf <- pdf1
-  if (a_prime <= 1 && b_prime > 1) {
-    hde1 <- 0
-  } else if (a_prime > 1 && b_prime <= 1) {
-    hde1 <- Inf
-  } else {
-    hde1 <- (a_prime - 1) / b_prime
-  }
+  hde1 <- .gammaHDE(shape = a_prime, scale = 1 / b_prime)
   hdi1 <- qgamma(
     c((1 - cred.int.level) / 2, (1 - ((1 - cred.int.level) / 2))),
     a_prime, b_prime

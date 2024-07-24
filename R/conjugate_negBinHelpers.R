@@ -64,13 +64,7 @@
   hdi1 <- qbeta(c((1 - cred.int.level) / 2, (1 - ((1 - cred.int.level) / 2))), a1_prime, b1_prime)
 
   #* `calculate highest density estimate``
-  if (a1_prime <= 1 && b1_prime > 1) {
-    hde1 <- 0
-  } else if (a1_prime > 1 && b1_prime <= 1) {
-    hde1 <- 1
-  } else {
-    hde1 <- (a1_prime - 1) / (a1_prime + b1_prime - 2) # to p1 or xbar/var
-  }
+  hde1 <- .betaHDE(a1_prime, b1_prime)
 
   #* `save summary and parameters`
   out$summary <- data.frame(HDE_1 = hde1, HDI_1_low = hdi1[1], HDI_1_high = hdi1[2])
