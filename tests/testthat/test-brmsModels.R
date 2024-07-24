@@ -30,7 +30,7 @@ test_that("Logistic brms model pipeline", {
   plot2.5 <- brmViolin(fit, hyp = "num/denom>1.05",
                        facet = "group", returnData = FALSE)
   d3 <- brmViolin(fit, hyp = "num/denom>1.05", compareX = NULL, againstY = NULL,
-                       facet = "group", returnData = FALSE)
+                  facet = "group", returnData = FALSE)
   expect_s3_class(plot2.5, "ggplot")
   expect_equal(nrow(d3), 3000)
   cd <- combineDraws(fit, fit)
