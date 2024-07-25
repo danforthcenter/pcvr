@@ -41,6 +41,21 @@ test_that("Logistic brms model pipeline", {
   expect_s3_class(plot3, "ggplot")
 })
 
+test_that("brms model warns about priors", {
+  set.seed(123)
+  simdf <- growthSim(
+    "linear", n = 20, t = 25,
+    params = list("A" = c(1, 1.1))
+  )
+  ss <- growthSS(
+    model = "linear", form = y ~ time | id / group, sigma = "spline",
+    df = simdf, type = "brms"
+  )
+  ss <- ss[-which(names(ss) == "prior")]
+  expect_warning(fitGrowth(ss, backend = "cmdstanr",
+                           iter = 100, chains = 1, cores = 1))
+})
+
 test_that("Hierarchical Model Works", {
   set.seed(123)
   simdf <- growthSim(

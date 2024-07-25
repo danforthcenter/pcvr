@@ -27,20 +27,17 @@
 #' @importFrom viridis plasma
 #' @examples
 #'
-#' ## Not run:
-#'
 #' simdf <- growthSim("logistic",
 #'   n = 20, t = 25,
 #'   params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
 #' )
 #' ss <- growthSS(
 #'   model = "logistic", form = y ~ time | id / group,
-#'   tau = 0.5, df = simdf, start = NULL, type = "nlrq"
+#'   tau = c(0.5, 0.9), df = simdf, start = NULL, type = "nlrq"
 #' )
 #' fit <- fitGrowth(ss)
-#' nlrqPlot(fit, form = ss$pcvrForm, df = ss$df)
-#'
-#' ## End(Not run)
+#' nlrqPlot(fit, form = ss$pcvrForm, df = ss$df, groups = "a", timeRange = 1:20)
+#' nlrqPlot(fit, form = ss$pcvrForm, df = ss$df, groupFill = TRUE, virMaps = c("plasma", "viridis"))
 #'
 #' @return Returns a ggplot showing an nlrq model's quantiles
 #'  and optionally the individual growth lines.
@@ -87,10 +84,9 @@ nlrqPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL,
   colnames(plotdf) <- c(colnames(df), colnames(preds))
 
   #* `facetGroups`
+  facet_layer <- NULL
   if (facetGroups) {
     facet_layer <- ggplot2::facet_wrap(stats::as.formula(paste0("~", group)))
-  } else {
-    facet_layer <- NULL
   }
   #* `groupFill`
   if (groupFill) {

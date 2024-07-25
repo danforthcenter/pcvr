@@ -14,7 +14,7 @@ test_that("GrowthSS Helpers for Logistic Data work", {
   expect_type(ss, "list")
   ss <- suppressMessages(growthSS(
     model = "logistic", form = y ~ time | id / group,
-    df = df, type = "nlrq"
+    df = df, type = "nlrq", tau = c(0.45, 0.55)
   ))
   expect_type(ss, "list")
   ss <- suppressMessages(growthSS(

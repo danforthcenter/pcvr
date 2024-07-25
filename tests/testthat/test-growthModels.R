@@ -78,7 +78,7 @@ test_that("Test Logistic nls modeling", {
 test_that("Test Logistic nlrq modeling", {
   ss <- suppressMessages(growthSS(
     model = "logistic", form = y ~ time | id / group,
-    df = logistic_df, type = "nlrq", tau = 0.5
+    df = logistic_df, type = "nlrq", tau = c(0.5, 0.8)
   ))
   expect_equal(
     as.numeric(unlist(ss$start)),
@@ -89,9 +89,9 @@ test_that("Test Logistic nlrq modeling", {
   )
 
   fit <- fitGrowth(ss)
-  expect_s3_class(fit, "nlrq")
+  expect_s3_class(fit[[1]], "nlrq")
 
-  nlrq_p <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df) +
+  nlrq_p <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df, groupFill = "plasma") +
     ggplot2::labs(title = "nlrq")
   expect_s3_class(nlrq_p, "ggplot")
 

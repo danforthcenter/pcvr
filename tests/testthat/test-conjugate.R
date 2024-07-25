@@ -50,16 +50,13 @@ test_that("conjugate multi value T works", {
 
   out <- conjugate(
     s1 = mv_gauss[1:15, -1], s2 = mv_gauss[16:35, -1], method = "t",
-    priors = list(mu = 50, n = 1, s2 = 100),
-    plot = FALSE, rope_range = c(-5, 5), rope_ci = 0.89,
+    priors = NULL,
+    plot = TRUE, rope_range = c(-5, 5), rope_ci = 0.89,
     cred.int.level = 0.89, hypothesis = "equal", support = NULL
   )
-
-  expect_equal(out$summary$post.prob, 0.001036255, tolerance = 1e-6)
-
+  expect_equal(out$summary$post.prob, 0.02475074, tolerance = 1e-6)
   expect_true(out$summary$rope_prob < 1e-5)
-
-  expect_equal(names(out), c("summary", "posterior"))
+  expect_equal(names(out), c("summary", "posterior", "plot"))
 })
 
 test_that("conjugate single value gaussian works", {
@@ -174,16 +171,13 @@ test_that("conjugate single value lognormal works", {
   s2 <- rlnorm(100, log(100), log(2))
   out <- conjugate(
     s1 = s1, s2 = s2,
-    method = "lognormal", priors = list(mu = 3, sd = 3),
-    plot = FALSE, rope_range = c(-1, 1), rope_ci = 0.89, cred.int.level = 0.89,
+    method = "lognormal", priors = NULL,
+    plot = TRUE, rope_range = c(-1, 1), rope_ci = 0.89, cred.int.level = 0.89,
     hypothesis = "equal", support = NULL
   )
-
-  expect_equal(out$summary$post.prob, 0.3224215, tolerance = 1e-6)
-
-  expect_equal(out$summary$rope_prob, 0.8657454, tolerance = 1e-6)
-
-  expect_equal(names(out), c("summary", "posterior"))
+  expect_equal(out$summary$post.prob, 0.5527433, tolerance = 1e-6)
+  expect_equal(out$summary$rope_prob, 0.7356477, tolerance = 1e-6)
+  expect_equal(names(out), c("summary", "posterior", "plot"))
 })
 
 
@@ -196,20 +190,15 @@ test_that("conjugate multi value lognormal works", {
     ),
     n_samples = 30
   )
-
-
   out <- conjugate(
     s1 = mv_ln[1:30, -1], s2 = mv_ln[31:60, -1], method = "lognormal",
-    priors = list(mu = 3, sd = 3),
-    plot = FALSE, rope_range = c(-1, 1), rope_ci = 0.89,
+    priors = NULL,
+    plot = TRUE, rope_range = c(-1, 1), rope_ci = 0.89,
     cred.int.level = 0.89, hypothesis = "equal", support = NULL
   )
-
-  expect_equal(out$summary$post.prob, 0.005472403, tolerance = 1e-6)
-
+  expect_equal(out$summary$post.prob, 0.09558071, tolerance = 1e-6)
   expect_equal(out$summary$rope_prob, 1, tolerance = 0.0001)
-
-  expect_equal(names(out), c("summary", "posterior"))
+  expect_equal(names(out), c("summary", "posterior", "plot"))
 })
 
 test_that("conjugate single value lognormal2 works", {

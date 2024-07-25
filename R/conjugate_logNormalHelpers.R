@@ -68,12 +68,9 @@
   })))
 
   #* `Define support if it is missing`
-  if (is.null(support)) {
+  if (is.null(support) && calculatingSupport) {
     quantiles <- stats::qnorm(c(0.0001, 0.9999), mu_ls_prime, sigma_ls_prime)
-    if (calculatingSupport) {
-      return(quantiles)
-    }
-    support <- seq(quantiles[1], quantiles[2], length.out = 10000)
+    return(quantiles)
   }
   #* `posterior`
   dens1 <- stats::dnorm(support, mu_ls_prime, sigma_ls_prime)
@@ -131,52 +128,45 @@
   if (is.null(priors)) {
     priors <- list(mu = 0, sd = 5)
   }
-  if (length(s1) > 1) {
-    #* `Get mean of s1`
-    x_bar <- mean(s1)
-    mu_s1 <- log(x_bar / (sqrt(var(s1) / x_bar^2) + 1))
-    #* `Get sigma of s1`
-    sigma_s1 <- sqrt(log((var(s1)) / (x_bar ^ 2) + 1))
-    #* `Update Normal Distribution of Mu`
-    #* sufficient stats: n, mean of log data | precision
-    n <- length(s1)
-    m <- priors$mu[1]
-    p <- 1 / (priors$sd[1] ^ 2) # precision
-    mu_prime <- ((m * p) + (n * p * mu_s1)) / (p + (n * p))
-    precision_prime <- (p + (n * p))
-    var_prime <- 1 / precision_prime
-    sd_prime <- sqrt(var_prime)
-    #* `Define support if it is missing`
-    if (is.null(support)) {
-      quantiles <- qnorm(c(0.0001, 0.9999), mu_prime, sd_prime)
-      if (calculatingSupport) {
-        return(quantiles)
-      }
-      support <- seq(quantiles[1], quantiles[2], length.out = 10000)
-    }
-    #* `posterior`
-    dens1 <- dnorm(support, mu_prime, sd_prime)
-    pdf1 <- dens1 / sum(dens1)
-    hde1 <- mu_prime
-    hdi1 <- qnorm(c((1 - cred.int.level) / 2, (1 - ((1 - cred.int.level) / 2))), mu_prime, sd_prime)
-    #* `Store summary`
-    out$summary <- data.frame(HDE_1 = hde1, HDI_1_low = hdi1[1], HDI_1_high = hdi1[2])
-    out$posterior$mu <- mu_prime
-    out$posterior$sd <- sd_prime
-    out$posterior$lognormal_sigma <- sigma_s1 # returning this as a number, not a distribution
-    #* `Make Posterior Draws`
-    out$posteriorDraws <- rnorm(10000, mu_prime, sd_prime)
-    out$pdf <- pdf1
-    #* `save s1 data for plotting`
-    if (plot) {
-      out$plot_df <- data.frame(
-        "range" = support,
-        "prob" = pdf1,
-        "sample" = rep("Sample 1", length(support))
-      )
-    }
-  } else {
-    stop("s1 must be a numeric of length 2 or greater")
+  #* `Get mean of s1`
+  x_bar <- mean(s1)
+  mu_s1 <- log(x_bar / (sqrt(var(s1) / x_bar^2) + 1))
+  #* `Get sigma of s1`
+  sigma_s1 <- sqrt(log((var(s1)) / (x_bar ^ 2) + 1))
+  #* `Update Normal Distribution of Mu`
+  #* sufficient stats: n, mean of log data | precision
+  n <- length(s1)
+  m <- priors$mu[1]
+  p <- 1 / (priors$sd[1] ^ 2) # precision
+  mu_prime <- ((m * p) + (n * p * mu_s1)) / (p + (n * p))
+  precision_prime <- (p + (n * p))
+  var_prime <- 1 / precision_prime
+  sd_prime <- sqrt(var_prime)
+  #* `Define support if it is missing`
+  if (is.null(support) && calculatingSupport) {
+    quantiles <- stats::qnorm(c(0.0001, 0.9999), mu_prime, sd_prime)
+    return(quantiles)
+  }
+  #* `posterior`
+  dens1 <- dnorm(support, mu_prime, sd_prime)
+  pdf1 <- dens1 / sum(dens1)
+  hde1 <- mu_prime
+  hdi1 <- qnorm(c((1 - cred.int.level) / 2, (1 - ((1 - cred.int.level) / 2))), mu_prime, sd_prime)
+  #* `Store summary`
+  out$summary <- data.frame(HDE_1 = hde1, HDI_1_low = hdi1[1], HDI_1_high = hdi1[2])
+  out$posterior$mu <- mu_prime
+  out$posterior$sd <- sd_prime
+  out$posterior$lognormal_sigma <- sigma_s1 # returning this as a number, not a distribution
+  #* `Make Posterior Draws`
+  out$posteriorDraws <- rnorm(10000, mu_prime, sd_prime)
+  out$pdf <- pdf1
+  #* `save s1 data for plotting`
+  if (plot) {
+    out$plot_df <- data.frame(
+      "range" = support,
+      "prob" = pdf1,
+      "sample" = rep("Sample 1", length(support))
+    )
   }
   return(out)
 }

@@ -33,12 +33,9 @@
     v1_n # pooled variance
   se1 <- sqrt(s2_1_n / n1_n) # standard error of the mean
   #* `Define support if it is missing`
-  if (is.null(support)) {
-    quantiles <- extraDistr::qlst(c(0.0001, 0.9999), v1_n, m1_n, se1)
-    if (calculatingSupport) {
-      return(quantiles)
-    }
-    support <- seq(quantiles[1], quantiles[2], length.out = 10000)
+  if (is.null(support) && calculatingSupport) {
+    quantiles <- qlst(c(0.0001, 0.9999), v1_n, m1_n, se1)
+    return(quantiles)
   }
   dens <- extraDistr::dlst(support, v1_n, m1_n, se1)
   pdf1 <- dens / sum(dens)
@@ -118,12 +115,9 @@
     v1_n # pooled variance
   se1 <- sqrt(s2_1_n / n1_n) # standard error of the mean
   #* `Define support if it is missing`
-  if (is.null(support)) {
+  if (is.null(support) && calculatingSupport) {
     quantiles <- qlst(c(0.0001, 0.9999), v1_n, m1_n, se1)
-    if (calculatingSupport) {
-      return(quantiles)
-    }
-    support <- seq(quantiles[1], quantiles[2], length.out = 10000)
+    return(quantiles)
   }
   dens <- extraDistr::dlst(support, v1_n, m1_n, se1)
   pdf1 <- dens / sum(dens)

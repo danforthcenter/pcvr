@@ -59,10 +59,11 @@ simdf <- growthSim("logistic",
 )
 ss <- growthSS(
   model = "logistic", form = y ~ time | id / group,
-  tau = 0.5, df = simdf, start = NULL, type = "nlrq"
+  tau = c(0.5, 0.9), df = simdf, start = NULL, type = "nlrq"
 )
 fit <- fitGrowth(ss)
-nlrqPlot(fit, form = ss$pcvrForm, df = ss$df)
+nlrqPlot(fit, form = ss$pcvrForm, df = ss$df, groups = "a", timeRange = 1:20)
+nlrqPlot(fit, form = ss$pcvrForm, df = ss$df, groupFill = TRUE, virMaps = c("plasma", "viridis"))
 
 ## End(Not run)
 
