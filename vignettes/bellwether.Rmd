@@ -679,7 +679,7 @@ Joyplots are a common way to look at lots of distributions. Here we check the hu
 ```{r, message=FALSE}
 p <- pcv.joyplot(hue_wide[hue_wide$DAS == 18, ],
   index = "hue_frequencies",
-  group = c("fertilizer", "genotype"), method = NULL, compare = NULL
+  group = c("fertilizer", "genotype")
 )
 p + scale_fill_gradientn(colors = scales::hue_pal(l = 65)(360)) +
   scale_y_discrete(limits = c("0", "50", "100"))
