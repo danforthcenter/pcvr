@@ -1,6 +1,28 @@
 if (!interactive()) pdf(NULL)
 
 #* ************************************************************
+#* *************** `growthSim options` ***************
+#* ************************************************************
+
+test_that("Count data can be made by growthSim", {
+  # use lowercase parameters
+  df <- suppressWarnings(growthSim("count:gompertz", n = 20, t = 25,
+                  params = list("a" = c(100, 90), "b" = 10, "c" = 0.25)))
+  expect_equal(any(is.na(as.integer(df$y))), FALSE)
+  # use unnamed parameters
+  df <- growthSim("count:gompertz", n = 20, t = 25,
+                  params = list(100, 10, 0.25))
+  expect_equal(any(is.na(as.integer(df$y))), FALSE)
+})
+
+test_that("Fixed Changepoint data can be made by growthSim", {
+  df <- growthSim(model = "gompertz + linear", n = 20, t = 50,
+                  params = list("gompertz1A" = 100, "gompertz1B" = 10, "gompertz1C" = 0.25,
+                             "fixedChangePoint1" = 25, "linear2A" = 3))
+  expect_equal(any(is.na(as.integer(df$y))), FALSE)
+})
+
+#* ************************************************************
 #* *************** `Logistic growth modeling` ***************
 #* ************************************************************
 
@@ -329,7 +351,7 @@ test_that("Test logarithmic nlrq modeling", {
 
 test_that("Test logarithmic nlme modeling", {
   ss <- growthSS(
-    model = "logarithmic", form = y ~ time | id / group, sigma = "power",
+    model = "logarithmic", form = y ~ time | id / group, sigma = "exp",
     df = lgrthmc_df, type = "nlme"
   )
   fit <- suppressWarnings(fitGrowth(ss))
@@ -389,7 +411,7 @@ test_that("Test nlrq gam modeling", {
 
 test_that("Test nlme gam", {
   ss <- growthSS(
-    model = "gam", form = y ~ time | id / group, sigma = "power",
+    model = "gam", form = y ~ time | id / group, sigma = "exp",
     df = gomp_df, type = "nlme"
   )
   expect_equal(as.character(ss$formula$model), as.character(y ~ time * group))

@@ -49,7 +49,7 @@ test_that("reading mv github data as long works", {
   #* test joyplot
   joyplot <- pcv.joyplot(mv[mv$DAS == 18, ],
     index = "hue_frequencies",
-    group = c("fertilizer", "genotype"), method = NULL, compare = NULL
+    group = c("fertilizer", "genotype")
   )
   expect_s3_class(joyplot, "ggplot")
 

@@ -380,6 +380,44 @@ test_that("conjugate single value von mises (1) works", {
   expect_equal(out$summary$post.prob, 0.4736915, tolerance = 1e-6)
   expect_equal(out$summary$rope_prob, 0.255814, tolerance = 1e-6)
   expect_equal(names(out), c("summary", "posterior", "plot"))
+  out2 <- conjugate(
+    s1 = s1, s2 = s2, method = "vonmises",
+    priors = list(mu = 0),
+    plot = TRUE, rope_range = c(-0.5, 0.5), rope_ci = 0.89,
+    cred.int.level = 0.89, hypothesis = "equal"
+  )
+  expect_error(conjugate(
+    s1 = rnorm(10, 10, 1), s2 = rnorm(10, 10, 1), method = "vonmises",
+    priors = NULL,
+    plot = FALSE, rope_range = c(-0.5, 0.5), rope_ci = 0.89,
+    cred.int.level = 0.89, hypothesis = "equal"
+  ))
+})
+
+test_that("conjugate multi value von mises (1) works", {
+  set.seed(123)
+  mv <- mvSim(
+    dists = list(
+      rnorm = list(mean = 50, sd = 10),
+      rnorm = list(mean = 40, sd = 8)
+    ),
+    n_samples = 30, counts = 1000
+  )
+  out <- conjugate(
+    s1 = mv[1:30, -1], s2 = mv[31:60, -1], method = "vonmises",
+    priors = list(boundary = c(0, 100)),
+    plot = TRUE, rope_range = c(-0.5, 0.5), rope_ci = 0.89,
+    cred.int.level = 0.89, hypothesis = "equal"
+  )
+  expect_equal(out$summary$post.prob, 0.562518, tolerance = 1e-6)
+  expect_equal(out$summary$rope_prob, 0.0217953, tolerance = 1e-6)
+  expect_equal(names(out), c("summary", "posterior", "plot"))
+  expect_error(conjugate(
+    s1 = mv[1:30, -1], s2 = mv[31:60, -1], method = "vonmises",
+    priors = NULL,
+    plot = FALSE, rope_range = c(-0.5, 0.5), rope_ci = 0.89,
+    cred.int.level = 0.89, hypothesis = "equal"
+  ))
 })
 
 test_that("conjugate single value von mises (2) works", {
@@ -387,14 +425,46 @@ test_that("conjugate single value von mises (2) works", {
   s1 <- rnorm(10, 50, 6)
   s2 <- rnorm(10, 60, 10)
   out <- conjugate(
-    s1 = s1, s2 = s2, method = "vonmises",
-    priors = list(mu = 0, kappa = 0.5, boundary = c(0, 110)),
-    plot = FALSE, rope_range = c(-0.5, 0.5), rope_ci = 0.89,
+    s1 = s1, s2 = s2, method = "vonmises2",
+    priors = list(mu = 0, boundary = c(0, 110)),
+    plot = TRUE, rope_range = c(-0.5, 0.5), rope_ci = 0.89,
     cred.int.level = 0.89, hypothesis = "equal"
   )
-  expect_equal(out$summary$post.prob, 0.4364471, tolerance = 1e-6)
-  expect_equal(out$summary$rope_prob, 0.01955, tolerance = 1e-3)
-  expect_equal(names(out), c("summary", "posterior"))
+  expect_equal(out$summary$post.prob, 0.4529312, tolerance = 1e-6)
+  expect_equal(out$summary$rope_prob, 0.01999775, tolerance = 1e-3)
+  expect_equal(names(out), c("summary", "posterior", "plot"))
+  expect_error(conjugate(
+    s1 = s1, s2 = s2, method = "vonmises2",
+    priors = NULL,
+    plot = FALSE, rope_range = c(-0.5, 0.5), rope_ci = 0.89,
+    cred.int.level = 0.89, hypothesis = "equal"
+  ))
+})
+
+test_that("conjugate multi value von mises (2) works", {
+  set.seed(123)
+  mv <- mvSim(
+    dists = list(
+      rnorm = list(mean = 50, sd = 10),
+      rnorm = list(mean = 40, sd = 8)
+    ),
+    n_samples = 30, counts = 1000
+  )
+  out <- conjugate(
+    s1 = mv[1:30, -1], s2 = mv[31:60, -1], method = "vonmises2",
+    priors = list(boundary = c(0, 100)),
+    plot = TRUE, rope_range = c(-0.5, 0.5), rope_ci = 0.89,
+    cred.int.level = 0.89, hypothesis = "equal"
+  )
+  expect_equal(out$summary$post.prob, 0.5684183, tolerance = 1e-6)
+  expect_equal(out$summary$rope_prob, 0.02471632, tolerance = 1e-6)
+  expect_equal(names(out), c("summary", "posterior", "plot"))
+  expect_error(conjugate(
+    s1 = mv[1:30, -1], s2 = mv[31:60, -1], method = "vonmises2",
+    priors = NULL,
+    plot = FALSE, rope_range = c(-0.5, 0.5), rope_ci = 0.89,
+    cred.int.level = 0.89, hypothesis = "equal"
+  ))
 })
 
 test_that("conjugate single value gamma works", {
@@ -516,6 +586,21 @@ test_that("bivariate conjugate uniform works", {
   out <- conjugate(
     s1 = s1, s2 = s2,
     method = "bivariate_uniform", priors = NULL,
+    plot = TRUE, rope_range = c(-1, 1), rope_ci = 0.89, cred.int.level = 0.89,
+    hypothesis = "equal", support = NULL
+  )
+  expect_s3_class(out$plot, "ggplot")
+  expect_equal(nrow(out$summary), 2)
+  expect_equal(length(out$posterior), 2)
+  expect_equal(names(out$posterior[[1]]), c("scale", "location_l", "location_u"))
+  expect_equal(names(out), c("summary", "posterior", "plot"))
+
+  set.seed(123)
+  s1 <- runif(10, -15, -7)
+  s2 <- runif(10, -10, -5)
+  out <- conjugate(
+    s1 = s1, s2 = s2,
+    method = "bivariate_uniform", priors = list(location_l = -10, location_u = -8, scale = 1),
     plot = TRUE, rope_range = c(-1, 1), rope_ci = 0.89, cred.int.level = 0.89,
     hypothesis = "equal", support = NULL
   )

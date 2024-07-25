@@ -58,12 +58,6 @@ test_that("reading sv github data as wide works", {
   )
   expect_equal(dim(csv), c(2854, 54))
   expect_equal(sum(csv$height_pixels_csum), 10646423)
-  #* check pcvBox makes a ggplot
-  sv_box <- pcvBox(sv[sv$DAS == 15, ],
-    x = "fertilizer", y = "area_pixels",
-    compare = "0", showPoints = TRUE
-  )
-  expect_s3_class(sv_box, "ggplot")
   #* check growthSS (R CMD might throw a fit about brms and my SUGGESTS vs DEPENDS)
   sv$group <- interaction(sv$fertilizer, sv$genotype)
   sv$area_cm2 <- sv$area_pixels / (42.5^2)
