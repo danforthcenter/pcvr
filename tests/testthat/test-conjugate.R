@@ -26,12 +26,16 @@ test_that("conjugate single value T works", {
     plot = FALSE, rope_range = c(-8, 8), rope_ci = 0.89,
     cred.int.level = 0.89, hypothesis = "equal", support = seq(20, 100, length.out = 10000)
   )
-
   expect_equal(out$summary$post.prob, 0.5864103, tolerance = 1e-6)
-
   expect_equal(out$summary$rope_prob, 0.7396922, tolerance = 1e-6)
-
   expect_equal(names(out), c("summary", "posterior"))
+
+  out2 <- conjugate(
+    s1 = s1, s2 = s2, method = "t",
+    priors = NULL,
+    plot = FALSE, rope_range = c(-8, 8), rope_ci = 0.89,
+    cred.int.level = 0.89, hypothesis = "equal"
+  )
 })
 
 test_that("conjugate multi value T works", {
@@ -611,28 +615,11 @@ test_that("bivariate conjugate uniform works", {
   expect_equal(names(out), c("summary", "posterior", "plot"))
 })
 
-test_that("bivariate conjugate uniform works", {
-  set.seed(123)
-  s1 <- runif(10, 50, 100)
-  s2 <- runif(10, 30, 110)
-  out <- conjugate(
-    s1 = s1, s2 = s2,
-    method = "bivariate_uniform", priors = list(location_l = 60, location_u = 70, scale = 1),
-    plot = TRUE, rope_range = c(-1, 1), rope_ci = 0.89, cred.int.level = 0.89,
-    hypothesis = "equal", support = NULL
-  )
-  expect_s3_class(out$plot, "ggplot")
-  expect_equal(nrow(out$summary), 2)
-  expect_equal(length(out$posterior), 2)
-  expect_equal(names(out$posterior[[1]]), c("scale", "location_l", "location_u"))
-  expect_equal(names(out), c("summary", "posterior", "plot"))
-})
-
 test_that("bivariate conjugate multi value uniform works", {
   set.seed(123)
   mv <- mvSim(
-    dists = list(runif = list(min = 15, max = 125),
-                 runif = list(min = 10, max = 150)),
+    dists = list(runif = list(min = 0, max = 125),
+                 runif = list(min = 0, max = 150)),
     n_samples = 10,
     counts = 1000,
     min_bin = 1,
@@ -642,7 +629,7 @@ test_that("bivariate conjugate multi value uniform works", {
   out <- conjugate(
     s1 = mv[1:10, -1],
     s2 = mv[11:20, -1],
-    method = "bivariate_uniform", priors = list(location_l = 30, location_u = 35, scale = 1),
+    method = "bivariate_uniform", priors = NULL,
     plot = TRUE, rope_range = c(-1, 1), rope_ci = 0.89, cred.int.level = 0.89,
     hypothesis = "equal", support = NULL
   )
@@ -651,6 +638,29 @@ test_that("bivariate conjugate multi value uniform works", {
   expect_equal(length(out$posterior), 2)
   expect_equal(names(out$posterior[[1]]), c("scale", "location_l", "location_u"))
   expect_equal(names(out), c("summary", "posterior", "plot"))
+
+  set.seed(123)
+  mv <- mvSim(
+    dists = list(runif = list(min = -100, max = -10),
+                 runif = list(min = -90, max = -15)),
+    n_samples = 10,
+    counts = 1000,
+    min_bin = 1,
+    max_bin = 180,
+    wide = TRUE
+  )
+  out2 <- conjugate(
+    s1 = mv[1:10, -1],
+    s2 = mv[11:20, -1],
+    method = "bivariate_uniform", priors = list(location_l = -85, location_u = -20, scale = 1),
+    plot = TRUE, rope_range = c(-1, 1), rope_ci = 0.89, cred.int.level = 0.89,
+    hypothesis = "equal", support = NULL
+  )
+  expect_s3_class(out2$plot, "ggplot")
+  expect_equal(nrow(out2$summary), 2)
+  expect_equal(length(out2$posterior), 2)
+  expect_equal(names(out2$posterior[[1]]), c("scale", "location_l", "location_u"))
+  expect_equal(names(out2), c("summary", "posterior", "plot"))
 })
 
 test_that("bivariate conjugate gaussian works", {
