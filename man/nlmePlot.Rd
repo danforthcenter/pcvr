@@ -65,6 +65,7 @@ ss <- growthSS(
 fit <- fitGrowth(ss)
 
 nlmePlot(fit, form = ss$pcvrForm, groups = NULL, df = ss$df, timeRange = NULL)
+nlmePlot(fit, form = ss$pcvrForm, groups = "a", df = ss$df, timeRange = 1:10)
 
 ## End(Not run)
 
