@@ -113,16 +113,6 @@
   if (is.null(priors)) {
     priors <- list(mu = 0, n = 1, s2 = 100)
   }
-  #* `Standardize sample 1 class and names`
-  if (is.null(colnames(s1))) {
-    bins <- (seq_along(s1)) / 100
-    colnames(s1) <- paste0("b", bins)
-    warning(paste0("Assuming unnamed columns represent bins from ", min(bins), " to ", max(bins)))
-  }
-  if (is.matrix(s1)) {
-    s1 <- as.data.frame(s1)
-  }
-
   #* `Reorder columns if they are not in the numeric order`
   histColsBin <- as.numeric(sub("[a-zA-Z_.]+", "", colnames(s1)))
   bins_order <- sort(histColsBin, index.return = TRUE)$ix

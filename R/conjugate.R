@@ -343,6 +343,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
     #* `Check sample class`
     if (is.matrix(sample) | is.data.frame(sample)) {
       vec_suffix <- "mv"
+      sample <- .mvSampleFormatting(sample)
     } else if (is.vector(sample)) {
       vec_suffix <- "sv"
     } else {
@@ -426,6 +427,25 @@ conjugate <- function(s1 = NULL, s2 = NULL,
   }
 }
 
+#' ***********************************************************************************************
+#' *************** `MV Sample Formatting Helper function` ***********************************
+#' ***********************************************************************************************
+
+#' @keywords internal
+#' @noRd
+
+.mvSampleFormatting <- function(sample) {
+  #* `Standardize sample class and names`
+  if (is.null(colnames(sample))) {
+    bins <- (seq_along(sample))
+    colnames(sample) <- paste0("b", bins)
+    warning(paste0("Assuming unnamed columns represent bins from ", min(bins), " to ", max(bins)))
+  }
+  if (is.matrix(sample)) {
+    sample <- as.data.frame(sample)
+  }
+  return(sample)
+}
 
 #' ***********************************************************************************************
 #' *************** `Support Calculating function` ***********************************
