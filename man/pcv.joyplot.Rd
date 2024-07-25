@@ -10,9 +10,6 @@ pcv.joyplot(
   group = NULL,
   y = NULL,
   id = NULL,
-  method = NULL,
-  hypothesis = "unequal",
-  compare = NULL,
   bin = "label",
   freq = "value",
   trait = "trait",
@@ -41,25 +38,6 @@ length 2 group will be faceted group1 ~ group2).}
 Note that ggridges::geom_density_ridges_gradient does not support transparency,
 so if fillx is TRUE then only the outer line will show individual IDs.}
 
-\item{method}{A method to use in comparing distributions/means.
-Currently "ks" and "pdf" are supported, where density is approximated from the
-histogram columns and  KS test is used between samples from those densities per each photo.
-For the "pdf" method a flat prior is added to the data and the distributions are compared
-depending on the hypothesis provided. For other
-options in comparing multi-value traits see \code{\link{conjugate}} or
-\code{\link{pcv.emd}}.}
-
-\item{hypothesis}{A hypothesis for the "pdf" method,
-must be either unequal, equal, lesser, or greater.}
-
-\item{compare}{Groups to compare. By default this is set to FALSE,
-which corresponds to no testing. Other values of compare are passed to
-fixCompare to make t.test comparisons using ggpubr.
-In short, NULL will run all pairwise T tests, a single value of the X axis
-variable will compare that level to all other levels of the X variable,
-alternatively this can be a list as used by ggpubr: list(c("level1", "level2"),
- c("level1", "level3"))}
-
 \item{bin}{Column containing histogram (multi value trait) bins. Defaults to "label".}
 
 \item{freq}{Column containing histogram counts. Defaults to "value"}
@@ -72,8 +50,7 @@ Default is T, if F then \code{ggridges::geom_density_ridges} is used instead,
  may issue a message about deprecated ggplot2 features.}
 }
 \value{
-Returns either a ggplot object or a list containing a ggplot and a
-dataframe of statistical comparisons (if compare is not FALSE).
+Returns a ggplot.
 }
 \description{
 Make Joyplots for multi value trait plantCV data and optionally compare distributions
