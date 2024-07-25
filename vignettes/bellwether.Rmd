@@ -441,15 +441,6 @@ ggplot(cp, aes(x = DAS, y = area_cm2_csum, color = genotype, group = barcode)) +
   )
 ```
 
-And we can use this new phenotype data to analyse data from the entire experiment using just the last day. Here we don't specify a comparison group so `pcvBox` does not make any statistical comparisons.
-
-```{r}
-pcvBox(cp[cp$DAS == 19, ], x = "fertilizer", y = "area_cm2_csum", showPoints = TRUE) +
-  labs(y = expression("Cumulative Area")) +
-  facet_wrap(~genotype) + theme(legend.position = "none") +
-  scale_x_discrete(limits = c("0", "50", "100"))
-```
-
 
 
 ### Longitudinal Modeling
