@@ -20,10 +20,6 @@
 #' of parameters. In the case of the "double" models there are also A2, B2, and C2 terms.
 #' Changepoints should be specified as "changePointX" or "fixedChangePointX" as in
 #' \code{\link{growthSS}}.
-#' @param noise Optionally this can be used to add specific amounts of
-#' noise to the input parameters by specifying a list similar to params.
-#' If NULL (the default) then data is simulated with 10\% random noise like: param + N(0, 0.1*param).
-#' This exists for fringe cases and should generally be left NULL.
 #' @param D If decay is being simulated then this is the starting point for decay. This defaults to 0.
 #'
 #' @keywords growth curve, logistic, gompertz, monomolecular, linear, exponential, power-law
@@ -244,27 +240,12 @@ growthSim <- function(
       "monomolecular", "exponential", "linear", "power law", "frechet",
       "weibull", "gumbel", "logarithmic", "bragg", "lorentz", "beta"
     ),
-    n = 20, t = 25, params = list(), noise = NULL, D = 0) {
+    n = 20, t = 25, params = list(), D = 0) {
   if (grepl("count:", model)) {
     COUNT <- TRUE
     model <- trimws(gsub("count:", "", model))
   } else {
     COUNT <- FALSE
-  }
-  if (length(model) > 1) {
-    stop("Select one model to use, changepoints should be specified with '+'")
-  }
-  if (is.null(noise)) {
-    noise <- lapply(params, function(i) mean(i) / 10)
-    wasNULL <- TRUE
-  } else {
-    wasNULL <- FALSE
-  }
-  if (is.null(names(noise))) {
-    names(noise) <- c(LETTERS[seq_along(noise)])
-  }
-  if (any(names(noise) %in% letters)) {
-    names(noise) <- c(LETTERS[which(letters %in% substr(names(noise), 1, 1))])
   }
   if (is.null(names(params))) {
     names(params) <- c(LETTERS[seq_along(params)])
@@ -272,7 +253,10 @@ growthSim <- function(
   if (any(names(params) %in% letters)) {
     names(params) <- c(LETTERS[which(letters %in% substr(names(params), 1, 1))])
   }
-  if (wasNULL && any(grepl("fixedChangePoint", names(noise)))) {
+  params <- as.list(params)
+  noise <- lapply(params, function(i) mean(i) / 10)
+  names(noise) <- names(params)
+  if (any(grepl("fixedChangePoint", names(noise), ignore.case = TRUE))) {
     noise[grepl("fixedChangePoint", names(noise))] <- 0
     nms <- names(noise)
     nms <- sub("fixedC", "c", nms)
@@ -284,7 +268,7 @@ growthSim <- function(
 
   #* check that params are all the same length, if not then rep until they are
   if (!all(unlist(lapply(params, length)) == max(unlist(lapply(params, length))))) {
-    warning("params are not uniform length, values are being recycled to fit max length")
+    message("params are not uniform length, values are being recycled to fit max length")
     diffLengths <- which(!unlist(lapply(params, length)) == max(unlist(lapply(params, length))))
     params[diffLengths] <- lapply(
       diffLengths,

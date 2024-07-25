@@ -11,7 +11,6 @@ growthSim(
   n = 20,
   t = 25,
   params = list(),
-  noise = NULL,
   D = 0
 )
 }
@@ -36,11 +35,6 @@ appear in the formula (see examples). Number of groups is inferred from the leng
 of parameters. In the case of the "double" models there are also A2, B2, and C2 terms.
 Changepoints should be specified as "changePointX" or "fixedChangePointX" as in
 \code{\link{growthSS}}.}
-
-\item{noise}{Optionally this can be used to add specific amounts of
-noise to the input parameters by specifying a list similar to params.
-If NULL (the default) then data is simulated with 10\% random noise like: param + N(0, 0.1*param).
-This exists for fringe cases and should generally be left NULL.}
 
 \item{D}{If decay is being simulated then this is the starting point for decay. This defaults to 0.}
 }
