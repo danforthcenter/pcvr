@@ -16,6 +16,8 @@ test_that("Count data can be made by growthSim", {
 })
 
 test_that("Fixed Changepoint data can be made by growthSim", {
+  expect_error(growthSim(model = "gompertz + linear", n = 20, t = 50,
+                         params = list(100, 10, 0.25, 25, 3)))
   df <- growthSim(model = "gompertz + linear", n = 20, t = 50,
                   params = list("gompertz1A" = 100, "gompertz1B" = 10, "gompertz1C" = 0.25,
                              "fixedChangePoint1" = 25, "linear2A" = 3))
