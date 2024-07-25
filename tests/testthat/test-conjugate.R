@@ -645,14 +645,14 @@ test_that("bivariate conjugate multi value uniform works", {
                  runif = list(min = -90, max = -15)),
     n_samples = 10,
     counts = 1000,
-    min_bin = 1,
-    max_bin = 180,
+    min_bin = -100,
+    max_bin = 0,
     wide = TRUE
   )
   out2 <- conjugate(
     s1 = mv[1:10, -1],
     s2 = mv[11:20, -1],
-    method = "bivariate_uniform", priors = list(location_l = -85, location_u = -20, scale = 1),
+    method = "bivariate_uniform", priors = list(location_l = -50, location_u = -45, scale = 1),
     plot = TRUE, rope_range = c(-1, 1), rope_ci = 0.89, cred.int.level = 0.89,
     hypothesis = "equal", support = NULL
   )
