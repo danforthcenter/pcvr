@@ -6,21 +6,35 @@ if (!interactive()) pdf(NULL)
 
 test_that("Count data can be made by growthSim", {
   # use lowercase parameters
-  df <- suppressWarnings(growthSim("count:gompertz", n = 20, t = 25,
-                  params = list("a" = c(100, 90), "b" = 10, "c" = 0.25)))
+  df <- suppressWarnings(
+    growthSim("count:gompertz",
+      n = 20, t = 25,
+      params = list("a" = c(100, 90), "b" = 10, "c" = 0.25)
+    )
+  )
   expect_equal(any(is.na(as.integer(df$y))), FALSE)
   # use unnamed parameters
-  df <- growthSim("count:gompertz", n = 20, t = 25,
-                  params = list(100, 10, 0.25))
+  df <- growthSim("count:gompertz",
+    n = 20, t = 25,
+    params = list(100, 10, 0.25)
+  )
   expect_equal(any(is.na(as.integer(df$y))), FALSE)
 })
 
 test_that("Fixed Changepoint data can be made by growthSim", {
-  expect_error(growthSim(model = "gompertz + linear", n = 20, t = 50,
-                         params = list(100, 10, 0.25, 25, 3)))
-  df <- growthSim(model = "gompertz + linear", n = 20, t = 50,
-                  params = list("gompertz1A" = 100, "gompertz1B" = 10, "gompertz1C" = 0.25,
-                             "fixedChangePoint1" = 25, "linear2A" = 3))
+  expect_error(
+    growthSim(
+      model = "gompertz + linear", n = 20, t = 50,
+      params = list(100, 10, 0.25, 25, 3)
+    )
+  )
+  df <- growthSim(
+    model = "gompertz + linear", n = 20, t = 50,
+    params = list(
+      "gompertz1A" = 100, "gompertz1B" = 10, "gompertz1C" = 0.25,
+      "fixedChangePoint1" = 25, "linear2A" = 3
+    )
+  )
   expect_equal(any(is.na(as.integer(df$y))), FALSE)
 })
 
