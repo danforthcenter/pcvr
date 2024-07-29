@@ -33,7 +33,7 @@
   out <- list()
   #* `Reorder columns if they are not in the numeric order`
   histColsBin <- as.numeric(sub("[a-zA-Z_.]+", "", colnames(s1)))
-  if (any(histColsBin > 1 || histColsBin < 0)) {
+  if (any(histColsBin > 1) || any(histColsBin < 0)) {
     stop("Beta Distribution is only defined on [0,1]")
   }
   bins_order <- sort(histColsBin, index.return = TRUE)$ix
@@ -99,7 +99,7 @@
 .conj_beta_sv <- function(s1 = NULL, priors = NULL,
                           plot = FALSE, support = NULL, cred.int.level = NULL,
                           calculatingSupport = FALSE) {
-  if (any(c(s1) > 1 || c(s1) < 0)) {
+  if (any(c(s1) > 1) || any(c(s1) < 0)) {
     stop("Beta Distribution is only defined on [0,1]")
   }
   #* `make default prior if none provided`

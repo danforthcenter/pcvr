@@ -202,7 +202,7 @@ test_that("conjugate single value lognormal2 works", {
   )
   expect_equal(out$summary$post.prob, 1.069935e-09, tolerance = 1e-6)
   expect_equal(out$summary$rope_prob, 0, tolerance = 1e-6)
-  expect_equal(names(out), c("summary", "posterior"))
+  expect_equal(names(out), c("summary", "posterior", "plot"))
 })
 
 test_that("conjugate multi value lognormal2 works", {
@@ -222,7 +222,7 @@ test_that("conjugate multi value lognormal2 works", {
   )
   expect_equal(out$summary$post.prob, 0.3054448, tolerance = 1e-6)
   expect_equal(out$summary$rope_prob, 0.007976632, tolerance = 0.0001)
-  expect_equal(names(out), c("summary", "posterior"))
+  expect_equal(names(out), c("summary", "posterior", "plot"))
 })
 
 test_that("conjugate single value poisson works", {

@@ -109,11 +109,19 @@ test_that("Changepoint model can be specified", {
   }))
   simdf <- rbind(noise, noise2)
   ss <- growthSS(
-    model = "int + gam", form = y ~ time | id / group, sigma = "int",
-    list("int1" = 10, "fixedChangePoint1" = 20),
+    model = "int_linear + decay linear", form = y ~ time | id / group, sigma = "int + gam",
+    list("I" = 1, "linear1A" = 10, "fixedChangePoint1" = 20, "linear2A" = 2, "sigmaint1" = 1,
+         "sigmachangePoint1" = 25),
     df = simdf, type = "brms"
   )
-  expect_equal(ss$prior$nlpar, c("", "int1"))
+  expect_equal(ss$prior$nlpar, c("", "linear1A", "linear2A", "I", "sigmaint1", "sigmachangePoint1"))
+  ss <- growthSS(
+    model = "int_linear + decay linear", form = y ~ time | id / group, sigma = "int + gam",
+    list("I" = 1, "linear1A" = 10, "fixedChangePoint1" = 20, "linear2A" = 2, "sigmaint1" = 1,
+         "sigmachangePoint1" = 25),
+    df = simdf[1:10, ], type = "brms"
+  )
+  expect_equal(ss$prior$nlpar, c("", "linear1A", "linear2A", "I", "sigmaint1", "sigmachangePoint1"))
 })
 
 test_that("weibull survival", {

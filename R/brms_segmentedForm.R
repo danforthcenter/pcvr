@@ -52,12 +52,6 @@
     "logistic", "gompertz", "monomolecular", "exponential", "linear", "power law", "gam",
     "spline", "int", "homo", "weibull", "frechet", "gumbel", "logarithmic"
   )
-  if (is.null(priors)) {
-    priors <- stats::setNames(
-      lapply(seq_along(component_models), identity),
-      paste0("changePoint", seq_along(component_models))
-    )
-  }
 
   if (dpar) {
     prefix <- y
@@ -94,7 +88,7 @@
     matched_iter_model <- gsub("homo", "int", matched_iter_model) # recoding
     matched_iter_model <- gsub("spline", "gam", matched_iter_model) # recoding
 
-    chngptFormFun <- match.fun(paste0(".", gsub(" ", "", matched_iter_model), "ChngptForm"))
+    chngptFormFun <- get(paste0(".", gsub(" ", "", matched_iter_model), "ChngptForm"))
     iter <- chngptFormFun(x, i, dpar = prefix, priors)
     if (decay) {
       iter <- .decayChngptForm(iter)
