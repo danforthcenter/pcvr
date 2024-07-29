@@ -464,11 +464,13 @@ test_that(".gamChngptForm assembles a formula in all conditions", {
     err_condition[i, "dpar"], err_condition[i, "chngpt"],
     err_condition[i, "position"]
   )
-  expect_error(.gamChngptForm(err_condition[i, "x"],
-                         position = err_condition[i, "position"],
-                         dpar = err_condition[i, "dpar"],
-                         priors = prior
-  ))
+  expect_error(
+    .gamChngptForm(err_condition[i, "x"],
+      position = err_condition[i, "position"],
+      dpar = err_condition[i, "dpar"],
+      priors = prior
+    )
+  )
 })
 
 test_that(".linearChngptForm assembles a formula in all conditions", {
