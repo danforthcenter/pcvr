@@ -458,6 +458,17 @@ test_that(".gamChngptForm assembles a formula in all conditions", {
     )
     expect_equal(names(iter), c("form", "cp", "cpInt", "params", "splineVar")) # gam terms
   }
+  err_condition <- conditions[conditions$position == 1, ][1, ]
+  prior <- list("other1" = 1, "c" = 5, "int2" = 10)
+  names(prior)[2] <- paste0(
+    err_condition[i, "dpar"], err_condition[i, "chngpt"],
+    err_condition[i, "position"]
+  )
+  expect_error(.gamChngptForm(err_condition[i, "x"],
+                         position = err_condition[i, "position"],
+                         dpar = err_condition[i, "dpar"],
+                         priors = prior
+  ))
 })
 
 test_that(".linearChngptForm assembles a formula in all conditions", {

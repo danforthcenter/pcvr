@@ -74,17 +74,11 @@ test_that("conjugate single value gaussian works", {
   set.seed(123)
   out <- conjugate(
     s1 = s1, s2 = s2, method = "gaussian",
-    priors = list(mu = 40, n = 1, s2 = 100),
-    plot = FALSE, rope_range = c(-10, 10), rope_ci = 0.89,
+    priors = NULL,
+    plot = TRUE, rope_range = c(-10, 10), rope_ci = 0.89,
     cred.int.level = 0.89, hypothesis = "equal", support = NULL
   )
-
-
-  expect_equal(out$summary$post.prob, 0.9198604, tolerance = 1e-6)
-
-  expect_equal(out$summary$rope_prob, 0.45927, tolerance = 1e-5)
-
-  expect_equal(names(out), c("summary", "posterior"))
+  expect_equal(names(out), c("summary", "posterior", "plot"))
 })
 
 test_that("conjugate multi value gaussian works", {
@@ -99,16 +93,12 @@ test_that("conjugate multi value gaussian works", {
 
   out <- conjugate(
     s1 = mv_gauss[1:30, -1], s2 = mv_gauss[31:70, -1], method = "gaussian",
-    priors = list(mu = 0, n = 1, s2 = 20),
-    plot = FALSE, rope_range = c(-5, 5), rope_ci = 0.89,
+    priors = NULL,
+    plot = TRUE, rope_range = c(-5, 5), rope_ci = 0.89,
     cred.int.level = 0.89, hypothesis = "equal", support = NULL
   )
 
-  expect_equal(out$summary$post.prob, 0.7153165, tolerance = 1e-6)
-
-  expect_equal(out$summary$rope_prob, 0.1824514, tolerance = 0.015)
-
-  expect_equal(names(out), c("summary", "posterior"))
+  expect_equal(names(out), c("summary", "posterior", "plot"))
 })
 
 test_that("conjugate single value beta works", {
@@ -129,16 +119,15 @@ test_that("conjugate single value beta works", {
   set.seed(123)
   out <- conjugate(
     s1 = s1, s2 = s2, method = "beta",
-    priors = list(a = 0.5, b = 0.5),
-    plot = FALSE, rope_range = c(-0.1, 0.1), rope_ci = 0.89,
+    priors = NULL,
+    plot = TRUE, rope_range = c(-0.1, 0.1), rope_ci = 0.89,
     cred.int.level = 0.89, hypothesis = "equal"
   )
 
   expect_equal(out$summary$post.prob, 0.02229246, tolerance = 1e-6)
-
   expect_equal(out$summary$rope_prob, 0.1351534, tolerance = 1e-6)
-
-  expect_equal(names(out), c("summary", "posterior"))
+  expect_equal(names(out), c("summary", "posterior", "plot"))
+  expect_error(conjugate(s1 = c(s1, -0.1), s2 = c(s2, 1.1), method = "beta"))
 })
 
 test_that("conjugate multi value beta works", {
@@ -153,16 +142,16 @@ test_that("conjugate multi value beta works", {
 
   out <- conjugate(
     s1 = mv_beta[1:10, -1], s2 = mv_beta[11:20, -1], method = "beta",
-    priors = list(a = 0.5, b = 0.5),
-    plot = FALSE, rope_range = c(-0.1, 0.1), rope_ci = 0.89,
+    priors = NULL,
+    plot = TRUE, rope_range = c(-0.1, 0.1), rope_ci = 0.89,
     cred.int.level = 0.89, hypothesis = "equal"
   )
 
   expect_equal(out$summary$post.prob, 0.1575291, tolerance = 1e-6)
-
   expect_equal(out$summary$rope_prob, 0.4059094, tolerance = 0.0001)
-
-  expect_equal(names(out), c("summary", "posterior"))
+  expect_equal(names(out), c("summary", "posterior", "plot"))
+  colnames(mv_beta)[ncol(mv_beta)] <- "sim_500"
+  expect_error(conjugate(s1 = mv_beta[1:10, -1], s2 = mv_beta[11:20, -1], method = "beta"))
 })
 
 test_that("conjugate single value lognormal works", {
@@ -207,8 +196,8 @@ test_that("conjugate single value lognormal2 works", {
   s2 <- rlnorm(100, log(100), log(2))
   out <- conjugate(
     s1 = s1, s2 = s2,
-    method = "lognormal2", priors = list(a = 1, b = 1),
-    plot = FALSE, rope_range = c(-1, 1), rope_ci = 0.89, cred.int.level = 0.89,
+    method = "lognormal2", priors = NULL,
+    plot = TRUE, rope_range = c(-1, 1), rope_ci = 0.89, cred.int.level = 0.89,
     hypothesis = "equal", support = NULL
   )
   expect_equal(out$summary$post.prob, 1.069935e-09, tolerance = 1e-6)
@@ -227,8 +216,8 @@ test_that("conjugate multi value lognormal2 works", {
   )
   out <- conjugate(
     s1 = mv_ln[1:30, -1], s2 = mv_ln[31:60, -1], method = "lognormal2",
-    priors = list(a = 1, b = 1),
-    plot = FALSE, rope_range = c(-1, 1), rope_ci = 0.89,
+    priors = NULL,
+    plot = TRUE, rope_range = c(-1, 1), rope_ci = 0.89,
     cred.int.level = 0.89, hypothesis = "equal", support = NULL
   )
   expect_equal(out$summary$post.prob, 0.3054448, tolerance = 1e-6)

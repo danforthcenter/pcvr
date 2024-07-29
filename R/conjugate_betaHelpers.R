@@ -27,17 +27,14 @@
     priors <- list(a = 0.5, b = 0.5)
   }
   #* `Define dense Support`
-  if (is.null(support)) {
-    if (calculatingSupport) {
-      return(c(0.0001, 0.9999))
-    }
-    support <- seq(0.0001, 0.9999, 0.0001)
+  if (is.null(support) && calculatingSupport) {
+    return(c(0.0001, 0.9999))
   }
   out <- list()
   #* `Reorder columns if they are not in the numeric order`
   histColsBin <- as.numeric(sub("[a-zA-Z_.]+", "", colnames(s1)))
-  if (any(histColsBin > 1)) {
-    histColsBin <- histColsBin / 100
+  if (any(histColsBin > 1 || histColsBin < 0)) {
+    stop("Beta Distribution is only defined on [0,1]")
   }
   bins_order <- sort(histColsBin, index.return = TRUE)$ix
   s1 <- s1[, bins_order]
@@ -102,19 +99,16 @@
 .conj_beta_sv <- function(s1 = NULL, priors = NULL,
                           plot = FALSE, support = NULL, cred.int.level = NULL,
                           calculatingSupport = FALSE) {
-  if (any(c(s1) > 1)) {
-    stop("Values above 1 cannot be used with the beta distribution")
+  if (any(c(s1) > 1 || c(s1) < 0)) {
+    stop("Beta Distribution is only defined on [0,1]")
   }
   #* `make default prior if none provided`
   if (is.null(priors)) {
     priors <- list(a = 0.5, b = 0.5)
   }
   #* `Define dense Support`
-  if (is.null(support)) {
-    if (calculatingSupport) {
-      return(c(0.0001, 0.9999))
-    }
-    support <- seq(0.0001, 0.9999, 0.0001)
+  if (is.null(support) && calculatingSupport) {
+    return(c(0.0001, 0.9999))
   }
   out <- list()
 

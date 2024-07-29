@@ -78,6 +78,44 @@ test_that("Hierarchical Model Works", {
   expect_s3_class(p, "ggplot")
 })
 
+test_that("Changepoint model can be specified", {
+  set.seed(123)
+  noise <- do.call(rbind, lapply(1:30, function(i) {
+    chngpt <- c(20, 21)
+    rbind(
+      data.frame(
+        id = paste0("id_", i), time = 1:chngpt[1], group = "a",
+        y = c(runif(chngpt[1] - 1, 0, 20), rnorm(1, 5, 1))
+      ),
+      data.frame(
+        id = paste0("id_", i), time = 1:chngpt[2], group = "b",
+        y = c(runif(chngpt[2] - 1, 0, 20), rnorm(1, 5, 1))
+      )
+    )
+  }))
+  noise2 <- do.call(rbind, lapply(1:30, function(i) {
+    start1 <- max(noise[noise$id == paste0("id_", i) & noise$group == "a", "time"])
+    start2 <- max(noise[noise$id == paste0("id_", i) & noise$group == "b", "time"])
+    rbind(
+      data.frame(
+        id = paste0("id_", i), time = start1:40, group = "a",
+        y = c(runif(length(start1:40), 15, 50))
+      ),
+      data.frame(
+        id = paste0("id_", i), time = start2:40, group = "b",
+        y = c(runif(length(start2:40), 15, 50))
+      )
+    )
+  }))
+  simdf <- rbind(noise, noise2)
+  ss <- growthSS(
+    model = "int + gam", form = y ~ time | id / group, sigma = "int",
+    list("int1" = 10, "fixedChangePoint1" = 20),
+    df = simdf, type = "brms"
+  )
+  expect_equal(ss$prior$nlpar, c("", "int1"))
+})
+
 test_that("weibull survival", {
   set.seed(123)
   model <- "survival"

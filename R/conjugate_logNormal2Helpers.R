@@ -58,12 +58,9 @@
     i$ln_mu
   })))
   #* `Define support if it is missing`
-  if (is.null(support)) {
+  if (is.null(support) && calculatingSupport) {
     quantiles <- qgamma(c(0.0001, 0.9999), shape = a_prime, scale = b_prime)
-    if (calculatingSupport) {
-      return(quantiles)
-    }
-    support <- seq(quantiles[1], quantiles[2], length.out = 10000)
+    return(quantiles)
   }
   #* `posterior`
   dens1 <- dgamma(support, shape = a_prime, scale = b_prime)
@@ -117,49 +114,42 @@
   if (is.null(priors)) {
     priors <- list(a = 1, b = 1) # prior on shape, scale of precision
   }
-  if (length(s1) > 1) {
-    #* `Get mean of s1`
-    x_bar <- mean(s1)
-    mu_s1 <- log(x_bar / (sqrt(var(s1) / x_bar^2) + 1))
-    #* `Update Gamma Distribution of precision`
-    #* sufficient stats: n, ss
-    ss <- sum((log(s1) - mu_s1)^2)
-    n1 <- length(s1)
-    a_prime <- priors$a[1] + (n1 / 2)
-    b_prime <- priors$b[1] + (ss / 2)
-    #* `Define support if it is missing`
-    if (is.null(support)) {
-      quantiles <- qgamma(c(0.0001, 0.9999), shape = a_prime, scale = b_prime)
-      if (calculatingSupport) {
-        return(quantiles)
-      }
-      support <- seq(quantiles[1], quantiles[2], length.out = 10000)
-    }
-    #* `posterior`
-    dens1 <- dgamma(support, shape = a_prime, scale = b_prime)
-    pdf1 <- dens1 / sum(dens1)
-    hde1 <- .gammaHDE(shape = a_prime, scale = b_prime)
-    hdi1 <- qgamma(c((1 - cred.int.level) / 2, (1 - ((1 - cred.int.level) / 2))),
-      shape = a_prime, scale = b_prime
+  #* `Get mean of s1`
+  x_bar <- mean(s1)
+  mu_s1 <- log(x_bar / (sqrt(var(s1) / x_bar^2) + 1))
+  #* `Update Gamma Distribution of precision`
+  #* sufficient stats: n, ss
+  ss <- sum((log(s1) - mu_s1)^2)
+  n1 <- length(s1)
+  a_prime <- priors$a[1] + (n1 / 2)
+  b_prime <- priors$b[1] + (ss / 2)
+  #* `Define support if it is missing`
+  if (is.null(support) && calculatingSupport) {
+    quantiles <- qgamma(c(0.0001, 0.9999), shape = a_prime, scale = b_prime)
+    return(quantiles)
+  }
+  #* `posterior`
+  dens1 <- dgamma(support, shape = a_prime, scale = b_prime)
+  pdf1 <- dens1 / sum(dens1)
+  hde1 <- .gammaHDE(shape = a_prime, scale = b_prime)
+  hdi1 <- qgamma(c((1 - cred.int.level) / 2, (1 - ((1 - cred.int.level) / 2))),
+    shape = a_prime, scale = b_prime
+  )
+  #* `Store summary`
+  out$summary <- data.frame(HDE_1 = hde1, HDI_1_low = hdi1[1], HDI_1_high = hdi1[2])
+  out$posterior$a <- a_prime
+  out$posterior$b <- b_prime
+  out$posterior$lognormal_mu <- mu_s1 # returning this as a number, not a distribution
+  #* `Make Posterior Draws`
+  out$posteriorDraws <- rgamma(10000, shape = a_prime, scale = b_prime)
+  out$pdf <- pdf1
+  #* `save s1 data for plotting`
+  if (plot) {
+    out$plot_df <- data.frame(
+      "range" = support,
+      "prob" = pdf1,
+      "sample" = rep("Sample 1", length(support))
     )
-    #* `Store summary`
-    out$summary <- data.frame(HDE_1 = hde1, HDI_1_low = hdi1[1], HDI_1_high = hdi1[2])
-    out$posterior$a <- a_prime
-    out$posterior$b <- b_prime
-    out$posterior$lognormal_mu <- mu_s1 # returning this as a number, not a distribution
-    #* `Make Posterior Draws`
-    out$posteriorDraws <- rgamma(10000, shape = a_prime, scale = b_prime)
-    out$pdf <- pdf1
-    #* `save s1 data for plotting`
-    if (plot) {
-      out$plot_df <- data.frame(
-        "range" = support,
-        "prob" = pdf1,
-        "sample" = rep("Sample 1", length(support))
-      )
-    }
-  } else {
-    stop("s1 must be a numeric of length 2 or greater")
   }
   return(out)
 }
