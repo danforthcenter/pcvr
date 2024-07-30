@@ -135,6 +135,12 @@ nlsPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL,
 #' fit <- fitGrowth(ss)
 #' gamPlot(fit, form = ss$pcvrForm, df = ss$df, groupFill = TRUE)
 #' gamPlot(fit, form = ss$pcvrForm, df = ss$df, groups = "a", timeRange = 1:10)
+#' ss <- growthSS(
+#'   model = "gam", form = y ~ time | group,
+#'   df = simdf, start = NULL, type = "nls"
+#' )
+#' fit <- fitGrowth(ss)
+#' gamPlot(fit, form = ss$pcvrForm, df = ss$df, groupFill = TRUE)
 #'
 #' @export
 
@@ -175,6 +181,7 @@ gamPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
   #* `when implemented SE can be added here, see ?predict.nls`
   #*
   #* `layer for individual lines if formula was complete`
+  individual_lines <- list()
   if (!is.null(individual)) {
     individual_lines <- ggplot2::geom_line(
       data = df, ggplot2::aes(
@@ -186,14 +193,11 @@ gamPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
       ),
       linewidth = 0.25, color = "gray40"
     )
-  } else {
-    individual_lines <- list()
   }
   #* `facetGroups`
+  facet_layer <- NULL
   if (facetGroups) {
     facet_layer <- ggplot2::facet_wrap(stats::as.formula(paste0("~", group)))
-  } else {
-    facet_layer <- NULL
   }
   #* `groupFill`
   if (groupFill) {

@@ -101,6 +101,12 @@ ss <- growthSS(
 fit <- fitGrowth(ss)
 gamPlot(fit, form = ss$pcvrForm, df = ss$df, groupFill = TRUE)
 gamPlot(fit, form = ss$pcvrForm, df = ss$df, groups = "a", timeRange = 1:10)
+ss <- growthSS(
+  model = "gam", form = y ~ time | group,
+  df = simdf, start = NULL, type = "nls"
+)
+fit <- fitGrowth(ss)
+gamPlot(fit, form = ss$pcvrForm, df = ss$df, groupFill = TRUE)
 
 simdf <- growthSim("logistic",
   n = 20, t = 25,
