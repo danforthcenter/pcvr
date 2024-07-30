@@ -3,10 +3,12 @@ library(testthat)
 library(brms)
 library(ggplot2)
 library(pcvr)
+
 test_that("Logistic brms model pipeline", {
   set.seed(123)
   simdf <- growthSim(
-    "logistic", n = 20, t = 25,
+    "logistic",
+    n = 20, t = 25,
     params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
   )
   ss <- growthSS(
@@ -23,51 +25,62 @@ test_that("Logistic brms model pipeline", {
   expect_s3_class(plot, "ggplot")
   plot1.5 <- growthPlot(fit = fit, form = y ~ time | group, groups = "a", df = ss$df)
   expect_s3_class(plot1.5, "ggplot")
-  plot2 <- brmViolin(fit, hyp = "num/denom>1.05",
-                     compareX = "a",
-                     againstY = "b", returnData = TRUE)
+  plot2 <- brmViolin(fit,
+    hyp = "num/denom>1.05",
+    compareX = "a",
+    againstY = "b", returnData = TRUE
+  )
   expect_s3_class(plot2$plot, "ggplot")
-  plot2.5 <- brmViolin(fit, hyp = "num/denom>1.05",
-                       facet = "group", returnData = FALSE)
-  d3 <- brmViolin(fit, hyp = "num/denom>1.05", compareX = NULL, againstY = NULL,
-                  facet = "group", returnData = FALSE)
+  plot2.5 <- brmViolin(fit,
+    hyp = "num/denom>1.05",
+    facet = "group", returnData = FALSE
+  )
+  d3 <- brmViolin(fit,
+    hyp = "num/denom>1.05", compareX = NULL, againstY = NULL,
+    facet = "group", returnData = FALSE
+  )
   expect_s3_class(plot2.5, "ggplot")
   expect_equal(nrow(d3), 3000)
   cd <- combineDraws(fit, fit)
   expect_equal(dim(cd), c(250, 16))
   fit2 <- fit1 <- fit
   fit1$data <- fit1$data[fit1$data$time < 10, ]
-  plot3 <- distributionPlot(list(fit1, fit2), form = ss$pcvrForm, d = ss$df,
-                            priors = list("A" = rlnorm(500, log(130), 0.25),
-                                          "B" = rlnorm(500, log(12), 0.25),
-                                          "C" = rlnorm(500, log(3), 0.25)))
+  plot3 <- distributionPlot(list(fit1, fit2),
+    form = ss$pcvrForm, d = ss$df,
+    priors = list(
+      "A" = rlnorm(500, log(130), 0.25),
+      "B" = rlnorm(500, log(12), 0.25),
+      "C" = rlnorm(500, log(3), 0.25)
+    )
+  )
   expect_s3_class(plot3, "ggplot")
 })
 
 test_that("distPlot works with many models", {
-    load(url("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/brmsFits.rdata"))
-    fits <- list(fit_3, fit_15)
-    form <- y~time | id / group
-    priors <- list(
-      "phi1" = rlnorm(2000, log(130), 0.25),
-      "phi2" = rlnorm(2000, log(12), 0.25),
-      "phi3" = rlnorm(2000, log(3), 0.25)
-    )
-    from3to25 <- list(
-      fit_3, fit_5, fit_7, fit_9, fit_11,
-      fit_13, fit_15, fit_17, fit_19, fit_21, fit_23, fit_25
-    )
-    plot <- distributionPlot(
-      fits = from3to25, form = y ~ time | id / group,
-      params = c("A", "B", "C"), d = simdf, priors = priors
-    )
-    expect_s3_class(plot, "ggplot")
+  load(url("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/brmsFits.rdata"))
+  fits <- list(fit_3, fit_15)
+  form <- y ~ time | id / group
+  priors <- list(
+    "phi1" = rlnorm(2000, log(130), 0.25),
+    "phi2" = rlnorm(2000, log(12), 0.25),
+    "phi3" = rlnorm(2000, log(3), 0.25)
+  )
+  from3to25 <- list(
+    fit_3, fit_5, fit_7, fit_9, fit_11,
+    fit_13, fit_15, fit_17, fit_19, fit_21, fit_23, fit_25
+  )
+  plot <- distributionPlot(
+    fits = from3to25, form = y ~ time | id / group,
+    params = c("A", "B", "C"), d = simdf, priors = priors
+  )
+  expect_s3_class(plot, "ggplot")
 })
 
 test_that("brms model warns about priors", {
   set.seed(123)
   simdf <- growthSim(
-    "linear", n = 20, t = 25,
+    "linear",
+    n = 20, t = 25,
     params = list("A" = c(1, 1.1))
   )
   ss <- growthSS(
@@ -75,8 +88,10 @@ test_that("brms model warns about priors", {
     df = simdf, type = "brms"
   )
   ss <- ss[-which(names(ss) == "prior")]
-  expect_warning(fitGrowth(ss, backend = "cmdstanr",
-                           iter = 100, chains = 1, cores = 1))
+  expect_warning(fitGrowth(ss,
+    backend = "cmdstanr",
+    iter = 100, chains = 1, cores = 1
+  ))
 })
 
 test_that("Hierarchical Model Works", {
@@ -89,8 +104,10 @@ test_that("Hierarchical Model Works", {
   simdf$covar <- rnorm(nrow(simdf), 10, 1)
   ss <- growthSS(
     model = "logistic", form = y ~ time + covar | id / group, sigma = "logistic",
-    list("AI" = 100, "AA" = 5, "B" = 10, "C" = 3,
-         "sigmaA" = 10, "sigmaB" = 10, "sigmaC" = 3),
+    list(
+      "AI" = 100, "AA" = 5, "B" = 10, "C" = 3,
+      "sigmaA" = 10, "sigmaB" = 10, "sigmaC" = 3
+    ),
     df = simdf, type = "brms",
     hierarchy = list("A" = "int_linear")
   )
@@ -133,15 +150,19 @@ test_that("Changepoint model can be specified", {
   simdf <- rbind(noise, noise2)
   ss <- growthSS(
     model = "int_linear + decay linear", form = y ~ time | id / group, sigma = "int + gam",
-    list("I" = 1, "linear1A" = 10, "fixedChangePoint1" = 20, "linear2A" = 2, "sigmaint1" = 1,
-         "sigmachangePoint1" = 25),
+    list(
+      "I" = 1, "linear1A" = 10, "fixedChangePoint1" = 20, "linear2A" = 2, "sigmaint1" = 1,
+      "sigmachangePoint1" = 25
+    ),
     df = simdf, type = "brms"
   )
   expect_equal(ss$prior$nlpar, c("", "linear1A", "linear2A", "I", "sigmaint1", "sigmachangePoint1"))
   ss <- growthSS(
     model = "int_linear + decay linear", form = y ~ time | id / group, sigma = "int + gam",
-    list("I" = 1, "linear1A" = 10, "fixedChangePoint1" = 20, "linear2A" = 2, "sigmaint1" = 1,
-         "sigmachangePoint1" = 25),
+    list(
+      "I" = 1, "linear1A" = 10, "fixedChangePoint1" = 20, "linear2A" = 2, "sigmaint1" = 1,
+      "sigmachangePoint1" = 25
+    ),
     df = simdf[1:10, ], type = "brms"
   )
   expect_equal(ss$prior$nlpar, c("", "linear1A", "linear2A", "I", "sigmaint1", "sigmachangePoint1"))
@@ -152,7 +173,8 @@ test_that("weibull survival", {
   model <- "survival"
   form <- y > 100 ~ time | id / group
   df <- growthSim(
-    "logistic", n = 20, t = 25,
+    "logistic",
+    n = 20, t = 25,
     params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
   )
   prior <- c(0, 5)
@@ -170,7 +192,8 @@ test_that("binomial survival", {
   model <- "survival binomial"
   form <- y > 100 ~ time | id / group
   df <- growthSim(
-    "logistic", n = 20, t = 25,
+    "logistic",
+    n = 20, t = 25,
     params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
   )
   prior <- c(0, 5)
@@ -181,6 +204,98 @@ test_that("binomial survival", {
   expect_s3_class(plot, "ggplot")
   # need to still check plotting/testing, those are pending.
 })
+
+test_that(".brmSurvSS options all work", {
+  set.seed(123)
+  df <- growthSim("logistic",
+    n = 20, t = 25,
+    params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
+  )
+  surv <- .survModelParser("survival weibull")
+  ss <- suppressMessages(
+    .brmsSurvSS(
+      model = surv$model,
+      form = y > 100 ~ time | id / group,
+      df = df,
+      priors = c(0, 5)
+    )
+  )
+  expect_equal(names(ss), c("df", "family", "formula", "prior", "initfun", "pcvrForm"))
+  ss2 <- suppressMessages(
+    .brmsSurvSS(
+      model = surv$model,
+      form = y > 100 ~ time | id / group,
+      df = df,
+      priors = NULL
+    )
+  )
+  expect_equal(names(ss2), c("df", "family", "formula", "prior", "initfun", "pcvrForm"))
+  df2 <- df
+  df2$censor <- 0 # dummy data
+  df2$event <- 1 # dummy data
+  df2$n_eligible <- 100 # dummy data
+  df2$n_events <- 5 # dummy data
+  ss3 <- suppressMessages(
+    .brmsSurvSS(
+      model = surv$model,
+      form = y > 100 ~ time | id / group,
+      df = df2,
+      priors = NULL
+    )
+  )
+  expect_equal(names(ss3), c("df", "family", "formula", "prior", "initfun", "pcvrForm"))
+  ss4 <- suppressMessages(
+    .brmsSurvSS(
+      model = surv$model,
+      form = y > 100 ~ time | id / group,
+      df = df2[df2$group == "a", ],
+      priors = NULL
+    )
+  )
+  expect_equal(names(ss4), c("df", "family", "formula", "prior", "initfun", "pcvrForm"))
+
+  surv <- .survModelParser("survival binomial")
+  ss <- suppressMessages(
+    .brmsSurvSS(
+      model = surv$model,
+      form = y > 100 ~ time | id / group,
+      df = df,
+      priors = c(0, 5)
+    )
+  )
+  expect_equal(names(ss), c("df", "family", "formula", "prior", "initfun", "pcvrForm"))
+  ss2 <- suppressMessages(
+    .brmsSurvSS(
+      model = surv$model,
+      form = y > 100 ~ time | id / group,
+      df = df,
+      priors = NULL
+    )
+  )
+  expect_equal(names(ss2), c("df", "family", "formula", "prior", "initfun", "pcvrForm"))
+  ss3 <- suppressMessages(
+    .brmsSurvSS(
+      model = surv$model,
+      form = y > 100 ~ time | id / group,
+      df = df2,
+      priors = NULL
+    )
+  )
+  expect_equal(names(ss3), c("df", "family", "formula", "prior", "initfun", "pcvrForm"))
+  ss4 <- suppressMessages(
+    .brmsSurvSS(
+      model = surv$model,
+      form = y > 100 ~ time | id / group,
+      df = df2[df2$group == "a", ],
+      priors = NULL
+    )
+  )
+  expect_equal(names(ss4), c("df", "family", "formula", "prior", "initfun", "pcvrForm"))
+})
+
+#* ***********************************
+#* ***** `Not Run on the remote` *****
+#* ***********************************
 
 if (file.exists("/home/josh/Desktop/") && interactive()) {
   # only run locally, don't test for each R-CMD Check

@@ -47,7 +47,8 @@
     getGroup <- trimws(strsplit(as.character(form)[3], "[|]|[/]")[[1]])
     makeSurvDataRet$group <- getGroup[length(getGroup)]
     makeSurvDataRet$x <- getGroup[1]
-    out[["df"]] <- df
+    out_df <- df
+    out[["df"]] <- out_df
   }
 
   #* `make bayesian formula`

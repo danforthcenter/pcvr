@@ -50,9 +50,23 @@ test_that("reading mv github data as long works", {
 
   #* test mv_ag
   set.seed(123)
-  mv_ag1 <- mv_ag(df = mv, group = c("DAS", "genotype", "fertilizer"), n_per_group = 2)
+  mv$svt <- rnorm(nrow(mv))
+  mv_ag1 <- mv_ag(
+    df = mv,
+    group = c("DAS", "genotype", "fertilizer"),
+    n_per_group = 2,
+    keep = "svt"
+  )
+  expect_error(
+    mv_ag2 <- mv_ag(
+      df = mv,
+      group = c("DAS", "genotype", "fertilizer"),
+      n_per_group = 2,
+      labelCol = "camera" # if only some of the id columns are there then error should be thrown
+    )
+  )
 
-  expect_equal(dim(mv_ag1), c(460, 183))
+  expect_equal(dim(mv_ag1), c(460, 184))
 
   #* test EMD
   images <- unique(mv$image)[1:10]

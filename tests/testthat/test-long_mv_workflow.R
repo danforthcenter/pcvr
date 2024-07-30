@@ -58,7 +58,16 @@ test_that("reading mv github data as long works", {
     group = c("DAS", "genotype", "fertilizer"),
     mvCols = "hue", n_per_group = 2
   )
-
+  mv2 <- mv
+  mv2$trait <- rep(c("hue_frequencies", "hue_other"), length.out = nrow(mv2))
+  expect_error(
+    mv_ag2 <- mv_ag(
+      mv2,
+      group = c("DAS", "genotype", "fertilizer"),
+      mvCols = "hue",
+      n_per_group = 2
+    )
+  )
   expect_equal(dim(mv_ag1), c(42480, 6))
 
   #* test EMD
