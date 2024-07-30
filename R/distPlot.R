@@ -45,7 +45,11 @@
 #'   )
 #'   distributionPlot(
 #'     fits = from3to25, form = y ~ time | id / group,
-#'     params = params, d = d, priors = priors
+#'     params = params, d = d, priors = priors, patch = FALSE
+#'   )
+#'   distributionPlot(
+#'     fits = from3to25, form = y ~ time | id / group,
+#'     params = params, d = d, patch = FALSE
 #'   )
 #' }
 #' ## End(Not run)

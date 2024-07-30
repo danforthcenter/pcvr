@@ -16,7 +16,7 @@ test_that("Logistic brms model pipeline", {
   )
   expect_equal(ss$prior$nlpar, c("", "", "A", "B", "C"))
 
-  fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1, sample_prior = "yes")
+  fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1)
   expect_s3_class(fit, "brmsfit")
 
   plot <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
@@ -37,7 +37,10 @@ test_that("Logistic brms model pipeline", {
   expect_equal(dim(cd), c(250, 16))
   fit2 <- fit1 <- fit
   fit1$data <- fit1$data[fit1$data$time < 10, ]
-  plot3 <- distributionPlot(list(fit1, fit2), form = ss$pcvrForm, d = ss$df)
+  plot3 <- distributionPlot(list(fit1, fit2), form = ss$pcvrForm, d = ss$df,
+                            priors = list("A" = rlnorm(500, log(130), 0.25),
+                                          "B" = rlnorm(500, log(12), 0.25),
+                                          "C" = rlnorm(500, log(3), 0.25)))
   expect_s3_class(plot3, "ggplot")
 })
 
