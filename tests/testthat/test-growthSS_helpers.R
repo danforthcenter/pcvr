@@ -445,9 +445,9 @@ test_that(".intChngptForm assembles a formula in all conditions", {
     names(prior)[c(2, 4, 6)] <- paste0(conditions[i, "dpar"], c(conditions[i, 3:5]))
     for (ii in 1:3) {
       iter <- .intChngptForm(conditions[i, "x"],
-                             position = ii,
-                             dpar = conditions[i, "dpar"],
-                             priors = prior
+        position = ii,
+        dpar = conditions[i, "dpar"],
+        priors = prior
       )
       expect_equal(names(iter), c("form", "cp", "cpInt", "params"))
     }
@@ -459,31 +459,38 @@ test_that(".gamChngptForm assembles a formula in all conditions", {
     prior <- list("int1" = 1, "c" = 1, "int2" = 1, "c2" = 2, "int3" = 1, "c3" = 3, "int4" = 1)
     names(prior)[c(2, 4, 6)] <- paste0(conditions[i, "dpar"], c(conditions[i, 3:5]))
     iter <- .gamChngptForm(conditions[i, "x"],
-                           position = 3,
-                           dpar = conditions[i, "dpar"],
-                           priors = prior
+      position = 3,
+      dpar = conditions[i, "dpar"],
+      priors = prior
     )
     expect_equal(names(iter), c("form", "cp", "cpInt", "params", "splineVar"))
   }
   prior <- list("int1" = 1, "c" = 1, "int2" = 1, "c2" = 2, "int3" = 1, "c3" = 3, "int4" = 1)
   names(prior)[c(2, 4, 6)] <- paste0(conditions[1, "dpar"], c(conditions[1, 3:5]))
-  expect_error(suppressMessages(.gamChngptForm(gam_conditions[1, "x"],
-                         position = 1,
-                         dpar = gam_conditions[1, "dpar"],
-                         priors = prior
-  )))
+  expect_error(
+    suppressMessages(
+      .gamChngptForm(
+        gam_conditions[1, "x"],
+        position = 1,
+        dpar = gam_conditions[1, "dpar"],
+        priors = prior
+      )
+    )
+  )
 })
 
 test_that(".linearChngptForm assembles a formula in all conditions", {
   for (i in seq_len(nrow(conditions))) {
-    prior <- list("linear1" = 1, "c" = 1, "linear2" = 1, "c2" = 2,
-                  "linear3" = 1, "c3" = 3, "linear4" = 1)
+    prior <- list(
+      "linear1" = 1, "c" = 1, "linear2" = 1, "c2" = 2,
+      "linear3" = 1, "c3" = 3, "linear4" = 1
+    )
     names(prior)[c(2, 4, 6)] <- paste0(conditions[i, "dpar"], c(conditions[i, 3:5]))
     for (ii in 1:3) {
       iter <- .linearChngptForm(conditions[i, "x"],
-                             position = ii,
-                             dpar = conditions[i, "dpar"],
-                             priors = prior
+        position = ii,
+        dpar = conditions[i, "dpar"],
+        priors = prior
       )
       expect_equal(names(iter), c("form", "cp", "cpInt", "params"))
     }
@@ -492,14 +499,16 @@ test_that(".linearChngptForm assembles a formula in all conditions", {
 
 test_that("logarithmicChngptForm assembles a formula in all conditions", {
   for (i in seq_len(nrow(conditions))) {
-    prior <- list("logarithmic1" = 1, "c" = 1, "logarithmic2" = 1, "c2" = 2,
-                  "logarithmic3" = 1, "c3" = 3, "logarithmic4" = 1)
+    prior <- list(
+      "logarithmic1" = 1, "c" = 1, "logarithmic2" = 1, "c2" = 2,
+      "logarithmic3" = 1, "c3" = 3, "logarithmic4" = 1
+    )
     names(prior)[c(2, 4, 6)] <- paste0(conditions[i, "dpar"], c(conditions[i, 3:5]))
     for (ii in 1:3) {
       iter <- .logarithmicChngptForm(conditions[i, "x"],
-                                position = ii,
-                                dpar = conditions[i, "dpar"],
-                                priors = prior
+        position = ii,
+        dpar = conditions[i, "dpar"],
+        priors = prior
       )
       expect_equal(names(iter), c("form", "cp", "cpInt", "params"))
     }
@@ -508,19 +517,21 @@ test_that("logarithmicChngptForm assembles a formula in all conditions", {
 
 test_that(".exponentialChngptForm assembles a formula in all conditions", {
   for (i in seq_len(nrow(conditions))) {
-    prior <- list("exponential1A" = 1, "exponential1B" = 0.1,
-                  "c" = 1,
-                  "exponential2A" = 1, "exponential2B" = 0.1,
-                  "c2" = 2,
-                  "exponential3A" = 1, "exponential3B" = 0.1,
-                  "c3" = 3,
-                  "exponential4A" = 1, "exponential4B" = 0.1)
+    prior <- list(
+      "exponential1A" = 1, "exponential1B" = 0.1,
+      "c" = 1,
+      "exponential2A" = 1, "exponential2B" = 0.1,
+      "c2" = 2,
+      "exponential3A" = 1, "exponential3B" = 0.1,
+      "c3" = 3,
+      "exponential4A" = 1, "exponential4B" = 0.1
+    )
     names(prior)[c(3, 6, 9)] <- paste0(conditions[i, "dpar"], c(conditions[i, 3:5]))
     for (ii in 1:3) {
       iter <- .exponentialChngptForm(conditions[i, "x"],
-                                     position = ii,
-                                     dpar = conditions[i, "dpar"],
-                                     priors = prior
+        position = ii,
+        dpar = conditions[i, "dpar"],
+        priors = prior
       )
       expect_equal(names(iter), c("form", "cp", "cpInt", "params"))
     }
@@ -529,19 +540,21 @@ test_that(".exponentialChngptForm assembles a formula in all conditions", {
 
 test_that(".monomolecularChngptForm assembles a formula in all conditions", {
   for (i in seq_len(nrow(conditions))) {
-    prior <- list("monomolecular1A" = 1, "monomolecular1B" = 0.1,
-                  "c" = 1,
-                  "monomolecular2A" = 1, "monomolecular2B" = 0.1,
-                  "c2" = 2,
-                  "monomolecular3A" = 1, "monomolecular3B" = 0.1,
-                  "c3" = 3,
-                  "monomolecular4A" = 1, "monomolecular4B" = 0.1)
+    prior <- list(
+      "monomolecular1A" = 1, "monomolecular1B" = 0.1,
+      "c" = 1,
+      "monomolecular2A" = 1, "monomolecular2B" = 0.1,
+      "c2" = 2,
+      "monomolecular3A" = 1, "monomolecular3B" = 0.1,
+      "c3" = 3,
+      "monomolecular4A" = 1, "monomolecular4B" = 0.1
+    )
     names(prior)[c(3, 6, 9)] <- paste0(conditions[i, "dpar"], c(conditions[i, 3:5]))
     for (ii in 1:3) {
       iter <- .monomolecularChngptForm(conditions[i, "x"],
-                                     position = ii,
-                                     dpar = conditions[i, "dpar"],
-                                     priors = prior
+        position = ii,
+        dpar = conditions[i, "dpar"],
+        priors = prior
       )
       expect_equal(names(iter), c("form", "cp", "cpInt", "params"))
     }
@@ -550,19 +563,21 @@ test_that(".monomolecularChngptForm assembles a formula in all conditions", {
 
 test_that(".powerlawChngptForm assembles a formula in all conditions", {
   for (i in seq_len(nrow(conditions))) {
-    prior <- list("powerlaw1A" = 1, "powerlaw1B" = 0.1,
-                  "c" = 1,
-                  "powerlaw2A" = 1, "powerlaw2B" = 0.1,
-                  "c2" = 2,
-                  "powerlaw3A" = 1, "powerlaw3B" = 0.1,
-                  "c3" = 3,
-                  "powerlaw4A" = 1, "powerlaw4B" = 0.1)
+    prior <- list(
+      "powerlaw1A" = 1, "powerlaw1B" = 0.1,
+      "c" = 1,
+      "powerlaw2A" = 1, "powerlaw2B" = 0.1,
+      "c2" = 2,
+      "powerlaw3A" = 1, "powerlaw3B" = 0.1,
+      "c3" = 3,
+      "powerlaw4A" = 1, "powerlaw4B" = 0.1
+    )
     names(prior)[c(3, 6, 9)] <- paste0(conditions[i, "dpar"], c(conditions[i, 3:5]))
     for (ii in 1:3) {
       iter <- .powerlawChngptForm(conditions[i, "x"],
-                                       position = ii,
-                                       dpar = conditions[i, "dpar"],
-                                       priors = prior
+        position = ii,
+        dpar = conditions[i, "dpar"],
+        priors = prior
       )
       expect_equal(names(iter), c("form", "cp", "cpInt", "params"))
     }
@@ -571,19 +586,21 @@ test_that(".powerlawChngptForm assembles a formula in all conditions", {
 
 test_that(".frechetChngptForm assembles a formula in all conditions", {
   for (i in seq_len(nrow(conditions))) {
-    prior <- list("frechet1A" = 1, "frechet1B" = 1, "frechet1C" = 1,
-                  "c" = 1,
-                  "frechet2A" = 1, "frechet2B" = 1, "frechet2C" = 1,
-                  "c2" = 2,
-                  "frechet3A" = 1, "frechet3B" = 1, "frechet3C" = 1,
-                  "c3" = 3,
-                  "frechet4A" = 1, "frechet4B" = 1, "frechet4C" = 1)
+    prior <- list(
+      "frechet1A" = 1, "frechet1B" = 1, "frechet1C" = 1,
+      "c" = 1,
+      "frechet2A" = 1, "frechet2B" = 1, "frechet2C" = 1,
+      "c2" = 2,
+      "frechet3A" = 1, "frechet3B" = 1, "frechet3C" = 1,
+      "c3" = 3,
+      "frechet4A" = 1, "frechet4B" = 1, "frechet4C" = 1
+    )
     names(prior)[c(4, 8, 12)] <- paste0(conditions[i, "dpar"], c(conditions[i, 3:5]))
     for (ii in 1:3) {
       iter <- .frechetChngptForm(conditions[i, "x"],
-                                  position = ii,
-                                  dpar = conditions[i, "dpar"],
-                                  priors = prior
+        position = ii,
+        dpar = conditions[i, "dpar"],
+        priors = prior
       )
       expect_equal(names(iter), c("form", "cp", "cpInt", "params"))
     }
@@ -592,19 +609,21 @@ test_that(".frechetChngptForm assembles a formula in all conditions", {
 
 test_that(".gompertzChngptForm assembles a formula in all conditions", {
   for (i in seq_len(nrow(conditions))) {
-    prior <- list("gompertz1A" = 1, "gompertz1B" = 1, "gompertz1C" = 1,
-                  "c" = 1,
-                  "gompertz2A" = 1, "gompertz2B" = 1, "gompertz2C" = 1,
-                  "c2" = 2,
-                  "gompertz3A" = 1, "gompertz3B" = 1, "gompertz3C" = 1,
-                  "c3" = 3,
-                  "gompertz4A" = 1, "gompertz4B" = 1, "gompertz4C" = 1)
+    prior <- list(
+      "gompertz1A" = 1, "gompertz1B" = 1, "gompertz1C" = 1,
+      "c" = 1,
+      "gompertz2A" = 1, "gompertz2B" = 1, "gompertz2C" = 1,
+      "c2" = 2,
+      "gompertz3A" = 1, "gompertz3B" = 1, "gompertz3C" = 1,
+      "c3" = 3,
+      "gompertz4A" = 1, "gompertz4B" = 1, "gompertz4C" = 1
+    )
     names(prior)[c(4, 8, 12)] <- paste0(conditions[i, "dpar"], c(conditions[i, 3:5]))
     for (ii in 1:3) {
       iter <- .gompertzChngptForm(conditions[i, "x"],
-                                 position = ii,
-                                 dpar = conditions[i, "dpar"],
-                                 priors = prior
+        position = ii,
+        dpar = conditions[i, "dpar"],
+        priors = prior
       )
       expect_equal(names(iter), c("form", "cp", "cpInt", "params"))
     }
@@ -613,19 +632,21 @@ test_that(".gompertzChngptForm assembles a formula in all conditions", {
 
 test_that(".gumbelChngptForm assembles a formula in all conditions", {
   for (i in seq_len(nrow(conditions))) {
-    prior <- list("gumbel1A" = 1, "gumbel1B" = 1, "gumbel1C" = 1,
-                  "c" = 1,
-                  "gumbel2A" = 1, "gumbel2B" = 1, "gumbel2C" = 1,
-                  "c2" = 2,
-                  "gumbel3A" = 1, "gumbel3B" = 1, "gumbel3C" = 1,
-                  "c3" = 3,
-                  "gumbel4A" = 1, "gumbel4B" = 1, "gumbel4C" = 1)
+    prior <- list(
+      "gumbel1A" = 1, "gumbel1B" = 1, "gumbel1C" = 1,
+      "c" = 1,
+      "gumbel2A" = 1, "gumbel2B" = 1, "gumbel2C" = 1,
+      "c2" = 2,
+      "gumbel3A" = 1, "gumbel3B" = 1, "gumbel3C" = 1,
+      "c3" = 3,
+      "gumbel4A" = 1, "gumbel4B" = 1, "gumbel4C" = 1
+    )
     names(prior)[c(4, 8, 12)] <- paste0(conditions[i, "dpar"], c(conditions[i, 3:5]))
     for (ii in 1:3) {
       iter <- .gumbelChngptForm(conditions[i, "x"],
-                                  position = ii,
-                                  dpar = conditions[i, "dpar"],
-                                  priors = prior
+        position = ii,
+        dpar = conditions[i, "dpar"],
+        priors = prior
       )
       expect_equal(names(iter), c("form", "cp", "cpInt", "params"))
     }
@@ -634,19 +655,21 @@ test_that(".gumbelChngptForm assembles a formula in all conditions", {
 
 test_that(".logisticChngptForm assembles a formula in all conditions", {
   for (i in seq_len(nrow(conditions))) {
-    prior <- list("logistic1A" = 1, "logistic1B" = 1, "logistic1C" = 1,
-                  "c" = 1,
-                  "logistic2A" = 1, "logistic2B" = 1, "logistic2C" = 1,
-                  "c2" = 2,
-                  "logistic3A" = 1, "logistic3B" = 1, "logistic3C" = 1,
-                  "c3" = 3,
-                  "logistic4A" = 1, "logistic4B" = 1, "logistic4C" = 1)
+    prior <- list(
+      "logistic1A" = 1, "logistic1B" = 1, "logistic1C" = 1,
+      "c" = 1,
+      "logistic2A" = 1, "logistic2B" = 1, "logistic2C" = 1,
+      "c2" = 2,
+      "logistic3A" = 1, "logistic3B" = 1, "logistic3C" = 1,
+      "c3" = 3,
+      "logistic4A" = 1, "logistic4B" = 1, "logistic4C" = 1
+    )
     names(prior)[c(4, 8, 12)] <- paste0(conditions[i, "dpar"], c(conditions[i, 3:5]))
     for (ii in 1:3) {
       iter <- .logisticChngptForm(conditions[i, "x"],
-                                position = ii,
-                                dpar = conditions[i, "dpar"],
-                                priors = prior
+        position = ii,
+        dpar = conditions[i, "dpar"],
+        priors = prior
       )
       expect_equal(names(iter), c("form", "cp", "cpInt", "params"))
     }
@@ -655,19 +678,21 @@ test_that(".logisticChngptForm assembles a formula in all conditions", {
 
 test_that(".weibullChngptForm assembles a formula in all conditions", {
   for (i in seq_len(nrow(conditions))) {
-    prior <- list("weibull1A" = 1, "weibull1B" = 1, "weibull1C" = 1,
-                  "c" = 1,
-                  "weibull2A" = 1, "weibull2B" = 1, "weibull2C" = 1,
-                  "c2" = 2,
-                  "weibull3A" = 1, "weibull3B" = 1, "weibull3C" = 1,
-                  "c3" = 3,
-                  "weibull4A" = 1, "weibull4B" = 1, "weibull4C" = 1)
+    prior <- list(
+      "weibull1A" = 1, "weibull1B" = 1, "weibull1C" = 1,
+      "c" = 1,
+      "weibull2A" = 1, "weibull2B" = 1, "weibull2C" = 1,
+      "c2" = 2,
+      "weibull3A" = 1, "weibull3B" = 1, "weibull3C" = 1,
+      "c3" = 3,
+      "weibull4A" = 1, "weibull4B" = 1, "weibull4C" = 1
+    )
     names(prior)[c(4, 8, 12)] <- paste0(conditions[i, "dpar"], c(conditions[i, 3:5]))
     for (ii in 1:3) {
       iter <- .weibullChngptForm(conditions[i, "x"],
-                                  position = ii,
-                                  dpar = conditions[i, "dpar"],
-                                  priors = prior
+        position = ii,
+        dpar = conditions[i, "dpar"],
+        priors = prior
       )
       expect_equal(names(iter), c("form", "cp", "cpInt", "params"))
     }
@@ -675,10 +700,13 @@ test_that(".weibullChngptForm assembles a formula in all conditions", {
 })
 
 test_that("Error generation works", {
-  prior <- list("weibull1A" = 1, "weibull1B" = 1, "weibull1C" = 1,
-                "weibull2A" = 1, "weibull2B" = 1, "weibull2C" = 1)
-  expect_error(suppressMessages(.brmsChangePointHelper(model = "weibull + weibull", x = "x", y = "y",
-                                      group = "group", dpar = FALSE,
-                                      nTimes = 25, useGroup = TRUE, priors = prior, int = FALSE
+  prior <- list(
+    "weibull1A" = 1, "weibull1B" = 1, "weibull1C" = 1,
+    "weibull2A" = 1, "weibull2B" = 1, "weibull2C" = 1
+  )
+  expect_error(suppressMessages(.brmsChangePointHelper(
+    model = "weibull + weibull", x = "x", y = "y",
+    group = "group", dpar = FALSE,
+    nTimes = 25, useGroup = TRUE, priors = prior, int = FALSE
   )))
 })
