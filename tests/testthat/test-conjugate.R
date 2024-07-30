@@ -8,6 +8,44 @@ test_that("conjugate HDE helpers work", {
   expect_equal(.gammaHDE(10, 10), 90)
 })
 
+test_that("conjugate MV Sample formatting helper works", {
+  mv1 <- matrix(1, 10, 10)
+  expect_warning(out1 <- .mvSampleFormatting(mv1))
+  expect_equal(colnames(out1), paste0("b", 1:10))
+})
+
+test_that("conjugate raises expected errors", {
+  set.seed(123)
+  s1 <- rnorm(10, 10, 1)
+  res1 <- conjugate(
+    s1 = s1, method = "t",
+    priors = NULL,
+    plot = TRUE,
+    cred.int.level = 0.89, hypothesis = "bad", rope_range = c(-1, 1)
+  )
+  expect_equal(res1$summary$HDE_1, 9.158751, tolerance = 1e-6)
+  s2 <- rnorm(10, 15, 2)
+  expect_error(conjugate(
+    s1 = s1, s2 = s2, method = "t",
+    priors = NULL,
+    plot = TRUE,
+    cred.int.level = 0.89, hypothesis = "bad", rope_range = c(-1, 1)
+  ))
+  expect_error(conjugate(
+    s1 = s1, s2 = s2, method = "t",
+    priors = NULL,
+    plot = TRUE,
+    cred.int.level = 0.89, hypothesis = "lesser", rope_range = 1
+  ))
+  df <- data.frame(value = c(s1, s2), group = rep(c("a", "b"), each = 10))
+  expect_error(conjugate(
+    value ~ group, s2, method = "t",
+    priors = NULL,
+    plot = TRUE,
+    cred.int.level = 0.89, hypothesis = "lesser", rope_range = 1
+  ))
+})
+
 test_that("conjugate single value T works", {
   s1 <- c(
     43.8008289810423, 44.6084228775479, 68.9524219823026, 77.442231894233,
@@ -23,19 +61,20 @@ test_that("conjugate single value T works", {
   out <- conjugate(
     s1 = s1, s2 = s2, method = "t",
     priors = list(mu = 40, n = 1, s2 = 100),
-    plot = FALSE, rope_range = c(-8, 8), rope_ci = 0.89,
-    cred.int.level = 0.89, hypothesis = "equal", support = seq(20, 100, length.out = 10000)
+    plot = TRUE, rope_range = c(-8, 8), rope_ci = 0.89,
+    cred.int.level = 0.89, hypothesis = "unequal", support = seq(20, 100, length.out = 10000)
   )
-  expect_equal(out$summary$post.prob, 0.5864103, tolerance = 1e-6)
+  expect_equal(out$summary$post.prob, 0.4135897, tolerance = 1e-6)
   expect_equal(out$summary$rope_prob, 0.7396922, tolerance = 1e-6)
-  expect_equal(names(out), c("summary", "posterior"))
-
+  expect_equal(names(out), c("summary", "posterior", "plot"))
+  df <- data.frame(value = c(s1, s2), group = rep(c("a", "b"), each = 10))
   out2 <- conjugate(
-    s1 = s1, s2 = s2, method = "t",
+    value ~ group, df, method = "t",
     priors = NULL,
     plot = FALSE, rope_range = c(-8, 8), rope_ci = 0.89,
-    cred.int.level = 0.89, hypothesis = "equal"
+    cred.int.level = 0.89, hypothesis = "lesser"
   )
+  expect_equal(out2$summary$post.prob, 0.3278761, tolerance = 1e-6)
 })
 
 test_that("conjugate multi value T works", {
@@ -47,9 +86,9 @@ test_that("conjugate multi value T works", {
     ),
     n_samples = c(15, 20)
   )
-
+  mv_gauss$group <- rep(c("a", "b"), times = c(15, 20))
   out <- conjugate(
-    s1 = mv_gauss[1:15, -1], s2 = mv_gauss[16:35, -1], method = "t",
+    2:181 ~ group, mv_gauss, method = "t",
     priors = NULL,
     plot = TRUE, rope_range = c(-5, 5), rope_ci = 0.89,
     cred.int.level = 0.89, hypothesis = "equal", support = NULL
@@ -231,16 +270,21 @@ test_that("conjugate single value poisson works", {
   s2 <- rpois(20, 8)
   out <- conjugate(
     s1 = s1, s2 = s2, method = "poisson",
-    priors = list(a = 0.5, b = 0.5),
-    plot = FALSE, rope_range = c(-1, 1), rope_ci = 0.89,
+    priors = NULL,
+    plot = TRUE, rope_range = c(-1, 1), rope_ci = 0.89,
     cred.int.level = 0.89, hypothesis = "equal"
   )
-
   expect_equal(out$summary$post.prob, 0.09622298, tolerance = 1e-6)
-
   expect_equal(out$summary$rope_prob, 0.05594877, tolerance = 1e-6)
-
-  expect_equal(names(out), c("summary", "posterior"))
+  expect_equal(names(out), c("summary", "posterior", "plot"))
+  expect_error(
+    conjugate(
+      s1 = c(s1, 1.5), s2 = s2, method = "poisson",
+      priors = NULL,
+      plot = TRUE, rope_range = c(-1, 1), rope_ci = 0.89,
+      cred.int.level = 0.89, hypothesis = "equal"
+    )
+  )
 })
 
 
@@ -319,13 +363,13 @@ test_that("conjugate single value uniform works", {
   s2 <- runif(10, 0, 13)
   out <- conjugate(
     s1 = s1, s2 = s2, method = "uniform",
-    priors = list(scale = 0.5, location = 0.5),
-    plot = FALSE, rope_range = c(-0.5, 0.5), rope_ci = 0.89,
+    priors = NULL,
+    plot = TRUE, rope_range = c(-0.5, 0.5), rope_ci = 0.89,
     cred.int.level = 0.89, hypothesis = "equal"
   )
   expect_equal(out$summary$post.prob, 0.05305783, tolerance = 1e-6)
   expect_equal(out$summary$rope_prob, 0, tolerance = 1e-6)
-  expect_equal(names(out), c("summary", "posterior"))
+  expect_equal(names(out), c("summary", "posterior", "plot"))
 })
 
 test_that("conjugate multi value uniform works", {
@@ -339,13 +383,13 @@ test_that("conjugate multi value uniform works", {
   )
   out <- conjugate(
     s1 = mvu[1:30, -1], s2 = mvu[31:60, -1], method = "uniform",
-    priors = list(scale = 0.5, location = 0.5),
-    plot = FALSE, rope_range = c(-0.5, 0.5), rope_ci = 0.89,
+    priors = NULL,
+    plot = TRUE, rope_range = c(-0.5, 0.5), rope_ci = 0.89,
     cred.int.level = 0.89, hypothesis = "equal"
   )
   expect_equal(out$summary$post.prob, 0.03885159, tolerance = 1e-6)
   expect_equal(out$summary$rope_prob, 0, tolerance = 1e-6)
-  expect_equal(names(out), c("summary", "posterior"))
+  expect_equal(names(out), c("summary", "posterior", "plot"))
 })
 
 
@@ -470,13 +514,13 @@ test_that("conjugate single value exponential works", {
   s2 <- rexp(10, 1)
   out <- conjugate(
     s1 = s1, s2 = s2, method = "exponential",
-    priors = list(a = 0.5, b = 0.5),
-    plot = FALSE, rope_range = c(-0.5, 0.5), rope_ci = 0.89,
+    priors = NULL,
+    plot = TRUE, rope_range = c(-0.5, 0.5), rope_ci = 0.89,
     cred.int.level = 0.89, hypothesis = "equal"
   )
   expect_equal(out$summary$post.prob, 0.3536306, tolerance = 1e-6)
   expect_equal(out$summary$rope_prob, 0.3370408, tolerance = 1e-6)
-  expect_equal(names(out), c("summary", "posterior"))
+  expect_equal(names(out), c("summary", "posterior", "plot"))
 })
 
 test_that("generic conjugate plotting works", {
@@ -576,7 +620,13 @@ test_that("bivariate conjugate uniform works", {
   expect_equal(length(out$posterior), 2)
   expect_equal(names(out$posterior[[1]]), c("scale", "location_l", "location_u"))
   expect_equal(names(out), c("summary", "posterior", "plot"))
-
+  out2 <- conjugate(
+    s1 = s1,
+    method = "bivariate_uniform", priors = NULL,
+    plot = TRUE, rope_range = c(-1, 1), rope_ci = 0.89, cred.int.level = 0.89,
+    hypothesis = "equal", support = NULL
+  )
+  expect_equal(names(out2), c("summary", "posterior", "plot"))
   set.seed(123)
   s1 <- runif(10, -15, -7)
   s2 <- runif(10, -10, -5)

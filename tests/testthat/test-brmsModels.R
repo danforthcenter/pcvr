@@ -10,13 +10,13 @@ test_that("Logistic brms model pipeline", {
     params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
   )
   ss <- growthSS(
-    model = "logistic", form = y ~ time | id / group, sigma = "spline",
+    model = "logistic", form = y ~ time | id / group, sigma = "gam",
     list("A" = 130, "B" = 10, "C" = 3),
     df = simdf, type = "brms"
   )
   expect_equal(ss$prior$nlpar, c("", "", "A", "B", "C"))
 
-  fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1)
+  fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1, sample_prior = "yes")
   expect_s3_class(fit, "brmsfit")
 
   plot <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
@@ -39,6 +39,26 @@ test_that("Logistic brms model pipeline", {
   fit1$data <- fit1$data[fit1$data$time < 10, ]
   plot3 <- distributionPlot(list(fit1, fit2), form = ss$pcvrForm, d = ss$df)
   expect_s3_class(plot3, "ggplot")
+})
+
+test_that("distPlot works with many models", {
+    load(url("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/brmsFits.rdata"))
+    fits <- list(fit_3, fit_15)
+    form <- y~time | id / group
+    priors <- list(
+      "phi1" = rlnorm(2000, log(130), 0.25),
+      "phi2" = rlnorm(2000, log(12), 0.25),
+      "phi3" = rlnorm(2000, log(3), 0.25)
+    )
+    from3to25 <- list(
+      fit_3, fit_5, fit_7, fit_9, fit_11,
+      fit_13, fit_15, fit_17, fit_19, fit_21, fit_23, fit_25
+    )
+    plot <- distributionPlot(
+      fits = from3to25, form = y ~ time | id / group,
+      params = c("A", "B", "C"), d = simdf, priors = priors
+    )
+    expect_s3_class(plot, "ggplot")
 })
 
 test_that("brms model warns about priors", {

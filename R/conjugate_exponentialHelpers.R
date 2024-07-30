@@ -24,12 +24,9 @@
   a_prime <- priors$a[1] + n
   b_prime <- priors$b[1] + S
   #* `Define support if it is missing`
-  if (is.null(support)) {
+  if (is.null(support) && calculatingSupport) {
     quantiles <- qgamma(c(0.0001, 0.9999), a_prime, b_prime)
-    if (calculatingSupport) {
-      return(quantiles)
-    }
-    support <- seq(quantiles[1], quantiles[2], length.out = 10000)
+    return(quantiles)
   }
   #* `Make Posterior Draws`
   out$posteriorDraws <- rgamma(10000, a_prime, b_prime)

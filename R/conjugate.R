@@ -346,8 +346,6 @@ conjugate <- function(s1 = NULL, s2 = NULL,
       sample <- .mvSampleFormatting(sample)
     } else if (is.vector(sample)) {
       vec_suffix <- "sv"
-    } else {
-      stop("samples must be a vector, data.frame, or matrix.")
     }
     matched_arg <- match.arg(method[i], choices = c(
       "t", "gaussian", "beta", "binomial",
@@ -436,13 +434,15 @@ conjugate <- function(s1 = NULL, s2 = NULL,
 
 .mvSampleFormatting <- function(sample) {
   #* `Standardize sample class and names`
+  if (is.matrix(sample)) {
+    original_names <- colnames(sample)
+    sample <- as.data.frame(sample)
+    colnames(sample) <- original_names
+  }
   if (is.null(colnames(sample))) {
     bins <- (seq_along(sample))
     colnames(sample) <- paste0("b", bins)
     warning(paste0("Assuming unnamed columns represent bins from ", min(bins), " to ", max(bins)))
-  }
-  if (is.matrix(sample)) {
-    sample <- as.data.frame(sample)
   }
   return(sample)
 }
@@ -471,8 +471,6 @@ conjugate <- function(s1 = NULL, s2 = NULL,
       vec <- FALSE
     } else if (is.vector(sample)) {
       vec <- TRUE
-    } else {
-      stop("samples must be a vector, data.frame, or matrix.")
     }
     vec_suffix <- if (vec) {
       "sv"
@@ -737,16 +735,6 @@ conjugate <- function(s1 = NULL, s2 = NULL,
         round(res$summary$HDI_2_high, 2), "]\n",
         "P[p1", dirSymbol, "p2] = ", post.prob.text
       ))
-  }
-  #* `make x axis range if using default support`
-  if (is.null(support)) {
-    x_lower <- min(unlist(lapply(sample_results, function(s) {
-      min(s$plot_df$range)
-    }))) / 1.1
-    x_upper <- max(unlist(lapply(sample_results, function(s) {
-      max(s$plot_df$range)
-    }))) * 1.1
-    p <- p + ggplot2::coord_cartesian(xlim = c(x_lower, x_upper))
   }
 
   if (!is.null(rope_res)) {

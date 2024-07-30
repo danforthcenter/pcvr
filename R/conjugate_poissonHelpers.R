@@ -26,7 +26,7 @@
                              calculatingSupport = FALSE) {
   #* `Check samples`
   if (any(abs(s1 - round(s1)) > .Machine$double.eps^0.5) || any(s1 < 0)) {
-    stop("Only positive whole numbers can be used in the Negative Binomial distribution")
+    stop("Only positive integers can be used in the Poisson distribution")
   }
   #* `make default prior if none provided`
   if (is.null(priors)) {
@@ -39,12 +39,9 @@
   a1_prime <- priors$a[1] + sum(s1)
   b1_prime <- priors$b[1] + length(s1)
   #* `Define support if it is missing`
-  if (is.null(support)) {
+  if (is.null(support) && calculatingSupport) {
     quantiles <- qgamma(c(0.0001, 0.9999), a1_prime, b1_prime)
-    if (calculatingSupport) {
-      return(quantiles)
-    }
-    support <- seq(quantiles[1], quantiles[2], length.out = 10000)
+    return(quantiles)
   }
   #* `calculate density over support``
   dens1 <- dgamma(support, a1_prime, b1_prime)

@@ -41,12 +41,9 @@
   scale_prime <- priors$scale + n_obs
   location_prime <- max(c(max_obs, priors$location), na.rm = TRUE)
   #* `Define support if it is missing`
-  if (is.null(support)) {
+  if (is.null(support) && calculatingSupport) {
     quantiles <- qpareto(c(0.0001, 0.9999), scale_prime, location_prime)
-    if (calculatingSupport) {
-      return(quantiles)
-    }
-    support <- seq(quantiles[1], quantiles[2], length.out = 10000)
+    return(quantiles)
   }
   #* `Make Posterior Draws`
   out$posteriorDraws <- extraDistr::rpareto(10000, scale_prime, location_prime)
@@ -101,12 +98,9 @@
   scale_prime <- priors$scale + length(s1)
   location_prime <- max(c(s1, priors$location), na.rm = TRUE)
   #* `Define support if it is missing`
-  if (is.null(support)) {
+  if (is.null(support) && calculatingSupport) {
     quantiles <- qpareto(c(0.0001, 0.9999), scale_prime, location_prime)
-    if (calculatingSupport) {
-      return(quantiles)
-    }
-    support <- seq(quantiles[1], quantiles[2], length.out = 10000)
+    return(quantiles)
   }
   #* `Make Posterior Draws`
   out$posteriorDraws <- extraDistr::rpareto(10000, scale_prime, location_prime)
