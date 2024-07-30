@@ -64,8 +64,15 @@ ss <- growthSS(
   tau = c(0.25, 0.5, 0.75), df = simdf, start = NULL, type = "nlrq"
 )
 fits <- fitGrowth(ss)
-rqPlot(fits, form = ss$pcvrForm, df = ss$df)
+rqPlot(fits, form = ss$pcvrForm, df = ss$df, groupFill = TRUE)
+rqPlot(fits, form = ss$pcvrForm, df = ss$df, groups = "a", timeRange = 1:10)
 
+ss <- growthSS(
+  model = "gam", form = y ~ time | group,
+  tau = c(0.5), df = simdf, start = NULL, type = "nlrq"
+)
+fit <- fitGrowth(ss)
+rqPlot(fit, form = ss$pcvrForm, df = ss$df, groupFill = TRUE)
 
 ## End(Not run)
 

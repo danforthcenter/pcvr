@@ -40,8 +40,15 @@
 #'   tau = c(0.25, 0.5, 0.75), df = simdf, start = NULL, type = "nlrq"
 #' )
 #' fits <- fitGrowth(ss)
-#' rqPlot(fits, form = ss$pcvrForm, df = ss$df)
+#' rqPlot(fits, form = ss$pcvrForm, df = ss$df, groupFill = TRUE)
+#' rqPlot(fits, form = ss$pcvrForm, df = ss$df, groups = "a", timeRange = 1:10)
 #'
+#' ss <- growthSS(
+#'   model = "gam", form = y ~ time | group,
+#'   tau = c(0.5), df = simdf, start = NULL, type = "nlrq"
+#' )
+#' fit <- fitGrowth(ss)
+#' rqPlot(fit, form = ss$pcvrForm, df = ss$df, groupFill = TRUE)
 #'
 #' ## End(Not run)
 #'
@@ -64,13 +71,14 @@ rqPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facetG
   df <- parsed_form$data
   #* `filter by groups if groups != NULL`
   if (!is.null(groups)) {
-    df <- df[df[[groups]] %in% groups, ]
+    df <- df[df[[group]] %in% groups, ]
   }
   #* `make new data if timerange is not NULL`
   if (!is.null(timeRange)) {
     new_data <- do.call(rbind, lapply(unique(df[[group]]), function(g) {
       stats::setNames(data.frame(g, timeRange), c(group, x))
     }))
+    df <- df[df[[x]] >= min(timeRange) & df[[x]] <= max(timeRange), ]
   } else {
     new_data <- df
   }
@@ -89,6 +97,7 @@ rqPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facetG
   plotdf <- cbind(df[keep, ], preds[keep, ])
   colnames(plotdf) <- c(colnames(df), colnames(preds))
   #* `layer for individual lines if formula was complete`
+  individual_lines <- list()
   if (!is.null(individual)) {
     individual_lines <- ggplot2::geom_line(
       data = df, ggplot2::aes(
@@ -100,14 +109,11 @@ rqPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facetG
       ),
       linewidth = 0.25, color = "gray40"
     )
-  } else {
-    individual_lines <- list()
   }
   #* `facetGroups`
+  facet_layer <- NULL
   if (facetGroups) {
     facet_layer <- ggplot2::facet_wrap(stats::as.formula(paste0("~", group)))
-  } else {
-    facet_layer <- NULL
   }
   #* `groupFill`
   if (groupFill) {

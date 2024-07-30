@@ -51,8 +51,6 @@ can be visualized easily using this function. This will generally be called by \
 }
 \examples{
 
-## Not run:
-
 simdf <- growthSim("logistic",
   n = 20, t = 25,
   params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
@@ -64,8 +62,6 @@ ss <- growthSS(
 fit <- fitGrowth(ss)
 nlrqPlot(fit, form = ss$pcvrForm, df = ss$df, groups = "a", timeRange = 1:20)
 nlrqPlot(fit, form = ss$pcvrForm, df = ss$df, groupFill = TRUE, virMaps = c("plasma", "viridis"))
-
-## End(Not run)
 
 }
 \keyword{exponential,}

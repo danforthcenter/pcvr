@@ -21,15 +21,6 @@
                             plot = FALSE, support = NULL, cred.int.level = NULL,
                             calculatingSupport = FALSE) {
   out <- list()
-  #* `Standardize sample 1 class and names`
-  if (is.null(colnames(s1))) {
-    bins <- (seq_along(s1))
-    colnames(s1) <- paste0("b", bins)
-    warning(paste0("Assuming unnamed columns represent bins from ", min(bins), " to ", max(bins)))
-  }
-  if (is.matrix(s1)) {
-    s1 <- as.data.frame(s1)
-  }
   #* `N observations`
   n_obs <- nrow(s1)
   #* `Reorder columns if they are not in the numeric order`
@@ -69,12 +60,9 @@
   a_prime <- priors$a + n
   b_prime <- 1 / (1 / priors$b + log(m) - n * log(priors$known_location))
   #* `Define support if it is missing`
-  if (is.null(support)) {
+  if (is.null(support) && calculatingSupport) {
     quantiles <- qgamma(c(0.0001, 0.9999), a_prime, b_prime)
-    if (calculatingSupport) {
-      return(quantiles)
-    }
-    support <- seq(quantiles[1], quantiles[2], length.out = 10000)
+    return(quantiles)
   }
   #* `Make Posterior Draws`
   out$posteriorDraws <- rgamma(10000, a_prime, b_prime)
@@ -129,12 +117,9 @@
   a_prime <- priors$a + n
   b_prime <- 1 / (1 / priors$b + log(m) - n * log(priors$known_location))
   #* `Define support if it is missing`
-  if (is.null(support)) {
+  if (is.null(support) && calculatingSupport) {
     quantiles <- qgamma(c(0.0001, 0.9999), a_prime, b_prime)
-    if (calculatingSupport) {
-      return(quantiles)
-    }
-    support <- seq(quantiles[1], quantiles[2], length.out = 10000)
+    return(quantiles)
   }
   #* `Make Posterior Draws`
   out$posteriorDraws <- rgamma(10000, a_prime, b_prime)

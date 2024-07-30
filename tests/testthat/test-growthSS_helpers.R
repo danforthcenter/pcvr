@@ -413,6 +413,77 @@ test_that("GrowthSS Helpers for beta DRMs run", {
   expect_type(ss, "list")
 })
 
+test_that(".brmSS messages about complex models", {
+  set.seed(123)
+  df <- growthSim(
+    "gompertz",
+    n = 20, t = 25,
+    params = list(
+      "A" = rnorm(20, 200, 20),
+      "B" = rnorm(20, 12, 2),
+      "C" = rnorm(20, 0.4, 0.1)
+    )
+  )
+  expect_message(growthSS(
+    model = "gompertz", form = y ~ time | id / group,
+    start = list("A" = 100, "B" = 10, "C" = 3),
+    df = df, type = "brms"
+  ))
+})
+
+test_that(".brmSS assembles decay model", {
+  set.seed(123)
+  df <- growthSim(
+    "gompertz",
+    n = 20, t = 25,
+    params = list(
+      "A" = rnorm(2, 200, 20),
+      "B" = rnorm(2, 12, 2),
+      "C" = rnorm(2, 0.4, 0.1)
+    )
+  )
+  ss <- growthSS(
+    model = "decay gompertz", form = y ~ time | id / group,
+    start = list("A" = 100, "B" = 10, "C" = 3),
+    df = df, type = "brms"
+  )
+  expect_true(grepl("^-", as.character(ss$formula$formula)[3]))
+})
+
+test_that(".brmSS warns about ambiguous hierarchy", {
+  set.seed(123)
+  df <- growthSim(
+    "gompertz",
+    n = 20, t = 25,
+    params = list(
+      "A" = rnorm(2, 200, 20),
+      "B" = rnorm(2, 12, 2),
+      "C" = rnorm(2, 0.4, 0.1)
+    )
+  )
+  df$covar <- rnorm(nrow(df))
+  expect_warning(growthSS(
+    model = "gompertz", form = y ~ time + covar | id / group,
+    start = list("AI" = 100, "BI" = 10, "CI" = 3),
+    df = df, type = "brms"
+  ))
+})
+
+test_that(".brmSS handles a truncated response", {
+  set.seed(123)
+  df <- growthSim(
+    "gompertz",
+    n = 20, t = 25,
+    params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(0.25, 0.5))
+  )
+  ss <- suppressMessages(growthSS(
+    model = "gompertz", form = y[0, 100] ~ time | group,
+    start = list("A" = 100, "B" = 10, "C" = 3),
+    df = df, type = "brms"
+  ))
+  expect_true(grepl("trunc", as.character(ss$formula$formula[2])))
+})
+
 test_that(".decayChngptForm flips a formula returned by another chngpt function", {
   starter <- .linearChngptForm("x_var",
     position = 1, dpar = NULL,
@@ -421,15 +492,6 @@ test_that(".decayChngptForm flips a formula returned by another chngpt function"
   final <- .decayChngptForm(starter)
   expect_equal(final$form, "-linear1A * x_var")
 })
-
-conditions <- data.frame(
-  x = "x_var", position = rep(c(1:2), each = 4),
-  dpar = rep(c("", "sigma"), times = 4),
-  chngpt = rep(c("changepoint", "fixedChangePoint", "fixedChangePoint", "changepoint"),
-    times = 2
-  )
-)
-conditions
 
 conditions <- data.frame(
   x = "x_var",

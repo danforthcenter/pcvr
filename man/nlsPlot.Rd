@@ -85,7 +85,8 @@ ss <- growthSS(
   df = simdf, start = NULL, type = "nls"
 )
 fit <- fitGrowth(ss)
-nlsPlot(fit, form = ss$pcvrForm, df = ss$df)
+nlsPlot(fit, form = ss$pcvrForm, df = ss$df, groupFill = TRUE)
+nlsPlot(fit, form = ss$pcvrForm, df = ss$df, groups = "a", timeRange = 1:10)
 
 ## End(Not run)
 
@@ -98,7 +99,8 @@ ss <- growthSS(
   df = simdf, start = NULL, type = "nls"
 )
 fit <- fitGrowth(ss)
-gamPlot(fit, form = ss$pcvrForm, df = ss$df)
+gamPlot(fit, form = ss$pcvrForm, df = ss$df, groupFill = TRUE)
+gamPlot(fit, form = ss$pcvrForm, df = ss$df, groups = "a", timeRange = 1:10)
 
 simdf <- growthSim("logistic",
   n = 20, t = 25,

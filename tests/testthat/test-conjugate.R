@@ -283,13 +283,13 @@ test_that("conjugate single value pareto works", {
   s2 <- extraDistr::rpareto(10, 3, 1)
   out <- conjugate(
     s1 = s1, s2 = s2, method = "pareto",
-    priors = list(a = 1, b = 1, known_location = min(c(s1, s2))),
-    plot = FALSE, rope_range = c(-0.5, 0.5), rope_ci = 0.89,
+    priors = NULL,
+    plot = TRUE, rope_range = c(-0.5, 0.5), rope_ci = 0.89,
     cred.int.level = 0.89, hypothesis = "equal"
   )
-  expect_equal(out$summary$post.prob, 0.8257879, tolerance = 1e-6)
-  expect_equal(out$summary$rope_prob, 0.02213234, tolerance = 1e-6)
-  expect_equal(names(out), c("summary", "posterior"))
+  expect_equal(out$summary$post.prob, 0.8643824, tolerance = 1e-6)
+  expect_equal(out$summary$rope_prob, 0.01584092, tolerance = 1e-6)
+  expect_equal(names(out), c("summary", "posterior", "plot"))
 })
 
 test_that("conjugate multi value pareto works", {
@@ -304,13 +304,13 @@ test_that("conjugate multi value pareto works", {
   )
   out <- conjugate(
     s1 = mv[1:30, -1], s2 = mv[31:60, -1], method = "pareto",
-    priors = list(a = 1, b = 1, known_location = 1),
-    plot = FALSE, rope_range = c(-0.5, 0.5), rope_ci = 0.89,
+    priors = NULL,
+    plot = TRUE, rope_range = c(-0.5, 0.5), rope_ci = 0.89,
     cred.int.level = 0.89, hypothesis = "equal"
   )
-  expect_equal(out$summary$post.prob, 0.7988257, tolerance = 1e-6)
-  expect_equal(out$summary$rope_prob, 0.002583979, tolerance = 1e-6)
-  expect_equal(names(out), c("summary", "posterior"))
+  expect_equal(out$summary$post.prob, 0.9978403, tolerance = 1e-6)
+  expect_equal(out$summary$rope_prob, 0.001348163, tolerance = 1e-6)
+  expect_equal(names(out), c("summary", "posterior", "plot"))
 })
 
 test_that("conjugate single value uniform works", {
