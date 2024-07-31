@@ -65,7 +65,7 @@ test_that("reading mv github data as long works", {
       mv2,
       group = c("DAS", "genotype", "fertilizer"),
       mvCols = "hue",
-      n_per_group = 2
+      outRows = 3000
     )
   )
   expect_equal(dim(mv_ag1), c(42480, 6))
