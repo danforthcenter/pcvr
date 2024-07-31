@@ -108,18 +108,11 @@
     start <- 0
   }
   if (is.null(start)) {
-    if (matched_model == "double logistic") {
+    if (grepl("double", matched_model)) {
       warning(paste0(
         "Double Sigmoid models are not supported as self-starting models, ",
         "you will need to add starting parameters.",
         "Note for these models type='brms' is recommended."
-      ))
-      startingValues <- NULL
-    } else if (matched_model == "double gompertz") {
-      warning(paste0(
-        "Double Sigmoid models are not supported as self-starting models, ",
-        "you will need to add starting parameters.",
-        " Note for these models type='brms' is recommended."
       ))
       startingValues <- NULL
     } else {
@@ -158,7 +151,7 @@
     group <- NULL
   }
   #* `variance formula`
-  if (methods::is(matched_sigma, "varFun")) {
+  if (methods::is(matched_sigma, "varFunc")) {
     weights_form <- matched_sigma
   } else if (matched_sigma %in% c("int", "none")) {
     weights_form <- nlme::varIdent(
