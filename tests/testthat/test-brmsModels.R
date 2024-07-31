@@ -54,6 +54,12 @@ test_that("Logistic brms model pipeline", {
     )
   )
   expect_s3_class(plot3, "ggplot")
+  plots4 <- distributionPlot(
+    list(fit1, fit2),
+    form = ss$pcvrForm, d = ss$df,
+    priors = NULL,
+    patch = FALSE
+  )
 })
 
 test_that("distPlot works with many models", {
