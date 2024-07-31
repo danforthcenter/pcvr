@@ -146,9 +146,6 @@ testGrowth <- function(ss = NULL, fit, test = "A") {
   } else if (methods::is(fit, "nlrq") || is.list(fit)) {
     out <- .nlrqTest2(ss, fit, test)
     return(out)
-  } else {
-    stop(paste0("These hypotheses are only implemented for nls and nlme models.",
-                " For brms models see brms::hypothesis"))
   }
   dfresid <- summary(fit)$df[2]
   vcMat <- stats::vcov(fit)
