@@ -144,15 +144,11 @@ mv_ag <- function(df, group, mvCols = "frequencies", n_per_group = 1, outRows = 
     } else {
       iter_n <- n_per_group
     }
-    if (is.null(rownames(mv))) {
-      rownames(mv) <- seq_len(nrow(mv))
-    } # should be redundant
+    rownames(mv) <- seq_len(nrow(mv))
     nms <- sample(rownames(mv), nrow(mv), replace = FALSE)
     if (nrow(mv) > 1 & iter_n > 1) {
       index <- cut(seq_len(nrow(mv)), iter_n)
       nms_split <- split(nms, index)
-    } else if (nrow(mv) > 1 & iter_n == 1) {
-      nms_split <- list(rownames(mv))
     } else {
       nms_split <- list(rownames(mv))
     }
@@ -210,8 +206,6 @@ mv_ag <- function(df, group, mvCols = "frequencies", n_per_group = 1, outRows = 
     if (length(IDS) > 1 & iter_n > 1) {
       index <- cut(seq_along(IDS), iter_n)
       ids_split <- split(IDS, index)
-    } else if (length(IDS) > 1 & iter_n == 1) {
-      ids_split <- list(IDS)
     } else {
       ids_split <- list(IDS)
     }
