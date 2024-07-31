@@ -1,6 +1,50 @@
 library(testthat)
 library(pcvr)
 
+test_that("nlme double logistic formula", {
+  # x, y, group, individual, matched_sigma, pars, int
+  out <- .nlme_form_doublelogistic(
+    x = "x", y = "y", group = "group",
+    individual = "id", matched_sigma = "power",
+    pars = NULL, int = FALSE
+  )
+  expect_equal(names(out), c("model", "random", "fixed", "groups", "weights", "cor_form", "pars"))
+  out <- .nlme_form_doublelogistic(
+    x = "x", y = "y", group = "group",
+    individual = "id", matched_sigma = "power",
+    pars = "A", int = TRUE
+  )
+  expect_equal(names(out), c("model", "random", "fixed", "groups", "weights", "cor_form", "pars"))
+  out <- .nlme_form_doublelogistic(
+    x = "x", y = "y", group = "dummyGroup",
+    individual = "id", matched_sigma = "power",
+    pars = NULL, int = FALSE
+  )
+  expect_equal(names(out), c("model", "random", "fixed", "groups", "weights", "cor_form", "pars"))
+})
+
+test_that("nlme double gompertz formula", {
+  # x, y, group, individual, matched_sigma, pars, int
+  out <- .nlme_form_doublegompertz(
+    x = "x", y = "y", group = "group",
+    individual = "id", matched_sigma = "power",
+    pars = NULL, int = FALSE
+  )
+  expect_equal(names(out), c("model", "random", "fixed", "groups", "weights", "cor_form", "pars"))
+  out <- .nlme_form_doublegompertz(
+    x = "x", y = "y", group = "group",
+    individual = "id", matched_sigma = "power",
+    pars = "A", int = TRUE
+  )
+  expect_equal(names(out), c("model", "random", "fixed", "groups", "weights", "cor_form", "pars"))
+  out <- .nlme_form_doublegompertz(
+    x = "x", y = "y", group = "dummyGroup",
+    individual = "id", matched_sigma = "power",
+    pars = NULL, int = FALSE
+  )
+  expect_equal(names(out), c("model", "random", "fixed", "groups", "weights", "cor_form", "pars"))
+})
+
 test_that("nlme logistic formula", {
   # x, y, group, individual, matched_sigma, pars, int
   out <- .nlme_form_logistic(
