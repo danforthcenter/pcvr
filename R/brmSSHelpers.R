@@ -515,7 +515,7 @@
                                    useGroup = TRUE, prior = NULL, int) {
   if (dpar) {
     if (int) {
-      form <- brms::nlf(stats::as.formula(paste0(y, " ~ ", y, "I + (", y, "A*log(", x, ")")))
+      form <- brms::nlf(stats::as.formula(paste0(y, " ~ ", y, "I + (", y, "A*log(", x, "))")))
       pars <- paste0(y, LETTERS[c(1, 9)])
     } else {
       form <- brms::nlf(stats::as.formula(paste0(y, " ~ ", y, "A*log(", x, ")")))
@@ -523,7 +523,7 @@
     }
   } else {
     if (int) {
-      form <- stats::as.formula(paste0(y, " ~ I + (A*log(", x, ")"))
+      form <- stats::as.formula(paste0(y, " ~ I + (A*log(", x, "))"))
       pars <- LETTERS[c(1, 9)]
     } else {
       form <- stats::as.formula(paste0(y, " ~ A*log(", x, ")"))
