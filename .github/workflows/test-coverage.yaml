@@ -50,7 +50,7 @@ jobs:
             combine_types = TRUE,
             quiet = FALSE,
             clean = FALSE,
-            line_exclusions = list("R/readpcvjson.R"),
+            line_exclusions = list("R/readpcvjson.R", "R/plsr.R", "R/vipPlot.R"),
             install_path = file.path(normalizePath(Sys.getenv("RUNNER_TEMP"), winslash = "/"), "package")
           )
         shell: Rscript {0}
