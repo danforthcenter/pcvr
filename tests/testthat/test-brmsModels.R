@@ -60,6 +60,8 @@ test_that("Logistic brms model pipeline", {
     priors = NULL,
     patch = FALSE
   )
+  test <- testGrowth(ss, fit, "A_groupa > A_groupb")
+  expect_s3_class(test, "brmshypothesis")
 })
 
 test_that("distPlot works with many models", {
