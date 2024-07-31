@@ -33,3 +33,29 @@ test_that("read pcv raises error", {
   file <- paste0(link1, link2)
   expect_error(suppressWarnings(read.pcv(file, awk = list("gear in 4, 3"))))
 })
+
+test_that("read pcv 3 works", {
+  base_url <- "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/"
+  bw <- suppressMessages(read.pcv.3(
+    file = paste0(base_url, "pcv3Phenos.csv"),
+    metaCol = NULL,
+    reader = "fread"
+  ))
+  expect_equal(dim(bw), c(120428L, 26L))
+  bw <- suppressMessages(read.pcv.3(
+    file = paste0(base_url, "pcv3Phenos.csv"),
+    metaCol = "meta", metaForm = "vis_view_angle_zoom_horizontal_gain_exposure_v_new_n_rep",
+    joinSnapshot = "id",
+    reader = "fread"
+  ))
+  expect_equal(dim(bw), c(120428L, 38L))
+  bw <- suppressMessages(read.pcv.3(
+    file = paste0(base_url, "pcv3Phenos.csv"),
+    snapshotFile = paste0(base_url, "pcv3Snapshot.csv"),
+    designFile = paste0(base_url, "pcv3Design.csv"),
+    metaCol = "meta", metaForm = "vis_view_angle_zoom_horizontal_gain_exposure_v_new_n_rep",
+    joinSnapshot = "id", conversions = list(area = 13.2 * 3.7 / 46856),
+    reader = "fread"
+  ))
+  expect_equal(dim(bw), c(120428L, 55L))
+})
