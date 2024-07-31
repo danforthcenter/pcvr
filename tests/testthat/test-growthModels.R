@@ -409,6 +409,9 @@ test_that("Test nls gam modeling", {
 
   p <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
   expect_s3_class(p, "ggplot")
+
+  av <- testGrowth(ss = ss, fit)$anova
+  expect_s3_class(av, "anova")
 })
 
 test_that("Test nlrq gam modeling", {
@@ -423,6 +426,9 @@ test_that("Test nlrq gam modeling", {
 
   p <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
   expect_s3_class(p, "ggplot")
+  
+  av <- suppressWarnings(testGrowth(ss = ss, fit)$anova)
+  expect_s3_class(av, "anova.rq")
 })
 
 test_that("Test nlme gam", {
@@ -437,6 +443,9 @@ test_that("Test nlme gam", {
 
   p <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
   expect_s3_class(p, "ggplot")
+  
+  av <- testGrowth(ss = ss, fit)$anova
+  expect_s3_class(av, "anova.lme")
 })
 
 test_that("Test mgcv gam", {
@@ -455,15 +464,16 @@ test_that("Test mgcv gam", {
     model = fit, g1 = "a", g2 = "b", plot = TRUE
   )
   expect_s3_class(p2$plot, "ggplot")
-})
 
+  av <- testGrowth(ss = ss, fit)$anova
+  expect_s3_class(av, "anova")
+})
 
 test_that("Test gam brms model setup", {
   ss <- growthSS(
     model = "gam", form = y ~ time | id / group, sigma = "homo",
     df = gomp_df, type = "brms"
   )
-
   expect_s3_class(ss$formula, "brmsformula")
 })
 
@@ -515,6 +525,8 @@ test_that("Test survreg", {
   expect_s3_class(fit, "survreg")
   p <- growthPlot(fit, form = ss$pcvrForm, df = ss$df)
   expect_s3_class(p, "ggplot")
+  test <- testGrowth(ss, fit)
+  expect_s3_class(test, "survdiff")
 })
 
 
