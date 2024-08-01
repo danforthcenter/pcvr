@@ -81,5 +81,11 @@ pwue(
   waterCol = "water_amount", method = "rate"
 )
 
+pwue(
+  df = sim_df, w = sim_water, pheno = "area_pixels",
+  time = c("timestamp", "timestamp"), id = "barcode", offset = 0,
+  waterCol = "water_amount", method = "abs"
+)
+
 }
 \keyword{WUE}
