@@ -59,6 +59,11 @@ test_that("reading sv github data as wide works", {
   )
   expect_equal(dim(csv), c(2854, 54))
   expect_equal(sum(csv$height_pixels_csum), 10646423)
+  #* relative tolerance
+  rt <- relativeTolerance(
+    df = sv, phenotypes = "area_pixels", grouping = c("genotype", "fertilizer")
+  )
+  expect_equal(dim(rt), c(9L, 9L))
   #* check growthSS (R CMD might throw a fit about brms and my SUGGESTS vs DEPENDS)
   sv$group <- interaction(sv$fertilizer, sv$genotype)
   sv$area_cm2 <- sv$area_pixels / (42.5^2)

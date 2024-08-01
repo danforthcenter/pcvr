@@ -48,6 +48,11 @@ test_that("reading sv github data as long works", {
     phenotypes = c("area_pixels", "height_pixels", "width_pixels"),
     group = c("barcode", "rotation")
   )
+  #* check relativeTolerance
+  rt <- relativeTolerance(
+    df = sv, phenotypes = "area_pixels", grouping = c("genotype", "fertilizer")
+  )
+  expect_equal(dim(rt), c(9L, 9L))
   expect_equal(dim(csv), c(85620, 26))
   expect_equal(sum(csv[csv[["trait"]] == "height_pixels_csum", "value"]), 10646423)
 })
