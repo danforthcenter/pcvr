@@ -2,7 +2,7 @@
 % Please edit documentation in R/frem.R
 \name{frem}
 \alias{frem}
-\title{Variance partitioning using Fully Random Effects Models}
+\title{Variance partitioning using Full Random Effects Models}
 \usage{
 frem(
   df,
@@ -33,7 +33,7 @@ If left NULL (the default) then all data is assumed to be from one timepoint.}
 \item{returnData}{Logical, should the used to make plots be returned? Defaults to FALSE.}
 
 \item{combine}{Logical, should plots be combined with patchwork?
-Defaults to T, which works well when there is a single timepoint being used.}
+Defaults to TRUE, which works well when there is a single timepoint being used.}
 
 \item{markSingular}{Logical, should singular fits be marked in the variance explained plot?
 This is FALSE by default but it is good practice to check with TRUE in some situations.
@@ -61,31 +61,25 @@ Variance partitioning for phenotypes (over time) using fully random effects mode
 
 
 library(data.table)
-wide <- read.pcv(
-  paste0(
-    "https://raw.githubusercontent.com/joshqsumner/",
-    "pcvrTestData/main/pcv4-single-value-traits.csv"
-  ),
-  reader = "fread"
+set.seed(456)
+df <- data.frame(
+  genotype = rep(c("g1", "g2"), each = 10),
+  treatment = rep(c("C", "T"), times = 10),
+  time = rep(c(1:5), times = 2),
+  pheno1 = rnorm(20, 10, 1),
+  pheno2 = sort(rnorm(20, 5, 1)),
+  pheno3 = sort(runif(20))
 )
-wide$genotype <- substr(wide$barcode, 3, 5)
-wide$genotype <- ifelse(wide$genotype == "002", "B73",
-  ifelse(wide$genotype == "003", "W605S",
-    ifelse(wide$genotype == "004", "MM", "Mo17")
-  )
-)
-wide$fertilizer <- substr(wide$barcode, 8, 8)
-wide$fertilizer <- ifelse(wide$fertilizer == "A", "100",
-  ifelse(wide$fertilizer == "B", "50", "0")
-)
-wide <- bw.time(wide, timeCol = "timestamp", group = "barcode", plot = FALSE)
-
-des <- c("genotype", "fertilizer")
-phenotypes <- colnames(wide)[20] # could be 20:25 or more
-timeCol <- "DAS"
-
-frem(wide, des, phenotypes, cor = FALSE, timeCol, time = "all")
-frem(wide, des, phenotypes = colnames(wide)[20:22], cor = TRUE, timeCol, time = "all")
+out <- frem(df, des = "genotype", phenotypes = c("pheno1", "pheno2", "pheno3"), returnData = TRUE)
+lapply(out, class)
+frem(df, des = c("genotype", "treatment"), phenotypes = c("pheno1", "pheno2", "pheno3"),
+     cor = FALSE)
+frem(df, des = "genotype", phenotypes = c("pheno1", "pheno2", "pheno3"),
+     combine = FALSE, timeCol = "time", time = "all")
+frem(df, des = "genotype", phenotypes = c("pheno1", "pheno2", "pheno3"),
+     combine = TRUE, timeCol = "time", time = 1)
+frem(df, des = "genotype", phenotypes = c("pheno1", "pheno2", "pheno3"),
+     cor = FALSE, timeCol = "time", time = 3:5, markSingular = TRUE)
 
 ## End(Not run)
 
