@@ -37,6 +37,11 @@
 #' )
 #' net <- pcv.net(emd_df, meta = "group")
 #' net.plot(net)
+#' net.plot(net, edgeFilter = "0.25")
+#' net.plot(net, edgeFilter = 0.25, fill = c("degree", "group"),
+#'          shape = c("degree", "group"))
+#' net.plot(net, edgeFilter = 0.25, fill = c("degree", "group"),
+#'          shape = c("degree"))
 #' ## End(Not run)
 #'
 #' @return Returns a ggplot of a network.
@@ -50,10 +55,10 @@ net.plot <- function(net, fill = "strength", shape = NULL, size = 3, edgeWeight 
   edges <- net[["edges"]]
   if (is.null(fill)) {
     fill <- "NOFILL"
-    edges$NOFILL <- "a"
+    nodes$NOFILL <- "a"
   }
   if (length(fill) > 1) {
-    edges$FILL <- interaction(edges[, fill])
+    nodes$FILL <- interaction(nodes[, fill])
     fill <- "FILL"
   }
   if (is.null(shape)) {

@@ -51,6 +51,8 @@
 #' p <- pcv.joyplot(x_long, bin = "variable", group = "group")
 #' # we might want to display hues as their hue
 #' p + ggplot2::scale_fill_gradientn(colors = scales::hue_pal(l = 65)(360))
+#' x_long$group2 <- "example"
+#' pcv.joyplot(x_long, bin = "variable", y = "group", fillx = FALSE)
 #' ## End(Not run)
 #'
 #' @export
@@ -106,7 +108,7 @@ pcv.joyplot <- function(df = NULL, index = NULL, group = NULL, y = NULL, id = NU
       suppressMessages(ggridges::geom_density_ridges2(
         ggplot2::aes(
           x = .data$bin, y = .data$y,
-          height = .data$freq, fill = .data$bin, color = .data$bin
+          height = .data$freq, fill = .data[[group]], color = .data[[group]]
         ),
         show.legend = FALSE, stat = "identity"
       )),
