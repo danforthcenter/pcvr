@@ -25,11 +25,8 @@
   a1_prime <- priors$a[1] + sum(s1)
   b1_prime <- priors$b[1] + sum(!s1)
   #* `Define support if it is missing`
-  if (is.null(support)) {
-    if (calculatingSupport) {
-      return(c(0.0001, 0.9999))
-    }
-    support <- seq(0.0001, 0.9999, 0.0001)
+  if (is.null(support) && calculatingSupport) {
+    return(c(0.0001, 0.9999))
   }
   out <- list()
   #* `Make Posterior Draws`
