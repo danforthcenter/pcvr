@@ -203,9 +203,7 @@ test_that("conjugate single value bernoulli works", {
   expect_equal(out$summary$rope_prob, 0.914504, tolerance = 1e-6)
   expect_equal(names(out), c("summary", "posterior", "plot"))
   expect_error(
-    conjugate(
-      c(1, 2, 3),
-      method = "bernoulli")
+    conjugate(c(1, 2, 3), method = "bernoulli")
   )
 })
 

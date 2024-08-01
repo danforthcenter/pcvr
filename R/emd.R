@@ -209,7 +209,7 @@ pcv.emd <- function(df, cols = NULL, reorder = NULL, include = reorder, mat = FA
         i <- unique(df$INNER_ID_EMD)[i_n]
         j <- unique(df$INNER_ID_EMD)[j_n]
         if (i_n < j_n) {
-          emdOut <- dist_1d(
+          dist_1d(
             as.numeric(df[df$INNER_ID_EMD == as.character(i), value]),
             as.numeric(df[df$INNER_ID_EMD == as.character(j), value])
           )
