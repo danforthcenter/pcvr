@@ -43,6 +43,11 @@ test_that("Logistic brms model pipeline", {
   expect_equal(nrow(d3), 3000)
   cd <- combineDraws(fit, fit)
   expect_equal(dim(cd), c(250, 16))
+  fit_df <- as.data.frame(fit)
+  fit_df <- fit_df[, grepl("^b_", colnames(fit_df))]
+  cd <- combineDraws(fit, fit_df)
+  expect_equal(dim(cd), c(250, 16))
+  expect_error(combineDraws(fit, list()))
   fit2 <- fit1 <- fit
   fit1$data <- fit1$data[fit1$data$time < 10, ]
   plot3 <- distributionPlot(list(fit1, fit2),

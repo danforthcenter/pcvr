@@ -26,24 +26,28 @@
 #'   ss_ab <- growthSS(
 #'     model = "logistic", form = y ~ time | id / group,
 #'     sigma = "logistic", df = simdf[simdf$group %in% c("a", "b"), ],
-#'     start = list("A" = 130, "B" = 12, "C" = 3, "subA" = 15, "subB" = 10, "subC" = 3), type = "brms"
+#'     start = list("A" = 130, "B" = 12, "C" = 3,
+#'                  "sigmaA" = 15, "sigmaB" = 10, "sigmaC" = 3), type = "brms"
 #'   )
 #'
 #'   ss_cd <- growthSS(
 #'     model = "logistic", form = y ~ time | id / group,
 #'     sigma = "logistic", df = simdf[simdf$group %in% c("c", "d"), ],
-#'     start = list("A" = 130, "B" = 12, "C" = 3, "subA" = 15, "subB" = 10, "subC" = 3), type = "brms"
+#'     start = list("A" = 130, "B" = 12, "C" = 3,
+#'                  "sigmaA" = 15, "sigmaB" = 10, "sigmaC" = 3), type = "brms"
 #'   )
 #'
 #'   ss_ef <- growthSS(
 #'     model = "logistic", form = y ~ time | id / group,
 #'     sigma = "logistic", df = simdf[simdf$group %in% c("e", "f"), ],
-#'     start = list("A" = 130, "B" = 12, "C" = 3, "subA" = 15, "subB" = 10, "subC" = 3), type = "brms"
+#'     start = list("A" = 130, "B" = 12, "C" = 3,
+#'                  "sigmaA" = 15, "sigmaB" = 10, "sigmaC" = 3), type = "brms"
 #'   )
 #'   ss_ef2 <- growthSS(
 #'     model = "gompertz", form = y ~ time | id / group,
 #'     sigma = "logistic", df = simdf[simdf$group %in% c("e", "f"), ],
-#'     start = list("A" = 130, "B" = 12, "C" = 1, "subA" = 15, "subB" = 10, "subC" = 3), type = "brms"
+#'     start = list("A" = 130, "B" = 12, "C" = 3,
+#'                  "sigmaA" = 15, "sigmaB" = 10, "sigmaC" = 3), type = "brms"
 #'   )
 #'
 #'
@@ -55,6 +59,7 @@
 #'
 #'   x <- combineDraws(fit_ab, fit_cd, fit_ef)
 #'   draws_ef <- as.data.frame(fit_ef)
+#'   draws_ef <- draws_ef[, grepl("^b_", colnames(draws_ef))]
 #'   x2 <- combineDraws(fit_ab2, fit_cd, draws_ef)
 #'   x3 <- combineDraws(fit_ab, fit_cd, fit_ef2)
 #' }
@@ -81,9 +86,6 @@ combineDraws <- function(..., message = TRUE) {
   model_names <- obj_names[unlist(lapply(objects, function(m) {
     methods::is(m, "brmsfit")
   }))]
-  if (length(model_names) == 1) {
-    models <- list(models)
-  }
   supplied_draw_dfs <- objects[unlist(lapply(objects, function(m) {
     methods::is(m, "data.frame")
   }))]
