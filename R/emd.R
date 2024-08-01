@@ -204,10 +204,12 @@ pcv.emd <- function(df, cols = NULL, reorder = NULL, include = reorder, mat = FA
       nrow = length(unique(df$INNER_ID_EMD)),
       ncol = length(unique(df$INNER_ID_EMD))
     )
-    values <- unlist(lapply(unique(df$INNER_ID_EMD), function(i) {
-      parallel::mclapply(unique(df$INNER_ID_EMD), function(j) {
-        if (i <= j) {
-          dist_1d(
+    values <- unlist(lapply(seq_along(unique(df$INNER_ID_EMD)), function(i_n) {
+      parallel::mclapply(seq_along(unique(df$INNER_ID_EMD)), function(j_n) {
+        i <- unique(df$INNER_ID_EMD)[i_n]
+        j <- unique(df$INNER_ID_EMD)[j_n]
+        if (i_n < j_n) {
+          emdOut <- dist_1d(
             as.numeric(df[df$INNER_ID_EMD == as.character(i), value]),
             as.numeric(df[df$INNER_ID_EMD == as.character(j), value])
           )
