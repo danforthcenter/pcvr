@@ -81,13 +81,13 @@ test_that("Logistic brms model pipeline", {
     type = "monomolecular",
     n = 200, t = 25
   )
-  expect_s3_class(pp2, "ggplot")
+  expect_s3_class(pp3$simulated, "ggplot")
   pp4 <- plotPrior(
     priors = list("A" = c(101, 11), "B" = c(0.12, 0.15)),
     type = "exponential",
     n = 200, t = 25
   )
-  expect_s3_class(pp4, "ggplot")
+  expect_s3_class(pp4$simulated, "ggplot")
 })
 
 test_that("distPlot works with many models", {
