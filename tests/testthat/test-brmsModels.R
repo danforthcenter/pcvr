@@ -62,6 +62,32 @@ test_that("Logistic brms model pipeline", {
   )
   test <- testGrowth(ss, fit, "A_groupa > A_groupb")
   expect_s3_class(test, "brmshypothesis")
+  ss <- growthSS(
+    model = "logistic", form = y ~ time | id / group, sigma = "logistic",
+    list("A" = 130, "B" = 10, "C" = 3,
+         "sigmaA" = 20, "sigmaB" = 10, "sigmaC" = 3),
+    df = simdf, type = "brms"
+  )
+  pp1 <- plotPrior(ss)
+  expect_s3_class(pp1, "ggplot")
+  pp2 <- plotPrior(
+    priors = list("A" = c(100, 130), "B" = c(10, 8), "C" = c(0.2, 0.1)),
+    type = "logistic",
+    n = 200, t = 25
+  )
+  expect_s3_class(pp2$simulated, "ggplot")
+  pp3 <- plotPrior(
+    priors = list("A" = c(100, 130), "B" = c(0.08, 0.1)),
+    type = "monomolecular",
+    n = 200, t = 25
+  )
+  expect_s3_class(pp2, "ggplot")
+  pp4 <- plotPrior(
+    priors = list("A" = c(101, 11), "B" = c(0.12, 0.15)),
+    type = "exponential",
+    n = 200, t = 25
+  )
+  expect_s3_class(pp4, "ggplot")
 })
 
 test_that("distPlot works with many models", {
