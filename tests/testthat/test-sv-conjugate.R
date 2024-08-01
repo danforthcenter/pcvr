@@ -140,18 +140,53 @@ test_that("conjugate single value negative binomial works", {
   set.seed(123)
   s1 <- rnbinom(20, 10, 0.5)
   s2 <- rnbinom(20, 10, 0.25)
+  expect_warning(
+    out <- conjugate(
+      s1 = s1, s2 = s2, method = "negbin",
+      priors = NULL,
+      plot = TRUE, rope_range = c(-0.5, 0.5), rope_ci = 0.89,
+      cred.int.level = 0.89, hypothesis = "equal"
+    )
+  )
+  expect_equal(out$summary$post.prob, 6.569111e-09, tolerance = 1e-6)
+  expect_equal(out$summary$rope_prob, 1, tolerance = 1e-6)
+  expect_equal(names(out), c("summary", "posterior", "plot"))
+  expect_error(
+    conjugate(
+      c(0.5, 0.1, 1, 1.1),
+      method = "negbin"
+    )
+  )
+})
+
+test_that("conjugate single value binomial works", {
+  set.seed(123)
+  s1 <- list(successes = c(15, 14, 16, 11), trials = 20)
+  s2 <- list(successes = c(10, 9, 12, 10), trials = 20)
   out <- conjugate(
-    s1 = s1, s2 = s2, method = "negbin",
-    priors = list(r = 10, a = 0.5, b = 0.5),
-    plot = FALSE, rope_range = c(-0.5, 0.5), rope_ci = 0.89,
+    s1 = s1, s2 = s2, method = "binomial",
+    priors = NULL,
+    plot = TRUE, rope_range = c(-0.5, 0.5), rope_ci = 0.89,
     cred.int.level = 0.89, hypothesis = "equal"
   )
-
-  expect_equal(out$summary$post.prob, 6.569111e-09, tolerance = 1e-6)
-
+  expect_equal(out$summary$post.prob, 0.08529131, tolerance = 1e-6)
   expect_equal(out$summary$rope_prob, 1, tolerance = 1e-6)
-
-  expect_equal(names(out), c("summary", "posterior"))
+  expect_equal(names(out), c("summary", "posterior", "plot"))
+  expect_error(
+    .conj_binomial_formatter(c(1, -1))
+  )
+  expect_error(
+    .conj_binomial_formatter(c(1, 1, 1))
+  )
+  expect_message(
+    out <- .conj_binomial_formatter(
+      list(
+        c(1, 1, 4),
+        c(3, 3, 10)
+      )
+    )
+  )
+  expect_equal(names(out), c("successes", "trials"))
 })
 
 test_that("conjugate single value bernoulli works", {
@@ -160,13 +195,18 @@ test_that("conjugate single value bernoulli works", {
   s2 <- sample(c(TRUE, FALSE), 10, replace = TRUE, prob = c(0.7, 0.3))
   out <- conjugate(
     s1 = s1, s2 = s2, method = "bernoulli",
-    priors = list(a = 0.5, b = 0.5),
-    plot = FALSE, rope_range = c(-0.5, 0.5), rope_ci = 0.89,
+    priors = NULL,
+    plot = TRUE, rope_range = c(-0.5, 0.5), rope_ci = 0.89,
     cred.int.level = 0.89, hypothesis = "equal"
   )
   expect_equal(out$summary$post.prob, 0.3412209, tolerance = 1e-6)
   expect_equal(out$summary$rope_prob, 0.914504, tolerance = 1e-6)
-  expect_equal(names(out), c("summary", "posterior"))
+  expect_equal(names(out), c("summary", "posterior", "plot"))
+  expect_error(
+    conjugate(
+      c(1, 2, 3),
+      method = "bernoulli")
+  )
 })
 
 test_that("conjugate single value pareto works", {

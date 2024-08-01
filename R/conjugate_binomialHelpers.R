@@ -32,11 +32,8 @@
   }
   #* `Define dense Support`
   #* `p parameter is beta distributed`
-  if (is.null(support)) {
-    if (calculatingSupport) {
-      return(c(0.0001, 0.9999))
-    }
-    support <- seq(0.0001, 0.9999, 0.0001)
+  if (is.null(support) && calculatingSupport) {
+    return(c(0.0001, 0.9999))
   }
   out <- list()
   #* `Update priors with observed counts`
@@ -79,13 +76,13 @@
   if (any(unlist(s1) < 0)) {
     stop(paste0(
       "Binomial method requires successes and trials in sample data",
-      "as a list of two integer vectors. See examples."
+      " as a list of two positive integer vectors. See examples."
     ))
   }
   if (length(s1) != 2) {
     stop(paste0(
       "Binomial method requires successes and trials in sample data",
-      "as a list of two integer vectors. See examples."
+      " as a list of two integer vectors. See examples."
     ))
   }
   if (any(is.null(names(s1)), names(s1) != c("successes", "trials"))) {

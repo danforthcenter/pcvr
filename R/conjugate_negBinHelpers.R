@@ -50,11 +50,8 @@
   a1_prime <- priors$a[1] + priors$r[1] * length(s1)
   b1_prime <- priors$b[1] + sum(s1)
   #* `Define support if it is missing`
-  if (is.null(support)) {
-    if (calculatingSupport) {
-      return(c(0.0001, 0.9999))
-    }
-    support <- seq(0.0001, 0.9999, 0.0001)
+  if (is.null(support) && calculatingSupport) {
+    return(c(0.0001, 0.9999))
   }
   #* `calculate density over support``
   dens1 <- dbeta(support, a1_prime, b1_prime)
