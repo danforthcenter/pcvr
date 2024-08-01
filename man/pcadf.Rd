@@ -10,8 +10,7 @@ pcadf(
   color = NULL,
   facet = NULL,
   returnData = TRUE,
-  ncp = NULL,
-  split = "DAS"
+  ncp = NULL
 )
 }
 \arguments{
@@ -23,7 +22,7 @@ the column names that should be used.}
 
 \item{color}{column name(s) used to color points in the pca plot.}
 
-\item{facet}{Optional column or vector to facet/split plots on.}
+\item{facet}{Optional column or vector to facet plots on.}
 
 \item{returnData}{Logical, should data be returned?}
 

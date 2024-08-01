@@ -5,7 +5,7 @@
 #' If this is length of 1 then it is treated as regex pattern to match
 #' the column names that should be used.
 #' @param color column name(s) used to color points in the pca plot.
-#' @param facet Optional column or vector to facet/split plots on.
+#' @param facet Optional column or vector to facet plots on.
 #' @param returnData Logical, should data be returned?
 #' @param ncp Optional, number of principal components to return attached
 #'  to dataframe if data is returned. Defaults to all.
@@ -34,7 +34,7 @@
 #' @export
 
 pcadf <- function(df = NULL, cols = NULL, color = NULL,
-                  facet = NULL, returnData = TRUE, ncp = NULL, split = "DAS") {
+                  facet = NULL, returnData = TRUE, ncp = NULL) {
   if (is.character(cols) && length(cols) == 1) {
     cols <- which(grepl(cols, colnames(df)))
   }
