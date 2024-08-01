@@ -426,7 +426,6 @@ test_that("Test nlrq gam modeling", {
 
   p <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
   expect_s3_class(p, "ggplot")
-  
   av <- suppressWarnings(testGrowth(ss = ss, fit)$anova)
   expect_s3_class(av, "anova.rq")
 })
@@ -443,7 +442,6 @@ test_that("Test nlme gam", {
 
   p <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
   expect_s3_class(p, "ggplot")
-  
   av <- testGrowth(ss = ss, fit)$anova
   expect_s3_class(av, "anova.lme")
 })

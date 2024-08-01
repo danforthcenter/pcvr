@@ -275,7 +275,7 @@ bw.outliers <- function(df = NULL,
     rmdfPlotData <- plotdf[plotdf$outlier, ]
     p <- ggplot2::ggplot() +
       ggplot2::facet_wrap(stats::as.formula(paste0("~", paste(group[-1], collapse = "+")))) +
-      ggplot2::geom_line(data = df, ggplot2::aes(
+      ggplot2::geom_line(data = plotdf, ggplot2::aes(
         x = .data[[x]], y = .data[[valueCol]],
         group = .data[["grouping"]]
       ), linewidth = 0.25) +

@@ -47,11 +47,11 @@ test_that("reading sv github data as wide works", {
   #* see notes from 9/6/2023 on why this is done differently, also see test-long_sv_workflow.R
   svNoOutliers <- suppressWarnings(bw.outliers(
     df = sv, phenotype = "area_pixels", group = c("DAS", "genotype", "fertilizer"),
-    cutoff = 3, plot = FALSE
+    cutoff = 3, plot = TRUE
   ))
-  pct_removed <- nrow(svNoOutliers) / nrow(sv)
+  pct_removed <- nrow(svNoOutliers$data) / nrow(sv)
   expect_equal(pct_removed, 0.997, tolerance = 0.0015)
-
+  expect_s3_class(svNoOutliers$plot, "ggplot")
   #* check cumulativePheno
   csv <- cumulativePheno(sv,
     phenotypes = c("area_pixels", "height_pixels", "width_pixels"),

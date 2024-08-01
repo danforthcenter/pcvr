@@ -40,9 +40,9 @@ test_that("reading sv github data as long works", {
     df = sv, phenotype = "area_pixels", group = c("DAS", "genotype", "fertilizer"),
     cutoff = 3, plot = TRUE
   ))
-  pct_removed <- nrow(svNoOutliers) / nrow(sv)
+  pct_removed <- nrow(svNoOutliers$data) / nrow(sv)
   expect_equal(pct_removed, 0.997, tolerance = 0.0015)
-
+  expect_s3_class(svNoOutliers$plot, "ggplot")
   #* check cumulativePheno
   csv <- cumulativePheno(sv,
     phenotypes = c("area_pixels", "height_pixels", "width_pixels"),

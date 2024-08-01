@@ -1,4 +1,5 @@
 library(data.table)
+if (!interactive()) pdf(NULL)
 test_that("reading mv github data as long works", {
   mv <- read.pcv(paste0(
     "https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/",
@@ -34,13 +35,13 @@ test_that("reading mv github data as long works", {
   expect_equal(pct_removed, 0.93, tolerance = 0.015)
 
   mvNoOutliers <- suppressWarnings(bw.outliers(
-    df = mv, phenotype = phenotypes, naTo0 = FALSE, plot = FALSE, outlierMethod = "mahalanobis",
+    df = mv, phenotype = phenotypes, naTo0 = FALSE, plot = TRUE, outlierMethod = "mahalanobis",
     group = c("DAS", "genotype", "fertilizer"), cutoff = 3, plotgroup = c("barcode", "rotation")
   ))
 
-  pct_removed <- nrow(mvNoOutliers) / nrow(mv)
+  pct_removed <- nrow(mvNoOutliers$data) / nrow(mv)
   expect_equal(pct_removed, 0.945, tolerance = 0.015)
-
+  expect_s3_class(mvNoOutliers$plot, "ggplot")
   #* test joyplot
   joyplot <- pcv.joyplot(mv[mv$DAS == 18, ],
     index = "hue_frequencies",
