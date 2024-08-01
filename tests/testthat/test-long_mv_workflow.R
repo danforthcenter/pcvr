@@ -31,12 +31,13 @@ test_that("reading mv github data as long works", {
   # test bw.outliers
 
   mvNoOutliers <- suppressWarnings(bw.outliers(
-    df = mv, phenotype = "hue_frequencies", naTo0 = FALSE, plot = FALSE,
+    df = mv, phenotype = "hue_frequencies", naTo0 = FALSE, plot = TRUE,
     group = c("DAS", "genotype", "fertilizer"), cutoff = 3, plotgroup = c("barcode", "rotation")
   ))
 
-  pct_removed <- nrow(mvNoOutliers) / nrow(mv)
+  pct_removed <- nrow(mvNoOutliers$data) / nrow(mv)
   expect_equal(pct_removed, 0.93, tolerance = 0.015)
+  expect_s3_class(mvNoOutliers$plot, "ggplot")
 
   mvNoOutliers <- suppressWarnings(bw.outliers(
     df = mv, phenotype = "hue_frequencies", naTo0 = FALSE, plot = FALSE, outlierMethod = "mahalanobis",
