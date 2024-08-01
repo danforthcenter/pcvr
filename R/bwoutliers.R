@@ -432,10 +432,6 @@ bw.outliers <- function(df = NULL,
   phenos_df <- df[, phenotype]
   if (is.null(ncp)) {
     ncp <- min(min(dim(phenos_df)) - 1, 3)
-    message(paste0(
-      "Using ", ncp, " PCs comprising ", round(pca$eig[ncp, 3], 3),
-      "% of variation"
-    ))
   }
   pca <- FactoMineR::PCA(phenos_df, ncp = ncp, graph = FALSE)
   coords <- as.data.frame(pca$ind)
