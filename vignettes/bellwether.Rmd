@@ -717,34 +717,13 @@ hue_res_ln <- conjugate(
 
 ### Ordination
 
-Ordinations are another common way to look at multi value traits. The `pcadf` function in `pcvr` has several options for how this can work.
+Ordinations are another common way to look at multi value traits. The `pcadf` function runs ordinations and optionally returns the PCs with metadata.
 
 ```{r}
-# could use facet="fertilizer" here but I want to reorder manually instead of changing the data
 pcadf(hue_wide, cols = "hue_frequencies", color = "genotype", returnData = FALSE) +
   facet_wrap(~ factor(fertilizer, levels = c("0", "50", "100")))
 ```
 
-
-This is potentially useful but it does not show us the time component well. We can facet by day or add traces easily. Using the trace argument we can view the movement of groups over time, but that can be cluttered.
-
-```{r}
-pcadf(hue_wide,
-  cols = "hue_frequencies", color = c("genotype", "fertilizer"),
-  trace = "DAS", returnData = FALSE
-)
-```
-
-When the trace is cluttered it generally helps to either use a facet or to return a list of plots showing a few days at a time in the trace. Both those options are done using the `facet` argument.
-
-```{r}
-plots <- pcadf(hue_wide,
-  cols = "hue_frequencies", color = c("genotype", "fertilizer"),
-  trace = "DAS", returnData = FALSE, facet = c(1, 2, 3, 4)
-)
-
-(plots[[1]] + plots[[2]]) / (plots[[3]] + plots[[2]]) + plot_layout(guides = "collect")
-```
 
 ### Earth Mover's Distance
 

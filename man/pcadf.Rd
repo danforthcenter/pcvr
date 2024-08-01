@@ -8,7 +8,6 @@ pcadf(
   df = NULL,
   cols = NULL,
   color = NULL,
-  trace = NULL,
   facet = NULL,
   returnData = TRUE,
   ncp = NULL,
@@ -24,22 +23,12 @@ the column names that should be used.}
 
 \item{color}{column name(s) used to color points in the pca plot.}
 
-\item{trace}{Optional column to use to show changes over by way of geom_path,
-generally this would be a time variable.}
-
-\item{facet}{Optional column or vector to facet/split plots on.
-If this is a character then it is taken as a column name.
-Numeric vectors are taken as values of trace to split on,
-if trace=NULL and this is numeric then plots will be split by the split argument.
- If this is a vector then a list of plots is returned.}
+\item{facet}{Optional column or vector to facet/split plots on.}
 
 \item{returnData}{Logical, should data be returned?}
 
 \item{ncp}{Optional, number of principal components to return attached
 to dataframe if data is returned. Defaults to all.}
-
-\item{split}{Time variable to split data on if a facet on time is used.
-See bellwether vignette for examples.}
 }
 \description{
 Function to run a PCA, plot and optionally return the data with PCA coordinates and pca object
