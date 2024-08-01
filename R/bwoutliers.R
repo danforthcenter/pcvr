@@ -431,36 +431,31 @@ bw.outliers <- function(df = NULL,
 
   phenos_df <- df[, phenotype]
   if (is.null(ncp)) {
-    use_ncp <- min(min(dim(phenos_df)) - 1, 3)
-  } else {
-    use_ncp <- ncp
+    ncp <- min(min(dim(phenos_df)) - 1, 3)
+    message(paste0(
+      "Using ", ncp, " PCs comprising ", round(pca$eig[ncp, 3], 3),
+      "% of variation"
+    ))
   }
-  pca <- FactoMineR::PCA(phenos_df, ncp = use_ncp, graph = FALSE)
+  pca <- FactoMineR::PCA(phenos_df, ncp = ncp, graph = FALSE)
   coords <- as.data.frame(pca$ind)
   coords <- coords[, grepl("coord", colnames(coords))]
   colnames(coords) <- gsub("coord.Dim.", "pc", colnames(coords))
   pca_cols <- colnames(coords)
   df <- cbind(df, coords)
 
-  if (is.null(ncp)) {
-    message(paste0(
-      "Using ", use_ncp, " PCs comprising ", round(pca$eig[use_ncp, 3], 3),
-      "% of variation"
-    ))
-  }
-
   df <- df[complete.cases(df[, c(pca_cols, group)]), ]
 
   outlierForm <- paste(
-    "cbind(", paste0("pc", 1:use_ncp, collapse = ","), ")~",
+    "cbind(", paste0("pc", 1:ncp, collapse = ","), ")~",
     paste(paste0("as.factor(", group, ")"), collapse = ":")
   )
   cooksd <- cooks.distance(lm(data = df, as.formula(outlierForm)))
 
-  df <- df[, -which(colnames(df) %in% c(paste0("pc", 1:use_ncp)))]
+  df <- df[, -which(colnames(df) %in% c(paste0("pc", 1:ncp)))]
 
   if (length(cutoff) == 1) {
-    cutoff <- rep(cutoff, use_ncp)
+    cutoff <- rep(cutoff, ncp)
   }
   outlierCutoffs <- cutoff * colMeans(cooksd, na.rm = TRUE)
 
