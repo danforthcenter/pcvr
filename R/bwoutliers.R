@@ -44,67 +44,23 @@
 #'
 #' ## Not run:
 #'
-#' sv <- read.pcv(
-#'   "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv",
-#'   reader = "fread"
+#' sv <- growthSim("logistic",
+#'                 n = 5, t = 20,
+#'                 params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
 #' )
-#' sv$genotype <- substr(sv$barcode, 3, 5)
-#' sv$genotype <- ifelse(sv$genotype == "002", "B73",
-#'   ifelse(sv$genotype == "003", "W605S",
-#'     ifelse(sv$genotype == "004", "MM", "Mo17")
-#'   )
+#' sv[130, ]$y <- 500
+#' sv_res <- bw.outliers(
+#'   df = sv, phenotype = "y", naTo0 = FALSE, cutoff = 15,
+#'   group = c("time", "group"), outlierMethod = "cooks",
+#'   plotgroup = "id", plot = TRUE
 #' )
-#' sv$fertilizer <- substr(sv$barcode, 8, 8)
-#' sv$fertilizer <- ifelse(sv$fertilizer == "A", "100",
-#'   ifelse(sv$fertilizer == "B", "50", "0")
-#' )
-#' sv <- bw.time(sv,
-#'   plantingDelay = 0, phenotype = "area_pixels", cutoff = 10, timeCol = "timestamp",
-#'   group = c("barcode", "rotation"), plot = FALSE
-#' )
-#'
-#' res1 <- bw.outliers(
-#'   df = sv, phenotype = "area_pixels", naTo0 = FALSE,
-#'   group = c("DAS", "genotype", "fertilizer"), outlierMethod = "cooks",
-#'   plotgroup = c("barcode", "rotation"), plot = TRUE
-#' )
-#'
-#' res2 <- bw.outliers(
-#'   df = sv, phenotype = "area_pixels", naTo0 = FALSE,
-#'   group = c("DAS", "genotype", "fertilizer"), outlierMethod = "cooks",
-#'   plotgroup = c("barcode", "rotation"), plot = TRUE, separate = "genotype"
-#' )
-#'
-#' if (FALSE) {
-#'   svl <- read.pcv(
-#'     "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv",
-#'     mode = "long", reader = "fread"
-#'   )
-#'   svl$genotype <- substr(svl$barcode, 3, 5)
-#'   svl$genotype <- ifelse(svl$genotype == "002", "B73",
-#'     ifelse(svl$genotype == "003", "W605S",
-#'       ifelse(svl$genotype == "004", "MM", "Mo17")
-#'     )
-#'   )
-#'   svl$fertilizer <- substr(svl$barcode, 8, 8)
-#'   svl$fertilizer <- ifelse(svl$fertilizer == "A", "100",
-#'     ifelse(svl$fertilizer == "B", "50", "0")
-#'   )
-#'   svl <- bw.time(svl,
-#'     plantingDelay = 0, phenotype = "area_pixels", cutoff = 10, timeCol = "timestamp",
-#'     group = c("barcode", "rotation"), plot = FALSE
-#'   )
-#'
-#'   svl <- bw.outliers(
-#'     df = svl, phenotype = "area_pixels", naTo0 = FALSE,
-#'     group = c("DAS", "genotype", "fertilizer"),
-#'     plotgroup = c("barcode", "rotation"), plot = TRUE
-#'   )
-#'
+#' sv_res$plot
+#' if(FALSE) {
+#'   library(data.table)
 #'   mvw <- read.pcv(paste0(
 #'     "https://media.githubusercontent.com/media/joshqsumner/",
 #'     "pcvrTestData/main/pcv4-multi-value-traits.csv"
-#'   ), mode = "wide")
+#'   ), mode = "wide", reader = "fread")
 #'   mvw$genotype <- substr(mvw$barcode, 3, 5)
 #'   mvw$genotype <- ifelse(mvw$genotype == "002", "B73",
 #'     ifelse(mvw$genotype == "003", "W605S",
@@ -146,7 +102,6 @@
 #'     group = c("DAS", "genotype", "fertilizer"), cutoff = 3, plotgroup = c("barcode", "rotation")
 #'   )
 #' }
-#'
 #' ## End(Not run)
 #'
 #' @return The input dataframe with outliers removed and optionally a plot
@@ -320,7 +275,7 @@ bw.outliers <- function(df = NULL,
     rmdfPlotData <- plotdf[plotdf$outlier, ]
     p <- ggplot2::ggplot() +
       ggplot2::facet_wrap(stats::as.formula(paste0("~", paste(group[-1], collapse = "+")))) +
-      ggplot2::geom_line(data = df, ggplot2::aes(
+      ggplot2::geom_line(data = plotdf, ggplot2::aes(
         x = .data[[x]], y = .data[[valueCol]],
         group = .data[["grouping"]]
       ), linewidth = 0.25) +
@@ -476,36 +431,27 @@ bw.outliers <- function(df = NULL,
 
   phenos_df <- df[, phenotype]
   if (is.null(ncp)) {
-    use_ncp <- min(min(dim(phenos_df)) - 1, 3)
-  } else {
-    use_ncp <- ncp
+    ncp <- min(min(dim(phenos_df)) - 1, 3)
   }
-  pca <- FactoMineR::PCA(phenos_df, ncp = use_ncp, graph = FALSE)
+  pca <- FactoMineR::PCA(phenos_df, ncp = ncp, graph = FALSE)
   coords <- as.data.frame(pca$ind)
   coords <- coords[, grepl("coord", colnames(coords))]
   colnames(coords) <- gsub("coord.Dim.", "pc", colnames(coords))
   pca_cols <- colnames(coords)
   df <- cbind(df, coords)
 
-  if (is.null(ncp)) {
-    message(paste0(
-      "Using ", use_ncp, " PCs comprising ", round(pca$eig[use_ncp, 3], 3),
-      "% of variation"
-    ))
-  }
-
   df <- df[complete.cases(df[, c(pca_cols, group)]), ]
 
   outlierForm <- paste(
-    "cbind(", paste0("pc", 1:use_ncp, collapse = ","), ")~",
+    "cbind(", paste0("pc", 1:ncp, collapse = ","), ")~",
     paste(paste0("as.factor(", group, ")"), collapse = ":")
   )
   cooksd <- cooks.distance(lm(data = df, as.formula(outlierForm)))
 
-  df <- df[, -which(colnames(df) %in% c(paste0("pc", 1:use_ncp)))]
+  df <- df[, -which(colnames(df) %in% c(paste0("pc", 1:ncp)))]
 
   if (length(cutoff) == 1) {
-    cutoff <- rep(cutoff, use_ncp)
+    cutoff <- rep(cutoff, ncp)
   }
   outlierCutoffs <- cutoff * colMeans(cooksd, na.rm = TRUE)
 

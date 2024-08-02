@@ -8,9 +8,17 @@
 #'
 #' @examples
 #'
-#' if (FALSE) {
-#'   checkGroups(sv, c("DAS", "barcode", "rotation", "genotype", "fertilizer"))
-#' }
+#' ## Not run:
+#'
+#' df <- growthSim("linear",
+#'                 n = 10, t = 10,
+#'                 params = list("A" = c(2, 1.5)))
+#' checkGroups(df, c("time", "id", "group"))
+#' df$time[12] <- 3
+#' checkGroups(df, c("time", "id", "group"))
+#'
+#' ## End(Not run)
+#'
 #' @export
 
 checkGroups <- function(df, group) {

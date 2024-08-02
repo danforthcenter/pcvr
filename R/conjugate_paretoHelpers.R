@@ -21,15 +21,8 @@
                             plot = FALSE, support = NULL, cred.int.level = NULL,
                             calculatingSupport = FALSE) {
   out <- list()
-  #* `Standardize sample 1 class and names`
-  if (is.null(colnames(s1))) {
-    bins <- (seq_along(s1))
-    colnames(s1) <- paste0("b", bins)
-    warning(paste0("Assuming unnamed columns represent bins from ", min(bins), " to ", max(bins)))
-  }
-  if (is.matrix(s1)) {
-    s1 <- as.data.frame(s1)
-  }
+  #* `N observations`
+  n_obs <- nrow(s1)
   #* `Reorder columns if they are not in the numeric order`
   histColsBin <- as.numeric(sub("[a-zA-Z_.]+", "", colnames(s1)))
   bins_order <- sort(histColsBin, index.return = TRUE)$ix
@@ -49,8 +42,6 @@
   #* `Calculate Sufficient Statistics`
   #* This is abnormal because one of the sufficient statistics is the product of the data.
   #* That quantity does not translate well to the MV trait setting.
-  #* `N observations`
-  n_obs <- nrow(s1)
   #* `MLE Estimates of Pareto Parameters`
   #* Note this is being done per row of the MV data
   row_scales <- unlist(lapply(seq_len(n_obs), function(i) {
@@ -69,12 +60,9 @@
   a_prime <- priors$a + n
   b_prime <- 1 / (1 / priors$b + log(m) - n * log(priors$known_location))
   #* `Define support if it is missing`
-  if (is.null(support)) {
+  if (is.null(support) && calculatingSupport) {
     quantiles <- qgamma(c(0.0001, 0.9999), a_prime, b_prime)
-    if (calculatingSupport) {
-      return(quantiles)
-    }
-    support <- seq(quantiles[1], quantiles[2], length.out = 10000)
+    return(quantiles)
   }
   #* `Make Posterior Draws`
   out$posteriorDraws <- rgamma(10000, a_prime, b_prime)
@@ -82,13 +70,7 @@
   dens1 <- dgamma(support, a_prime, b_prime)
   pdf1 <- dens1 / sum(dens1)
   out$pdf <- pdf1
-  if (a_prime <= 1 && b_prime > 1) {
-    hde1 <- 0
-  } else if (a_prime > 1 && b_prime <= 1) {
-    hde1 <- Inf
-  } else {
-    hde1 <- (a_prime - 1) / b_prime
-  }
+  hde1 <- .gammaHDE(shape = a_prime, scale = 1 / b_prime)
   hdi1 <- qgamma(
     c((1 - cred.int.level) / 2, (1 - ((1 - cred.int.level) / 2))),
     a_prime, b_prime
@@ -114,13 +96,11 @@
 #' represented by single value traits.
 #' @param s1 A vector of numerics drawn from a pareto distribution.
 #' @examples
-#' if (FALSE) {
-#'   out <- .conj_pareto_sv(
-#'     s1 = runif(10, 1, 1), cred.int.level = 0.95,
-#'     plot = FALSE
-#'   )
-#'   lapply(out, head)
-#' }
+#' out <- .conj_pareto_sv(
+#'   s1 = runif(10, 1, 1), cred.int.level = 0.95,
+#'   plot = FALSE
+#' )
+#' lapply(out, head)
 #' @keywords internal
 #' @noRd
 .conj_pareto_sv <- function(s1 = NULL, priors = NULL,
@@ -137,12 +117,9 @@
   a_prime <- priors$a + n
   b_prime <- 1 / (1 / priors$b + log(m) - n * log(priors$known_location))
   #* `Define support if it is missing`
-  if (is.null(support)) {
+  if (is.null(support) && calculatingSupport) {
     quantiles <- qgamma(c(0.0001, 0.9999), a_prime, b_prime)
-    if (calculatingSupport) {
-      return(quantiles)
-    }
-    support <- seq(quantiles[1], quantiles[2], length.out = 10000)
+    return(quantiles)
   }
   #* `Make Posterior Draws`
   out$posteriorDraws <- rgamma(10000, a_prime, b_prime)
@@ -150,13 +127,7 @@
   dens1 <- dgamma(support, a_prime, b_prime)
   pdf1 <- dens1 / sum(dens1)
   out$pdf <- pdf1
-  if (a_prime <= 1 && b_prime > 1) {
-    hde1 <- 0
-  } else if (a_prime > 1 && b_prime <= 1) {
-    hde1 <- Inf
-  } else {
-    hde1 <- (a_prime - 1) / b_prime
-  }
+  hde1 <- .gammaHDE(shape = a_prime, scale = 1 / b_prime)
   hdi1 <- qgamma(
     c((1 - cred.int.level) / 2, (1 - ((1 - cred.int.level) / 2))),
     a_prime, b_prime

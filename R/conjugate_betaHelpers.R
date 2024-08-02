@@ -4,27 +4,19 @@
 #' @param s1 A data.frame or matrix of multi value traits. The column names should include a number
 #' between 0.0001 and 0.9999 representing the "bin".
 #' @examples
-#' if (FALSE) {
-#'   makeMvBeta <- function(n = 100, a, b) {
-#'     setNames(data.frame(matrix(hist(rbeta(2000, a, b),
-#'       breaks = seq(0, 1, length.out = n), plot = FALSE
-#'     )$counts, nrow = 1)), paste0("b0.", 1:(n - 1)))
-#'   }
 #'
-#'   mv_beta <- rbind(
-#'     do.call(rbind, lapply(1:30, function(i) {
-#'       makeMvBeta(n = 100, a = 5, b = 8)
-#'     })),
-#'     do.call(rbind, lapply(1:30, function(i) {
-#'       makeMvBeta(n = 100, a = 10, b = 3)
-#'     }))
-#'   )
+#' mv_beta <- mvSim(
+#'   dists = list(
+#'     rbeta = list(shape1 = 5, shape2 = 8),
+#'   ),
+#'   n_samples = c(30)
+#' )
+#' .conj_beta_mv(
+#'   s1 = mv_beta[1:30, -1], priors = list(a = c(0.5), b = c(0.5)),
+#'   cred.int.level = 0.9,
+#'   plot = TRUE
+#' )
 #'
-#'   .conj_beta_mv(
-#'     s1 = mv_beta[1:30, ], priors = list(a = c(0.5, 0.5), b = c(0.5, 0.5)),
-#'     plot = FALSE
-#'   )
-#' }
 #' @keywords internal
 #' @noRd
 .conj_beta_mv <- function(s1 = NULL, priors = NULL,
@@ -35,29 +27,14 @@
     priors <- list(a = 0.5, b = 0.5)
   }
   #* `Define dense Support`
-
-  if (is.null(support)) {
-    if (calculatingSupport) {
-      return(c(0.0001, 0.9999))
-    }
-    support <- seq(0.0001, 0.9999, 0.0001)
+  if (is.null(support) && calculatingSupport) {
+    return(c(0.0001, 0.9999))
   }
-
   out <- list()
-  #* `Standardize sample 1 class and names`
-  if (is.null(colnames(s1))) {
-    bins <- (seq_along(s1)) / 100
-    colnames(s1) <- paste0("b", bins)
-    warning(paste0("Assuming unnamed columns represent bins from ", min(bins), " to ", max(bins)))
-  }
-  if (is.matrix(s1)) {
-    s1 <- as.data.frame(s1)
-  }
-
   #* `Reorder columns if they are not in the numeric order`
   histColsBin <- as.numeric(sub("[a-zA-Z_.]+", "", colnames(s1)))
-  if (any(histColsBin > 1)) {
-    histColsBin <- histColsBin / 100
+  if (any(histColsBin > 1) || any(histColsBin < 0)) {
+    stop("Beta Distribution is only defined on [0,1]")
   }
   bins_order <- sort(histColsBin, index.return = TRUE)$ix
   s1 <- s1[, bins_order]
@@ -85,14 +62,8 @@
   #* `calculate highest density interval`
   hdi1 <- qbeta(c((1 - cred.int.level) / 2, (1 - ((1 - cred.int.level) / 2))), a1_prime, b1_prime)
 
-  #* `calculate highest density estimate``
-  if (a1_prime <= 1 && b1_prime > 1) {
-    hde1 <- 0
-  } else if (a1_prime > 1 && b1_prime <= 1) {
-    hde1 <- 1
-  } else {
-    hde1 <- (a1_prime - 1) / (a1_prime + b1_prime - 2)
-  }
+  #* `calculate highest density estimate`
+  hde1 <- .betaHDE(a1_prime, b1_prime)
 
   #* `save summary and parameters`
   out$summary <- data.frame(HDE_1 = hde1, HDI_1_low = hdi1[1], HDI_1_high = hdi1[2])
@@ -117,30 +88,27 @@
 #' traits.
 #' @param s1 A vector of numerics drawn from a beta distribution.
 #' @examples
-#' if (FALSE) {
-#'   .conj_beta_sv(
-#'     s1 = rbeta(100, 5, 10), priors = list(a = c(0.5, 0.5), b = c(0.5, 0.5)),
-#'     plot = FALSE
-#'   )
-#' }
+#' .conj_beta_sv(
+#'   s1 = rbeta(100, 5, 10),
+#'   priors = list(a = c(0.5, 0.5), b = c(0.5, 0.5)),
+#'   cred.int.level = 0.9,
+#'   plot = FALSE
+#' )
 #' @keywords internal
 #' @noRd
 .conj_beta_sv <- function(s1 = NULL, priors = NULL,
                           plot = FALSE, support = NULL, cred.int.level = NULL,
                           calculatingSupport = FALSE) {
-  if (any(c(s1) > 1)) {
-    stop("Values above 1 cannot be used with the beta distribution")
+  if (any(c(s1) > 1) || any(c(s1) < 0)) {
+    stop("Beta Distribution is only defined on [0,1]")
   }
   #* `make default prior if none provided`
   if (is.null(priors)) {
     priors <- list(a = 0.5, b = 0.5)
   }
   #* `Define dense Support`
-  if (is.null(support)) {
-    if (calculatingSupport) {
-      return(c(0.0001, 0.9999))
-    }
-    support <- seq(0.0001, 0.9999, 0.0001)
+  if (is.null(support) && calculatingSupport) {
+    return(c(0.0001, 0.9999))
   }
   out <- list()
 
@@ -164,14 +132,8 @@
   #* `calculate highest density interval`
   hdi1 <- qbeta(c((1 - cred.int.level) / 2, (1 - ((1 - cred.int.level) / 2))), a1_prime, b1_prime)
 
-  #* `calculate highest density estimate``
-  if (a1_prime <= 1 && b1_prime > 1) {
-    hde1 <- 0
-  } else if (a1_prime > 1 && b1_prime <= 1) {
-    hde1 <- 1
-  } else {
-    hde1 <- (a1_prime - 1) / (a1_prime + b1_prime - 2)
-  }
+  #* `calculate highest density estimate`
+  hde1 <- .betaHDE(a1_prime, b1_prime)
 
   #* `save summary and parameters`
   out$summary <- data.frame(HDE_1 = hde1, HDI_1_low = hdi1[1], HDI_1_high = hdi1[2])
@@ -186,4 +148,26 @@
                               "sample" = rep("Sample 1", length(support)))
   }
   return(out)
+}
+
+#' @description
+#' Internal function for calculating the HDE of a beta distribution
+#' @param alpha alpha parameter
+#' @param beta beta parameter
+#' @examples
+#' .betaHDE(1, 2)
+#' .betaHDE(2, 1)
+#' .betaHDE(10, 10)
+#' @keywords internal
+#' @noRd
+
+.betaHDE <- function(alpha, beta) {
+  if (alpha <= 1 && beta > 1) {
+    hde <- 0
+  } else if (alpha > 1 && beta <= 1) {
+    hde <- 1
+  } else {
+    hde <- (alpha - 1) / (alpha + beta - 2)
+  }
+  return(hde)
 }

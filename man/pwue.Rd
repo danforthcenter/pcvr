@@ -61,42 +61,31 @@ The equation is then
 \eqn{\frac{P_{t}}{W_{t_{end-1}}-W_{t_{start}} }}{P_[t] / W_[t_(end-1)]-W_[t_start]}
 }
 \examples{
-if (FALSE) {
-library(data.table)
-sv <- read.pcv(
-  "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv",
-  reader = "fread"
+sim_water <- data.frame("barcode" = "exampleBarcode1",
+"timestamp" = as.POSIXct(c("2023-04-13 23:28:17 UTC",
+                           "2023-04-22 05:30:42 UTC",
+                           "2023-05-04 18:55:38 UTC")),
+"DAS" = c(0.000000,  8.251675, 20.810660),
+"water_amount" = c(98, 12, -1)
 )
-sv$genotype <- substr(sv$barcode, 3, 5)
-sv$genotype <- ifelse(sv$genotype == "002", "B73",
-  ifelse(sv$genotype == "003", "W605S",
-    ifelse(sv$genotype == "004", "MM", "Mo17")
-  )
+sim_df <- data.frame("barcode" = "exampleBarcode1",
+                     "timestamp" = as.POSIXct(c("2023-04-13 23:28:17 UTC",
+                                                "2023-04-22 05:30:42 UTC",
+                                                "2023-05-04 18:55:38 UTC")),
+                     "DAS" = c(0.000000,  8, 20),
+                     "area_pixels" = c(20, 1000, 1500)
 )
-sv$fertilizer <- substr(sv$barcode, 8, 8)
-sv$fertilizer <- ifelse(sv$fertilizer == "A", "100",
-  ifelse(sv$fertilizer == "B", "50", "0")
-)
-sv <- bw.time(sv,
-  plantingDelay = 0,
-  phenotype = "area_pixels", cutoff = 10, timeCol = "timestamp",
-  group = c("barcode", "rotation"), plot = FALSE
-)
-phenotypes <- colnames(sv)[19:35]
-phenoForm <- paste0("cbind(", paste0(phenotypes, collapse = ", "), ")")
-groupForm <- "DAS+DAP+barcode+genotype+fertilizer+timestamp"
-sv <- aggregate(as.formula(paste0(phenoForm, "~", groupForm)), data = sv, mean, na.rm = TRUE)
-sv <- bw.outliers(sv,
-  phenotype = "area_pixels",
-  group = c("DAS", "genotype", "fertilizer"), plotgroup = c("barcode"), plot = FALSE
-)
-water <- bw.water("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/metadata.json")
-
-x <- pwue(
-  df = sv, w = water, pheno = "area_pixels",
+pwue(
+  df = sim_df, w = sim_water, pheno = "area_pixels",
   time = "timestamp", id = "barcode", offset = 0,
   waterCol = "water_amount", method = "rate"
 )
-}
+
+pwue(
+  df = sim_df, w = sim_water, pheno = "area_pixels",
+  time = c("timestamp", "timestamp"), id = "barcode", offset = 0,
+  waterCol = "water_amount", method = "abs"
+)
+
 }
 \keyword{WUE}

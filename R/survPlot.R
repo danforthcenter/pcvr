@@ -27,19 +27,21 @@
 #'
 #' ## Not run:
 #'
-#' if (FALSE) {
-#'   set.seed(123)
-#'   model = "survival weibull"
-#'   form <- y > 100 ~ time | id / group
-#'   df <- growthSim("logistic",
-#'     n = 20, t = 25,
-#'     params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
-#'   )
-#'   ss <- growthSS(model = model, form = form, df = df, type = "survreg")
-#'   lapply(ss, head)
-#'   fit <- fitGrowth(ss)
-#'   survregPlot(fit, form = ss$pcvrForm, df = ss$df)
-#' }
+#' df <- growthSim("logistic",
+#'   n = 20, t = 25,
+#'   params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
+#' )
+#' ss <- growthSS(
+#'   model = "survival weibull", form = y > 100 ~ time | id / group,
+#'   df = df, type = "survreg"
+#' )
+#' fit <- fitGrowth(ss)
+#' survregPlot(fit, form = ss$pcvrForm, df = ss$df)
+#' survregPlot(fit, form = ss$pcvrForm, df = ss$df, groups = "a")
+#' survregPlot(fit,
+#'   form = ss$pcvrForm, df = ss$df, facetGroups = FALSE,
+#'   groupFill = TRUE, virMaps = c("plasma", "mako")
+#' )
 #'
 #' ## End(Not run)
 #'
@@ -47,7 +49,7 @@
 #'
 #' @export
 
-survregPlot <- function(fit, form, groups, df = NULL, timeRange = NULL, facetGroups = TRUE,
+survregPlot <- function(fit, form, groups = NULL, df = NULL, timeRange = NULL, facetGroups = TRUE,
                         groupFill = FALSE, virMaps = c("plasma")) {
   #* `parse formula`
   parsed_form <- .parsePcvrForm(form, df)
@@ -62,8 +64,13 @@ survregPlot <- function(fit, form, groups, df = NULL, timeRange = NULL, facetGro
   }
   #* `generate predictions`
   pct <- seq(0.01, 0.99, 0.01)
-  preds <- predict(fit, newdata = data.frame("group" = groups),
-                   type = "quantile", p = pct, se.fit = TRUE)
+  preds <- predict(fit,
+    newdata = data.frame("group" = groups),
+    type = "quantile", p = pct, se.fit = TRUE
+  )
+  preds <- lapply(preds, function(d) {
+    matrix(d, nrow = length(groups), ncol = length(pct))
+  })
   pred_df <- stats::setNames(as.data.frame(t(preds$fit)), c(paste0("est_", groups)))
   pred_df <- cbind(pred_df, stats::setNames(as.data.frame(t(preds$se.fit)), c(paste0("se_", groups))))
   pred_df$pct <- 1 - pct
@@ -93,8 +100,10 @@ survregPlot <- function(fit, form, groups, df = NULL, timeRange = NULL, facetGro
     color_scale <- ggplot2::scale_color_manual(values = unlist(lapply(virVals, function(pal) pal[3])))
   }
   #* `Make ggplot`
-  p <- ggplot2::ggplot(preds, ggplot2::aes(x = .data[["est"]],
-                                           y = .data[["pct"]], group = .data[[group]])) +
+  p <- ggplot2::ggplot(preds, ggplot2::aes(
+    x = .data[["est"]],
+    y = .data[["pct"]], group = .data[[group]]
+  )) +
     facet_layer +
     lapply(groups, function(grp) {
       ggplot2::geom_ribbon(data = preds[preds[[group]] == grp, ], ggplot2::aes(
@@ -121,8 +130,10 @@ survregPlot <- function(fit, form, groups, df = NULL, timeRange = NULL, facetGro
         sum_events <- sum(c(sub[as.numeric(sub[[x]]) <= ti, "event"], 0))
         n_at_risk <- nrow(sub) - sum_events
         surv_pct <- n_at_risk / nrow(sub)
-        iter <- data.frame(group = grp, time = ti, events = sum_events,
-                           at_risk = n_at_risk, surv_pct = surv_pct)
+        iter <- data.frame(
+          group = grp, time = ti, events = sum_events,
+          at_risk = n_at_risk, surv_pct = surv_pct
+        )
         colnames(iter)[1] <- group
         iter
       }))

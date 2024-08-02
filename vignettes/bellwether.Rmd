@@ -441,15 +441,6 @@ ggplot(cp, aes(x = DAS, y = area_cm2_csum, color = genotype, group = barcode)) +
   )
 ```
 
-And we can use this new phenotype data to analyse data from the entire experiment using just the last day. Here we don't specify a comparison group so `pcvBox` does not make any statistical comparisons.
-
-```{r}
-pcvBox(cp[cp$DAS == 19, ], x = "fertilizer", y = "area_cm2_csum", showPoints = TRUE) +
-  labs(y = expression("Cumulative Area")) +
-  facet_wrap(~genotype) + theme(legend.position = "none") +
-  scale_x_discrete(limits = c("0", "50", "100"))
-```
-
 
 
 ### Longitudinal Modeling
@@ -688,7 +679,7 @@ Joyplots are a common way to look at lots of distributions. Here we check the hu
 ```{r, message=FALSE}
 p <- pcv.joyplot(hue_wide[hue_wide$DAS == 18, ],
   index = "hue_frequencies",
-  group = c("fertilizer", "genotype"), method = NULL, compare = NULL
+  group = c("fertilizer", "genotype")
 )
 p + scale_fill_gradientn(colors = scales::hue_pal(l = 65)(360)) +
   scale_y_discrete(limits = c("0", "50", "100"))
@@ -699,7 +690,7 @@ We can also specify a y argument to show multiple days across several variables.
 ```{r, message=FALSE}
 p <- pcv.joyplot(hue_wide[hue_wide$DAS %in% c(5, 10, 15), ],
   index = "hue_frequencies", group = c("fertilizer", "genotype"),
-  y = "DAS", method = NULL, compare = NULL, id = NULL
+  y = "DAS", id = NULL
 )
 p + scale_fill_gradientn(colors = scales::hue_pal(l = 65)(360)) +
   scale_y_discrete(limits = c("5", "10", "15"))
@@ -726,34 +717,13 @@ hue_res_ln <- conjugate(
 
 ### Ordination
 
-Ordinations are another common way to look at multi value traits. The `pcadf` function in `pcvr` has several options for how this can work.
+Ordinations are another common way to look at multi value traits. The `pcadf` function runs ordinations and optionally returns the PCs with metadata.
 
 ```{r}
-# could use facet="fertilizer" here but I want to reorder manually instead of changing the data
 pcadf(hue_wide, cols = "hue_frequencies", color = "genotype", returnData = FALSE) +
   facet_wrap(~ factor(fertilizer, levels = c("0", "50", "100")))
 ```
 
-
-This is potentially useful but it does not show us the time component well. We can facet by day or add traces easily. Using the trace argument we can view the movement of groups over time, but that can be cluttered.
-
-```{r}
-pcadf(hue_wide,
-  cols = "hue_frequencies", color = c("genotype", "fertilizer"),
-  trace = "DAS", returnData = FALSE
-)
-```
-
-When the trace is cluttered it generally helps to either use a facet or to return a list of plots showing a few days at a time in the trace. Both those options are done using the `facet` argument.
-
-```{r}
-plots <- pcadf(hue_wide,
-  cols = "hue_frequencies", color = c("genotype", "fertilizer"),
-  trace = "DAS", returnData = FALSE, facet = c(1, 2, 3, 4)
-)
-
-(plots[[1]] + plots[[2]]) / (plots[[3]] + plots[[2]]) + plot_layout(guides = "collect")
-```
 
 ### Earth Mover's Distance
 

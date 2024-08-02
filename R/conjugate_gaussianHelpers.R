@@ -24,51 +24,45 @@
     priors <- list(mu = 0, n = 1, s2 = 100)
   }
   #* `Get Mean, Variance, SE, and DF from s1`
-  if (length(s1) > 1) {
-    n1 <- length(s1) # n samples
-    m1 <- mean(s1) # xbar
-    s2_1 <- var(s1) # variance
-    v1 <- priors$n[1] - 1 # prior DF
-    n1_n <- priors$n[1] + n1 # total N including prior
-    m1_n <- (n1 * m1 + priors$n[1] * priors$mu[1]) / n1_n # weighted mean of prior and data
-    v1_n <- v1 + n1 # degrees of freedom including data
-    s2_1_n <- ((n1 - 1) * s2_1 + v1 * priors$s2[1] + priors$n[1] * n1 * (priors$mu[1] - m1)^2 / n1_n) /
-      v1_n # pooled variance
-    sigma_1 <- sqrt(s2_1_n)
-    #* `Define support if it is missing`
-    if (is.null(support)) {
-      quantiles <- qlst(c(0.0001, 0.9999), v1_n, m1_n, sigma_1)
-      if (calculatingSupport) {
-        return(quantiles)
-      }
-      support <- seq(quantiles[1], quantiles[2], length.out = 10000)
-    }
 
-    dens1 <- extraDistr::dlst(support, v1_n, m1_n, sigma_1)
-    pdf1 <- dens1 / sum(dens1)
-    hde1_mean <- m1_n
-    hdi1_mean <- m1_n + qt(c(
-      (1 - cred.int.level) / 2,
-      (1 - ((1 - cred.int.level) / 2))
-    ), v1_n) * sigma_1
+  n1 <- length(s1) # n samples
+  m1 <- mean(s1) # xbar
+  s2_1 <- var(s1) # variance
+  v1 <- priors$n[1] - 1 # prior DF
+  n1_n <- priors$n[1] + n1 # total N including prior
+  m1_n <- (n1 * m1 + priors$n[1] * priors$mu[1]) / n1_n # weighted mean of prior and data
+  v1_n <- v1 + n1 # degrees of freedom including data
+  s2_1_n <- ((n1 - 1) * s2_1 + v1 * priors$s2[1] + priors$n[1] * n1 * (priors$mu[1] - m1)^2 / n1_n) /
+    v1_n # pooled variance
+  sigma_1 <- sqrt(s2_1_n)
+  #* `Define support if it is missing`
+  if (is.null(support) && calculatingSupport) {
+    quantiles <- qlst(c(0.0001, 0.9999), v1_n, m1_n, sigma_1)
+    return(quantiles)
+  }
 
-    out$summary <- data.frame(HDE_1 = hde1_mean, HDI_1_low = hdi1_mean[1], HDI_1_high = hdi1_mean[2])
-    out$posterior$mu <- m1_n
-    out$posterior$n <- n1_n
-    out$posterior$s2 <- s2_1_n # return variance
-    #* `Make Posterior Draws`
-    out$posteriorDraws <- extraDistr::rlst(10000, v1_n, m1_n, sigma_1)
-    out$pdf <- pdf1
-    #* `Save data for plotting`
-    if (plot) {
-      out$plot_df <- data.frame(
-        "range" = support,
-        "prob" = pdf1,
-        "sample" = rep("Sample 1", length(support))
-      )
-    }
-  } else {
-    stop("s1 must be a numeric of length 2 or greater")
+  dens1 <- extraDistr::dlst(support, v1_n, m1_n, sigma_1)
+  pdf1 <- dens1 / sum(dens1)
+  hde1_mean <- m1_n
+  hdi1_mean <- m1_n + qt(c(
+    (1 - cred.int.level) / 2,
+    (1 - ((1 - cred.int.level) / 2))
+  ), v1_n) * sigma_1
+
+  out$summary <- data.frame(HDE_1 = hde1_mean, HDI_1_low = hdi1_mean[1], HDI_1_high = hdi1_mean[2])
+  out$posterior$mu <- m1_n
+  out$posterior$n <- n1_n
+  out$posterior$s2 <- s2_1_n # return variance
+  #* `Make Posterior Draws`
+  out$posteriorDraws <- extraDistr::rlst(10000, v1_n, m1_n, sigma_1)
+  out$pdf <- pdf1
+  #* `Save data for plotting`
+  if (plot) {
+    out$plot_df <- data.frame(
+      "range" = support,
+      "prob" = pdf1,
+      "sample" = rep("Sample 1", length(support))
+    )
   }
   return(out)
 }
@@ -113,16 +107,6 @@
   if (is.null(priors)) {
     priors <- list(mu = 0, n = 1, s2 = 100)
   }
-  #* `Standardize sample 1 class and names`
-  if (is.null(colnames(s1))) {
-    bins <- (seq_along(s1)) / 100
-    colnames(s1) <- paste0("b", bins)
-    warning(paste0("Assuming unnamed columns represent bins from ", min(bins), " to ", max(bins)))
-  }
-  if (is.matrix(s1)) {
-    s1 <- as.data.frame(s1)
-  }
-
   #* `Reorder columns if they are not in the numeric order`
   histColsBin <- as.numeric(sub("[a-zA-Z_.]+", "", colnames(s1)))
   bins_order <- sort(histColsBin, index.return = TRUE)$ix
@@ -145,12 +129,9 @@
     v1_n # pooled variance
   sigma_1 <- sqrt(s2_1_n) # standard deviation
   #* `Define support if it is missing`
-  if (is.null(support)) {
+  if (is.null(support) && calculatingSupport) {
     quantiles <- qlst(c(0.0001, 0.9999), v1_n, m1_n, sigma_1)
-    if (calculatingSupport) {
-      return(quantiles)
-    }
-    support <- seq(quantiles[1], quantiles[2], length.out = 10000)
+    return(quantiles)
   }
   dens <- extraDistr::dlst(support, v1_n, m1_n, sigma_1)
   pdf1 <- dens / sum(dens)

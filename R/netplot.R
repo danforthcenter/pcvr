@@ -23,38 +23,25 @@
 #' @keywords emd, earth mover's distance, multi-value trait, network
 #' @examples
 #'
-#' ## Not run:
+#' library(extraDistr)
+#' dists <- list(
+#'   rmixnorm = list(mean = c(70, 150), sd = c(15, 5), alpha = c(0.3, 0.7)),
+#'   rnorm = list(mean = 90, sd = 3)
+#' )
+#' x <- mvSim(dists = dists, n_samples = 5, counts = 1000,
+#'            min_bin = 1, max_bin = 180, wide = TRUE)
+#' emd_df <- pcv.emd(x,
+#'                   cols = "sim", reorder = c("group"), mat = FALSE,
+#'                   plot = FALSE, parallel = 1
+#' )
+#' net <- pcv.net(emd_df, meta = "group")
+#' net.plot(net)
+#' net.plot(net, edgeFilter = "0.25")
+#' net.plot(net, edgeFilter = 0.25, fill = c("degree", "group"),
+#'          shape = c("degree", "group"))
+#' net.plot(net, edgeFilter = 0.25, fill = c("degree", "group"),
+#'          shape = c("degree"))
 #'
-#' if (FALSE) {
-#'   file <- "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest1.csv"
-#'   df1 <- read.pcv(file, mode = "wide")
-#'
-#'   df1$genotype <- substr(df1$barcode, 3, 5)
-#'   df1$genotype <- ifelse(df1$genotype == "002", "B73",
-#'     ifelse(df1$genotype == "003", "W605S",
-#'       ifelse(df1$genotype == "004", "MM", "Mo17")
-#'     )
-#'   )
-#'   df1$fertilizer <- substr(df1$barcode, 8, 8)
-#'   df1$fertilizer <- ifelse(df1$fertilizer == "A", "100",
-#'     ifelse(df1$fertilizer == "B", "50", "0")
-#'   )
-#'
-#'   w <- pcv.emd(df1,
-#'     cols = "index_frequencies_index_ndvi.",
-#'     reorder = c("treatment", "genotype"), mat = FALSE, plot = FALSE
-#'   )
-#'
-#'   network <- pcv.net(w, meta = c("treatment", "genotype"))
-#'   net <- network
-#'   fill <- "strength"
-#'   shape <- "genotype"
-#'   size <- 5
-#'   edgeWeight <- "emd"
-#'   net.plot(network, fill = "strength", shape = "genotype", size = 5, edgeFilter = 0.5)
-#'   net.plot(network, fill = "strength", shape = "genotype", size = 5, edgeFilter = "0.5")
-#' }
-#' ## End(Not run)
 #'
 #' @return Returns a ggplot of a network.
 #'
@@ -67,10 +54,10 @@ net.plot <- function(net, fill = "strength", shape = NULL, size = 3, edgeWeight 
   edges <- net[["edges"]]
   if (is.null(fill)) {
     fill <- "NOFILL"
-    edges$NOFILL <- "a"
+    nodes$NOFILL <- "a"
   }
   if (length(fill) > 1) {
-    edges$FILL <- interaction(edges[, fill])
+    nodes$FILL <- interaction(nodes[, fill])
     fill <- "FILL"
   }
   if (is.null(shape)) {
@@ -90,8 +77,6 @@ net.plot <- function(net, fill = "strength", shape = NULL, size = 3, edgeWeight 
       edges <- edges[edges[[edgeWeight]] >= as.numeric(cutoff), ]
     } else if (is.numeric(edgeFilter)) {
       edges <- edges[edges[[edgeWeight]] >= edgeFilter, ]
-    } else {
-      stop("edgeFilter must be character or numeric, see ?net.plot for details.")
     }
     nodes <- nodes[nodes$index %in% c(edges$from, edges$to), ]
   }

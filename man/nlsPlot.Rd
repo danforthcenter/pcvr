@@ -76,25 +76,48 @@ This will generally be called by \code{growthPlot}.
 
 ## Not run:
 
-if (FALSE) {
-  simdf <- growthSim("logistic",
-    n = 20, t = 25,
-    params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
-  )
-
-  ss <- growthSS(
-    model = "logistic", form = y ~ time | id / group,
-    df = simdf, start = NULL, type = "nls"
-  )
-  dim(ss$df)
-
-  fit <- fitGrowth(ss)
-
-  nlsPlot(fit, form = ss$pcvrForm, df = ss$df)
-}
+simdf <- growthSim("logistic",
+  n = 20, t = 25,
+  params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
+)
+ss <- growthSS(
+  model = "logistic", form = y ~ time | id / group,
+  df = simdf, start = NULL, type = "nls"
+)
+fit <- fitGrowth(ss)
+nlsPlot(fit, form = ss$pcvrForm, df = ss$df, groupFill = TRUE)
+nlsPlot(fit, form = ss$pcvrForm, df = ss$df, groups = "a", timeRange = 1:10)
 
 ## End(Not run)
 
+simdf <- growthSim("logistic",
+  n = 20, t = 25,
+  params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
+)
+ss <- growthSS(
+  model = "gam", form = y ~ time | id / group,
+  df = simdf, start = NULL, type = "nls"
+)
+fit <- fitGrowth(ss)
+gamPlot(fit, form = ss$pcvrForm, df = ss$df, groupFill = TRUE)
+gamPlot(fit, form = ss$pcvrForm, df = ss$df, groups = "a", timeRange = 1:10)
+ss <- growthSS(
+  model = "gam", form = y ~ time | group,
+  df = simdf, start = NULL, type = "nls"
+)
+fit <- fitGrowth(ss)
+gamPlot(fit, form = ss$pcvrForm, df = ss$df, groupFill = TRUE)
+
+simdf <- growthSim("logistic",
+  n = 20, t = 25,
+  params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
+)
+ss <- growthSS(
+  model = "gam", form = y ~ time | id / group,
+  df = simdf, start = NULL, type = "nls"
+)
+fit <- fitGrowth(ss)
+lmPlot(fit, form = ss$pcvrForm, df = ss$df)
 }
 \keyword{exponential,}
 \keyword{gompertz,}

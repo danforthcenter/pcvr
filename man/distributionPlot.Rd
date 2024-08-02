@@ -7,9 +7,9 @@
 distributionPlot(
   fits,
   form,
+  df,
   priors = NULL,
   params = NULL,
-  d,
   maxTime = NULL,
   patch = TRUE
 )
@@ -21,14 +21,14 @@ Currently checkpointing is not supported.}
 \item{form}{A formula describing the growth model similar to \code{\link{growthSS}}
 and \code{\link{brmPlot}} such as: outcome ~ predictor |individual/group}
 
+\item{df}{data used to fit models (this is used to plot each subject's trend line).}
+
 \item{priors}{a named list of samples from the prior distributions for each parameter in
 \code{params}. This is only used if sample_prior=FALSE in the brmsfit object.
 If left NULL then no prior is included.}
 
 \item{params}{a vector of parameters to include distribution plots of.
 Defaults to NULL which will use all parameters from the top level model.}
-
-\item{d}{data used to fit models (this is used to plot each subject's trend line)}
 
 \item{maxTime}{Optional parameter to designate a max time not observed in the models so far}
 
@@ -65,7 +65,11 @@ if (FALSE) {
   )
   distributionPlot(
     fits = from3to25, form = y ~ time | id / group,
-    params = params, d = d, priors = priors
+    params = params, d = d, priors = priors, patch = FALSE
+  )
+  distributionPlot(
+    fits = from3to25, form = y ~ time | id / group,
+    params = params, d = d, patch = FALSE
   )
 }
 ## End(Not run)

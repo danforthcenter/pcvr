@@ -1,58 +1,343 @@
+#* there are lots of options and until one obviously breaks I am not going to try to test all of them.
+library(testthat)
+library(brms)
+library(ggplot2)
+library(pcvr)
+
+test_that("Logistic brms model pipeline", {
+  set.seed(123)
+  simdf <- growthSim(
+    "logistic",
+    n = 20, t = 25,
+    params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
+  )
+  ss <- growthSS(
+    model = "logistic", form = y ~ time | id / group, sigma = "gam",
+    list("A" = 130, "B" = 10, "C" = 3),
+    df = simdf, type = "brms"
+  )
+  expect_equal(ss$prior$nlpar, c("", "", "A", "B", "C"))
+
+  fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1)
+  expect_s3_class(fit, "brmsfit")
+
+  plot <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
+  expect_s3_class(plot, "ggplot")
+  plot1.5 <- growthPlot(fit = fit, form = y ~ time | group, groups = "a", df = ss$df)
+  expect_s3_class(plot1.5, "ggplot")
+  plot2 <- brmViolin(fit,
+    hyp = "num/denom>1.05",
+    compareX = "a",
+    againstY = "b", returnData = TRUE
+  )
+  expect_s3_class(plot2$plot, "ggplot")
+  plot2.5 <- brmViolin(fit,
+    hyp = "num/denom>1.05",
+    facet = "group", returnData = FALSE
+  )
+  d3 <- brmViolin(fit,
+    hyp = "num/denom>1.05", compareX = NULL, againstY = NULL,
+    facet = "group", returnData = FALSE
+  )
+  expect_s3_class(plot2.5, "ggplot")
+  expect_equal(nrow(d3), 3000)
+  cd <- combineDraws(fit, fit)
+  expect_equal(dim(cd), c(250, 16))
+  fit_df <- as.data.frame(fit)
+  fit_df <- fit_df[, grepl("^b_", colnames(fit_df))]
+  cd <- combineDraws(fit, fit_df)
+  expect_equal(dim(cd), c(250, 16))
+  expect_error(combineDraws(fit, list()))
+  fit2 <- fit1 <- fit
+  fit1$data <- fit1$data[fit1$data$time < 10, ]
+  plot3 <- distributionPlot(list(fit1, fit2),
+    form = ss$pcvrForm, d = ss$df,
+    priors = list(
+      "A" = rlnorm(500, log(130), 0.25),
+      "B" = rlnorm(500, log(12), 0.25),
+      "C" = rlnorm(500, log(3), 0.25)
+    )
+  )
+  expect_s3_class(plot3, "ggplot")
+  plots4 <- distributionPlot(
+    list(fit1, fit2),
+    form = ss$pcvrForm, d = ss$df,
+    priors = NULL,
+    patch = FALSE
+  )
+  test <- testGrowth(ss, fit, "A_groupa > A_groupb")
+  expect_s3_class(test, "brmshypothesis")
+  ss <- growthSS(
+    model = "logistic", form = y ~ time | id / group, sigma = "logistic",
+    list("A" = 130, "B" = 10, "C" = 3,
+         "sigmaA" = 20, "sigmaB" = 10, "sigmaC" = 3),
+    df = simdf, type = "brms"
+  )
+  pp1 <- plotPrior(ss)
+  expect_s3_class(pp1, "ggplot")
+  pp2 <- plotPrior(
+    priors = list("A" = c(100, 130), "B" = c(10, 8), "C" = c(0.2, 0.1)),
+    type = "logistic",
+    n = 200, t = 25
+  )
+  expect_s3_class(pp2$simulated, "ggplot")
+  pp3 <- plotPrior(
+    priors = list("A" = c(100, 130), "B" = c(0.08, 0.1)),
+    type = "monomolecular",
+    n = 200, t = 25
+  )
+  expect_s3_class(pp3$simulated, "ggplot")
+  pp4 <- plotPrior(
+    priors = list("A" = c(101, 11), "B" = c(0.12, 0.15)),
+    type = "exponential",
+    n = 200, t = 25
+  )
+  expect_s3_class(pp4$simulated, "ggplot")
+})
+
+test_that("distPlot works with many models", {
+  load(url("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/brmsFits.rdata"))
+  fits <- list(fit_3, fit_15)
+  form <- y ~ time | id / group
+  priors <- list(
+    "phi1" = rlnorm(2000, log(130), 0.25),
+    "phi2" = rlnorm(2000, log(12), 0.25),
+    "phi3" = rlnorm(2000, log(3), 0.25)
+  )
+  from3to25 <- list(
+    fit_3, fit_5, fit_7, fit_9, fit_11,
+    fit_13, fit_15, fit_17, fit_19, fit_21, fit_23, fit_25
+  )
+  plot <- distributionPlot(
+    fits = from3to25, form = y ~ time | id / group,
+    params = c("A", "B", "C"), d = simdf, priors = priors
+  )
+  expect_s3_class(plot, "ggplot")
+})
+
+test_that("brms model warns about priors", {
+  set.seed(123)
+  simdf <- growthSim(
+    "linear",
+    n = 20, t = 25,
+    params = list("A" = c(1, 1.1))
+  )
+  ss <- growthSS(
+    model = "linear", form = y ~ time | id / group, sigma = "spline",
+    df = simdf, type = "brms"
+  )
+  ss <- ss[-which(names(ss) == "prior")]
+  expect_warning(fitGrowth(ss,
+    backend = "cmdstanr",
+    iter = 100, chains = 1, cores = 1
+  ))
+})
+
+test_that("Hierarchical Model Works", {
+  set.seed(123)
+  simdf <- growthSim(
+    "logistic",
+    n = 20, t = 25,
+    params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
+  )
+  simdf$covar <- rnorm(nrow(simdf), 10, 1)
+  ss <- growthSS(
+    model = "logistic", form = y ~ time + covar | id / group, sigma = "logistic",
+    list(
+      "AI" = 100, "AA" = 5, "B" = 10, "C" = 3,
+      "sigmaA" = 10, "sigmaB" = 10, "sigmaC" = 3
+    ),
+    df = simdf, type = "brms",
+    hierarchy = list("A" = "int_linear")
+  )
+  lapply(ss, head)
+  fit <- fitGrowth(ss, iter = 600, cores = 1, chains = 1, backend = "cmdstanr")
+  expect_s3_class(fit, "brmsfit")
+  p <- growthPlot(fit, ss$pcvrForm, df = ss$df)
+  expect_s3_class(p, "ggplot")
+})
+
+test_that("Changepoint model can be specified", {
+  set.seed(123)
+  noise <- do.call(rbind, lapply(1:30, function(i) {
+    chngpt <- c(20, 21)
+    rbind(
+      data.frame(
+        id = paste0("id_", i), time = 1:chngpt[1], group = "a",
+        y = c(runif(chngpt[1] - 1, 0, 20), rnorm(1, 5, 1))
+      ),
+      data.frame(
+        id = paste0("id_", i), time = 1:chngpt[2], group = "b",
+        y = c(runif(chngpt[2] - 1, 0, 20), rnorm(1, 5, 1))
+      )
+    )
+  }))
+  noise2 <- do.call(rbind, lapply(1:30, function(i) {
+    start1 <- max(noise[noise$id == paste0("id_", i) & noise$group == "a", "time"])
+    start2 <- max(noise[noise$id == paste0("id_", i) & noise$group == "b", "time"])
+    rbind(
+      data.frame(
+        id = paste0("id_", i), time = start1:40, group = "a",
+        y = c(runif(length(start1:40), 15, 50))
+      ),
+      data.frame(
+        id = paste0("id_", i), time = start2:40, group = "b",
+        y = c(runif(length(start2:40), 15, 50))
+      )
+    )
+  }))
+  simdf <- rbind(noise, noise2)
+  ss <- growthSS(
+    model = "int_linear + decay linear", form = y ~ time | id / group, sigma = "int + gam",
+    list(
+      "I" = 1, "linear1A" = 10, "fixedChangePoint1" = 20, "linear2A" = 2, "sigmaint1" = 1,
+      "sigmachangePoint1" = 25
+    ),
+    df = simdf, type = "brms"
+  )
+  expect_equal(ss$prior$nlpar, c("", "linear1A", "linear2A", "I", "sigmaint1", "sigmachangePoint1"))
+  ss <- growthSS(
+    model = "int_linear + decay linear", form = y ~ time | id / group, sigma = "int + gam",
+    list(
+      "I" = 1, "linear1A" = 10, "fixedChangePoint1" = 20, "linear2A" = 2, "sigmaint1" = 1,
+      "sigmachangePoint1" = 25
+    ),
+    df = simdf[1:10, ], type = "brms"
+  )
+  expect_equal(ss$prior$nlpar, c("", "linear1A", "linear2A", "I", "sigmaint1", "sigmachangePoint1"))
+})
+
+test_that("weibull survival", {
+  set.seed(123)
+  model <- "survival"
+  form <- y > 100 ~ time | id / group
+  df <- growthSim(
+    "logistic",
+    n = 20, t = 25,
+    params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
+  )
+  prior <- c(0, 5)
+  ss <- growthSS(model = model, form = form, df = df, start = prior)
+  expect_equal(ss$prior$coef, c("groupa", "groupb"))
+  fit <- fitGrowth(ss, iter = 600, cores = 1, chains = 1, backend = "cmdstanr")
+  expect_s3_class(fit, "brmsfit")
+  plot <- growthPlot(fit, form = ss$pcvrForm, df = ss$df)
+  expect_s3_class(plot, "ggplot")
+  test <- testGrowth(ss, fit, "groupa > groupb")
+  expect_s3_class(test, "brmshypothesis")
+})
+
+test_that("binomial survival", {
+  set.seed(123)
+  model <- "survival binomial"
+  form <- y > 100 ~ time | id / group
+  df <- growthSim(
+    "logistic",
+    n = 20, t = 25,
+    params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
+  )
+  prior <- c(0, 5)
+  ss <- growthSS(model = model, form = form, df = df, start = prior)
+  fit <- fitGrowth(ss, iter = 600, cores = 1, chains = 1, backend = "cmdstanr")
+  expect_s3_class(fit, "brmsfit")
+  plot <- growthPlot(fit, form = ss$pcvrForm, df = ss$df)
+  expect_s3_class(plot, "ggplot")
+})
+
+test_that(".brmSurvSS options all work", {
+  set.seed(123)
+  df <- growthSim("logistic",
+    n = 20, t = 25,
+    params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
+  )
+  surv <- .survModelParser("survival weibull")
+  ss <- suppressMessages(
+    .brmsSurvSS(
+      model = surv$model,
+      form = y > 100 ~ time | id / group,
+      df = df,
+      priors = c(0, 5)
+    )
+  )
+  expect_equal(names(ss), c("df", "family", "formula", "prior", "initfun", "pcvrForm"))
+  ss2 <- suppressMessages(
+    .brmsSurvSS(
+      model = surv$model,
+      form = y > 100 ~ time | id / group,
+      df = df,
+      priors = NULL
+    )
+  )
+  expect_equal(names(ss2), c("df", "family", "formula", "prior", "initfun", "pcvrForm"))
+  df2 <- df
+  df2$censor <- 0 # dummy data
+  df2$event <- 1 # dummy data
+  df2$n_eligible <- 100 # dummy data
+  df2$n_events <- 5 # dummy data
+  ss3 <- suppressMessages(
+    .brmsSurvSS(
+      model = surv$model,
+      form = y > 100 ~ time | id / group,
+      df = df2,
+      priors = NULL
+    )
+  )
+  expect_equal(names(ss3), c("df", "family", "formula", "prior", "initfun", "pcvrForm"))
+  ss4 <- suppressMessages(
+    .brmsSurvSS(
+      model = surv$model,
+      form = y > 100 ~ time | id / group,
+      df = df2[df2$group == "a", ],
+      priors = NULL
+    )
+  )
+  expect_equal(names(ss4), c("df", "family", "formula", "prior", "initfun", "pcvrForm"))
+
+  surv <- .survModelParser("survival binomial")
+  ss <- suppressMessages(
+    .brmsSurvSS(
+      model = surv$model,
+      form = y > 100 ~ time | id / group,
+      df = df,
+      priors = c(0, 5)
+    )
+  )
+  expect_equal(names(ss), c("df", "family", "formula", "prior", "initfun", "pcvrForm"))
+  ss2 <- suppressMessages(
+    .brmsSurvSS(
+      model = surv$model,
+      form = y > 100 ~ time | id / group,
+      df = df,
+      priors = NULL
+    )
+  )
+  expect_equal(names(ss2), c("df", "family", "formula", "prior", "initfun", "pcvrForm"))
+  ss3 <- suppressMessages(
+    .brmsSurvSS(
+      model = surv$model,
+      form = y > 100 ~ time | id / group,
+      df = df2,
+      priors = NULL
+    )
+  )
+  expect_equal(names(ss3), c("df", "family", "formula", "prior", "initfun", "pcvrForm"))
+  ss4 <- suppressMessages(
+    .brmsSurvSS(
+      model = surv$model,
+      form = y > 100 ~ time | id / group,
+      df = df2[df2$group == "a", ],
+      priors = NULL
+    )
+  )
+  expect_equal(names(ss4), c("df", "family", "formula", "prior", "initfun", "pcvrForm"))
+})
+
+#* ***********************************
+#* ***** `Not Run on the remote` *****
+#* ***********************************
+
 if (file.exists("/home/josh/Desktop/") && interactive()) {
   # only run locally, don't test for each R-CMD Check
-
-  #* there are lots of options and until one obviously breaks I am not going to try to test all of them.
-  library(testthat)
-  library(brms)
-  library(ggplot2)
-  library(pcvr)
-
-  test_that("Logistic brms model pipeline", {
-    set.seed(123)
-    simdf <- growthSim("logistic",
-      n = 20, t = 25,
-      params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
-    )
-
-    ss <- growthSS(
-      model = "logistic", form = y ~ time | id / group, sigma = "spline",
-      list("A" = 130, "B" = 10, "C" = 3),
-      df = simdf, type = "brms"
-    )
-    expect_equal(ss$prior$nlpar, c("", "", "A", "B", "C"))
-
-    fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1)
-    expect_s3_class(fit, "brmsfit")
-
-    plot <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
-    ggsave("~/scripts/fahlgren_lab/labMeetings/logistic_fitGrowth.png",
-      plot,
-      width = 10, height = 6, dpi = 300, bg = "#ffffff"
-    )
-    expect_s3_class(plot, "ggplot")
-
-    plot2 <- postPred(fit,
-      form = ss$pcvrForm, groups = NULL, timeRange = NULL, hyp = "abs(diff) > 20",
-      plot = FALSE
-    )
-    expect_s3_class(plot2$hypothesis, "data.frame")
-    plot2 <- postPred(fit,
-      form = ss$pcvrForm, groups = NULL, timeRange = 10:30, hyp = "abs(diff) > 20",
-      plot = TRUE
-    )
-    expect_s3_class(plot2$plot, "ggplot")
-    plot2 <- postPred(fit,
-      form = ss$pcvrForm, groups = c("b", "a"), timeRange = NULL,
-      hyp = "abs(diff) > 20", plot = TRUE
-    )
-    expect_s3_class(plot2$plot, "ggplot")
-    plot2 <- postPred(fit,
-      form = ss$pcvrForm, groups = c("b", "a"), timeRange = 10:30,
-      hyp = "abs(diff) > 20", plot = TRUE
-    )
-    expect_s3_class(plot2$plot, "ggplot")
-  })
-
   test_that("Gompertz brms model pipeline", {
     set.seed(123)
     simdf <- growthSim("gompertz",
@@ -772,42 +1057,6 @@ if (file.exists("/home/josh/Desktop/") && interactive()) {
     expect_s3_class(plot, "ggplot")
   })
 
-  test_that("postPred can compare multiple models", {
-    set.seed(123)
-    simdf1 <- growthSim("logistic",
-      n = 20, t = 25,
-      params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
-    )
-
-    ss1 <- growthSS(
-      model = "logistic", form = y ~ time | id / group, sigma = "spline",
-      list("A" = 130, "B" = 10, "C" = 3),
-      df = simdf1, type = "brms"
-    )
-
-    fit1 <- fitGrowth(ss1, backend = "cmdstanr", iter = 500, chains = 1, cores = 1)
-
-    simdf2 <- growthSim("monomolecular",
-      n = 20, t = 25,
-      params = list("A" = c(200, 160), "B" = c(0.01, 0.08))
-    )
-
-    ss2 <- growthSS(
-      model = "monomolecular", form = y ~ time | id / group, sigma = "int",
-      list("A" = 130, "B" = 1),
-      df = simdf2, type = "brms"
-    )
-
-    fit2 <- fitGrowth(ss2, backend = "cmdstanr", iter = 550, chains = 1, cores = 1)
-
-
-    post <- postPred(
-      fit = list(fit1, fit2), form = ss1$pcvrForm, groups = c("a", "a"),
-      timeRange = NULL, hyp = "abs(diff) > 20", plot = TRUE
-    )
-    expect_s3_class(post$plot, "ggplot")
-  })
-
   test_that("logistic decay as a segment", {
     simdf <- growthSim(
       model = "logistic + logistic decay", n = 20, t = 45,
@@ -831,37 +1080,6 @@ if (file.exists("/home/josh/Desktop/") && interactive()) {
       width = 10, height = 6, dpi = 300, bg = "#ffffff"
     )
     expect_s3_class(plot, "ggplot")
-  })
-
-  test_that("weibull survival", {
-    set.seed(123)
-    model <- "survival weibull"
-    form <- y > 100 ~ time | id / group
-    df <- growthSim("logistic",
-      n = 20, t = 25,
-      params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
-    )
-    prior <- c(0, 5)
-    ss <- growthSS(model = model, form = form, df = df, start = prior)
-    expect_equal(ss$prior$coef, c("groupa", "groupb"))
-    fit <- fitGrowth(ss, iter = 600, cores = 1, chains = 1, backend = "cmdstanr")
-    expect_s3_class(fit, "brmsfit")
-    # need to still check plotting/testing, those are pending.
-  })
-
-  test_that("binomial survival", {
-    set.seed(123)
-    model <- "survival binomial"
-    form <- y > 100 ~ time | id / group
-    df <- growthSim("logistic",
-      n = 20, t = 25,
-      params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
-    )
-    prior <- c(0, 5)
-    ss <- growthSS(model = model, form = form, df = df, start = prior)
-    test <- fitGrowth(ss, iter = 600, cores = 1, chains = 1, backend = "cmdstanr")
-    expect_s3_class(test, "brmsfit")
-    # need to still check plotting/testing, those are pending.
   })
 
   test_that("Test flexsurv model", {
@@ -918,28 +1136,6 @@ if (file.exists("/home/josh/Desktop/") && interactive()) {
     )
     lapply(ss, head)
     ss$initfun <- 0
-    fit <- fitGrowth(ss, iter = 600, cores = 1, chains = 1, backend = "cmdstanr")
-    expect_s3_class(fit, "brmsfit")
-    p <- growthPlot(fit, ss$pcvrForm, df = ss$df)
-    expect_s3_class(p, "ggplot")
-  })
-
-  test_that("Hierarchical Model", {
-    set.seed(123)
-    simdf <- growthSim(
-      "logistic",
-      n = 20, t = 25,
-      params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
-    )
-    simdf$covar <- rnorm(nrow(simdf), 10, 1)
-    ss <- growthSS(
-      model = "logistic", form = y ~ time + covar | id / group, sigma = "logistic",
-      list("AI" = 100, "AA" = 5, "B" = 10, "C" = 3,
-           "sigmaA" = 10, "sigmaB" = 10, "sigmaC" = 3),
-      df = simdf, type = "brms",
-      hierarchy = list("A" = "int_linear")
-    )
-    lapply(ss, head)
     fit <- fitGrowth(ss, iter = 600, cores = 1, chains = 1, backend = "cmdstanr")
     expect_s3_class(fit, "brmsfit")
     p <- growthPlot(fit, ss$pcvrForm, df = ss$df)

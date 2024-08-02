@@ -122,10 +122,9 @@ bw.time <- function(df = NULL, mode = c("DAS", "DAP", "DAE"), plantingDelay = NU
 .formatNonIntegerTime <- function(df, timeCol, format, index) {
   if (!is.integer(df[[timeCol]])) {
     df[[timeCol]] <- as.POSIXct(strptime(df[[timeCol]], format = format))
+    beg <- as.POSIXct(index, tz = "UTC")
     if (is.null(index)) {
       beg <- min(df[[timeCol]], na.rm = TRUE)
-    } else {
-      beg <- as.POSIXct(index, tz = "UTC")
     }
     df$DAS <- floor(as.numeric((df[[timeCol]] - beg) / 60 / 60 / 24))
     timeCol <- "DAS"
@@ -144,34 +143,33 @@ bw.time <- function(df = NULL, mode = c("DAS", "DAP", "DAE"), plantingDelay = NU
 #' @noRd
 
 .timePlottingHelper <- function(df, phenotype, group, wide, mode, traitCol, valueCol) {
-  if (is.null(phenotype)) {
-    message("Plotting requires a phenotype for the y axis.")
-  } else if (wide) {
+  if (wide) {
     plotDat <- df
     plotDat$plotGroup <- interaction(plotDat[, c(group)])
-    for (m in mode) {
-      p <- ggplot2::ggplot(plotDat, ggplot2::aes(
+    p <- lapply(mode, function(m) {
+      ggplot2::ggplot(plotDat, ggplot2::aes(
         x = .data[[m]], y = .data[[phenotype]],
         group = .data$plotGroup
       )) +
         ggplot2::geom_line() +
         ggplot2::labs(x = m, y = phenotype, title = m) +
         pcv_theme()
-    }
+    })
+    return(p)
   } else if (!wide) {
     plotDat <- df[df[[traitCol]] == phenotype, ]
     plotDat$plotGroup <- interaction(plotDat[, c(group)])
-    for (m in mode) {
-      p <- ggplot2::ggplot(plotDat, ggplot2::aes(
+    p <- lapply(mode, function(m) {
+      ggplot2::ggplot(plotDat, ggplot2::aes(
         x = .data[[m]], y = .data[[valueCol]],
         group = .data$plotGroup
       )) +
         ggplot2::geom_line() +
         ggplot2::labs(x = m, y = phenotype, title = m) +
         pcv_theme()
-    }
+    })
+    return(p)
   }
-  return(p)
 }
 
 #' ***********************************************************************************************
@@ -182,7 +180,6 @@ bw.time <- function(df = NULL, mode = c("DAS", "DAP", "DAE"), plantingDelay = NU
 #'
 #' @keywords internal
 #' @noRd
-
 
 .daeHelper <- function(df, group, wide, phenotype, cutoff, timeCol, traitCol, valueCol) {
   if (wide) {

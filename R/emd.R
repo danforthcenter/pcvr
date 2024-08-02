@@ -46,24 +46,29 @@
 #'
 #' ## Not run:
 #'
-#' makeHist <- function(mu, sd) {
-#'   hist(rnorm(10000, mu, sd), breaks = seq(1, 100, 1), plot = FALSE)$counts
-#' }
-#' test <- as.data.frame(do.call(rbind, lapply(seq(30, 54, 6), function(d) {
-#'   x <- as.data.frame(do.call(rbind, lapply(1:5, function(i) makeHist(mu = d, sd = 5))))
-#'   x$Mu <- round(d, -1)
-#'   x
-#' })))
-#' test <- test[sample(rownames(test), nrow(test), replace = FALSE), ]
+#' set.seed(123)
+#' test <- mvSim(
+#'   dists = list(
+#'     runif = list(min = 0, max = 100),
+#'     rnorm = list(mean = 90, sd = 20)
+#'   ),
+#'   n_samples = 10
+#' )
 #' test$meta1 <- rep(LETTERS[1:3], length.out = nrow(test))
 #' test$meta2 <- rep(LETTERS[4:5], length.out = nrow(test))
 #'
 #' x <- pcv.emd(
-#'   df = test, cols = "V", reorder = "Mu",
+#'   df = test, cols = "sim", reorder = "group",
 #'   include = c("meta1", "meta2"), mat = FALSE,
 #'   plot = FALSE, parallel = 1
 #' )
 #' head(x)
+#' x2 <- pcv.emd(
+#'   df = test, cols = "sim", reorder = "group",
+#'   include = c("meta1", "meta2"), mat = FALSE,
+#'   plot = FALSE, parallel = 1, method = "euc"
+#' )
+#' head(x2)
 #'
 #' if (FALSE) {
 #'   file <- paste0(
@@ -199,9 +204,11 @@ pcv.emd <- function(df, cols = NULL, reorder = NULL, include = reorder, mat = FA
       nrow = length(unique(df$INNER_ID_EMD)),
       ncol = length(unique(df$INNER_ID_EMD))
     )
-    values <- unlist(lapply(unique(df$INNER_ID_EMD), function(i) {
-      parallel::mclapply(unique(df$INNER_ID_EMD), function(j) {
-        if (i <= j) {
+    values <- unlist(lapply(seq_along(unique(df$INNER_ID_EMD)), function(i_n) {
+      parallel::mclapply(seq_along(unique(df$INNER_ID_EMD)), function(j_n) {
+        i <- unique(df$INNER_ID_EMD)[i_n]
+        j <- unique(df$INNER_ID_EMD)[j_n]
+        if (i_n < j_n) {
           dist_1d(
             as.numeric(df[df$INNER_ID_EMD == as.character(i), value]),
             as.numeric(df[df$INNER_ID_EMD == as.character(j), value])
@@ -367,4 +374,13 @@ euc1d <- function(s1, s2) {
   mat <- matrix(c(s1, s2), nrow = 2, byrow = TRUE)
   euc <- as.numeric(stats::dist(mat, method = "euclidean"))
   return(euc)
+}
+
+#' @rdname pcv.emd
+#' @export
+#'
+pcv.euc <- function(df, cols = NULL, reorder = NULL, include = reorder, mat = FALSE, plot = TRUE,
+                    parallel = getOption("mc.cores", 1), trait = "trait", id = "image",
+                    value = "value", raiseError = TRUE, method = "euc") {
+  pcv.emd(df, cols, reorder, include, mat, plot, parallel, trait, id, value, raiseError, method)
 }

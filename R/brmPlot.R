@@ -25,12 +25,17 @@
 #' ## Not run:
 #'
 #' if (FALSE) {
-#'   data(bw_vignette_fit)
-#'   brmPlot(bw_vignette_fit, y ~ time | id / group, df = NULL)
-#'   print(load(url("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/brmsFits.rdata")))
-#'   brmPlot(fit_25, form = y ~ time | id / group)
-#'   brmPlot(fit_9, form = y ~ time | id / group)
-#'   brmPlot(fit_15, form = y ~ time | id / group)
+#' simdf <- growthSim(
+#'  "logistic", n = 20, t = 25,
+#'  params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
+#' )
+#' ss <- growthSS(
+#'  model = "logistic", form = y ~ time | id / group, sigma = "spline",
+#'  list("A" = 130, "B" = 10, "C" = 3),
+#'  df = simdf, type = "brms"
+#' )
+#' fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1)
+#' growthPlot(fit = fit, form = y ~ time | group, groups = "a", df = ss$df)
 #' }
 #'
 #' ## End(Not run)
@@ -53,11 +58,6 @@ brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
   }
   group <- parsed_form$group
   df <- parsed_form$data
-
-  #* if no group in fitdata then add a dummy group
-  if (!group %in% colnames(fitData)) {
-    fitData[[group]] <- "a"
-  }
 
   probs <- seq(from = 99, to = 1, by = -2) / 100
 
@@ -87,14 +87,9 @@ brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
   }
 
   #* `facetGroups`
-  if (facetGroups) {
-    if (!all(fitData[[group]] == "a")) {
-      facetLayer <- ggplot2::facet_wrap(as.formula(paste0("~", group)))
-    } else {
-      facetLayer <- NULL
-    }
-  } else {
-    facetLayer <- NULL
+  facetLayer <- NULL
+  if (facetGroups && length(unique(fitData[[group]])) > 1) {
+    facetLayer <- ggplot2::facet_wrap(as.formula(paste0("~", group)))
   }
   #* `lengthen predictions`
   max_prime <- 0.99

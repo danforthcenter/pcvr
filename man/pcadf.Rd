@@ -8,11 +8,9 @@ pcadf(
   df = NULL,
   cols = NULL,
   color = NULL,
-  trace = NULL,
   facet = NULL,
   returnData = TRUE,
-  ncp = NULL,
-  split = "DAS"
+  ncp = NULL
 )
 }
 \arguments{
@@ -24,22 +22,12 @@ the column names that should be used.}
 
 \item{color}{column name(s) used to color points in the pca plot.}
 
-\item{trace}{Optional column to use to show changes over by way of geom_path,
-generally this would be a time variable.}
-
-\item{facet}{Optional column or vector to facet/split plots on.
-If this is a character then it is taken as a column name.
-Numeric vectors are taken as values of trace to split on,
-if trace=NULL and this is numeric then plots will be split by the split argument.
- If this is a vector then a list of plots is returned.}
+\item{facet}{Optional column or vector to facet plots on.}
 
 \item{returnData}{Logical, should data be returned?}
 
 \item{ncp}{Optional, number of principal components to return attached
 to dataframe if data is returned. Defaults to all.}
-
-\item{split}{Time variable to split data on if a facet on time is used.
-See bellwether vignette for examples.}
 }
 \description{
 Function to run a PCA, plot and optionally return the data with PCA coordinates and pca object
@@ -52,30 +40,15 @@ If data is returned then it will contain the coordinates from the
 
 ## Not run:
 
-if (FALSE) {
-  hue_wide <- read.pcv(
-    paste0(
-      "https://media.githubusercontent.com/media/joshqsumner/",
-      "pcvrTestData/main/pcv4-multi-value-traits.csv"
-    ),
-    mode = "wide", reader = "fread"
-  )
-  hue_wide$genotype <- substr(hue_wide$barcode, 3, 5)
-  hue_wide$genotype <- ifelse(hue_wide$genotype == "002", "B73",
-    ifelse(hue_wide$genotype == "003", "W605S",
-      ifelse(hue_wide$genotype == "004", "MM", "Mo17")
-    )
-  )
-  hue_wide$fertilizer <- substr(hue_wide$barcode, 8, 8)
-  hue_wide$fertilizer <- ifelse(hue_wide$fertilizer == "A", "100",
-    ifelse(hue_wide$fertilizer == "B", "50", "0")
-  )
-  hue_wide <- bw.time(hue_wide, timeCol = "timestamp", group = "barcode")
-
-  hue_wide$geno_fertilizer <- interaction(hue_wide$fertilizer, hue_wide$genotype)
-
-  pcadf(hue_wide, cols = "hue_frequencies", color = "geno_fertilizer", returnData = FALSE)
-}
+dists <- list(
+  rlnorm = list(meanlog = log(40), sdlog = 0.5),
+  rnorm = list(mean = 60, sd = 10)
+)
+mv <- mvSim(dists = dists, n_samples = 100, counts = 1000,
+            min_bin = 1, max_bin = 180, wide = TRUE)
+mv$otherGroup <- sample(c("a", "b"), size = nrow(mv), replace = TRUE)
+pcadf(mv, cols = "sim_", returnData = TRUE)
+pcadf(mv, cols = 2:181, color = c("group", "otherGroup"), returnData = FALSE)
 
 ## End(Not run)
 

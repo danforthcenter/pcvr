@@ -4,12 +4,12 @@
 #'    Currently checkpointing is not supported.
 #' @param form A formula describing the growth model similar to \code{\link{growthSS}}
 #'    and \code{\link{brmPlot}} such as: outcome ~ predictor |individual/group
+#' @param df data used to fit models (this is used to plot each subject's trend line).
 #' @param priors a named list of samples from the prior distributions for each parameter in
 #'     \code{params}. This is only used if sample_prior=FALSE in the brmsfit object.
 #'     If left NULL then no prior is included.
 #' @param params a vector of parameters to include distribution plots of.
 #'     Defaults to NULL which will use all parameters from the top level model.
-#' @param d data used to fit models (this is used to plot each subject's trend line)
 #' @param maxTime Optional parameter to designate a max time not observed in the models so far
 #' @param patch Logical, should a patchwork plot be returned or should lists of ggplots be returned?
 #' @keywords Bayesian, brms
@@ -45,24 +45,18 @@
 #'   )
 #'   distributionPlot(
 #'     fits = from3to25, form = y ~ time | id / group,
-#'     params = params, d = d, priors = priors
+#'     params = params, d = d, priors = priors, patch = FALSE
+#'   )
+#'   distributionPlot(
+#'     fits = from3to25, form = y ~ time | id / group,
+#'     params = params, d = d, patch = FALSE
 #'   )
 #' }
 #' ## End(Not run)
-distributionPlot <- function(fits, form, priors = NULL,
-                             params = NULL, d, maxTime = NULL, patch = TRUE) {
-  #* ***** `Check args`
-  if (missing(fits)) {
-    stop("A list of fits must be supplied")
-  }
-  if (missing(form)) {
-    stop("A formula must be supplied")
-  }
-  if (missing(d)) {
-    stop("Data used to fit the final model must be supplied")
-  }
+distributionPlot <- function(fits, form, df, priors = NULL,
+                             params = NULL, maxTime = NULL, patch = TRUE) {
   #* ***** `Reused helper variables`
-  parsed_form <- .parsePcvrForm(form, d)
+  parsed_form <- .parsePcvrForm(form, df)
   y <- parsed_form$y
   x <- parsed_form$x
   individual <- parsed_form$individual
@@ -223,6 +217,9 @@ distributionPlot <- function(fits, form, priors = NULL,
 #' @noRd
 
 .distPlotPriorExtraction <- function(fits, priors, d, group, params, x) {
+  if (is.null(priors)) {
+    return(list("prior_df" = NULL, "UP" = FALSE))
+  }
   if (all(unlist(lapply(fits, function(fit) nrow(brms::prior_draws(fit)) < 1)))) {
     # if no models were fit with sample_prior
     if (!is.null(priors)) { # if prior is supplied as argument

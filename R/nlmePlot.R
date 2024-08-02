@@ -28,22 +28,20 @@
 #'
 #' ## Not run:
 #'
-#' if (FALSE) {
-#'   simdf <- growthSim("logistic",
-#'     n = 20, t = 25,
-#'     params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
-#'   )
+#' simdf <- growthSim("logistic",
+#'   n = 10, t = 25,
+#'   params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
+#' )
 #'
-#'   ss <- growthSS(
-#'     model = "logistic", form = y ~ time | id / group,
-#'     df = simdf, sigma = "power", start = NULL, type = "nlme"
-#'   )
-#'   dim(ss$df)
+#' ss <- growthSS(
+#'   model = "logistic", form = y ~ time | id / group, sigma = "none",
+#'   df = simdf, start = NULL, type = "nlme"
+#' )
 #'
-#'   fit <- fitGrowth(ss)
+#' fit <- fitGrowth(ss)
 #'
-#'   nlmePlot(fit, form = ss$pcvrForm, groups = NULL, df = ss$df, timeRange = NULL)
-#' }
+#' nlmePlot(fit, form = ss$pcvrForm, groups = NULL, df = ss$df, timeRange = NULL)
+#' nlmePlot(fit, form = ss$pcvrForm, groups = "a", df = ss$df, timeRange = 1:10, groupFill = TRUE)
 #'
 #' ## End(Not run)
 #'
@@ -75,6 +73,9 @@ nlmePlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, face
     new_data <- do.call(rbind, lapply(unique(df[[intVar]]), function(g) {
       stats::setNames(data.frame(g, timeRange), c(intVar, x))
     }))
+    new_data[[group]] <- gsub("[.].*", "", new_data[[intVar]])
+    new_data[[individual]] <- gsub(".*[.]", "", new_data[[intVar]])
+    df <- df[df[[x]] >= min(timeRange) & df[[x]] <= max(timeRange), ]
   } else {
     new_data <- df
   }
@@ -87,23 +88,22 @@ nlmePlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, face
   #* `plot`
 
   #* `facetGroups`
+  facet_layer <- NULL
   if (facetGroups) {
     facet_layer <- ggplot2::facet_wrap(stats::as.formula(paste0("~", group)))
-  } else {
-    facet_layer <- NULL
   }
   #* `groupFill`
+  pal <- viridis::plasma(2, begin = 0.1, end = 0.9)
+  virList <- lapply(seq_along(unique(df[[group]])), function(i) {
+    pal
+  })
   if (groupFill) {
     virList <- lapply(rep(virMaps, length.out = length(unique(df[[group]]))), function(pal) {
       viridis::viridis(2, begin = 0.1, end = 0.9, option = pal)
     })
-  } else {
-    pal <- viridis::plasma(2, begin = 0.1, end = 0.9)
-    virList <- lapply(seq_along(unique(df[[group]])), function(i) {
-      pal
-    })
   }
   #* `layer for individual lines if formula was complete`
+  individual_lines <- list()
   if (!is.null(individual)) {
     individual_lines <- ggplot2::geom_line(
       data = df, ggplot2::aes(
@@ -115,8 +115,6 @@ nlmePlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, face
       ),
       linewidth = 0.25, color = "gray40"
     )
-  } else {
-    individual_lines <- list()
   }
 
   plot <- ggplot2::ggplot(preds, ggplot2::aes(x = .data[[x]], y = .data[["trendline"]])) +
@@ -158,8 +156,6 @@ nlmePlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, face
       coefs <- data.frame(x = 1 / unique(attr(varSummary, "weight")),
                           g = unique(attr(varSummary, "groups")))
       out <- baseSigma * coefs[coefs$g == grp, "x"]
-    } else {
-      stop("Only models fit with power, exp, or no variance model are suppported.")
     }
 
     sub$sigma_ymax <- sub$trendline + 0.5 * out

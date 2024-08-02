@@ -25,15 +25,6 @@
   if (is.null(priors)) {
     priors <- list(scale = 0.5, location = 0.5)
   }
-  #* `Standardize sample 1 class and names`
-  if (is.null(colnames(s1))) {
-    bins <- (seq_along(s1))
-    colnames(s1) <- paste0("b", bins)
-    warning(paste0("Assuming unnamed columns represent bins from ", min(bins), " to ", max(bins)))
-  }
-  if (is.matrix(s1)) {
-    s1 <- as.data.frame(s1)
-  }
   #* `Reorder columns if they are not in the numeric order`
   histColsBin <- as.numeric(sub("[a-zA-Z_.]+", "", colnames(s1)))
   bins_order <- sort(histColsBin, index.return = TRUE)$ix
@@ -50,12 +41,9 @@
   scale_prime <- priors$scale + n_obs
   location_prime <- max(c(max_obs, priors$location), na.rm = TRUE)
   #* `Define support if it is missing`
-  if (is.null(support)) {
+  if (is.null(support) && calculatingSupport) {
     quantiles <- qpareto(c(0.0001, 0.9999), scale_prime, location_prime)
-    if (calculatingSupport) {
-      return(quantiles)
-    }
-    support <- seq(quantiles[1], quantiles[2], length.out = 10000)
+    return(quantiles)
   }
   #* `Make Posterior Draws`
   out$posteriorDraws <- extraDistr::rpareto(10000, scale_prime, location_prime)
@@ -91,13 +79,11 @@
 #' distribution represented by single value traits.
 #' @param s1 A vector of numerics drawn from a uniform distribution.
 #' @examples
-#' if (FALSE) {
-#'   out <- .conj_uniform_sv(
-#'     s1 = runif(10, 0, 100), cred.int.level = 0.95,
-#'     plot = FALSE
-#'   )
-#'   lapply(out, head)
-#' }
+#' out <- .conj_uniform_sv(
+#'   s1 = runif(10, 0, 100), cred.int.level = 0.95,
+#'   plot = FALSE
+#' )
+#' lapply(out, head)
 #' @keywords internal
 #' @noRd
 .conj_uniform_sv <- function(s1 = NULL, priors = NULL,
@@ -112,12 +98,9 @@
   scale_prime <- priors$scale + length(s1)
   location_prime <- max(c(s1, priors$location), na.rm = TRUE)
   #* `Define support if it is missing`
-  if (is.null(support)) {
+  if (is.null(support) && calculatingSupport) {
     quantiles <- qpareto(c(0.0001, 0.9999), scale_prime, location_prime)
-    if (calculatingSupport) {
-      return(quantiles)
-    }
-    support <- seq(quantiles[1], quantiles[2], length.out = 10000)
+    return(quantiles)
   }
   #* `Make Posterior Draws`
   out$posteriorDraws <- extraDistr::rpareto(10000, scale_prime, location_prime)

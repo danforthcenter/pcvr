@@ -3,13 +3,11 @@
 #' data represented by single value traits.
 #' @param s1 A vector of numerics drawn from a uniform distribution.
 #' @examples
-#' if (FALSE) {
-#'   out <- .conj_gamma_sv(
-#'     s1 = rgamma(10, 1, 2), cred.int.level = 0.95,
-#'     plot = FALSE
-#'   )
-#'   lapply(out, head)
-#' }
+#' out <- .conj_gamma_sv(
+#'   s1 = rgamma(10, 1, 2), cred.int.level = 0.95,
+#'   plot = FALSE
+#' )
+#' lapply(out, head)
 #' @keywords internal
 #' @noRd
 .conj_gamma_sv <- function(s1 = NULL, priors = NULL,
@@ -26,12 +24,9 @@
   shape_prime <- (priors$known_shape * n) + priors$shape
   scale_prime <- priors$scale / (1 + (priors$scale * S))
   #* `Define support if it is missing`
-  if (is.null(support)) {
+  if (is.null(support) && calculatingSupport) {
     quantiles <- qgamma(c(0.0001, 0.9999), shape = shape_prime, scale = scale_prime)
-    if (calculatingSupport) {
-      return(quantiles)
-    }
-    support <- seq(quantiles[1], quantiles[2], length.out = 10000)
+    return(quantiles)
   }
   #* `Make Posterior Draws`
   out$posteriorDraws <- rgamma(10000, shape = shape_prime, scale = scale_prime)
@@ -39,13 +34,7 @@
   dens1 <- dgamma(support, shape = shape_prime, scale = scale_prime)
   pdf1 <- dens1 / sum(dens1)
   out$pdf <- pdf1
-  if (scale_prime <= 1 && shape_prime > 1) {
-    hde1 <- qgamma(0.5, shape = shape_prime, scale = scale_prime)
-  } else if (shape_prime == 0) {
-    hde1 <- qgamma(0.5, shape = shape_prime, scale = scale_prime)
-  } else {
-    hde1 <- (scale_prime - 1) * shape_prime # note, using shape instead of rate (inverse) HDE
-  }
+  hde1 <- .gammaHDE(shape_prime, scale_prime)
   hdi1 <- qgamma(
     c((1 - cred.int.level) / 2, (1 - ((1 - cred.int.level) / 2))),
     shape = shape_prime, scale = scale_prime
@@ -63,4 +52,24 @@
     )
   }
   return(out)
+}
+
+#' @description
+#' Internal function for calculating the HDE of a gamma distribution
+#' @param shape shape parameter
+#' @param scale scale parameter
+#' @examples
+#' .gammaHDE(1, 2)
+#' .gammaHDE(0, 1)
+#' .gammaHDE(10, 10)
+#' @keywords internal
+#' @noRd
+
+.gammaHDE <- function(shape, scale) {
+  if (shape >= 1) {
+    hde <- (shape - 1) * scale
+  } else {
+    hde <- 0
+  }
+  return(hde)
 }

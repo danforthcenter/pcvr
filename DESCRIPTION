@@ -1,7 +1,7 @@
 Package: pcvr
 Type: Package
 Title: Functions for use with plantCV output
-Version: 0.1.0
+Version: 0.2.0
 Author: Josh Sumner
 Maintainer: Josh Sumner <jsumner@danforthcenter.org>
 Description: Streamlines use of plantCV output in common data analysis tasks.
@@ -20,7 +20,6 @@ Imports:
     methods,
     data.table,
     ggplot2,
-    ggpubr,
     ggridges,
     igraph,
     jsonlite,

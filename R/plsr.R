@@ -23,12 +23,19 @@
 #' ## Not run:
 #'
 #' if (FALSE) {
-#'   file = "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest1.csv"
-#'   df1 <- read.pcv(file, mode = "wide")
-#'   colnames(df1) <- sub("index_frequencies_index_ndvi.", "ndvi_", colnames(df1))
-#'   # Note, this requires the pls package.
-#'   x <- pcv.plsr(df = df1, resps = "area.pixels", spectra = grepl("^ndvi_", colnames(df1)))
-#'   x <- pcv.plsr(df = df1, resps = "area.pixels", spectra = "^ndvi_")
+#' dists <- list(
+#'   rlnorm = list(meanlog = log(40), sdlog = 0.5),
+#'   rlnorm = list(meanlog = log(60), sdlog = 0.35)
+#' )
+#' mv <- mvSim(dists = dists, n_samples = 100, counts = 1000,
+#'             min_bin = 1, max_bin = 180, wide = TRUE)
+#' sv <- growthSim("logistic",
+#'                 n = 5, t = 20,
+#'                 params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
+#' )
+#' d <- cbind(sv, mv[, -1])
+#' # note that this requires the "pls" package to be installed.
+#' x <- pcv.plsr(df = d, resps = "y", spectra = grepl("^sim_", colnames(d)))
 #' }
 #' ## End(Not run)
 #'

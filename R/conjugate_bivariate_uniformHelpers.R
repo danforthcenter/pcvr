@@ -3,17 +3,14 @@
 #' distribution represented by single value traits.
 #' @param s1 A vector of numerics drawn from a uniform distribution.
 #' @examples
-#' if (FALSE) {
-#'   set.seed(123)
-#'   s1 = stats::runif(10, -1, 10)
-#'   out <- .conj_bivariate_uniform_sv(
-#'     s1 = s1, cred.int.level = 0.95,
-#'     plot = TRUE
-#'   )
-#'   lapply(out, head)
-#'   p2 <- out$plot_df
-#'   plot(p2[p2$param == "A", ]$range, p2[p2$param == "A", ]$prob, type = "l")
-#' }
+#' set.seed(123)
+#' s1 = stats::runif(10, -1, 10)
+#' out <- .conj_bivariate_uniform_sv(
+#'  s1 = s1, cred.int.level = 0.95,
+#'  plot = TRUE
+#' )
+#' lapply(out, head)
+#'
 #' @keywords internal
 #' @noRd
 
@@ -131,6 +128,14 @@
   return(out)
 }
 
+#' @description
+#' Internal function for calculating conditional inverse sampling from bivariate pareto
+#' @examples
+#' .conj_cond_inv_rpareto(10, 1, 2, 10)
+#'
+#' @keywords internal
+#' @noRd
+
 .conj_cond_inv_rpareto <- function(n, r1, r2, scale) {
   u <- stats::runif(n, min = 0, max = 1)
   # pareto quantile function
@@ -147,22 +152,20 @@
 #' distribution represented by multi value traits.
 #' @param s1 A vector of numerics drawn from a uniform distribution.
 #' @examples
-#' if (FALSE) {
-#'   s1 <- mvSim(
-#'     dists = list(runif = list(min = 15, max = 150)),
-#'     n_samples = 10,
-#'     counts = 1000,
-#'     min_bin = 1,
-#'     max_bin = 180,
-#'     wide = TRUE
-#'   )
-#'   out <- .conj_bivariate_uniform_mv(
-#'     s1 = s1[, -1], cred.int.level = 0.95,
-#'     priors = list(location_l = 50, location_u = 100, scale = 1),
-#'     plot = FALSE
-#'   )
-#'   lapply(out, head)
-#' }
+#' s1 <- mvSim(
+#'  dists = list(runif = list(min = 15, max = 150)),
+#'  n_samples = 10,
+#'  counts = 1000,
+#'  min_bin = 1,
+#'  max_bin = 180,
+#'  wide = TRUE
+#' )
+#' out <- .conj_bivariate_uniform_mv(
+#'  s1 = s1[, -1], cred.int.level = 0.95,
+#'  priors = list(location_l = 50, location_u = 100, scale = 1),
+#'  plot = FALSE
+#' )
+#' lapply(out, head)
 #' @keywords internal
 #' @noRd
 

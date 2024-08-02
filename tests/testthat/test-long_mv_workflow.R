@@ -30,18 +30,19 @@ test_that("reading mv github data as long works", {
 
   # test bw.outliers
 
-  mvNoOutliers <- bw.outliers(
-    df = mv, phenotype = "hue_frequencies", naTo0 = FALSE, plot = FALSE,
+  mvNoOutliers <- suppressWarnings(bw.outliers(
+    df = mv, phenotype = "hue_frequencies", naTo0 = FALSE, plot = TRUE,
     group = c("DAS", "genotype", "fertilizer"), cutoff = 3, plotgroup = c("barcode", "rotation")
-  )
+  ))
 
-  pct_removed <- nrow(mvNoOutliers) / nrow(mv)
+  pct_removed <- nrow(mvNoOutliers$data) / nrow(mv)
   expect_equal(pct_removed, 0.93, tolerance = 0.015)
+  expect_s3_class(mvNoOutliers$plot, "ggplot")
 
-  mvNoOutliers <- bw.outliers(
+  mvNoOutliers <- suppressWarnings(bw.outliers(
     df = mv, phenotype = "hue_frequencies", naTo0 = FALSE, plot = FALSE, outlierMethod = "mahalanobis",
     group = c("DAS", "genotype", "fertilizer"), cutoff = 3, plotgroup = c("barcode", "rotation")
-  )
+  ))
 
   pct_removed <- nrow(mvNoOutliers) / nrow(mv)
   expect_equal(pct_removed, 0.945, tolerance = 0.015)
@@ -49,7 +50,7 @@ test_that("reading mv github data as long works", {
   #* test joyplot
   joyplot <- pcv.joyplot(mv[mv$DAS == 18, ],
     index = "hue_frequencies",
-    group = c("fertilizer", "genotype"), method = NULL, compare = NULL
+    group = c("fertilizer", "genotype")
   )
   expect_s3_class(joyplot, "ggplot")
 
@@ -58,7 +59,16 @@ test_that("reading mv github data as long works", {
     group = c("DAS", "genotype", "fertilizer"),
     mvCols = "hue", n_per_group = 2
   )
-
+  mv2 <- mv
+  mv2$trait <- rep(c("hue_frequencies", "hue_other"), length.out = nrow(mv2))
+  expect_error(
+    mv_ag2 <- mv_ag(
+      mv2,
+      group = c("DAS", "genotype", "fertilizer"),
+      mvCols = "hue",
+      outRows = 3000
+    )
+  )
   expect_equal(dim(mv_ag1), c(42480, 6))
 
   #* test EMD
@@ -73,6 +83,7 @@ test_that("reading mv github data as long works", {
 
   #* test network
   net <- pcv.net(emd$data)
+  expect_error(pcv.net(c(1, 2, 3)))
   expect_s3_class(net[[3]], "igraph")
   expect_equal(dim(net$nodes), c(8, 12))
   expect_equal(dim(net$edges), c(44, 11))

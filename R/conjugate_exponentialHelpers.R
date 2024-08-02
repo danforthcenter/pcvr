@@ -3,13 +3,11 @@
 #' represented by single value traits.
 #' @param s1 A vector of numerics drawn from a pareto distribution.
 #' @examples
-#' if (FALSE) {
-#'   out <- .conj_exponential_sv(
-#'     s1 = rexp(10, 3), cred.int.level = 0.95,
-#'     plot = FALSE
-#'   )
-#'   lapply(out, head)
-#' }
+#' out <- .conj_exponential_sv(
+#'   s1 = rexp(10, 3), cred.int.level = 0.95,
+#'   plot = FALSE
+#' )
+#' lapply(out, head)
 #' @keywords internal
 #' @noRd
 .conj_exponential_sv <- function(s1 = NULL, priors = NULL,
@@ -26,12 +24,9 @@
   a_prime <- priors$a[1] + n
   b_prime <- priors$b[1] + S
   #* `Define support if it is missing`
-  if (is.null(support)) {
+  if (is.null(support) && calculatingSupport) {
     quantiles <- qgamma(c(0.0001, 0.9999), a_prime, b_prime)
-    if (calculatingSupport) {
-      return(quantiles)
-    }
-    support <- seq(quantiles[1], quantiles[2], length.out = 10000)
+    return(quantiles)
   }
   #* `Make Posterior Draws`
   out$posteriorDraws <- rgamma(10000, a_prime, b_prime)
@@ -39,13 +34,7 @@
   dens1 <- dgamma(support, a_prime, b_prime)
   pdf1 <- dens1 / sum(dens1)
   out$pdf <- pdf1
-  if (a_prime <= 1 && b_prime > 1) {
-    hde1 <- 0
-  } else if (a_prime > 1 && b_prime <= 1) {
-    hde1 <- Inf
-  } else {
-    hde1 <- (a_prime - 1) / b_prime
-  }
+  hde1 <- .gammaHDE(shape = a_prime, scale = 1 / b_prime)
   hdi1 <- qgamma(
     c((1 - cred.int.level) / 2, (1 - ((1 - cred.int.level) / 2))),
     a_prime, b_prime

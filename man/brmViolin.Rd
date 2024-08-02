@@ -5,13 +5,13 @@
 \title{Function to visualize hypotheses tested on brms models similar to those made using growthSS outputs.}
 \usage{
 brmViolin(
-  model,
+  fit,
   params = NULL,
   hyp = "num/denom>1.05",
-  compareX = NULL,
-  againstY = NULL,
+  compareX = "a",
+  againstY = "b",
   group_sep = "[.]",
-  groups_into = c(),
+  groups_into = c("group2"),
   x = NULL,
   facet = NULL,
   cores = getOption("mc.cores", 1),
@@ -19,9 +19,9 @@ brmViolin(
 )
 }
 \arguments{
-\item{model}{A brmsfit object or a list of brmsfit objects}
+\item{fit}{A brmsfit object or a list of brmsfit objects}
 
-\item{params}{A list of parameters to use from the model.
+\item{params}{A list of parameters to use from the fit.
 Defaults to NULL in which case all growth model parameters are used.}
 
 \item{hyp}{A character string defining the hypothesis to be tested.
@@ -69,13 +69,21 @@ Function to visualize hypotheses tested on brms models similar to those made usi
 ## Not run:
 
 if (FALSE) {
-  data(bw_vignette_fit)
-  brmViolin(
-    model = bw_vignette_fit, params = NULL,
-    hyp = "num/denom>1.05", compareX = c("0.B73", "50.B73", "100.B73"), againstY = "0.B73",
-    group_sep = "[.]", groups_into = c("soil", "genotype"), x = "soil", facet = "genotype",
-    returnData = FALSE
-  )
+set.seed(123)
+simdf <- growthSim(
+  "logistic", n = 20, t = 25,
+  params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
+)
+ss <- growthSS(
+  model = "logistic", form = y ~ time | id / group, sigma = "spline",
+  list("A" = 130, "B" = 10, "C" = 3),
+  df = simdf, type = "brms"
+)
+
+fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1)
+brmViolin(fit, hyp = "num/denom>1.05",
+          compareX = "a",
+          againstY = "b", returnData = TRUE)
 }
 ## End(Not run)
 

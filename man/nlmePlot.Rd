@@ -52,22 +52,20 @@ Models fit using \link{growthSS} inputs by \link{fitGrowth}
 
 ## Not run:
 
-if (FALSE) {
-  simdf <- growthSim("logistic",
-    n = 20, t = 25,
-    params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
-  )
+simdf <- growthSim("logistic",
+  n = 10, t = 25,
+  params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
+)
 
-  ss <- growthSS(
-    model = "logistic", form = y ~ time | id / group,
-    df = simdf, sigma = "power", start = NULL, type = "nlme"
-  )
-  dim(ss$df)
+ss <- growthSS(
+  model = "logistic", form = y ~ time | id / group, sigma = "none",
+  df = simdf, start = NULL, type = "nlme"
+)
 
-  fit <- fitGrowth(ss)
+fit <- fitGrowth(ss)
 
-  nlmePlot(fit, form = ss$pcvrForm, groups = NULL, df = ss$df, timeRange = NULL)
-}
+nlmePlot(fit, form = ss$pcvrForm, groups = NULL, df = ss$df, timeRange = NULL)
+nlmePlot(fit, form = ss$pcvrForm, groups = "a", df = ss$df, timeRange = 1:10, groupFill = TRUE)
 
 ## End(Not run)
 

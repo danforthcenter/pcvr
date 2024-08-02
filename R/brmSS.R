@@ -180,11 +180,8 @@
     pars <- chngptHelperList$pars
     splineHelperForm <- chngptHelperList$splineHelperForm
   } else {
-    if (matched_model == "homo") {
-      matched_model <- "int" # recode alternate names
-    } else if (matched_model == "spline") {
-      matched_model <- "gam"
-    }
+    matched_model <- gsub("homo", "int", matched_model)
+    matched_model <- gsub("spline", "gam", matched_model)
 
     stringBrmsFormFun <- paste0(".brms_form_", gsub(" ", "", matched_model))
     brmsFormFun <- match.fun(stringBrmsFormFun)
@@ -200,31 +197,27 @@
   }
 
   #* `Make distributional parameter formulas`
-  if (length(sigma) > 0) {
-    dpar_res <- lapply(seq_along(sigma), function(i) {
-      dpar <- names(sigma)[[i]]
-      model <- sigma[[i]]
-      intModelRes <- .intModelHelper(model)
-      model <- intModelRes$model
-      sigmaInt <- intModelRes$int
-      .brmDparHelper(dpar, model, x, group, nTimes, USEGROUP, priors, sigmaInt)
-    })
-    names(dpar_res) <- names(sigma)
-    dparForm <- unlist(lapply(dpar_res, function(res) {
-      res$dparForm
-    }))
-    dparSplineHelperForm <- unlist(lapply(dpar_res, function(res) {
-      res$dparSplineHelperForm
-    }))
-    dpar_pars <- unlist(lapply(dpar_res, function(res) {
-      res$dpar_pars
-    }))
-    names(dpar_pars) <- NULL
-    pars <- append(pars, dpar_pars)
-  } else {
-    dparForm <- NULL
-    dparSplineHelperForm <- NULL
-  }
+  #* Note there is always a sigma after .sigmaHelper (it just might be homoskedastic)
+  dpar_res <- lapply(seq_along(sigma), function(i) {
+    dpar <- names(sigma)[[i]]
+    model <- sigma[[i]]
+    intModelRes <- .intModelHelper(model)
+    model <- intModelRes$model
+    sigmaInt <- intModelRes$int
+    .brmDparHelper(dpar, model, x, group, nTimes, USEGROUP, priors, sigmaInt)
+  })
+  names(dpar_res) <- names(sigma)
+  dparForm <- unlist(lapply(dpar_res, function(res) {
+    res$dparForm
+  }))
+  dparSplineHelperForm <- unlist(lapply(dpar_res, function(res) {
+    res$dparSplineHelperForm
+  }))
+  dpar_pars <- unlist(lapply(dpar_res, function(res) {
+    res$dpar_pars
+  }))
+  names(dpar_pars) <- NULL
+  pars <- append(pars, dpar_pars)
   pars <- pars[!grepl("spline", pars)]
 
   #* `Make hierarchical parameter model formulas`

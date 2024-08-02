@@ -12,12 +12,12 @@
 #' via MoM \hat(\labmda) =  = 1/n +sum^1_n(x)
 #' @param s1 A vector of numerics drawn from a beta distribution.
 #' @examples
-#' if (FALSE) {
-#'   .conj_poisson_sv(
-#'     s1 = rpois(20, 10), priors = list(a = c(0.5, 0.5), b = c(0.5, 0.5)),
-#'     plot = FALSE
-#'   )
-#' }
+#'
+#' .conj_poisson_sv(
+#'  s1 = rpois(20, 10), priors = list(a = c(0.5, 0.5), b = c(0.5, 0.5)),
+#'  plot = FALSE
+#' )
+#'
 #' @keywords internal
 #' @noRd
 
@@ -26,7 +26,7 @@
                              calculatingSupport = FALSE) {
   #* `Check samples`
   if (any(abs(s1 - round(s1)) > .Machine$double.eps^0.5) || any(s1 < 0)) {
-    stop("Only positive whole numbers can be used in the Negative Binomial distribution")
+    stop("Only positive integers can be used in the Poisson distribution")
   }
   #* `make default prior if none provided`
   if (is.null(priors)) {
@@ -39,12 +39,9 @@
   a1_prime <- priors$a[1] + sum(s1)
   b1_prime <- priors$b[1] + length(s1)
   #* `Define support if it is missing`
-  if (is.null(support)) {
+  if (is.null(support) && calculatingSupport) {
     quantiles <- qgamma(c(0.0001, 0.9999), a1_prime, b1_prime)
-    if (calculatingSupport) {
-      return(quantiles)
-    }
-    support <- seq(quantiles[1], quantiles[2], length.out = 10000)
+    return(quantiles)
   }
   #* `calculate density over support``
   dens1 <- dgamma(support, a1_prime, b1_prime)
@@ -54,13 +51,7 @@
   hdi1 <- qgamma(c((1 - cred.int.level) / 2, (1 - ((1 - cred.int.level) / 2))), a1_prime, b1_prime)
 
   #* `calculate highest density estimate``
-  if (a1_prime <= 1 && b1_prime > 1) {
-    hde1 <- 0
-  } else if (b1_prime == 0) {
-    hde1 <- Inf
-  } else {
-    hde1 <- (a1_prime - 1) / b1_prime
-  }
+  hde1 <- .gammaHDE(shape = a1_prime, scale = 1 / b1_prime)
 
   #* `save summary and parameters`
   out$summary <- data.frame(HDE_1 = hde1, HDI_1_low = hdi1[1], HDI_1_high = hdi1[2])

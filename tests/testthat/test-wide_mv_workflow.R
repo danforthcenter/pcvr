@@ -1,4 +1,5 @@
 library(data.table)
+if (!interactive()) pdf(NULL)
 test_that("reading mv github data as long works", {
   mv <- read.pcv(paste0(
     "https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/",
@@ -25,34 +26,48 @@ test_that("reading mv github data as long works", {
 
   phenotypes <- which(grepl("hue_freq", colnames(mv)))
 
-  mvNoOutliers <- bw.outliers(
+  mvNoOutliers <- suppressWarnings(bw.outliers(
     df = mv, phenotype = phenotypes, naTo0 = FALSE, plot = FALSE,
     group = c("DAS", "genotype", "fertilizer"), cutoff = 3, plotgroup = c("barcode", "rotation")
-  )
+  ))
 
   pct_removed <- nrow(mvNoOutliers) / nrow(mv)
   expect_equal(pct_removed, 0.93, tolerance = 0.015)
 
-  mvNoOutliers <- bw.outliers(
-    df = mv, phenotype = phenotypes, naTo0 = FALSE, plot = FALSE, outlierMethod = "mahalanobis",
+  mvNoOutliers <- suppressWarnings(bw.outliers(
+    df = mv, phenotype = phenotypes, naTo0 = FALSE, plot = TRUE, outlierMethod = "mahalanobis",
     group = c("DAS", "genotype", "fertilizer"), cutoff = 3, plotgroup = c("barcode", "rotation")
-  )
+  ))
 
-  pct_removed <- nrow(mvNoOutliers) / nrow(mv)
+  pct_removed <- nrow(mvNoOutliers$data) / nrow(mv)
   expect_equal(pct_removed, 0.945, tolerance = 0.015)
-
+  expect_s3_class(mvNoOutliers$plot, "ggplot")
   #* test joyplot
   joyplot <- pcv.joyplot(mv[mv$DAS == 18, ],
     index = "hue_frequencies",
-    group = c("fertilizer", "genotype"), method = NULL, compare = NULL
+    group = c("fertilizer", "genotype")
   )
   expect_s3_class(joyplot, "ggplot")
 
   #* test mv_ag
   set.seed(123)
-  mv_ag1 <- mv_ag(df = mv, group = c("DAS", "genotype", "fertilizer"), n_per_group = 2)
+  mv$svt <- rnorm(nrow(mv))
+  mv_ag1 <- mv_ag(
+    df = mv,
+    group = c("DAS", "genotype", "fertilizer"),
+    n_per_group = 2,
+    keep = "svt"
+  )
+  expect_error(
+    mv_ag2 <- mv_ag(
+      df = mv,
+      group = c("DAS", "genotype", "fertilizer"),
+      n_per_group = 2,
+      labelCol = "camera" # if only some of the id columns are there then error should be thrown
+    )
+  )
 
-  expect_equal(dim(mv_ag1), c(460, 183))
+  expect_equal(dim(mv_ag1), c(460, 184))
 
   #* test EMD
   images <- unique(mv$image)[1:10]

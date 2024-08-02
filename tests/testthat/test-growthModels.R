@@ -1,6 +1,44 @@
 if (!interactive()) pdf(NULL)
 
 #* ************************************************************
+#* *************** `growthSim options` ***************
+#* ************************************************************
+
+test_that("Count data can be made by growthSim", {
+  # use lowercase parameters
+  df <- suppressWarnings(
+    growthSim("count:gompertz",
+      n = 20, t = 25,
+      params = list("a" = c(100, 90), "b" = 10, "c" = 0.25)
+    )
+  )
+  expect_equal(any(is.na(as.integer(df$y))), FALSE)
+  # use unnamed parameters
+  df <- growthSim("count:gompertz",
+    n = 20, t = 25,
+    params = list(100, 10, 0.25)
+  )
+  expect_equal(any(is.na(as.integer(df$y))), FALSE)
+})
+
+test_that("Fixed Changepoint data can be made by growthSim", {
+  expect_error(
+    growthSim(
+      model = "gompertz + linear", n = 20, t = 50,
+      params = list(100, 10, 0.25, 25, 3)
+    )
+  )
+  df <- growthSim(
+    model = "gompertz + linear", n = 20, t = 50,
+    params = list(
+      "gompertz1A" = 100, "gompertz1B" = 10, "gompertz1C" = 0.25,
+      "fixedChangePoint1" = 25, "linear2A" = 3
+    )
+  )
+  expect_equal(any(is.na(as.integer(df$y))), FALSE)
+})
+
+#* ************************************************************
 #* *************** `Logistic growth modeling` ***************
 #* ************************************************************
 
@@ -40,7 +78,7 @@ test_that("Test Logistic nls modeling", {
 test_that("Test Logistic nlrq modeling", {
   ss <- suppressMessages(growthSS(
     model = "logistic", form = y ~ time | id / group,
-    df = logistic_df, type = "nlrq", tau = 0.5
+    df = logistic_df, type = "nlrq", tau = c(0.5, 0.8)
   ))
   expect_equal(
     as.numeric(unlist(ss$start)),
@@ -51,9 +89,9 @@ test_that("Test Logistic nlrq modeling", {
   )
 
   fit <- fitGrowth(ss)
-  expect_s3_class(fit, "nlrq")
+  expect_s3_class(fit[[1]], "nlrq")
 
-  nlrq_p <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df) +
+  nlrq_p <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df, groupFill = "plasma") +
     ggplot2::labs(title = "nlrq")
   expect_s3_class(nlrq_p, "ggplot")
 
@@ -329,7 +367,7 @@ test_that("Test logarithmic nlrq modeling", {
 
 test_that("Test logarithmic nlme modeling", {
   ss <- growthSS(
-    model = "logarithmic", form = y ~ time | id / group, sigma = "power",
+    model = "logarithmic", form = y ~ time | id / group, sigma = "exp",
     df = lgrthmc_df, type = "nlme"
   )
   fit <- suppressWarnings(fitGrowth(ss))
@@ -371,6 +409,9 @@ test_that("Test nls gam modeling", {
 
   p <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
   expect_s3_class(p, "ggplot")
+
+  av <- testGrowth(ss = ss, fit)$anova
+  expect_s3_class(av, "anova")
 })
 
 test_that("Test nlrq gam modeling", {
@@ -385,11 +426,13 @@ test_that("Test nlrq gam modeling", {
 
   p <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
   expect_s3_class(p, "ggplot")
+  av <- suppressWarnings(testGrowth(ss = ss, fit)$anova)
+  expect_s3_class(av, "anova.rq")
 })
 
 test_that("Test nlme gam", {
   ss <- growthSS(
-    model = "gam", form = y ~ time | id / group, sigma = "power",
+    model = "gam", form = y ~ time | id / group, sigma = "exp",
     df = gomp_df, type = "nlme"
   )
   expect_equal(as.character(ss$formula$model), as.character(y ~ time * group))
@@ -399,6 +442,8 @@ test_that("Test nlme gam", {
 
   p <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
   expect_s3_class(p, "ggplot")
+  av <- testGrowth(ss = ss, fit)$anova
+  expect_s3_class(av, "anova.lme")
 })
 
 test_that("Test mgcv gam", {
@@ -413,15 +458,20 @@ test_that("Test mgcv gam", {
 
   p <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
   expect_s3_class(p, "ggplot")
-})
+  p2 <- gam_diff(
+    model = fit, g1 = "a", g2 = "b", plot = TRUE
+  )
+  expect_s3_class(p2$plot, "ggplot")
 
+  av <- testGrowth(ss = ss, fit)$anova
+  expect_s3_class(av, "anova")
+})
 
 test_that("Test gam brms model setup", {
   ss <- growthSS(
     model = "gam", form = y ~ time | id / group, sigma = "homo",
     df = gomp_df, type = "brms"
   )
-
   expect_s3_class(ss$formula, "brmsformula")
 })
 
@@ -473,6 +523,8 @@ test_that("Test survreg", {
   expect_s3_class(fit, "survreg")
   p <- growthPlot(fit, form = ss$pcvrForm, df = ss$df)
   expect_s3_class(p, "ggplot")
+  test <- testGrowth(ss, fit)
+  expect_s3_class(test, "survdiff")
 })
 
 

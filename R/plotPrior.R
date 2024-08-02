@@ -120,6 +120,9 @@ plotPrior <- function(priors, type = "density", n = 200, t = 25) {
   model_plot_solo <- model_plot
 
   sum_non_null <- 0
+  x_margin_plot <- NULL
+  y_margin_plot <- NULL
+  z_margin_plot <- NULL
 
   if (!is.null(y)) {
     y_margin_plot <- densPlots[[y]] +

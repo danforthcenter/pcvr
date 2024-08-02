@@ -84,25 +84,23 @@ the output.
 
 ## Not run:
 
-if (FALSE) {
-  simdf <- growthSim("logistic",
-    n = 20, t = 25,
-    params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
-  )
-  ss <- growthSS(
-    model = "logistic", form = y ~ time | id / group, sigma = "spline",
-    df = simdf, start = list("A" = 130, "B" = 12, "C" = 3), type = "brms"
-  )
-
-  fit_test <- fitGrowth(ss,
-    iter = 600, cores = 2, chains = 2, backend = "cmdstanr",
-    control = list(adapt_delta = 0.999, max_treedepth = 20)
-  )
-  barg(fit_test, ss)
-  fit_stable2 <- fit_test
-  fit <- list(fit_test, fit_stable)
-  x <- barg(list(fit_test, fit_stable), ss)
-}
+simdf <- growthSim("logistic",
+  n = 20, t = 25,
+  params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
+)
+ss <- growthSS(
+  model = "logistic", form = y ~ time | id / group, sigma = "logistic",
+  df = simdf, start = list("A" = 130, "B" = 12, "C" = 3,
+                           "sigmaA" = 20, "sigmaB" = 10, "sigmaC" = 2), type = "brms"
+)
+fit_test <- fitGrowth(ss,
+  iter = 600, cores = 1, chains = 1, backend = "cmdstanr",
+  sample_prior = "only" # only sampling from prior for speed
+)
+barg(fit_test, ss)
+fit_2 <- fit_test
+fit_list <- list(fit_test, fit_2)
+x <- barg(fit_list, list(ss, ss))
 
 ## End(Not run:)
 

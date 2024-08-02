@@ -3,14 +3,12 @@
 #' distribution represented by single value traits.
 #' @param s1 A vector of numerics drawn from a uniform distribution.
 #' @examples
-#' if (FALSE) {
-#'   out <- .conj_bernoulli_sv(
-#'     s1 = sample(c(TRUE, FALSE), 10, prob = c(0.3, 0.7), replace = TRUE),
-#'     cred.int.level = 0.95,
-#'     plot = FALSE
-#'   )
-#'   lapply(out, head)
-#' }
+#' out <- .conj_bernoulli_sv(
+#'   s1 = sample(c(TRUE, FALSE), 10, prob = c(0.3, 0.7), replace = TRUE),
+#'   cred.int.level = 0.95,
+#'   plot = TRUE
+#' )
+#' lapply(out, head)
 #' @keywords internal
 #' @noRd
 .conj_bernoulli_sv <- function(s1 = NULL, priors = NULL,
@@ -27,11 +25,8 @@
   a1_prime <- priors$a[1] + sum(s1)
   b1_prime <- priors$b[1] + sum(!s1)
   #* `Define support if it is missing`
-  if (is.null(support)) {
-    if (calculatingSupport) {
-      return(c(0.0001, 0.9999))
-    }
-    support <- seq(0.0001, 0.9999, 0.0001)
+  if (is.null(support) && calculatingSupport) {
+    return(c(0.0001, 0.9999))
   }
   out <- list()
   #* `Make Posterior Draws`
@@ -43,13 +38,7 @@
   #* `calculate highest density interval`
   hdi1 <- qbeta(c((1 - cred.int.level) / 2, (1 - ((1 - cred.int.level) / 2))), a1_prime, b1_prime)
   #* `calculate highest density estimate``
-  if (a1_prime <= 1 && b1_prime > 1) {
-    hde1 <- 0
-  } else if (a1_prime > 1 && b1_prime <= 1) {
-    hde1 <- 1
-  } else {
-    hde1 <- (a1_prime - 1) / (a1_prime + b1_prime - 2)
-  }
+  hde1 <- .betaHDE(a1_prime, b1_prime)
   #* `Store summary`
   out$summary <- data.frame(HDE_1 = hde1, HDI_1_low = hdi1[1], HDI_1_high = hdi1[2])
   out$posterior <- list("a" = a1_prime, "b" = b1_prime)

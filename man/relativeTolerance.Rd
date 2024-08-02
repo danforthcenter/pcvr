@@ -51,7 +51,7 @@ growth models are another suggested way to test relative tolerance questions.
 \examples{
 
 ## Not run:
-\donttest{
+
 sv <- read.pcv(
   "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv",
   reader = "fread"
@@ -95,7 +95,7 @@ control <- "fertilizer"
 rt <- relativeTolerance(df, phenotypes, grouping, control, controlGroup)
 head(rt)
 sapply(rt, function(c) sum(is.na(c)))
-}
+
 ## End(Not run)
 
 }

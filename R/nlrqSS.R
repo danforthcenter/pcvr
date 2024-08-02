@@ -356,9 +356,6 @@
   if (nrow(xy) < 5) {
     stop("too few distinct input values to fit the EVD growth model")
   }
-  if (any(xy[["x"]] < 0)) {
-    stop("all 'x' values must be non-negative to fit the EVD growth model")
-  }
   rAsym <- stats::NLSstRtAsymptote(xy)
   pars <- stats::coef(stats::lm(
     log(-log((rAsym - y) / (rAsym - stats::NLSstLfAsymptote(xy)))) ~ log(x),
@@ -400,7 +397,7 @@
   B <- -coefs[1] # pseudo precision/slope at inflection, conventionally b
   start <- stats::setNames(c(B, A, C), c("B", "A", "C"))
   if (int) {
-    start <- stats::setNames(append(obs_min, start), c("I", "A", "B", "C"))
+    start <- stats::setNames(append(obs_min, start), c("I", "B", "A", "C"))
   }
   return(start)
 }
@@ -432,7 +429,7 @@
   B <- coefs[1] # pseudo precision/slope at inflection, conventionally b
   start <- stats::setNames(c(B, A, C), c("B", "A", "C"))
   if (int) {
-    start <- stats::setNames(append(obs_min, start), c("I", "A", "B", "C"))
+    start <- stats::setNames(append(obs_min, start), c("I", "B", "A", "C"))
   }
   return(start)
 }

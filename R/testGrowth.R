@@ -77,8 +77,6 @@ testGrowth <- function(ss = NULL, fit, test = "A") {
         res <- .lmeGamAnova(ss, fit)
       } else if (ss$type == "mgcv") {
         res <- .mgcvGamAnova(ss, fit)
-      } else if (ss$type == "brms") {
-        stop("For brms model tests use brms::hypothesis")
       }
     } else if (ss$type %in% c("nls", "nlme")) {
       res <- .nlsAnova(ss, fit, test_pars = test)
@@ -88,8 +86,6 @@ testGrowth <- function(ss = NULL, fit, test = "A") {
       }
     } else if (grepl("surv", ss$type)) {
       res <- .survTest(ss)
-    } else if (ss$type == "brms") {
-      stop("For brms model tests use brms::hypothesis style syntax")
     }
   }
 
@@ -97,6 +93,10 @@ testGrowth <- function(ss = NULL, fit, test = "A") {
 }
 
 #' Helper function to specify type of testing to do
+#' @examples
+#' .specifyTestType(NULL, "anything") # survival test
+#' .specifyTestType(list(), "A") # parameter anova test
+#' .specifyTestType(list(), "A1 > A2") # contrast test
 #' @keywords internal
 #' @noRd
 
@@ -114,21 +114,20 @@ testGrowth <- function(ss = NULL, fit, test = "A") {
 
 #' (non)linear hypothesis function for nls and nlme models
 #' @examples
-#' if (FALSE) {
-#'   set.seed(123)
-#'   logistic_df <- growthSim("logistic",
-#'     n = 20, t = 25,
-#'     params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
-#'   )
-#'   ss <- growthSS(
-#'     model = "logistic", form = y ~ time | id / group,
-#'     df = logistic_df, type = "nls"
-#'   )
-#'   fit <- fitGrowth(ss)
-#'   .nlhypothesis(fit, test = list("A1 - A2", "B1-B2"))
-#'   .nlhypothesis(fit, test = "A1 + 10 - A2 * 1.1")
-#'   .nlhypothesis(fit, test = "A1/B1 - A2/B2")
-#' }
+#'
+#' logistic_df <- growthSim("logistic",
+#'  n = 20, t = 25,
+#'  params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
+#' )
+#' ss <- growthSS(
+#'  model = "logistic", form = y ~ time | id / group,
+#'  df = logistic_df, type = "nls"
+#' )
+#' fit <- fitGrowth(ss)
+#' .nlhypothesis(fit, test = list("A1 - A2", "B1-B2"))
+#' .nlhypothesis(fit, test = "A1 + 10 - A2 * 1.1")
+#' .nlhypothesis(fit, test = "A1/B1 - A2/B2")
+#'
 #' @keywords internal
 #' @noRd
 
@@ -143,9 +142,6 @@ testGrowth <- function(ss = NULL, fit, test = "A") {
   } else if (methods::is(fit, "nlrq") || is.list(fit)) {
     out <- .nlrqTest2(ss, fit, test)
     return(out)
-  } else {
-    stop(paste0("These hypotheses are only implemented for nls and nlme models.",
-                " For brms models see brms::hypothesis"))
   }
   dfresid <- summary(fit)$df[2]
   vcMat <- stats::vcov(fit)
@@ -172,19 +168,18 @@ testGrowth <- function(ss = NULL, fit, test = "A") {
 
 #' mgcv gam testing function
 #' @examples
-#' if (FALSE) {
-#'   set.seed(123)
-#'   logistic_df <- growthSim("logistic",
-#'     n = 20, t = 25,
-#'     params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
-#'   )
-#'   ss <- growthSS(
-#'     model = "gam", form = y ~ time | id / group,
-#'     df = logistic_df, type = "mgcv"
-#'   )
-#'   fit <- fitGrowth(ss)
-#'   .mgcvGamAnova(ss, fit)$anova
-#' }
+#'
+#' logistic_df <- growthSim("logistic",
+#'  n = 20, t = 25,
+#'  params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
+#' )
+#' ss <- growthSS(
+#'  model = "gam", form = y ~ time | id / group,
+#'  df = logistic_df, type = "mgcv"
+#' )
+#' fit <- fitGrowth(ss)
+#' .mgcvGamAnova(ss, fit)$anova
+#'
 #' @keywords internal
 #' @noRd
 
@@ -207,19 +202,18 @@ testGrowth <- function(ss = NULL, fit, test = "A") {
 
 #' lme gam testing function
 #' @examples
-#' if (FALSE) {
-#'   set.seed(123)
-#'   logistic_df <- growthSim("logistic",
-#'     n = 20, t = 25,
-#'     params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
-#'   )
-#'   ss <- growthSS(
-#'     model = "gam", form = y ~ time | id / group,
-#'     df = logistic_df, type = "nlme", sigma = "power"
-#'   )
-#'   fit <- fitGrowth(ss)
-#'   .lmeGamAnova(ss, fit)$anova
-#' }
+#'
+#' logistic_df <- growthSim("logistic",
+#'  n = 20, t = 25,
+#'  params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
+#' )
+#' ss <- growthSS(
+#'  model = "gam", form = y ~ time | id / group,
+#'  df = logistic_df, type = "nlme"
+#'  )
+#' fit <- fitGrowth(ss)
+#' .lmeGamAnova(ss, fit)$anova
+#'
 #' @keywords internal
 #' @noRd
 
@@ -254,20 +248,19 @@ testGrowth <- function(ss = NULL, fit, test = "A") {
 
 #' rq gam testing function for multiple taus
 #' @examples
-#' if (FALSE) {
-#'   set.seed(123)
-#'   logistic_df <- growthSim("logistic",
-#'     n = 20, t = 25,
-#'     params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
-#'   )
-#'   ss <- growthSS(
-#'     model = "gam", form = y ~ time | id / group,
-#'     df = logistic_df, type = "nlrq", tau = c(0.25, 0.5, 0.75)
-#'   )
-#'   fit <- fitGrowth(ss, cores = 3)
-#'   .rqGamAnova(ss, fit)$"0.25"$anova
-#'   .rqGamAnova(ss, fit[[1]])$anova
-#' }
+#'
+#' logistic_df <- growthSim("logistic",
+#'  n = 20, t = 25,
+#'  params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
+#' )
+#' ss <- growthSS(
+#'  model = "gam", form = y ~ time | id / group,
+#'  df = logistic_df, type = "nlrq", tau = c(0.25, 0.5, 0.75)
+#' )
+#' fit <- fitGrowth(ss, cores = 3)
+#' .rqGamAnova(ss, fit)$"0.25"$anova
+#' .rqGamAnova(ss, fit[[1]])$anova
+#'
 #' @keywords internal
 #' @noRd
 
@@ -301,23 +294,20 @@ testGrowth <- function(ss = NULL, fit, test = "A") {
   return(res)
 }
 
-
-
 #' lm gam testing function
 #' @examples
-#' if (FALSE) {
-#'   set.seed(123)
-#'   logistic_df <- growthSim("logistic",
-#'     n = 20, t = 25,
-#'     params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
-#'   )
-#'   ss <- growthSS(
-#'     model = "gam", form = y ~ time | id / group,
-#'     df = logistic_df, type = "nls"
-#'   )
-#'   fit <- fitGrowth(ss)
-#'   .lmGamAnova(ss, fit)$anova
-#' }
+#'
+#' logistic_df <- growthSim("logistic",
+#'  n = 20, t = 25,
+#'  params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
+#' )
+#' ss <- growthSS(
+#'  model = "gam", form = y ~ time | id / group,
+#'  df = logistic_df, type = "nls"
+#' )
+#' fit <- fitGrowth(ss)
+#' .lmGamAnova(ss, fit)$anova
+#'
 #' @keywords internal
 #' @noRd
 
@@ -340,19 +330,24 @@ testGrowth <- function(ss = NULL, fit, test = "A") {
 
 #' nls and nlme testing function
 #' @examples
-#' if (FALSE) {
-#'   set.seed(123)
-#'   logistic_df <- growthSim("logistic",
-#'     n = 20, t = 25,
-#'     params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
-#'   )
-#'   ss <- growthSS(
-#'     model = "logistic", form = y ~ time | id / group,
-#'     df = logistic_df, type = "nls"
-#'   )
-#'   fit <- fitGrowth(ss)
-#'   .nlsAnova(ss, fit, test_pars = "A")$anova
-#' }
+#'
+#' logistic_df <- growthSim("logistic",
+#'  n = 20, t = 25,
+#'  params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
+#' )
+#' ss <- growthSS(
+#'  model = "logistic", form = y ~ time | id / group,
+#'  df = logistic_df, type = "nls"
+#' )
+#' fit <- fitGrowth(ss)
+#' .nlsAnova(ss, fit, test_pars = "A")$anova
+#' ss <- growthSS(
+#'  model = "logistic", form = y ~ time | id / group,
+#'  df = logistic_df, type = "nlme"
+#' )
+#' fit <- fitGrowth(ss)
+#' .nlsAnova(ss, fit, test_pars = "A")$anova
+#'
 #' @keywords internal
 #' @noRd
 
@@ -378,20 +373,18 @@ testGrowth <- function(ss = NULL, fit, test = "A") {
 
 #' pseudo LRT function for nlrq
 #' @examples
-#' if (FALSE) {
-#'   set.seed(123)
-#'   logistic_df <- growthSim("logistic",
-#'     n = 20, t = 25,
-#'     params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
-#'   )
-#'   ss <- growthSS(
-#'     model = "logistic", form = y ~ time | id / group,
-#'     df = logistic_df, type = "nlrq", tau = c(0.25, 0.5, 0.75)
-#'   )
-#'   fit <- fitGrowth(ss)
 #'
-#'   .nlrqTest(ss, fit, test_pars = "A")$anova
-#' }
+#' logistic_df <- growthSim("logistic",
+#'  n = 20, t = 25,
+#'  params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
+#' )
+#' ss <- growthSS(
+#'  model = "logistic", form = y ~ time | id / group,
+#'  df = logistic_df, type = "nlrq", tau = c(0.25, 0.5, 0.75)
+#' )
+#' fit <- fitGrowth(ss)
+#' .nlrqTest(ss, fit, test_pars = "A")$anova
+#'
 #' @keywords internal
 #' @noRd
 
@@ -459,20 +452,16 @@ testGrowth <- function(ss = NULL, fit, test = "A") {
 
 #' Parameterized test for nlrq models using SE
 #' @examples
-#' if (FALSE) {
-#'   set.seed(123)
-#'   logistic_df <- growthSim("logistic",
-#'     n = 20, t = 25,
-#'     params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
-#'   )
-#'   ss <- growthSS(
-#'     model = "logistic", form = y ~ time | id / group,
-#'     df = logistic_df, type = "nlrq", tau = c(0.25, 0.5, 0.75)
-#'   )
-#'   fit <- fitGrowth(ss)
-#'
-#'   .nlrqTest2(ss, fit, test_pars = "a|0.5|A > b|0.5|A")
-#' }
+#' logistic_df <- growthSim("logistic",
+#'  n = 20, t = 25,
+#'  params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
+#' )
+#' ss <- growthSS(
+#'  model = "logistic", form = y ~ time | id / group,
+#'  df = logistic_df, type = "nlrq", tau = c(0.25, 0.5, 0.75)
+#' )
+#' fit <- fitGrowth(ss)
+#' .nlrqTest2(ss, fit, test_pars = "a|0.5|A > b|0.5|A")
 #' @keywords internal
 #' @noRd
 
@@ -538,19 +527,23 @@ testGrowth <- function(ss = NULL, fit, test = "A") {
 
 #' Chisq based test for survreg and flexsurv models using SE
 #' @examples
-#' if (FALSE) {
-#'   set.seed(123)
-#'   model <- "survival weibull"
-#'   form <- y > 100 ~ time | id / group
-#'   df <- growthSim("logistic",
-#'     n = 20, t = 25,
-#'     params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
-#'   )
-#'   ss <- growthSS(model = model, form = form, df = df, type = "survreg")
-#'   # lapply(ss,head)
-#'   fit <- fitGrowth(ss)
-#'   p <- plotGrowth(fit, ss$pcvrForm, ss$df)
-#' }
+#'
+#' ## Not run:
+#'
+#' df <- growthSim("logistic",
+#'  n = 20, t = 25,
+#'  params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
+#' )
+#' ss <- growthSS("survival weibull", y > 100 ~ time | id / group, df = df, type = "survreg")
+#' fit <- fitGrowth(ss)
+#' .survTest(ss, fit)
+#'
+#' ss <- growthSS("survival weibull", y > 100 ~ time | id / group, df = df, type = "flexsurv")
+#' fit <- fitGrowth(ss)
+#' .survTest(ss, fit)
+#'
+#' ## End(Not run)
+#'
 #' @keywords internal
 #' @noRd
 

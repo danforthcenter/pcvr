@@ -10,9 +10,6 @@ pcv.joyplot(
   group = NULL,
   y = NULL,
   id = NULL,
-  method = NULL,
-  hypothesis = "unequal",
-  compare = NULL,
   bin = "label",
   freq = "value",
   trait = "trait",
@@ -41,25 +38,6 @@ length 2 group will be faceted group1 ~ group2).}
 Note that ggridges::geom_density_ridges_gradient does not support transparency,
 so if fillx is TRUE then only the outer line will show individual IDs.}
 
-\item{method}{A method to use in comparing distributions/means.
-Currently "ks" and "pdf" are supported, where density is approximated from the
-histogram columns and  KS test is used between samples from those densities per each photo.
-For the "pdf" method a flat prior is added to the data and the distributions are compared
-depending on the hypothesis provided. For other
-options in comparing multi-value traits see \code{\link{conjugate}} or
-\code{\link{pcv.emd}}.}
-
-\item{hypothesis}{A hypothesis for the "pdf" method,
-must be either unequal, equal, lesser, or greater.}
-
-\item{compare}{Groups to compare. By default this is set to FALSE,
-which corresponds to no testing. Other values of compare are passed to
-fixCompare to make t.test comparisons using ggpubr.
-In short, NULL will run all pairwise T tests, a single value of the X axis
-variable will compare that level to all other levels of the X variable,
-alternatively this can be a list as used by ggpubr: list(c("level1", "level2"),
- c("level1", "level3"))}
-
 \item{bin}{Column containing histogram (multi value trait) bins. Defaults to "label".}
 
 \item{freq}{Column containing histogram counts. Defaults to "value"}
@@ -72,8 +50,7 @@ Default is T, if F then \code{ggridges::geom_density_ridges} is used instead,
  may issue a message about deprecated ggplot2 features.}
 }
 \value{
-Returns either a ggplot object or a list containing a ggplot and a
-dataframe of statistical comparisons (if compare is not FALSE).
+Returns a ggplot.
 }
 \description{
 Make Joyplots for multi value trait plantCV data and optionally compare distributions
@@ -82,43 +59,23 @@ Make Joyplots for multi value trait plantCV data and optionally compare distribu
 
 ## Not run:
 
-df <- read.pcv(
-  "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest2.csv", "long"
+library(extraDistr)
+dists <- list(
+  rmixnorm = list(mean = c(70, 150), sd = c(15, 5), alpha = c(0.3, 0.7)),
+  rnorm = list(mean = 90, sd = 20),
+  rlnorm = list(meanlog = log(40), sdlog = 0.5)
 )
-
-x <- pcv.joyplot(df,
-  index = "index_frequencies_index_ndvi",
-  group = c("genotype", "timepoint"), method = "pdf"
-)
-
-if (FALSE) {
-  wide <- read.pcv(
-    paste0(
-      "https://media.githubusercontent.com/media/joshqsumner/",
-      "pcvrTestData/main/pcv4-multi-value-traits.csv"
-    ),
-    mode = "wide"
-  )
-  wide <- bw.time(wide, mode = "DAS", plot = FALSE)
-  wide$genotype <- substr(wide$barcode, 3, 5)
-  wide$genotype <- ifelse(wide$genotype == "002", "B73",
-    ifelse(wide$genotype == "003", "W605S",
-      ifelse(wide$genotype == "004", "MM", "Mo17")
-    )
-  )
-  wide$fertilizer <- substr(wide$barcode, 8, 8)
-  wide$fertilizer <- ifelse(wide$fertilizer == "A", "100",
-    ifelse(wide$fertilizer == "B", "50", "0")
-  )
-  p <- pcv.joyplot(wide[wide$DAS > 15, ],
-    index = "hue_frequencies",
-    group = c("genotype", "fertilizer"), y = "DAS"
-  )
-
-  # For some color traits it makes sense to show the actual
-  # represented color, which can be done easily by adding new fill scales.
-  p + ggplot2::scale_fill_gradientn(colors = scales::hue_pal(l = 65)(360))
-}
+x_wide <- mvSim(dists = dists, n_samples = 5, counts = 1000,
+                min_bin = 1, max_bin = 180, wide = TRUE)
+pcv.joyplot(x_wide, index = "sim", group = "group")
+x_long <- mvSim(dists = dists, n_samples = 5, counts = 1000,
+                min_bin = 1, max_bin = 180, wide = FALSE)
+x_long$trait <- "x"
+p <- pcv.joyplot(x_long, bin = "variable", group = "group")
+# we might want to display hues as their hue
+p + ggplot2::scale_fill_gradientn(colors = scales::hue_pal(l = 65)(360))
+x_long$group2 <- "example"
+pcv.joyplot(x_long, bin = "variable", y = "group", fillx = FALSE)
 ## End(Not run)
 
 }

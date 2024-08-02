@@ -16,22 +16,6 @@
 #' @param id Optionally a variable to show the outline of different replicates.
 #' Note that ggridges::geom_density_ridges_gradient does not support transparency,
 #' so if fillx is TRUE then only the outer line will show individual IDs.
-#' @param method A method to use in comparing distributions/means.
-#'  Currently "ks" and "pdf" are supported, where density is approximated from the
-#'  histogram columns and  KS test is used between samples from those densities per each photo.
-#'  For the "pdf" method a flat prior is added to the data and the distributions are compared
-#'  depending on the hypothesis provided. For other
-#'  options in comparing multi-value traits see \code{\link{conjugate}} or
-#'  \code{\link{pcv.emd}}.
-#' @param hypothesis A hypothesis for the "pdf" method,
-#' must be either unequal, equal, lesser, or greater.
-#' @param compare Groups to compare. By default this is set to FALSE,
-#' which corresponds to no testing. Other values of compare are passed to
-#' fixCompare to make t.test comparisons using ggpubr.
-#' In short, NULL will run all pairwise T tests, a single value of the X axis
-#' variable will compare that level to all other levels of the X variable,
-#' alternatively this can be a list as used by ggpubr: list(c("level1", "level2"),
-#'  c("level1", "level3"))
 #' @param bin Column containing histogram (multi value trait) bins. Defaults to "label".
 #' @param freq Column containing histogram counts. Defaults to "value"
 #' @param trait Column containing phenotype names. Defaults to "trait".
@@ -46,57 +30,34 @@
 #' @importFrom stats setNames density aggregate as.formula ks.test
 #'
 #'
-#' @return Returns either a ggplot object or a list containing a ggplot and a
-#' dataframe of statistical comparisons (if compare is not FALSE).
+#' @return Returns a ggplot.
 #'
 #' @examples
 #'
 #' ## Not run:
 #'
-#' df <- read.pcv(
-#'   "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcvrTest2.csv", "long"
+#' library(extraDistr)
+#' dists <- list(
+#'   rmixnorm = list(mean = c(70, 150), sd = c(15, 5), alpha = c(0.3, 0.7)),
+#'   rnorm = list(mean = 90, sd = 20),
+#'   rlnorm = list(meanlog = log(40), sdlog = 0.5)
 #' )
-#'
-#' x <- pcv.joyplot(df,
-#'   index = "index_frequencies_index_ndvi",
-#'   group = c("genotype", "timepoint"), method = "pdf"
-#' )
-#'
-#' if (FALSE) {
-#'   wide <- read.pcv(
-#'     paste0(
-#'       "https://media.githubusercontent.com/media/joshqsumner/",
-#'       "pcvrTestData/main/pcv4-multi-value-traits.csv"
-#'     ),
-#'     mode = "wide"
-#'   )
-#'   wide <- bw.time(wide, mode = "DAS", plot = FALSE)
-#'   wide$genotype <- substr(wide$barcode, 3, 5)
-#'   wide$genotype <- ifelse(wide$genotype == "002", "B73",
-#'     ifelse(wide$genotype == "003", "W605S",
-#'       ifelse(wide$genotype == "004", "MM", "Mo17")
-#'     )
-#'   )
-#'   wide$fertilizer <- substr(wide$barcode, 8, 8)
-#'   wide$fertilizer <- ifelse(wide$fertilizer == "A", "100",
-#'     ifelse(wide$fertilizer == "B", "50", "0")
-#'   )
-#'   p <- pcv.joyplot(wide[wide$DAS > 15, ],
-#'     index = "hue_frequencies",
-#'     group = c("genotype", "fertilizer"), y = "DAS"
-#'   )
-#'
-#'   # For some color traits it makes sense to show the actual
-#'   # represented color, which can be done easily by adding new fill scales.
-#'   p + ggplot2::scale_fill_gradientn(colors = scales::hue_pal(l = 65)(360))
-#' }
+#' x_wide <- mvSim(dists = dists, n_samples = 5, counts = 1000,
+#'                 min_bin = 1, max_bin = 180, wide = TRUE)
+#' pcv.joyplot(x_wide, index = "sim", group = "group")
+#' x_long <- mvSim(dists = dists, n_samples = 5, counts = 1000,
+#'                 min_bin = 1, max_bin = 180, wide = FALSE)
+#' x_long$trait <- "x"
+#' p <- pcv.joyplot(x_long, bin = "variable", group = "group")
+#' # we might want to display hues as their hue
+#' p + ggplot2::scale_fill_gradientn(colors = scales::hue_pal(l = 65)(360))
+#' x_long$group2 <- "example"
+#' pcv.joyplot(x_long, bin = "variable", y = "group", fillx = FALSE)
 #' ## End(Not run)
 #'
 #' @export
 
-
 pcv.joyplot <- function(df = NULL, index = NULL, group = NULL, y = NULL, id = NULL,
-                        method = NULL, hypothesis = "unequal", compare = NULL,
                         bin = "label", freq = "value", trait = "trait", fillx = TRUE) {
   #* ***** `general calculated values`
 
@@ -118,17 +79,6 @@ pcv.joyplot <- function(df = NULL, index = NULL, group = NULL, y = NULL, id = NU
   facet_layer <- joyPlotFacetHelperResult[["facet"]]
   sub <- joyPlotFacetHelperResult[["data"]]
   sub$grouping <- interaction(sub[, c(y, group)], drop = TRUE)
-
-  # default compare to NULL, but if F then skip all testing
-  if (is.logical(compare) && compare == FALSE) {
-    doStats <- FALSE
-  } else if (is.null(compare)) {
-    compareTests <- fixCompare(compare, sub, "grouping", TRUE)
-    doStats <- TRUE
-  } else {
-    compareTests <- fixCompare(compare, sub, "grouping")
-    doStats <- TRUE
-  }
 
   #* `if ID is null then aggregate, else draw with ID`
   if (is.null(id)) {
@@ -158,7 +108,7 @@ pcv.joyplot <- function(df = NULL, index = NULL, group = NULL, y = NULL, id = NU
       suppressMessages(ggridges::geom_density_ridges2(
         ggplot2::aes(
           x = .data$bin, y = .data$y,
-          height = .data$freq, fill = .data$bin, color = .data$bin
+          height = .data$freq, fill = .data[[group]], color = .data[[group]]
         ),
         show.legend = FALSE, stat = "identity"
       )),
@@ -173,60 +123,8 @@ pcv.joyplot <- function(df = NULL, index = NULL, group = NULL, y = NULL, id = NU
     ggplot2::labs(x = index, y = c(y, group)[1]) +
     pcv_theme() +
     ggplot2::theme(legend.position = "none")
-
-  if (doStats && !is.null(method)) {
-    outStats <- .joyPlotDoStats(sub, method, compareTests, hypothesis)
-    return(list("plot" = p, "stats" = outStats))
-  } else {
-    return(p)
-  }
+  return(p)
 }
-
-
-
-#' ***********************************************************************************************
-#' *************** `JoyPlot Stats` ****************************************
-#' ***********************************************************************************************
-#'
-#' @description
-#' Internal function for running statistical comparisons
-#'
-#' @keywords internal
-#' @noRd
-
-.joyPlotDoStats <- function(sub, method, compareTests, hypothesis) {
-  if (!is.null(method) && match.arg(method, choices = c("ks", "pdf")) == "ks") {
-    #* ***** `Run KS tests`
-    ksVectors <- .makeKSdata(d = sub)
-    outStats <- do.call(rbind, lapply(compareTests, function(comp) {
-      g1 <- as.character(comp[1])
-      g2 <- as.character(comp[2])
-      ks <- suppressWarnings(ks.test(ksVectors[[g1]], ksVectors[[g2]]))
-      ret <- data.frame(
-        group1 = g1, group2 = g2, p = ks$p.value, method = "ks",
-        hypothesis = "same distribution"
-      )
-      return(ret)
-    }))
-  } else if (!is.null(method) && match.arg(method, choices = c("ks", "pdf")) == "pdf") {
-    #* ***** `Run PDF comparisons`
-    pdfs <- .makePDFs(d = sub)
-    outStats <- do.call(rbind, lapply(compareTests, function(comp) {
-      g1 <- as.character(comp[1])
-      g2 <- as.character(comp[2])
-      prob <- .post.prob.from.pdfs(pdfs[[g1]]$pdf, pdfs[[g2]]$pdf, hypothesis)
-      ret <- data.frame(
-        group1 = g1, group2 = g2, p = prob$post.prob, method = "pdf",
-        hypothesis = hypothesis
-      )
-      return(ret)
-    }))
-  }
-  return(outStats)
-}
-
-
-
 
 
 #' ***********************************************************************************************
@@ -305,58 +203,4 @@ pcv.joyplot <- function(df = NULL, index = NULL, group = NULL, y = NULL, id = NU
     sub <- sub[, c(group, y, id, "bin", "freq", trait)]
   }
   return(sub)
-}
-
-
-
-
-
-
-#' ***********************************************************************************************
-#' *************** `KS test vectors` ****************************************
-#' ***********************************************************************************************
-#'
-#' @description
-#' Internal function for making density of histogram data and returning it in a standard format for
-#' use in KS tests. Currently picking how many samples to pull from the distribution is arbitrary.
-#' @param d data with some manipulations to make groups consistent passed from pcv.joyplot
-#'
-#' @keywords internal
-#' @noRd
-
-.makeKSdata <- function(d = NULL) {
-  datsp <- split(d, d$grouping, drop = TRUE)
-  ksVectors <- lapply(datsp, function(datsp_iter) {
-    dens <- density(datsp_iter$bin,
-      weights = datsp_iter$freq / sum(datsp_iter$freq),
-      from = min(d$bin, na.rm = TRUE), # min and max of total data
-      to = max(d$bin, na.rm = TRUE),
-      n = 2^10
-    )
-    den_df <- as.data.frame(dens)
-    set.seed(123)
-    n_bins <- length(unique(datsp_iter$bin))
-    n_photos <- nrow(datsp_iter) / n_bins
-    vec <- sample(den_df$x, size = n_photos, replace = TRUE, prob = den_df$y)
-    return(vec)
-  })
-  return(ksVectors)
-}
-
-.makePDFs <- function(d = NULL) {
-  datsp <- split(d, d$grouping, drop = TRUE)
-  pdfs <- lapply(datsp, function(datsp_iter) {
-    ag_df <- stats::aggregate(freq ~ bin + grouping, data = datsp_iter, mean)
-    dens <- stats::density(ag_df$bin,
-      weights = (ag_df$freq + 1 / nrow(ag_df)) / sum((ag_df$freq + 1 / nrow(ag_df))),
-      # weighting with flat prior
-      from = min(d$bin, na.rm = TRUE), # min and max of total data
-      to = max(d$bin, na.rm = TRUE),
-      n = 2^10
-    )
-    dens_df <- data.frame(support = dens$x, dens = dens$y)
-    dens_df$pdf <- dens_df$dens / sum(dens_df$dens)
-    return(dens_df)
-  })
-  return(pdfs)
 }

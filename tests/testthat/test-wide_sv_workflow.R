@@ -1,3 +1,4 @@
+if (!interactive()) pdf(NULL)
 test_that("reading sv github data as wide works", {
   sv <- read.pcv(paste0(
     "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/",
@@ -24,7 +25,7 @@ test_that("reading sv github data as wide works", {
   #* check bw.time
   sv <- bw.time(sv,
     plantingDelay = 7, phenotype = "area_pixels", cutoff = 10, timeCol = "timestamp",
-    group = c("barcode", "rotation"), plot = FALSE
+    group = c("barcode", "rotation"), plot = TRUE
   )
   expect_equal(colnames(sv)[46:48], c("DAS", "DAP", "DAE"))
   expect_equal(head(sv$DAS), 4:9)
@@ -44,13 +45,13 @@ test_that("reading sv github data as wide works", {
   )
 
   #* see notes from 9/6/2023 on why this is done differently, also see test-long_sv_workflow.R
-  svNoOutliers <- bw.outliers(
+  svNoOutliers <- suppressWarnings(bw.outliers(
     df = sv, phenotype = "area_pixels", group = c("DAS", "genotype", "fertilizer"),
-    cutoff = 3, plot = FALSE
-  )
-  pct_removed <- nrow(svNoOutliers) / nrow(sv)
+    cutoff = 3, plot = TRUE
+  ))
+  pct_removed <- nrow(svNoOutliers$data) / nrow(sv)
   expect_equal(pct_removed, 0.997, tolerance = 0.0015)
-
+  expect_s3_class(svNoOutliers$plot, "ggplot")
   #* check cumulativePheno
   csv <- cumulativePheno(sv,
     phenotypes = c("area_pixels", "height_pixels", "width_pixels"),
@@ -58,12 +59,11 @@ test_that("reading sv github data as wide works", {
   )
   expect_equal(dim(csv), c(2854, 54))
   expect_equal(sum(csv$height_pixels_csum), 10646423)
-  #* check pcvBox makes a ggplot
-  sv_box <- pcvBox(sv[sv$DAS == 15, ],
-    x = "fertilizer", y = "area_pixels",
-    compare = "0", showPoints = TRUE
+  #* relative tolerance
+  rt <- relativeTolerance(
+    df = sv, phenotypes = "area_pixels", grouping = c("genotype", "fertilizer")
   )
-  expect_s3_class(sv_box, "ggplot")
+  expect_equal(dim(rt), c(9L, 9L))
   #* check growthSS (R CMD might throw a fit about brms and my SUGGESTS vs DEPENDS)
   sv$group <- interaction(sv$fertilizer, sv$genotype)
   sv$area_cm2 <- sv$area_pixels / (42.5^2)

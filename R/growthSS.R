@@ -393,8 +393,6 @@ growthSS <- function(model, form, sigma = NULL, df, start = NULL,
                      start = start, int = int)
     } else if (type_matched == "mgcv") {
       res <- .mgcvSS(model = model, form = form, df = df)
-    } else {
-      stop("Type must match one of brms, nlrq, nls, nlme, or mgcv")
     }
     res$type <- type
   }

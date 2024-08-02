@@ -1,6 +1,7 @@
+if (!interactive()) pdf(NULL)
 test_that("reading sv github data as long works", {
   sv <- read.pcv(paste0("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/",
-                        "main/pcv4-single-value-traits.csv"), mode = "long")
+                        "main/pcv4-single-value-traits.csv"), mode = "long", reader = "read.csv")
   #* check read in
   expect_equal(dim(sv), c(77058, 20))
   expect_equal(colnames(sv), c(
@@ -13,7 +14,7 @@ test_that("reading sv github data as long works", {
   #* check bw.time
   sv <- bw.time(sv,
     plantingDelay = 7, phenotype = "area_pixels", cutoff = 10, timeCol = "timestamp",
-    group = c("barcode", "rotation"), plot = FALSE
+    group = c("barcode", "rotation"), plot = TRUE
   )
   expect_equal(colnames(sv)[21:23], c("DAS", "DAP", "DAE"))
   expect_equal(head(sv$DAS), 4:9)
@@ -35,23 +36,23 @@ test_that("reading sv github data as long works", {
     ifelse(sv$fertilizer == "B", "50", "0")
   )
 
-  svNoOutliers <- bw.outliers(
+  svNoOutliers <- suppressWarnings(bw.outliers(
     df = sv, phenotype = "area_pixels", group = c("DAS", "genotype", "fertilizer"),
-    cutoff = 3, plot = FALSE
-  )
-  pct_removed <- nrow(svNoOutliers) / nrow(sv)
+    cutoff = 3, plot = TRUE
+  ))
+  pct_removed <- nrow(svNoOutliers$data) / nrow(sv)
   expect_equal(pct_removed, 0.997, tolerance = 0.0015)
-
+  expect_s3_class(svNoOutliers$plot, "ggplot")
   #* check cumulativePheno
   csv <- cumulativePheno(sv,
     phenotypes = c("area_pixels", "height_pixels", "width_pixels"),
     group = c("barcode", "rotation")
   )
+  #* check relativeTolerance
+  rt <- relativeTolerance(
+    df = sv, phenotypes = "area_pixels", grouping = c("genotype", "fertilizer")
+  )
+  expect_equal(dim(rt), c(9L, 9L))
   expect_equal(dim(csv), c(85620, 26))
   expect_equal(sum(csv[csv[["trait"]] == "height_pixels_csum", "value"]), 10646423)
-
-  #* check pcvBox makes a ggplot
-  sv_box <- pcvBox(sv[sv$DAS == 15 & sv$trait == "area_pixels", ], x = "fertilizer", y = "value",
-                   compare = "0", showPoints = TRUE)
-  expect_s3_class(sv_box, "ggplot")
 })

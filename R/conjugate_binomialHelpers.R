@@ -4,13 +4,11 @@
 #'
 #' @param s1 A named list of integer data containing number of successes and number of trials.
 #' @examples
-#' if (FALSE) {
-#'   .conj_binomial_sv(
-#'     s1 = list(successes = c(15, 14, 16, 11), trials = 20),
-#'     priors = list(a = c(0.5, 0.5), b = c(0.5, 0.5)),
-#'     plot = FALSE, cred.int.level = 0.95
-#'   )
-#' }
+#' .conj_binomial_sv(
+#'   s1 = list(successes = c(15, 14, 16, 11), trials = 20),
+#'   priors = list(a = c(0.5, 0.5), b = c(0.5, 0.5)),
+#'   plot = FALSE, cred.int.level = 0.95
+#' )
 #' @keywords internal
 #' @noRd
 
@@ -34,11 +32,8 @@
   }
   #* `Define dense Support`
   #* `p parameter is beta distributed`
-  if (is.null(support)) {
-    if (calculatingSupport) {
-      return(c(0.0001, 0.9999))
-    }
-    support <- seq(0.0001, 0.9999, 0.0001)
+  if (is.null(support) && calculatingSupport) {
+    return(c(0.0001, 0.9999))
   }
   out <- list()
   #* `Update priors with observed counts`
@@ -53,13 +48,7 @@
   hdi1 <- qbeta(c((1 - cred.int.level) / 2, (1 - ((1 - cred.int.level) / 2))), a1_prime, b1_prime)
 
   #* `calculate highest density estimate``
-  if (a1_prime <= 1 && b1_prime > 1) {
-    hde1 <- 0
-  } else if (a1_prime > 1 && b1_prime <= 1) {
-    hde1 <- 1
-  } else {
-    hde1 <- (a1_prime - 1) / (a1_prime + b1_prime - 2)
-  }
+  hde1 <- .betaHDE(a1_prime, b1_prime)
   #* `save summary and parameters`
   out$summary <- data.frame(HDE_1 = hde1, HDI_1_low = hdi1[1], HDI_1_high = hdi1[2])
   out$posterior$a <- a1_prime
@@ -87,13 +76,13 @@
   if (any(unlist(s1) < 0)) {
     stop(paste0(
       "Binomial method requires successes and trials in sample data",
-      "as a list of two integer vectors. See examples."
+      " as a list of two positive integer vectors. See examples."
     ))
   }
   if (length(s1) != 2) {
     stop(paste0(
       "Binomial method requires successes and trials in sample data",
-      "as a list of two integer vectors. See examples."
+      " as a list of two integer vectors. See examples."
     ))
   }
   if (any(is.null(names(s1)), names(s1) != c("successes", "trials"))) {

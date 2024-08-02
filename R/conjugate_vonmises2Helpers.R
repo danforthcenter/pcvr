@@ -3,29 +3,17 @@
 #' traits.
 #' @param s1 A vector of numerics generated from a circular process
 #' @examples
-#' if (FALSE) {
-#'   .conj_vonmises2_sv(
-#'     s1 = brms::rvon_mises(100, 2, 2), priors = list(mu = 0.5, kappa = 0.5),
-#'     cred.int.level = 0.95,
-#'     plot = FALSE
-#'   )$posterior
-#'
-#'   set.seed(123)
-#'   x <- rnorm(20, 0, 5)
-#'   .conj_vonmises2_sv(
-#'     s1 = x, priors = list(mu = 0.5, kappa = 0.5, boundary = c(-10, 10)),
-#'     cred.int.level = 0.95,
-#'     plot = FALSE
-#'   )$posterior
-#'
-#'   set.seed(123)
-#'   x <- rnorm(20, 90, 20)
-#'   .conj_vonmises2_sv(
-#'     s1 = x, priors = list(mu = 75, kappa = 0.5, boundary = c(0, 180)),
-#'     cred.int.level = 0.95,
-#'     plot = FALSE
-#'   )$posterior
-#' }
+#' .conj_vonmises2_sv(
+#'   s1 = brms::rvon_mises(100, 2, 2), priors = list(mu = 0.5, kappa = 0.5),
+#'   cred.int.level = 0.95,
+#'   plot = FALSE
+#' )
+#' .conj_vonmises2_sv(
+#'   s1 = rnorm(20, 90, 20),
+#'   priors = list(mu = 75, kappa = 0.5, boundary = c(0, 180)),
+#'   cred.int.level = 0.95,
+#'   plot = TRUE
+#' )
 #' @keywords internal
 #' @noRd
 
@@ -140,21 +128,17 @@
 #' traits.
 #' @param s1 A vector of numerics generated from a circular process
 #' @examples
-#' if (FALSE) {
-#'   set.seed(123)
-#'   mv_gauss <- mvSim(
-#'     dists = list(
-#'       rnorm = list(mean = 50, sd = 10),
-#'       rnorm = list(mean = 60, sd = 12)
-#'     ),
-#'     n_samples = c(30, 40)
-#'   )
-#'   .conj_vonmises2_mv(
-#'     s1 = mv_gauss[1:30, -1], priors = list(mu = 30, kappa = 1, boundary = c(0, 180)),
-#'     cred.int.level = 0.95,
-#'     plot = FALSE
-#'   )$posterior
-#' }
+#' mv_gauss <- mvSim(
+#'   dists = list(
+#'     rnorm = list(mean = 50, sd = 10)
+#'   ),
+#'   n_samples = 30
+#' )
+#' .conj_vonmises2_mv(
+#'   s1 = mv_gauss[, -1], priors = list(mu = 30, kappa = 1, boundary = c(0, 180)),
+#'   cred.int.level = 0.95,
+#'   plot = TRUE
+#' )
 #' @keywords internal
 #' @noRd
 
@@ -163,15 +147,6 @@
                                calculatingSupport = FALSE) {
   #* `set support to NULL to avoid default length of 10000`
   support <- NULL
-  #* `Standardize sample 1 class and names`
-  if (is.null(colnames(s1))) {
-    bins <- (seq_along(s1))
-    colnames(s1) <- paste0("b", bins)
-    warning(paste0("Assuming unnamed columns represent bins from ", min(bins), " to ", max(bins)))
-  }
-  if (is.matrix(s1)) {
-    s1 <- as.data.frame(s1)
-  }
   #* `Reorder columns if they are not in the numeric order`
   histColsBin <- as.numeric(sub("[a-zA-Z_.]+", "", colnames(s1)))
   bins_order <- sort(histColsBin, index.return = TRUE)$ix
@@ -281,10 +256,8 @@
 #' This is a biased estimate of kappa, with small samples sizes the bias is strong.
 #' @param x A vector of numerics from a von mises distribution
 #' @examples
-#' if (FALSE) {
-#'   x <- brms::rvon_mises(100, 3, 2)
-#'   .bessel.inv(mean(cos(x - .circular.mean(x))))
-#' }
+#' x <- brms::rvon_mises(100, 3, 2)
+#' .bessel.inv(mean(cos(x - .circular.mean(x))))
 #' @keywords internal
 #' @noRd
 
@@ -305,10 +278,7 @@
 #' @param n the number of samples used. If NULL, the default, then length(x) is used. If this is <16
 #' then the bias adjustment from Best, D. and Fisher N. (1981) is used.
 #' @examples
-#' if (FALSE) {
-#'   x <- brms::rvon_mises(15, 3, 2)
-#'   .unbiased.kappa(x)
-#' }
+#' .unbiased.kappa(brms::rvon_mises(15, 3, 2))
 #' @keywords internal
 #' @noRd
 

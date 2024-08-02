@@ -14,54 +14,6 @@
 #'
 #' @examples
 #'
-#' if (FALSE) {
-#'   ex <- growthSim("logistic",
-#'     n = 20, t = 25,
-#'     params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
-#'   )
-#'   ex$group <- factor(ex$group) # group MUST be a factor for nlme (typical)
-#'   nl1 <- nlme::nlme(
-#'     model = y ~ A / (1 + exp((B - time) / C)),
-#'     data = ex,
-#'     fixed = list(
-#'       A ~ 0 + group,
-#'       B ~ 0 + group,
-#'       C ~ 0 + group
-#'     ),
-#'     random = A + B + C ~ 1,
-#'     groups = ~group,
-#'     weights = nlme::varIdent(form = ~ 1 | group),
-#'     start = c(150, 150, 10, 10, 3, 3)
-#'   )
-#'   # linear sigma using power
-#'   nl2 <- nlme::nlme(
-#'     model = y ~ A / (1 + exp((B - time) / C)),
-#'     data = ex,
-#'     fixed = list(
-#'       A ~ 0 + group,
-#'       B ~ 0 + group,
-#'       C ~ 0 + group
-#'     ),
-#'     random = A ~ 1,
-#'     groups = ~group,
-#'     weights = nlme::varPower(form = ~ time | group),
-#'     start = c(150, 150, 10, 10, 3, 3)
-#'   )
-#'   # linear sigma using exp
-#'   nl3 <- nlme::nlme(
-#'     model = y ~ A / (1 + exp((B - time) / C)),
-#'     data = ex,
-#'     fixed = list(
-#'       A ~ 0 + group,
-#'       B ~ 0 + group,
-#'       C ~ 0 + group
-#'     ),
-#'     random = A ~ 1,
-#'     groups = ~group,
-#'     weights = nlme::varExp(form = ~ time | group),
-#'     start = c(150, 150, 10, 10, 3, 3)
-#'   )
-#' }
 #' simdf <- growthSim("logistic",
 #'   n = 20, t = 25,
 #'   params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
@@ -156,18 +108,11 @@
     start <- 0
   }
   if (is.null(start)) {
-    if (matched_model == "double logistic") {
+    if (grepl("double", matched_model)) {
       warning(paste0(
         "Double Sigmoid models are not supported as self-starting models, ",
         "you will need to add starting parameters.",
         "Note for these models type='brms' is recommended."
-      ))
-      startingValues <- NULL
-    } else if (matched_model == "double gompertz") {
-      warning(paste0(
-        "Double Sigmoid models are not supported as self-starting models, ",
-        "you will need to add starting parameters.",
-        " Note for these models type='brms' is recommended."
       ))
       startingValues <- NULL
     } else {
@@ -206,7 +151,7 @@
     group <- NULL
   }
   #* `variance formula`
-  if (methods::is(matched_sigma, "varFun")) {
+  if (methods::is(matched_sigma, "varFunc")) {
     weights_form <- matched_sigma
   } else if (matched_sigma %in% c("int", "none")) {
     weights_form <- nlme::varIdent(

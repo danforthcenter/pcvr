@@ -37,11 +37,20 @@ jobs:
           extra-packages: any::covr
           needs: coverage
 
+      - name: Build Cmdstan
+        run: |
+          cmdstanr::check_cmdstan_toolchain(fix = TRUE)
+          cmdstanr::install_cmdstan(cores = parallel::detectCores())
+        shell: Rscript {0}
+
       - name: Test coverage
         run: |
           covr::codecov(
+            type = c("examples", "tests"),
+            combine_types = TRUE,
             quiet = FALSE,
             clean = FALSE,
+            line_exclusions = list("R/readpcvjson.R", "R/plsr.R", "R/vipPlot.R", "R/pcvsubread.R", "R/readpcv3.R"),
             install_path = file.path(normalizePath(Sys.getenv("RUNNER_TEMP"), winslash = "/"), "package")
           )
         shell: Rscript {0}

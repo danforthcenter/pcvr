@@ -33,92 +33,15 @@
 #'
 #' ## Not run:
 #'
-#' makeMvData <- function(bins = 180, mu, sigma) {
-#'   setNames(
-#'     data.frame(matrix(hist(rnorm(2000, mu, sigma),
-#'       breaks = seq(1, bins, 1), plot = FALSE
-#'     )$counts, nrow = 1)),
-#'     paste0("b", 1:(bins - 1))
-#'   )
-#' }
-#' set.seed(123)
-#' mv <- rbind(
-#'   do.call(rbind, lapply(1:30, function(i) {
-#'     makeMvData(bins = 180, mu = 50, sigma = 10)
-#'   })),
-#'   do.call(rbind, lapply(1:30, function(i) {
-#'     makeMvData(bins = 180, mu = 60, sigma = 12)
-#'   }))
+#' s1 <- mvSim(
+#'  dists = list(runif = list(min = 15, max = 150)),
+#'  n_samples = 10,
+#'  counts = 1000,
+#'  min_bin = 1,
+#'  max_bin = 180,
+#'  wide = TRUE
 #' )
-#' mv$group <- rep(c("a", "b"), each = 30)
-#' dim(mv)
-#' mv_aggregated <- mv_ag(mv, group = "group", n_per_group = 5, mvCols = "b")
-#' dim(mv_aggregated)
-#'
-#'
-#' if (FALSE) {
-#'   hue_wide <- read.pcv(
-#'     paste0(
-#'       "https://media.githubusercontent.com/media/joshqsumner/",
-#'       "pcvrTestData/main/pcv4-multi-value-traits.csv"
-#'     ),
-#'     mode = "wide", reader = "fread"
-#'   )
-#'
-#'   hue_wide$genotype <- substr(hue_wide$barcode, 3, 5)
-#'   hue_wide$genotype <- ifelse(hue_wide$genotype == "002", "B73",
-#'     ifelse(hue_wide$genotype == "003", "W605S",
-#'       ifelse(hue_wide$genotype == "004", "MM", "Mo17")
-#'     )
-#'   )
-#'   hue_wide$fertilizer <- substr(hue_wide$barcode, 8, 8)
-#'   hue_wide$fertilizer <- ifelse(hue_wide$fertilizer == "A", "100",
-#'     ifelse(hue_wide$fertilizer == "B", "50", "0")
-#'   )
-#'   hue_wide <- bw.time(hue_wide, timeCol = "timestamp", group = "barcode")
-#'   phenotypes <- colnames(hue_wide)[grepl("hue_frequencies", colnames(hue_wide))]
-#'   phenoForm <- paste0("cbind(", paste0(phenotypes, collapse = ", "), ")")
-#'   groupForm <- "DAS+barcode+genotype+fertilizer"
-#'   form <- as.formula(paste0(phenoForm, "~", groupForm))
-#'   hue_wide <- aggregate(form, data = hue_wide, mean, na.rm = TRUE)
-#'   dim(hue_wide)
-#'   hue_ag1 <- mv_ag(
-#'     df = hue_wide, group = c("DAS", "genotype", "fertilizer"),
-#'     n_per_group = 2
-#'   )
-#'   dim(hue_ag1)
-#'   hue_ag2 <- mv_ag(hue_wide,
-#'     group = c("DAS", "genotype", "fertilizer"),
-#'     n_per_group = 1
-#'   )
-#'   dim(hue_ag2)
-#'
-#'   hue_long <- read.pcv(
-#'     paste0(
-#'       "https://media.githubusercontent.com/media/joshqsumner/",
-#'       "pcvrTestData/main/pcv4-multi-value-traits.csv"
-#'     ),
-#'     reader = "fread"
-#'   )
-#'   hue_long$genotype <- substr(hue_long$barcode, 3, 5)
-#'   hue_long$genotype <- ifelse(hue_long$genotype == "002", "B73",
-#'     ifelse(hue_long$genotype == "003", "W605S",
-#'       ifelse(hue_long$genotype == "004", "MM", "Mo17")
-#'     )
-#'   )
-#'   hue_long$fertilizer <- substr(hue_long$barcode, 8, 8)
-#'   hue_long$fertilizer <- ifelse(hue_long$fertilizer == "A", "100",
-#'     ifelse(hue_long$fertilizer == "B", "50", "0")
-#'   )
-#'   hue_long <- bw.time(hue_long, timeCol = "timestamp", group = "barcode")
-#'   dim(hue_long)
-#'   hue_ag3 <- mv_ag(hue_long,
-#'     group = c("DAS", "genotype", "fertilizer"),
-#'     mvCols = "hue", n_per_group = 2
-#'   )
-#'   dim(hue_ag3)
-#'   head(hue_ag3)
-#' }
+#' mv_ag(s1, group = "group", mvCols = "sim_", n_per_group = 2)
 #'
 #' ## End(Not run)
 #'
@@ -221,15 +144,11 @@ mv_ag <- function(df, group, mvCols = "frequencies", n_per_group = 1, outRows = 
     } else {
       iter_n <- n_per_group
     }
-    if (is.null(rownames(mv))) {
-      rownames(mv) <- seq_len(nrow(mv))
-    } # should be redundant
+    rownames(mv) <- seq_len(nrow(mv))
     nms <- sample(rownames(mv), nrow(mv), replace = FALSE)
     if (nrow(mv) > 1 & iter_n > 1) {
       index <- cut(seq_len(nrow(mv)), iter_n)
       nms_split <- split(nms, index)
-    } else if (nrow(mv) > 1 & iter_n == 1) {
-      nms_split <- list(rownames(mv))
     } else {
       nms_split <- list(rownames(mv))
     }
@@ -287,8 +206,6 @@ mv_ag <- function(df, group, mvCols = "frequencies", n_per_group = 1, outRows = 
     if (length(IDS) > 1 & iter_n > 1) {
       index <- cut(seq_along(IDS), iter_n)
       ids_split <- split(IDS, index)
-    } else if (length(IDS) > 1 & iter_n == 1) {
-      ids_split <- list(IDS)
     } else {
       ids_split <- list(IDS)
     }
