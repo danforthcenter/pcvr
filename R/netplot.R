@@ -77,8 +77,6 @@ net.plot <- function(net, fill = "strength", shape = NULL, size = 3, edgeWeight 
       edges <- edges[edges[[edgeWeight]] >= as.numeric(cutoff), ]
     } else if (is.numeric(edgeFilter)) {
       edges <- edges[edges[[edgeWeight]] >= edgeFilter, ]
-    } else {
-      stop("edgeFilter must be character or numeric, see ?net.plot for details.")
     }
     nodes <- nodes[nodes$index %in% c(edges$from, edges$to), ]
   }
