@@ -77,8 +77,6 @@ testGrowth <- function(ss = NULL, fit, test = "A") {
         res <- .lmeGamAnova(ss, fit)
       } else if (ss$type == "mgcv") {
         res <- .mgcvGamAnova(ss, fit)
-      } else if (ss$type == "brms") {
-        stop("For brms model tests use brms::hypothesis")
       }
     } else if (ss$type %in% c("nls", "nlme")) {
       res <- .nlsAnova(ss, fit, test_pars = test)
@@ -88,8 +86,6 @@ testGrowth <- function(ss = NULL, fit, test = "A") {
       }
     } else if (grepl("surv", ss$type)) {
       res <- .survTest(ss)
-    } else if (ss$type == "brms") {
-      stop("For brms model tests use brms::hypothesis style syntax")
     }
   }
 
