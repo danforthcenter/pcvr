@@ -74,6 +74,8 @@ x_long$trait <- "x"
 p <- pcv.joyplot(x_long, bin = "variable", group = "group")
 # we might want to display hues as their hue
 p + ggplot2::scale_fill_gradientn(colors = scales::hue_pal(l = 65)(360))
+x_long$group2 <- "example"
+pcv.joyplot(x_long, bin = "variable", y = "group", fillx = FALSE)
 ## End(Not run)
 
 }
