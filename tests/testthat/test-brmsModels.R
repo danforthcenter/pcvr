@@ -223,7 +223,8 @@ test_that("weibull survival", {
   expect_s3_class(fit, "brmsfit")
   plot <- growthPlot(fit, form = ss$pcvrForm, df = ss$df)
   expect_s3_class(plot, "ggplot")
-  # need to still check plotting/testing, those are pending.
+  test <- testGrowth(ss, fit, "groupa > groupb")
+  expect_s3_class(test, "brmshypothesis")
 })
 
 test_that("binomial survival", {
@@ -241,7 +242,6 @@ test_that("binomial survival", {
   expect_s3_class(fit, "brmsfit")
   plot <- growthPlot(fit, form = ss$pcvrForm, df = ss$df)
   expect_s3_class(plot, "ggplot")
-  # need to still check plotting/testing, those are pending.
 })
 
 test_that(".brmSurvSS options all work", {
