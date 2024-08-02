@@ -42,7 +42,6 @@ Easy igraph visualization with pcv.net output
 }
 \examples{
 
-## Not run:
 library(extraDistr)
 dists <- list(
   rmixnorm = list(mean = c(70, 150), sd = c(15, 5), alpha = c(0.3, 0.7)),
@@ -56,7 +55,12 @@ emd_df <- pcv.emd(x,
 )
 net <- pcv.net(emd_df, meta = "group")
 net.plot(net)
-## End(Not run)
+net.plot(net, edgeFilter = "0.25")
+net.plot(net, edgeFilter = 0.25, fill = c("degree", "group"),
+         shape = c("degree", "group"))
+net.plot(net, edgeFilter = 0.25, fill = c("degree", "group"),
+         shape = c("degree"))
+
 
 }
 \keyword{distance,}

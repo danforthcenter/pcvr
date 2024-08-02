@@ -23,7 +23,6 @@
 #' @keywords emd, earth mover's distance, multi-value trait, network
 #' @examples
 #'
-#' ## Not run:
 #' library(extraDistr)
 #' dists <- list(
 #'   rmixnorm = list(mean = c(70, 150), sd = c(15, 5), alpha = c(0.3, 0.7)),
@@ -42,7 +41,7 @@
 #'          shape = c("degree", "group"))
 #' net.plot(net, edgeFilter = 0.25, fill = c("degree", "group"),
 #'          shape = c("degree"))
-#' ## End(Not run)
+#'
 #'
 #' @return Returns a ggplot of a network.
 #'
