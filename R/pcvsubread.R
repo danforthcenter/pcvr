@@ -10,9 +10,11 @@
 #' @importFrom utils read.csv
 #' @return Returns a dataframe after subsetting happens outside of R using the awk statement from
 #' \code{awkHelper}.
-#' @keywords read.csv, pcv, wide, long
-#' @export
-#'
+#' @return A data.frame
+#' 
+#' @keywords internal
+#' @noRd
+
 pcv.sub.read <- function(inputFile, filters, reader = "read.csv", awk = NULL, ...) {
   awkCommand <- awkHelper(inputFile, filters, awk)
   COLS <- colnames(read.csv(inputFile, nrows = 1))
