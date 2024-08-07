@@ -1,10 +1,7 @@
 #* there are lots of options and until one obviously breaks I am not going to try to test all of them.
-library(testthat)
-library(brms)
-library(ggplot2)
-library(pcvr)
 
 test_that("Logistic brms model pipeline", {
+  skip_if_not_installed("brms")
   set.seed(123)
   simdf <- growthSim(
     "logistic",
@@ -96,6 +93,7 @@ test_that("Logistic brms model pipeline", {
 })
 
 test_that("distPlot works with many models", {
+  skip_if_not_installed("brms")
   load(url("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/brmsFits.rdata"))
   fits <- list(fit_3, fit_15)
   form <- y ~ time | id / group
@@ -116,6 +114,7 @@ test_that("distPlot works with many models", {
 })
 
 test_that("brms model warns about priors", {
+  skip_if_not_installed("brms")
   set.seed(123)
   simdf <- growthSim(
     "linear",
@@ -134,6 +133,7 @@ test_that("brms model warns about priors", {
 })
 
 test_that("Hierarchical Model Works", {
+  skip_if_not_installed("brms")
   set.seed(123)
   simdf <- growthSim(
     "logistic",
@@ -158,6 +158,7 @@ test_that("Hierarchical Model Works", {
 })
 
 test_that("Changepoint model can be specified", {
+  skip_if_not_installed("brms")
   set.seed(123)
   noise <- do.call(rbind, lapply(1:30, function(i) {
     chngpt <- c(20, 21)
@@ -208,6 +209,7 @@ test_that("Changepoint model can be specified", {
 })
 
 test_that("weibull survival", {
+  skip_if_not_installed("brms")
   set.seed(123)
   model <- "survival"
   form <- y > 100 ~ time | id / group
@@ -228,6 +230,7 @@ test_that("weibull survival", {
 })
 
 test_that("binomial survival", {
+  skip_if_not_installed("brms")
   set.seed(123)
   model <- "survival binomial"
   form <- y > 100 ~ time | id / group
