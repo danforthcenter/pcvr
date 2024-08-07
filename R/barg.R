@@ -77,7 +77,7 @@
 #' @return A named list containing Rhat, ESS, NEFF, and Prior/Posterior Predictive plots.
 #' See details for interpretation.
 #'
-#' @examples
+#' @examplesIf rlang::is_installed(c("brms", "cmdstanr"))
 #'
 #' ## Not run:
 #'
