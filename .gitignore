@@ -9,3 +9,4 @@
 inst/doc
 tutorials/pcvr*/*.html
 vignettes/*.html
+tools
