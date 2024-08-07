@@ -1,10 +1,10 @@
 Package: pcvr
 Type: Package
-Title: Functions for use with plantCV output
-Version: 0.2.0
+Title: Functions for plant phenotyping
+Version: 1.0.0
 Author: Josh Sumner
 Maintainer: Josh Sumner <jsumner@danforthcenter.org>
-Description: Streamlines use of plantCV output in common data analysis tasks.
+Description: Provides functions for analyzing common types of plant phenotyping data and streamlines use of PlantCV output.
 Depends:
     R (>= 3.5.0)
 License: GPL-2
