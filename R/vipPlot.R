@@ -16,7 +16,7 @@
 #' @examples
 #'
 #' ## Not run:
-#' if (rlang::is_installed("pls"))
+#' if (rlang::is_installed("pls")) {
 #' dists <- list(
 #'   rlnorm = list(meanlog = log(40), sdlog = 0.5),
 #'   rlnorm = list(meanlog = log(60), sdlog = 0.35)
