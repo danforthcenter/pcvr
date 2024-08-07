@@ -11,7 +11,7 @@
 #' @return Returns a dataframe after subsetting happens outside of R using the awk statement from
 #' \code{awkHelper}.
 #' @return A data.frame
-#' 
+#'
 #' @keywords internal
 #' @noRd
 
