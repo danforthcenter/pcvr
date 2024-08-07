@@ -18,6 +18,8 @@
 #' @importFrom stats complete.cases coef predict
 #'
 #' @keywords PLSR
+#' @return a list of lists each with model performance, prediction target, model, plot, N components,
+#' and variable influence on projection components for each response variable.
 #' @examples
 #'
 #' ## Not run:

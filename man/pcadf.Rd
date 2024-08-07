@@ -29,6 +29,10 @@ the column names that should be used.}
 \item{ncp}{Optional, number of principal components to return attached
 to dataframe if data is returned. Defaults to all.}
 }
+\value{
+A ggplot or list with a ggplot, a dataframe with the data and PCs, and the factominer
+PCA object as elements.
+}
 \description{
 Function to run a PCA, plot and optionally return the data with PCA coordinates and pca object
 }

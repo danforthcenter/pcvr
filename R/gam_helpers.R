@@ -27,6 +27,7 @@
 #' @importFrom viridis viridis
 #' @import ggplot2
 #' @import patchwork
+#' @return A dataframe or a list containing a ggplot and a dataframe
 #' @examples
 #'
 #' ex <- pcvr::growthSim("logistic",

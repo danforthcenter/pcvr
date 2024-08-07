@@ -6,6 +6,12 @@
 \usage{
 pcv_theme()
 }
+\value{
+A ggplot theme
+}
 \description{
 Default theme for ggplots made by pcvr functions.
+}
+\examples{
+ggplot() + pcv_theme()
 }

@@ -50,7 +50,7 @@ This takes a vector of column names of length 1 or more (see examples).}
 \item{include}{if a long dataframe is returned then these columns will be added to the dataframe,
 labelled for i and j (the row positions for compared histograms).
 If a matrix is returned then this information is stored in the row names.
-This defaults to \link{rescale}.}
+This defaults to reorder.}
 
 \item{mat}{Logical, should data be returned as an nrow x nrow matrix or as a long dataframe?
 By Default this is FALSE and a long dataframe is returned.

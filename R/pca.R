@@ -16,6 +16,8 @@
 #' @import ggplot2
 #' @import FactoMineR
 #' @importFrom stats as.formula
+#' @return A ggplot or list with a ggplot, a dataframe with the data and PCs, and the factominer
+#' PCA object as elements.
 #' @examples
 #'
 #' ## Not run:

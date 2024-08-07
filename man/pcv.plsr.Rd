@@ -21,6 +21,10 @@ taken to be a pattern that will match some set of column names in the data to us
 
 \item{...}{Further arguments passed to caret::train.}
 }
+\value{
+a list of lists each with model performance, prediction target, model, plot, N components,
+and variable influence on projection components for each response variable.
+}
 \description{
 Partial Least Squares Regression (plsr) is often used to analyze spectral data.
 }
