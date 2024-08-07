@@ -47,7 +47,7 @@
 #' setting and scientific question.
 #' See Kruschke (2018) for details on ROPE and other Bayesian methods to aide
 #' decision-making \url{https://doi.org/10.3758/s13423-016-1221-4}
-#' and \url{https://doi.org/10.1177/251524591877130}.
+#' and \url{https://doi.org/10.1037/a0029146}.
 #' @param rope_ci The credible interval probability to use for ROPE. Defaults to 0.89.
 #' @param cred.int.level The credible interval probability to use
 #' in computing HDI for samples, defaults to 0.89.
