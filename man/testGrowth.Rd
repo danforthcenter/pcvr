@@ -66,7 +66,9 @@ testGrowth(ss2, fit2, "A1 - A2*1.1")
 
 ## End(Not run)
 }
-\keyword{hypothesis,}
-\keyword{nlme,}
+\keyword{brms}
+\keyword{hypothesis}
+\keyword{mgcv}
+\keyword{nlme}
 \keyword{nlrq}
-\keyword{nls,}
+\keyword{nls}

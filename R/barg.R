@@ -73,9 +73,10 @@
 #'
 #'
 #'
-#' @keywords Bayesian, brms, prior
+#' @keywords Bayesian brms prior
 #' @return A named list containing Rhat, ESS, NEFF, and Prior/Posterior Predictive plots.
 #' See details for interpretation.
+#' @importFrom rlang is_installed
 #'
 #' @examplesIf rlang::is_installed(c("brms", "cmdstanr"))
 #'

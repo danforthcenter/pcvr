@@ -39,6 +39,6 @@ awkHelper(file, list("gear in 4, 3"), awk = "existing_command")
 
 }
 \keyword{long}
-\keyword{pcv,}
-\keyword{read.csv,}
-\keyword{wide,}
+\keyword{pcv}
+\keyword{read.csv}
+\keyword{wide}

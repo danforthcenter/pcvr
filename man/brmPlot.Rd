@@ -64,10 +64,5 @@ growthPlot(fit = fit, form = y ~ time | group, groups = "a", df = ss$df)
 ## End(Not run)
 
 }
-\keyword{exponential,}
-\keyword{gompertz,}
-\keyword{growth-curve,}
-\keyword{linear,}
-\keyword{logistic,}
-\keyword{monomolecular,}
-\keyword{power-law}
+\keyword{brms}
+\keyword{growth-curve}

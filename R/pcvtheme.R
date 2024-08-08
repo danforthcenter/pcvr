@@ -4,7 +4,7 @@
 #' @importFrom ggplot2 %+replace%
 #' @return A ggplot theme
 #' @examples
-#' ggplot() + pcv_theme()
+#' ggplot2::ggplot() + pcv_theme()
 #' @export
 #'
 pcv_theme <- function() {

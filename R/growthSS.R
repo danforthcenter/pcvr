@@ -114,7 +114,7 @@
 #' @param tau A vector of quantiles to fit for nlrq models.
 #' @param hierarchy Optionally a list of model parameters that should themselves by modeled by another
 #' predictor variable. This is only used with the brms backend.
-#' @keywords Bayesian, brms
+#' @keywords Bayesian brms nls nlme nlrq mgcv longitudinal
 #'
 #' @importFrom stats as.formula rgamma
 #'

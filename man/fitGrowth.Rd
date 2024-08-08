@@ -42,8 +42,8 @@ fitGrowth(ss)
 
 ## End(Not run)
 }
-\keyword{Bayesian,}
-\keyword{brms,}
-\keyword{nlme,}
+\keyword{Bayesian}
+\keyword{brms}
+\keyword{nlme}
 \keyword{nlrq}
-\keyword{nls,}
+\keyword{nls}

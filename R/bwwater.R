@@ -4,7 +4,7 @@
 #' @param envKey Character string representing the json key for environment data.
 #'  By default this is set to "environment".
 #'  Currently there are no situations where this makes sense to change.
-#' @keywords watering, json
+#' @keywords watering json
 #' @import jsonlite
 #' @importFrom utils type.convert
 #' @return A data frame containing the bellwether watering data

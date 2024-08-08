@@ -49,6 +49,5 @@ if (FALSE) {
 
 ## End(Not run)
 }
-\keyword{bellwether}
-\keyword{pcv,}
-\keyword{read.csv,}
+\keyword{json}
+\keyword{read.csv}

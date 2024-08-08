@@ -14,7 +14,6 @@
 #' future data if the available data has not reached some point (such as asymptotic size),
 #' although prediction using splines outside of the observed range is not necessarily reliable.
 #' @param facetGroups logical, should groups be separated in facets? Defaults to TRUE.
-#' @keywords growth-curve, logistic, gompertz, monomolecular, linear, exponential, power-law
 #' @import ggplot2
 #' @import viridis
 #' @importFrom stats as.formula

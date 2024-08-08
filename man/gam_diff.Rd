@@ -78,7 +78,4 @@ out2 <- gam_diff(
   model = m, g1 = "a", g2 = "b", byVar = NULL, smoothVar = NULL, plot = TRUE
 )
 }
-\keyword{gam,}
-\keyword{growth,}
-\keyword{mgcv,}
-\keyword{spline}
+\keyword{gam}

@@ -106,6 +106,6 @@ x <- barg(fit_list, list(ss, ss))
 ## End(Not run:)
 \dontshow{\}) # examplesIf}
 }
-\keyword{Bayesian,}
-\keyword{brms,}
+\keyword{Bayesian}
+\keyword{brms}
 \keyword{prior}

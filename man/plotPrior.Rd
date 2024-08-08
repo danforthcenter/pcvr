@@ -45,6 +45,6 @@ plotPrior(priors, "gompertz")[[1]]
 ## End(Not run:)
 
 }
-\keyword{Bayesian,}
-\keyword{brms,}
-\keyword{prior}
+\keyword{Bayesian}
+\keyword{brms}
+\keyword{priors}

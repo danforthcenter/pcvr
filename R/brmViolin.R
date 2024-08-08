@@ -30,7 +30,7 @@
 #' This is treated as TRUE if a plot will not be generated but
 #' otherwise defaults to FALSE.
 #'
-#' @keywords brms, ggplot2
+#' @keywords brms ggplot2
 #'
 #' @import ggplot2
 #' @import viridis

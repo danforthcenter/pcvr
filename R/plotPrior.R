@@ -14,7 +14,7 @@
 #' trendlines and densities will be plotted on margins for some distributions.
 #' @param n Numeric, if type is a model then how many draws from the prior should be simulated?
 #' @param t Numeric, time passed to growthSim. Defaults to 25 (the growthSim default).
-#' @keywords Bayesian, brms, prior
+#' @keywords Bayesian brms priors
 #' @return A named list of plots showing prior distributions that \code{growthSS} would use,
 #' optionally with a plot of simulated growth curves using draws from those priors.
 #' @import ggplot2

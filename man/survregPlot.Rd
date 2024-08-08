@@ -70,10 +70,4 @@ survregPlot(fit,
 ## End(Not run)
 
 }
-\keyword{exponential,}
-\keyword{gompertz,}
-\keyword{growth-curve,}
-\keyword{linear,}
-\keyword{logistic,}
-\keyword{monomolecular,}
-\keyword{power-law}
+\keyword{survival}

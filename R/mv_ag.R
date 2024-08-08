@@ -26,7 +26,7 @@
 #' @param valueCol Column with phenotype values, defaults to "value".
 #' @param id Column that uniquely identifies images if the data is in long format.
 #' This is ignored when data is in wide format.
-#' @keywords emd, earth mover's distance, multi-value trait, network
+#' @keywords emd multi-value-trait
 #' @import parallel
 #' @importFrom stats setNames aggregate as.formula
 #' @examples

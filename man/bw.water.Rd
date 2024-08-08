@@ -27,4 +27,4 @@ w <- bw.water("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/m
 ## End(Not run)
 }
 \keyword{json}
-\keyword{watering,}
+\keyword{watering}

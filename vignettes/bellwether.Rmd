@@ -74,7 +74,7 @@ plot(support, dbeta(support, 5, 5), type = "l", main = "simulated example")
 
 ### `read.pcv`
 
-Bellwether data can be very large so this vignette will use a small bellwether dataset that is already subset to remove most multi-value traits (most color histograms). Both the [single value data](https://github.com/danforthcenter/pcvrTestData/blob/main/) and [multi value data](https://github.com/danforthcenter/pcvrTestData/blob/main/) are available on github. For single value traits being read into wide format there is not a compelling reason to use `read.pcv` in place directly calling `fread` or `read.csv`. The benefits of `read.pcv` are only shown if you need to filter data outside of R or if you want to use your data in a different format than it is stored in (wide going to long and vice versa).
+Bellwether data can be very large so this vignette will use a small bellwether dataset that is already subset to remove most multi-value traits (most color histograms). Both the [single value data](https://github.com/joshqsumner/pcvrTestData) and [multi value data](https://github.com/joshqsumner/pcvrTestData) are available on github. For single value traits being read into wide format there is not a compelling reason to use `read.pcv` in place directly calling `fread` or `read.csv`. The benefits of `read.pcv` are only shown if you need to filter data outside of R or if you want to use your data in a different format than it is stored in (wide going to long and vice versa).
 
 The single value traits can be read in with `read.pcv`, here using `data.table::fread` for speed.
 

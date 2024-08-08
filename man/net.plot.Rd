@@ -63,10 +63,5 @@ net.plot(net, edgeFilter = 0.25, fill = c("degree", "group"),
 
 
 }
-\keyword{distance,}
-\keyword{earth}
-\keyword{emd,}
-\keyword{mover's}
-\keyword{multi-value}
+\keyword{emd}
 \keyword{network}
-\keyword{trait,}

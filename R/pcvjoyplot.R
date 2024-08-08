@@ -23,7 +23,7 @@
 #'  Default is T, if F then \code{ggridges::geom_density_ridges} is used instead,
 #'   with arbitrary fill. Note that \code{ggridges::geom_density_ridges_gradient}
 #'   may issue a message about deprecated ggplot2 features.
-#' @keywords bayesian, ggplot, multi value trait, pcv.hists
+#' @keywords multi-value-trait
 #' @import ggplot2
 #' @import ggridges
 #' @import data.table

@@ -161,10 +161,7 @@ if (FALSE) {
 ## End(Not run)
 
 }
-\keyword{distance,}
-\keyword{earth}
-\keyword{emd,}
+\keyword{earth-mover's-distance}
+\keyword{emd}
 \keyword{histogram}
-\keyword{mover's}
 \keyword{multi-value}
-\keyword{trait,}

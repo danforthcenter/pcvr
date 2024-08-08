@@ -145,7 +145,5 @@ if (FALSE) {
 ## End(Not run)
 
 }
-\keyword{long}
-\keyword{pcv,}
-\keyword{read.csv,}
-\keyword{wide,}
+\keyword{pcv4}
+\keyword{read.csv}

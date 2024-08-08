@@ -113,5 +113,6 @@ svl <- bw.time(svl,
 ## End(Not run)
 
 }
-\keyword{Bellwether,}
+\keyword{DAS}
 \keyword{ggplot}
+\keyword{time}

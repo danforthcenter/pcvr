@@ -16,6 +16,7 @@
 #'
 #' @import ggplot2
 #' @importFrom stats complete.cases coef predict
+#' @importFrom rlang is_installed
 #'
 #' @keywords PLSR
 #' @return a list of lists each with model performance, prediction target, model, plot, N components,

@@ -95,7 +95,5 @@ base_url <- "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/"
 ## End(Not run)
 
 }
-\keyword{bellwether,}
-\keyword{pcv,}
 \keyword{pcv3}
-\keyword{read.csv,}
+\keyword{read.csv}

@@ -22,7 +22,6 @@
 #' \code{\link{growthSS}}.
 #' @param D If decay is being simulated then this is the starting point for decay. This defaults to 0.
 #'
-#' @keywords growth curve, logistic, gompertz, monomolecular, linear, exponential, power-law
 #' @return Returns a dataframe of example growth data following the input parameters.
 #'
 #' @importFrom stats rnorm setNames

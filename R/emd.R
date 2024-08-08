@@ -41,7 +41,7 @@
 #' @return A dataframe/matrix (if plot=FALSE) or a list with a dataframe/matrix and\
 #' a ggplot (if plot=TRUE). The returned data contains pairwise EMD values.
 #'
-#' @keywords emd, earth mover's distance, multi-value trait, histogram
+#' @keywords emd earth-mover's-distance multi-value histogram
 #' @examples
 #'
 #' ## Not run:
@@ -326,7 +326,7 @@ pcv.emd <- function(df, cols = NULL, reorder = NULL, include = reorder, mat = FA
 #' @param s1 Histogram as a numeric vector of counts per position.
 #' @param s2 Histogram as a numeric vector of counts per position. Must be the same length as s1.
 #'
-#' @keywords emd, earth mover's distance, multi-value trait, histogram
+#' @keywords internal
 #' @return Returns EMD between two samples as a numeric.
 #' @examples
 #'
@@ -336,8 +336,7 @@ pcv.emd <- function(df, cols = NULL, reorder = NULL, include = reorder, mat = FA
 #' plot(s2, type = "l"); lines(s1)
 #' emd1d(s1, s2)
 #'
-#' @export
-#'
+#' @noRd
 #'
 emd1d <- function(s1, s2) {
   if (length(s1) != length(s2)) {

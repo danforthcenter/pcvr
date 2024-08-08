@@ -25,7 +25,7 @@
 #' @importFrom utils type.convert
 #' @importFrom stats quantile
 #'
-#' @keywords emd, earth mover's distance, multi-value trait, network
+#' @keywords emd multi-value-trait network
 #' @examples
 #'
 #' ## Not run:

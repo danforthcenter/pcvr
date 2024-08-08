@@ -16,7 +16,7 @@
 #' @param facetGroups logical, should groups be separated in facets? Defaults to TRUE.
 #' @param hierarchy_value If a hierarchical model is being plotted, what value should the
 #' hiearchical predictor be? If left NULL (the default) the mean value is used.
-#' @keywords growth-curve, logistic, gompertz, monomolecular, linear, exponential, power-law
+#' @keywords growth-curve brms
 #' @import ggplot2
 #' @import viridis
 #' @importFrom stats as.formula

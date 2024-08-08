@@ -36,7 +36,7 @@
 #' very many levels then it may be helpful to separate by that variable.
 #' Note this will subset the data for each model so it will change
 #' the outlier removal (generally to be more conservative).
-#' @keywords Bellwether, ggplot, outliers
+#' @keywords ggplot outliers
 #' @import ggplot2
 #' @import data.table
 #' @importFrom stats complete.cases cooks.distance glm as.formula lm mahalanobis cov
