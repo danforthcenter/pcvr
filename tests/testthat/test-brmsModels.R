@@ -2,6 +2,7 @@
 
 test_that("Logistic brms model pipeline", {
   skip_if_not_installed("brms")
+  skip_on_cran()
   set.seed(123)
   simdf <- growthSim(
     "logistic",
@@ -90,10 +91,15 @@ test_that("Logistic brms model pipeline", {
     n = 200, t = 25
   )
   expect_s3_class(pp4$simulated, "ggplot")
+  barg_output1 <- barg(fit, ss)
+  fit_2 <- fit
+  fit_list <- list(fit, fit_2)
+  x <- barg(fit_list, list(ss, ss))
 })
 
 test_that("distPlot works with many models", {
   skip_if_not_installed("brms")
+  skip_on_cran()
   load(url("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/brmsFits.rdata"))
   fits <- list(fit_3, fit_15)
   form <- y ~ time | id / group
@@ -115,6 +121,7 @@ test_that("distPlot works with many models", {
 
 test_that("brms model warns about priors", {
   skip_if_not_installed("brms")
+  skip_on_cran()
   set.seed(123)
   simdf <- growthSim(
     "linear",
@@ -134,6 +141,7 @@ test_that("brms model warns about priors", {
 
 test_that("Hierarchical Model Works", {
   skip_if_not_installed("brms")
+  skip_on_cran()
   set.seed(123)
   simdf <- growthSim(
     "logistic",
@@ -210,6 +218,7 @@ test_that("Changepoint model can be specified", {
 
 test_that("weibull survival", {
   skip_if_not_installed("brms")
+  skip_on_cran()
   set.seed(123)
   model <- "survival"
   form <- y > 100 ~ time | id / group
@@ -231,6 +240,7 @@ test_that("weibull survival", {
 
 test_that("binomial survival", {
   skip_if_not_installed("brms")
+  skip_on_cran()
   set.seed(123)
   model <- "survival binomial"
   form <- y > 100 ~ time | id / group
