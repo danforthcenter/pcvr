@@ -6,3 +6,5 @@
 ^papers
 ^tools
 ^\.github$
+^cran-comments\.md$
+^install.ps1

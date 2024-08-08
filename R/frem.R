@@ -29,8 +29,6 @@
 #' @importFrom stats as.formula na.omit
 #' @import patchwork
 #'
-#' @keywords read.csv, pcv, wide, long
-#'
 #' @return Returns either a plot (if returnData=FALSE) or a list with a plot and
 #' data/a list of dataframes (depending on returnData and cor).
 #'

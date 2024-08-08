@@ -21,12 +21,13 @@
 #' standard errors. Defaults to TRUE.
 #' @param plot Logical, should a plot of the difference be returned? Defaults to TRUE.
 #'
-#' @keywords gam, growth, mgcv, spline
+#' @keywords gam
 #' @importFrom mgcv gam s
 #' @importFrom stats vcov predict df.residual qt
 #' @importFrom viridis viridis
 #' @import ggplot2
 #' @import patchwork
+#' @return A dataframe or a list containing a ggplot and a dataframe
 #' @examples
 #'
 #' ex <- pcvr::growthSim("logistic",

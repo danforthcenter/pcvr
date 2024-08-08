@@ -14,7 +14,7 @@
 #' "mv" for multi value traits only, and "all" for all traits.
 #' Note that by default tuple value data is output with single value data in a wide format.
 #' @import jsonlite
-#' @keywords read.csv, pcv, bellwether
+#' @keywords read.csv json
 #' @return Returns a dataframe.
 #' @export
 #' @examples

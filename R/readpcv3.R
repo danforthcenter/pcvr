@@ -34,7 +34,7 @@
 #' The default is "long" because this function is built for pcv3 output,
 #' which was generally a wider format to start with than pcv4 output.
 #' @param ... Other arguments passed to \code{read.pcv}.
-#' @keywords read.csv, pcv, bellwether, pcv3
+#' @keywords read.csv pcv3
 #' @importFrom utils read.csv
 #' @return Returns a dataframe potentially with several files merged into it.
 #'

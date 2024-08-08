@@ -146,6 +146,5 @@ if(FALSE) {
 ## End(Not run)
 
 }
-\keyword{Bellwether,}
-\keyword{ggplot,}
+\keyword{ggplot}
 \keyword{outliers}

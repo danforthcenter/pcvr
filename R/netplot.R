@@ -20,7 +20,7 @@
 #' @import ggplot2
 #' @importFrom stats quantile
 #'
-#' @keywords emd, earth mover's distance, multi-value trait, network
+#' @keywords emd network
 #' @examples
 #'
 #' library(extraDistr)

@@ -1,10 +1,13 @@
 Package: pcvr
 Type: Package
-Title: Functions for use with plantCV output
-Version: 0.2.0
-Author: Josh Sumner
+Title: Plant Phenotyping and Bayesian Statistics
+Version: 1.0.0
+Authors@R:
+    c(person("Josh", "Sumner", email = "jsumner@danforthcenter.org",
+             role = c("aut", "cre", "cph")),
+             person("Jeffrey", "Berry", role = c("aut")))
 Maintainer: Josh Sumner <jsumner@danforthcenter.org>
-Description: Streamlines use of plantCV output in common data analysis tasks.
+Description: Analyse common types of plant phenotyping data, provide a simplified interface to longitudinal growth modeling and select Bayesian statistics, and streamline use of PlantCV output.
 Depends:
     R (>= 3.5.0)
 License: GPL-2
@@ -15,6 +18,7 @@ Additional_repositories: https://mc-stan.org/r-packages/
 RoxygenNote: 7.2.3
 Imports: 
     FactoMineR,
+    rlang,
     stats,
     utils,
     methods,
@@ -49,3 +53,5 @@ Suggests:
     testthat (>= 3.0.0)
 VignetteBuilder: knitr
 Config/testthat/edition: 3
+URL: https://github.com/danforthcenter/pcvr
+BugReports: https://github.com/danforthcenter/pcvr/issues

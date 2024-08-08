@@ -67,10 +67,6 @@ net2 <- pcv.net(emd_df, meta = "group", filter = "0.9", direction = "lesser")
 ## End(Not run)
 
 }
-\keyword{distance,}
-\keyword{earth}
-\keyword{emd,}
-\keyword{mover's}
-\keyword{multi-value}
+\keyword{emd}
+\keyword{multi-value-trait}
 \keyword{network}
-\keyword{trait,}

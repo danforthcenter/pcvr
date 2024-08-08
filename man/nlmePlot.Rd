@@ -70,10 +70,4 @@ nlmePlot(fit, form = ss$pcvrForm, groups = "a", df = ss$df, timeRange = 1:10, gr
 ## End(Not run)
 
 }
-\keyword{exponential,}
-\keyword{gompertz,}
-\keyword{growth-curve,}
-\keyword{linear,}
-\keyword{logistic,}
-\keyword{monomolecular,}
-\keyword{power-law}
+\keyword{growth-curve}

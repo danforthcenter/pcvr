@@ -77,10 +77,5 @@ mv_ag(s1, group = "group", mvCols = "sim_", n_per_group = 2)
 ## End(Not run)
 
 }
-\keyword{distance,}
-\keyword{earth}
-\keyword{emd,}
-\keyword{mover's}
-\keyword{multi-value}
-\keyword{network}
-\keyword{trait,}
+\keyword{emd}
+\keyword{multi-value-trait}

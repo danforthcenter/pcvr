@@ -19,7 +19,7 @@
 #' viridis colormaps are used in the order of virMaps
 #' @param virMaps order of viridis maps to use. Will be recycled to necessary length.
 #' Defaults to "plasma", but will generally be informed by growthPlot's default.
-#' @keywords growth-curve, logistic, gompertz, monomolecular, linear, exponential, power-law
+#' @keywords survival
 #' @importFrom methods is
 #' @import ggplot2
 #' @importFrom stats predict

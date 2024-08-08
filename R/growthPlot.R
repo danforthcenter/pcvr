@@ -25,7 +25,7 @@
 #' viridis colormap names to use in a different order than above. Note this is ignored for brms models.
 #' @param hierarchy_value If a hierarchical model is being plotted, what value should the
 #' hiearchical predictor be? If left NULL (the default) the mean value is used.
-#' @keywords growth-curve, logistic, gompertz, monomolecular, linear, exponential, power-law
+#' @keywords growth-curve
 #' @importFrom methods is
 #' @examples
 #'

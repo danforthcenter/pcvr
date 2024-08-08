@@ -84,7 +84,3 @@ frem(df, des = "genotype", phenotypes = c("pheno1", "pheno2", "pheno3"),
 ## End(Not run)
 
 }
-\keyword{long}
-\keyword{pcv,}
-\keyword{read.csv,}
-\keyword{wide,}

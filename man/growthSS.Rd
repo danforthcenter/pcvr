@@ -372,5 +372,10 @@ ex2_ss$formula # specifies an A intercept for each group and splines by group fo
 ## End(Not run)
 
 }
-\keyword{Bayesian,}
+\keyword{Bayesian}
 \keyword{brms}
+\keyword{longitudinal}
+\keyword{mgcv}
+\keyword{nlme}
+\keyword{nlrq}
+\keyword{nls}

@@ -6,7 +6,7 @@
 #' @param filters filtering conditions, see read.pcv for details. Format as
 #' list("trait in area, perimeter", "other contains stringToMatch")
 #' @param awk Optional awk command to use instead.
-#' @keywords read.csv, pcv, wide, long
+#' @keywords read.csv pcv wide long
 #' @details awkHelper attempts to make awk commands from human readable input.
 #' Currently when filters are supplied the input file has quotes removed by `sed`
 #' then is piped into awk, so an equivalent command line statement may be:

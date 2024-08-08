@@ -18,7 +18,7 @@
 #' is passed to brms::hypothesis, which has extensive documentation and is very flexible.
 #' Note that for survreg the \code{survival::survdiff} function is used so fewer hypothesis testing
 #' options are available and flexsurv models are tested using contrasts via \code{flexsurv::standsurv}.
-#' @keywords hypothesis, nlme, nls, nlrq
+#' @keywords hypothesis brms nlme nls nlrq mgcv
 #' @importFrom stats getCall logLik pchisq anova as.formula setNames vcov coef pt
 #' @importFrom nlme pdIdent corAR1 fixef
 #' @importFrom extraDistr qlst dlst

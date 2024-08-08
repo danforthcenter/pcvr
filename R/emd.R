@@ -15,7 +15,7 @@
 #' @param include if a long dataframe is returned then these columns will be added to the dataframe,
 #'  labelled for i and j (the row positions for compared histograms).
 #'  If a matrix is returned then this information is stored in the row names.
-#'  This defaults to \link{rescale}.
+#'  This defaults to reorder.
 #' @param mat Logical, should data be returned as an nrow x nrow matrix or as a long dataframe?
 #'  By Default this is FALSE and a long dataframe is returned.
 #'  Both options are comparable in terms of speed,
@@ -41,7 +41,7 @@
 #' @return A dataframe/matrix (if plot=FALSE) or a list with a dataframe/matrix and\
 #' a ggplot (if plot=TRUE). The returned data contains pairwise EMD values.
 #'
-#' @keywords emd, earth mover's distance, multi-value trait, histogram
+#' @keywords emd earth-mover's-distance multi-value histogram
 #' @examples
 #'
 #' ## Not run:
@@ -326,7 +326,7 @@ pcv.emd <- function(df, cols = NULL, reorder = NULL, include = reorder, mat = FA
 #' @param s1 Histogram as a numeric vector of counts per position.
 #' @param s2 Histogram as a numeric vector of counts per position. Must be the same length as s1.
 #'
-#' @keywords emd, earth mover's distance, multi-value trait, histogram
+#' @keywords internal
 #' @return Returns EMD between two samples as a numeric.
 #' @examples
 #'
@@ -336,8 +336,7 @@ pcv.emd <- function(df, cols = NULL, reorder = NULL, include = reorder, mat = FA
 #' plot(s2, type = "l"); lines(s1)
 #' emd1d(s1, s2)
 #'
-#' @export
-#'
+#' @noRd
 #'
 emd1d <- function(s1, s2) {
   if (length(s1) != length(s2)) {

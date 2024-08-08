@@ -119,10 +119,4 @@ ss <- growthSS(
 fit <- fitGrowth(ss)
 lmPlot(fit, form = ss$pcvrForm, df = ss$df)
 }
-\keyword{exponential,}
-\keyword{gompertz,}
-\keyword{growth-curve,}
-\keyword{linear,}
-\keyword{logistic,}
-\keyword{monomolecular,}
-\keyword{power-law}
+\keyword{growth-curve}

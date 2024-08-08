@@ -48,7 +48,7 @@
 #' wide or long format in R. Keep in mind that the 'mode' argument controls the format that will be
 #' returned in R, not the format that the data saved as in your csv file.
 #'
-#' @keywords read.csv, pcv, wide, long
+#' @keywords read.csv pcv4
 #' @return Returns a data.frame in wide or long format.
 #' @importFrom stats as.formula
 #' @import data.table

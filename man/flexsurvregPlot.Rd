@@ -65,10 +65,4 @@ flexsurvregPlot(fit, form = ss$pcvrForm, df = ss$df,
 ## End(Not run)
 
 }
-\keyword{exponential,}
-\keyword{gompertz,}
-\keyword{growth-curve,}
-\keyword{linear,}
-\keyword{logistic,}
-\keyword{monomolecular,}
-\keyword{power-law}
+\keyword{survival}

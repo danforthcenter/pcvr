@@ -88,5 +88,5 @@ brmViolin(fit, hyp = "num/denom>1.05",
 ## End(Not run)
 
 }
-\keyword{brms,}
+\keyword{brms}
 \keyword{ggplot2}

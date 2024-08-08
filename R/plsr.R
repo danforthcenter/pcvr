@@ -16,13 +16,16 @@
 #'
 #' @import ggplot2
 #' @importFrom stats complete.cases coef predict
+#' @importFrom rlang is_installed
 #'
 #' @keywords PLSR
+#' @return a list of lists each with model performance, prediction target, model, plot, N components,
+#' and variable influence on projection components for each response variable.
 #' @examples
 #'
 #' ## Not run:
 #'
-#' if (FALSE) {
+#' if (rlang::is_installed("pls")) {
 #' dists <- list(
 #'   rlnorm = list(meanlog = log(40), sdlog = 0.5),
 #'   rlnorm = list(meanlog = log(60), sdlog = 0.35)

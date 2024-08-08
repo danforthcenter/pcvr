@@ -79,9 +79,4 @@ pcv.joyplot(x_long, bin = "variable", y = "group", fillx = FALSE)
 ## End(Not run)
 
 }
-\keyword{bayesian,}
-\keyword{ggplot,}
-\keyword{multi}
-\keyword{pcv.hists}
-\keyword{trait,}
-\keyword{value}
+\keyword{multi-value-trait}

@@ -74,5 +74,5 @@ if (FALSE) {
 }
 ## End(Not run)
 }
-\keyword{Bayesian,}
+\keyword{Bayesian}
 \keyword{brms}

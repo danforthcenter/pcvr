@@ -17,6 +17,9 @@ or should the components be shown individually (FALSE, the default).}
 
 \item{removePattern}{A pattern to remove to make the wavelength column into a numeric.}
 }
+\value{
+A ggplot showing variable influence on projection
+}
 \description{
 This function is used to visualize variable influence on projection (vip) from a plsr
 model.
@@ -24,7 +27,7 @@ model.
 \examples{
 
 ## Not run:
-if (FALSE) {
+if (rlang::is_installed("pls")) {
 dists <- list(
   rlnorm = list(meanlog = log(40), sdlog = 0.5),
   rlnorm = list(meanlog = log(60), sdlog = 0.35)

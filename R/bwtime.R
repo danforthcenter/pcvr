@@ -28,7 +28,7 @@
 #' and plants were watered before being imaged or if you want to index days off of
 #' midnight. This defaults to NULL but will take any value coercible to POSIXct by
 #' \code{as.POSIXct(... , tz="UTC")} such as "2020-01-01 18:30:00"
-#' @keywords Bellwether, ggplot
+#' @keywords DAS time ggplot
 #' @import ggplot2
 #' @return The input dataframe with new integer columns for different ways
 #' of describing time in the experiment.

@@ -18,4 +18,4 @@ An \code{gam} object, see \code{?gam} for details.
 Helper function generally called from \link{fitGrowth}.
 }
 \keyword{gam}
-\keyword{mgcv,}
+\keyword{mgcv}

@@ -73,14 +73,13 @@
 #'
 #'
 #'
-#' @keywords Bayesian, brms, prior
+#' @keywords Bayesian brms prior
 #' @return A named list containing Rhat, ESS, NEFF, and Prior/Posterior Predictive plots.
 #' See details for interpretation.
+#' @importFrom rlang is_installed
 #'
-#' @examples
-#'
-#' ## Not run:
-#'
+#' @examplesIf rlang::is_installed(c("brms", "cmdstanr"))
+#' \donttest{
 #' simdf <- growthSim("logistic",
 #'   n = 20, t = 25,
 #'   params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
@@ -98,8 +97,7 @@
 #' fit_2 <- fit_test
 #' fit_list <- list(fit_test, fit_2)
 #' x <- barg(fit_list, list(ss, ss))
-#'
-#' ## End(Not run:)
+#' }
 #'
 #' @export
 

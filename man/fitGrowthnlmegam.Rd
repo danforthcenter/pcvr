@@ -18,4 +18,4 @@ An \code{lme} object, see \code{?lme} for details.
 Helper function generally called from \link{fitGrowth}.
 }
 \keyword{gam}
-\keyword{nlme,}
+\keyword{nlme}

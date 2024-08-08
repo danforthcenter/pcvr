@@ -249,11 +249,3 @@ ggplot(simdf, aes(time, y, group = interaction(group, id))) +
 ## End(Not run)
 
 }
-\keyword{curve,}
-\keyword{exponential,}
-\keyword{gompertz,}
-\keyword{growth}
-\keyword{linear,}
-\keyword{logistic,}
-\keyword{monomolecular,}
-\keyword{power-law}
