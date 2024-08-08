@@ -18,6 +18,7 @@ Additional_repositories: https://mc-stan.org/r-packages/
 RoxygenNote: 7.2.3
 Imports: 
     FactoMineR,
+    rlang,
     stats,
     utils,
     methods,
