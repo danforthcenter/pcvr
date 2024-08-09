@@ -4,8 +4,10 @@ Title: Plant Phenotyping and Bayesian Statistics
 Version: 1.0.0
 Authors@R:
     c(person("Josh", "Sumner", email = "jsumner@danforthcenter.org",
-             role = c("aut", "cre", "cph")),
-             person("Jeffrey", "Berry", role = c("aut")))
+             role = c("aut", "cre"), comment = c(ORCID = "0000-0002-3399-9063")),
+             person("Jeffrey", "Berry", role = c("aut"), comment = c(ORCID = "0000-0002-8064-9787")),
+             person("Noah", "Fahlgren", role = c("rev"), comment = c(ORCID = "0000-0002-5597-4537")),
+             person("Donald Danforth Plant Science Center", role = "cph"))
 Maintainer: Josh Sumner <jsumner@danforthcenter.org>
 Description: Analyse common types of plant phenotyping data, provide a simplified interface to longitudinal growth modeling and select Bayesian statistics, and streamline use of PlantCV output.
 Depends:
@@ -53,5 +55,5 @@ Suggests:
     testthat (>= 3.0.0)
 VignetteBuilder: knitr
 Config/testthat/edition: 3
-URL: https://github.com/danforthcenter/pcvr
+URL: https://github.com/danforthcenter/pcvr, https://plantcv.org/
 BugReports: https://github.com/danforthcenter/pcvr/issues
