@@ -1,4 +1,4 @@
-#' Multi Value Trait Aggregation function
+#' Combine Draws From brms Models
 #'
 #' @description Helper function for binding draws from several \code{brms} models to make a data.frame
 #' for use with \code{brms::hypothesis()}. This will also check that the draws are comparable using

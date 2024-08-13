@@ -2,7 +2,7 @@
 % Please edit documentation in R/combineDraws.R
 \name{combineDraws}
 \alias{combineDraws}
-\title{Multi Value Trait Aggregation function}
+\title{Combine Draws From brms Models}
 \usage{
 combineDraws(..., message = TRUE)
 }
