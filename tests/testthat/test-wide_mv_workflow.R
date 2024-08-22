@@ -1,6 +1,7 @@
-library(data.table)
 if (!interactive()) pdf(NULL)
 test_that("reading mv github data as long works", {
+  skip_on_cran()
+  library(data.table)
   mv <- read.pcv(paste0(
     "https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/",
     "main/pcv4-multi-value-traits.csv"

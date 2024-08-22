@@ -150,6 +150,7 @@ test_that("Test Logistic brms model setup", {
 #* ************************************************************
 
 test_that("Test Logistic nls modeling without individuals", {
+  skip_on_cran()
   ss <- suppressMessages(growthSS(
     model = "logistic", form = y ~ time | group,
     df = logistic_df, type = "nls"
@@ -170,6 +171,7 @@ test_that("Test Logistic nls modeling without individuals", {
 })
 
 test_that("Test Logistic nls modeling without individuals or groups", {
+  skip_on_cran()
   ss <- suppressMessages(growthSS(
     model = "logistic", form = y ~ time,
     df = logistic_df, type = "nls"
@@ -187,6 +189,7 @@ test_that("Test Logistic nls modeling without individuals or groups", {
 })
 
 test_that("Test Logistic nlrq modeling without individuals", {
+  skip_on_cran()
   ss <- suppressMessages(growthSS(
     model = "logistic", form = y ~ time | group,
     df = logistic_df, type = "nlrq", tau = 0.5
@@ -207,6 +210,7 @@ test_that("Test Logistic nlrq modeling without individuals", {
 })
 
 test_that("Test Logistic nlrq modeling without individuals or groups", {
+  skip_on_cran()
   ss <- suppressMessages(growthSS(
     model = "logistic", form = y ~ time,
     df = logistic_df, type = "nlrq", tau = 0.5
@@ -224,6 +228,7 @@ test_that("Test Logistic nlrq modeling without individuals or groups", {
 })
 
 test_that("Test Logistic nlme modeling without individuals", {
+  skip_on_cran()
   ss <- growthSS(
     model = "logistic", form = y ~ time | group, sigma = "power", # failing on this so far
     df = logistic_df, type = "nlme"
@@ -244,6 +249,7 @@ test_that("Test Logistic nlme modeling without individuals", {
 })
 
 test_that("Test Logistic nlme modeling without individuals or groups", {
+  skip_on_cran()
   ss <- growthSS(
     model = "logistic", form = y ~ time, sigma = "power", # failing on this so far
     df = logistic_df, type = "nlme"
@@ -272,6 +278,7 @@ mono_df <- growthSim("monomolecular",
 )
 
 test_that("Test monomolecular nls modeling", {
+  skip_on_cran()
   ss <- suppressMessages(growthSS(
     model = "monomolecular", form = y ~ time | id / group,
     df = mono_df, type = "nls"
@@ -289,6 +296,7 @@ test_that("Test monomolecular nls modeling", {
 })
 
 test_that("Test monomolecular nlrq modeling", {
+  skip_on_cran()
   ss <- suppressMessages(growthSS(
     model = "monomolecular", form = y ~ time | id / group,
     df = mono_df, type = "nlrq"
@@ -306,6 +314,7 @@ test_that("Test monomolecular nlrq modeling", {
 })
 
 test_that("Test monomolecular nlme modeling", {
+  skip_on_cran()
   ss <- growthSS(
     model = "monomolecular", form = y ~ time | id / group, sigma = "power",
     df = mono_df, type = "nlme"
@@ -323,6 +332,7 @@ test_that("Test monomolecular nlme modeling", {
 })
 
 test_that("Test monomolecular brms model setup", {
+  skip_on_cran()
   ss <- growthSS(
     model = "monomolecular", form = y ~ time | id / group, sigma = "spline",
     list("A" = 130, "B" = 0.1),
@@ -344,6 +354,7 @@ lgrthmc_df <- growthSim("logarithmic",
 )
 
 test_that("Test logarithmic nls modeling", {
+  skip_on_cran()
   ss <- suppressMessages(growthSS(
     model = "logarithmic", form = y ~ time | id / group,
     df = lgrthmc_df, type = "nls"
@@ -355,6 +366,7 @@ test_that("Test logarithmic nls modeling", {
 })
 
 test_that("Test logarithmic nlrq modeling", {
+  skip_on_cran()
   ss <- suppressMessages(growthSS(
     model = "logarithmic", form = y ~ time | id / group,
     df = lgrthmc_df, type = "nlrq"
@@ -366,6 +378,7 @@ test_that("Test logarithmic nlrq modeling", {
 })
 
 test_that("Test logarithmic nlme modeling", {
+  skip_on_cran()
   ss <- growthSS(
     model = "logarithmic", form = y ~ time | id / group, sigma = "exp",
     df = lgrthmc_df, type = "nlme"
@@ -377,6 +390,7 @@ test_that("Test logarithmic nlme modeling", {
 })
 
 test_that("Test logarithmic brms model setup", {
+  skip_on_cran()
   ss <- growthSS(
     model = "logarithmic", form = y ~ time | id / group, sigma = "spline",
     list("A" = 3),
@@ -398,6 +412,7 @@ gomp_df <- growthSim("gompertz",
 
 
 test_that("Test nls gam modeling", {
+  skip_on_cran()
   ss <- suppressMessages(growthSS(
     model = "gam", form = y ~ time | id / group,
     df = gomp_df, type = "nls"
@@ -415,6 +430,7 @@ test_that("Test nls gam modeling", {
 })
 
 test_that("Test nlrq gam modeling", {
+  skip_on_cran()
   ss <- suppressMessages(growthSS(
     model = "gam", form = y ~ time | id / group,
     df = gomp_df, type = "nlrq"
@@ -431,6 +447,7 @@ test_that("Test nlrq gam modeling", {
 })
 
 test_that("Test nlme gam", {
+  skip_on_cran()
   ss <- growthSS(
     model = "gam", form = y ~ time | id / group, sigma = "exp",
     df = gomp_df, type = "nlme"
@@ -447,6 +464,7 @@ test_that("Test nlme gam", {
 })
 
 test_that("Test mgcv gam", {
+  skip_on_cran()
   ss <- suppressMessages(growthSS(
     model = "gam", form = y ~ time | id / group,
     df = gomp_df, type = "mgcv"
@@ -468,6 +486,7 @@ test_that("Test mgcv gam", {
 })
 
 test_that("Test gam brms model setup", {
+  skip_on_cran()
   ss <- growthSS(
     model = "gam", form = y ~ time | id / group, sigma = "homo",
     df = gomp_df, type = "brms"
@@ -481,6 +500,7 @@ test_that("Test gam brms model setup", {
 
 
 test_that("Test logistic decay", {
+  skip_on_cran()
   df <- simdf <- growthSim("logistic decay",
     n = 20, t = 25,
     params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
@@ -512,6 +532,7 @@ test_that("Test logistic decay", {
 #* ************************************************************
 
 test_that("Test survreg", {
+  skip_on_cran()
   model <- "survival weibull"
   form <- y > 100 ~ time | id / group
   df <- growthSim("logistic",
@@ -540,6 +561,7 @@ logistic_df <- growthSim("logistic",
 logistic_df$y <- logistic_df$y + 20
 
 test_that("Test Intercept Logistic nls modeling", {
+  skip_on_cran()
   ss <- suppressMessages(growthSS(
     model = "int_logistic", form = y ~ time | id / group,
     df = logistic_df, type = "nls"
@@ -559,6 +581,7 @@ test_that("Test Intercept Logistic nls modeling", {
 })
 
 test_that("Test Intercept Logistic nlrq modeling", {
+  skip_on_cran()
   ss <- suppressMessages(growthSS(
     model = "int_logistic", form = y ~ time | id / group,
     df = logistic_df, type = "nlrq", tau = 0.5
@@ -573,6 +596,7 @@ test_that("Test Intercept Logistic nlrq modeling", {
 })
 
 test_that("Test Intercept Logistic nlme modeling", {
+  skip_on_cran()
   ss <- growthSS(
     model = "int_logistic", form = y ~ time | id / group, sigma = "power",
     df = logistic_df, type = "nlme"
@@ -598,6 +622,7 @@ test_that("Test Intercept Logistic nlme modeling", {
 })
 
 test_that("Test Intercept Monomolecular nls modeling", {
+  skip_on_cran()
   set.seed(123)
   simdf <- growthSim(
     "monomolecular",
@@ -614,6 +639,7 @@ test_that("Test Intercept Monomolecular nls modeling", {
 })
 
 test_that("Test Intercept linear nls modeling", {
+  skip_on_cran()
   set.seed(123)
   simdf <- growthSim(
     "linear",
@@ -635,6 +661,7 @@ test_that("Test Intercept linear nls modeling", {
 #* ************************************************************
 
 test_that("Test Bragg in nls", {
+  skip_on_cran()
   set.seed(123)
   simdf <- growthSim(
     "bragg",
@@ -651,6 +678,7 @@ test_that("Test Bragg in nls", {
 })
 
 test_that("Test Bragg specification (not fitting) in nlme", {
+  skip_on_cran()
   set.seed(123)
   simdf <- growthSim(
     "bragg",
@@ -665,6 +693,7 @@ test_that("Test Bragg specification (not fitting) in nlme", {
 })
 
 test_that("Test lorentz in nls", {
+  skip_on_cran()
   set.seed(123)
   simdf <- growthSim(
     "lorentz",
@@ -681,6 +710,7 @@ test_that("Test lorentz in nls", {
 })
 
 test_that("Test lorentz specification (not fitting) in nlme", {
+  skip_on_cran()
   set.seed(123)
   simdf <- growthSim(
     "lorentz",
