@@ -92,10 +92,10 @@ test_that("Logistic brms model pipeline", {
     n = 200, t = 25
   )
   expect_s3_class(pp4$simulated, "ggplot")
-  barg_output1 <- barg(fit, ss)
+  suppressWarnings(barg_output1 <- barg(fit, ss))
   fit_2 <- fit
   fit_list <- list(fit, fit_2)
-  x <- barg(fit_list, list(ss, ss))
+  x <- suppressWarnings(barg(fit_list, list(ss, ss)))
 })
 
 test_that("distPlot works with many models", {
