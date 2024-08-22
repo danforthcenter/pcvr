@@ -132,8 +132,8 @@ prior specifies the support has to be very dense.
 Note also that our rope_range is specified in the boundary units space, which is not necessarily
 the unit circle.
 
-```{r heavy conj plot}
-vm_ex1$plot
+```{r heavy conj plot, eval = FALSE}
+vm_ex1$plot # not printed due to being a very dense ggplot
 ```
 
 We get very similar results using roughly analogous single value traits.
@@ -175,8 +175,8 @@ do.call(rbind, vm_ex2$posterior)
 Here our plot is much faster to make since the support is a roughly a thirtieth the size of the previous
 example.
 
-```{r conjugate 3 plot}
-vm_ex2$plot
+```{r conjugate 3 plot, eval = FALSE}
+vm_ex2$plot # not printed due to being a very dense ggplot
 ```
 
 Sometimes it may be helpful to use polar coordinates to consider this data, although limitations in
@@ -252,7 +252,7 @@ vm2_ex2 <- conjugate(
 ```
 
 ```{r plot from conjugate 5}
-vm2_ex2$plot
+vm2_ex2$plot # not printed due to being a very dense ggplot
 ```
 
 ```{r posterior from conjugate 5}
