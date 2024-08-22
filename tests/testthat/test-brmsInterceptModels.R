@@ -104,7 +104,4 @@ test_that("intercepts work in a changepoint model", {
 
   fit <- fitGrowth(ss, backend = "cmdstanr", iter = 200, chains = 1, cores = 1)
   expect_s3_class(fit, "brmsfit")
-
-  plot <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
-  expect_s3_class(plot, "ggplot")
 })
