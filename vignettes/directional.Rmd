@@ -29,7 +29,7 @@ knitr::opts_chunk$set(echo = TRUE)
 }
 ```
 
-```{r libraries}
+```{r libraries, message=FALSE}
 library(pcvr)
 library(brms) # for rvon_mises
 library(ggplot2)
@@ -182,16 +182,15 @@ vm_ex2$plot # not printed due to being a very dense ggplot
 Sometimes it may be helpful to use polar coordinates to consider this data, although limitations in
 plotting area style geometries in the polar coordinates can be frustrating.
 
-```{r polar coord conj plot}
+```{r polar coord conj plot, eval = FALSE}
 p <- vm_ex2$plot
 p[[1]] <- p[[1]] +
   ggplot2::coord_polar() +
   ggplot2::scale_y_continuous(limits = c(-pi, pi))
-p
 ```
 
 
-```{r polar coord conj plot 2}
+```{r polar coord conj plot 2, eval=FALSE, echo=FALSE}
 coord_polar_linear <- function(theta = "x", start = 0, direction = 1, clip = "on") {
   theta <- match.arg(theta, c("x", "y"))
   r <- if (theta == "x") {
@@ -252,7 +251,7 @@ vm2_ex2 <- conjugate(
 ```
 
 ```{r plot from conjugate 5}
-vm2_ex2$plot # not printed due to being a very dense ggplot
+vm2_ex2$plot # much lighter to print this since it is in radians
 ```
 
 ```{r posterior from conjugate 5}
