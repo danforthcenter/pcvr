@@ -16,6 +16,7 @@
 #' @param facetGroups logical, should groups be separated in facets? Defaults to TRUE.
 #' @param hierarchy_value If a hierarchical model is being plotted, what value should the
 #' hiearchical predictor be? If left NULL (the default) the mean value is used.
+#' @param vir_option Viridis color scale to use for plotting credible intervals. Defaults to "plasma".
 #' @keywords growth-curve brms
 #' @import ggplot2
 #' @import viridis
@@ -46,7 +47,7 @@
 #' @export
 
 brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facetGroups = TRUE,
-                    hierarchy_value = NULL) {
+                    hierarchy_value = NULL, vir_option = "plasma") {
   fitData <- fit$data
   parsed_form <- .parsePcvrForm(form, df)
   y <- parsed_form$y
@@ -121,14 +122,14 @@ brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
       ggplot2::geom_ribbon(
         data = longPreds[longPreds$q == q, ],
         ggplot2::aes(
-          ymin = min,
-          ymax = max,
+          ymin = .data[["min"]],
+          ymax = .data[["max"]],
           group = .data[[group]],
-          fill = q
+          fill = .data[["q"]]
         ), alpha = 0.5
       )
     }) +
-    viridis::scale_fill_viridis(direction = -1, option = "plasma") +
+    viridis::scale_fill_viridis(direction = -1, option = vir_option) +
     ggplot2::labs(fill = "Credible\nInterval")
 
   if (!is.null(df) && !is.null(individual)) {
