@@ -1,4 +1,4 @@
-#' Make Joyplots for multi value trait plantCV data and optionally compare distributions
+#' Make Joyplots for multi value trait plantCV data
 #'
 #' @param df Data frame to use. Long or wide format is accepted.
 #' @param index If the data is long then this is a multi value trait as a
