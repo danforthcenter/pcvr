@@ -37,7 +37,7 @@ navbar:
 reference:
   - title: "Bayesian Statistics"
     desc: >
-      Functions for bayes stuff
+      Functions for Bayesian statistics.
     contents:
       - conjugate
       - growthSS
@@ -65,6 +65,16 @@ reference:
       - bw.time
       - bw.water
       - pwue
+  - title: "Single-Value Traits"
+    desc: >
+      Functions suited for use with single-value trait data
+      (Height, Area, etc)
+    contents:
+    - conjugate
+    - growthSS
+    - frem
+    - relativeTolerance
+    - cumulativePheno
   - title: "Multi-Value Traits"
     desc: >
       Functions suited for use with multi-value trait data
@@ -77,13 +87,20 @@ reference:
       - pcadf
       - pcv.net
       - pcv.plsr
+  - title: "Reading PlantCV output"
+    desc: >
+      Functions for reading different formats of PlantCV output (note for PlantCV >= 4.1)
+      data.table::fread or utils::read.csv are perfectly adequate.
+    contents:
+      - read.pcv.3
+      - read.pcv
+      - read.pcv.jsn
   - title: "internal"
     contents:
       - awkHelper
       - brmPlot
       - brmSurvPlot
       - checkGroups
-      - cumulativePheno
       - fitGrowthbrms
       - fitGrowthflexsurv
       - fitGrowthmgcvgam
@@ -95,7 +112,6 @@ reference:
       - fitGrowthnlsgam
       - fitGrowthsurvreg
       - flexsurvregPlot
-      - frem
       - gam_diff
       - growthSim
       - net.plot
@@ -105,10 +121,5 @@ reference:
       - mvSim
       - pcv_theme
       - plotVIP
-      - read.pcv.3
-      - read.pcv
-      - read.pcv.jsn
-      - relativeTolerance
       - rqPlot
       - survregPlot
-      - testGrowth
