@@ -251,6 +251,8 @@ vm2_ex2 <- conjugate(
 ```
 
 ```{r plot from conjugate 5}
+#| fig.alt: >
+#|   Plot of the posterior distribution using the vonmises2 method
 vm2_ex2$plot # much lighter to print this since it is in radians
 ```
 
