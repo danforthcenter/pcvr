@@ -11,7 +11,8 @@ brmPlot(
   groups = NULL,
   timeRange = NULL,
   facetGroups = TRUE,
-  hierarchy_value = NULL
+  hierarchy_value = NULL,
+  vir_option = "plasma"
 )
 }
 \arguments{
@@ -33,6 +34,8 @@ although prediction using splines outside of the observed range is not necessari
 
 \item{hierarchy_value}{If a hierarchical model is being plotted, what value should the
 hiearchical predictor be? If left NULL (the default) the mean value is used.}
+
+\item{vir_option}{Viridis color scale to use for plotting credible intervals. Defaults to "plasma".}
 }
 \value{
 Returns a ggplot showing a brms model's credible
