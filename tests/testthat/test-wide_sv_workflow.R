@@ -26,7 +26,7 @@ test_that("reading sv github data as wide works", {
   sv <- bw.time(sv,
     plantingDelay = 7, phenotype = "area_pixels", cutoff = 10, timeCol = "timestamp",
     group = c("barcode", "rotation"), plot = TRUE
-  )
+  )$data
   expect_equal(colnames(sv)[46:48], c("DAS", "DAP", "DAE"))
   expect_equal(head(sv$DAS), 4:9)
   expect_equal(head(sv$DAP), 11:16)
