@@ -1,0 +1,129 @@
+home:
+  links:
+    - text: PlantCV source code
+      href: https://github.com/danforthcenter/PlantCV
+
+url: https://danforthcenter.github.io/pcvr/
+template:
+  bootstrap: 5
+
+navbar:
+  title: "pcvr"
+  left:
+    - icon: fa-home fa-lg
+      href: index.html
+    - text: "Vignettes"
+      href: articles/index.html
+    - text: "Functions"
+      href: reference/index.html
+    - text: "News"
+      href: news/index.html
+    - text: "Quarto Tutorials"
+      menu:
+        - text: "Installation"
+          href: https://github.com/danforthcenter/pcvr/tree/main/tutorials/pcvrInstallation
+        - text: "Intro"
+          href: https://github.com/danforthcenter/pcvr/tree/main/tutorials/pcvrTutorial_intro
+        - text: "Growth Modeling"
+          href: https://github.com/danforthcenter/pcvr/tree/main/tutorials/pcvrTutorial_intermediateGrowthModeling
+        - text: "Advanced Growth Modeling"
+          href: https://github.com/danforthcenter/pcvr/tree/main/tutorials/pcvrTutorial_advancedGrowthModeling
+        - text: "Bayesian Conjugate Priors"
+          href: https://github.com/danforthcenter/pcvr/tree/main/tutorials/pcvrTutorial_conjugate
+    - text: "PlantCV"
+      href: https://plantcv.org/
+  right:
+   - icon: fa-github
+     href: https://github.com/danforthcenter/pcvr
+   - icon: fa-leaf
+     href: https://github.com/danforthcenter/PlantCV
+
+reference:
+  - title: "Bayesian Statistics"
+    desc: >
+      Functions for Bayesian statistics.
+    contents:
+      - conjugate
+      - growthSS
+      - fitGrowth
+      - growthPlot
+      - testGrowth
+      - barg
+      - combineDraws
+      - plotPrior
+      - distributionPlot
+      - brmViolin
+  - title: "Modeling"
+    desc: >
+      Functions for Bayesian or Frequentist Longitudinal (and other) Modeling
+    contents:
+      - growthSS
+      - fitGrowth
+      - growthPlot
+      - testGrowth
+  - title: "Lemnatech System Support"
+    desc: >
+      Functions for use with Lemnatech style data.
+    contents:
+      - bw.outliers
+      - bw.time
+      - bw.water
+      - pwue
+  - title: "Single-Value Traits"
+    desc: >
+      Functions suited for use with single-value trait data
+      (Height, Area, etc)
+    contents:
+    - conjugate
+    - growthSS
+    - frem
+    - relativeTolerance
+    - cumulativePheno
+  - title: "Multi-Value Traits"
+    desc: >
+      Functions suited for use with multi-value trait data
+      (spectral indices, colorspaces, etc)
+    contents:
+      - conjugate
+      - mv_ag
+      - pcv.emd
+      - pcv.joyplot
+      - pcadf
+      - pcv.net
+      - pcv.plsr
+  - title: "Reading PlantCV output"
+    desc: >
+      Functions for reading different formats of PlantCV output (note for PlantCV >= 4.1)
+      data.table::fread or utils::read.csv are perfectly adequate.
+    contents:
+      - read.pcv.3
+      - read.pcv
+      - read.pcv.jsn
+  - title: "internal"
+    contents:
+      - awkHelper
+      - brmPlot
+      - brmSurvPlot
+      - checkGroups
+      - fitGrowthbrms
+      - fitGrowthflexsurv
+      - fitGrowthmgcvgam
+      - fitGrowthnlme
+      - fitGrowthnlmegam
+      - fitGrowthnlrq
+      - fitGrowthnlrqgam
+      - fitGrowthnls
+      - fitGrowthnlsgam
+      - fitGrowthsurvreg
+      - flexsurvregPlot
+      - gam_diff
+      - growthSim
+      - net.plot
+      - nlmePlot
+      - nlrqPlot
+      - nlsPlot
+      - mvSim
+      - pcv_theme
+      - plotVIP
+      - rqPlot
+      - survregPlot

@@ -60,5 +60,5 @@ Suggests:
     testthat (>= 3.0.0)
 VignetteBuilder: knitr
 Config/testthat/edition: 3
-URL: https://github.com/danforthcenter/pcvr, https://plantcv.org/
+URL: https://github.com/danforthcenter/pcvr, https://plantcv.org/, https://danforthcenter.github.io/pcvr/
 BugReports: https://github.com/danforthcenter/pcvr/issues

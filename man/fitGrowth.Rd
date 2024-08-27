@@ -2,7 +2,7 @@
 % Please edit documentation in R/fitGrowth.R
 \name{fitGrowth}
 \alias{fitGrowth}
-\title{Ease of use wrapper function for fitting various growth models specified by \code{growthSS}}
+\title{Ease of use wrapper function for fitting various growth models specified by \link{growthSS}}
 \usage{
 fitGrowth(ss, ...)
 }
@@ -19,7 +19,7 @@ Additional arguments are documented in \link{fitGrowthbrms}, \link{fitGrowthnlme
 A fit model from the selected type.
 }
 \description{
-Ease of use wrapper function for fitting various growth models specified by \code{growthSS}
+Ease of use wrapper function for fitting various growth models specified by \link{growthSS}
 }
 \examples{
 

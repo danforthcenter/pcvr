@@ -1,4 +1,4 @@
-#' Hypothesis testing for \code{fitGrowth} models.
+#' Hypothesis testing for \link{fitGrowth} models.
 #'
 #' @param ss A list output from \link{growthSS}. This is not required for nls, nlme, and brms models
 #' if \code{test} is given in \code{brms::hypothesis} style as a written statement.

@@ -6,6 +6,7 @@
 *.R#
 *.#*
 *.csv
+*DO_NOT_COMMIT*
 inst/doc
 tutorials/pcvr*/*.html
 vignettes/*.html
