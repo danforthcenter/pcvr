@@ -117,7 +117,7 @@ x2 <- pcv.emd(
 )
 head(x2)
 
-if (FALSE) {
+\dontrun{
   file <- paste0(
     "https://media.githubusercontent.com/media/joshqsumner/",
     "pcvrTestData/main/pcv4-multi-value-traits.csv"

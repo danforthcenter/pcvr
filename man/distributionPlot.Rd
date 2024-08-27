@@ -42,8 +42,7 @@ Function for plotting iterations of posterior distributions
 }
 \examples{
 
-## Not run:
-if (FALSE) {
+\donttest{
   print(load(url("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/brmsFits.rdata")))
   library(brms)
   library(ggplot2)

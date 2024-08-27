@@ -45,9 +45,8 @@ means) can be visualized easily using this function. This will generally be call
 }
 \examples{
 
-## Not run:
 
-if (FALSE) {
+\donttest{
 simdf <- growthSim(
  "logistic", n = 20, t = 25,
  params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
@@ -61,7 +60,6 @@ fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1)
 growthPlot(fit = fit, form = y ~ time | group, groups = "a", df = ss$df)
 }
 
-## End(Not run)
 
 }
 \keyword{brms}

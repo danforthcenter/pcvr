@@ -62,7 +62,8 @@ midnight. This defaults to NULL but will take any value coercible to POSIXct by
 }
 \value{
 The input dataframe with new integer columns for different ways
-of describing time in the experiment.
+of describing time in the experiment. If plot is TRUE then a ggplot is also returned as part of
+a list.
 }
 \description{
 Time conversion and plotting for bellwether data

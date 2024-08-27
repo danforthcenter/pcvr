@@ -81,9 +81,7 @@ returned in R, not the format that the data saved as in your csv file.
 }
 \examples{
 
-## Not run:
-
-if (FALSE) {
+\donttest{
   mv <- paste0(
     "https://media.githubusercontent.com/media/joshqsumner/",
     "pcvrTestData/main/pcv4-multi-value-traits.csv"
@@ -142,7 +140,6 @@ if (FALSE) {
     mode = "wide"
   )
 }
-## End(Not run)
 
 }
 \keyword{pcv4}

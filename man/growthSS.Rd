@@ -342,7 +342,7 @@ ss <- growthSS(
 lapply(ss, class)
 ss$initfun()
 
-if (FALSE) {
+\dontrun{
   fit_test <- fitGrowth(ss,
     iter = 1000, cores = 2, chains = 2, backend = "cmdstanr",
     control = list(adapt_delta = 0.999, max_treedepth = 20)

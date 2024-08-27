@@ -24,8 +24,7 @@ basic model metrics.
 }
 \examples{
 
-## Not run:
-if (FALSE) {
+\dontrun{
   simdf <- growthSim("logistic",
     n = 20, t = 25,
     params = list(
@@ -74,7 +73,6 @@ if (FALSE) {
   x2 <- combineDraws(fit_ab2, fit_cd, draws_ef)
   x3 <- combineDraws(fit_ab, fit_cd, fit_ef2)
 }
-## End(Not run)
 
 }
 \keyword{brms}

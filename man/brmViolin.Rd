@@ -66,9 +66,7 @@ Function to visualize hypotheses tested on brms models similar to those made usi
 }
 \examples{
 
-## Not run:
-
-if (FALSE) {
+\donttest{
 set.seed(123)
 simdf <- growthSim(
   "logistic", n = 20, t = 25,
@@ -85,7 +83,6 @@ brmViolin(fit, hyp = "num/denom>1.05",
           compareX = "a",
           againstY = "b", returnData = TRUE)
 }
-## End(Not run)
 
 }
 \keyword{brms}

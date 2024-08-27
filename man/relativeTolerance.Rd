@@ -50,8 +50,7 @@ growth models are another suggested way to test relative tolerance questions.
 }
 \examples{
 
-## Not run:
-
+\donttest{
 sv <- read.pcv(
   "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv",
   reader = "fread"
@@ -69,7 +68,7 @@ sv$fertilizer <- ifelse(sv$fertilizer == "A", "100",
 
 sv <- bw.time(sv,
   plantingDelay = 0, phenotype = "area_pixels",
-  cutoff = 10, timeCol = "timestamp", group = c("barcode", "rotation"), plot = TRUE
+  cutoff = 10, timeCol = "timestamp", group = c("barcode", "rotation"), plot = FALSE
 )
 phenotypes <- colnames(sv)[19:35]
 phenoForm <- paste0("cbind(", paste0(phenotypes, collapse = ", "), ")")
@@ -95,8 +94,7 @@ control <- "fertilizer"
 rt <- relativeTolerance(df, phenotypes, grouping, control, controlGroup)
 head(rt)
 sapply(rt, function(c) sum(is.na(c)))
-
-## End(Not run)
+}
 
 }
 \keyword{single-value-trait}

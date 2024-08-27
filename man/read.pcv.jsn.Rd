@@ -38,16 +38,13 @@ Read in plantCV json keeping either single value, multi value, or all traits.
 }
 \examples{
 
-## Not run:
-
-if (FALSE) {
+\dontrun{
   file <- "path/to/your/json/file.json"
   x <- read.pcv.jsn(file, output = "sv")
   y <- read.pcv.jsn(file, output = c("area", "perimeter"))
   z <- read.pcv.jsn(file, output = "mv")
 }
 
-## End(Not run)
 }
 \keyword{json}
 \keyword{read.csv}
