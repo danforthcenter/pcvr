@@ -14,7 +14,7 @@ Description: Analyse common types of plant phenotyping data, provide a simplifie
 	and streamline use of 'PlantCV' output.
 	Several Bayesian methods and reporting guidelines for Bayesian methods are described in
 	Kruschke (2018) <doi:10.1177/2515245918771304>,
-	Kruschke (2013) <doi:10.1037/a0029146>, and Kruschke (2021) <doi:10.1038/s41562-021-01177-7>
+	Kruschke (2013) <doi:10.1037/a0029146>, and Kruschke (2021) <doi:10.1038/s41562-021-01177-7>.
 Depends:
     R (>= 3.5.0)
 License: GPL-2
