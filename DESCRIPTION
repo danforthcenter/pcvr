@@ -9,7 +9,13 @@ Authors@R:
              person("Noah", "Fahlgren", role = c("rev"), comment = c(ORCID = "0000-0002-5597-4537")),
              person("Donald Danforth Plant Science Center", role = "cph"))
 Maintainer: Josh Sumner <jsumner@danforthcenter.org>
-Description: Analyse common types of plant phenotyping data, provide a simplified interface to longitudinal growth modeling and select Bayesian statistics, and streamline use of PlantCV output.
+Description: Analyse common types of plant phenotyping data, provide a simplified interface
+to longitudinal growth modeling and select Bayesian statistics,
+and streamline use of 'PlantCV' output.
+References: Kruschke (2018) <doi:10.1177/2515245918771304>;
+Kruschke (2013) <doi:10.1037/a0029146>;
+Kruschke (2021) <doi:10.1038/s41562-021-01177-7>
+
 Depends:
     R (>= 3.5.0)
 License: GPL-2
