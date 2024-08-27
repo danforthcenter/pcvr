@@ -200,10 +200,12 @@ colnames(all)
 Often we want to convert our timestamp data from the lemnatech into either days after start (DAS), days after planting (DAP), or days after emergence (DAE). By default the `bw.time` function will add columns called DAS, DAP, and DAE to your data. Days after emergence requires using a phenotype and a value to classify emergence. Here an area greater than 10 pixels is considered an emerged plant. In this example with a planting delay of 0 DAP and DAE will be the same, but both are still created for the purpose of the example.
 
 ```{r}
-sv <- bw.time(sv,
+out <- bw.time(sv,
   plantingDelay = 0, phenotype = "area_pixels", cutoff = 10,
   timeCol = "timestamp", group = c("barcode", "rotation"), plot = TRUE
 )
+out$plot
+sv <- out$data
 dim(sv)
 ```
 

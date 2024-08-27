@@ -19,9 +19,7 @@
 #' @importFrom stats as.formula
 #' @examples
 #'
-#' ## Not run:
-#'
-#' if (FALSE) {
+#' \donttest{
 #'   set.seed(123)
 #'   df <- growthSim("exponential",
 #'     n = 20, t = 50,
@@ -44,7 +42,6 @@
 #'   brmSurvPlot(fit2, form = ss2$pcvrForm, df = ss2$df)
 #' }
 #'
-#' ## End(Not run)
 #'
 #' @return Returns a ggplot showing a brms model's credible
 #' intervals and optionally the individual growth lines.

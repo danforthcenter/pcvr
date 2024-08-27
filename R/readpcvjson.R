@@ -19,16 +19,13 @@
 #' @export
 #' @examples
 #'
-#' ## Not run:
-#'
-#' if (FALSE) {
+#' \dontrun{
 #'   file <- "path/to/your/json/file.json"
 #'   x <- read.pcv.jsn(file, output = "sv")
 #'   y <- read.pcv.jsn(file, output = c("area", "perimeter"))
 #'   z <- read.pcv.jsn(file, output = "mv")
 #' }
 #'
-#' ## End(Not run)
 read.pcv.jsn <- function(file, dtSuffix = "datatype", valSuffix = "value",
                          labSuffix = "label", output = "sv") {
   jsn <- as.data.frame(jsonlite::fromJSON(file, flatten = TRUE))

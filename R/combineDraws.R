@@ -13,8 +13,7 @@
 #' @importFrom methods is
 #' @examples
 #'
-#' ## Not run:
-#' if (FALSE) {
+#' \dontrun{
 #'   simdf <- growthSim("logistic",
 #'     n = 20, t = 25,
 #'     params = list(
@@ -63,7 +62,6 @@
 #'   x2 <- combineDraws(fit_ab2, fit_cd, draws_ef)
 #'   x3 <- combineDraws(fit_ab, fit_cd, fit_ef2)
 #' }
-#' ## End(Not run)
 #'
 #' @return Returns a dataframe of posterior draws.
 #' @export
@@ -109,7 +107,7 @@ combineDraws <- function(..., message = TRUE) {
     names(formulae) <- model_names
     if (length(unique(formulae)) > 1) {
       message("Some of these models have different growth formulas, consider if this is what you want.")
-      print(as.data.frame(formulae))
+      message(paste0(paste(names(formulae), formulae, sep = ": "), collapse = ", "))
     }
   }
   #* `get and bind draws from models`

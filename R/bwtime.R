@@ -31,7 +31,8 @@
 #' @keywords DAS time ggplot
 #' @import ggplot2
 #' @return The input dataframe with new integer columns for different ways
-#' of describing time in the experiment.
+#' of describing time in the experiment. If plot is TRUE then a ggplot is also returned as part of
+#' a list.
 #' @export
 #' @examples
 #'
@@ -105,7 +106,7 @@ bw.time <- function(df = NULL, mode = c("DAS", "DAP", "DAE"), plantingDelay = NU
   rownames(df) <- NULL
   if (plot) {
     p <- .timePlottingHelper(df, phenotype, group, wide, mode, traitCol, valueCol)
-    print(p)
+    df <- list("data" = df, "plot" = p)
   }
   return(df)
 }

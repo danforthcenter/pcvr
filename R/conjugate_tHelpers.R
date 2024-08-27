@@ -2,7 +2,7 @@
 #' Internal function for Bayesian T Tests of gaussian data represented by single value traits.
 #' @param s1 A vector of numerics drawn from a gaussian distribution.
 #' @examples
-#' if (FALSE) {
+#' \donttest{
 #'   .conj_t_sv(
 #'     s1 = rnorm(100, 50, 10), s2 = rnorm(100, 60, 12),
 #'     priors = list(mu = c(0, 0), n = c(1, 1), s2 = c(20, 20)),
@@ -70,6 +70,7 @@
 #' @param s1 A data.frame or matrix of multi value traits. The column names should include a number
 #' representing the "bin".
 #' @examples
+#' \donttest{
 #' mv_gauss <- mvSim(
 #'   dists = list(
 #'     rnorm = list(mean = 50, sd = 10)
@@ -82,7 +83,7 @@
 #'   plot = TRUE,
 #'   cred.int.level = 0.89
 #' )
-#'
+#' }
 #' @keywords internal
 #' @noRd
 

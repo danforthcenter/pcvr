@@ -22,9 +22,8 @@
 #' @importFrom stats as.formula
 #' @examples
 #'
-#' ## Not run:
 #'
-#' if (FALSE) {
+#' \donttest{
 #' simdf <- growthSim(
 #'  "logistic", n = 20, t = 25,
 #'  params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
@@ -38,7 +37,6 @@
 #' growthPlot(fit = fit, form = y ~ time | group, groups = "a", df = ss$df)
 #' }
 #'
-#' ## End(Not run)
 #'
 #' @return Returns a ggplot showing a brms model's credible
 #' intervals and optionally the individual growth lines.

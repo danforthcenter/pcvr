@@ -168,7 +168,6 @@ bw.outliers <- function(df = NULL,
   ))
   if (nrow(removedInteractions) > 0) {
     warning(paste0(nrow(removedInteractions), " groupings had all observations removed"))
-    print(removedInteractions)
   }
 
   if (plot) {

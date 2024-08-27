@@ -40,9 +40,8 @@
 #'
 #' @examples
 #'
-#' ## Not run:
 #'
-#' if (FALSE) {
+#' \donttest{
 #' base_url <- "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/"
 #'   bw <- read.pcv.3(
 #'     file = paste0(base_url, "pcv3Phenos.csv"),
@@ -64,7 +63,6 @@
 #'     reader = "fread"
 #'   )
 #' }
-#' ## End(Not run)
 #'
 #' @export
 

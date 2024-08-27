@@ -24,7 +24,6 @@
 #'
 #' @examples
 #'
-#' ## Not run:
 #' library(extraDistr) # for rmixnorm
 #' library(ggplot2)
 #' n_samples = 10
@@ -48,8 +47,7 @@
 #'   pcv_theme() +
 #'   labs(x = "bin")
 #'
-#' if (FALSE) { # example of plotting based on the dists argument
-#'
+#' \dontrun{
 #'   ggplot(data = data.frame(x = 1:180), aes(x = x)) +
 #'     facet_grid(dist ~ group) +
 #'     lapply(c("a", "b"), function(grp) {

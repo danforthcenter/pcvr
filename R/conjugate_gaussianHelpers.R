@@ -5,7 +5,7 @@
 #' desired, but this is provided for completeness.
 #' @param s1 A vector of numerics drawn from a gaussian distribution.
 #' @examples
-#' if (FALSE) {
+#' \dontrun{
 #'   .conj_gaussian_sv(
 #'     s1 = rnorm(100, 50, 10),
 #'     priors = list(mu = c(0, 0), n = c(1, 1), s2 = c(20, 20)),
@@ -75,7 +75,7 @@
 #' desired, but this is provided for completeness.
 #' @param s1 A vector of numerics drawn from a gaussian distribution.
 #' @examples
-#' if (FALSE) {
+#' \dontrun{
 #'   makeMvGauss <- function(bins = 180, mu, sigma) {
 #'     setNames(data.frame(matrix(hist(rnorm(2000, mu, sigma),
 #'       breaks = seq(1, bins, 1), plot = FALSE

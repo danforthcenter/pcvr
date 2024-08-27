@@ -54,9 +54,7 @@
 #' @import data.table
 #' @examples
 #'
-#' ## Not run:
-#'
-#' if (FALSE) {
+#' \donttest{
 #'   mv <- paste0(
 #'     "https://media.githubusercontent.com/media/joshqsumner/",
 #'     "pcvrTestData/main/pcv4-multi-value-traits.csv"
@@ -115,7 +113,6 @@
 #'     mode = "wide"
 #'   )
 #' }
-#' ## End(Not run)
 #'
 #' @export
 
