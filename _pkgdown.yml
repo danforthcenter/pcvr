@@ -1,7 +1,11 @@
+home:
+  links:
+    - text: PlantCV source code
+      href: https://github.com/danforthcenter/PlantCV
+
 url: https://danforthcenter.github.io/pcvr/
 template:
   bootstrap: 5
-  bootswatch: flatly
 
 navbar:
   title: "pcvr"
