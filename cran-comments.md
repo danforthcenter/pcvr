@@ -5,14 +5,12 @@
 0 errors ✔ | 0 warnings ✔ | 2 notes ✖
 
 ❯ checking CRAN incoming feasibility ... [4s/6s] NOTE
-Maintainer: ‘Josh Sumner <jsumner@danforthcenter.org>’
-
-New submission
-
-Possibly misspelled words in DESCRIPTION:
-  Phenotyping (3:14)
-  PlantCV (12:179)
-  phenotyping (12:44)
+  Maintainer: ‘Josh Sumner <jsumner@danforthcenter.org>’
+  
+  Possibly misspelled words in DESCRIPTION:
+    Kruschke (16:2, 17:2, 17:46)
+    Phenotyping (3:14)
+    phenotyping (12:44)
 
 Suggests or Enhances not in mainstream repositories:
   cmdstanr
@@ -25,7 +23,7 @@ Package suggested but not available for checking: ‘cmdstanr’
 ## Notes
 
 No notes seem critical.
-Names (PlantCV) and words (phenotyping) in DESCRIPTION are not misspelled.
+Names (PlantCV, Kruschke) and words (phenotyping) in DESCRIPTION are not misspelled.
 The `cmdstanr` suggestion is available from the additional repository specified in DESCRIPTION.
 The R CMD check on MacOs via github actions yields a NOTE about installed package size as well.
 
