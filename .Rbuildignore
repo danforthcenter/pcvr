@@ -9,3 +9,4 @@
 ^cran-comments\.md$
 ^install.ps1
 ^CRAN-SUBMISSION$
+^docs$
