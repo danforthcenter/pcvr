@@ -74,6 +74,11 @@ test_that("Logistic brms model pipeline", {
   )
   pp1 <- plotPrior(ss)
   expect_s3_class(pp1, "ggplot")
+  ss2 <- ss
+  ss2$prior <- data.frame()
+  expect_error(
+    err <- plotPrior(ss2)
+  )
   pp2 <- plotPrior(
     priors = list("A" = c(100, 130), "B" = c(10, 8), "C" = c(0.2, 0.1)),
     type = "logistic",
