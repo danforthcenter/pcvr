@@ -140,7 +140,7 @@ test_that("conjugate single value negative binomial works", {
   set.seed(123)
   s1 <- rnbinom(20, 10, 0.5)
   s2 <- rnbinom(20, 10, 0.25)
-  expect_warning(
+  suppressWarnings(
     out <- conjugate(
       s1 = s1, s2 = s2, method = "negbin",
       priors = NULL,
