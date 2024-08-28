@@ -341,7 +341,7 @@ This informs our next steps. Hue and size based phenotypes are well explained by
 
 ## Single Value Traits
 
-Most analysis focus on single value traits, that is phenotypes where one image returns on numeric value such as area or height. These can be compared longitudinally or with respect to individual days. Note that we do not recommend using a PCA of the single value traits to look for differences in your treatment groups, these traits are interpretable on their own and are interdependent enough that a PCA is not appropriate.
+Most analysis focus on single value traits, that is phenotypes where one object in an image returns on numeric value such as area or height. These can be compared longitudinally or with respect to individual days. Note that we do not recommend using a PCA of the single value traits to look for differences in your treatment groups, these traits are interpretable on their own and are interdependent enough that a PCA is not appropriate.
 
 
 ### Growth Trendlines
