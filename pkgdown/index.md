@@ -1,7 +1,7 @@
 
-<!-- README.md is generated from README.Rmd. Please edit that file -->
+<!-- index.md is generated from index.Rmd Please edit that file -->
 
-# `pcvr`: An R Package for Plant Phenotyping Statistics
+# `pcvr`: An R Package for Plant Phenotyping Statistics <img src="man/figures/pcvr_logo.png" width = 200 alt="pcvr Logo" align="right"/>
 
 <!-- badges: start -->
 

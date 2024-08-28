@@ -7,6 +7,15 @@ url: https://danforthcenter.github.io/pcvr/
 template:
   bootstrap: 5
 
+footer:
+  structure: 
+    right: built_with
+    left: [maintained_by, developed_in, logo_credit]
+  components:
+    maintained_by: Maintained by Josh Sumner
+    developed_in: <br> Developed in DDPSC Datascience Core Facility
+    logo_credit: <br> Logo design by <a href="https://twitter.com/Kerri_Gilbert">Kerri Gilbert</a>
+
 navbar:
   title: "pcvr"
   left:
