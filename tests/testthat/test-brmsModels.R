@@ -40,6 +40,16 @@ test_that("Logistic brms model pipeline", {
   )
   expect_s3_class(plot2.5, "ggplot")
   expect_equal(nrow(d3), 3000)
+  ss2 <- growthSS(
+    model = "gompertz", form = y ~ time | id / group, sigma = "logistic",
+    list("A" = 130, "B" = 10, "C" = 1, "sigmaA" = 20, "sigmaB" = 10, "sigmaC" = 2),
+    df = simdf, type = "brms"
+  )
+  fit2 <- fitGrowth(ss2, backend = "cmdstanr", iter = 500, chains = 1, cores = 1, sample_prior = "only")
+  expect_message(
+    cd <- combineDraws(fit, fit2)
+  )
+  expect_equal(dim(cd), c(250, 21))
   cd <- combineDraws(fit, fit)
   expect_equal(dim(cd), c(250, 16))
   fit_df <- as.data.frame(fit)
@@ -68,8 +78,10 @@ test_that("Logistic brms model pipeline", {
   expect_s3_class(test, "brmshypothesis")
   ss <- growthSS(
     model = "logistic", form = y ~ time | id / group, sigma = "logistic",
-    list("A" = 130, "B" = 10, "C" = 3,
-         "sigmaA" = 20, "sigmaB" = 10, "sigmaC" = 3),
+    list(
+      "A" = 130, "B" = 10, "C" = 3,
+      "sigmaA" = 20, "sigmaB" = 10, "sigmaC" = 3
+    ),
     df = simdf, type = "brms"
   )
   pp1 <- plotPrior(ss)
