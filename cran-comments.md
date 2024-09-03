@@ -35,6 +35,8 @@ The R CMD check on MacOs via github actions yields a NOTE about installed packag
     R     2.0Mb
 ```
 
+Additionally there are some examples wrapped in `\donttest` that may take several minutes to run.
+
 * This is a new release.
 
 ## Test environments
