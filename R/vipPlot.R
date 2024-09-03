@@ -16,7 +16,6 @@
 #' @keywords PLSR
 #' @examples
 #'
-#' ## Not run:
 #' if (rlang::is_installed("pls")) {
 #' dists <- list(
 #'   rlnorm = list(meanlog = log(40), sdlog = 0.5),
@@ -33,7 +32,6 @@
 #' plotVIP(x)
 #' }
 #'
-#' ## End(Not run)
 #'
 #' @export
 

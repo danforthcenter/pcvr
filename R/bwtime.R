@@ -36,7 +36,6 @@
 #' @export
 #' @examples
 #'
-#' ## Not run:
 #' \donttest{
 #' sv <- read.pcv(
 #'   "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv",
@@ -77,7 +76,6 @@
 #'   group = c("barcode", "rotation"), plot = FALSE
 #' )
 #' }
-#' ## End(Not run)
 #'
 bw.time <- function(df = NULL, mode = c("DAS", "DAP", "DAE"), plantingDelay = NULL,
                     phenotype = NULL, cutoff = 1, timeCol = "timestamp",

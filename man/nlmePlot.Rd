@@ -50,8 +50,6 @@ Models fit using \link{growthSS} inputs by \link{fitGrowth}
 }
 \examples{
 
-## Not run:
-
 simdf <- growthSim("logistic",
   n = 10, t = 25,
   params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
@@ -66,8 +64,6 @@ fit <- fitGrowth(ss)
 
 nlmePlot(fit, form = ss$pcvrForm, groups = NULL, df = ss$df, timeRange = NULL)
 nlmePlot(fit, form = ss$pcvrForm, groups = "a", df = ss$df, timeRange = 1:10, groupFill = TRUE)
-
-## End(Not run)
 
 }
 \keyword{growth-curve}

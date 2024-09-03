@@ -9,11 +9,9 @@
 #' @importFrom utils type.convert
 #' @return A data frame containing the bellwether watering data
 #' @examples
-#' ## Not run:
 #'
 #' w <- bw.water("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/metadata.json")
 #'
-#' ## End(Not run)
 #' @export
 
 bw.water <- function(file = NULL, envKey = "environment") {

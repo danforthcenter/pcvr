@@ -57,8 +57,6 @@ Variance partitioning for phenotypes (over time) using fully random effects mode
 }
 \examples{
 
-## Not run:
-
 
 library(data.table)
 set.seed(456)
@@ -80,7 +78,5 @@ frem(df, des = "genotype", phenotypes = c("pheno1", "pheno2", "pheno3"),
      combine = TRUE, timeCol = "time", time = 1)
 frem(df, des = "genotype", phenotypes = c("pheno1", "pheno2", "pheno3"),
      cor = FALSE, timeCol = "time", time = 3:5, markSingular = TRUE)
-
-## End(Not run)
 
 }

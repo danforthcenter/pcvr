@@ -49,8 +49,6 @@ This will generally be called by \code{growthPlot}.
 }
 \examples{
 
-## Not run:
-
 df <- growthSim("logistic",
   n = 20, t = 25,
   params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
@@ -61,8 +59,6 @@ fit <- fitGrowth(ss)
 flexsurvregPlot(fit, form = ss$pcvrForm, df = ss$df, groups = "a")
 flexsurvregPlot(fit, form = ss$pcvrForm, df = ss$df,
   facetGroups = FALSE, groupFill = TRUE)
-
-## End(Not run)
 
 }
 \keyword{survival}

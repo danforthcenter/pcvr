@@ -25,8 +25,6 @@
 #' @importFrom stats predict
 #' @examples
 #'
-#' ## Not run:
-#'
 #' df <- growthSim("logistic",
 #'   n = 20, t = 25,
 #'   params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
@@ -37,8 +35,6 @@
 #' flexsurvregPlot(fit, form = ss$pcvrForm, df = ss$df, groups = "a")
 #' flexsurvregPlot(fit, form = ss$pcvrForm, df = ss$df,
 #'   facetGroups = FALSE, groupFill = TRUE)
-#'
-#' ## End(Not run)
 #'
 #' @return Returns a ggplot showing an survival model's survival function.
 #'

@@ -23,8 +23,6 @@
 #' and variable influence on projection components for each response variable.
 #' @examples
 #'
-#' ## Not run:
-#'
 #' if (rlang::is_installed("pls")) {
 #' dists <- list(
 #'   rlnorm = list(meanlog = log(40), sdlog = 0.5),
@@ -40,7 +38,6 @@
 #' # note that this requires the "pls" package to be installed.
 #' x <- pcv.plsr(df = d, resps = "y", spectra = grepl("^sim_", colnames(d)))
 #' }
-#' ## End(Not run)
 #'
 #' @export
 

@@ -62,8 +62,6 @@ comparing histograms and moving on with matrix methods or network analysis.
 }
 \examples{
 
-## Not run:
-
 s1 <- mvSim(
  dists = list(runif = list(min = 15, max = 150)),
  n_samples = 10,
@@ -73,8 +71,6 @@ s1 <- mvSim(
  wide = TRUE
 )
 mv_ag(s1, group = "group", mvCols = "sim_", n_per_group = 2)
-
-## End(Not run)
 
 }
 \keyword{emd}

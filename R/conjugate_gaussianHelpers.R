@@ -5,13 +5,11 @@
 #' desired, but this is provided for completeness.
 #' @param s1 A vector of numerics drawn from a gaussian distribution.
 #' @examples
-#' \dontrun{
-#'   .conj_gaussian_sv(
-#'     s1 = rnorm(100, 50, 10),
-#'     priors = list(mu = c(0, 0), n = c(1, 1), s2 = c(20, 20)),
-#'     plot = FALSE, support = NULL
-#'   )
-#' }
+#' .conj_gaussian_sv(
+#'  s1 = rnorm(100, 50, 10),
+#'  priors = list(mu = c(0, 0), n = c(1, 1), s2 = c(20, 20)),
+#'  plot = FALSE, support = NULL
+#' )
 #' @keywords internal
 #' @noRd
 
@@ -74,28 +72,6 @@
 #' In frequentist terms this is analogous to a Z test as opposed to a T test. Generally the T test is
 #' desired, but this is provided for completeness.
 #' @param s1 A vector of numerics drawn from a gaussian distribution.
-#' @examples
-#' \dontrun{
-#'   makeMvGauss <- function(bins = 180, mu, sigma) {
-#'     setNames(data.frame(matrix(hist(rnorm(2000, mu, sigma),
-#'       breaks = seq(1, bins, 1), plot = FALSE
-#'     )$counts, nrow = 1)), paste0("b", 1:(bins - 1)))
-#'   }
-#'   mv_gauss <- rbind(
-#'     do.call(rbind, lapply(1:30, function(i) {
-#'       makeMvGauss(bins = 180, mu = 50, sigma = 10)
-#'     })),
-#'     do.call(rbind, lapply(1:30, function(i) {
-#'       makeMvGauss(bins = 180, mu = 60, sigma = 12)
-#'     }))
-#'   )
-#'
-#'   .conj_gaussian_mv(
-#'     s1 = mv_gauss[1:30, ],
-#'     priors = list(mu = c(0, 0), n = c(1, 1), s2 = c(20, 20)),
-#'     plot = FALSE, support = NULL
-#'   )
-#' }
 #' @keywords internal
 #' @noRd
 

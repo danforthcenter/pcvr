@@ -31,8 +31,6 @@
 #' @importFrom stats setNames aggregate as.formula
 #' @examples
 #'
-#' ## Not run:
-#'
 #' s1 <- mvSim(
 #'  dists = list(runif = list(min = 15, max = 150)),
 #'  n_samples = 10,
@@ -42,8 +40,6 @@
 #'  wide = TRUE
 #' )
 #' mv_ag(s1, group = "group", mvCols = "sim_", n_per_group = 2)
-#'
-#' ## End(Not run)
 #'
 #' @return Returns a dataframe summarized by the specified groups over the multi-value traits.
 #' @export

@@ -24,7 +24,6 @@
 #' @importFrom stats setNames
 #' @examples
 #'
-#' ## Not run:
 #' \donttest{
 #' sv <- read.pcv(
 #'   "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv",
@@ -87,7 +86,6 @@
 #'   group = c("barcode", "rotation"), timeCol = "DAS"
 #' )
 #' }
-#' ## End(Not run)
 #'
 #' @export
 #'

@@ -43,7 +43,6 @@ Often in bellwether experiments we are curious about the effect of
 }
 \examples{
 
-## Not run:
 \donttest{
 sv <- read.pcv(
   "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv",
@@ -106,7 +105,6 @@ sv_l <- cumulativePheno(sv_l,
   group = c("barcode", "rotation"), timeCol = "DAS"
 )
 }
-## End(Not run)
 
 }
 \keyword{single-value-traits}

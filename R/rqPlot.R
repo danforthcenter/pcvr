@@ -28,8 +28,6 @@
 #' @importFrom viridis plasma
 #' @examples
 #'
-#' ## Not run:
-#'
 #'
 #' simdf <- growthSim("logistic",
 #'   n = 20, t = 25,
@@ -49,8 +47,6 @@
 #' )
 #' fit <- fitGrowth(ss)
 #' rqPlot(fit, form = ss$pcvrForm, df = ss$df, groupFill = TRUE)
-#'
-#' ## End(Not run)
 #'
 #' @return Returns a ggplot showing an rq general additive model's quantiles
 #'  and optionally the individual growth lines.

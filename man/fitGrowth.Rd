@@ -23,8 +23,6 @@ Ease of use wrapper function for fitting various growth models specified by \lin
 }
 \examples{
 
-## Not run:
-
 simdf <- growthSim("logistic",
   n = 20, t = 25,
   params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
@@ -40,7 +38,6 @@ ss <- growthSS(
 )
 fitGrowth(ss)
 
-## End(Not run)
 }
 \keyword{Bayesian}
 \keyword{brms}

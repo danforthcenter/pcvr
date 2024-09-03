@@ -22,15 +22,12 @@
 #' @importFrom stats rlnorm dlnorm
 #' @examples
 #'
-#' ## Not run:
-#'
 #' set.seed(123)
 #' priors <- list("A" = c(100, 130), "B" = c(10, 8), "C" = c(0.2, 0.1))
 #' plotPrior(priors)
 #'
 #' plotPrior(priors, "gompertz")[[1]]
 #'
-#' ## End(Not run:)
 #'
 #' @export
 

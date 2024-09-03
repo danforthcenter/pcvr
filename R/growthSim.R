@@ -28,7 +28,6 @@
 #'
 #' @examples
 #'
-#' ## Not run:
 #' library(ggplot2)
 #' simdf <- growthSim("logistic",
 #'   n = 20, t = 25,
@@ -174,7 +173,6 @@
 #'   geom_line(aes(color = group)) +
 #'   labs(title = "linear + linear + logistic")
 #'
-#' ## End(Not run)
 #'
 #' @details
 #'     The \code{params} argument requires some understanding of how each growth model is parameterized.

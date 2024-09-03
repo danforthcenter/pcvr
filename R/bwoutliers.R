@@ -42,7 +42,6 @@
 #' @importFrom stats complete.cases cooks.distance glm as.formula lm mahalanobis cov
 #' @examples
 #'
-#' ## Not run:
 #'
 #' sv <- growthSim("logistic",
 #'                 n = 5, t = 20,
@@ -55,7 +54,7 @@
 #'   plotgroup = "id", plot = TRUE
 #' )
 #' sv_res$plot
-#' if(FALSE) {
+#' \donttest{
 #'   library(data.table)
 #'   mvw <- read.pcv(paste0(
 #'     "https://media.githubusercontent.com/media/joshqsumner/",
@@ -102,7 +101,6 @@
 #'     group = c("DAS", "genotype", "fertilizer"), cutoff = 3, plotgroup = c("barcode", "rotation")
 #'   )
 #' }
-#' ## End(Not run)
 #'
 #' @return The input dataframe with outliers removed and optionally a plot
 #' (if a plot is returned then output is a list).

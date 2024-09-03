@@ -70,7 +70,6 @@ Time conversion and plotting for bellwether data
 }
 \examples{
 
-## Not run:
 \donttest{
 sv <- read.pcv(
   "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv",
@@ -111,7 +110,6 @@ svl <- bw.time(svl,
   group = c("barcode", "rotation"), plot = FALSE
 )
 }
-## End(Not run)
 
 }
 \keyword{DAS}

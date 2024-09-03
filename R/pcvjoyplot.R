@@ -34,8 +34,6 @@
 #'
 #' @examples
 #'
-#' ## Not run:
-#'
 #' library(extraDistr)
 #' dists <- list(
 #'   rmixnorm = list(mean = c(70, 150), sd = c(15, 5), alpha = c(0.3, 0.7)),
@@ -53,7 +51,6 @@
 #' p + ggplot2::scale_fill_gradientn(colors = scales::hue_pal(l = 65)(360))
 #' x_long$group2 <- "example"
 #' pcv.joyplot(x_long, bin = "variable", y = "group", fillx = FALSE)
-#' ## End(Not run)
 #'
 #' @export
 

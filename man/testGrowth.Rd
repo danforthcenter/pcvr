@@ -41,7 +41,6 @@ For nls and nlme models an anova is run and returned as part of a list along wit
 }
 \examples{
 
-## Not run:
 set.seed(123)
 simdf <- growthSim("logistic",
   n = 20, t = 25,
@@ -64,7 +63,6 @@ testGrowth(ss2, fit2, "A")$anova
 coef(fit2) # check options for contrast testing
 testGrowth(ss2, fit2, "A1 - A2*1.1")
 
-## End(Not run)
 }
 \keyword{brms}
 \keyword{hypothesis}

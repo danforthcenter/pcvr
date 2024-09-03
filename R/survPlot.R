@@ -25,7 +25,6 @@
 #' @importFrom stats predict
 #' @examples
 #'
-#' ## Not run:
 #'
 #' df <- growthSim("logistic",
 #'   n = 20, t = 25,
@@ -42,8 +41,6 @@
 #'   form = ss$pcvrForm, df = ss$df, facetGroups = FALSE,
 #'   groupFill = TRUE, virMaps = c("plasma", "mako")
 #' )
-#'
-#' ## End(Not run)
 #'
 #' @return Returns a ggplot showing an survival model's survival function.
 #'

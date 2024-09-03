@@ -44,7 +44,6 @@
 #' @keywords emd earth-mover's-distance multi-value histogram
 #' @examples
 #'
-#' ## Not run:
 #'
 #' set.seed(123)
 #' test <- mvSim(
@@ -70,12 +69,13 @@
 #' )
 #' head(x2)
 #'
-#' \dontrun{
+#' \donttest{
+#' library(data.table)
 #'   file <- paste0(
 #'     "https://media.githubusercontent.com/media/joshqsumner/",
 #'     "pcvrTestData/main/pcv4-multi-value-traits.csv"
 #'   )
-#'   df1 <- read.pcv(file, "wide")
+#'   df1 <- read.pcv(file, "wide", reader = "fread")
 #'
 #'   df1$genotype <- substr(df1$barcode, 3, 5)
 #'   df1$genotype <- ifelse(df1$genotype == "002", "B73",
@@ -111,7 +111,6 @@
 #'     xlab = "N Input Images", ylab = "time (seconds)"
 #'   )
 #' }
-#' ## End(Not run)
 #'
 #' @export
 #'

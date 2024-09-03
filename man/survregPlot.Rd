@@ -49,7 +49,6 @@ This will generally be called by \code{growthPlot}.
 }
 \examples{
 
-## Not run:
 
 df <- growthSim("logistic",
   n = 20, t = 25,
@@ -66,8 +65,6 @@ survregPlot(fit,
   form = ss$pcvrForm, df = ss$df, facetGroups = FALSE,
   groupFill = TRUE, virMaps = c("plasma", "mako")
 )
-
-## End(Not run)
 
 }
 \keyword{survival}

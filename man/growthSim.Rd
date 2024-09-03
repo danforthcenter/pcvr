@@ -100,7 +100,6 @@ The \code{params} argument requires some understanding of how each growth model 
 }
 \examples{
 
-## Not run:
 library(ggplot2)
 simdf <- growthSim("logistic",
   n = 20, t = 25,
@@ -246,6 +245,5 @@ ggplot(simdf, aes(time, y, group = interaction(group, id))) +
   geom_line(aes(color = group)) +
   labs(title = "linear + linear + logistic")
 
-## End(Not run)
 
 }

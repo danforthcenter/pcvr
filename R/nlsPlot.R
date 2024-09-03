@@ -26,7 +26,6 @@
 #' @importFrom stats predict
 #' @examples
 #'
-#' ## Not run:
 #'
 #' simdf <- growthSim("logistic",
 #'   n = 20, t = 25,
@@ -39,8 +38,6 @@
 #' fit <- fitGrowth(ss)
 #' nlsPlot(fit, form = ss$pcvrForm, df = ss$df, groupFill = TRUE)
 #' nlsPlot(fit, form = ss$pcvrForm, df = ss$df, groups = "a", timeRange = 1:10)
-#'
-#' ## End(Not run)
 #'
 #' @return Returns a ggplot showing an nls model's predictions.
 #'

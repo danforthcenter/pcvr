@@ -28,8 +28,6 @@
 #' @keywords emd multi-value-trait network
 #' @examples
 #'
-#' ## Not run:
-#'
 #' library(extraDistr)
 #' dists <- list(
 #'   rmixnorm = list(mean = c(70, 150), sd = c(15, 5), alpha = c(0.3, 0.7)),
@@ -44,7 +42,6 @@
 #' net <- pcv.net(emd_df, meta = "group")
 #' net2 <- pcv.net(emd_df, meta = "group", filter = "0.9", direction = "lesser")
 #'
-#' ## End(Not run)
 #'
 #' @return Returns a list containing three elements:
 #' \code{nodes}: A dataframe of node data.

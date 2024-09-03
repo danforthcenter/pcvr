@@ -57,8 +57,6 @@ Models fit using \link{growthSS} inputs by \link{fitGrowth}
 }
 \examples{
 
-## Not run:
-
 simdf <- growthSim("logistic",
   n = 20, t = 25,
   params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
@@ -70,7 +68,6 @@ ss <- growthSS(
 fit <- fitGrowth(ss)
 growthPlot(fit, form = ss$pcvrForm, df = ss$df)
 
-## End(Not run)
 
 }
 \keyword{growth-curve}

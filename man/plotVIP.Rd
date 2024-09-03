@@ -26,7 +26,6 @@ model.
 }
 \examples{
 
-## Not run:
 if (rlang::is_installed("pls")) {
 dists <- list(
   rlnorm = list(meanlog = log(40), sdlog = 0.5),
@@ -43,7 +42,6 @@ x <- pcv.plsr(df = d, resps = "y", spectra = grepl("^sim_", colnames(d)))
 plotVIP(x)
 }
 
-## End(Not run)
 
 }
 \keyword{PLSR}

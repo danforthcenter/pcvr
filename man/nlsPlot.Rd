@@ -74,7 +74,6 @@ This will generally be called by \code{growthPlot}.
 }
 \examples{
 
-## Not run:
 
 simdf <- growthSim("logistic",
   n = 20, t = 25,
@@ -87,8 +86,6 @@ ss <- growthSS(
 fit <- fitGrowth(ss)
 nlsPlot(fit, form = ss$pcvrForm, df = ss$df, groupFill = TRUE)
 nlsPlot(fit, form = ss$pcvrForm, df = ss$df, groups = "a", timeRange = 1:10)
-
-## End(Not run)
 
 simdf <- growthSim("logistic",
   n = 20, t = 25,
