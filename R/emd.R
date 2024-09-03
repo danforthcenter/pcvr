@@ -88,11 +88,12 @@
 #'     ifelse(df1$fertilizer == "B", "50", "0")
 #'   )
 #'
-#'   w <- pcv.emd(df1,
-#'     cols = "hue_frequencies", reorder = c("fertilizer", "genotype"),
-#'     mat = FALSE, plot = TRUE, parallel = 1
+#'   tryCatch({
+#'     w <- pcv.emd(df1,
+#'       cols = "hue_frequencies", reorder = c("fertilizer", "genotype"),
+#'       mat = FALSE, plot = TRUE, parallel = 1)
+#'     }, error = function(err) {message(err)}
 #'   )
-#'
 #'
 #'   # Note on computational complexity
 #'   # This scales as O^2, see the plot below for some idea
