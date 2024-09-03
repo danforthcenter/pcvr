@@ -1,5 +1,6 @@
 test_that("reading mv github data as long works", {
   skip_on_cran()
+  skip_if_offline(host = "r-project.org")
   #* test read.pcv
   mv <- read.pcv(paste0(
     "https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/",

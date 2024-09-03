@@ -1,5 +1,6 @@
 if (!interactive()) pdf(NULL)
 test_that("reading sv github data as long works", {
+  skip_if_offline(host = "r-project.org")
   sv <- read.pcv(paste0("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/",
                         "main/pcv4-single-value-traits.csv"), mode = "long", reader = "read.csv")
   #* check read in
