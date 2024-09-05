@@ -1,7 +1,6 @@
 ---
 title: "Bellwether"
 author: "Josh Sumner, DDPSC Data Science Core Facility"
-subtitle: "pcvr v0.1.0"
 output: 
   html_vignette:
     toc: true
