@@ -11,6 +11,7 @@ tdf <- do.call(rbind, lapply(dir("~/pcvr/man", pattern = ".[Rr]d$", full.names =
 }))
 setwd(wd)
 tdf
+if (!interactive) {pdf(NULL)}
 ggplot(tdf, aes(x = 1, y = time, fill = fun)) +
   geom_col(position = "stack") +
   scale_fill_viridis_d()+
