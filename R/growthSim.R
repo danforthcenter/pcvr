@@ -22,14 +22,12 @@
 #' \code{\link{growthSS}}.
 #' @param D If decay is being simulated then this is the starting point for decay. This defaults to 0.
 #'
-#' @keywords growth curve, logistic, gompertz, monomolecular, linear, exponential, power-law
 #' @return Returns a dataframe of example growth data following the input parameters.
 #'
 #' @importFrom stats rnorm setNames
 #'
 #' @examples
 #'
-#' ## Not run:
 #' library(ggplot2)
 #' simdf <- growthSim("logistic",
 #'   n = 20, t = 25,
@@ -175,7 +173,6 @@
 #'   geom_line(aes(color = group)) +
 #'   labs(title = "linear + linear + logistic")
 #'
-#' ## End(Not run)
 #'
 #' @details
 #'     The \code{params} argument requires some understanding of how each growth model is parameterized.

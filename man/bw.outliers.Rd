@@ -83,7 +83,6 @@ Remove outliers from bellwether data using cook's distance
 }
 \examples{
 
-## Not run:
 
 sv <- growthSim("logistic",
                 n = 5, t = 20,
@@ -96,7 +95,7 @@ sv_res <- bw.outliers(
   plotgroup = "id", plot = TRUE
 )
 sv_res$plot
-if(FALSE) {
+\donttest{
   library(data.table)
   mvw <- read.pcv(paste0(
     "https://media.githubusercontent.com/media/joshqsumner/",
@@ -143,9 +142,7 @@ if(FALSE) {
     group = c("DAS", "genotype", "fertilizer"), cutoff = 3, plotgroup = c("barcode", "rotation")
   )
 }
-## End(Not run)
 
 }
-\keyword{Bellwether,}
-\keyword{ggplot,}
+\keyword{ggplot}
 \keyword{outliers}

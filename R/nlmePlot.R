@@ -19,14 +19,12 @@
 #' viridis colormaps are used in the order of virMaps.
 #' @param virMaps order of viridis maps to use. Will be recycled to necessary length.
 #' Defaults to "plasma", but will generally be informed by growthPlot's default.
-#' @keywords growth-curve, logistic, gompertz, monomolecular, linear, exponential, power-law
+#' @keywords growth-curve
 #' @importFrom methods is
 #' @import ggplot2
 #' @importFrom stats predict update residuals
 #' @importFrom nlme nlme nlme.formula
 #' @examples
-#'
-#' ## Not run:
 #'
 #' simdf <- growthSim("logistic",
 #'   n = 10, t = 25,
@@ -42,8 +40,6 @@
 #'
 #' nlmePlot(fit, form = ss$pcvrForm, groups = NULL, df = ss$df, timeRange = NULL)
 #' nlmePlot(fit, form = ss$pcvrForm, groups = "a", df = ss$df, timeRange = 1:10, groupFill = TRUE)
-#'
-#' ## End(Not run)
 #'
 #' @return Returns a ggplot showing an nlme model's credible
 #' intervals and optionally the individual growth lines.

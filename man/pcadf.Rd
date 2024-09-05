@@ -29,6 +29,10 @@ the column names that should be used.}
 \item{ncp}{Optional, number of principal components to return attached
 to dataframe if data is returned. Defaults to all.}
 }
+\value{
+A ggplot or list with a ggplot, a dataframe with the data and PCs, and the factominer
+PCA object as elements.
+}
 \description{
 Function to run a PCA, plot and optionally return the data with PCA coordinates and pca object
 }
@@ -37,8 +41,6 @@ If data is returned then it will contain the coordinates from the
  PCA and will not contain the columns that were reduced.
 }
 \examples{
-
-## Not run:
 
 dists <- list(
   rlnorm = list(meanlog = log(40), sdlog = 0.5),
@@ -49,8 +51,6 @@ mv <- mvSim(dists = dists, n_samples = 100, counts = 1000,
 mv$otherGroup <- sample(c("a", "b"), size = nrow(mv), replace = TRUE)
 pcadf(mv, cols = "sim_", returnData = TRUE)
 pcadf(mv, cols = 2:181, color = c("group", "otherGroup"), returnData = FALSE)
-
-## End(Not run)
 
 }
 \keyword{pca}

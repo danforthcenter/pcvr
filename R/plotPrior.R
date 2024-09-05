@@ -14,7 +14,7 @@
 #' trendlines and densities will be plotted on margins for some distributions.
 #' @param n Numeric, if type is a model then how many draws from the prior should be simulated?
 #' @param t Numeric, time passed to growthSim. Defaults to 25 (the growthSim default).
-#' @keywords Bayesian, brms, prior
+#' @keywords Bayesian brms priors
 #' @return A named list of plots showing prior distributions that \code{growthSS} would use,
 #' optionally with a plot of simulated growth curves using draws from those priors.
 #' @import ggplot2
@@ -22,15 +22,12 @@
 #' @importFrom stats rlnorm dlnorm
 #' @examples
 #'
-#' ## Not run:
-#'
 #' set.seed(123)
 #' priors <- list("A" = c(100, 130), "B" = c(10, 8), "C" = c(0.2, 0.1))
 #' plotPrior(priors)
 #'
 #' plotPrior(priors, "gompertz")[[1]]
 #'
-#' ## End(Not run:)
 #'
 #' @export
 
@@ -91,7 +88,8 @@ plotPrior <- function(priors, type = "density", n = 200, t = 25) {
         y = "Y", title = paste0(n, " curves simulated from prior draws"),
         color = "Prior"
       ) +
-      ggplot2::theme(legend.position = c(0.9, 0.9))
+      ggplot2::theme(legend.position = "inside",
+                     legend.position.inside = c(0.9, 0.9))
 
     if (type %in% c("logistic", "gompertz", "weibull", "frechet", "gumbel")) {
       x <- "B"
@@ -229,9 +227,8 @@ plotPrior <- function(priors, type = "density", n = 200, t = 25) {
     error = function(err) {
       message(paste0(
         "Error trying to sample from priors distributions.",
-        "All priors must be proper (non-flat).\nAttempting to sample from: "
+        "All priors must be proper (non-flat). Check prior specification in growthSS\n"
       ))
-      print(priors$prior)
       message("The original Error message is:")
       stop(conditionMessage(err))
     }

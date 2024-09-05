@@ -28,6 +28,8 @@ test_that(".readpcvCheckDataState works", {
 })
 
 test_that("read pcv raises error", {
+  skip_on_cran()
+  skip_if_offline(host = "r-project.org")
   link1 <- "https://gist.githubusercontent.com/seankross/"
   link2 <- "a412dfbd88b3db70b74b/raw/5f23f993cd87c283ce766e7ac6b329ee7cc2e1d1/mtcars.csv"
   file <- paste0(link1, link2)
@@ -35,6 +37,8 @@ test_that("read pcv raises error", {
 })
 
 test_that("read pcv 3 works", {
+  skip_on_cran()
+  skip_if_offline(host = "r-project.org")
   base_url <- "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/"
   bw <- suppressMessages(read.pcv.3(
     file = paste0(base_url, "pcv3Phenos.csv"),

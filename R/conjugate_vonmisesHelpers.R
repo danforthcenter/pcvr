@@ -260,7 +260,7 @@
 #' @param x A vector of numerics drawn from a beta distribution.
 #' @param w optional weights vector
 #' @examples
-#' if (FALSE) {
+#' \donttest{
 #'   .circular.mean(brms::rvon_mises(20, -3.1, 4))
 #' }
 #' @keywords internal
@@ -282,7 +282,7 @@
 #' @param boundary The edges of the circular process as a 2L numeric
 #' @param target the target circular space, should not be changed from radians (-pi, pi).
 #' @examples
-#' if (FALSE) {
+#' \donttest{
 #'   x <- seq(-6, 6, length.out = 20)
 #'   .boundary.to.radians(x, c(6.3, 6.3))
 #'
@@ -304,7 +304,7 @@
 #' generally these should not be changed from radians.
 #' @param target the target circular space, should be from priors$boundary.
 #' @examples
-#' if (FALSE) {
+#' \donttest{
 #'   x <- brms::rvon_mises(20, 2, 3)
 #'   .radians.to.boundary(x, target = c(6.3, 6.3))
 #'
@@ -326,7 +326,7 @@
 #' @param draws2 draws from another distribution
 #' @param boundary a boundary vector describing the circular space's edges. Should be from priors.
 #' @examples
-#' if (FALSE) {
+#' \donttest{
 #'   draws1 <- brms::rvon_mises(10000, 3.1, 4)
 #'   draws2 <- brms::rvon_mises(10000, -3, 2)
 #'   x <- .conj_rope_circular_diff(draws1, draws2)

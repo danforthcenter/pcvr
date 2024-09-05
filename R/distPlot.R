@@ -12,7 +12,7 @@
 #'     Defaults to NULL which will use all parameters from the top level model.
 #' @param maxTime Optional parameter to designate a max time not observed in the models so far
 #' @param patch Logical, should a patchwork plot be returned or should lists of ggplots be returned?
-#' @keywords Bayesian, brms
+#' @keywords Bayesian brms
 #' @import ggplot2
 #' @import patchwork
 #' @importFrom methods is
@@ -22,8 +22,7 @@
 #' @export
 #' @examples
 #'
-#' ## Not run:
-#' if (FALSE) {
+#' \donttest{
 #'   print(load(url("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/brmsFits.rdata")))
 #'   library(brms)
 #'   library(ggplot2)

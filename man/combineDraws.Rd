@@ -2,7 +2,7 @@
 % Please edit documentation in R/combineDraws.R
 \name{combineDraws}
 \alias{combineDraws}
-\title{Multi Value Trait Aggregation function}
+\title{Combine Draws From brms Models}
 \usage{
 combineDraws(..., message = TRUE)
 }
@@ -23,9 +23,8 @@ for use with \code{brms::hypothesis()}. This will also check that the draws are 
 basic model metrics.
 }
 \examples{
-
-## Not run:
-if (FALSE) {
+# note that this example will fit several bayesian models and may run for several minutes.
+\donttest{
   simdf <- growthSim("logistic",
     n = 20, t = 25,
     params = list(
@@ -62,11 +61,11 @@ if (FALSE) {
   )
 
 
-  fit_ab <- fitGrowth(ss_ab, chains = 4, cores = 4, iter = 1000)
-  fit_ab2 <- fitGrowth(ss_ab, chains = 4, cores = 4, iter = 1200)
-  fit_cd <- fitGrowth(ss_cd, chains = 4, cores = 4, iter = 1000)
-  fit_ef <- fitGrowth(ss_ef, chains = 4, cores = 4, iter = 1000)
-  fit_ef2 <- fitGrowth(ss_ef2, chains = 4, cores = 4, iter = 1000)
+  fit_ab <- fitGrowth(ss_ab, chains = 1, cores = 1, iter = 1000)
+  fit_ab2 <- fitGrowth(ss_ab, chains = 1, cores = 1, iter = 1200)
+  fit_cd <- fitGrowth(ss_cd, chains = 1, cores = 1, iter = 1000)
+  fit_ef <- fitGrowth(ss_ef, chains = 1, cores = 1, iter = 1000)
+  fit_ef2 <- fitGrowth(ss_ef2, chains = 1, cores = 1, iter = 1000)
 
   x <- combineDraws(fit_ab, fit_cd, fit_ef)
   draws_ef <- as.data.frame(fit_ef)
@@ -74,7 +73,6 @@ if (FALSE) {
   x2 <- combineDraws(fit_ab2, fit_cd, draws_ef)
   x3 <- combineDraws(fit_ab, fit_cd, fit_ef2)
 }
-## End(Not run)
 
 }
 \keyword{brms}

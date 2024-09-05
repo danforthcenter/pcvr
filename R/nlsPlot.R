@@ -20,13 +20,12 @@
 #' If TRUE then viridis colormaps are used in the order of virMaps
 #' @param virMaps order of viridis maps to use. Will be recycled to necessary length.
 #' Defaults to "plasma", but will generally be informed by growthPlot's default.
-#' @keywords growth-curve, logistic, gompertz, monomolecular, linear, exponential, power-law
+#' @keywords growth-curve
 #' @importFrom methods is
 #' @import ggplot2
 #' @importFrom stats predict
 #' @examples
 #'
-#' ## Not run:
 #'
 #' simdf <- growthSim("logistic",
 #'   n = 20, t = 25,
@@ -39,8 +38,6 @@
 #' fit <- fitGrowth(ss)
 #' nlsPlot(fit, form = ss$pcvrForm, df = ss$df, groupFill = TRUE)
 #' nlsPlot(fit, form = ss$pcvrForm, df = ss$df, groups = "a", timeRange = 1:10)
-#'
-#' ## End(Not run)
 #'
 #' @return Returns a ggplot showing an nls model's predictions.
 #'

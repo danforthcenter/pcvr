@@ -19,13 +19,11 @@
 #' viridis colormaps are used in the order of virMaps
 #' @param virMaps order of viridis maps to use. Will be recycled to necessary length.
 #' Defaults to "plasma", but will generally be informed by growthPlot's default.
-#' @keywords growth-curve, logistic, gompertz, monomolecular, linear, exponential, power-law
+#' @keywords survival
 #' @importFrom methods is
 #' @import ggplot2
 #' @importFrom stats predict
 #' @examples
-#'
-#' ## Not run:
 #'
 #' df <- growthSim("logistic",
 #'   n = 20, t = 25,
@@ -37,8 +35,6 @@
 #' flexsurvregPlot(fit, form = ss$pcvrForm, df = ss$df, groups = "a")
 #' flexsurvregPlot(fit, form = ss$pcvrForm, df = ss$df,
 #'   facetGroups = FALSE, groupFill = TRUE)
-#'
-#' ## End(Not run)
 #'
 #' @return Returns a ggplot showing an survival model's survival function.
 #'

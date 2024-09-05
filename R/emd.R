@@ -15,7 +15,7 @@
 #' @param include if a long dataframe is returned then these columns will be added to the dataframe,
 #'  labelled for i and j (the row positions for compared histograms).
 #'  If a matrix is returned then this information is stored in the row names.
-#'  This defaults to \link{rescale}.
+#'  This defaults to reorder.
 #' @param mat Logical, should data be returned as an nrow x nrow matrix or as a long dataframe?
 #'  By Default this is FALSE and a long dataframe is returned.
 #'  Both options are comparable in terms of speed,
@@ -41,10 +41,9 @@
 #' @return A dataframe/matrix (if plot=FALSE) or a list with a dataframe/matrix and\
 #' a ggplot (if plot=TRUE). The returned data contains pairwise EMD values.
 #'
-#' @keywords emd, earth mover's distance, multi-value trait, histogram
+#' @keywords emd earth-mover's-distance multi-value histogram
 #' @examples
 #'
-#' ## Not run:
 #'
 #' set.seed(123)
 #' test <- mvSim(
@@ -70,12 +69,13 @@
 #' )
 #' head(x2)
 #'
-#' if (FALSE) {
+#' \donttest{
+#' library(data.table)
 #'   file <- paste0(
 #'     "https://media.githubusercontent.com/media/joshqsumner/",
 #'     "pcvrTestData/main/pcv4-multi-value-traits.csv"
 #'   )
-#'   df1 <- read.pcv(file, "wide")
+#'   df1 <- read.pcv(file, "wide", reader = "fread")
 #'
 #'   df1$genotype <- substr(df1$barcode, 3, 5)
 #'   df1$genotype <- ifelse(df1$genotype == "002", "B73",
@@ -88,11 +88,12 @@
 #'     ifelse(df1$fertilizer == "B", "50", "0")
 #'   )
 #'
-#'   w <- pcv.emd(df1,
-#'     cols = "hue_frequencies", reorder = c("fertilizer", "genotype"),
-#'     mat = FALSE, plot = TRUE, parallel = 1
+#'   tryCatch({
+#'     w <- pcv.emd(df1,
+#'       cols = "hue_frequencies", reorder = c("fertilizer", "genotype"),
+#'       mat = FALSE, plot = TRUE, parallel = 1)
+#'     }, error = function(err) {message(err)}
 #'   )
-#'
 #'
 #'   # Note on computational complexity
 #'   # This scales as O^2, see the plot below for some idea
@@ -111,7 +112,6 @@
 #'     xlab = "N Input Images", ylab = "time (seconds)"
 #'   )
 #' }
-#' ## End(Not run)
 #'
 #' @export
 #'
@@ -326,7 +326,7 @@ pcv.emd <- function(df, cols = NULL, reorder = NULL, include = reorder, mat = FA
 #' @param s1 Histogram as a numeric vector of counts per position.
 #' @param s2 Histogram as a numeric vector of counts per position. Must be the same length as s1.
 #'
-#' @keywords emd, earth mover's distance, multi-value trait, histogram
+#' @keywords internal
 #' @return Returns EMD between two samples as a numeric.
 #' @examples
 #'
@@ -336,8 +336,7 @@ pcv.emd <- function(df, cols = NULL, reorder = NULL, include = reorder, mat = FA
 #' plot(s2, type = "l"); lines(s1)
 #' emd1d(s1, s2)
 #'
-#' @export
-#'
+#' @noRd
 #'
 emd1d <- function(s1, s2) {
   if (length(s1) != length(s2)) {

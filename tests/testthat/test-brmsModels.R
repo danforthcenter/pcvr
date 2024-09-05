@@ -1,10 +1,9 @@
 #* there are lots of options and until one obviously breaks I am not going to try to test all of them.
-library(testthat)
-library(brms)
-library(ggplot2)
-library(pcvr)
 
 test_that("Logistic brms model pipeline", {
+  skip_if_not_installed("brms")
+  skip_if_not_installed("cmdstanr")
+  skip_on_cran()
   set.seed(123)
   simdf <- growthSim(
     "logistic",
@@ -41,6 +40,16 @@ test_that("Logistic brms model pipeline", {
   )
   expect_s3_class(plot2.5, "ggplot")
   expect_equal(nrow(d3), 3000)
+  ss2 <- growthSS(
+    model = "gompertz", form = y ~ time | id / group, sigma = "logistic",
+    list("A" = 130, "B" = 10, "C" = 1, "sigmaA" = 20, "sigmaB" = 10, "sigmaC" = 2),
+    df = simdf, type = "brms"
+  )
+  fit2 <- fitGrowth(ss2, backend = "cmdstanr", iter = 500, chains = 1, cores = 1, sample_prior = "only")
+  expect_message(
+    cd <- combineDraws(fit, fit2)
+  )
+  expect_equal(dim(cd), c(250, 21))
   cd <- combineDraws(fit, fit)
   expect_equal(dim(cd), c(250, 16))
   fit_df <- as.data.frame(fit)
@@ -69,12 +78,19 @@ test_that("Logistic brms model pipeline", {
   expect_s3_class(test, "brmshypothesis")
   ss <- growthSS(
     model = "logistic", form = y ~ time | id / group, sigma = "logistic",
-    list("A" = 130, "B" = 10, "C" = 3,
-         "sigmaA" = 20, "sigmaB" = 10, "sigmaC" = 3),
+    list(
+      "A" = 130, "B" = 10, "C" = 3,
+      "sigmaA" = 20, "sigmaB" = 10, "sigmaC" = 3
+    ),
     df = simdf, type = "brms"
   )
   pp1 <- plotPrior(ss)
   expect_s3_class(pp1, "ggplot")
+  ss2 <- ss
+  ss2$prior <- data.frame()
+  expect_error(
+    err <- plotPrior(ss2)
+  )
   pp2 <- plotPrior(
     priors = list("A" = c(100, 130), "B" = c(10, 8), "C" = c(0.2, 0.1)),
     type = "logistic",
@@ -93,9 +109,16 @@ test_that("Logistic brms model pipeline", {
     n = 200, t = 25
   )
   expect_s3_class(pp4$simulated, "ggplot")
+  suppressWarnings(barg_output1 <- barg(fit, ss))
+  fit_2 <- fit
+  fit_list <- list(fit, fit_2)
+  x <- suppressWarnings(barg(fit_list, list(ss, ss)))
 })
 
 test_that("distPlot works with many models", {
+  skip_if_not_installed("brms")
+  skip_if_not_installed("cmdstanr")
+  skip_on_cran()
   load(url("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/brmsFits.rdata"))
   fits <- list(fit_3, fit_15)
   form <- y ~ time | id / group
@@ -116,6 +139,9 @@ test_that("distPlot works with many models", {
 })
 
 test_that("brms model warns about priors", {
+  skip_if_not_installed("brms")
+  skip_if_not_installed("cmdstanr")
+  skip_on_cran()
   set.seed(123)
   simdf <- growthSim(
     "linear",
@@ -134,6 +160,9 @@ test_that("brms model warns about priors", {
 })
 
 test_that("Hierarchical Model Works", {
+  skip_if_not_installed("brms")
+  skip_if_not_installed("cmdstanr")
+  skip_on_cran()
   set.seed(123)
   simdf <- growthSim(
     "logistic",
@@ -158,6 +187,8 @@ test_that("Hierarchical Model Works", {
 })
 
 test_that("Changepoint model can be specified", {
+  skip_if_not_installed("brms")
+  skip_if_not_installed("cmdstanr")
   set.seed(123)
   noise <- do.call(rbind, lapply(1:30, function(i) {
     chngpt <- c(20, 21)
@@ -208,6 +239,9 @@ test_that("Changepoint model can be specified", {
 })
 
 test_that("weibull survival", {
+  skip_if_not_installed("brms")
+  skip_if_not_installed("cmdstanr")
+  skip_on_cran()
   set.seed(123)
   model <- "survival"
   form <- y > 100 ~ time | id / group
@@ -228,6 +262,9 @@ test_that("weibull survival", {
 })
 
 test_that("binomial survival", {
+  skip_if_not_installed("brms")
+  skip_if_not_installed("cmdstanr")
+  skip_on_cran()
   set.seed(123)
   model <- "survival binomial"
   form <- y > 100 ~ time | id / group

@@ -11,7 +11,8 @@ brmPlot(
   groups = NULL,
   timeRange = NULL,
   facetGroups = TRUE,
-  hierarchy_value = NULL
+  hierarchy_value = NULL,
+  vir_option = "plasma"
 )
 }
 \arguments{
@@ -33,6 +34,8 @@ although prediction using splines outside of the observed range is not necessari
 
 \item{hierarchy_value}{If a hierarchical model is being plotted, what value should the
 hiearchical predictor be? If left NULL (the default) the mean value is used.}
+
+\item{vir_option}{Viridis color scale to use for plotting credible intervals. Defaults to "plasma".}
 }
 \value{
 Returns a ggplot showing a brms model's credible
@@ -45,9 +48,8 @@ means) can be visualized easily using this function. This will generally be call
 }
 \examples{
 
-## Not run:
 
-if (FALSE) {
+\donttest{
 simdf <- growthSim(
  "logistic", n = 20, t = 25,
  params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
@@ -61,13 +63,7 @@ fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1)
 growthPlot(fit = fit, form = y ~ time | group, groups = "a", df = ss$df)
 }
 
-## End(Not run)
 
 }
-\keyword{exponential,}
-\keyword{gompertz,}
-\keyword{growth-curve,}
-\keyword{linear,}
-\keyword{logistic,}
-\keyword{monomolecular,}
-\keyword{power-law}
+\keyword{brms}
+\keyword{growth-curve}

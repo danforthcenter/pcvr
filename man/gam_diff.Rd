@@ -43,6 +43,9 @@ standard errors. Defaults to TRUE.}
 
 \item{plot}{Logical, should a plot of the difference be returned? Defaults to TRUE.}
 }
+\value{
+A dataframe or a list containing a ggplot and a dataframe
+}
 \description{
 Note that using GAMs will be less useful than fitting parameterized models as supported by
 \code{growthSS} and \code{fitGrowth} for common applications in plant phenotyping.
@@ -75,7 +78,4 @@ out2 <- gam_diff(
   model = m, g1 = "a", g2 = "b", byVar = NULL, smoothVar = NULL, plot = TRUE
 )
 }
-\keyword{gam,}
-\keyword{growth,}
-\keyword{mgcv,}
-\keyword{spline}
+\keyword{gam}

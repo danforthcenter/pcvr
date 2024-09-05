@@ -43,7 +43,6 @@ Often in bellwether experiments we are curious about the effect of
 }
 \examples{
 
-## Not run:
 \donttest{
 sv <- read.pcv(
   "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv",
@@ -63,7 +62,7 @@ sv$fertilizer <- ifelse(sv$fertilizer == "A", "100",
 sv <- bw.time(sv,
   plantingDelay = 0, phenotype = "area_pixels", cutoff = 10,
   timeCol = "timestamp", group = c("barcode", "rotation"), plot = TRUE
-)
+)$data
 sv <- bw.outliers(sv,
   phenotype = "area_pixels", group = c("DAS", "genotype", "fertilizer"),
   plotgroup = c("barcode", "rotation")
@@ -100,13 +99,12 @@ sv_l$fertilizer <- ifelse(sv_l$fertilizer == "A", "100",
 sv_l <- bw.time(sv_l,
   plantingDelay = 0, phenotype = "area_pixels", cutoff = 10,
   timeCol = "timestamp", group = c("barcode", "rotation")
-)
+)$data
 sv_l <- cumulativePheno(sv_l,
   phenotypes = c("area_pixels", "height_pixels"),
   group = c("barcode", "rotation"), timeCol = "DAS"
 )
 }
-## End(Not run)
 
 }
 \keyword{single-value-traits}

@@ -1,5 +1,6 @@
 if (!interactive()) pdf(NULL)
 test_that("reading sv github data as wide works", {
+  skip_if_offline(host = "r-project.org")
   sv <- read.pcv(paste0(
     "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/",
     "main/pcv4-single-value-traits.csv"
@@ -26,7 +27,7 @@ test_that("reading sv github data as wide works", {
   sv <- bw.time(sv,
     plantingDelay = 7, phenotype = "area_pixels", cutoff = 10, timeCol = "timestamp",
     group = c("barcode", "rotation"), plot = TRUE
-  )
+  )$data
   expect_equal(colnames(sv)[46:48], c("DAS", "DAP", "DAE"))
   expect_equal(head(sv$DAS), 4:9)
   expect_equal(head(sv$DAP), 11:16)

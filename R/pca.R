@@ -16,9 +16,9 @@
 #' @import ggplot2
 #' @import FactoMineR
 #' @importFrom stats as.formula
+#' @return A ggplot or list with a ggplot, a dataframe with the data and PCs, and the factominer
+#' PCA object as elements.
 #' @examples
-#'
-#' ## Not run:
 #'
 #' dists <- list(
 #'   rlnorm = list(meanlog = log(40), sdlog = 0.5),
@@ -29,8 +29,6 @@
 #' mv$otherGroup <- sample(c("a", "b"), size = nrow(mv), replace = TRUE)
 #' pcadf(mv, cols = "sim_", returnData = TRUE)
 #' pcadf(mv, cols = 2:181, color = c("group", "otherGroup"), returnData = FALSE)
-#'
-#' ## End(Not run)
 #'
 #' @export
 

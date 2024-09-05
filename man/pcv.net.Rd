@@ -48,8 +48,6 @@ Easy igraph use with pcv.emd output
 }
 \examples{
 
-## Not run:
-
 library(extraDistr)
 dists <- list(
   rmixnorm = list(mean = c(70, 150), sd = c(15, 5), alpha = c(0.3, 0.7)),
@@ -64,13 +62,8 @@ emd_df <- pcv.emd(x,
 net <- pcv.net(emd_df, meta = "group")
 net2 <- pcv.net(emd_df, meta = "group", filter = "0.9", direction = "lesser")
 
-## End(Not run)
 
 }
-\keyword{distance,}
-\keyword{earth}
-\keyword{emd,}
-\keyword{mover's}
-\keyword{multi-value}
+\keyword{emd}
+\keyword{multi-value-trait}
 \keyword{network}
-\keyword{trait,}

@@ -114,7 +114,7 @@
 #' @param tau A vector of quantiles to fit for nlrq models.
 #' @param hierarchy Optionally a list of model parameters that should themselves by modeled by another
 #' predictor variable. This is only used with the brms backend.
-#' @keywords Bayesian, brms
+#' @keywords Bayesian brms nls nlme nlrq mgcv longitudinal
 #'
 #' @importFrom stats as.formula rgamma
 #'
@@ -304,7 +304,6 @@
 #'
 #' @examples
 #'
-#' ## Not run:
 #'
 #' simdf <- growthSim("logistic",
 #'   n = 20, t = 25,
@@ -317,10 +316,11 @@
 #' )
 #' lapply(ss, class)
 #' ss$initfun()
-#'
-#' if (FALSE) {
+#' # the next step would typically be compiling/fitting the model
+#' # here we use very few chains and very few iterations for speed, but more of both is better.
+#' \donttest{
 #'   fit_test <- fitGrowth(ss,
-#'     iter = 1000, cores = 2, chains = 2, backend = "cmdstanr",
+#'     iter = 500, cores = 1, chains = 1, backend = "cmdstanr",
 #'     control = list(adapt_delta = 0.999, max_treedepth = 20)
 #'   )
 #' }
@@ -345,7 +345,6 @@
 #' ex2_ss$prior # has coef level grouping for priors
 #' ex2_ss$formula # specifies an A intercept for each group and splines by group for sigma
 #'
-#' ## End(Not run)
 #'
 #' @export
 

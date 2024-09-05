@@ -29,14 +29,10 @@
 #' @importFrom stats as.formula na.omit
 #' @import patchwork
 #'
-#' @keywords read.csv, pcv, wide, long
-#'
 #' @return Returns either a plot (if returnData=FALSE) or a list with a plot and
 #' data/a list of dataframes (depending on returnData and cor).
 #'
 #' @examples
-#'
-#' ## Not run:
 #'
 #'
 #' library(data.table)
@@ -59,8 +55,6 @@
 #'      combine = TRUE, timeCol = "time", time = 1)
 #' frem(df, des = "genotype", phenotypes = c("pheno1", "pheno2", "pheno3"),
 #'      cor = FALSE, timeCol = "time", time = 3:5, markSingular = TRUE)
-#'
-#' ## End(Not run)
 #'
 #' @export
 

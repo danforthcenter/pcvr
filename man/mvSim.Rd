@@ -44,7 +44,6 @@ mvSim can be used to simulate data for example models/plots.
 }
 \examples{
 
-## Not run:
 library(extraDistr) # for rmixnorm
 library(ggplot2)
 n_samples = 10
@@ -64,32 +63,9 @@ ggplot(x, aes(
   x = as.numeric(sub("sim_", "", variable)),
   y = value, group = interaction(group, id), fill = group
 )) +
-  geom_col(position = "identity", alpha = 0.25) +
-  pcv_theme() +
-  labs(x = "bin")
+geom_col(position = "identity", alpha = 0.25) +
+pcv_theme() +
+labs(x = "bin")
 
-if (FALSE) { # example of plotting based on the dists argument
-
-  ggplot(data = data.frame(x = 1:180), aes(x = x)) +
-    facet_grid(dist ~ group) +
-    lapply(c("a", "b"), function(grp) {
-      lapply(1:length(dists), function(di) {
-        rfun <- names(dists)[di]
-        rargs <- append(dists[[di]], 1000)
-        names(rargs)[length(rargs)] <- "n"
-        v1 <- do.call(rfun, rargs)
-        v1[v1 > max_bin] <- max_bin
-        v1[v1 < min_bin] <- min_bin
-        d <- data.frame(group = grp, x = v1, dist = di)
-        geom_histogram(data = d, aes(x = x, fill = di),
-        alpha = 1, binwidth = 1, show.legend = FALSE)
-      })
-    }) +
-    pcv_theme()
-}
-
-
-
-## End(Not run)
 }
 \keyword{multi-value}

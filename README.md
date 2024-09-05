@@ -1,4 +1,4 @@
-## pcvr
+## pcvr <img src="man/figures/pcvr_logo.png" width = 160 alt="pcvr Logo" align="right"/>
 <!-- badges: start -->
   [![R-CMD-check](https://github.com/danforthcenter/pcvr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/danforthcenter/pcvr/actions/workflows/R-CMD-check.yaml)
   [![Coverage
@@ -9,7 +9,14 @@ R functions for use with plantCV output
 
 ## Installation
 
-`pcvr` can be installed using remotes/devtools `install_github` as shown below.
+A stable version of `pcvr` can be installed from `CRAN`
+
+```
+install.packages("pcvr")
+library(pcvr)
+```
+
+Alternatively, the development version of `pcvr` can be installed using remotes/devtools `install_github` as shown below.
 Note that the default behavior in devtools/remotes is to only install true dependencies. Several functions in pcvr use specific packages that would otherwise not be needed for most work, notably the brms supporting functions. To install suggested packages (see DESCRIPTION file) add dependencies=T to the `install_github` function call.
 
 ```

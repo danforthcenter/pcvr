@@ -81,9 +81,8 @@ the output.
     }
 }
 \examples{
-
-## Not run:
-
+\dontshow{if (rlang::is_installed(c("brms", "cmdstanr"))) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\donttest{
 simdf <- growthSim("logistic",
   n = 20, t = 25,
   params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
@@ -101,10 +100,9 @@ barg(fit_test, ss)
 fit_2 <- fit_test
 fit_list <- list(fit_test, fit_2)
 x <- barg(fit_list, list(ss, ss))
-
-## End(Not run:)
-
 }
-\keyword{Bayesian,}
-\keyword{brms,}
+\dontshow{\}) # examplesIf}
+}
+\keyword{Bayesian}
+\keyword{brms}
 \keyword{prior}

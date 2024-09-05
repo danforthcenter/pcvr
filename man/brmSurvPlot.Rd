@@ -41,9 +41,7 @@ Models fit using \link{growthSS} inputs by \link{fitGrowth}
 }
 \examples{
 
-## Not run:
-
-if (FALSE) {
+\donttest{
   set.seed(123)
   df <- growthSim("exponential",
     n = 20, t = 50,
@@ -66,13 +64,5 @@ if (FALSE) {
   brmSurvPlot(fit2, form = ss2$pcvrForm, df = ss2$df)
 }
 
-## End(Not run)
 
 }
-\keyword{exponential,}
-\keyword{gompertz,}
-\keyword{growth-curve,}
-\keyword{linear,}
-\keyword{logistic,}
-\keyword{monomolecular,}
-\keyword{power-law}

@@ -2,7 +2,7 @@
 % Please edit documentation in R/pcvjoyplot.R
 \name{pcv.joyplot}
 \alias{pcv.joyplot}
-\title{Make Joyplots for multi value trait plantCV data and optionally compare distributions}
+\title{Make Joyplots for multi value trait plantCV data}
 \usage{
 pcv.joyplot(
   df = NULL,
@@ -53,11 +53,9 @@ Default is T, if F then \code{ggridges::geom_density_ridges} is used instead,
 Returns a ggplot.
 }
 \description{
-Make Joyplots for multi value trait plantCV data and optionally compare distributions
+Make Joyplots for multi value trait plantCV data
 }
 \examples{
-
-## Not run:
 
 library(extraDistr)
 dists <- list(
@@ -76,12 +74,6 @@ p <- pcv.joyplot(x_long, bin = "variable", group = "group")
 p + ggplot2::scale_fill_gradientn(colors = scales::hue_pal(l = 65)(360))
 x_long$group2 <- "example"
 pcv.joyplot(x_long, bin = "variable", y = "group", fillx = FALSE)
-## End(Not run)
 
 }
-\keyword{bayesian,}
-\keyword{ggplot,}
-\keyword{multi}
-\keyword{pcv.hists}
-\keyword{trait,}
-\keyword{value}
+\keyword{multi-value-trait}

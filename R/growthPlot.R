@@ -1,4 +1,4 @@
-#' Function to visualize common growth models.
+#' Function to visualize models made by \link{fitGrowth}.
 #'
 #' Models fit using \link{growthSS} inputs by \link{fitGrowth}
 #' (and similar models made through other means) can be visualized easily using this function.
@@ -22,14 +22,14 @@
 #' facetGroups. If TRUE then
 #' viridis colormaps are used in the order c('plasma', 'mako', 'viridis', 'inferno', 'cividis', 'magma',
 #' 'turbo', 'rocket'). Alternatively this can be given as a vector of
-#' viridis colormap names to use in a different order than above. Note this is ignored for brms models.
+#' viridis colormap names to use in a different order than above.
+#' Note that for brms models this is ignored except if used to specify a different viridis color map
+#' to use.
 #' @param hierarchy_value If a hierarchical model is being plotted, what value should the
 #' hiearchical predictor be? If left NULL (the default) the mean value is used.
-#' @keywords growth-curve, logistic, gompertz, monomolecular, linear, exponential, power-law
+#' @keywords growth-curve
 #' @importFrom methods is
 #' @examples
-#'
-#' ## Not run:
 #'
 #' simdf <- growthSim("logistic",
 #'   n = 20, t = 25,
@@ -42,7 +42,6 @@
 #' fit <- fitGrowth(ss)
 #' growthPlot(fit, form = ss$pcvrForm, df = ss$df)
 #'
-#' ## End(Not run)
 #'
 #' @return Returns a ggplot showing a brms model's credible
 #' intervals and optionally the individual growth lines.
@@ -65,7 +64,7 @@ growthPlot <- function(fit, form, groups = NULL, df = NULL, timeRange = NULL,
     if (attr(fit$formula$formula, "nl")) { # non linear models are growth models
       plot <- brmPlot(
         fit = fit, form = form, groups = groups, df = df, timeRange = timeRange,
-        facetGroups = facetGroups, hierarchy_value = hierarchy_value
+        facetGroups = facetGroups, hierarchy_value = hierarchy_value, vir_option = virMaps[1]
       )
     } else { # linear models are survival models
       plot <- brmSurvPlot(

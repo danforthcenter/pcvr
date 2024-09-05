@@ -49,5 +49,5 @@ A \code{brmsfit} object, see \code{?`brmsfit-class`} for details.
 \description{
 Helper function generally called from \link{fitGrowth}.
 }
-\keyword{Bayesian,}
+\keyword{Bayesian}
 \keyword{brms}

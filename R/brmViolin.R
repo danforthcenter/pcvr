@@ -30,7 +30,7 @@
 #' This is treated as TRUE if a plot will not be generated but
 #' otherwise defaults to FALSE.
 #'
-#' @keywords brms, ggplot2
+#' @keywords brms ggplot2
 #'
 #' @import ggplot2
 #' @import viridis
@@ -40,9 +40,7 @@
 #'
 #' @examples
 #'
-#' ## Not run:
-#'
-#' if (FALSE) {
+#' \donttest{
 #' set.seed(123)
 #' simdf <- growthSim(
 #'   "logistic", n = 20, t = 25,
@@ -59,7 +57,6 @@
 #'           compareX = "a",
 #'           againstY = "b", returnData = TRUE)
 #' }
-#' ## End(Not run)
 #'
 #' @return Returns a ggplot showing a brms model's posterior distributions
 #' as violins and filled by posterior probability of some hypothesis.

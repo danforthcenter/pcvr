@@ -1,4 +1,4 @@
-#' Hypothesis testing for \code{fitGrowth} models.
+#' Hypothesis testing for \link{fitGrowth} models.
 #'
 #' @param ss A list output from \link{growthSS}. This is not required for nls, nlme, and brms models
 #' if \code{test} is given in \code{brms::hypothesis} style as a written statement.
@@ -18,7 +18,7 @@
 #' is passed to brms::hypothesis, which has extensive documentation and is very flexible.
 #' Note that for survreg the \code{survival::survdiff} function is used so fewer hypothesis testing
 #' options are available and flexsurv models are tested using contrasts via \code{flexsurv::standsurv}.
-#' @keywords hypothesis, nlme, nls, nlrq
+#' @keywords hypothesis brms nlme nls nlrq mgcv
 #' @importFrom stats getCall logLik pchisq anova as.formula setNames vcov coef pt
 #' @importFrom nlme pdIdent corAR1 fixef
 #' @importFrom extraDistr qlst dlst
@@ -36,7 +36,6 @@
 #'
 #' @examples
 #'
-#' ## Not run:
 #' set.seed(123)
 #' simdf <- growthSim("logistic",
 #'   n = 20, t = 25,
@@ -59,7 +58,6 @@
 #' coef(fit2) # check options for contrast testing
 #' testGrowth(ss2, fit2, "A1 - A2*1.1")
 #'
-#' ## End(Not run)
 #' @export
 
 testGrowth <- function(ss = NULL, fit, test = "A") {
@@ -528,7 +526,6 @@ testGrowth <- function(ss = NULL, fit, test = "A") {
 #' Chisq based test for survreg and flexsurv models using SE
 #' @examples
 #'
-#' ## Not run:
 #'
 #' df <- growthSim("logistic",
 #'  n = 20, t = 25,
@@ -541,8 +538,6 @@ testGrowth <- function(ss = NULL, fit, test = "A") {
 #' ss <- growthSS("survival weibull", y > 100 ~ time | id / group, df = df, type = "flexsurv")
 #' fit <- fitGrowth(ss)
 #' .survTest(ss, fit)
-#'
-#' ## End(Not run)
 #'
 #' @keywords internal
 #' @noRd

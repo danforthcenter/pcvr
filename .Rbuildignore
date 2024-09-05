@@ -6,3 +6,9 @@
 ^papers
 ^tools
 ^\.github$
+^cran-comments\.md$
+^install.ps1
+^CRAN-SUBMISSION$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$

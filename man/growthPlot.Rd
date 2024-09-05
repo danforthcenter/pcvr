@@ -2,7 +2,7 @@
 % Please edit documentation in R/growthPlot.R
 \name{growthPlot}
 \alias{growthPlot}
-\title{Function to visualize common growth models.}
+\title{Function to visualize models made by \link{fitGrowth}.}
 \usage{
 growthPlot(
   fit,
@@ -40,7 +40,9 @@ future data if the avaiable data has not reached some point (such as asymptotic 
 facetGroups. If TRUE then
 viridis colormaps are used in the order c('plasma', 'mako', 'viridis', 'inferno', 'cividis', 'magma',
 'turbo', 'rocket'). Alternatively this can be given as a vector of
-viridis colormap names to use in a different order than above. Note this is ignored for brms models.}
+viridis colormap names to use in a different order than above.
+Note that for brms models this is ignored except if used to specify a different viridis color map
+to use.}
 
 \item{hierarchy_value}{If a hierarchical model is being plotted, what value should the
 hiearchical predictor be? If left NULL (the default) the mean value is used.}
@@ -55,8 +57,6 @@ Models fit using \link{growthSS} inputs by \link{fitGrowth}
 }
 \examples{
 
-## Not run:
-
 simdf <- growthSim("logistic",
   n = 20, t = 25,
   params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
@@ -68,13 +68,6 @@ ss <- growthSS(
 fit <- fitGrowth(ss)
 growthPlot(fit, form = ss$pcvrForm, df = ss$df)
 
-## End(Not run)
 
 }
-\keyword{exponential,}
-\keyword{gompertz,}
-\keyword{growth-curve,}
-\keyword{linear,}
-\keyword{logistic,}
-\keyword{monomolecular,}
-\keyword{power-law}
+\keyword{growth-curve}

@@ -21,6 +21,10 @@ taken to be a pattern that will match some set of column names in the data to us
 
 \item{...}{Further arguments passed to caret::train.}
 }
+\value{
+a list of lists each with model performance, prediction target, model, plot, N components,
+and variable influence on projection components for each response variable.
+}
 \description{
 Partial Least Squares Regression (plsr) is often used to analyze spectral data.
 }
@@ -30,9 +34,7 @@ This function also uses the 'pls' method from the pls package.
 }
 \examples{
 
-## Not run:
-
-if (FALSE) {
+if (rlang::is_installed("pls")) {
 dists <- list(
   rlnorm = list(meanlog = log(40), sdlog = 0.5),
   rlnorm = list(meanlog = log(60), sdlog = 0.35)
@@ -47,7 +49,6 @@ d <- cbind(sv, mv[, -1])
 # note that this requires the "pls" package to be installed.
 x <- pcv.plsr(df = d, resps = "y", spectra = grepl("^sim_", colnames(d)))
 }
-## End(Not run)
 
 }
 \keyword{PLSR}

@@ -1,4 +1,4 @@
-#' Make Joyplots for multi value trait plantCV data and optionally compare distributions
+#' Make Joyplots for multi value trait plantCV data
 #'
 #' @param df Data frame to use. Long or wide format is accepted.
 #' @param index If the data is long then this is a multi value trait as a
@@ -23,7 +23,7 @@
 #'  Default is T, if F then \code{ggridges::geom_density_ridges} is used instead,
 #'   with arbitrary fill. Note that \code{ggridges::geom_density_ridges_gradient}
 #'   may issue a message about deprecated ggplot2 features.
-#' @keywords bayesian, ggplot, multi value trait, pcv.hists
+#' @keywords multi-value-trait
 #' @import ggplot2
 #' @import ggridges
 #' @import data.table
@@ -33,8 +33,6 @@
 #' @return Returns a ggplot.
 #'
 #' @examples
-#'
-#' ## Not run:
 #'
 #' library(extraDistr)
 #' dists <- list(
@@ -53,7 +51,6 @@
 #' p + ggplot2::scale_fill_gradientn(colors = scales::hue_pal(l = 65)(360))
 #' x_long$group2 <- "example"
 #' pcv.joyplot(x_long, bin = "variable", y = "group", fillx = FALSE)
-#' ## End(Not run)
 #'
 #' @export
 

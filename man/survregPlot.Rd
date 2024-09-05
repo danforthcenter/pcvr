@@ -49,7 +49,6 @@ This will generally be called by \code{growthPlot}.
 }
 \examples{
 
-## Not run:
 
 df <- growthSim("logistic",
   n = 20, t = 25,
@@ -67,13 +66,5 @@ survregPlot(fit,
   groupFill = TRUE, virMaps = c("plasma", "mako")
 )
 
-## End(Not run)
-
 }
-\keyword{exponential,}
-\keyword{gompertz,}
-\keyword{growth-curve,}
-\keyword{linear,}
-\keyword{logistic,}
-\keyword{monomolecular,}
-\keyword{power-law}
+\keyword{survival}

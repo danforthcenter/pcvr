@@ -2,7 +2,7 @@
 % Please edit documentation in R/testGrowth.R
 \name{testGrowth}
 \alias{testGrowth}
-\title{Hypothesis testing for \code{fitGrowth} models.}
+\title{Hypothesis testing for \link{fitGrowth} models.}
 \usage{
 testGrowth(ss = NULL, fit, test = "A")
 }
@@ -32,7 +32,7 @@ options are available and flexsurv models are tested using contrasts via \code{f
 A list containing an anova object comparing non-linear growth models and the null model.
 }
 \description{
-Hypothesis testing for \code{fitGrowth} models.
+Hypothesis testing for \link{fitGrowth} models.
 }
 \details{
 For nls and nlme models an anova is run and returned as part of a list along with the null model.
@@ -41,7 +41,6 @@ For nls and nlme models an anova is run and returned as part of a list along wit
 }
 \examples{
 
-## Not run:
 set.seed(123)
 simdf <- growthSim("logistic",
   n = 20, t = 25,
@@ -64,9 +63,10 @@ testGrowth(ss2, fit2, "A")$anova
 coef(fit2) # check options for contrast testing
 testGrowth(ss2, fit2, "A1 - A2*1.1")
 
-## End(Not run)
 }
-\keyword{hypothesis,}
-\keyword{nlme,}
+\keyword{brms}
+\keyword{hypothesis}
+\keyword{mgcv}
+\keyword{nlme}
 \keyword{nlrq}
-\keyword{nls,}
+\keyword{nls}

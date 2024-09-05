@@ -1,10 +1,20 @@
 Package: pcvr
 Type: Package
-Title: Functions for use with plantCV output
-Version: 0.2.0
-Author: Josh Sumner
+Title: Plant Phenotyping and Bayesian Statistics
+Version: 1.0.0
+Authors@R:
+    c(person("Josh", "Sumner", email = "jsumner@danforthcenter.org",
+             role = c("aut", "cre"), comment = c(ORCID = "0000-0002-3399-9063")),
+             person("Jeffrey", "Berry", role = c("aut"), comment = c(ORCID = "0000-0002-8064-9787")),
+             person("Noah", "Fahlgren", role = c("rev"), comment = c(ORCID = "0000-0002-5597-4537")),
+             person("Donald Danforth Plant Science Center", role = "cph"))
 Maintainer: Josh Sumner <jsumner@danforthcenter.org>
-Description: Streamlines use of plantCV output in common data analysis tasks.
+Description: Analyse common types of plant phenotyping data, provide a simplified interface
+	to longitudinal growth modeling and select Bayesian statistics,
+	and streamline use of 'PlantCV' output.
+	Several Bayesian methods and reporting guidelines for Bayesian methods are described in
+	Kruschke (2018) <doi:10.1177/2515245918771304>,
+	Kruschke (2013) <doi:10.1037/a0029146>, and Kruschke (2021) <doi:10.1038/s41562-021-01177-7>.
 Depends:
     R (>= 3.5.0)
 License: GPL-2
@@ -15,6 +25,7 @@ Additional_repositories: https://mc-stan.org/r-packages/
 RoxygenNote: 7.2.3
 Imports: 
     FactoMineR,
+    rlang,
     stats,
     utils,
     methods,
@@ -49,3 +60,5 @@ Suggests:
     testthat (>= 3.0.0)
 VignetteBuilder: knitr
 Config/testthat/edition: 3
+URL: https://github.com/danforthcenter/pcvr, https://plantcv.org/, https://danforthcenter.github.io/pcvr/
+BugReports: https://github.com/danforthcenter/pcvr/issues

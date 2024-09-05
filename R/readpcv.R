@@ -48,15 +48,13 @@
 #' wide or long format in R. Keep in mind that the 'mode' argument controls the format that will be
 #' returned in R, not the format that the data saved as in your csv file.
 #'
-#' @keywords read.csv, pcv, wide, long
+#' @keywords read.csv pcv4
 #' @return Returns a data.frame in wide or long format.
 #' @importFrom stats as.formula
 #' @import data.table
 #' @examples
 #'
-#' ## Not run:
-#'
-#' if (FALSE) {
+#' \donttest{
 #'   mv <- paste0(
 #'     "https://media.githubusercontent.com/media/joshqsumner/",
 #'     "pcvrTestData/main/pcv4-multi-value-traits.csv"
@@ -77,45 +75,7 @@
 #'
 #'   l2l <- read.pcv(mv, mode = "long", reader = "fread")
 #'   dim(l2l)
-#'
-#'
-#'   # Note only data stored on a Unix style system can be subset before reading in.
-#'   # For DDPSC employees there are larger datasets on stargate that
-#'   # better show the benefit of subsetting before reading data in.
-#'
-#'   fileBig <- "/shares/mgehan_share/llima/Maize_Project_2022/nir_maize_first_exp_results.csv"
-#'   # library(vroom)
-#'   start <- Sys.time()
-#'   x3a <- pcv.sub.read(
-#'     inputFile = fileBig, reader = "vroom",
-#'     filters = list("trait in area, perimeter", "barcode is Ea008AA114352")
-#'   )
-#'   Sys.time() - start
-#'   # library(data.table)
-#'   start <- Sys.time()
-#'   x3b <- pcv.sub.read(
-#'     inputFile = fileBig, reader = "fread",
-#'     filters = list("trait in area, perimeter", "barcode is Ea008AA114352")
-#'   )
-#'   Sys.time() - start
-#'   start <- Sys.time()
-#'   x3c <- pcv.sub.read(
-#'     inputFile = fileBig, reader = "read.csv",
-#'     filters = list("trait in area, perimeter", "barcode is Ea008AA114352")
-#'   )
-#'   Sys.time() - start
-#'   dim(x3a)
-#'   dim(x3b)
-#'   dim(x3c)
-#'
-#'   # There may be situations where you want to use wide mv traits which can read in easily:
-#'   x4 <- read.pcv(fileBig,
-#'     reader = "fread",
-#'     filters = list("trait in blue_frequencies"),
-#'     mode = "wide"
-#'   )
 #' }
-#' ## End(Not run)
 #'
 #' @export
 

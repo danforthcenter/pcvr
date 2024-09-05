@@ -26,12 +26,10 @@
 #' @param valueCol Column with phenotype values, defaults to "value".
 #' @param id Column that uniquely identifies images if the data is in long format.
 #' This is ignored when data is in wide format.
-#' @keywords emd, earth mover's distance, multi-value trait, network
+#' @keywords emd multi-value-trait
 #' @import parallel
 #' @importFrom stats setNames aggregate as.formula
 #' @examples
-#'
-#' ## Not run:
 #'
 #' s1 <- mvSim(
 #'  dists = list(runif = list(min = 15, max = 150)),
@@ -42,8 +40,6 @@
 #'  wide = TRUE
 #' )
 #' mv_ag(s1, group = "group", mvCols = "sim_", n_per_group = 2)
-#'
-#' ## End(Not run)
 #'
 #' @return Returns a dataframe summarized by the specified groups over the multi-value traits.
 #' @export

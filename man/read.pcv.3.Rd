@@ -68,9 +68,8 @@ Read in plantCV csv from bellwether phenotyper style experiments analyzed with p
 }
 \examples{
 
-## Not run:
 
-if (FALSE) {
+\donttest{
 base_url <- "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/"
   bw <- read.pcv.3(
     file = paste0(base_url, "pcv3Phenos.csv"),
@@ -92,10 +91,7 @@ base_url <- "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/"
     reader = "fread"
   )
 }
-## End(Not run)
 
 }
-\keyword{bellwether,}
-\keyword{pcv,}
 \keyword{pcv3}
-\keyword{read.csv,}
+\keyword{read.csv}

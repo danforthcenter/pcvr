@@ -1,4 +1,4 @@
-#' Multi Value Trait Aggregation function
+#' Combine Draws From brms Models
 #'
 #' @description Helper function for binding draws from several \code{brms} models to make a data.frame
 #' for use with \code{brms::hypothesis()}. This will also check that the draws are comparable using
@@ -12,9 +12,8 @@
 #' @keywords brms
 #' @importFrom methods is
 #' @examples
-#'
-#' ## Not run:
-#' if (FALSE) {
+#' # note that this example will fit several bayesian models and may run for several minutes.
+#' \donttest{
 #'   simdf <- growthSim("logistic",
 #'     n = 20, t = 25,
 #'     params = list(
@@ -51,11 +50,11 @@
 #'   )
 #'
 #'
-#'   fit_ab <- fitGrowth(ss_ab, chains = 4, cores = 4, iter = 1000)
-#'   fit_ab2 <- fitGrowth(ss_ab, chains = 4, cores = 4, iter = 1200)
-#'   fit_cd <- fitGrowth(ss_cd, chains = 4, cores = 4, iter = 1000)
-#'   fit_ef <- fitGrowth(ss_ef, chains = 4, cores = 4, iter = 1000)
-#'   fit_ef2 <- fitGrowth(ss_ef2, chains = 4, cores = 4, iter = 1000)
+#'   fit_ab <- fitGrowth(ss_ab, chains = 1, cores = 1, iter = 1000)
+#'   fit_ab2 <- fitGrowth(ss_ab, chains = 1, cores = 1, iter = 1200)
+#'   fit_cd <- fitGrowth(ss_cd, chains = 1, cores = 1, iter = 1000)
+#'   fit_ef <- fitGrowth(ss_ef, chains = 1, cores = 1, iter = 1000)
+#'   fit_ef2 <- fitGrowth(ss_ef2, chains = 1, cores = 1, iter = 1000)
 #'
 #'   x <- combineDraws(fit_ab, fit_cd, fit_ef)
 #'   draws_ef <- as.data.frame(fit_ef)
@@ -63,7 +62,6 @@
 #'   x2 <- combineDraws(fit_ab2, fit_cd, draws_ef)
 #'   x3 <- combineDraws(fit_ab, fit_cd, fit_ef2)
 #' }
-#' ## End(Not run)
 #'
 #' @return Returns a dataframe of posterior draws.
 #' @export
@@ -109,7 +107,7 @@ combineDraws <- function(..., message = TRUE) {
     names(formulae) <- model_names
     if (length(unique(formulae)) > 1) {
       message("Some of these models have different growth formulas, consider if this is what you want.")
-      print(as.data.frame(formulae))
+      message(paste0(paste(names(formulae), formulae, sep = ": "), collapse = ", "))
     }
   }
   #* `get and bind draws from models`
