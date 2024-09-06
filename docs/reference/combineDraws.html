@@ -110,8 +110,8 @@ the objects, or if models have different formulations.</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># note that this example will fit several bayesian models and may run for several minutes.</span></span></span>
+<span class="r-in"><span><span class="co"># \donttest{</span></span></span>
 <span class="r-in"><span>  <span class="va">simdf</span> <span class="op">&lt;-</span> <span class="fu"><a href="growthSim.html">growthSim</a></span><span class="op">(</span><span class="st">"logistic"</span>,</span></span>
 <span class="r-in"><span>    n <span class="op">=</span> <span class="fl">20</span>, t <span class="op">=</span> <span class="fl">25</span>,</span></span>
 <span class="r-in"><span>    params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
@@ -148,18 +148,532 @@ the objects, or if models have different formulations.</p></dd>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span>  <span class="va">fit_ab</span> <span class="op">&lt;-</span> <span class="fu"><a href="fitGrowth.html">fitGrowth</a></span><span class="op">(</span><span class="va">ss_ab</span>, chains <span class="op">=</span> <span class="fl">4</span>, cores <span class="op">=</span> <span class="fl">4</span>, iter <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">fit_ab2</span> <span class="op">&lt;-</span> <span class="fu"><a href="fitGrowth.html">fitGrowth</a></span><span class="op">(</span><span class="va">ss_ab</span>, chains <span class="op">=</span> <span class="fl">4</span>, cores <span class="op">=</span> <span class="fl">4</span>, iter <span class="op">=</span> <span class="fl">1200</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">fit_cd</span> <span class="op">&lt;-</span> <span class="fu"><a href="fitGrowth.html">fitGrowth</a></span><span class="op">(</span><span class="va">ss_cd</span>, chains <span class="op">=</span> <span class="fl">4</span>, cores <span class="op">=</span> <span class="fl">4</span>, iter <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">fit_ef</span> <span class="op">&lt;-</span> <span class="fu"><a href="fitGrowth.html">fitGrowth</a></span><span class="op">(</span><span class="va">ss_ef</span>, chains <span class="op">=</span> <span class="fl">4</span>, cores <span class="op">=</span> <span class="fl">4</span>, iter <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">fit_ef2</span> <span class="op">&lt;-</span> <span class="fu"><a href="fitGrowth.html">fitGrowth</a></span><span class="op">(</span><span class="va">ss_ef2</span>, chains <span class="op">=</span> <span class="fl">4</span>, cores <span class="op">=</span> <span class="fl">4</span>, iter <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">fit_ab</span> <span class="op">&lt;-</span> <span class="fu"><a href="fitGrowth.html">fitGrowth</a></span><span class="op">(</span><span class="va">ss_ab</span>, chains <span class="op">=</span> <span class="fl">1</span>, cores <span class="op">=</span> <span class="fl">1</span>, iter <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Start sampling</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Init values were only set for a subset of parameters. </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Missing init values for the following parameters:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Intercept_nu</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Running MCMC with 1 chain...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Initialization between (-2, 2) failed after 100 attempts. </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1  Try specifying initial values, reducing ranges of constrained values, or reparameterizing the model.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Initialization failed.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Rejecting initial value:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Gradient evaluated at the initial value is not finite.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1   Stan can't start sampling from this initial value.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Chain 1 finished unexpectedly!</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No chains finished successfully. Unable to retrieve the fit.</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> Fitting failed. Unable to retrieve the metadata.</span>
+<span class="r-in"><span>  <span class="va">fit_ab2</span> <span class="op">&lt;-</span> <span class="fu"><a href="fitGrowth.html">fitGrowth</a></span><span class="op">(</span><span class="va">ss_ab</span>, chains <span class="op">=</span> <span class="fl">1</span>, cores <span class="op">=</span> <span class="fl">1</span>, iter <span class="op">=</span> <span class="fl">1200</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Start sampling</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Init values were only set for a subset of parameters. </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Missing init values for the following parameters:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Intercept_nu</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Running MCMC with 1 chain...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration:    1 / 1200 [  0%]  (Warmup) </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/Rtmp1f98OU/model-32c14e92d1f9.stan', line 119, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/Rtmp1f98OU/model-32c14e92d1f9.stan', line 119, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/Rtmp1f98OU/model-32c14e92d1f9.stan', line 119, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/Rtmp1f98OU/model-32c14e92d1f9.stan', line 119, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Location parameter[1] is -nan, but must be finite! (in '/tmp/Rtmp1f98OU/model-32c14e92d1f9.stan', line 119, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/Rtmp1f98OU/model-32c14e92d1f9.stan', line 119, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration:  100 / 1200 [  8%]  (Warmup) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration:  200 / 1200 [ 16%]  (Warmup) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration:  300 / 1200 [ 25%]  (Warmup) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration:  400 / 1200 [ 33%]  (Warmup) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration:  500 / 1200 [ 41%]  (Warmup) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration:  600 / 1200 [ 50%]  (Warmup) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration:  601 / 1200 [ 50%]  (Sampling) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration:  700 / 1200 [ 58%]  (Sampling) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration:  800 / 1200 [ 66%]  (Sampling) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration:  900 / 1200 [ 75%]  (Sampling) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 1000 / 1200 [ 83%]  (Sampling) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 1100 / 1200 [ 91%]  (Sampling) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 1200 / 1200 [100%]  (Sampling) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 finished in 6.8 seconds.</span>
+<span class="r-in"><span>  <span class="va">fit_cd</span> <span class="op">&lt;-</span> <span class="fu"><a href="fitGrowth.html">fitGrowth</a></span><span class="op">(</span><span class="va">ss_cd</span>, chains <span class="op">=</span> <span class="fl">1</span>, cores <span class="op">=</span> <span class="fl">1</span>, iter <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Start sampling</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Init values were only set for a subset of parameters. </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Missing init values for the following parameters:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Intercept_nu</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Running MCMC with 1 chain...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration:   1 / 1000 [  0%]  (Warmup) </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/Rtmp1f98OU/model-32c14e92d1f9.stan', line 119, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/Rtmp1f98OU/model-32c14e92d1f9.stan', line 119, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/Rtmp1f98OU/model-32c14e92d1f9.stan', line 119, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[501] is inf, but must be positive finite! (in '/tmp/Rtmp1f98OU/model-32c14e92d1f9.stan', line 119, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Location parameter[1] is -nan, but must be finite! (in '/tmp/Rtmp1f98OU/model-32c14e92d1f9.stan', line 119, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is -nan, but must be positive finite! (in '/tmp/Rtmp1f98OU/model-32c14e92d1f9.stan', line 119, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[501] is inf, but must be positive finite! (in '/tmp/Rtmp1f98OU/model-32c14e92d1f9.stan', line 119, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 100 / 1000 [ 10%]  (Warmup) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 200 / 1000 [ 20%]  (Warmup) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 300 / 1000 [ 30%]  (Warmup) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 400 / 1000 [ 40%]  (Warmup) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 500 / 1000 [ 50%]  (Warmup) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 501 / 1000 [ 50%]  (Sampling) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 600 / 1000 [ 60%]  (Sampling) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 700 / 1000 [ 70%]  (Sampling) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 800 / 1000 [ 80%]  (Sampling) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 900 / 1000 [ 90%]  (Sampling) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 1000 / 1000 [100%]  (Sampling) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 finished in 5.4 seconds.</span>
+<span class="r-in"><span>  <span class="va">fit_ef</span> <span class="op">&lt;-</span> <span class="fu"><a href="fitGrowth.html">fitGrowth</a></span><span class="op">(</span><span class="va">ss_ef</span>, chains <span class="op">=</span> <span class="fl">1</span>, cores <span class="op">=</span> <span class="fl">1</span>, iter <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Start sampling</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Init values were only set for a subset of parameters. </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Missing init values for the following parameters:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Intercept_nu</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Running MCMC with 1 chain...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration:   1 / 1000 [  0%]  (Warmup) </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/Rtmp1f98OU/model-32c14e92d1f9.stan', line 119, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/Rtmp1f98OU/model-32c14e92d1f9.stan', line 119, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/Rtmp1f98OU/model-32c14e92d1f9.stan', line 119, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[3] is inf, but must be positive finite! (in '/tmp/Rtmp1f98OU/model-32c14e92d1f9.stan', line 119, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[501] is inf, but must be positive finite! (in '/tmp/Rtmp1f98OU/model-32c14e92d1f9.stan', line 119, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Location parameter[1] is -nan, but must be finite! (in '/tmp/Rtmp1f98OU/model-32c14e92d1f9.stan', line 119, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is -nan, but must be positive finite! (in '/tmp/Rtmp1f98OU/model-32c14e92d1f9.stan', line 119, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[501] is inf, but must be positive finite! (in '/tmp/Rtmp1f98OU/model-32c14e92d1f9.stan', line 119, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 100 / 1000 [ 10%]  (Warmup) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 200 / 1000 [ 20%]  (Warmup) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 300 / 1000 [ 30%]  (Warmup) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 400 / 1000 [ 40%]  (Warmup) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 500 / 1000 [ 50%]  (Warmup) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 501 / 1000 [ 50%]  (Sampling) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 600 / 1000 [ 60%]  (Sampling) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 700 / 1000 [ 70%]  (Sampling) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 800 / 1000 [ 80%]  (Sampling) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 900 / 1000 [ 90%]  (Sampling) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 1000 / 1000 [100%]  (Sampling) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 finished in 6.3 seconds.</span>
+<span class="r-in"><span>  <span class="va">fit_ef2</span> <span class="op">&lt;-</span> <span class="fu"><a href="fitGrowth.html">fitGrowth</a></span><span class="op">(</span><span class="va">ss_ef2</span>, chains <span class="op">=</span> <span class="fl">1</span>, cores <span class="op">=</span> <span class="fl">1</span>, iter <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Start sampling</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Init values were only set for a subset of parameters. </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Missing init values for the following parameters:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Intercept_nu</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Running MCMC with 1 chain...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration:   1 / 1000 [  0%]  (Warmup) </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[2] is inf, but must be positive finite! (in '/tmp/Rtmp1f98OU/model-32c1680517aa.stan', line 119, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Location parameter[1] is -nan, but must be finite! (in '/tmp/Rtmp1f98OU/model-32c1680517aa.stan', line 119, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is -nan, but must be positive finite! (in '/tmp/Rtmp1f98OU/model-32c1680517aa.stan', line 119, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 100 / 1000 [ 10%]  (Warmup) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 200 / 1000 [ 20%]  (Warmup) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 300 / 1000 [ 30%]  (Warmup) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 400 / 1000 [ 40%]  (Warmup) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 500 / 1000 [ 50%]  (Warmup) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 501 / 1000 [ 50%]  (Sampling) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 600 / 1000 [ 60%]  (Sampling) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 700 / 1000 [ 70%]  (Sampling) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 800 / 1000 [ 80%]  (Sampling) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 900 / 1000 [ 90%]  (Sampling) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 1000 / 1000 [100%]  (Sampling) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 finished in 15.5 seconds.</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span>  <span class="va">x</span> <span class="op">&lt;-</span> <span class="fu">combineDraws</span><span class="op">(</span><span class="va">fit_ab</span>, <span class="va">fit_cd</span>, <span class="va">fit_ef</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in eval(expr, envir, enclos):</span> object 'fit_ab' not found</span>
 <span class="r-in"><span>  <span class="va">draws_ef</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">fit_ef</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="va">draws_ef</span> <span class="op">&lt;-</span> <span class="va">draws_ef</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"^b_"</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">draws_ef</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></span></span>
 <span class="r-in"><span>  <span class="va">x2</span> <span class="op">&lt;-</span> <span class="fu">combineDraws</span><span class="op">(</span><span class="va">fit_ab2</span>, <span class="va">fit_cd</span>, <span class="va">draws_ef</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> fit_cd has fewer than 600 draws and will be padded with 100 NAs</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> draws_ef has fewer than 600 draws and will be padded with 100 NAs</span>
 <span class="r-in"><span>  <span class="va">x3</span> <span class="op">&lt;-</span> <span class="fu">combineDraws</span><span class="op">(</span><span class="va">fit_ab</span>, <span class="va">fit_cd</span>, <span class="va">fit_ef2</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in eval(expr, envir, enclos):</span> object 'fit_ab' not found</span>
+<span class="r-in"><span><span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
@@ -168,7 +682,7 @@ the objects, or if models have different formulations.</p></dd>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p></p><p>Developed by Josh Sumner, Jeffrey Berry.</p>
+  <p></p><p>Maintained by Josh Sumner <br> Developed in DDPSC Datascience Core Facility <br> Logo design by <a href="https://twitter.com/Kerri_Gilbert" class="external-link">Kerri Gilbert</a></p>
 </div>
 
 <div class="pkgdown-footer-right">

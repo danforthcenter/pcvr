@@ -108,7 +108,7 @@ If this is a list of hypothesis tests then they should describe tests similar to
 "A.group1 - A.group2*1.1" and can be thought of as contrasts. For brms models the "test" argument
 is passed to brms::hypothesis, which has extensive documentation and is very flexible.
 Note that for survreg the <code><a href="https://rdrr.io/pkg/survival/man/survdiff.html" class="external-link">survival::survdiff</a></code> function is used so fewer hypothesis testing
-options are available and flexsurv models are tested using contrasts via <code><a href="https://rdrr.io/pkg/flexsurv/man/standsurv.html" class="external-link">flexsurv::standsurv</a></code>.</p></dd>
+options are available and flexsurv models are tested using contrasts via <code><a href="http://chjackson.github.io/flexsurv-dev/reference/standsurv.html" class="external-link">flexsurv::standsurv</a></code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -127,7 +127,6 @@ options are available and flexsurv models are tested using contrasts via <code><
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">## Not run:</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">simdf</span> <span class="op">&lt;-</span> <span class="fu"><a href="growthSim.html">growthSim</a></span><span class="op">(</span><span class="st">"logistic"</span>,</span></span>
 <span class="r-in"><span>  n <span class="op">=</span> <span class="fl">20</span>, t <span class="op">=</span> <span class="fl">25</span>,</span></span>
@@ -175,7 +174,6 @@ options are available and flexsurv models are tested using contrasts via <code><
 <span class="r-out co"><span class="r-pr">#&gt;</span>          Form Estimate       SE  t-value   p-value</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1 A1 - A2*1.1 19.93375 2.523292 7.899899 7.368e-15</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">## End(Not run)</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
@@ -183,7 +181,7 @@ options are available and flexsurv models are tested using contrasts via <code><
 
 
     <footer><div class="pkgdown-footer-left">
-  <p></p><p>Developed by Josh Sumner, Jeffrey Berry.</p>
+  <p></p><p>Maintained by Josh Sumner <br> Developed in DDPSC Datascience Core Facility <br> Logo design by <a href="https://twitter.com/Kerri_Gilbert" class="external-link">Kerri Gilbert</a></p>
 </div>
 
 <div class="pkgdown-footer-right">

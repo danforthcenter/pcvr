@@ -175,9 +175,9 @@
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">vm_ex1</span><span class="op">$</span><span class="va">summary</span></span></code></pre></div>
 <pre><code><span><span class="co">##      HDE_1 HDI_1_low HDI_1_high    HDE_2 HDI_2_low HDI_2_high   hyp post.prob</span></span>
-<span><span class="co">## 1 49.59326  33.48298   65.50828 59.54006  41.22909   79.53955 equal 0.6381375</span></span>
-<span><span class="co">##   HDE_rope HDI_rope_low HDI_rope_high rope_prob</span></span>
-<span><span class="co">## 1 -9.97609    -34.63352      15.03027 0.2418829</span></span></code></pre>
+<span><span class="co">## 1 49.42484  33.33646   64.96226 59.58611  40.36102    78.1866 equal 0.6322996</span></span>
+<span><span class="co">##    HDE_rope HDI_rope_low HDI_rope_high rope_prob</span></span>
+<span><span class="co">## 1 -9.974164    -35.76338      13.98985 0.2350298</span></span></code></pre>
 <p>Displaying plots of these data can be slower than for other conjugate methods due to the density of the support. To explain, the Von-Mises distribution is defined in on the unit circle [<span class="math inline">\(-\pi\)</span>, <span class="math inline">\(\pi\)</span>] so in order to have support that works to project that data into whatever space the boundary in the prior specifies the support has to be very dense.</p>
 <p>Note also that our rope_range is specified in the boundary units space, which is not necessarily the unit circle.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
@@ -194,8 +194,8 @@
 <span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="va">vm_ex1_1</span><span class="op">$</span><span class="va">posterior</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##      mu       kappa    known_kappa n  boundary </span></span>
-<span><span class="co">## [1,] 45.57964 10.46718 1           31 numeric,2</span></span>
-<span><span class="co">## [2,] 57.74739 5.654707 1           41 numeric,2</span></span></code></pre>
+<span><span class="co">## [1,] 54.12846 10.71168 1           31 numeric,2</span></span>
+<span><span class="co">## [2,] 57.21127 6.559139 1           41 numeric,2</span></span></code></pre>
 <p>Single value traits work in the same way. Note that if we omit parts of the prior then they will be filled in with the default prior values.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span></span>
@@ -251,8 +251,8 @@
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="va">vm2_ex1</span><span class="op">$</span><span class="va">posterior</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##      mu       kappa    n  boundary </span></span>
-<span><span class="co">## [1,] 49.59326 8.579119 31 numeric,2</span></span>
-<span><span class="co">## [2,] 59.54006 6.116784 41 numeric,2</span></span></code></pre>
+<span><span class="co">## [1,] 49.42484 8.455683 31 numeric,2</span></span>
+<span><span class="co">## [2,] 59.58611 6.16385  41 numeric,2</span></span></code></pre>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span></span>
 <span><span class="va">vm2_ex2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/conjugate.html">conjugate</a></span><span class="op">(</span></span>
@@ -483,7 +483,7 @@
 
     <footer><div class="pkgdown-footer-left">
   <p></p>
-<p>Developed by Josh Sumner, Jeffrey Berry.</p>
+<p>Maintained by Josh Sumner <br> Developed in DDPSC Datascience Core Facility <br> Logo design by <a href="https://twitter.com/Kerri_Gilbert" class="external-link">Kerri Gilbert</a></p>
 </div>
 
 <div class="pkgdown-footer-right">

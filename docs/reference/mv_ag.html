@@ -171,8 +171,6 @@ This is ignored when data is in wide format.</p></dd>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">## Not run:</span></span></span>
-<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">s1</span> <span class="op">&lt;-</span> <span class="fu"><a href="mvSim.html">mvSim</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span> dists <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>runif <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>min <span class="op">=</span> <span class="fl">15</span>, max <span class="op">=</span> <span class="fl">150</span><span class="op">)</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span> n_samples <span class="op">=</span> <span class="fl">10</span>,</span></span>
@@ -186,50 +184,50 @@ This is ignored when data is in wide format.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> runif.1 runif     0     0     0     0     0     0     0     0     0      0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> runif.2 runif     0     0     0     0     0     0     0     0     0      0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         sim_11 sim_12 sim_13 sim_14 sim_15 sim_16 sim_17 sim_18 sim_19 sim_20</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> runif.1      0      0      0      0 0.0064 0.0048 0.0072 0.0074 0.0064 0.0064</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> runif.2      0      0      0      0 0.0062 0.0070 0.0072 0.0084 0.0084 0.0062</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> runif.1      0      0      0      0  0.006 0.0058 0.0072 0.0074 0.0068 0.0066</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> runif.2      0      0      0      0  0.007 0.0064 0.0078 0.0086 0.0074 0.0062</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         sim_21 sim_22 sim_23 sim_24 sim_25 sim_26 sim_27 sim_28 sim_29 sim_30</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> runif.1 0.0108 0.0052 0.0062 0.0066 0.0068 0.0062 0.0066 0.0070 0.0070 0.0062</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> runif.2 0.0082 0.0060 0.0084 0.0076 0.0096 0.0060 0.0090 0.0084 0.0076 0.0078</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> runif.1 0.0086 0.0056 0.0054 0.0066 0.0084 0.0054 0.0062 0.0074 0.0076 0.0070</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> runif.2 0.0114 0.0058 0.0086 0.0072 0.0078 0.0068 0.0094 0.0078 0.0076 0.0064</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         sim_31 sim_32 sim_33 sim_34 sim_35 sim_36 sim_37 sim_38 sim_39 sim_40</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> runif.1 0.0076 0.0078 0.0068 0.0084 0.0074 0.0082 0.0066 0.0058 0.0098 0.0074</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> runif.2 0.0060 0.0062 0.0058 0.0070 0.0066 0.0068 0.0068 0.0090 0.0072 0.0078</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> runif.1 0.0078 0.0080 0.0062 0.0070 0.0048 0.0066  0.007 0.0060 0.0084 0.0086</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> runif.2 0.0064 0.0058 0.0064 0.0088 0.0092 0.0090  0.006 0.0078 0.0090 0.0068</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         sim_41 sim_42 sim_43 sim_44 sim_45 sim_46 sim_47 sim_48 sim_49 sim_50</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> runif.1 0.0062 0.0072 0.0068 0.0074 0.0088 0.0102 0.0078 0.0076 0.0058 0.0064</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> runif.2 0.0090 0.0058 0.0064 0.0070 0.0094 0.0058 0.0070 0.0086 0.0066 0.0070</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> runif.1 0.0062 0.0072 0.0076 0.0076 0.0102 0.0076 0.0052 0.0086 0.0060 0.0062</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> runif.2 0.0080 0.0066 0.0056 0.0076 0.0074 0.0090 0.0100 0.0072 0.0064 0.0066</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         sim_51 sim_52 sim_53 sim_54 sim_55 sim_56 sim_57 sim_58 sim_59 sim_60</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> runif.1 0.0076 0.0094 0.0090 0.0080 0.0070 0.0062  0.007 0.0086 0.0060 0.0062</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> runif.2 0.0090 0.0098 0.0082 0.0084 0.0086 0.0074  0.006 0.0074 0.0074 0.0076</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> runif.1 0.0078 0.0092 0.0088 0.0078 0.0068 0.0070 0.0072 0.0086 0.0056 0.0068</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> runif.2 0.0082 0.0100 0.0078 0.0088 0.0086 0.0074 0.0058 0.0074 0.0078 0.0068</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         sim_61 sim_62 sim_63 sim_64 sim_65 sim_66 sim_67 sim_68 sim_69 sim_70</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> runif.1 0.0064 0.0076 0.0068 0.0062 0.0072 0.0086 0.0082 0.0074 0.0068 0.0096</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> runif.2 0.0086 0.0074 0.0076 0.0096 0.0096 0.0074 0.0056 0.0068 0.0088 0.0084</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> runif.1 0.0074 0.0080 0.0068 0.0090 0.0090 0.0080 0.0074 0.0084 0.0078 0.0094</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> runif.2 0.0064 0.0074 0.0080 0.0066 0.0076 0.0082 0.0066 0.0056 0.0076 0.0094</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         sim_71 sim_72 sim_73 sim_74 sim_75 sim_76 sim_77 sim_78 sim_79 sim_80</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> runif.1  0.006 0.0074 0.0070 0.0082 0.0094 0.0072 0.0066 0.0082 0.0068 0.0080</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> runif.2  0.008 0.0074 0.0072 0.0074 0.0076 0.0060 0.0058 0.0074 0.0076 0.0076</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> runif.1 0.0082 0.0066 0.0078 0.0070 0.0076 0.0068 0.0074 0.0086  0.006 0.0068</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> runif.2 0.0062 0.0084 0.0064 0.0086 0.0098 0.0074 0.0050 0.0062  0.008 0.0076</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         sim_81 sim_82 sim_83 sim_84 sim_85 sim_86 sim_87 sim_88 sim_89 sim_90</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> runif.1 0.0068 0.0096 0.0066 0.0102 0.0092 0.0074 0.0068 0.0086 0.0056 0.0072</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> runif.2 0.0082 0.0064 0.0068 0.0080 0.0068 0.0108 0.0058 0.0082 0.0066 0.0062</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> runif.1 0.0092 0.0086 0.0066 0.0086 0.0082 0.0102 0.0062 0.0094 0.0048 0.0058</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> runif.2 0.0060 0.0074 0.0068 0.0092 0.0080 0.0074 0.0060 0.0084 0.0064 0.0078</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         sim_91 sim_92 sim_93 sim_94 sim_95 sim_96 sim_97 sim_98 sim_99 sim_100</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> runif.1 0.0110 0.0078 0.0090 0.0092 0.0080 0.0054 0.0090 0.0086 0.0098  0.0066</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> runif.2 0.0064 0.0066 0.0084 0.0092 0.0066 0.0068 0.0074 0.0054 0.0074  0.0062</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> runif.1 0.0088 0.0074 0.0084 0.0096 0.0078 0.0058 0.0076 0.0080 0.0092   0.007</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> runif.2 0.0094 0.0066 0.0090 0.0086 0.0070 0.0068 0.0088 0.0062 0.0078   0.006</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         sim_101 sim_102 sim_103 sim_104 sim_105 sim_106 sim_107 sim_108 sim_109</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> runif.1  0.0054  0.0066  0.0080  0.0060  0.0090  0.0078  0.0064  0.0058  0.0078</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> runif.2  0.0064  0.0064  0.0094  0.0068  0.0062  0.0044  0.0070  0.0086  0.0072</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> runif.1  0.0056  0.0064  0.0082  0.0052  0.0080  0.0052  0.0078  0.0066  0.0064</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> runif.2  0.0070  0.0068  0.0086  0.0074  0.0072  0.0072  0.0054  0.0078  0.0084</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         sim_110 sim_111 sim_112 sim_113 sim_114 sim_115 sim_116 sim_117 sim_118</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> runif.1  0.0048  0.0076  0.0046  0.0072  0.0058  0.0066  0.0054  0.0060  0.0082</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> runif.2  0.0058  0.0060  0.0080  0.0068  0.0086  0.0072  0.0074  0.0078  0.0072</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> runif.1  0.0048  0.0076  0.0056  0.0056  0.0078  0.0082  0.0068  0.0072  0.0068</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> runif.2  0.0066  0.0066  0.0070  0.0094  0.0060  0.0066  0.0060  0.0064  0.0076</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         sim_119 sim_120 sim_121 sim_122 sim_123 sim_124 sim_125 sim_126 sim_127</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> runif.1  0.0066  0.0052  0.0092  0.0084  0.0078  0.0080  0.0056  0.0076  0.0054</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> runif.2  0.0080  0.0086  0.0090  0.0078  0.0070  0.0076  0.0064  0.0086  0.0078</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> runif.1  0.0068  0.0082  0.0070  0.0084  0.0066  0.0068  0.0058  0.0066  0.0074</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> runif.2  0.0082  0.0052  0.0106  0.0068  0.0072  0.0086  0.0070  0.0094  0.0072</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         sim_128 sim_129 sim_130 sim_131 sim_132 sim_133 sim_134 sim_135 sim_136</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> runif.1  0.0084  0.0102  0.0060  0.0058  0.0092  0.0074  0.0066  0.0068  0.0066</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> runif.2  0.0058  0.0074  0.0082  0.0084  0.0060  0.0076  0.0058  0.0070  0.0072</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> runif.1  0.0084  0.0096  0.0088  0.0078  0.0076  0.0082  0.0070  0.0068  0.0072</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> runif.2  0.0066  0.0074  0.0052  0.0064  0.0080  0.0062  0.0058  0.0068  0.0074</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         sim_137 sim_138 sim_139 sim_140 sim_141 sim_142 sim_143 sim_144 sim_145</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> runif.1  0.0110   0.008  0.0114  0.0064  0.0068  0.0072  0.0074  0.0080  0.0102</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> runif.2  0.0074   0.007  0.0090  0.0086  0.0072  0.0080  0.0046  0.0094  0.0086</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> runif.1  0.0104  0.0078  0.0114  0.0076  0.0066  0.0086  0.0054  0.0114  0.0098</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> runif.2  0.0078  0.0072  0.0092  0.0070  0.0076  0.0064  0.0060  0.0060  0.0082</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         sim_146 sim_147 sim_148 sim_149 sim_150 sim_151 sim_152 sim_153 sim_154</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> runif.1  0.0078  0.0078  0.0072  0.0068       0       0       0       0       0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> runif.2  0.0080  0.0052  0.0082  0.0078       0       0       0       0       0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> runif.1  0.0076  0.0070  0.0062  0.0078       0       0       0       0       0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> runif.2  0.0080  0.0054  0.0088  0.0074       0       0       0       0       0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         sim_155 sim_156 sim_157 sim_158 sim_159 sim_160 sim_161 sim_162 sim_163</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> runif.1       0       0       0       0       0       0       0       0       0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> runif.2       0       0       0       0       0       0       0       0       0</span>
@@ -240,8 +238,6 @@ This is ignored when data is in wide format.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> runif.1       0       0       0       0       0       0       0       0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> runif.2       0       0       0       0       0       0       0       0</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">## End(Not run)</span></span></span>
-<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
@@ -249,7 +245,7 @@ This is ignored when data is in wide format.</p></dd>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p></p><p>Developed by Josh Sumner, Jeffrey Berry.</p>
+  <p></p><p>Maintained by Josh Sumner <br> Developed in DDPSC Datascience Core Facility <br> Logo design by <a href="https://twitter.com/Kerri_Gilbert" class="external-link">Kerri Gilbert</a></p>
 </div>
 
 <div class="pkgdown-footer-right">
