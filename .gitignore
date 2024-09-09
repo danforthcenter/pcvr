@@ -8,5 +8,6 @@
 *.csv
 *DO_NOT_COMMIT*
 inst/doc
-tutorials/pcvr*/*.html
+#tutorials/pcvr*/*.html
 vignettes/*.html
+vignettes/articles/*.html
