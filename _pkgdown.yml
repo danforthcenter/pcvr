@@ -22,7 +22,25 @@ navbar:
     - icon: fa-home fa-lg
       href: index.html
     - text: "Vignettes"
-      href: articles/index.html
+      menu:
+        - text: "Bellwether"
+          href: articles/Bellwether.html
+        - text: "Longitudinal Modeling"
+          href: articles/longitudinal.html
+        - text: "Root Phenotyping"
+          href: articles/roots.html
+        - text: "Directional Statistics"
+          href: articles/directional.html
+        - text: "Installation Tutorial"
+          href: articles/installation.html
+        - text: "Conjugate Tutorial"
+          href: articles/pcvrTutorial_conjugate.html
+        - text: "Intermediate Growth Modeling Tutorial"
+          href: articles/pcvrTutorial_igm.html
+        - text: "Advanced Growth Modeling Tutorial"
+          href: articles/pcvrTutorial_agm.html
+        - text: "Multi-Value Traits Tutorial"
+          href: articles/pcvrTutorial_mvt.html
     - text: "Functions"
       href: reference/index.html
     - text: "News"
@@ -39,6 +57,8 @@ navbar:
           href: https://github.com/danforthcenter/pcvr/tree/main/tutorials/pcvrTutorial_advancedGrowthModeling
         - text: "Bayesian Conjugate Priors"
           href: https://github.com/danforthcenter/pcvr/tree/main/tutorials/pcvrTutorial_conjugate
+        - text: "Multi-Value Traits"
+          href: https://github.com/danforthcenter/pcvr/tree/crop_reporter/tutorials/pcvrTutorial_multiValueTraits
     - text: "PlantCV"
       href: https://plantcv.org/
   right:
@@ -46,7 +66,7 @@ navbar:
      href: https://github.com/danforthcenter/pcvr
    - icon: fa-leaf
      href: https://github.com/danforthcenter/PlantCV
-
+    
 reference:
   - title: "Bayesian Statistics"
     desc: >
@@ -91,7 +111,7 @@ reference:
   - title: "Multi-Value Traits"
     desc: >
       Functions suited for use with multi-value trait data
-      (spectral indices, colorspaces, etc)
+      (spectral indices, colorspaces, CropReporter, etc)
     contents:
       - conjugate
       - mv_ag
