@@ -38,8 +38,14 @@ mvSS <- function(model, form, sigma = NULL, df, start = NULL,
                                     "rvsi", "savi", "sipi", "sr", "vari", "vi_green", "wi",
                                     "fvfm", "fqfm")) {
   #* `get spectral index helper function`
+  #* spectral index function should just return truncation and family, then there will be a separate
+  #* function that applies those changes to the form argument.
   
   #* `run spectral index helper function`
+  #* 
+  
+  #* `run formula cleaner`
+  #* This should return the final, usable formula
   
   #* `if time is missing then..? do stuff here?`
   #* this is the tricky part I think. but on the other hand if time is missing then it's
