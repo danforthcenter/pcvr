@@ -12,7 +12,7 @@ format:
       data-background-image: ../quartoSupport/datascience.png
       data-background-size: 15%
       data-background-position: 2% 2%
-editor: visual
+editor: source
 ---
 
 ## Outline {.smaller}
@@ -26,7 +26,7 @@ editor: visual
 -   Longitudinal Analysis
 -   Resources
 
-## `pcvr` Goals
+## `pcvr` Goals {.smaller}
 
 Currently `pcvr` aims to:
 
@@ -35,7 +35,7 @@ Currently `pcvr` aims to:
 
 There is room for goals to evolve based on feedback and scientific needs.
 
-## Load package
+## Load package {.smaller}
 
 Pre-work was to install R, Rstudio, and `pcvr`.
 
@@ -58,7 +58,7 @@ library(ggplot2) # to change pcvr output plots some
 library(patchwork) # to combine ggplots
 ```
 
-## Read in Data
+## Read in Data {.smaller}
 
 Some plantCV output comes as a very long csv file.
 
@@ -68,7 +68,7 @@ Handling large experiments/those with lots of images can be difficult if the out
 
 The `read.pcv` function helps simplify common tasks related to getting your data ready to use in R.
 
-## Read in Data (2)
+## Read in Data (2) {.smaller}
 
 `read.pcv` takes several arguments but only the filepath argument is required, most other arguments are for special cases.
 
@@ -85,7 +85,7 @@ To see details about arguments use `?read.pcv`. Three main features are:
 -   `reader` allows for use of `data.table::fread`, `vroom::vroom`, or other functions to improve speed with large data. This defaults to NULL where `utils::read.csv` is used.
 -   `filters` allows Unix based systems to subset local large data without reading it into memory.
 
-## Read in Data (4)
+## Read in Data (4) {.smaller}
 
 There are datasets online for use with `pcvr` examples, here we read one in as a wide dataframe.
 
@@ -104,11 +104,11 @@ dim(sv)
 colnames(sv)[19:45]
 ```
 
-## [Read in Data (exercise)]{style="color:#FFD900;"}
+## [Read in Data (exercise)]{style="color:#FFD900;"} {.smaller}
 
 Read in the same example dataset from the previous slides as both wide and long formats. Compare the dimensions of the dataframes and their size in memory.
 
-## [Read in Data (solution)]{style="color:#FF007B;"}
+## [Read in Data (solution)]{style="color:#FF007B;"} {.smaller}
 
 ```{r}
 #| echo: true
@@ -137,7 +137,7 @@ Why does the long data take up so much more space?
 range(which(colnames(svl) %in% colnames(svw))) # 1:18
 ```
 
-## Join Metadata
+## Join Metadata {.smaller}
 
 We can either parse the barcodes for design information or join a key file using common barcodes.
 
@@ -153,35 +153,35 @@ sv<-merge(sv, key, by="barcode")
 
 Data joining tends to be straightforward enough, but other metadata tasks can be more involved.
 
-## Handling time with `bw.time`
+## Handling time with `bw.time` {.smaller}
 
 The `bw.time` function parses timestamps into (optionally) several kinds of time labels.
 
 Here we show a few examples before using the default behavior to make DAS, DAP, and DAE (days after start, planting, and emergence).
 
-## Handling time with `bw.time` (2)
+## Handling time with `bw.time` (2) {.smaller}
 
 `bw.time` takes an optional `mode` argument, which can control how many types of time are output. Here we make Days after Start (DAS).
 
 ```{r}
 #| echo: true
 #| output-location: slide
-ex<-bw.time(sv, mode="DAS", phenotype="area_pixels",
-           group=c("barcode", "rotation"), plot=T)
+bw.time(sv, mode="DAS", phenotype="area_pixels",
+           group=c("barcode", "rotation"), plot = TRUE)$plot
 ```
 
-## Handling time with `bw.time` (3)
+## Handling time with `bw.time` (3) {.smaller}
 
 We can also make Days after Emergence with `mode="DAE"`, using a cutoff for emergence on a phenotype.
 
 ```{r}
 #| echo: true
 #| output-location: slide
-ex<-bw.time(sv, mode="DAE", phenotype="area_pixels",
-               cutoff=10, group=c("barcode", "rotation"), plot=T)
+bw.time(sv, mode="DAE", phenotype="area_pixels",
+               cutoff=10, group=c("barcode", "rotation"), plot=TRUE)$plot
 ```
 
-## Handling time with `bw.time` (4)
+## Handling time with `bw.time` (4) {.smaller}
 
 ```{r}
 #| echo: true
@@ -195,7 +195,7 @@ svt <- bw.time(sv, plantingDelay = 0, phenotype="area_pixels",
 svt[1:8, c("timestamp", "DAS", "DAP", "DAE", "area_pixels")]
 ```
 
-## Remove Outliers
+## Remove Outliers {.smaller}
 
 Before removing outliers we aggregate across photos on the same day of the same plant.
 
@@ -214,7 +214,7 @@ dim(sv_ag_withOutliers)
 
 Now we can remove outliers as the last step before getting into analysis.
 
-## Removing Outliers with `bw.outliers`
+## Removing Outliers with `bw.outliers` {.smaller}
 
 The `bw.outliers` function uses Cook's Distance to detect outliers.
 
@@ -231,9 +231,11 @@ sv_ag<-bw.outliers(df = sv_ag_withOutliers,
                    phenotype="area_pixels",
                    group = c("DAS", "genotype", "fertilizer"),
                    plotgroup = c("barcode"))
+sv_ag$plot
+sv_ag <- sv_ag$data
 ```
 
-## Single Value Trait Analysis
+## Single Value Trait Analysis {.smaller}
 
 Some of our most common goals involve comparing single value traits at a given time.
 
@@ -245,48 +247,22 @@ pxTocm2 <- 42.5^2 # 51^2 / 1.2^2 : px per cm^2 / color chip size
 sv_ag$area_cm2<-sv_ag$area_pixels / pxTocm2
 ```
 
-## What are we asking?
+## What are we asking? {.smaller}
 
 -   Are the means (or distributions) of X groups different?
 -   Is the difference biologically meaningful?
 
-## T tests with pcvBox
+## T tests {.smaller}
 
-`pcvBox` is a ggplot and ggpubr wrapper with easy pairwise difference of means tests in mind.
-
-```{r}
-#| echo: true
-day19<-sv_ag[sv_ag$genotype=='W605S' & sv_ag$DAS==19, ]
-
-box <- pcvBox(day19, x="fertilizer", y="area_cm2",
-               compare="50", showPoints = T)
-```
-
-## T tests with pcvBox (2)
+At this point difference of means tests are a common next step.
 
 ```{r}
 #| echo: true
-#| output-location: slide
-(box<-box+
-  labs(y=expression("Area"~"(cm"^2~")"),
-       fill="Soil Fertilizer")+
-  scale_x_discrete(limits = c("0", "50", "100")) )
+ex <- sv_ag[sv_ag$fertilizer=="100" & sv_ag$DAS==19 & sv_ag$genotype %in% c("B73", "Mo17"), ]
+t.test(area_cm2 ~ genotype, ex)
 ```
 
-## [pcvBox (exercise)]{style="color:#FFD900;"}
-
-Compare all genotypes in fully fertilized soil (100) areas against B73 on day 19 using a non-parametric test (wilcox)
-
-## [pcvBox (solution)]{style="color:#FF007B;"}
-
-```{r}
-#| echo: true
-ex<-sv_ag[sv_ag$fertilizer=='100' & sv_ag$DAS==19, ]
-pcvBox(ex, x="genotype", y="area_cm2",
-               compare="B73", method = "wilcox", showPoints = T)
-```
-
-## Interpreting P-values
+## Interpreting P-values {.smaller}
 
 ```{r}
 print(box)
@@ -298,17 +274,17 @@ Based on an $\alpha$ of 0.05 we would say that B73 and Mo17 have statistically s
 
 But correct interpretation does not tell us the probability that one genotype is larger than the other.
 
-## Interpreting P-values (2)
+## Interpreting P-values (2) {.smaller}
 
 ![xkcd P-values](https://imgs.xkcd.com/comics/p_values.png)
 
-## Interpreting P-values (3)
+## Interpreting P-values (3) {.smaller}
 
-Correct interpretation: If these two genotypes have the same area at the population level then there would be a $\le5\%$ chance of estimating the observed difference.
+Correct interpretation: If these two genotypes have the same area at the population level then there would be a $\le P\%$ chance of estimating the observed difference.
 
 We can ask more specific questions using different tools.
 
-## Posterior Probability
+## Posterior Probability {.smaller}
 
 In Bayesian statistics posterior probability is used instead of p-values.
 
@@ -319,11 +295,11 @@ The interpretation is much simpler, posterior probability is the probability tha
 In a Bayesian context we flip "random" and "fixed" elements.
 
 |             | Fixed                                   | Random                                  | Interpretation                                                                                                                                                             |
-|-------------|-----------------------------------------|-----------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|------------|------------|------------|--------------------------------------|
 | Frequentist | [True Effect]{style="color:goldenrod;"} | [Data]{style="color:purple;"}           | If the [True Effect is 0]{style="color:goldenrod;"} then there is an $\alpha\cdot100$% chance of [estimating an effect]{style="color:purple;"} of this size or more.       |
 | Bayesian    | [Data]{style="color:purple;"}           | [True Effect]{style="color:goldenrod;"} | Given the [estimated effect from our data]{style="color:purple;"} there is a P probability of the [True Effect]{style="color:goldenrod;"} being a difference of at least X |
 
-## Bayesian vs Frequentist (2)
+## Bayesian vs Frequentist (2) {.smaller}
 
 You should pick statistical methods and your design models based on your research questions.
 
@@ -331,7 +307,7 @@ Be aware of the advantages and limitations that come with your phrasing of a que
 
 One of the goals in `pcvr` is to make it easier to answer a broader range of questions.
 
-## Conjugacy
+## Conjugacy {.smaller}
 
 Historically Bayesian methods have been difficult to implement because of computational complexitity.
 
@@ -339,7 +315,7 @@ Historically Bayesian methods have been difficult to implement because of comput
 
 Using "conjugate" prior distributions makes simple questions very quick to answer.
 
-## Conjugacy Example
+## Conjugacy Example {.smaller}
 
 ```{r}
 #| echo: false
@@ -397,7 +373,7 @@ conjugacy_ex <- betaBinom_dist_plot / beta_dist_plot + plot_layout(design = layo
 
 ```
 
-## Conjugacy Example
+## Conjugacy Example {.smaller}
 
 ```{r}
 #| echo: false
@@ -405,7 +381,7 @@ conjugacy_ex <- betaBinom_dist_plot / beta_dist_plot + plot_layout(design = layo
 conjugacy_ex
 ```
 
-## `conjugate` function
+## `conjugate` function {.smaller}
 
 `conjugate` uses conjugate priors and moments from given distributions to make computationally light Bayesian comparisons of single or multi value traits.
 
@@ -421,7 +397,7 @@ Several methods are available for different distributions.
 -   negative binomial: Alternative difference of distributions for count data (given "r")
 -   dirichlet: Difference of categorical distributions (2 versions)
 
-## `conjugate` function (3)
+## `conjugate` function (3) {.smaller}
 
 ```{r}
 #| echo: false
@@ -483,7 +459,7 @@ library(patchwork)
 (p1+p2+p3)/(p4+p5+p6)+plot_layout(guides="collect")
 ```
 
-## Bayesian comparison with `conjugate`
+## Bayesian comparison with `conjugate` {.smaller}
 
 Here is an example of using the `conjugate` function from `pcvr` to do a Bayesian analog to a T test and a region of practical equivalence (*ROPE*) comparison.
 
@@ -498,7 +474,7 @@ conj<-conjugate(s1, s2, method="t", plot=T,
                 support = seq(0,125,0.1))
 ```
 
-## Bayesian comparison with `conjugate`
+## Bayesian comparison with `conjugate` {.smaller}
 
 ```{r}
 #| echo: false
@@ -509,7 +485,7 @@ conj<-conjugate(s1, s2, method="t", plot=T,
                 rope_range=c(-10,10), support = seq(0,125,0.1))
 ```
 
-## Bayesian comparison with `conjugate` (2)
+## Bayesian comparison with `conjugate` (2) {.smaller}
 
 `conjugate` returns a list with several useful components.
 
@@ -518,7 +494,7 @@ conj<-conjugate(s1, s2, method="t", plot=T,
 lapply(conj, class)#[1:length(conj)]
 ```
 
-## Bayesian comparison with `conjugate` (2)
+## Bayesian comparison with `conjugate` (2) {.smaller}
 
 The summary item contains HDE and HDI estimates for samples and their difference (if two samples are provided).
 
@@ -531,11 +507,11 @@ The posterior item is an updated set of priors. It can be recycled as more data 
 
 The remaining items are the plot and data that was used in making the plot.
 
-## [conjugate (exercise)]{style="color:#FFD900;"}
+## [conjugate (exercise)]{style="color:#FFD900;"} {.smaller}
 
 Convert height from px to cm and report the probability that the difference in height between B73 in 50% fertilizer and W605x in 0% fertilizer is larger than $|10\text{cm}|$.
 
-## [conjugate (solution)]{style="color:#FF007B;"}
+## [conjugate (solution)]{style="color:#FF007B;"} {.smaller}
 
 ```{r}
 #| echo: true
@@ -550,13 +526,13 @@ conj<-conjugate(s1,s2, method="gaussian", plot=T,
 # 1-conj$summary$rope_prob: 0.318
 ```
 
-## Longitudinal Analysis
+## Longitudinal Analysis {.smaller}
 
 One of the core benefits of image based high throughput phenotyping is that you can quickly collect non-destructive samples.
 
 Keeping the plants alive allows for longitudinal data on individuals.
 
-## Longitudinal Analysis Challenges
+## Longitudinal Analysis Challenges {.smaller}
 
 These benefits add complexity to our data.
 
@@ -566,11 +542,11 @@ Longitudinal data is:
 -   Often non-linear
 -   Heteroskedastic
 
-## Modeling longitudinal data
+## Modeling longitudinal data {.smaller}
 
 `pcvr` supports 8 growth models fit with 4 different methods (`nls`, `nlrq`, `nlme`, and `brms`).
 
-## Modeling longitudinal data
+## Modeling longitudinal data {.smaller}
 
 ```{r}
 #| echo: false
@@ -632,7 +608,7 @@ patch8<-(l+g+m+dg+e+ln+pl+dl)+
 patch8
 ```
 
-## Data preparation
+## Data preparation {.smaller}
 
 For this example we subset the data, but we could also model the entire dataset by making a new `group` column that has fertilizer and genotype information.
 
@@ -652,7 +628,7 @@ ggplot(sub, aes(x= DAS, y=area_cm2, group=barcode, color=fertilizer))+
   theme_minimal()
 ```
 
-## Initializing with `growthSS`
+## Initializing with `growthSS` {.smaller}
 
 The `growthSS` function serves as a "self starter" for 8 common growth models (logistic, gompertz, monomolecular, linear, exponential, and power law).
 
@@ -669,7 +645,7 @@ ss<-growthSS(model="gompertz",
 
 See `?growthSS` and `?growthSim` for details.
 
-## Fitting with `fitGrowth`
+## Fitting with `fitGrowth` {.smaller}
 
 If you are using one of the 6 common growth models supported by `growthSS` then you can use `fitGrowth` to fit the model using Stan.
 
@@ -687,19 +663,19 @@ fit_test <- fitGrowth(ss, iter = 1000,
 summary(fit_test)
 ```
 
-## Plotting with `growthPlot`
+## Plotting with `growthPlot` {.smaller}
 
 Any of the 4 types of growth models can be plotted using `growthPlot`.
 
 ![](patched_growthPlots.png)
 
-## Testing with `testGrowth`
+## Testing with `testGrowth` {.smaller}
 
 This example uses a Bayesian model where hypothesis testing is much more robust.
 
 For examples of `testGrowth` on frequentist models see the intermediate growth modeling tutorial.
 
-## Resources
+## Resources {.smaller}
 
 For a more complete workflow using a small bellwether dataset see the `bellwether` vignette and [tutorials](https://github.com/danforthcenter/pcvr/tree/main/tutorials) on github.
 

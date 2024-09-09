@@ -1,6 +1,6 @@
 ---
 title: "Multi Value Trait Analysis with `pcvr`"
-subtitle: "DDPSC Data Science Core, Ocotober 2023"
+subtitle: "DDPSC Data Science Core, pcvr v1.0.0"
 author: Josh Sumner
 format:
   revealjs:
@@ -14,7 +14,7 @@ format:
       data-background-image: ../quartoSupport/datascience.png
       data-background-size: 15%
       data-background-position: 2% 2%
-editor: visual
+editor: source
 ---
 
 ## Outline {.smaller}
@@ -47,16 +47,13 @@ Pre-work was to install R, Rstudio, and `pcvr` with dependencies.
 #| echo: false
 #| eval: true
 if(!"pcvr" %in% installed.packages()){
-  if(!"devtools" %in% installed.packages()){
-   install.packages("devtools") 
-  }
-  devtools::install_github("danforthcenter/pcvr", dependencies = TRUE)
+  install.packages("pcvr")
 }
 ```
 
 ```{r}
 #| echo: true
-library(pcvr) # or devtools::load_all() if you are editing
+library(pcvr)
 library(ggplot2)
 library(patchwork)
 ```
@@ -75,9 +72,9 @@ Here our segmentation easily shows area, height, and other numeric phenotypes. T
 
 ## What are multi-value traits? {.smaller}
 
-There are many ways to describe color and many indices that can be calculated from those colors.
+There are many ways to describe color, many wavelengths to measure color in, and many indices that can be calculated from those wavelengths.
 
-Since each pixel has a color we describe the entire image using a histogram of those colors.
+Since each pixel has a color we describe the entire image using a histogram of those values
 
 ![Wikipedia HSV Color Space](HSV_color_solid_cylinder_saturation_gray.png)
 
@@ -160,12 +157,12 @@ sim_plot
 
 ## `pcv.joyplot` {.smaller}
 
-We can make joyplots and optionally perform some tests using `pcv.joyplot`
+We can make joyplots and using `pcv.joyplot`
 
 ```{r}
 #| echo: true
 #| warning: false
-(p<-pcv.joyplot(sim_df, index = "sim", group=c("group"), method=NULL, compare=NULL))
+(p<-pcv.joyplot(sim_df, index = "sim", group=c("group")))
 ```
 
 ## `pcv.joyplot` {.smaller}
@@ -177,20 +174,10 @@ The plot output is a `ggplot` object so we can change it to match our needs. Her
 p +scale_fill_gradientn(colors = scales::hue_pal(l=55)(360))
 ```
 
-## `pcv.joyplot` {.smaller}
-
-We can also run KS tests or compare PDFs, both of which also return a dataframe.
-
-```{r}
-#| echo: true
-p2<-pcv.joyplot(sim_df, index = "sim", group=c("group"),
-                method="pdf", hypothesis = "unequal", compare= NULL)
-p2$stats
-```
 
 ## `pcv.emd` {.smaller}
 
-Sometimes pairwise comparisons do not satisfactorily answer a research question or a more specific hypothesis should be tested than those possible through `pcv.joyplot`.
+Sometimes the multi-value trait histograms will not follow a unimodal distribution, or other aspects of what kind of test to use will be unclear.
 
 For those situations one option is to use earth mover's distance.
 
@@ -337,7 +324,7 @@ Now we can run `conjugate` on our samples. Here we use assume a lognormal distri
 #| output: false
 #| echo: true
 res <- conjugate(s1, s2, method = "lognormal",
-                 priors = list( mu_log=c(log(10),log(10)),n=c(1,1),sigma_log=c(log(3),log(3)) ),
+                 priors = list(mu = 10, sd = 5),
                  plot=TRUE, rope_range = NULL, rope_ci = 0.89, 
                  cred.int.level = 0.89, hypothesis="equal", support=NULL)
 
@@ -349,7 +336,7 @@ We can also perform region of practical equivalence tests by specifying a `rope_
 
 ```{r}
 res <- conjugate(s1, s2, method = "lognormal",
-                 priors = list( mu_log=c(log(10),log(10)),n=c(1,1),sigma_log=c(log(3),log(3)) ),
+                 priors = list(mu = 10, sd = 5),
                  plot=TRUE, rope_range = c(-10,10), rope_ci = 0.89, 
                  cred.int.level = 0.89, hypothesis="equal", support=NULL)
 ```
@@ -359,7 +346,7 @@ res <- conjugate(s1, s2, method = "lognormal",
 The results are also returned as a summary dataframe
 
 ```{r}
-res$summary
+res$summary[, -c(1:6)]
 ```
 
 ## Resources

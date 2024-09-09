@@ -4,7 +4,7 @@ format:
   html:
     embed-resources: true
     self-contained: true
-editor: visual
+editor: source
 ---
 
 ## Installing R
@@ -17,7 +17,20 @@ If you do not have Rstudio or some IDE that you like to work with installed then
 
 ## Installing `pcvr`
 
-Open Rstudio (or some IDE you prefer) and run the following command to install the `devtools` package from CRAN.
+### Stable Release
+
+A stable version of `pcvr` can be installed from CRAN using:
+
+```{r, eval = FALSE}
+#| echo: true
+#| eval: false
+install.packages("pcvr")
+```
+
+### Development version
+
+Alternatively the development version can be installed from github using `devtools` or `remotes` through R. First install either `devtools` or `remotes` from CRAN:
+
 
 ```{r, eval=F}
 #| echo: true
@@ -30,7 +43,7 @@ library(devtools) # should prevent download problems
 
 The `devtools` package makes developing your own R packages more straightforward and lets you easily install packages from places other than CRAN.
 
-With `devtools` installed we can use `install_github` to install `pcvr` from the Danforth center github account. By default this will install package dependencies and will not build the bellwether vignette. See the \textbf{Optional Extras} and \textbf{Bellwether Vignette} sections in this document for examples of different installation options.
+With `devtools` installed we can use `install_github` to install a more frequently updated version of `pcvr` from the Danforth center github account. By default this will install package dependencies and will not build the bellwether vignette. See the \textbf{Optional Extras} and \textbf{Bellwether Vignette} sections in this document for examples of different installation options.
 
 ```{r, eval=F}
 #| echo: true
