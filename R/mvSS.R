@@ -39,9 +39,12 @@ mvSS <- function(model, form, sigma = NULL, df, start = NULL,
                                     "fvfm", "fqfm")) {
   #* `get spectral index helper function`
   
-  #* `modify formula to work for growthSS`
+  #* `run spectral index helper function`
   
   #* `if time is missing then..? do stuff here?`
+  #* this is the tricky part I think. but on the other hand if time is missing then it's
+  #* really only one option for what happens next, so maybe it's not bad. Model is basically
+  #* ignored in this case.
   
   #* `if time is not missing, call growthSS with new model formula`
   
