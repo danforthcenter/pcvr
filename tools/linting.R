@@ -17,6 +17,20 @@ if (FALSE) {
   style_pkg("~/pcvr", dry = "on")
 }
 
+
+
+x <- lintr::lint_dir(path = "~/pcvr/tutorials",
+                         linters = linters_with_defaults(line_length_linter(length = 105L),
+                                                         object_name_linter(styles = c("snake_case", "symbols",
+                                                                                       "camelCase", "dotted.case",
+                                                                                       "lowercase", "UPPERCASE")),
+                                                         brace_linter(allow_single_line = TRUE)
+                         ))
+styler::style_dir(path = "~/pcvr/tutorials", scope = "line_breaks")
+
+
+
+
 if(FALSE){
   file = "~/pcvr/R/emd.R"
   styler::style_file(file, scope = "line_breaks")

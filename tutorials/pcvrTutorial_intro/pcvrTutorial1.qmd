@@ -42,9 +42,9 @@ Pre-work was to install R, Rstudio, and `pcvr`.
 ```{r}
 #| echo: false
 #| eval: true
-if(!"pcvr" %in% installed.packages()){
-  if(!"devtools" %in% installed.packages()){
-   install.packages("devtools") 
+if (!"pcvr" %in% installed.packages()) {
+  if (!"devtools" %in% installed.packages()) {
+    install.packages("devtools")
   }
   devtools::install_github("danforthcenter/pcvr")
 }
@@ -91,9 +91,13 @@ There are datasets online for use with `pcvr` examples, here we read one in as a
 
 ```{r}
 #| echo: true
-sv<-read.pcv(paste0("https://raw.githubusercontent.com/joshqsumner/",
-             "pcvrTestData/main/pcv4-single-value-traits.csv"),
-             reader="fread")
+sv <- read.pcv(
+  paste0(
+    "https://raw.githubusercontent.com/joshqsumner/",
+    "pcvrTestData/main/pcv4-single-value-traits.csv"
+  ),
+  reader = "fread"
+)
 dim(sv)
 ```
 
@@ -113,15 +117,23 @@ Read in the same example dataset from the previous slides as both wide and long 
 ```{r}
 #| echo: true
 #| eval: false
-svw<-read.pcv(paste0("https://raw.githubusercontent.com/joshqsumner/",
-             "pcvrTestData/main/pcv4-single-value-traits.csv"),
-          mode="wide", reader="fread")
+svw <- read.pcv(
+  paste0(
+    "https://raw.githubusercontent.com/joshqsumner/",
+    "pcvrTestData/main/pcv4-single-value-traits.csv"
+  ),
+  mode = "wide", reader = "fread"
+)
 dim(svw) # [1] 2824   45
 object.size(svw) # 1304192 bytes
 
-svl<-read.pcv(paste0("https://raw.githubusercontent.com/joshqsumner/",
-             "pcvrTestData/main/pcv4-single-value-traits.csv"),
-          mode="long", reader="fread")
+svl <- read.pcv(
+  paste0(
+    "https://raw.githubusercontent.com/joshqsumner/",
+    "pcvrTestData/main/pcv4-single-value-traits.csv"
+  ),
+  mode = "long", reader = "fread"
+)
 dim(svl) # [1] 77058    20
 object.size(svl) # 10070624 bytes
 10070624 / 1304024 # 7.7 times larger in long format
@@ -143,10 +155,11 @@ We can either parse the barcodes for design information or join a key file using
 
 ```{r}
 #| echo: true
-key<-read.csv(paste0(
+key <- read.csv(paste0(
   "https://raw.githubusercontent.com/joshqsumner/",
-  "pcvrTestData/main/smallPhenotyperRun_key.csv"))
-sv<-merge(sv, key, by="barcode")
+  "pcvrTestData/main/smallPhenotyperRun_key.csv"
+))
+sv <- merge(sv, key, by = "barcode")
 ```
 
 . . .
@@ -166,8 +179,10 @@ Here we show a few examples before using the default behavior to make DAS, DAP, 
 ```{r}
 #| echo: true
 #| output-location: slide
-bw.time(sv, mode="DAS", phenotype="area_pixels",
-           group=c("barcode", "rotation"), plot = TRUE)$plot
+bw.time(sv,
+  mode = "DAS", phenotype = "area_pixels",
+  group = c("barcode", "rotation"), plot = TRUE
+)$plot
 ```
 
 ## Handling time with `bw.time` (3) {.smaller}
@@ -177,16 +192,20 @@ We can also make Days after Emergence with `mode="DAE"`, using a cutoff for emer
 ```{r}
 #| echo: true
 #| output-location: slide
-bw.time(sv, mode="DAE", phenotype="area_pixels",
-               cutoff=10, group=c("barcode", "rotation"), plot=TRUE)$plot
+bw.time(sv,
+  mode = "DAE", phenotype = "area_pixels",
+  cutoff = 10, group = c("barcode", "rotation"), plot = TRUE
+)$plot
 ```
 
 ## Handling time with `bw.time` (4) {.smaller}
 
 ```{r}
 #| echo: true
-svt <- bw.time(sv, plantingDelay = 0, phenotype="area_pixels",
-               cutoff=10, group=c("barcode", "rotation"), plot=F)
+svt <- bw.time(sv,
+  plantingDelay = 0, phenotype = "area_pixels",
+  cutoff = 10, group = c("barcode", "rotation"), plot = F
+)
 ```
 
 . . .
@@ -203,10 +222,10 @@ Before removing outliers we aggregate across photos on the same day of the same 
 #| code-line-numbers: "1,3"
 #| echo: true
 phenotypes <- colnames(svt)[19:45]
-phenoForm<-paste0("cbind(", paste0(phenotypes, collapse=", "), ")")
-groupForm<-"DAS+barcode+genotype+fertilizer"
-form<-as.formula(paste0(phenoForm, "~", groupForm))
-sv_ag_withOutliers<-aggregate(form, data=svt, mean, na.rm=T)
+phenoForm <- paste0("cbind(", paste0(phenotypes, collapse = ", "), ")")
+groupForm <- "DAS+barcode+genotype+fertilizer"
+form <- as.formula(paste0(phenoForm, "~", groupForm))
+sv_ag_withOutliers <- aggregate(form, data = svt, mean, na.rm = T)
 dim(sv_ag_withOutliers)
 ```
 
@@ -227,10 +246,12 @@ Cook's Distance is model (glm) based, so we detect outliers on a per-phenotype (
 ```{r}
 #| echo: true
 #| output-location: slide
-sv_ag<-bw.outliers(df = sv_ag_withOutliers,
-                   phenotype="area_pixels",
-                   group = c("DAS", "genotype", "fertilizer"),
-                   plotgroup = c("barcode"))
+sv_ag <- bw.outliers(
+  df = sv_ag_withOutliers,
+  phenotype = "area_pixels",
+  group = c("DAS", "genotype", "fertilizer"),
+  plotgroup = c("barcode")
+)
 sv_ag$plot
 sv_ag <- sv_ag$data
 ```
@@ -244,7 +265,7 @@ Even these simple type of questions can take multiple forms, but before getting 
 ```{r}
 #| echo: true
 pxTocm2 <- 42.5^2 # 51^2 / 1.2^2 : px per cm^2 / color chip size
-sv_ag$area_cm2<-sv_ag$area_pixels / pxTocm2
+sv_ag$area_cm2 <- sv_ag$area_pixels / pxTocm2
 ```
 
 ## What are we asking? {.smaller}
@@ -258,7 +279,7 @@ At this point difference of means tests are a common next step.
 
 ```{r}
 #| echo: true
-ex <- sv_ag[sv_ag$fertilizer=="100" & sv_ag$DAS==19 & sv_ag$genotype %in% c("B73", "Mo17"), ]
+ex <- sv_ag[sv_ag$fertilizer == "100" & sv_ag$DAS == 19 & sv_ag$genotype %in% c("B73", "Mo17"), ]
 t.test(area_cm2 ~ genotype, ex)
 ```
 
@@ -320,57 +341,86 @@ Using "conjugate" prior distributions makes simple questions very quick to answe
 ```{r}
 #| echo: false
 #| eval: true
-bdf<-data.frame(
-  value = c(rbeta(5000,2,2), rbeta(5000, 20, 20), rbeta(5000, 40, 10), rbeta(5000,20, 80), rbeta(5000,2,8), rbeta(5000,100,10)),
+bdf <- data.frame(
+  value = c(rbeta(5000, 2, 2), rbeta(5000, 20, 20), rbeta(5000, 40, 10), rbeta(5000, 20, 80), rbeta(5000, 2, 8), rbeta(5000, 100, 10)),
   Beta = factor(c(rep(c("B(2,2)", "B(20,20)", "B(40,10)", "B(20,80)", "B(2,8)", "B(100,10)"), each = 5000)),
-                levels=c("B(2,2)", "B(20,20)", "B(40,10)", "B(20,80)", "B(2,8)", "B(100,10)"))
+    levels = c("B(2,2)", "B(20,20)", "B(40,10)", "B(20,80)", "B(2,8)", "B(100,10)")
+  )
 )
 
-pal<-viridis::viridis(6) # should be imported by pcvr and ggplot2
+pal <- viridis::viridis(6) # should be imported by pcvr and ggplot2
 
-beta_dist_plot<-ggplot(bdf, aes(x = value, fill=Beta))+
-  geom_density(alpha=0, color=NA)+scale_fill_viridis_d()+
-  guides(fill=guide_legend(override.aes = list(alpha=1)))+
-  labs(x="Percentage", y = "Density")+
-  stat_function(fun = dbeta, geom = "polygon", colour = pal[1],
-                fill = pal[1], alpha = 0.75, args=list(shape1=2, shape2=2), show.legend=F)+
-  stat_function(fun = dbeta, geom = "polygon", colour = pal[2],
-                fill = pal[2], alpha = 0.75, args=list(shape1=20, shape2=20), show.legend=F)+
-  stat_function(fun = dbeta, geom = "polygon", colour = pal[3],
-                fill = pal[3], alpha = 0.75, args=list(shape1=40, shape2=10), show.legend=F)+
-  stat_function(fun = dbeta, geom = "polygon", colour = pal[4],
-                fill = pal[4], alpha = 0.75, args=list(shape1=20, shape2=80), show.legend=F)+
-  stat_function(fun = dbeta, geom = "polygon", colour = pal[5],
-                fill = pal[5], alpha = 0.75, args=list(shape1=2, shape2=8), show.legend=F)+
-  stat_function(fun = dbeta, geom = "polygon", colour = pal[6],
-                fill = pal[6], alpha = 0.75,args=list(shape1=100, shape2=10), show.legend=F)+
+beta_dist_plot <- ggplot(bdf, aes(x = value, fill = Beta)) +
+  geom_density(alpha = 0, color = NA) +
+  scale_fill_viridis_d() +
+  guides(fill = guide_legend(override.aes = list(alpha = 1))) +
+  labs(x = "Percentage", y = "Density") +
+  stat_function(
+    fun = dbeta, geom = "polygon", colour = pal[1],
+    fill = pal[1], alpha = 0.75, args = list(shape1 = 2, shape2 = 2), show.legend = F
+  ) +
+  stat_function(
+    fun = dbeta, geom = "polygon", colour = pal[2],
+    fill = pal[2], alpha = 0.75, args = list(shape1 = 20, shape2 = 20), show.legend = F
+  ) +
+  stat_function(
+    fun = dbeta, geom = "polygon", colour = pal[3],
+    fill = pal[3], alpha = 0.75, args = list(shape1 = 40, shape2 = 10), show.legend = F
+  ) +
+  stat_function(
+    fun = dbeta, geom = "polygon", colour = pal[4],
+    fill = pal[4], alpha = 0.75, args = list(shape1 = 20, shape2 = 80), show.legend = F
+  ) +
+  stat_function(
+    fun = dbeta, geom = "polygon", colour = pal[5],
+    fill = pal[5], alpha = 0.75, args = list(shape1 = 2, shape2 = 8), show.legend = F
+  ) +
+  stat_function(
+    fun = dbeta, geom = "polygon", colour = pal[6],
+    fill = pal[6], alpha = 0.75, args = list(shape1 = 100, shape2 = 10), show.legend = F
+  ) +
   pcv_theme()
 
 beta_dist_plot
 
 #* ***** `Beta Binomial` *****
 
-values <- c(unlist(lapply(1:100, function(i) {set.seed(i);rbinom(10, 100, prob = rbeta(1, 2,2) )})),
-  unlist(lapply(1:100, function(i) {set.seed(i);rbinom(10, 100, prob = rbeta(1, 20,20) )})),
-  unlist(lapply(1:100, function(i) {set.seed(i);rbinom(10, 100, prob = rbeta(1, 40,10) )})),
-  unlist(lapply(1:100, function(i) {set.seed(i);rbinom(10, 100, prob = rbeta(1, 20,80) )})),
-  unlist(lapply(1:100, function(i) {set.seed(i);rbinom(10, 100, prob = rbeta(1, 2,8) )})),
-  unlist(lapply(1:100, function(i) {set.seed(i);rbinom(10, 100, prob = rbeta(1, 100,10) )})) )
+values <- c(
+  unlist(lapply(1:100, function(i) {
+    set.seed(i);rbinom(10, 100, prob = rbeta(1, 2, 2))
+  })),
+  unlist(lapply(1:100, function(i) {
+    set.seed(i);rbinom(10, 100, prob = rbeta(1, 20, 20))
+  })),
+  unlist(lapply(1:100, function(i) {
+    set.seed(i);rbinom(10, 100, prob = rbeta(1, 40, 10))
+  })),
+  unlist(lapply(1:100, function(i) {
+    set.seed(i);rbinom(10, 100, prob = rbeta(1, 20, 80))
+  })),
+  unlist(lapply(1:100, function(i) {
+    set.seed(i);rbinom(10, 100, prob = rbeta(1, 2, 8))
+  })),
+  unlist(lapply(1:100, function(i) {
+    set.seed(i);rbinom(10, 100, prob = rbeta(1, 100, 10))
+  }))
+)
 Beta = factor(c(rep(c("B(2,2)", "B(20,20)", "B(40,10)", "B(20,80)", "B(2,8)", "B(100,10)"), each = 1000)),
-              levels=c("B(2,2)", "B(20,20)", "B(40,10)", "B(20,80)", "B(2,8)", "B(100,10)"))
+  levels = c("B(2,2)", "B(20,20)", "B(40,10)", "B(20,80)", "B(2,8)", "B(100,10)")
+)
 
-bndf<-data.frame(values, Beta)
+bndf <- data.frame(values, Beta)
 
-betaBinom_dist_plot<-ggplot(bndf, aes(x = values, fill=Beta))+
-  geom_histogram(alpha=0.7, position="identity", binwidth=1)+
-  scale_fill_viridis_d()+
-  guides(fill=guide_legend(override.aes = list(alpha=1)))+
-  labs(x="Successes from 100 Trials", y = "Count", fill="Beta", title="Beta Binomial Conjugacy")+pcv_theme()
+betaBinom_dist_plot <- ggplot(bndf, aes(x = values, fill = Beta)) +
+  geom_histogram(alpha = 0.7, position = "identity", binwidth = 1) +
+  scale_fill_viridis_d() +
+  guides(fill = guide_legend(override.aes = list(alpha = 1))) +
+  labs(x = "Successes from 100 Trials", y = "Count", fill = "Beta", title = "Beta Binomial Conjugacy") +
+  pcv_theme()
 
-layout<-c(area(1,1,3,4), area(4,1,4,4))
+layout <- c(area(1, 1, 3, 4), area(4, 1, 4, 4))
 
-conjugacy_ex <- betaBinom_dist_plot / beta_dist_plot + plot_layout(design = layout, guides="collect")
-
+conjugacy_ex <- betaBinom_dist_plot / beta_dist_plot + plot_layout(design = layout, guides = "collect")
 ```
 
 ## Conjugacy Example {.smaller}
@@ -403,60 +453,84 @@ Several methods are available for different distributions.
 #| echo: false
 #| output-location: slide
 library(extraDistr) # also should be covered by pcvr
-methods<-c("lognormal","t","gaussian","beta","poisson","negbin")
-p1 <- ggplot(data.frame(x=seq(0, 250, 0.1),
-                        fill=factor("lognormal", levels = methods)),
-             aes(x=x, fill=fill))+
-  stat_function(geom="polygon", fun = dlnorm, args = list(meanlog=log(70), sdlog=log(1.5)))+
-  scale_fill_manual(values=viridis::viridis(6,1, 0.1, 0.9), drop = F)+
-  pcv_theme()+
-  labs(title="lognormal")
+methods <- c("lognormal", "t", "gaussian", "beta", "poisson", "negbin")
+p1 <- ggplot(
+  data.frame(
+    x = seq(0, 250, 0.1),
+    fill = factor("lognormal", levels = methods)
+  ),
+  aes(x = x, fill = fill)
+) +
+  stat_function(geom = "polygon", fun = dlnorm, args = list(meanlog = log(70), sdlog = log(1.5))) +
+  scale_fill_manual(values = viridis::viridis(6, 1, 0.1, 0.9), drop = F) +
+  pcv_theme() +
+  labs(title = "lognormal")
 
-p2 <- ggplot(data.frame(x=seq(0, 20, 0.01), 
-                        fill=factor("t", levels =methods)),
-             aes(x=x, fill=fill))+
-  stat_function(geom="polygon", fun = dlst, args = list(df = 3, mu = 10, sigma = 2))+
-  scale_fill_manual(values=viridis::viridis(6,1, 0.1, 0.9), drop = F)+
-  pcv_theme()+
-  labs(title="T")
+p2 <- ggplot(
+  data.frame(
+    x = seq(0, 20, 0.01),
+    fill = factor("t", levels = methods)
+  ),
+  aes(x = x, fill = fill)
+) +
+  stat_function(geom = "polygon", fun = dlst, args = list(df = 3, mu = 10, sigma = 2)) +
+  scale_fill_manual(values = viridis::viridis(6, 1, 0.1, 0.9), drop = F) +
+  pcv_theme() +
+  labs(title = "T")
 
-p3 <- ggplot(data.frame(x=seq(0, 20, 0.001),
-                        fill=factor("gaussian", levels = methods)),
-             aes(x=x, fill=fill))+
-  stat_function(geom="polygon", fun = dnorm, args = list(mean = 10, sd = 2))+
-  scale_fill_manual(values=viridis::viridis(6,1, 0.1, 0.9), drop = F)+
-  pcv_theme()+
-  labs(title="gaussian")
+p3 <- ggplot(
+  data.frame(
+    x = seq(0, 20, 0.001),
+    fill = factor("gaussian", levels = methods)
+  ),
+  aes(x = x, fill = fill)
+) +
+  stat_function(geom = "polygon", fun = dnorm, args = list(mean = 10, sd = 2)) +
+  scale_fill_manual(values = viridis::viridis(6, 1, 0.1, 0.9), drop = F) +
+  pcv_theme() +
+  labs(title = "gaussian")
 
-p4 <- ggplot(data.frame(x=seq(0, 1, 0.0001),
-                        fill=factor("beta", levels = methods)),
-             aes(x=x, fill=fill))+
-  stat_function(geom="polygon", fun = dbeta, args = list(shape1=10, shape2=5))+
-  scale_fill_manual(values=viridis::viridis(6,1, 0.1, 0.9), drop = F)+
-  pcv_theme()+
-  labs(title="beta")
+p4 <- ggplot(
+  data.frame(
+    x = seq(0, 1, 0.0001),
+    fill = factor("beta", levels = methods)
+  ),
+  aes(x = x, fill = fill)
+) +
+  stat_function(geom = "polygon", fun = dbeta, args = list(shape1 = 10, shape2 = 5)) +
+  scale_fill_manual(values = viridis::viridis(6, 1, 0.1, 0.9), drop = F) +
+  pcv_theme() +
+  labs(title = "beta")
 
 set.seed(123)
-pois<-hist(rpois(100000, 12), breaks=seq(0,30,1), plot=F)
-p5 <- ggplot(data.frame(x=pois$breaks[-31], y=pois$counts, 
-                        fill=factor("poisson",levels = methods)),
-             aes(x=x, y=y, fill=fill))+
-  geom_col()+
-  scale_fill_manual(values=viridis::viridis(6,1, 0.1, 0.9), drop = F)+
-  pcv_theme()+
-  labs(title="poisson")
+pois <- hist(rpois(100000, 12), breaks = seq(0, 30, 1), plot = F)
+p5 <- ggplot(
+  data.frame(
+    x = pois$breaks[-31], y = pois$counts,
+    fill = factor("poisson", levels = methods)
+  ),
+  aes(x = x, y = y, fill = fill)
+) +
+  geom_col() +
+  scale_fill_manual(values = viridis::viridis(6, 1, 0.1, 0.9), drop = F) +
+  pcv_theme() +
+  labs(title = "poisson")
 
 set.seed(123)
-nb<-hist(rnbinom(100000, 5, 0.2), breaks=seq(0,100,1), plot=F)
-p6 <- ggplot(data.frame(x=nb$breaks[-101], y=nb$counts,
-                        fill=factor("negbin", levels = methods)),
-             aes(x=x, y=y, fill=fill))+
-  geom_col()+
-  scale_fill_manual(values=viridis::viridis(6,1, 0.1, 0.9), drop = F)+
-  pcv_theme()+
-  labs(title="negbin")
+nb <- hist(rnbinom(100000, 5, 0.2), breaks = seq(0, 100, 1), plot = F)
+p6 <- ggplot(
+  data.frame(
+    x = nb$breaks[-101], y = nb$counts,
+    fill = factor("negbin", levels = methods)
+  ),
+  aes(x = x, y = y, fill = fill)
+) +
+  geom_col() +
+  scale_fill_manual(values = viridis::viridis(6, 1, 0.1, 0.9), drop = F) +
+  pcv_theme() +
+  labs(title = "negbin")
 library(patchwork)
-(p1+p2+p3)/(p4+p5+p6)+plot_layout(guides="collect")
+(p1 + p2 + p3) / (p4 + p5 + p6) + plot_layout(guides = "collect")
 ```
 
 ## Bayesian comparison with `conjugate` {.smaller}
@@ -466,23 +540,27 @@ Here is an example of using the `conjugate` function from `pcvr` to do a Bayesia
 ```{r}
 #| eval: false
 #| echo: true
-s1 <- sv_ag[sv_ag$fertilizer=='100' & sv_ag$DAS==19 & sv_ag$genotype=="W605S", "area_cm2"]
-s2 <- sv_ag[sv_ag$fertilizer=='50' & sv_ag$DAS==19 & sv_ag$genotype=="W605S", "area_cm2"]
-conj<-conjugate(s1, s2, method="t", plot=T,
-                priors = list( mu=c(20,20),n=c(1,1),s2=c(20,20) ),
-                rope_range=c(-10,10),
-                support = seq(0,125,0.1))
+s1 <- sv_ag[sv_ag$fertilizer == '100' & sv_ag$DAS == 19 & sv_ag$genotype == "W605S", "area_cm2"]
+s2 <- sv_ag[sv_ag$fertilizer == '50' & sv_ag$DAS == 19 & sv_ag$genotype == "W605S", "area_cm2"]
+conj <- conjugate(s1, s2,
+  method = "t", plot = T,
+  priors = list(mu = c(20, 20), n = c(1, 1), s2 = c(20, 20)),
+  rope_range = c(-10, 10),
+  support = seq(0, 125, 0.1)
+)
 ```
 
 ## Bayesian comparison with `conjugate` {.smaller}
 
 ```{r}
 #| echo: false
-s1 <- sv_ag[sv_ag$fertilizer=='100' & sv_ag$DAS==19 & sv_ag$genotype=="W605S", "area_cm2"]
-s2 <- sv_ag[sv_ag$fertilizer=='50' & sv_ag$DAS==19 & sv_ag$genotype=="W605S", "area_cm2"]
-conj<-conjugate(s1, s2, method="t", plot=T,
-                priors = list( mu=c(20,20),n=c(1,1),s2=c(20,20) ),
-                rope_range=c(-10,10), support = seq(0,125,0.1))
+s1 <- sv_ag[sv_ag$fertilizer == '100' & sv_ag$DAS == 19 & sv_ag$genotype == "W605S", "area_cm2"]
+s2 <- sv_ag[sv_ag$fertilizer == '50' & sv_ag$DAS == 19 & sv_ag$genotype == "W605S", "area_cm2"]
+conj <- conjugate(s1, s2,
+  method = "t", plot = T,
+  priors = list(mu = c(20, 20), n = c(1, 1), s2 = c(20, 20)),
+  rope_range = c(-10, 10), support = seq(0, 125, 0.1)
+)
 ```
 
 ## Bayesian comparison with `conjugate` (2) {.smaller}
@@ -491,7 +569,7 @@ conj<-conjugate(s1, s2, method="t", plot=T,
 
 ```{r}
 #| echo: true
-lapply(conj, class)#[1:length(conj)]
+lapply(conj, class) # [1:length(conj)]
 ```
 
 ## Bayesian comparison with `conjugate` (2) {.smaller}
@@ -515,14 +593,16 @@ Convert height from px to cm and report the probability that the difference in h
 
 ```{r}
 #| echo: true
-s1 <- sv_ag[sv_ag$fertilizer=='50' & sv_ag$DAS==19 &
-              sv_ag$genotype=="B73", "height_pixels"]/42.5
-s2 <- sv_ag[sv_ag$fertilizer=='0' & sv_ag$DAS==19 &
-              sv_ag$genotype=="W605S", "height_pixels"]/42.5
+s1 <- sv_ag[sv_ag$fertilizer == '50' & sv_ag$DAS == 19 &
+  sv_ag$genotype == "B73", "height_pixels"] / 42.5
+s2 <- sv_ag[sv_ag$fertilizer == '0' & sv_ag$DAS == 19 &
+  sv_ag$genotype == "W605S", "height_pixels"] / 42.5
 
-conj<-conjugate(s1,s2, method="gaussian", plot=T,
-                priors = list( mu=c(20,20),n=c(1,1),s2=c(20,20) ),
-                support = seq(0,60,0.1), rope_range = c(-10,10))
+conj <- conjugate(s1, s2,
+  method = "gaussian", plot = T,
+  priors = list(mu = c(20, 20), n = c(1, 1), s2 = c(20, 20)),
+  support = seq(0, 60, 0.1), rope_range = c(-10, 10)
+)
 # 1-conj$summary$rope_prob: 0.318
 ```
 
@@ -551,60 +631,92 @@ Longitudinal data is:
 ```{r}
 #| echo: false
 #| eval: true
-simdf<-growthSim("logistic", n=20, t=25, params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(3, 3.5)))
-l<-ggplot(simdf,aes(time, y, group=interaction(group,id)))+
-  geom_line(aes(color=group))+labs(title="Logistic")+theme_minimal()+theme(legend.position="none")
-
-simdf<-growthSim("gompertz", n=20, t=25, params = list("A"=c(200,160), "B"=c(13, 11), "C"=c(0.2, 0.25)))
-g<-ggplot(simdf,aes(time, y, group=interaction(group,id)))+
-  geom_line(aes(color=group))+labs(title="Gompertz")+theme_minimal()+theme(legend.position="none")
-
-simdf<-growthSim("monomolecular", n=20, t=25, params = list("A"=c(200,160), "B"=c(0.08, 0.1)))
-m<-ggplot(simdf,aes(time, y, group=interaction(group,id)))+
-  geom_line(aes(color=group))+labs(title="Monomolecular")+theme_minimal()+theme(legend.position="none")
-
-simdf<-growthSim("exponential", n=20, t=25, params = list("A"=c(15, 20), "B"=c(0.095, 0.095)))
-e<-ggplot(simdf,aes(time, y, group=interaction(group,id)))+
-  geom_line(aes(color=group))+labs(title="Exponential")+theme_minimal()+theme(legend.position="none")
-
-simdf<-growthSim("linear", n=20, t=25, params = list("A"=c(1.1, 0.95)))
-ln<-ggplot(simdf,aes(time, y, group=interaction(group,id)))+
-  geom_line(aes(color=group))+labs(title="Linear")+theme_minimal()+theme(legend.position="none")
-
-simdf<-growthSim("power law", n=20, t=25, params = list("A"=c(16, 11), "B"=c(0.75, 0.7)))
-pl<-ggplot(simdf,aes(time, y, group=interaction(group,id)))+ geom_line(aes(color=group))+
-  labs(title="Power Law")+theme_minimal()+theme(legend.position="none")
-
-simdf<-growthSim("double logistic", n=20, t=70,
-                 params = list("A"=c(70,50), "B"=c(20, 15), "C"=c(3, 3),
-                               "A2"=c(160,210), "B2"=c(45, 45), "C2"=c(4,4)))
-dl <- ggplot(simdf,aes(time, y, group=interaction(group,id)))+
- geom_line(aes(color=group))+labs(title="Double Logistic")+
-  theme_minimal()+
+simdf <- growthSim("logistic", n = 20, t = 25, params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5)))
+l <- ggplot(simdf, aes(time, y, group = interaction(group, id))) +
+  geom_line(aes(color = group)) +
+  labs(title = "Logistic") +
+  theme_minimal() +
   theme(legend.position = "none")
 
-simdf<-growthSim("double gompertz", n=20, t=70,
-                 params = list("A"=c(70,50), "B"=c(8, 8), "C"=c(0.2, 0.2),
-                               "A2"=c(160,210), "B2"=c(35, 40), "C2"=c(0.1, 0.1)))
-dg <- ggplot(simdf,aes(time, y, group=interaction(group,id)))+
- geom_line(aes(color=group))+labs(title="Double Gompertz")+
-  scale_y_continuous(limits = layer_scales(dl)$y$range$range)+
-  theme_minimal()+
-  theme(legend.position = "none",
-        axis.text.y=element_blank(),
-        axis.title.y=element_blank())
+simdf <- growthSim("gompertz", n = 20, t = 25, params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(0.2, 0.25)))
+g <- ggplot(simdf, aes(time, y, group = interaction(group, id))) +
+  geom_line(aes(color = group)) +
+  labs(title = "Gompertz") +
+  theme_minimal() +
+  theme(legend.position = "none")
 
-layout = c(area(1,1,1,1), # top, left, bottom , right
-           area(1,2,1,2),
-           area(1,3,1,3),
-           area(1,4,1,4),
-           area(2,1,2,1), 
-           area(2,2,2,2),
-           area(2,3,2,3),
-           area(2,4,2,4))
+simdf <- growthSim("monomolecular", n = 20, t = 25, params = list("A" = c(200, 160), "B" = c(0.08, 0.1)))
+m <- ggplot(simdf, aes(time, y, group = interaction(group, id))) +
+  geom_line(aes(color = group)) +
+  labs(title = "Monomolecular") +
+  theme_minimal() +
+  theme(legend.position = "none")
 
-patch8<-(l+g+m+dg+e+ln+pl+dl)+
-  plot_layout(guides="collect", design=layout)
+simdf <- growthSim("exponential", n = 20, t = 25, params = list("A" = c(15, 20), "B" = c(0.095, 0.095)))
+e <- ggplot(simdf, aes(time, y, group = interaction(group, id))) +
+  geom_line(aes(color = group)) +
+  labs(title = "Exponential") +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+simdf <- growthSim("linear", n = 20, t = 25, params = list("A" = c(1.1, 0.95)))
+ln <- ggplot(simdf, aes(time, y, group = interaction(group, id))) +
+  geom_line(aes(color = group)) +
+  labs(title = "Linear") +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+simdf <- growthSim("power law", n = 20, t = 25, params = list("A" = c(16, 11), "B" = c(0.75, 0.7)))
+pl <- ggplot(simdf, aes(time, y, group = interaction(group, id))) +
+  geom_line(aes(color = group)) +
+  labs(title = "Power Law") +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+simdf <- growthSim("double logistic",
+  n = 20, t = 70,
+  params = list(
+    "A" = c(70, 50), "B" = c(20, 15), "C" = c(3, 3),
+    "A2" = c(160, 210), "B2" = c(45, 45), "C2" = c(4, 4)
+  )
+)
+dl <- ggplot(simdf, aes(time, y, group = interaction(group, id))) +
+  geom_line(aes(color = group)) +
+  labs(title = "Double Logistic") +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+simdf <- growthSim("double gompertz",
+  n = 20, t = 70,
+  params = list(
+    "A" = c(70, 50), "B" = c(8, 8), "C" = c(0.2, 0.2),
+    "A2" = c(160, 210), "B2" = c(35, 40), "C2" = c(0.1, 0.1)
+  )
+)
+dg <- ggplot(simdf, aes(time, y, group = interaction(group, id))) +
+  geom_line(aes(color = group)) +
+  labs(title = "Double Gompertz") +
+  scale_y_continuous(limits = layer_scales(dl)$y$range$range) +
+  theme_minimal() +
+  theme(
+    legend.position = "none",
+    axis.text.y = element_blank(),
+    axis.title.y = element_blank()
+  )
+
+layout = c(
+  area(1, 1, 1, 1), # top, left, bottom , right
+  area(1, 2, 1, 2),
+  area(1, 3, 1, 3),
+  area(1, 4, 1, 4),
+  area(2, 1, 2, 1),
+  area(2, 2, 2, 2),
+  area(2, 3, 2, 3),
+  area(2, 4, 2, 4)
+)
+
+patch8 <- (l + g + m + dg + e + ln + pl + dl) +
+  plot_layout(guides = "collect", design = layout)
 patch8
 ```
 
@@ -614,8 +726,8 @@ For this example we subset the data, but we could also model the entire dataset 
 
 ```{r}
 #| echo: true
-sub<-sv_ag[sv_ag$genotype=="W605S",]
-sub$fertilizer=as.character(sub$fertilizer)
+sub <- sv_ag[sv_ag$genotype == "W605S", ]
+sub$fertilizer = as.character(sub$fertilizer)
 ```
 
 To set up our model it generally helps to plot the data and make sure we can use an appropriate model and can identify our groups and individuals.
@@ -623,8 +735,8 @@ To set up our model it generally helps to plot the data and make sure we can use
 ```{r}
 #| echo: true
 #| output-location: slide
-ggplot(sub, aes(x= DAS, y=area_cm2, group=barcode, color=fertilizer))+
-  geom_line()+
+ggplot(sub, aes(x = DAS, y = area_cm2, group = barcode, color = fertilizer)) +
+  geom_line() +
   theme_minimal()
 ```
 
@@ -635,12 +747,14 @@ The `growthSS` function serves as a "self starter" for 8 common growth models (l
 ```{r}
 #| echo: true
 #| eval: false
-ss<-growthSS(model="gompertz",
-             form =  area_cm2~DAS|barcode/fertilizer,
-             sigma="spline",
-             df=sub,
-             priors = list("A" = 130, "B" = 15, "C" = 3),
-             type="brms")
+ss <- growthSS(
+  model = "gompertz",
+  form = area_cm2 ~ DAS | barcode / fertilizer,
+  sigma = "spline",
+  df = sub,
+  priors = list("A" = 130, "B" = 15, "C" = 3),
+  type = "brms"
+)
 ```
 
 See `?growthSS` and `?growthSim` for details.
@@ -652,9 +766,11 @@ If you are using one of the 6 common growth models supported by `growthSS` then 
 ```{r}
 #| eval: false
 #| echo: true
-fit_test <- fitGrowth(ss, iter = 1000,
-                      cores = 2, chains = 2, backend = "cmdstanr",
-               control = list(adapt_delta = 0.999, max_treedepth = 20))
+fit_test <- fitGrowth(ss,
+  iter = 1000,
+  cores = 2, chains = 2, backend = "cmdstanr",
+  control = list(adapt_delta = 0.999, max_treedepth = 20)
+)
 ```
 
 ```{r}

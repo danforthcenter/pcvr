@@ -119,8 +119,8 @@ m <- brm(mpg ~ gear + hp, iter = 500, data = mtcars, backend = "cmdstanr")
 ```{r}
 #| echo: true
 #| eval: false
-simdf <- growthSim("linear", n=20, t=25, params = list("A"=c(1.1, 0.95)))
-ss <- growthSS(model = "linear", form=y~time|id/group, sigma="linear", df=simdf, priors = list("A"=1))
+simdf <- growthSim("linear", n = 20, t = 25, params = list("A" = c(1.1, 0.95)))
+ss <- growthSS(model = "linear", form = y ~ time | id / group, sigma = "linear", df = simdf, priors = list("A" = 1))
 fit_test <- fitGrowth(ss, iter = 1000, cores = 2, chains = 2, backend = "cmdstanr")
 ```
 
