@@ -2,8 +2,7 @@
 % Please edit documentation in R/growthSS.R
 \name{growthSS}
 \alias{growthSS}
-\title{Ease of use growth model helper function. Output from this should be passed to \link{fitGrowth} to
-fit the specified model.}
+\title{Ease of use growth model helper function.}
 \usage{
 growthSS(
   model,
@@ -184,8 +183,7 @@ data in a similar way as shown in \code{stats::selfStart} models.
 For all models the type and model are also returned for simplicity downstream.
 }
 \description{
-Ease of use growth model helper function. Output from this should be passed to \link{fitGrowth} to
-fit the specified model.
+Output from this should be passed to \link{fitGrowth} to fit the specified model.
 }
 \details{
 Default priors are not provided, but these can serve as starting points for each distribution.
@@ -285,7 +283,9 @@ If you do have a limited phenotype (besides the normal positive constraint for g
 then this may be helpful, one situation may be canopy coverage percentage which is naturally bounded
 at an upper and lower limit.
 To specify these limits add square brackets to the Y term with upper and lower limits such as
-\code{"y[0,100] ~ time|id/group"}.
+\code{"y[0,100] ~ time|id/group"}. Other "Additional response information" such as resp_weights or
+standard errors can be specified using the \code{brms} backend, with those options documented fully
+in the \code{brms::brmsformula} details.
 
 There are also three supported submodel options for \code{nlme} models, but a \code{varFunc} object
 can also be supplied, see \code{?nlme::varClasses}.
