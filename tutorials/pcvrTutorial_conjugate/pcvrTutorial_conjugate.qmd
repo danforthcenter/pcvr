@@ -146,8 +146,15 @@ Beta(\alpha', \beta' |(x_1, \ldots, x_n)) = Beta(\alpha, \beta) \cdot L(\alpha, 
 #| echo: false
 #| eval: true
 bdf <- data.frame(
-  value = c(rbeta(5000, 2, 2), rbeta(5000, 20, 20), rbeta(5000, 40, 10), rbeta(5000, 20, 80), rbeta(5000, 2, 8), rbeta(5000, 100, 10)),
-  Beta = factor(c(rep(c("B(2,2)", "B(20,20)", "B(40,10)", "B(20,80)", "B(2,8)", "B(100,10)"), each = 5000)),
+  value = c(
+    rbeta(5000, 2, 2), rbeta(5000, 20, 20), rbeta(5000, 40, 10),
+    rbeta(5000, 20, 80), rbeta(5000, 2, 8), rbeta(5000, 100, 10)
+  ),
+  Beta = factor(
+    c(rep(
+      c("B(2,2)", "B(20,20)", "B(40,10)", "B(20,80)", "B(2,8)", "B(100,10)"),
+      each = 5000
+    )),
     levels = c("B(2,2)", "B(20,20)", "B(40,10)", "B(20,80)", "B(2,8)", "B(100,10)")
   )
 )
@@ -158,30 +165,39 @@ beta_dist_plot <- ggplot(bdf, aes(x = value, fill = Beta)) +
   geom_density(alpha = 0, color = NA) +
   scale_fill_viridis_d() +
   guides(fill = guide_legend(override.aes = list(alpha = 1))) +
-  labs(x = "Percentage", y = "Density", fill = expression("Beta(" * alpha * ", " * beta * ")")) +
+  labs(
+    x = "Percentage", y = "Density",
+    fill = expression("Beta(" * alpha * ", " * beta * ")")
+  ) +
   stat_function(
     fun = dbeta, geom = "polygon", colour = pal[1],
-    fill = pal[1], alpha = 0.75, args = list(shape1 = 2, shape2 = 2), show.legend = F
+    fill = pal[1], alpha = 0.75,
+    args = list(shape1 = 2, shape2 = 2), show.legend = FALSE
   ) +
   stat_function(
     fun = dbeta, geom = "polygon", colour = pal[2],
-    fill = pal[2], alpha = 0.75, args = list(shape1 = 20, shape2 = 20), show.legend = F
+    fill = pal[2], alpha = 0.75,
+    args = list(shape1 = 20, shape2 = 20), show.legend = FALSE
   ) +
   stat_function(
     fun = dbeta, geom = "polygon", colour = pal[3],
-    fill = pal[3], alpha = 0.75, args = list(shape1 = 40, shape2 = 10), show.legend = F
+    fill = pal[3], alpha = 0.75,
+    args = list(shape1 = 40, shape2 = 10), show.legend = FALSE
   ) +
   stat_function(
     fun = dbeta, geom = "polygon", colour = pal[4],
-    fill = pal[4], alpha = 0.75, args = list(shape1 = 20, shape2 = 80), show.legend = F
+    fill = pal[4], alpha = 0.75,
+    args = list(shape1 = 20, shape2 = 80), show.legend = FALSE
   ) +
   stat_function(
     fun = dbeta, geom = "polygon", colour = pal[5],
-    fill = pal[5], alpha = 0.75, args = list(shape1 = 2, shape2 = 8), show.legend = F
+    fill = pal[5], alpha = 0.75,
+    args = list(shape1 = 2, shape2 = 8), show.legend = FALSE
   ) +
   stat_function(
     fun = dbeta, geom = "polygon", colour = pal[6],
-    fill = pal[6], alpha = 0.75, args = list(shape1 = 100, shape2 = 10), show.legend = F
+    fill = pal[6], alpha = 0.75,
+    args = list(shape1 = 100, shape2 = 10), show.legend = FALSE
   ) +
   scale_x_continuous(limits = c(-0.01, 1.01)) +
   pcv_theme()
@@ -191,41 +207,52 @@ beta_dist_plot
 
 values <- c(
   unlist(lapply(1:100, function(i) {
-    set.seed(i);rbinom(10, 100, prob = rbeta(1, 2, 2))
+    set.seed(i)
+    rbinom(10, 100, prob = rbeta(1, 2, 2))
   })),
   unlist(lapply(1:100, function(i) {
-    set.seed(i);rbinom(10, 100, prob = rbeta(1, 20, 20))
+    set.seed(i)
+    rbinom(10, 100, prob = rbeta(1, 20, 20))
   })),
   unlist(lapply(1:100, function(i) {
-    set.seed(i);rbinom(10, 100, prob = rbeta(1, 40, 10))
+    set.seed(i)
+    rbinom(10, 100, prob = rbeta(1, 40, 10))
   })),
   unlist(lapply(1:100, function(i) {
-    set.seed(i);rbinom(10, 100, prob = rbeta(1, 20, 80))
+    set.seed(i)
+    rbinom(10, 100, prob = rbeta(1, 20, 80))
   })),
   unlist(lapply(1:100, function(i) {
-    set.seed(i);rbinom(10, 100, prob = rbeta(1, 2, 8))
+    set.seed(i)
+    rbinom(10, 100, prob = rbeta(1, 2, 8))
   })),
   unlist(lapply(1:100, function(i) {
-    set.seed(i);rbinom(10, 100, prob = rbeta(1, 100, 10))
+    set.seed(i)
+    rbinom(10, 100, prob = rbeta(1, 100, 10))
   }))
 )
-Beta = factor(c(rep(c("B(2,2)", "B(20,20)", "B(40,10)", "B(20,80)", "B(2,8)", "B(100,10)"), each = 1000)),
+betas <- factor(
+  c(rep(c(
+    "B(2,2)", "B(20,20)", "B(40,10)", "B(20,80)", "B(2,8)", "B(100,10)"
+  ), each = 1000)),
   levels = c("B(2,2)", "B(20,20)", "B(40,10)", "B(20,80)", "B(2,8)", "B(100,10)")
 )
-bndf <- data.frame(values, Beta)
+bndf <- data.frame(values, betas)
 
-betaBinom_dist_plot <- ggplot(bndf, aes(x = values, fill = Beta)) +
+beta_binom_dist_plot <- ggplot(bndf, aes(x = values, fill = betas)) +
   geom_histogram(alpha = 0.7, position = "identity", binwidth = 1) +
   scale_fill_viridis_d() +
   guides(fill = guide_legend(override.aes = list(alpha = 1))) +
   labs(
-    x = "Successes from 100 Trials", y = "Count", fill = expression("Beta(" * alpha * ", " * beta * ")"),
+    x = "Successes from 100 Trials", y = "Count",
+    fill = expression("Beta(" * alpha * ", " * beta * ")"),
     title = "Beta Binomial Conjugacy"
   ) +
   pcv_theme()
 layout <- c(area(1, 1, 3, 4), area(4, 1, 4, 4))
 
-conjugacy_ex_betaBinom <- betaBinom_dist_plot / beta_dist_plot + plot_layout(design = layout, guides = "collect")
+conjugacy_ex_beta_binom <- beta_binom_dist_plot / beta_dist_plot +
+  plot_layout(design = layout, guides = "collect")
 ```
 
 ## Bayesian Beta-Binomial Conjugacy {.smaller}
@@ -233,7 +260,7 @@ conjugacy_ex_betaBinom <- betaBinom_dist_plot / beta_dist_plot + plot_layout(des
 ```{r}
 #| echo: false
 #| eval: true
-conjugacy_ex_betaBinom
+conjugacy_ex_beta_binom
 ```
 
 ## Bayesian Beta-Binomial Conjugacy {.smaller}
@@ -243,7 +270,7 @@ Generally we can think of conjugacy as when we know the distribution of a parame
 ```{r}
 #| echo: false
 #| eval: true
-conjugacy_ex_betaBinom
+conjugacy_ex_beta_binom
 ```
 
 
@@ -294,7 +321,7 @@ p1 <- ggplot(
   aes(x = x, fill = fill)
 ) +
   stat_function(geom = "polygon", fun = dnorm, args = list(mean = 10, sd = 2)) +
-  scale_fill_manual(values = virPal, drop = F) +
+  scale_fill_manual(values = virPal, drop = FALSE) +
   pcv_theme() +
   labs(title = "gaussian")
 
@@ -305,8 +332,11 @@ p2 <- ggplot(
   ),
   aes(x = x, fill = fill)
 ) +
-  stat_function(geom = "polygon", fun = dlst, args = list(df = 3, mu = 10, sigma = 2)) +
-  scale_fill_manual(values = virPal, drop = F) +
+  stat_function(
+    geom = "polygon", fun = dlst,
+    args = list(df = 3, mu = 10, sigma = 2)
+  ) +
+  scale_fill_manual(values = virPal, drop = FALSE) +
   pcv_theme() +
   labs(title = "T")
 
@@ -317,8 +347,11 @@ p3 <- ggplot(
   ),
   aes(x = x, fill = fill)
 ) +
-  stat_function(geom = "polygon", fun = dlnorm, args = list(meanlog = log(70), sdlog = log(1.5))) +
-  scale_fill_manual(values = virPal, drop = F) +
+  stat_function(
+    geom = "polygon", fun = dlnorm,
+    args = list(meanlog = log(70), sdlog = log(1.5))
+  ) +
+  scale_fill_manual(values = virPal, drop = FALSE) +
   pcv_theme() +
   labs(title = "lognormal")
 
@@ -329,13 +362,16 @@ p4 <- ggplot(
   ),
   aes(x = x, fill = fill)
 ) +
-  stat_function(geom = "polygon", fun = dbeta, args = list(shape1 = 10, shape2 = 5)) +
-  scale_fill_manual(values = virPal, drop = F) +
+  stat_function(
+    geom = "polygon", fun = dbeta,
+    args = list(shape1 = 10, shape2 = 5)
+  ) +
+  scale_fill_manual(values = virPal, drop = FALSE) +
   pcv_theme() +
   labs(title = "beta")
 
 set.seed(123)
-binomial <- hist(rbinom(100000, 20, 0.75), breaks = seq(0, 20, 1), plot = F)
+binomial <- hist(rbinom(100000, 20, 0.75), breaks = seq(0, 20, 1), plot = FALSE)
 p5 <- ggplot(
   data.frame(
     x = binomial$breaks[-21], y = binomial$counts,
@@ -344,12 +380,12 @@ p5 <- ggplot(
   aes(x = x, y = y, fill = fill)
 ) +
   geom_col() +
-  scale_fill_manual(values = virPal, drop = F) +
+  scale_fill_manual(values = virPal, drop = FALSE) +
   pcv_theme() +
   labs(title = "binomial")
 
 set.seed(123)
-pois <- hist(rpois(100000, 12), breaks = seq(0, 30, 1), plot = F)
+pois <- hist(rpois(100000, 12), breaks = seq(0, 30, 1), plot = FALSE)
 p6 <- ggplot(
   data.frame(
     x = pois$breaks[-31], y = pois$counts,
@@ -358,12 +394,12 @@ p6 <- ggplot(
   aes(x = x, y = y, fill = fill)
 ) +
   geom_col() +
-  scale_fill_manual(values = virPal, drop = F) +
+  scale_fill_manual(values = virPal, drop = FALSE) +
   pcv_theme() +
   labs(title = "poisson")
 
 set.seed(123)
-nb <- hist(rnbinom(100000, 5, 0.2), breaks = seq(0, 100, 1), plot = F)
+nb <- hist(rnbinom(100000, 5, 0.2), breaks = seq(0, 100, 1), plot = FALSE)
 p7 <- ggplot(
   data.frame(
     x = nb$breaks[-101], y = nb$counts,
@@ -372,7 +408,7 @@ p7 <- ggplot(
   aes(x = x, y = y, fill = fill)
 ) +
   geom_col() +
-  scale_fill_manual(values = virPal, drop = F) +
+  scale_fill_manual(values = virPal, drop = FALSE) +
   pcv_theme() +
   labs(title = "negbin")
 
@@ -385,8 +421,11 @@ p8 <- ggplot(
 ) +
   geom_bar() +
   coord_polar() +
-  scale_x_continuous(limits = c(-pi, pi), breaks = seq(-pi, pi, pi / 2), labels = ~ round(., 1)) +
-  scale_fill_manual(values = virPal, drop = F) +
+  scale_x_continuous(
+    limits = c(-pi, pi), breaks = seq(-pi, pi, pi / 2),
+    labels = ~ round(., 1)
+  ) +
+  scale_fill_manual(values = virPal, drop = FALSE) +
   pcv_theme() +
   theme(
     axis.text.y = element_blank(),
@@ -403,7 +442,7 @@ p9 <- ggplot(
   aes(x = x, fill = fill)
 ) +
   stat_function(geom = "polygon", fun = dunif, args = list(min = 0.5, max = 10.5)) +
-  scale_fill_manual(values = virPal, drop = F) +
+  scale_fill_manual(values = virPal, drop = FALSE) +
   coord_cartesian(xlim = c(1, 10), ylim = c(0, 0.15)) +
   pcv_theme() +
   labs(title = "uniform")
@@ -416,7 +455,7 @@ p10 <- ggplot(
   aes(x = x, fill = fill)
 ) +
   stat_function(geom = "polygon", fun = dpareto, args = list(a = 1, b = 1)) +
-  scale_fill_manual(values = virPal, drop = F) +
+  scale_fill_manual(values = virPal, drop = FALSE) +
   pcv_theme() +
   labs(title = "pareto")
 
@@ -428,7 +467,7 @@ p11 <- ggplot(
   aes(x = x, fill = fill)
 ) +
   stat_function(geom = "polygon", fun = dgamma, args = list(shape = 3, rate = 1)) +
-  scale_fill_manual(values = virPal, drop = F) +
+  scale_fill_manual(values = virPal, drop = FALSE) +
   pcv_theme() +
   labs(title = "gamma")
 
@@ -440,7 +479,7 @@ p12 <- ggplot(
   aes(x = x, fill = fill)
 ) +
   geom_bar() +
-  scale_fill_manual(values = virPal, drop = F) +
+  scale_fill_manual(values = virPal, drop = FALSE) +
   pcv_theme() +
   labs(title = "bernoulli")
 
@@ -452,13 +491,13 @@ p13 <- ggplot(
   aes(x = x, fill = fill)
 ) +
   stat_function(geom = "polygon", fun = dexp, args = list(rate = 0.5)) +
-  scale_fill_manual(values = virPal, drop = F) +
+  scale_fill_manual(values = virPal, drop = FALSE) +
   pcv_theme() +
   labs(title = "exponential")
 
 design <- c(
-  area(1, 1, 1, 1), area(1, 2, 1, 2), area(1, 3, 1, 3), # area(1,4,1,4),
-  area(2, 1, 2, 1), area(2, 2, 2, 2), area(2, 3, 2, 3), # area(2,4,2,4),
+  area(1, 1, 1, 1), area(1, 2, 1, 2), area(1, 3, 1, 3),
+  area(2, 1, 2, 1), area(2, 2, 2, 2), area(2, 3, 2, 3),
   area(3, 1, 3, 1), area(3, 2, 4, 2), area(3, 3, 3, 3),
   area(4, 1, 4, 1), area(4, 3, 4, 3),
   area(5, 1, 5, 1), area(5, 2, 5, 2)
@@ -567,7 +606,7 @@ p1 <- ggplot(
   aes(x = x, fill = fill)
 ) +
   stat_function(geom = "polygon", fun = dnorm, args = list(mean = 0, sd = sqrt(20))) +
-  scale_fill_manual(values = virPal, drop = F) +
+  scale_fill_manual(values = virPal, drop = FALSE) +
   pcv_theme() +
   labs(x = "mu = 0, n = 1, s2 = 20", title = "gaussian")
 
@@ -579,7 +618,7 @@ p2 <- ggplot(
   aes(x = x, fill = fill)
 ) +
   stat_function(geom = "polygon", fun = dnorm, args = list(mean = 0, sd = sqrt(20))) +
-  scale_fill_manual(values = virPal, drop = F) +
+  scale_fill_manual(values = virPal, drop = FALSE) +
   pcv_theme() +
   labs(x = "mu = 0, n = 1, s2 = 20", title = "t")
 
@@ -591,7 +630,7 @@ p3 <- ggplot(
   aes(x = x, fill = fill)
 ) +
   stat_function(geom = "polygon", fun = dnorm, args = list(mean = 0, sd = 3)) +
-  scale_fill_manual(values = virPal, drop = F) +
+  scale_fill_manual(values = virPal, drop = FALSE) +
   pcv_theme() +
   labs(x = "mu = 0, sd = 3", title = "lognormal")
 
@@ -603,7 +642,7 @@ p4 <- ggplot(
   aes(x = x, fill = fill)
 ) +
   stat_function(geom = "polygon", fun = dbeta, args = list(shape1 = 0.5, shape2 = 0.5)) +
-  scale_fill_manual(values = virPal, drop = F) +
+  scale_fill_manual(values = virPal, drop = FALSE) +
   pcv_theme() +
   labs(x = "a = 0.5, b = 0.5", title = "beta")
 
@@ -615,7 +654,7 @@ p5 <- ggplot(
   aes(x = x, fill = fill)
 ) +
   stat_function(geom = "polygon", fun = dbeta, args = list(shape1 = 0.5, shape2 = 0.5)) +
-  scale_fill_manual(values = virPal, drop = F) +
+  scale_fill_manual(values = virPal, drop = FALSE) +
   pcv_theme() +
   labs(x = "a = 0.5, b = 0.5", title = "binomial")
 
@@ -627,7 +666,7 @@ p6 <- ggplot(
   aes(x = x, fill = fill)
 ) +
   stat_function(geom = "polygon", fun = dbeta, args = list(shape1 = 0.5, shape2 = 0.5)) +
-  scale_fill_manual(values = virPal, drop = F) +
+  scale_fill_manual(values = virPal, drop = FALSE) +
   pcv_theme() +
   labs(x = "a = 0.5, b = 0.5", title = "poisson")
 
@@ -639,7 +678,7 @@ p7 <- ggplot(
   aes(x = x, fill = fill)
 ) +
   stat_function(geom = "polygon", fun = dbeta, args = list(shape1 = 0.5, shape2 = 0.5)) +
-  scale_fill_manual(values = virPal, drop = F) +
+  scale_fill_manual(values = virPal, drop = FALSE) +
   pcv_theme() +
   labs(x = "a = 0.5, b = 0.5, r = 10", title = "negbin")
 
@@ -653,7 +692,7 @@ p8 <- ggplot(
   geom_bar() +
   coord_polar() +
   scale_x_continuous(limits = c(-pi, pi), breaks = seq(-pi, pi, pi / 2), labels = ~ round(., 1)) +
-  scale_fill_manual(values = virPal, drop = F) +
+  scale_fill_manual(values = virPal, drop = FALSE) +
   pcv_theme() +
   theme(
     axis.text.y = element_blank(),
@@ -670,7 +709,7 @@ p9 <- ggplot(
   aes(x = x, fill = fill)
 ) +
   stat_function(geom = "polygon", fun = dpareto, args = list(a = 0.5, b = 0.5)) +
-  scale_fill_manual(values = virPal, drop = F) +
+  scale_fill_manual(values = virPal, drop = FALSE) +
   pcv_theme() +
   labs(x = "a = 0.5, b = 0.5", title = "uniform")
 
@@ -682,7 +721,7 @@ p10 <- ggplot(
   aes(x = x, fill = fill)
 ) +
   stat_function(geom = "polygon", fun = dpareto, args = list(a = 1, b = 1)) +
-  scale_fill_manual(values = virPal, drop = F) +
+  scale_fill_manual(values = virPal, drop = FALSE) +
   pcv_theme() +
   labs(x = "a = 1, b = 1,\nknown_location = min(x)", title = "pareto")
 
@@ -694,7 +733,7 @@ p11 <- ggplot(
   aes(x = x, fill = fill)
 ) +
   stat_function(geom = "polygon", fun = dgamma, args = list(shape = 0.5, rate = 0.5)) +
-  scale_fill_manual(values = virPal, drop = F) +
+  scale_fill_manual(values = virPal, drop = FALSE) +
   pcv_theme() +
   labs(x = "a = 0.5, b = 0.5,\nknown_location = 1", title = "gamma")
 
@@ -706,7 +745,7 @@ p12 <- ggplot(
   aes(x = x, fill = fill)
 ) +
   stat_function(geom = "polygon", fun = dbeta, args = list(shape1 = 0.5, shape2 = 0.5)) +
-  scale_fill_manual(values = virPal, drop = F) +
+  scale_fill_manual(values = virPal, drop = FALSE) +
   pcv_theme() +
   labs(x = "a = 0.5, b = 0.5", title = "bernoulli")
 
@@ -718,13 +757,13 @@ p13 <- ggplot(
   aes(x = x, fill = fill)
 ) +
   stat_function(geom = "polygon", fun = dgamma, args = list(shape = 0.5, rate = 0.5)) +
-  scale_fill_manual(values = virPal, drop = F) +
+  scale_fill_manual(values = virPal, drop = FALSE) +
   pcv_theme() +
   labs(x = "a = 0.5, b = 0.5", title = "exponential")
 
 design <- c(
-  area(1, 1, 1, 1), area(1, 2, 1, 2), area(1, 3, 1, 3), # area(1,4,1,4),
-  area(2, 1, 2, 1), area(2, 2, 2, 2), area(2, 3, 2, 3), # area(2,4,2,4),
+  area(1, 1, 1, 1), area(1, 2, 1, 2), area(1, 3, 1, 3),
+  area(2, 1, 2, 1), area(2, 2, 2, 2), area(2, 3, 2, 3),
   area(3, 1, 3, 1), area(3, 2, 3, 2), area(3, 3, 3, 3),
   area(4, 1, 4, 1), area(4, 2, 4, 2), area(4, 3, 4, 3),
   area(5, 1, 5, 1)

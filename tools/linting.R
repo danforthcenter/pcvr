@@ -26,7 +26,8 @@ x <- lintr::lint_dir(path = "~/pcvr/tutorials",
                                                                                        "lowercase", "UPPERCASE")),
                                                          brace_linter(allow_single_line = TRUE)
                          ))
-styler::style_dir(path = "~/pcvr/tutorials", scope = "line_breaks")
+x
+styler::style_dir(path = "~/pcvr/tutorials", scope = "tokens")
 
 
 

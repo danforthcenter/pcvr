@@ -213,14 +213,20 @@ Several are shown next, including asymptotic and non-asymptotic options.
 #| echo: false
 #| eval: true
 
-simdf <- growthSim("logistic", n = 20, t = 25, params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5)))
+simdf <- growthSim("logistic",
+  n = 20, t = 25,
+  params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
+)
 l <- ggplot(simdf, aes(time, y, group = interaction(group, id))) +
   geom_line(aes(color = group)) +
   labs(title = "Logistic") +
   theme_minimal() +
   theme(legend.position = "none")
 
-simdf <- growthSim("gompertz", n = 20, t = 25, params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(0.2, 0.25)))
+simdf <- growthSim("gompertz",
+  n = 20, t = 25,
+  params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(0.2, 0.25))
+)
 g <- ggplot(simdf, aes(time, y, group = interaction(group, id))) +
   geom_line(aes(color = group)) +
   labs(title = "Gompertz") +
@@ -361,11 +367,26 @@ wiggles <- data.frame(x = c(x, x2), y = c(y, y2))
 #| eval: true
 ggplot(wiggles, aes(x, y)) +
   geom_point() +
-  geom_smooth(method = "gam", formula = y ~ s(x, bs = "cs", k = 50), aes(color = "50"), se = F) +
-  geom_smooth(method = "gam", formula = y ~ s(x, bs = "cs", k = 15), aes(color = "15"), se = F) +
-  geom_smooth(method = "gam", formula = y ~ s(x, bs = "cs", k = 10), aes(color = "10"), se = F) +
-  geom_smooth(method = "gam", formula = y ~ s(x, bs = "cs", k = 5), aes(color = "5"), se = F) +
-  scale_color_viridis_d(option = "viridis", limits = c("5", "10", "15", "50")) +
+  geom_smooth(
+    method = "gam", formula = y ~ s(x, bs = "cs", k = 50),
+    aes(color = "50"), se = FALSE
+  ) +
+  geom_smooth(
+    method = "gam", formula = y ~ s(x, bs = "cs", k = 15),
+    aes(color = "15"), se = FALSE
+  ) +
+  geom_smooth(
+    method = "gam", formula = y ~ s(x, bs = "cs", k = 10),
+    aes(color = "10"), se = FALSE
+  ) +
+  geom_smooth(
+    method = "gam", formula = y ~ s(x, bs = "cs", k = 5),
+    aes(color = "5"), se = FALSE
+  ) +
+  scale_color_viridis_d(
+    option = "viridis",
+    limits = c("5", "10", "15", "50")
+  ) +
   labs(color = "Knots") +
   pcv_theme()
 ```
@@ -376,7 +397,13 @@ Intercept only models are supported, although they are only intended for use in 
 
 ```{r}
 set.seed(123)
-ggplot(data.frame(yint = c(rnorm(20, 8, 1), rnorm(20, 9, 1)), group = c(rep("a", 10), rep("b", 10))), aes(x = 1:25)) +
+ggplot(
+  data.frame(
+    yint = c(rnorm(20, 8, 1), rnorm(20, 9, 1)),
+    group = c(rep("a", 10), rep("b", 10))
+  ),
+  aes(x = 1:25)
+) +
   geom_hline(aes(yintercept = yint, color = group)) +
   scale_y_continuous(limits = c(0, 20)) +
   pcv_theme() +
@@ -485,9 +512,16 @@ draw_gomp_sigma <- function(x) {
 
 ggplot(sigma_df, aes(x = time, y = y)) +
   geom_line(aes(group = group), color = "gray60") +
-  geom_hline(aes(yintercept = 12, color = "Homoskedastic"), linetype = 5, key_glyph = draw_key_path) +
-  geom_abline(aes(slope = 0.8, intercept = 0, color = "Linear"), linetype = 5, key_glyph = draw_key_path) +
-  geom_smooth(method = "gam", aes(color = "Spline"), linetype = 5, se = F, key_glyph = draw_key_path) +
+  geom_hline(aes(yintercept = 12, color = "Homoskedastic"),
+    linetype = 5, key_glyph = draw_key_path
+  ) +
+  geom_abline(aes(slope = 0.8, intercept = 0, color = "Linear"),
+    linetype = 5, key_glyph = draw_key_path
+  ) +
+  geom_smooth(
+    method = "gam", aes(color = "Spline"), linetype = 5,
+    se = FALSE, key_glyph = draw_key_path
+  ) +
   geom_function(fun = draw_gomp_sigma, aes(color = "Gompertz"), linetype = 5) +
   scale_color_viridis_d(option = "plasma", begin = 0.1, end = 0.9) +
   guides(color = guide_legend(override.aes = list(linewidth = 1, linetype = 1))) +
@@ -521,7 +555,10 @@ ggplot(sigma_df, aes(x = time, y = y, group = group)) +
 
 ```{r}
 p <- ggplot(sigma_df, aes(x = time, y = y, group = group)) +
-  geom_smooth(aes(group = "linear", color = "Linear"), linetype = 5, method = "lm", se = F, formula = y ~ x) +
+  geom_smooth(aes(group = "linear", color = "Linear"),
+    linetype = 5,
+    method = "lm", se = FALSE, formula = y ~ x
+  ) +
   geom_line(aes(color = group)) +
   scale_color_manual(values = c(scales::hue_pal()(2), "gray40")) +
   pcv_theme() +
@@ -576,7 +613,7 @@ p
 p <- ggplot(sigma_df, aes(x = time, y = y, group = group)) +
   geom_smooth(
     method = "gam", aes(group = "Spline", color = "Spline"),
-    linetype = 5, se = F, formula = y ~ s(x, bs = "cs")
+    linetype = 5, se = FALSE, formula = y ~ s(x, bs = "cs")
   ) +
   geom_line(aes(color = group)) +
   scale_color_manual(values = c(scales::hue_pal()(2), "gray40")) +
@@ -617,8 +654,14 @@ draw_sigma_quad <- function(x) {
 ggplot(sigma_df, aes(x = time, y = y)) +
   geom_line(aes(group = group), color = "gray60", linetype = 5) +
   geom_hline(aes(yintercept = 12, color = "Homoskedastic"), linetype = 1) +
-  geom_abline(aes(slope = 0.8, intercept = 0, color = "Linear"), linetype = 1, key_glyph = draw_key_path) +
-  geom_smooth(method = "gam", aes(color = "Spline"), linetype = 1, se = F, key_glyph = draw_key_path) +
+  geom_abline(aes(slope = 0.8, intercept = 0, color = "Linear"),
+    linetype = 1,
+    key_glyph = draw_key_path
+  ) +
+  geom_smooth(
+    method = "gam", aes(color = "Spline"), linetype = 1, se = FALSE,
+    key_glyph = draw_key_path
+  ) +
   geom_function(fun = draw_gomp_sigma, aes(color = "Gompertz"), linetype = 1) +
   geom_function(fun = draw_logistic_sigma, aes(color = "Logistic"), linetype = 1) +
   geom_function(fun = draw_exp_sigma, aes(color = "Exponential"), linetype = 1) +
@@ -683,7 +726,7 @@ We can see what those log-normal distributions look like with `plotPrior`.
 ```{r}
 #| output-location: slide
 #| echo: true
-priors = list("A" = 130, "B" = 10, "C" = 0.2)
+priors <- list("A" = 130, "B" = 10, "C" = 0.2)
 priorPlots <- plotPrior(priors)
 priorPlots[[1]] / priorPlots[[2]] / priorPlots[[3]]
 ```
@@ -695,7 +738,7 @@ Those distributions can still be somewhat abstract, so we can simulate draws fro
 ```{r}
 #| output-location: slide
 #| echo: true
-twoPriors = list("A" = c(100, 130), "B" = c(6, 12), "C" = c(0.5, 0.25))
+twoPriors <- list("A" = c(100, 130), "B" = c(6, 12), "C" = c(0.5, 0.25))
 plotPrior(twoPriors, "gompertz", n = 100)[[1]]
 ```
 
@@ -975,16 +1018,28 @@ set.seed(123)
 noise <- do.call(rbind, lapply(1:30, function(i) {
   chngpt <- rnorm(2, 18, 2)
   rbind(
-    data.frame(id = paste0("id_", i), time = 1:chngpt[1], group = "a", y = c(runif(chngpt[1] - 1, 0, 20), rnorm(1, 5, 1))),
-    data.frame(id = paste0("id_", i), time = 1:chngpt[2], group = "b", y = c(runif(chngpt[2] - 1, 0, 20), rnorm(1, 5, 1)))
+    data.frame(
+      id = paste0("id_", i), time = 1:chngpt[1], group = "a",
+      y = c(runif(chngpt[1] - 1, 0, 20), rnorm(1, 5, 1))
+    ),
+    data.frame(
+      id = paste0("id_", i), time = 1:chngpt[2], group = "b",
+      y = c(runif(chngpt[2] - 1, 0, 20), rnorm(1, 5, 1))
+    )
   )
 }))
 noise2 <- do.call(rbind, lapply(1:30, function(i) {
   start1 <- max(noise[noise$id == paste0("id_", i) & noise$group == "a", "time"])
   start2 <- max(noise[noise$id == paste0("id_", i) & noise$group == "b", "time"])
   rbind(
-    data.frame(id = paste0("id_", i), time = start1:40, group = "a", y = c(runif(length(start1:40), 15, 50))),
-    data.frame(id = paste0("id_", i), time = start2:40, group = "b", y = c(runif(length(start2:40), 15, 50)))
+    data.frame(
+      id = paste0("id_", i), time = start1:40, group = "a",
+      y = c(runif(length(start1:40), 15, 50))
+    ),
+    data.frame(
+      id = paste0("id_", i), time = start2:40, group = "b",
+      y = c(runif(length(start2:40), 15, 50))
+    )
   )
 }))
 simdf <- rbind(noise, noise2)
@@ -1021,8 +1076,14 @@ set.seed(123)
 noise <- do.call(rbind, lapply(1:30, function(i) {
   chngpt <- rnorm(2, 18, 2)
   rbind(
-    data.frame(id = paste0("id_", i), time = 1:chngpt[1], group = "a", y = c(runif(chngpt[1] - 1, 0, 20), rnorm(1, 5, 1))),
-    data.frame(id = paste0("id_", i), time = 1:chngpt[2], group = "b", y = c(runif(chngpt[2] - 1, 0, 20), rnorm(1, 5, 1)))
+    data.frame(
+      id = paste0("id_", i), time = 1:chngpt[1], group = "a",
+      y = c(runif(chngpt[1] - 1, 0, 20), rnorm(1, 5, 1))
+    ),
+    data.frame(
+      id = paste0("id_", i), time = 1:chngpt[2], group = "b",
+      y = c(runif(chngpt[2] - 1, 0, 20), rnorm(1, 5, 1))
+    )
   )
 }))
 signal <- growthSim("linear",
@@ -1069,8 +1130,14 @@ set.seed(123)
 noise <- do.call(rbind, lapply(1:30, function(i) {
   chngpt <- rnorm(2, 18, 2)
   rbind(
-    data.frame(id = paste0("id_", i), time = 1:chngpt[1], group = "a", y = c(runif(chngpt[1] - 1, 0, 20), rnorm(1, 5, 1))),
-    data.frame(id = paste0("id_", i), time = 1:chngpt[2], group = "b", y = c(runif(chngpt[2] - 1, 0, 20), rnorm(1, 5, 1)))
+    data.frame(
+      id = paste0("id_", i), time = 1:chngpt[1], group = "a",
+      y = c(runif(chngpt[1] - 1, 0, 20), rnorm(1, 5, 1))
+    ),
+    data.frame(
+      id = paste0("id_", i), time = 1:chngpt[2], group = "b",
+      y = c(runif(chngpt[2] - 1, 0, 20), rnorm(1, 5, 1))
+    )
   )
 }))
 signal <- growthSim("logistic",
@@ -1097,8 +1164,8 @@ ss <- growthSS(
   model = "int+logistic", form = y ~ time | id / group, sigma = "int + spline",
   list(
     "int1" = 5, "changePoint1" = 10,
-    'logistic2A' = 130, 'logistic2B' = 10, "logistic2C" = 3,
-    'sigmaint1' = 5, "sigmachangePoint1" = 15
+    "logistic2A" = 130, "logistic2B" = 10, "logistic2C" = 3,
+    "sigmaint1" = 5, "sigmachangePoint1" = 15
   ),
   df = simdf, type = "brms"
 )
@@ -1158,7 +1225,10 @@ plot <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
 ```{r}
 #| eval: false
 #| echo: false
-ggsave("~/pcvr/tutorials/pcvrTutorial_advancedGrowthModeling/exCountModel.png", plot, width = 6, height = 4, dpi = 300, bg = "#ffffff")
+ggsave("~/pcvr/tutorials/pcvrTutorial_advancedGrowthModeling/exCountModel.png",
+  plot,
+  width = 6, height = 4, dpi = 300, bg = "#ffffff"
+)
 ```
 
 
@@ -1197,7 +1267,10 @@ plot <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
 ```{r}
 #| eval: false
 #| echo: false
-ggsave("~/pcvr/tutorials/pcvrTutorial_advancedGrowthModeling/exHierarchyModel.png", plot, width = 6, height = 4, dpi = 300, bg = "#ffffff")
+ggsave("~/pcvr/tutorials/pcvrTutorial_advancedGrowthModeling/exHierarchyModel.png",
+  plot,
+  width = 6, height = 4, dpi = 300, bg = "#ffffff"
+)
 ```
 
 ## Example hierarchical model {.smaller}

@@ -83,7 +83,6 @@ Since each pixel has a color we describe the entire image using a histogram of t
 PlantCV returns multi-value traits as histograms in long format
 
 ```{r}
-# dput(hue_long[3641:3660,18:21 ])
 structure(list(sample = c(
   "default", "default", "default", "default",
   "default", "default", "default", "default", "default", "default",
@@ -144,7 +143,7 @@ set.seed(123)
 simFreqs <- function(vec, group) {
   s1 <- hist(vec, breaks = seq(1, 181, 1), plot = FALSE)$counts
   s1d <- as.data.frame(cbind(data.frame(group), matrix(s1, nrow = 1)))
-  colnames(s1d) <- c('group', paste0("sim_", 1:180))
+  colnames(s1d) <- c("group", paste0("sim_", 1:180))
   s1d
 }
 sim_df <- rbind(
@@ -168,7 +167,7 @@ sim_df_long <- as.data.frame(data.table::melt(data.table::as.data.table(sim_df),
 sim_df_long$bin <- as.numeric(sub("sim_", "", sim_df_long$variable))
 
 sim_plot <- ggplot(sim_df_long, aes(x = bin, y = value, fill = group), alpha = 0.25) +
-  geom_col(position = "identity", show.legend = F) +
+  geom_col(position = "identity", show.legend = FALSE) +
   pcv_theme() +
   labs(x = "Color Histogram Bin") +
   theme(axis.title.y = element_blank()) +
@@ -320,7 +319,7 @@ Here we specify our filter as a character, which is interpreted as a quantile he
 ```{r}
 #| echo: true
 set.seed(123)
-n <- pcv.net(sim_emd$data, filter = '0.5')
+n <- pcv.net(sim_emd$data, filter = "0.5")
 net2 <- net.plot(n, fill = "group") +
   labs(color = "", title = "Network 2") +
   theme(
