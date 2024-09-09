@@ -175,9 +175,9 @@
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">vm_ex1</span><span class="op">$</span><span class="va">summary</span></span></code></pre></div>
 <pre><code><span><span class="co">##      HDE_1 HDI_1_low HDI_1_high    HDE_2 HDI_2_low HDI_2_high   hyp post.prob</span></span>
-<span><span class="co">## 1 49.42484  33.33646   64.96226 59.58611  40.36102    78.1866 equal 0.6322996</span></span>
-<span><span class="co">##    HDE_rope HDI_rope_low HDI_rope_high rope_prob</span></span>
-<span><span class="co">## 1 -9.974164    -35.76338      13.98985 0.2350298</span></span></code></pre>
+<span><span class="co">## 1 49.58994  33.95821   65.91398 59.61388  40.40433   78.89345 equal 0.6372983</span></span>
+<span><span class="co">##   HDE_rope HDI_rope_low HDI_rope_high rope_prob</span></span>
+<span><span class="co">## 1 -9.81722    -35.26417      14.80772 0.2304235</span></span></code></pre>
 <p>Displaying plots of these data can be slower than for other conjugate methods due to the density of the support. To explain, the Von-Mises distribution is defined in on the unit circle [<span class="math inline">\(-\pi\)</span>, <span class="math inline">\(\pi\)</span>] so in order to have support that works to project that data into whatever space the boundary in the prior specifies the support has to be very dense.</p>
 <p>Note also that our rope_range is specified in the boundary units space, which is not necessarily the unit circle.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
@@ -194,8 +194,8 @@
 <span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="va">vm_ex1_1</span><span class="op">$</span><span class="va">posterior</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##      mu       kappa    known_kappa n  boundary </span></span>
-<span><span class="co">## [1,] 54.12846 10.71168 1           31 numeric,2</span></span>
-<span><span class="co">## [2,] 57.21127 6.559139 1           41 numeric,2</span></span></code></pre>
+<span><span class="co">## [1,] 49.62326 7.309001 1           31 numeric,2</span></span>
+<span><span class="co">## [2,] 58.5876  5.6554   1           41 numeric,2</span></span></code></pre>
 <p>Single value traits work in the same way. Note that if we omit parts of the prior then they will be filled in with the default prior values.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span></span>
@@ -251,8 +251,8 @@
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="va">vm2_ex1</span><span class="op">$</span><span class="va">posterior</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##      mu       kappa    n  boundary </span></span>
-<span><span class="co">## [1,] 49.42484 8.455683 31 numeric,2</span></span>
-<span><span class="co">## [2,] 59.58611 6.16385  41 numeric,2</span></span></code></pre>
+<span><span class="co">## [1,] 49.58994 8.508108 31 numeric,2</span></span>
+<span><span class="co">## [2,] 59.61388 6.039808 41 numeric,2</span></span></code></pre>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span></span>
 <span><span class="va">vm2_ex2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/conjugate.html">conjugate</a></span><span class="op">(</span></span>
