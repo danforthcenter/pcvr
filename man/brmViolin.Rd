@@ -65,11 +65,11 @@ as violins and filled by posterior probability of some hypothesis.
 Function to visualize hypotheses tested on brms models similar to those made using growthSS outputs.
 }
 \examples{
-
 \donttest{
 set.seed(123)
 simdf <- growthSim(
-  "logistic", n = 20, t = 25,
+  "logistic",
+  n = 20, t = 25,
   params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
 )
 ss <- growthSS(
@@ -79,9 +79,11 @@ ss <- growthSS(
 )
 
 fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1)
-brmViolin(fit, hyp = "num/denom>1.05",
-          compareX = "a",
-          againstY = "b", returnData = TRUE)
+brmViolin(fit,
+  hyp = "num/denom>1.05",
+  compareX = "a",
+  againstY = "b", returnData = TRUE
+)
 }
 
 }

@@ -26,7 +26,6 @@
 #' @importFrom stats sd setNames
 #' @keywords single-value-trait
 #' @examples
-#'
 #' \donttest{
 #' sv <- read.pcv(
 #'   "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv",

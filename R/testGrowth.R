@@ -114,12 +114,12 @@ testGrowth <- function(ss = NULL, fit, test = "A") {
 #' @examples
 #'
 #' logistic_df <- growthSim("logistic",
-#'  n = 20, t = 25,
-#'  params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
+#'   n = 20, t = 25,
+#'   params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
 #' )
 #' ss <- growthSS(
-#'  model = "logistic", form = y ~ time | id / group,
-#'  df = logistic_df, type = "nls"
+#'   model = "logistic", form = y ~ time | id / group,
+#'   df = logistic_df, type = "nls"
 #' )
 #' fit <- fitGrowth(ss)
 #' .nlhypothesis(fit, test = list("A1 - A2", "B1-B2"))
@@ -168,12 +168,12 @@ testGrowth <- function(ss = NULL, fit, test = "A") {
 #' @examples
 #'
 #' logistic_df <- growthSim("logistic",
-#'  n = 20, t = 25,
-#'  params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
+#'   n = 20, t = 25,
+#'   params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
 #' )
 #' ss <- growthSS(
-#'  model = "gam", form = y ~ time | id / group,
-#'  df = logistic_df, type = "mgcv"
+#'   model = "gam", form = y ~ time | id / group,
+#'   df = logistic_df, type = "mgcv"
 #' )
 #' fit <- fitGrowth(ss)
 #' .mgcvGamAnova(ss, fit)$anova
@@ -202,13 +202,13 @@ testGrowth <- function(ss = NULL, fit, test = "A") {
 #' @examples
 #'
 #' logistic_df <- growthSim("logistic",
-#'  n = 20, t = 25,
-#'  params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
+#'   n = 20, t = 25,
+#'   params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
 #' )
 #' ss <- growthSS(
-#'  model = "gam", form = y ~ time | id / group,
-#'  df = logistic_df, type = "nlme"
-#'  )
+#'   model = "gam", form = y ~ time | id / group,
+#'   df = logistic_df, type = "nlme"
+#' )
 #' fit <- fitGrowth(ss)
 #' .lmeGamAnova(ss, fit)$anova
 #'
@@ -248,12 +248,12 @@ testGrowth <- function(ss = NULL, fit, test = "A") {
 #' @examples
 #'
 #' logistic_df <- growthSim("logistic",
-#'  n = 20, t = 25,
-#'  params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
+#'   n = 20, t = 25,
+#'   params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
 #' )
 #' ss <- growthSS(
-#'  model = "gam", form = y ~ time | id / group,
-#'  df = logistic_df, type = "nlrq", tau = c(0.25, 0.5, 0.75)
+#'   model = "gam", form = y ~ time | id / group,
+#'   df = logistic_df, type = "nlrq", tau = c(0.25, 0.5, 0.75)
 #' )
 #' fit <- fitGrowth(ss, cores = 3)
 #' .rqGamAnova(ss, fit)$"0.25"$anova
@@ -296,12 +296,12 @@ testGrowth <- function(ss = NULL, fit, test = "A") {
 #' @examples
 #'
 #' logistic_df <- growthSim("logistic",
-#'  n = 20, t = 25,
-#'  params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
+#'   n = 20, t = 25,
+#'   params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
 #' )
 #' ss <- growthSS(
-#'  model = "gam", form = y ~ time | id / group,
-#'  df = logistic_df, type = "nls"
+#'   model = "gam", form = y ~ time | id / group,
+#'   df = logistic_df, type = "nls"
 #' )
 #' fit <- fitGrowth(ss)
 #' .lmGamAnova(ss, fit)$anova
@@ -330,18 +330,18 @@ testGrowth <- function(ss = NULL, fit, test = "A") {
 #' @examples
 #'
 #' logistic_df <- growthSim("logistic",
-#'  n = 20, t = 25,
-#'  params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
+#'   n = 20, t = 25,
+#'   params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
 #' )
 #' ss <- growthSS(
-#'  model = "logistic", form = y ~ time | id / group,
-#'  df = logistic_df, type = "nls"
+#'   model = "logistic", form = y ~ time | id / group,
+#'   df = logistic_df, type = "nls"
 #' )
 #' fit <- fitGrowth(ss)
 #' .nlsAnova(ss, fit, test_pars = "A")$anova
 #' ss <- growthSS(
-#'  model = "logistic", form = y ~ time | id / group,
-#'  df = logistic_df, type = "nlme"
+#'   model = "logistic", form = y ~ time | id / group,
+#'   df = logistic_df, type = "nlme"
 #' )
 #' fit <- fitGrowth(ss)
 #' .nlsAnova(ss, fit, test_pars = "A")$anova
@@ -373,12 +373,12 @@ testGrowth <- function(ss = NULL, fit, test = "A") {
 #' @examples
 #'
 #' logistic_df <- growthSim("logistic",
-#'  n = 20, t = 25,
-#'  params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
+#'   n = 20, t = 25,
+#'   params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
 #' )
 #' ss <- growthSS(
-#'  model = "logistic", form = y ~ time | id / group,
-#'  df = logistic_df, type = "nlrq", tau = c(0.25, 0.5, 0.75)
+#'   model = "logistic", form = y ~ time | id / group,
+#'   df = logistic_df, type = "nlrq", tau = c(0.25, 0.5, 0.75)
 #' )
 #' fit <- fitGrowth(ss)
 #' .nlrqTest(ss, fit, test_pars = "A")$anova
@@ -451,12 +451,12 @@ testGrowth <- function(ss = NULL, fit, test = "A") {
 #' Parameterized test for nlrq models using SE
 #' @examples
 #' logistic_df <- growthSim("logistic",
-#'  n = 20, t = 25,
-#'  params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
+#'   n = 20, t = 25,
+#'   params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
 #' )
 #' ss <- growthSS(
-#'  model = "logistic", form = y ~ time | id / group,
-#'  df = logistic_df, type = "nlrq", tau = c(0.25, 0.5, 0.75)
+#'   model = "logistic", form = y ~ time | id / group,
+#'   df = logistic_df, type = "nlrq", tau = c(0.25, 0.5, 0.75)
 #' )
 #' fit <- fitGrowth(ss)
 #' .nlrqTest2(ss, fit, test_pars = "a|0.5|A > b|0.5|A")
@@ -528,8 +528,8 @@ testGrowth <- function(ss = NULL, fit, test = "A") {
 #'
 #'
 #' df <- growthSim("logistic",
-#'  n = 20, t = 25,
-#'  params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
+#'   n = 20, t = 25,
+#'   params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
 #' )
 #' ss <- growthSS("survival weibull", y > 100 ~ time | id / group, df = df, type = "survreg")
 #' fit <- fitGrowth(ss)

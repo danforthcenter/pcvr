@@ -24,7 +24,8 @@ test_that("Logistic Decay brms Model with Intercept", {
   skip_on_cran()
   set.seed(123)
   logistic_df <- growthSim(
-    "logistic decay", n = 20, t = 25,
+    "logistic decay",
+    n = 20, t = 25,
     params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
   )
   logistic_df$y <- logistic_df$y + 300
@@ -43,7 +44,8 @@ test_that("Gompertz brms model pipeline", {
   skip_on_cran()
   set.seed(123)
   simdf <- growthSim(
-    "gompertz", n = 20, t = 25,
+    "gompertz",
+    n = 20, t = 25,
     params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(0.25, 0.25))
   )
   simdf$y <- simdf$y + 30

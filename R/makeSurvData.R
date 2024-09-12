@@ -49,8 +49,10 @@
       } else {
         prev <- sub
       }
-      lt <- stats::setNames(aggregate(as.formula(paste0(y_var, " ~ ", group)), sub, sum),
-                            c("group", "n_events"))
+      lt <- stats::setNames(
+        aggregate(as.formula(paste0(y_var, " ~ ", group)), sub, sum),
+        c("group", "n_events")
+      )
       lt$n_no_event <- aggregate(as.formula(paste0(y_var, " ~ ", group)), sub, function(x) {
         sum(x == 0)
       })[, 2]

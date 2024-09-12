@@ -22,22 +22,20 @@
 #' @import viridis
 #' @importFrom stats as.formula
 #' @examples
-#'
-#'
 #' \donttest{
 #' simdf <- growthSim(
-#'  "logistic", n = 20, t = 25,
-#'  params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
+#'   "logistic",
+#'   n = 20, t = 25,
+#'   params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
 #' )
 #' ss <- growthSS(
-#'  model = "logistic", form = y ~ time | id / group, sigma = "spline",
-#'  list("A" = 130, "B" = 10, "C" = 3),
-#'  df = simdf, type = "brms"
+#'   model = "logistic", form = y ~ time | id / group, sigma = "spline",
+#'   list("A" = 130, "B" = 10, "C" = 3),
+#'   df = simdf, type = "brms"
 #' )
 #' fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1)
 #' growthPlot(fit = fit, form = y ~ time | group, groups = "a", df = ss$df)
 #' }
-#'
 #'
 #' @return Returns a ggplot showing a brms model's credible
 #' intervals and optionally the individual growth lines.
@@ -48,12 +46,14 @@ brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
                     hierarchy_value = NULL, vir_option = "plasma") {
   fitData <- fit$data
   parsed_form <- .parsePcvrForm(form, df)
-  if (!is.numeric(fitData[, parsed_form$x]) & !parsed_form$USEG & !parsed_form$USEID) {
+  if (!is.numeric(fitData[, parsed_form$x]) && !parsed_form$USEG && !parsed_form$USEID) {
     p <- .brmStaticPlot(fit, form, df, groups, facetGroups, vir_option, fitData, parsed_form)
     return(p)
   }
-  p <- .brmLongitudinalPlot(fit, form, df, groups, timeRange, facetGroups,
-                            hierarchy_value, vir_option, fitData, parsed_form)
+  p <- .brmLongitudinalPlot(
+    fit, form, df, groups, timeRange, facetGroups,
+    hierarchy_value, vir_option, fitData, parsed_form
+  )
   return(p)
 }
 
@@ -64,7 +64,6 @@ brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
   y <- parsed_form$y
   x <- parsed_form$x
   individual <- parsed_form$individual
-  hierarchical_predictor <- parsed_form$hierarchical_predictor
   if (individual == "dummyIndividual") {
     individual <- NULL
   }
@@ -98,7 +97,7 @@ brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
     do.call(rbind, lapply(seq(1, 49, 2), function(i) {
       min <- paste0("Q", i)
       max <- paste0("Q", 100 - i)
-      iter <- sub[, c(x,"Estimate")]
+      iter <- sub[, c(x, "Estimate")]
       iter$q <- round(1 - (c1 * (i - max_obs) + max_prime), 2)
       iter$min <- sub[[min]]
       iter$max <- sub[[max]]
@@ -163,7 +162,7 @@ brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
     newData[[hierarchical_predictor]] <- hierarchy_value
   }
   predictions <- cbind(newData, predict(fit, newData, probs = probs))
-  
+
   if (!is.null(groups)) {
     predictions <- predictions[predictions$group %in% groups, ]
     if (!is.null(df)) {
@@ -212,21 +211,14 @@ brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
     }) +
     viridis::scale_fill_viridis(direction = -1, option = vir_option) +
     ggplot2::labs(fill = "Credible\nInterval")
-  
+
   if (!is.null(df) && !is.null(individual)) {
     p <- p + ggplot2::geom_line(
       data = df, ggplot2::aes(.data[[x]], .data[[y]],
-                              group = interaction(.data[[individual]], .data[[group]])
+        group = interaction(.data[[individual]], .data[[group]])
       ),
       color = "gray20", linewidth = 0.2
     )
   }
   return(p)
 }
-
-
-
-
-
-
-

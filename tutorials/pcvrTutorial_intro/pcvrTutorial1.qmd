@@ -610,9 +610,9 @@ Convert height from px to cm and report the probability that the difference in h
 ```{r}
 #| echo: true
 s1 <- sv_ag[sv_ag$fertilizer == "50" & sv_ag$DAS == 19 &
-              sv_ag$genotype == "B73", "height_pixels"] / 42.5
+  sv_ag$genotype == "B73", "height_pixels"] / 42.5
 s2 <- sv_ag[sv_ag$fertilizer == "0" & sv_ag$DAS == 19 &
-              sv_ag$genotype == "W605S", "height_pixels"] / 42.5
+  sv_ag$genotype == "W605S", "height_pixels"] / 42.5
 
 conj <- conjugate(s1, s2,
   method = "gaussian", plot = TRUE,

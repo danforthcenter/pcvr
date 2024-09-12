@@ -52,8 +52,12 @@
     hierarchical_predictor <- NULL
   }
   if (!is.null(df)) {
-    tryCatch({df <- df[complete.cases(df[, c(x, y, individual, group)]), ]},
-             error = function(err) {})
+    tryCatch(
+      {
+        df <- df[complete.cases(df[, c(x, y, individual, group)]), ]
+      },
+      error = function(err) {}
+    )
   }
   return(list(
     "y" = y, "x" = x, "individual" = individual, "group" = group,

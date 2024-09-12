@@ -81,7 +81,7 @@ the output.
     }
 }
 \examples{
-\dontshow{if (rlang::is_installed(c("brms", "cmdstanr"))) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+
 \donttest{
 simdf <- growthSim("logistic",
   n = 20, t = 25,
@@ -89,8 +89,10 @@ simdf <- growthSim("logistic",
 )
 ss <- growthSS(
   model = "logistic", form = y ~ time | id / group, sigma = "logistic",
-  df = simdf, start = list("A" = 130, "B" = 12, "C" = 3,
-                           "sigmaA" = 20, "sigmaB" = 10, "sigmaC" = 2), type = "brms"
+  df = simdf, start = list(
+    "A" = 130, "B" = 12, "C" = 3,
+    "sigmaA" = 20, "sigmaB" = 10, "sigmaC" = 2
+  ), type = "brms"
 )
 fit_test <- fitGrowth(ss,
   iter = 600, cores = 1, chains = 1, backend = "cmdstanr",
@@ -101,7 +103,7 @@ fit_2 <- fit_test
 fit_list <- list(fit_test, fit_2)
 x <- barg(fit_list, list(ss, ss))
 }
-\dontshow{\}) # examplesIf}
+
 }
 \keyword{Bayesian}
 \keyword{brms}

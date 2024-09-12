@@ -22,7 +22,7 @@ conjugate(
 \arguments{
 \item{s1}{A data.frame or matrix of multi value traits or a vector of single value traits.
 If a multi value trait is used then column names should include a number representing the "bin".
-Alternatively for distributions other than "binomial" (which requires list data 
+Alternatively for distributions other than "binomial" (which requires list data
 with "successes" and "trials" as numeric vectors in the list, see examples)
 this can be a formula specifying \code{outcome ~ group} where group has exactly 2
 levels. If using wide MV trait data then the formula should specify column positions ~ grouping

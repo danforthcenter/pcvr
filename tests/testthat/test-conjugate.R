@@ -40,7 +40,8 @@ test_that("conjugate raises expected errors", {
   ))
   df <- data.frame(value = c(s1, s2), group = rep(c("a", "b"), each = 10))
   expect_error(conjugate(
-    value ~ group, s2, method = "t",
+    value ~ group, s2,
+    method = "t",
     priors = NULL,
     plot = TRUE,
     cred.int.level = 0.89, hypothesis = "lesser", rope_range = 1

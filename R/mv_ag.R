@@ -32,12 +32,12 @@
 #' @examples
 #'
 #' s1 <- mvSim(
-#'  dists = list(runif = list(min = 15, max = 150)),
-#'  n_samples = 10,
-#'  counts = 1000,
-#'  min_bin = 1,
-#'  max_bin = 180,
-#'  wide = TRUE
+#'   dists = list(runif = list(min = 15, max = 150)),
+#'   n_samples = 10,
+#'   counts = 1000,
+#'   min_bin = 1,
+#'   max_bin = 180,
+#'   wide = TRUE
 #' )
 #' mv_ag(s1, group = "group", mvCols = "sim_", n_per_group = 2)
 #'

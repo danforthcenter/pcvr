@@ -33,15 +33,16 @@
 #'   rmixnorm = list(mean = c(70, 150), sd = c(15, 5), alpha = c(0.3, 0.7)),
 #'   rnorm = list(mean = 90, sd = 3)
 #' )
-#' x <- mvSim(dists = dists, n_samples = 5, counts = 1000,
-#'            min_bin = 1, max_bin = 180, wide = TRUE)
+#' x <- mvSim(
+#'   dists = dists, n_samples = 5, counts = 1000,
+#'   min_bin = 1, max_bin = 180, wide = TRUE
+#' )
 #' emd_df <- pcv.emd(x,
-#'                   cols = "sim", reorder = c("group"), mat = FALSE,
-#'                   plot = FALSE, parallel = 1
+#'   cols = "sim", reorder = c("group"), mat = FALSE,
+#'   plot = FALSE, parallel = 1
 #' )
 #' net <- pcv.net(emd_df, meta = "group")
 #' net2 <- pcv.net(emd_df, meta = "group", filter = "0.9", direction = "lesser")
-#'
 #'
 #' @return Returns a list containing three elements:
 #' \code{nodes}: A dataframe of node data.

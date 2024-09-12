@@ -58,13 +58,17 @@ rqPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facetG
   #* `get needed information from formula`
   parsed_form <- .parsePcvrForm(form, df)
   #* `pick longitudinal or non-longitudinal helper`
-  if (!is.numeric(df[, parsed_form$x]) & !parsed_form$USEG & !parsed_form$USEID) {
-    p <- .rqStaticPlot(fit, form, df, groups, timeRange,
-                       facetGroups, groupFill, virMaps, parsed_form)
+  if (!is.numeric(df[, parsed_form$x]) && !parsed_form$USEG && !parsed_form$USEID) {
+    p <- .rqStaticPlot(
+      fit, form, df, groups, timeRange,
+      facetGroups, groupFill, virMaps, parsed_form
+    )
     return(p)
   }
-  p <- .rqLongitudinalPlot(fit, form, df, groups, timeRange,
-                           facetGroups, groupFill, virMaps, parsed_form)
+  p <- .rqLongitudinalPlot(
+    fit, form, df, groups, timeRange,
+    facetGroups, groupFill, virMaps, parsed_form
+  )
   return(p)
 }
 
@@ -73,14 +77,13 @@ rqPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facetG
 
 .rqStaticPlot <- function(fit, form, df, groups, timeRange,
                           facetGroups, groupFill, virMaps, parsed_form) {
-  y <- parsed_form$y
   x <- parsed_form$x
   df <- parsed_form$data
-  
+
   if (methods::is(fit, "rq")) {
     fit <- list(fit)
   }
-  
+
   summary_df <- do.call(rbind, lapply(fit, function(model) {
     iter_df <- as.data.frame(coef(summary(model)))
     colnames(iter_df) <- c("est", "err", "t", "p")
@@ -90,7 +93,7 @@ rqPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facetG
     iter_df$tau <- model$tau
     iter_df
   }))
-  
+
   #* `filter by groups if groups != NULL`
   if (!is.null(groups)) {
     summary_df <- summary_df[summary_df[[x]] %in% groups, ]
@@ -99,16 +102,19 @@ rqPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facetG
   facet_layer <- NULL
   if (facetGroups) {
     facet_layer <- ggplot2::facet_wrap(stats::as.formula(paste0("~", x)),
-                                       scales = "free_x")
+      scales = "free_x"
+    )
   }
   #* `groupFill`
   n_taus <- length(unique(summary_df$tau))
   if (groupFill) {
     virList <- lapply(rep(virMaps, length.out = length(unique(summary_df[[x]]))), function(pal) {
       virpal_p1 <- viridis::viridis(ceiling(n_taus / 2),
-                                    direction = 1, end = 1, option = pal)
+        direction = 1, end = 1, option = pal
+      )
       virpal_p2 <- viridis::viridis(ceiling(n_taus / 2),
-                                    direction = -1, end = 1, option = pal)[-1]
+        direction = -1, end = 1, option = pal
+      )[-1]
       c(virpal_p1, virpal_p2)
     })
   } else {
@@ -124,7 +130,7 @@ rqPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facetG
     facet_layer +
     labs(x = x, y = as.character(form)[2]) +
     pcv_theme()
-  
+
   for (g in seq_along(unique(summary_df[[x]]))) {
     iteration_group <- unique(summary_df[[x]])[g]
     sub <- summary_df[summary_df[[x]] == iteration_group, ]
@@ -136,13 +142,21 @@ rqPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facetG
           ymin = .data[["est"]] - 2 * .data[["err"]],
           ymax = .data[["est"]] + 2 * .data[["err"]]
         ), width = 0.15, color = virList[[g]][i]) +
-        ggplot2::geom_point(data = inner_sub, ggplot2::aes(x = .data[[x]],
-                                                     y = .data[["est"]]),
-                            color = virList[[g]][i], size = 4) +
-        ggplot2::geom_text(data = inner_sub, ggplot2::aes(x = .data[[x]],
-                                                    y = .data[["est"]],
-                                                    label = .data[["tau"]]),
-                           size = 2, color = "white")
+        ggplot2::geom_point(
+          data = inner_sub, ggplot2::aes(
+            x = .data[[x]],
+            y = .data[["est"]]
+          ),
+          color = virList[[g]][i], size = 4
+        ) +
+        ggplot2::geom_text(
+          data = inner_sub, ggplot2::aes(
+            x = .data[[x]],
+            y = .data[["est"]],
+            label = .data[["tau"]]
+          ),
+          size = 2, color = "white"
+        )
     }
   }
   plot
@@ -213,7 +227,8 @@ rqPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facetG
     virList <- lapply(rep(virMaps, length.out = length(unique(df[[group]]))), function(pal) {
       virpal_p1 <- viridis::viridis(ceiling(length(predCols) / 2), direction = 1, end = 1, option = pal)
       virpal_p2 <- viridis::viridis(ceiling(length(predCols) / 2),
-                                    direction = -1, end = 1, option = pal)[-1]
+        direction = -1, end = 1, option = pal
+      )[-1]
       c(virpal_p1, virpal_p2)
     })
   } else {
@@ -230,7 +245,7 @@ rqPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facetG
     individual_lines +
     labs(x = x, y = as.character(form)[2]) +
     pcv_theme()
-  
+
   for (g in seq_along(unique(plotdf[[group]]))) {
     iteration_group <- unique(plotdf[[group]])[g]
     sub <- plotdf[plotdf[[group]] == iteration_group, ]
@@ -244,6 +259,3 @@ rqPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facetG
   }
   return(plot)
 }
-
-
-

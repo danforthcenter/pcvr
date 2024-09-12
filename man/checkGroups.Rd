@@ -22,8 +22,9 @@ Helper function to check groups in data.
 \examples{
 
 df <- growthSim("linear",
-                n = 10, t = 10,
-                params = list("A" = c(2, 1.5)))
+  n = 10, t = 10,
+  params = list("A" = c(2, 1.5))
+)
 checkGroups(df, c("time", "id", "group"))
 df$time[12] <- 3
 checkGroups(df, c("time", "id", "group"))

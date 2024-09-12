@@ -74,8 +74,10 @@
   out$pdf <- pdf1
   #* `keep data for plotting`
   if (plot) {
-    out$plot_df <- data.frame("range" = support, "prob" = pdf1,
-                              "sample" = rep("Sample 1", length(support)))
+    out$plot_df <- data.frame(
+      "range" = support, "prob" = pdf1,
+      "sample" = rep("Sample 1", length(support))
+    )
   }
 
   return(out)
@@ -144,8 +146,10 @@
   out$pdf <- pdf1
   #* `keep data for plotting`
   if (plot) {
-    out$plot_df <- data.frame("range" = support, "prob" = pdf1,
-                              "sample" = rep("Sample 1", length(support)))
+    out$plot_df <- data.frame(
+      "range" = support, "prob" = pdf1,
+      "sample" = rep("Sample 1", length(support))
+    )
   }
   return(out)
 }

@@ -40,7 +40,8 @@ test_that("GrowthSS Helpers for double logistic Data work", {
 test_that("GrowthSS Helpers for double gompertz Data work", {
   set.seed(123)
   df <- growthSim(
-    "logistic", n = 20, t = 25,
+    "logistic",
+    n = 20, t = 25,
     params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
   )
   expect_warning(

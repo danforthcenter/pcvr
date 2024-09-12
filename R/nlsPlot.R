@@ -48,13 +48,17 @@ nlsPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL,
   #* `get needed information from formula`
   parsed_form <- .parsePcvrForm(form, df)
   #* `pick longitudinal or non-longitudinal helper`
-  if (!is.numeric(df[, parsed_form$x]) & !parsed_form$USEG & !parsed_form$USEID) {
-    p <- .nlsStaticPlot(fit, form, df, groups, timeRange,
-                        facetGroups, groupFill, virMaps, parsed_form)
+  if (!is.numeric(df[, parsed_form$x]) && !parsed_form$USEG && !parsed_form$USEID) {
+    p <- .nlsStaticPlot(
+      fit, form, df, groups, timeRange,
+      facetGroups, groupFill, virMaps, parsed_form
+    )
     return(p)
   }
-  p <- .nlsLongitudinalPlot(fit, form, df, groups, timeRange,
-                            facetGroups, groupFill, virMaps, parsed_form)
+  p <- .nlsLongitudinalPlot(
+    fit, form, df, groups, timeRange,
+    facetGroups, groupFill, virMaps, parsed_form
+  )
   return(p)
 }
 
@@ -62,8 +66,7 @@ nlsPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL,
 #' @noRd
 
 .nlsStaticPlot <- function(fit, form, df, groups, timeRange,
-                                 facetGroups, groupFill, virMaps, parsed_form) {
-  y <- parsed_form$y
+                           facetGroups, groupFill, virMaps, parsed_form) {
   x <- parsed_form$x
   df <- parsed_form$data
   #* `when implemented SE can be added here, see ?predict.nls`
@@ -83,10 +86,12 @@ nlsPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL,
   }
   #* `groupFill`
   if (groupFill) {
-    virVals <- unlist(lapply(rep(virMaps, length.out = length(unique(summary_df[[x]]))),
-                             function(pal) {
-                               viridis::viridis(1, begin = 0.5, option = pal)
-                               }))
+    virVals <- unlist(lapply(
+      rep(virMaps, length.out = length(unique(summary_df[[x]]))),
+      function(pal) {
+        viridis::viridis(1, begin = 0.5, option = pal)
+      }
+    ))
     color_scale <- ggplot2::scale_color_manual(values = virVals)
   } else {
     color_scale <- ggplot2::scale_color_manual(values = rep("#CC4678FF", length(unique(df[[x]]))))
@@ -100,7 +105,8 @@ nlsPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL,
       ymax = .data[["est"]] + 2 * .data[["err"]]
     ), width = 0.25) +
     ggplot2::geom_point(ggplot2::aes(x = .data[[x]], y = .data[["est"]], color = .data[[x]]),
-                        size = 4) +
+      size = 4
+    ) +
     color_scale +
     labs(x = x, y = as.character(form)[2]) +
     pcv_theme()
@@ -134,12 +140,12 @@ nlsPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL,
     new_data <- NULL
   }
   #* `add predictions`
-  
+
   preds <- data.frame(pred = stats::predict(fit, newdata = new_data))
   keep <- which(!duplicated(preds$pred))
   plotdf <- df[keep, ]
   plotdf$pred <- preds[keep, "pred"]
-  
+
   #* `when implemented SE can be added here, see ?predict.nls`
   #*
   #* `layer for individual lines if formula was complete`
@@ -170,17 +176,18 @@ nlsPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL,
   } else {
     color_scale <- ggplot2::scale_color_manual(values = rep("#CC4678FF", length(unique(df[[group]]))))
   }
-  
+
   #* `plot`
   plot <- ggplot(plotdf, ggplot2::aes(group = interaction(.data[[group]]))) +
     facet_layer +
     individual_lines +
     ggplot2::geom_line(ggplot2::aes(x = .data[[x]], y = .data[["pred"]], color = .data[[group]]),
-                       linewidth = 0.7) + # using middle of plasma pal
+      linewidth = 0.7
+    ) + # using middle of plasma pal
     color_scale +
     labs(x = x, y = as.character(form)[2]) +
     pcv_theme()
-  
+
   return(plot)
 }
 
@@ -276,7 +283,8 @@ gamPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
     facet_layer +
     individual_lines +
     ggplot2::geom_line(ggplot2::aes(x = .data[[x]], y = .data[["pred"]], color = .data[[group]]),
-                       linewidth = 0.7) + # using middle of plasma pal
+      linewidth = 0.7
+    ) + # using middle of plasma pal
     color_scale +
     labs(x = x, y = as.character(form)[2]) +
     pcv_theme()

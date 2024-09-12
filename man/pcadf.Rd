@@ -46,8 +46,10 @@ dists <- list(
   rlnorm = list(meanlog = log(40), sdlog = 0.5),
   rnorm = list(mean = 60, sd = 10)
 )
-mv <- mvSim(dists = dists, n_samples = 100, counts = 1000,
-            min_bin = 1, max_bin = 180, wide = TRUE)
+mv <- mvSim(
+  dists = dists, n_samples = 100, counts = 1000,
+  min_bin = 1, max_bin = 180, wide = TRUE
+)
 mv$otherGroup <- sample(c("a", "b"), size = nrow(mv), replace = TRUE)
 pcadf(mv, cols = "sim_", returnData = TRUE)
 pcadf(mv, cols = 2:181, color = c("group", "otherGroup"), returnData = FALSE)

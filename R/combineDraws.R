@@ -14,53 +14,61 @@
 #' @examples
 #' # note that this example will fit several bayesian models and may run for several minutes.
 #' \donttest{
-#'   simdf <- growthSim("logistic",
-#'     n = 20, t = 25,
-#'     params = list(
-#'       "A" = c(200, 160, 220, 200, 140, 300),
-#'       "B" = c(13, 11, 10, 9, 16, 12),
-#'       "C" = c(3, 3.5, 3.2, 2.8, 3.3, 2.5)
-#'     )
+#' simdf <- growthSim("logistic",
+#'   n = 20, t = 25,
+#'   params = list(
+#'     "A" = c(200, 160, 220, 200, 140, 300),
+#'     "B" = c(13, 11, 10, 9, 16, 12),
+#'     "C" = c(3, 3.5, 3.2, 2.8, 3.3, 2.5)
 #'   )
-#'   ss_ab <- growthSS(
-#'     model = "logistic", form = y ~ time | id / group,
-#'     sigma = "logistic", df = simdf[simdf$group %in% c("a", "b"), ],
-#'     start = list("A" = 130, "B" = 12, "C" = 3,
-#'                  "sigmaA" = 15, "sigmaB" = 10, "sigmaC" = 3), type = "brms"
-#'   )
+#' )
+#' ss_ab <- growthSS(
+#'   model = "logistic", form = y ~ time | id / group,
+#'   sigma = "logistic", df = simdf[simdf$group %in% c("a", "b"), ],
+#'   start = list(
+#'     "A" = 130, "B" = 12, "C" = 3,
+#'     "sigmaA" = 15, "sigmaB" = 10, "sigmaC" = 3
+#'   ), type = "brms"
+#' )
 #'
-#'   ss_cd <- growthSS(
-#'     model = "logistic", form = y ~ time | id / group,
-#'     sigma = "logistic", df = simdf[simdf$group %in% c("c", "d"), ],
-#'     start = list("A" = 130, "B" = 12, "C" = 3,
-#'                  "sigmaA" = 15, "sigmaB" = 10, "sigmaC" = 3), type = "brms"
-#'   )
+#' ss_cd <- growthSS(
+#'   model = "logistic", form = y ~ time | id / group,
+#'   sigma = "logistic", df = simdf[simdf$group %in% c("c", "d"), ],
+#'   start = list(
+#'     "A" = 130, "B" = 12, "C" = 3,
+#'     "sigmaA" = 15, "sigmaB" = 10, "sigmaC" = 3
+#'   ), type = "brms"
+#' )
 #'
-#'   ss_ef <- growthSS(
-#'     model = "logistic", form = y ~ time | id / group,
-#'     sigma = "logistic", df = simdf[simdf$group %in% c("e", "f"), ],
-#'     start = list("A" = 130, "B" = 12, "C" = 3,
-#'                  "sigmaA" = 15, "sigmaB" = 10, "sigmaC" = 3), type = "brms"
-#'   )
-#'   ss_ef2 <- growthSS(
-#'     model = "gompertz", form = y ~ time | id / group,
-#'     sigma = "logistic", df = simdf[simdf$group %in% c("e", "f"), ],
-#'     start = list("A" = 130, "B" = 12, "C" = 3,
-#'                  "sigmaA" = 15, "sigmaB" = 10, "sigmaC" = 3), type = "brms"
-#'   )
+#' ss_ef <- growthSS(
+#'   model = "logistic", form = y ~ time | id / group,
+#'   sigma = "logistic", df = simdf[simdf$group %in% c("e", "f"), ],
+#'   start = list(
+#'     "A" = 130, "B" = 12, "C" = 3,
+#'     "sigmaA" = 15, "sigmaB" = 10, "sigmaC" = 3
+#'   ), type = "brms"
+#' )
+#' ss_ef2 <- growthSS(
+#'   model = "gompertz", form = y ~ time | id / group,
+#'   sigma = "logistic", df = simdf[simdf$group %in% c("e", "f"), ],
+#'   start = list(
+#'     "A" = 130, "B" = 12, "C" = 3,
+#'     "sigmaA" = 15, "sigmaB" = 10, "sigmaC" = 3
+#'   ), type = "brms"
+#' )
 #'
 #'
-#'   fit_ab <- fitGrowth(ss_ab, chains = 1, cores = 1, iter = 1000)
-#'   fit_ab2 <- fitGrowth(ss_ab, chains = 1, cores = 1, iter = 1200)
-#'   fit_cd <- fitGrowth(ss_cd, chains = 1, cores = 1, iter = 1000)
-#'   fit_ef <- fitGrowth(ss_ef, chains = 1, cores = 1, iter = 1000)
-#'   fit_ef2 <- fitGrowth(ss_ef2, chains = 1, cores = 1, iter = 1000)
+#' fit_ab <- fitGrowth(ss_ab, chains = 1, cores = 1, iter = 1000)
+#' fit_ab2 <- fitGrowth(ss_ab, chains = 1, cores = 1, iter = 1200)
+#' fit_cd <- fitGrowth(ss_cd, chains = 1, cores = 1, iter = 1000)
+#' fit_ef <- fitGrowth(ss_ef, chains = 1, cores = 1, iter = 1000)
+#' fit_ef2 <- fitGrowth(ss_ef2, chains = 1, cores = 1, iter = 1000)
 #'
-#'   x <- combineDraws(fit_ab, fit_cd, fit_ef)
-#'   draws_ef <- as.data.frame(fit_ef)
-#'   draws_ef <- draws_ef[, grepl("^b_", colnames(draws_ef))]
-#'   x2 <- combineDraws(fit_ab2, fit_cd, draws_ef)
-#'   x3 <- combineDraws(fit_ab, fit_cd, fit_ef2)
+#' x <- combineDraws(fit_ab, fit_cd, fit_ef)
+#' draws_ef <- as.data.frame(fit_ef)
+#' draws_ef <- draws_ef[, grepl("^b_", colnames(draws_ef))]
+#' x2 <- combineDraws(fit_ab2, fit_cd, draws_ef)
+#' x3 <- combineDraws(fit_ab, fit_cd, fit_ef2)
 #' }
 #'
 #' @return Returns a dataframe of posterior draws.
@@ -122,15 +130,19 @@ combineDraws <- function(..., message = TRUE) {
       rhats <- brms::rhat(m)
       rhats <- rhats[grepl("^b_", names(rhats))]
       if (any(rhats > 1.05)) {
-        message(paste0(mn, " has Rhat values >1.05 for some model parameters.",
-                       "See ?barg for possible improvements.\n"))
+        message(paste0(
+          mn, " has Rhat values >1.05 for some model parameters.",
+          "See ?barg for possible improvements.\n"
+        ))
       }
     }
 
     if (nrow(draws) < limit_size) {
       if (message) {
-        message(paste0(mn, " has fewer than ", limit_size, " draws and will be padded with ",
-                       limit_size - nrow(draws), " NAs\n"))
+        message(paste0(
+          mn, " has fewer than ", limit_size, " draws and will be padded with ",
+          limit_size - nrow(draws), " NAs\n"
+        ))
       }
       draws[(nrow(draws) + 1):limit_size, ] <- NA
       draws
@@ -144,8 +156,10 @@ combineDraws <- function(..., message = TRUE) {
       dn <- df_names[[i]]
       if (nrow(df) < limit_size) {
         if (message) {
-          message(paste0(dn, " has fewer than ", limit_size, " draws and will be padded with ",
-                         limit_size - nrow(df), " NAs\n"))
+          message(paste0(
+            dn, " has fewer than ", limit_size, " draws and will be padded with ",
+            limit_size - nrow(df), " NAs\n"
+          ))
         }
         df[(nrow(df) + 1):limit_size, ] <- NA
       }

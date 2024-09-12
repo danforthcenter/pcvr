@@ -6,8 +6,8 @@
 #' set.seed(123)
 #' s1 = stats::runif(10, -1, 10)
 #' out <- .conj_bivariate_uniform_sv(
-#'  s1 = s1, cred.int.level = 0.95,
-#'  plot = TRUE
+#'   s1 = s1, cred.int.level = 0.95,
+#'   plot = TRUE
 #' )
 #' lapply(out, head)
 #'
@@ -153,17 +153,17 @@
 #' @param s1 A vector of numerics drawn from a uniform distribution.
 #' @examples
 #' s1 <- mvSim(
-#'  dists = list(runif = list(min = 15, max = 150)),
-#'  n_samples = 10,
-#'  counts = 1000,
-#'  min_bin = 1,
-#'  max_bin = 180,
-#'  wide = TRUE
+#'   dists = list(runif = list(min = 15, max = 150)),
+#'   n_samples = 10,
+#'   counts = 1000,
+#'   min_bin = 1,
+#'   max_bin = 180,
+#'   wide = TRUE
 #' )
 #' out <- .conj_bivariate_uniform_mv(
-#'  s1 = s1[, -1], cred.int.level = 0.95,
-#'  priors = list(location_l = 50, location_u = 100, scale = 1),
-#'  plot = FALSE
+#'   s1 = s1[, -1], cred.int.level = 0.95,
+#'   priors = list(location_l = 50, location_u = 100, scale = 1),
+#'   plot = FALSE
 #' )
 #' lapply(out, head)
 #' @keywords internal

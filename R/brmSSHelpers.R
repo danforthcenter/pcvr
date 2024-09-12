@@ -811,12 +811,16 @@
     }
   } else {
     if (int) {
-      form <- stats::as.formula(paste0(y, " ~ I + A * (((", x, " - D) / (C - D)) * ((E - ", x,
-                                       ") / (E - C)) ^ ((E - C) / (C - D))) ^ B"))
+      form <- stats::as.formula(paste0(
+        y, " ~ I + A * (((", x, " - D) / (C - D)) * ((E - ", x,
+        ") / (E - C)) ^ ((E - C) / (C - D))) ^ B"
+      ))
       pars <- LETTERS[c(1:5, 9)]
     } else {
-      form <- stats::as.formula(paste0(y, " ~ A * (((", x, " - D) / (C - D)) * ((E - ", x,
-                                       ") / (E - C)) ^ ((E - C) / (C - D))) ^ B"))
+      form <- stats::as.formula(paste0(
+        y, " ~ A * (((", x, " - D) / (C - D)) * ((E - ", x,
+        ") / (E - C)) ^ ((E - C) / (C - D))) ^ B"
+      ))
       pars <- LETTERS[1:5]
     }
   }

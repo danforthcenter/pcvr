@@ -42,7 +42,6 @@
 #' fit <- fitGrowth(ss)
 #' growthPlot(fit, form = ss$pcvrForm, df = ss$df)
 #'
-#'
 #' @return Returns a ggplot showing a brms model's credible
 #' intervals and optionally the individual growth lines.
 #'

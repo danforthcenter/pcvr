@@ -40,7 +40,6 @@ plotPrior(priors)
 
 plotPrior(priors, "gompertz")[[1]]
 
-
 }
 \keyword{Bayesian}
 \keyword{brms}

@@ -49,7 +49,6 @@ function can also be useful in considering the relative tolerance to stress betw
 growth models are another suggested way to test relative tolerance questions.
 }
 \examples{
-
 \donttest{
 sv <- read.pcv(
   "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv",

@@ -35,7 +35,6 @@
 #' a list.
 #' @export
 #' @examples
-#'
 #' \donttest{
 #' sv <- read.pcv(
 #'   "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv",

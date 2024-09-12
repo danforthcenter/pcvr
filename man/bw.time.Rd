@@ -69,7 +69,6 @@ a list.
 Time conversion and plotting for bellwether data
 }
 \examples{
-
 \donttest{
 sv <- read.pcv(
   "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv",

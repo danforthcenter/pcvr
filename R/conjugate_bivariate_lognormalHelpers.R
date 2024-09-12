@@ -4,8 +4,8 @@
 #' @param s1 A vector of numerics drawn from a uniform distribution.
 #' @examples
 #' out <- .conj_bivariate_lognormal_sv(
-#'  s1 = rlnorm(10, log(20), 1), cred.int.level = 0.95,
-#'  plot = FALSE
+#'   s1 = rlnorm(10, log(20), 1), cred.int.level = 0.95,
+#'   plot = FALSE
 #' )
 #' lapply(out, head)
 #'

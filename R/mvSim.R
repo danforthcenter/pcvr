@@ -43,9 +43,9 @@
 #'   x = as.numeric(sub("sim_", "", variable)),
 #'   y = value, group = interaction(group, id), fill = group
 #' )) +
-#' geom_col(position = "identity", alpha = 0.25) +
-#' pcv_theme() +
-#' labs(x = "bin")
+#'   geom_col(position = "identity", alpha = 0.25) +
+#'   pcv_theme() +
+#'   labs(x = "bin")
 #'
 #' @export
 

@@ -44,12 +44,12 @@
     x_bar <- mean(X1)
     mu_x1 <- log(x_bar / (sqrt(var(X1) / x_bar^2) + 1))
     #* `Get sigma of X1`
-    sigma_x1 <- sqrt(log((var(X1)) / (x_bar ^ 2) + 1))
+    sigma_x1 <- sqrt(log((var(X1)) / (x_bar^2) + 1))
     #* `Update Normal Distribution of Mu`
     #* sufficient stats: n, mean of log data | precision
     n <- length(X1)
     m <- priors$mu[1]
-    p <- 1 / (priors$sd[1] ^ 2) # precision
+    p <- 1 / (priors$sd[1]^2) # precision
     mu_prime <- ((m * p) + (n * p * mu_x1)) / (p + (n * p))
     precision_prime <- (p + (n * p))
     var_prime <- 1 / precision_prime
@@ -132,12 +132,12 @@
   x_bar <- mean(s1)
   mu_s1 <- log(x_bar / (sqrt(var(s1) / x_bar^2) + 1))
   #* `Get sigma of s1`
-  sigma_s1 <- sqrt(log((var(s1)) / (x_bar ^ 2) + 1))
+  sigma_s1 <- sqrt(log((var(s1)) / (x_bar^2) + 1))
   #* `Update Normal Distribution of Mu`
   #* sufficient stats: n, mean of log data | precision
   n <- length(s1)
   m <- priors$mu[1]
-  p <- 1 / (priors$sd[1] ^ 2) # precision
+  p <- 1 / (priors$sd[1]^2) # precision
   mu_prime <- ((m * p) + (n * p * mu_s1)) / (p + (n * p))
   precision_prime <- (p + (n * p))
   var_prime <- 1 / precision_prime

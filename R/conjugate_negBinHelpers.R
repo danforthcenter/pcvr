@@ -39,8 +39,10 @@
   #* `make default prior if none provided`
   if (is.null(priors)) {
     priors <- list(r = 10, a = 0.5, b = 0.5) # beta prior on P
-    warning(paste0("True value of r for negative binomial distribution has defaulted to 10,",
-                   " you should add a prior including r parameter."))
+    warning(paste0(
+      "True value of r for negative binomial distribution has defaulted to 10,",
+      " you should add a prior including r parameter."
+    ))
   }
 
   out <- list()
@@ -73,8 +75,10 @@
   out$pdf <- pdf1
   #* `keep data for plotting`
   if (plot) {
-    out$plot_df <- data.frame("range" = support, "prob" = pdf1,
-                              "sample" = rep("Sample 1", length(support)))
+    out$plot_df <- data.frame(
+      "range" = support, "prob" = pdf1,
+      "sample" = rep("Sample 1", length(support))
+    )
   }
   return(out)
 }

@@ -204,12 +204,12 @@ ggplot(simdf, aes(time, y, group = interaction(group, id))) +
   labs(title = "Power Law")
 
 simdf <- growthSim("bragg",
-n = 20, t = 100,
-list("A" = c(10, 15), "B" = c(0.01, 0.02), "C" = c(50, 60))
+  n = 20, t = 100,
+  list("A" = c(10, 15), "B" = c(0.01, 0.02), "C" = c(50, 60))
 )
 ggplot(simdf, aes(time, y, group = interaction(group, id))) +
-geom_line(aes(color = group)) +
-labs(title = "bragg")
+  geom_line(aes(color = group)) +
+  labs(title = "bragg")
 
 # simulating models from segmented growth models
 
@@ -244,6 +244,5 @@ simdf <- growthSim(
 ggplot(simdf, aes(time, y, group = interaction(group, id))) +
   geom_line(aes(color = group)) +
   labs(title = "linear + linear + logistic")
-
 
 }

@@ -82,7 +82,7 @@ nlrqPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL,
   keep <- which(!duplicated(preds))
   plotdf <- cbind(df[keep, ], preds[keep, ])
   colnames(plotdf) <- c(colnames(df), colnames(preds))
-  
+
   #* `facetGroups`
   facet_layer <- NULL
   if (facetGroups) {
@@ -93,7 +93,8 @@ nlrqPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL,
     virList <- lapply(rep(virMaps, length.out = length(unique(df[[group]]))), function(pal) {
       virpal_p1 <- viridis::viridis(ceiling(length(predCols) / 2), direction = 1, end = 1, option = pal)
       virpal_p2 <- viridis::viridis(ceiling(length(predCols) / 2),
-                                    direction = -1, end = 1, option = pal)[-1]
+        direction = -1, end = 1, option = pal
+      )[-1]
       c(virpal_p1, virpal_p2)
     })
   } else {
@@ -125,16 +126,18 @@ nlrqPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL,
     individual_lines +
     labs(x = x, y = as.character(form)[2]) +
     pcv_theme()
-  
+
   for (g in seq_along(unique(plotdf[[group]]))) {
     iteration_group <- unique(plotdf[[group]])[g]
     sub <- plotdf[plotdf[[group]] == iteration_group, ]
     plot <- plot +
       lapply(seq_along(predCols), function(i) {
-        ggplot2::geom_line(data = sub, ggplot2::aes(x = .data[[x]], y = .data[[predCols[i]]]),
-                           color = virList[[g]][i], linewidth = 0.7)
+        ggplot2::geom_line(
+          data = sub, ggplot2::aes(x = .data[[x]], y = .data[[predCols[i]]]),
+          color = virList[[g]][i], linewidth = 0.7
+        )
       })
   }
-  
+
   return(plot)
 }

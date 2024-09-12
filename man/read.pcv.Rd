@@ -80,28 +80,27 @@ wide or long format in R. Keep in mind that the 'mode' argument controls the for
 returned in R, not the format that the data saved as in your csv file.
 }
 \examples{
-
 \donttest{
-  mv <- paste0(
-    "https://media.githubusercontent.com/media/joshqsumner/",
-    "pcvrTestData/main/pcv4-multi-value-traits.csv"
-  )
-  sv <- paste0(
-    "https://raw.githubusercontent.com/joshqsumner/",
-    "pcvrTestData/main/pcv4-single-value-traits.csv"
-  )
+mv <- paste0(
+  "https://media.githubusercontent.com/media/joshqsumner/",
+  "pcvrTestData/main/pcv4-multi-value-traits.csv"
+)
+sv <- paste0(
+  "https://raw.githubusercontent.com/joshqsumner/",
+  "pcvrTestData/main/pcv4-single-value-traits.csv"
+)
 
-  w2w <- read.pcv(sv, mode = "wide", reader = "fread")
-  dim(w2w)
+w2w <- read.pcv(sv, mode = "wide", reader = "fread")
+dim(w2w)
 
-  w2l <- read.pcv(sv, mode = "long", reader = "fread")
-  dim(w2l)
+w2l <- read.pcv(sv, mode = "long", reader = "fread")
+dim(w2l)
 
-  l2w <- read.pcv(mv, mode = "wide", reader = "fread")
-  dim(l2w)
+l2w <- read.pcv(mv, mode = "wide", reader = "fread")
+dim(l2w)
 
-  l2l <- read.pcv(mv, mode = "long", reader = "fread")
-  dim(l2l)
+l2l <- read.pcv(mv, mode = "long", reader = "fread")
+dim(l2l)
 }
 
 }

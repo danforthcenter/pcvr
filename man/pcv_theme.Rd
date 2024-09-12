@@ -13,5 +13,6 @@ A ggplot theme
 Default theme for ggplots made by pcvr functions.
 }
 \examples{
-ggplot2::ggplot() + pcv_theme()
+ggplot2::ggplot() +
+  pcv_theme()
 }

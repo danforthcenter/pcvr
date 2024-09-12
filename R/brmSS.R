@@ -223,11 +223,15 @@
   #* `Make hierarchical parameter model formulas`
   if (!is.null(hierarchical_predictor)) {
     if (is.null(hierarchy)) {
-      warning(paste0("hierarchy argument not provided, assuming linear models with intercepts ",
-                     "for all ", matched_model, " model parameters (",
-                     paste(pars, collapse = ", "),
-                     ")."))
-      hierarchy <- lapply(pars, function(p) {"int_linear"})
+      warning(paste0(
+        "hierarchy argument not provided, assuming linear models with intercepts ",
+        "for all ", matched_model, " model parameters (",
+        paste(pars, collapse = ", "),
+        ")."
+      ))
+      hierarchy <- lapply(pars, function(p) {
+        "int_linear"
+      })
       names(hierarchy) <- pars
     }
 
@@ -236,8 +240,10 @@
       intModelRes <- .intModelHelper(hrc_model)
       hrc_model <- intModelRes$model
       hrc_int <- intModelRes$int
-      .brmDparHelper(dpar = pname, model = hrc_model, x = hierarchical_predictor,
-                     group, nTimes, USEGROUP, priors, int = hrc_int)
+      .brmDparHelper(
+        dpar = pname, model = hrc_model, x = hierarchical_predictor,
+        group, nTimes, USEGROUP, priors, int = hrc_int
+      )
       #* here passing `pname` to the `dpar` argument of .brmDparHelper will make
       #* .brmDparHelper add that name as a prefix on all of the existing model parameters.
       #* Since all the parameter names are unique coming into this they will be unique coming

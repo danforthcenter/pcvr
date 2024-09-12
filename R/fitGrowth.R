@@ -31,7 +31,9 @@
 fitGrowth <- function(ss, ...) {
   if (ss$model == "gam") {
     suffix <- "gam"
-  } else { suffix <- NULL}
+  } else {
+    suffix <- NULL
+  }
   fit_function <- match.fun(paste0("fitGrowth", ss$type, suffix))
   fit <- fit_function(ss, ...)
   return(fit)

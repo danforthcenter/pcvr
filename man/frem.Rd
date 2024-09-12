@@ -70,13 +70,21 @@ df <- data.frame(
 )
 out <- frem(df, des = "genotype", phenotypes = c("pheno1", "pheno2", "pheno3"), returnData = TRUE)
 lapply(out, class)
-frem(df, des = c("genotype", "treatment"), phenotypes = c("pheno1", "pheno2", "pheno3"),
-     cor = FALSE)
-frem(df, des = "genotype", phenotypes = c("pheno1", "pheno2", "pheno3"),
-     combine = FALSE, timeCol = "time", time = "all")
-frem(df, des = "genotype", phenotypes = c("pheno1", "pheno2", "pheno3"),
-     combine = TRUE, timeCol = "time", time = 1)
-frem(df, des = "genotype", phenotypes = c("pheno1", "pheno2", "pheno3"),
-     cor = FALSE, timeCol = "time", time = 3:5, markSingular = TRUE)
+frem(df,
+  des = c("genotype", "treatment"), phenotypes = c("pheno1", "pheno2", "pheno3"),
+  cor = FALSE
+)
+frem(df,
+  des = "genotype", phenotypes = c("pheno1", "pheno2", "pheno3"),
+  combine = FALSE, timeCol = "time", time = "all"
+)
+frem(df,
+  des = "genotype", phenotypes = c("pheno1", "pheno2", "pheno3"),
+  combine = TRUE, timeCol = "time", time = 1
+)
+frem(df,
+  des = "genotype", phenotypes = c("pheno1", "pheno2", "pheno3"),
+  cor = FALSE, timeCol = "time", time = 3:5, markSingular = TRUE
+)
 
 }

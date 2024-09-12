@@ -322,10 +322,10 @@
 #' # the next step would typically be compiling/fitting the model
 #' # here we use very few chains and very few iterations for speed, but more of both is better.
 #' \donttest{
-#'   fit_test <- fitGrowth(ss,
-#'     iter = 500, cores = 1, chains = 1, backend = "cmdstanr",
-#'     control = list(adapt_delta = 0.999, max_treedepth = 20)
-#'   )
+#' fit_test <- fitGrowth(ss,
+#'   iter = 500, cores = 1, chains = 1, backend = "cmdstanr",
+#'   control = list(adapt_delta = 0.999, max_treedepth = 20)
+#' )
 #' }
 #'
 #'
@@ -347,7 +347,6 @@
 #' )
 #' ex2_ss$prior # has coef level grouping for priors
 #' ex2_ss$formula # specifies an A intercept for each group and splines by group for sigma
-#'
 #'
 #' @export
 
@@ -380,8 +379,10 @@ growthSS <- function(model, form, sigma = NULL, df, start = NULL,
     }
   } else {
     if (type_matched == "brms") {
-      res <- .brmSS(model = model, form = form, sigma = sigma, df = df, priors = start, int = int,
-                    hierarchy = hierarchy)
+      res <- .brmSS(
+        model = model, form = form, sigma = sigma, df = df, priors = start, int = int,
+        hierarchy = hierarchy
+      )
     } else if (type_matched %in% c("nlrq", "nls")) {
       res <- .nlrqSS(
         model = model, form = form, tau = tau, df = df, start = start, pars = pars,
@@ -391,8 +392,10 @@ growthSS <- function(model, form, sigma = NULL, df, start = NULL,
       if (is.null(sigma)) {
         sigma <- "power"
       }
-      res <- .nlmeSS(model = model, form = form, sigma = sigma, df = df, pars = pars,
-                     start = start, int = int)
+      res <- .nlmeSS(
+        model = model, form = form, sigma = sigma, df = df, pars = pars,
+        start = start, int = int
+      )
     } else if (type_matched == "mgcv") {
       res <- .mgcvSS(model = model, form = form, df = df)
     }

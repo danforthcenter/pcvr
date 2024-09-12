@@ -40,11 +40,15 @@
 #'   rnorm = list(mean = 90, sd = 20),
 #'   rlnorm = list(meanlog = log(40), sdlog = 0.5)
 #' )
-#' x_wide <- mvSim(dists = dists, n_samples = 5, counts = 1000,
-#'                 min_bin = 1, max_bin = 180, wide = TRUE)
+#' x_wide <- mvSim(
+#'   dists = dists, n_samples = 5, counts = 1000,
+#'   min_bin = 1, max_bin = 180, wide = TRUE
+#' )
 #' pcv.joyplot(x_wide, index = "sim", group = "group")
-#' x_long <- mvSim(dists = dists, n_samples = 5, counts = 1000,
-#'                 min_bin = 1, max_bin = 180, wide = FALSE)
+#' x_long <- mvSim(
+#'   dists = dists, n_samples = 5, counts = 1000,
+#'   min_bin = 1, max_bin = 180, wide = FALSE
+#' )
 #' x_long$trait <- "x"
 #' p <- pcv.joyplot(x_long, bin = "variable", group = "group")
 #' # we might want to display hues as their hue

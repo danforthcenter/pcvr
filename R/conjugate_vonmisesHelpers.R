@@ -83,8 +83,7 @@
   #* seems like this would come up a lot, only difference I have seen is using [-pi, pi] vs
   #* the compendiums [0, 2pi], but I don't think that should make a difference.
 
-  mu_prime_atan_scale <- atan(((a * sin(b)) + sum(sin(X1))) /
-                                ((a * cos(b)) + sum(cos(X1))))
+  mu_prime_atan_scale <- atan(((a * sin(b)) + sum(sin(X1))) / ((a * cos(b)) + sum(cos(X1))))
   mu_prime <- unitCircleAdj + mu_prime_atan_scale
   #* `calculate density over support`
   dens1 <- brms::dvon_mises(support, mu_prime, kappa_prime)
@@ -261,7 +260,7 @@
 #' @param w optional weights vector
 #' @examples
 #' \donttest{
-#'   .circular.mean(brms::rvon_mises(20, -3.1, 4))
+#' .circular.mean(brms::rvon_mises(20, -3.1, 4))
 #' }
 #' @keywords internal
 #' @noRd
@@ -283,11 +282,11 @@
 #' @param target the target circular space, should not be changed from radians (-pi, pi).
 #' @examples
 #' \donttest{
-#'   x <- seq(-6, 6, length.out = 20)
-#'   .boundary.to.radians(x, c(6.3, 6.3))
+#' x <- seq(-6, 6, length.out = 20)
+#' .boundary.to.radians(x, c(6.3, 6.3))
 #'
-#'   x <- seq(0, 100, length.out = 20)
-#'   .boundary.to.radians(x, c(0, 100))
+#' x <- seq(0, 100, length.out = 20)
+#' .boundary.to.radians(x, c(0, 100))
 #' }
 #' @keywords internal
 #' @noRd
@@ -305,11 +304,11 @@
 #' @param target the target circular space, should be from priors$boundary.
 #' @examples
 #' \donttest{
-#'   x <- brms::rvon_mises(20, 2, 3)
-#'   .radians.to.boundary(x, target = c(6.3, 6.3))
+#' x <- brms::rvon_mises(20, 2, 3)
+#' .radians.to.boundary(x, target = c(6.3, 6.3))
 #'
-#'   x <- brms::rvon_mises(20, 3.1, 2)
-#'   .radians.to.boundary(x, target = c(0, 100))
+#' x <- brms::rvon_mises(20, 3.1, 2)
+#' .radians.to.boundary(x, target = c(0, 100))
 #' }
 #' @keywords internal
 #' @noRd
@@ -327,9 +326,9 @@
 #' @param boundary a boundary vector describing the circular space's edges. Should be from priors.
 #' @examples
 #' \donttest{
-#'   draws1 <- brms::rvon_mises(10000, 3.1, 4)
-#'   draws2 <- brms::rvon_mises(10000, -3, 2)
-#'   x <- .conj_rope_circular_diff(draws1, draws2)
+#' draws1 <- brms::rvon_mises(10000, 3.1, 4)
+#' draws2 <- brms::rvon_mises(10000, -3, 2)
+#' x <- .conj_rope_circular_diff(draws1, draws2)
 #' }
 #' @keywords internal
 #' @noRd

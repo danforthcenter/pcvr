@@ -12,9 +12,9 @@ x <- lintr::lint_package(path = "~/pcvr",
                     ))
 x
 length(x)
-#* dry run styling
+#* run styling
 if (FALSE) {
-  style_pkg("~/pcvr", dry = "on")
+  style_pkg("~/pcvr", dry = "off", scope = "line_breaks")
 }
 
 
