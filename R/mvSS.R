@@ -29,9 +29,10 @@
 #' mv_df$label <- as.numeric(gsub("sim_", "", mv_df$variable))
 #' 
 #' ss1 <- mvSS(model = "linear", form = label | value ~ group, df = mv_df,
-#'             start = list("A" = 5), type = "brms", spectral_index = "none")
+#'             start = list("A" = 5), type = "brms", spectral_index = "ci_rededge")
 #' \donttest{
-#' fitGrowth(ss1, backend = "cmdstanr", iter = 1000, chains = 1, cores = 1)
+#' mod1 <- fitGrowth(ss1, backend = "cmdstanr", iter = 1000, chains = 1, cores = 1)
+#' growthPlot(mod1, ss1$pcvrForm, df = ss1$df)
 #' }
 #' 
 #' # when the model is longitudinal the same model is possible with growthSS
@@ -69,7 +70,12 @@
 #'   }
 #' }
 #' }))
-#'
+#' 
+#' \donttest{
+#' m2 <- fitGrowth(ss_mv1, backend = "cmdstanr", iter = 1000, chains = 1, cores = 1)
+#' growthPlot(m2, ss_mv1$pcvrForm, df = ss_mv1$df)
+#' }
+#' 
 #' @export
 
 mvSS <- function(model = "linear", form, sigma = NULL, df, start = NULL,
@@ -108,7 +114,7 @@ mvSS <- function(model = "linear", form, sigma = NULL, df, start = NULL,
     #* really only one option for what happens next, so maybe it's not bad. Model is basically
     #* ignored in this case.
     form_fun <- get(paste0(".", type, "_mvSS"))
-    out <- form_fun(form, df, start, family, model, tau, weights, pcvrform)
+    out <- form_fun(form, df, start, family, model, tau, weights, pcvrForm)
   }
   out$call <- match.call()
   return(out)
@@ -184,11 +190,12 @@ mvSS <- function(model = "linear", form, sigma = NULL, df, start = NULL,
 #' @noRd
 
 .nls_mvSS <- function(form = NULL, df = NULL, start = NULL, family = NULL, model = NULL, tau = NULL,
-                      weights = NULL, pcvrform = NULL) {
+                      weights = NULL, pcvrForm = NULL) {
+  out <- list()
   out[["formula"]] <- form
   out[["start"]] <- NULL
   out[["df"]] <- df
-  out[["pcvrForm"]] <- pcvrform
+  out[["pcvrForm"]] <- pcvrForm
   out[["type"]] <- "lm"
   out[["model"]] <- trimws(gsub(".*:", "", model))
   out[["weights"]] <- df[[weights]]
@@ -200,6 +207,7 @@ mvSS <- function(model = "linear", form, sigma = NULL, df, start = NULL,
 
 .nlrq_mvSS <- function(form = NULL, df = NULL, start = NULL, family = NULL, model = NULL, tau = NULL,
                        weights = NULL, pcvrform = NULL) {
+  out <- list()
   out[["formula"]] <- form
   out[["start"]] <- NULL
   out[["df"]] <- df
