@@ -190,12 +190,14 @@ fitGrowthnlsgam <- function(ss, ...) {
 #' @export
 
 fitGrowthlm <- function(ss, ...) {
-  fit <- stats::lm(
+  fit <- do.call("lm", args = list(
     formula = ss[["formula"]],
-    data = ss[["df"]],
-    start = ss[["start"]], 
+    data = quote(ss[["df"]]),
     weights = ss[["weights"]], ...
-  )
+  ))
+  ocall <- as.character(fit$call)
+  ocall[4] <- "weights"
+  fit$call <- as.call(str2expression(ocall))
   return(fit)
 }
 
@@ -290,10 +292,13 @@ fitGrowthrq <- function(ss, cores = getOption("mc.cores", 1), ...) {
       fit <- do.call("rq", args = list(
         formula = ss[["formula"]],
         data = quote(ss[["df"]]),
-        weights = quote(ss[["weights"]]),
+        weights = ss[["weights"]],
         tau = tau,
         ...
       ))
+      ocall <- as.character(fit$call)
+      ocall[5] <- "weights"
+      fit$call <- as.call(str2expression(ocall))
       return(fit)
     }, mc.cores = cores)
     names(fits) <- ss[["taus"]]
@@ -301,10 +306,13 @@ fitGrowthrq <- function(ss, cores = getOption("mc.cores", 1), ...) {
     fits <- do.call("rq", args = list(
       formula = ss[["formula"]],
       data = quote(ss[["df"]]),
-      weights = quote(ss[["weights"]]),
+      weights = ss[["weights"]],
       tau = ss[["taus"]],
       ...
     ))
+    ocall <- as.character(fits$call)
+    ocall[5] <- "weights"
+    fits$call <- as.call(str2expression(ocall))
   }
   return(fits)
 }

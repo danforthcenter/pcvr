@@ -14,7 +14,7 @@ fitGrowthnlrqgam(ss, cores = getOption("mc.cores", 1), ...)
 \item{...}{Additional arguments passed to \code{quantreg::rq}.}
 }
 \value{
-An \code{lm} object, see \code{?lm} for details.
+An \code{rq} object, see \code{?rq} for details.
 }
 \description{
 Helper function generally called from \link{fitGrowth}.
