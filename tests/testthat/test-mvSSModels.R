@@ -65,7 +65,7 @@ m2 <- mvSim(dists = list(rnorm = list(mean = 85, sd = 25),
                          wide = FALSE, n = 6)
 m2$time <- rep(1:4, times = 6*180)
 mv_df2 <- rbind(m1, m2)
-mv_df2$group <- rep(c("a", "b"), times = 4320)
+mv_df2$group <- rep(c("a", "b"), each = 4320)
 mv_df2 <- mv_df2[mv_df2$value > 0, ]
 mv_df2$label <- as.numeric(gsub("sim_", "", mv_df2$variable))
 
@@ -76,15 +76,34 @@ test_that("Test brms mv trait longitudinal model", {
   ss_mv1 <- mvSS(model = "linear", form = label | value ~ time | group, df = mv_df2,
                  start = list("A" = 50), type = "brms", spectral_index = "ci_rededge")
   fit <- fitGrowth(ss_mv1, backend = "cmdstanr", iter = 600, chains = 1, cores = 1)
-  growthPlot(fit, form = ss_mv1$pcvrForm)
+  expect_s3_class(fit, "brmsfit")
+  p <- growthPlot(fit, ss_mv1$pcvrForm, df = ss_mv1$df)
+  expect_s3_class(p, "ggplot")
 })
 
+test_that("Test nls mv trait longitudinal model", {
+  skip_on_cran()
+  ss_mv1 <- mvSS(model = "linear", form = label | value ~ time | group, df = mv_df2,
+                 type = "nls", spectral_index = "ci_rededge")
+  fit <- fitGrowth(ss_mv1)
+  expect_s3_class(fit, "nls")
+  p <- growthPlot(fit, ss_mv1$pcvrForm, df = ss_mv1$df)
+  expect_s3_class(p, "ggplot")
+})
 
-
-
-
-
-
-
-
-
+test_that("Test nlrq mv trait longitudinal model", {
+  skip_on_cran()
+  ss_mv1 <- mvSS(model = "linear", form = label | value ~ time | group, df = mv_df2,
+                 type = "nlrq", spectral_index = "ci_rededge")
+  fit <- fitGrowth(ss_mv1)
+  expect_s3_class(fit, "nlrq")
+  p <- growthPlot(fit, ss_mv1$pcvrForm, df = ss_mv1$df)
+  expect_s3_class(p, "ggplot")
+  
+  ss_mv2 <- mvSS(model = "linear", form = label | value ~ time | group, df = mv_df2,
+                 type = "nlrq", spectral_index = "ci_rededge", tau = c(0.4, 0.5, 0.6))
+  fit2 <- fitGrowth(ss_mv2)
+  expect_s3_class(fit2[[1]], "nlrq")
+  p2 <- growthPlot(fit2, ss_mv2$pcvrForm, df = ss_mv2$df)
+  expect_s3_class(p2, "ggplot")
+})
