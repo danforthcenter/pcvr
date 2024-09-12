@@ -322,7 +322,7 @@
   #* ***** `Return Components` *****
   out[["initfun"]] <- wrapper
   out[["df"]] <- df
-  out[["family"]] <- "student"
+  out[["family"]] <- family
   out[["pcvrForm"]] <- form
   return(out)
 }
