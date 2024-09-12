@@ -175,7 +175,7 @@ fitGrowthnlsgam <- function(ss, ...) {
   fit <- stats::lm(
     formula = ss[["formula"]],
     data = ss[["df"]],
-    weights = ss[["weights"]], ...
+    ...
   )
   return(fit)
 }
