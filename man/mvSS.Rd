@@ -22,6 +22,8 @@ mvSS(
 )
 }
 \arguments{
+\item{model}{A model specification as in \link{growthSS}.}
+
 \item{form}{A formula similar to \code{label | value ~ time + id/group} where label is a column
 of histogram bins, value is the counts within those bins, time is an optional time variable,
 id identifies an individual, and group contains the treatment groups.}
@@ -62,7 +64,7 @@ mv_df$label <- as.numeric(gsub("sim_", "", mv_df$variable))
 
 ss1 <- mvSS(
   model = "linear", form = label | value ~ group, df = mv_df,
-  start = list("A" = 5), type = "brms", spectral_index = "ci_rededge"
+  start = list("A" = 5), type = "brms", spectral_index = "none"
 )
 \donttest{
 mod1 <- fitGrowth(ss1, backend = "cmdstanr", iter = 1000, chains = 1, cores = 1)
@@ -120,8 +122,10 @@ unlist(lapply(names(ss_mv1), function(nm) {
 }))
 
 \donttest{
+if (rlang::is_installed("mnormt")){
 m2 <- fitGrowth(ss_mv1, backend = "cmdstanr", iter = 1000, chains = 1, cores = 1)
 growthPlot(m2, ss_mv1$pcvrForm, df = ss_mv1$df)
+}
 }
 
 }

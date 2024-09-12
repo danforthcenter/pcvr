@@ -31,7 +31,7 @@
 #'
 #' ss1 <- mvSS(
 #'   model = "linear", form = label | value ~ group, df = mv_df,
-#'   start = list("A" = 5), type = "brms", spectral_index = "ci_rededge"
+#'   start = list("A" = 5), type = "brms", spectral_index = "none"
 #' )
 #' \donttest{
 #' mod1 <- fitGrowth(ss1, backend = "cmdstanr", iter = 1000, chains = 1, cores = 1)
@@ -89,8 +89,10 @@
 #' }))
 #'
 #' \donttest{
+#' if (rlang::is_installed("mnormt")){
 #' m2 <- fitGrowth(ss_mv1, backend = "cmdstanr", iter = 1000, chains = 1, cores = 1)
 #' growthPlot(m2, ss_mv1$pcvrForm, df = ss_mv1$df)
+#' }
 #' }
 #'
 #' @export

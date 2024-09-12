@@ -12,6 +12,7 @@ mv_df$label <- as.numeric(gsub("sim_", "", mv_df$variable))
 test_that("Test brms mv trait non-longitudinal model", {
   skip_if_not_installed("brms")
   skip_if_not_installed("cmdstanr")
+  skip_if_not_installed("mnormt")
   skip_on_cran()
   ss1 <- mvSS(
     model = "linear", form = label | value ~ group, df = mv_df,
@@ -40,7 +41,7 @@ test_that("Test nlrq mv trait non-longitudinal model", {
   skip_on_cran()
   ss1 <- mvSS(
     model = "linear", form = label | value ~ group, df = mv_df, tau = 0.5,
-    start = list("A" = 5), type = "nlrq", spectral_index = "ci_rededge"
+    start = list("A" = 5), type = "nlrq", spectral_index = "none"
   )
   mod1 <- fitGrowth(ss1)
   expect_s3_class(mod1, "rq")
@@ -49,7 +50,7 @@ test_that("Test nlrq mv trait non-longitudinal model", {
 
   ss2 <- mvSS(
     model = "linear", form = label | value ~ group, df = mv_df, tau = seq(0.3, 0.7, 0.1),
-    start = list("A" = 5), type = "nlrq", spectral_index = "ci_rededge"
+    start = list("A" = 5), type = "nlrq", spectral_index = "none"
   )
   suppressWarnings(mod2 <- fitGrowth(ss2))
   expect_s3_class(mod2[[1]], "rq")
@@ -87,10 +88,11 @@ mv_df2$label <- as.numeric(gsub("sim_", "", mv_df2$variable))
 test_that("Test brms mv trait longitudinal model", {
   skip_if_not_installed("brms")
   skip_if_not_installed("cmdstanr")
+  skip_if_not_installed("mnormt")
   skip_on_cran()
   ss_mv1 <- mvSS(
     model = "linear", form = label | value ~ time | group, df = mv_df2,
-    start = list("A" = 50), type = "brms", spectral_index = "ci_rededge"
+    start = list("A" = 50), type = "brms", spectral_index = "none"
   )
   fit <- fitGrowth(ss_mv1, backend = "cmdstanr", iter = 600, chains = 1, cores = 1)
   expect_s3_class(fit, "brmsfit")
