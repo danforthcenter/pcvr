@@ -82,7 +82,7 @@ m2 <- mvSim(dists = list(rnorm = list(mean = 85, sd = 25),
                          wide = FALSE, n = 6)
 m2$time <- rep(1:4, times = 6*180)
 mv_df2 <- rbind(m1, m2)
-mv_df2$group <- rep(c("a", "b"), times = 4320)
+mv_df2$group <- rep(c("a", "b"), each = 4320)
 mv_df2 <- mv_df2[mv_df2$value > 0, ]
 mv_df2$label <- as.numeric(gsub("sim_", "", mv_df2$variable))
 

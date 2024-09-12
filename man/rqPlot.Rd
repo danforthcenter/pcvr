@@ -25,7 +25,7 @@ predictor, and grouping structure of the data as \code{outcome ~ predictor|indiv
 If the individual and group are specified then the observed growth lines are plotted.}
 
 \item{df}{A dataframe to use in plotting observed growth curves on top of the model.
-This must be supplied for nlrq models.}
+This must be supplied for rq models.}
 
 \item{groups}{An optional set of groups to keep in the plot.
 Defaults to NULL in which case all groups in the model are plotted.}
