@@ -82,7 +82,7 @@ nlrqPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL,
   keep <- which(!duplicated(preds))
   plotdf <- cbind(df[keep, ], preds[keep, ])
   colnames(plotdf) <- c(colnames(df), colnames(preds))
-
+  
   #* `facetGroups`
   facet_layer <- NULL
   if (facetGroups) {
@@ -125,7 +125,7 @@ nlrqPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL,
     individual_lines +
     labs(x = x, y = as.character(form)[2]) +
     pcv_theme()
-
+  
   for (g in seq_along(unique(plotdf[[group]]))) {
     iteration_group <- unique(plotdf[[group]])[g]
     sub <- plotdf[plotdf[[group]] == iteration_group, ]
@@ -135,6 +135,6 @@ nlrqPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL,
                            color = virList[[g]][i], linewidth = 0.7)
       })
   }
-
+  
   return(plot)
 }

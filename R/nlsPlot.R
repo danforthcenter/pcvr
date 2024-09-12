@@ -47,6 +47,71 @@ nlsPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL,
                     facetGroups = TRUE, groupFill = FALSE, virMaps = c("plasma")) {
   #* `get needed information from formula`
   parsed_form <- .parsePcvrForm(form, df)
+  #* `pick longitudinal or non-longitudinal helper`
+  if (!is.numeric(df[, parsed_form$x]) & !parsed_form$USEG & !parsed_form$USEID) {
+    p <- .nlsStaticPlot(fit, form, df, groups, timeRange,
+                        facetGroups, groupFill, virMaps, parsed_form)
+    return(p)
+  }
+  p <- .nlsLongitudinalPlot(fit, form, df, groups, timeRange,
+                            facetGroups, groupFill, virMaps, parsed_form)
+  return(p)
+}
+
+#' @keywords internal
+#' @noRd
+
+.nlsStaticPlot <- function(fit, form, df, groups, timeRange,
+                                 facetGroups, groupFill, virMaps, parsed_form) {
+  y <- parsed_form$y
+  x <- parsed_form$x
+  df <- parsed_form$data
+  #* `when implemented SE can be added here, see ?predict.nls`
+  summary_df <- as.data.frame(coef(summary(mod1)))
+  colnames(summary_df) <- c("est", "err", "t", "p")
+  summary_df[[x]] <- rownames(summary_df)
+  summary_df[1, x] <- paste0(x, unique(df[[x]])[1])
+  summary_df[["est"]] <- cumsum(summary_df[["est"]])
+  #* `filter by groups if groups != NULL`
+  if (!is.null(groups)) {
+    summary_df <- summary_df[summary_df[[x]] %in% groups, ]
+  }
+  #* `facetGroups`
+  facet_layer <- NULL
+  if (facetGroups) {
+    facet_layer <- ggplot2::facet_wrap(stats::as.formula(paste0("~", x)))
+  }
+  #* `groupFill`
+  if (groupFill) {
+    virVals <- unlist(lapply(rep(virMaps, length.out = length(unique(summary_df[[x]]))),
+                             function(pal) {
+                               viridis::viridis(1, begin = 0.5, option = pal)
+                               }))
+    color_scale <- ggplot2::scale_color_manual(values = virVals)
+  } else {
+    color_scale <- ggplot2::scale_color_manual(values = rep("#CC4678FF", length(unique(df[[x]]))))
+  }
+  #* `plot`
+  plot <- ggplot(summary_df, ggplot2::aes(group = interaction(.data[[x]]))) +
+    facet_layer +
+    ggplot2::geom_errorbar(ggplot2::aes(
+      x = .data[[x]],
+      ymin = .data[["est"]] - 2 * .data[["err"]],
+      ymax = .data[["est"]] + 2 * .data[["err"]]
+    ), width = 0.25) +
+    ggplot2::geom_point(ggplot2::aes(x = .data[[x]], y = .data[["est"]], color = .data[[x]]),
+                        size = 4) +
+    color_scale +
+    labs(x = x, y = as.character(form)[2]) +
+    pcv_theme()
+  return(plot)
+}
+
+#' @keywords internal
+#' @noRd
+
+.nlsLongitudinalPlot <- function(fit, form, df, groups, timeRange,
+                                 facetGroups, groupFill, virMaps, parsed_form) {
   y <- parsed_form$y
   x <- parsed_form$x
   individual <- parsed_form$individual
@@ -69,12 +134,12 @@ nlsPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL,
     new_data <- NULL
   }
   #* `add predictions`
-
+  
   preds <- data.frame(pred = stats::predict(fit, newdata = new_data))
   keep <- which(!duplicated(preds$pred))
   plotdf <- df[keep, ]
   plotdf$pred <- preds[keep, "pred"]
-
+  
   #* `when implemented SE can be added here, see ?predict.nls`
   #*
   #* `layer for individual lines if formula was complete`
@@ -105,7 +170,7 @@ nlsPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL,
   } else {
     color_scale <- ggplot2::scale_color_manual(values = rep("#CC4678FF", length(unique(df[[group]]))))
   }
-
+  
   #* `plot`
   plot <- ggplot(plotdf, ggplot2::aes(group = interaction(.data[[group]]))) +
     facet_layer +
@@ -115,7 +180,7 @@ nlsPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL,
     color_scale +
     labs(x = x, y = as.character(form)[2]) +
     pcv_theme()
-
+  
   return(plot)
 }
 

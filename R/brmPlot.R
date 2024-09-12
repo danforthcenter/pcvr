@@ -48,6 +48,19 @@ brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
                     hierarchy_value = NULL, vir_option = "plasma") {
   fitData <- fit$data
   parsed_form <- .parsePcvrForm(form, df)
+  if (!is.numeric(fitData[, parsed_form$x]) & !parsed_form$USEG & !parsed_form$USEID) {
+    p <- .brmStaticPlot(fit, form, df, groups, facetGroups, vir_option, fitData, parsed_form)
+    return(p)
+  }
+  p <- .brmLongitudinalPlot(fit, form, df, groups, timeRange, facetGroups,
+                            hierarchy_value, vir_option, fitData, parsed_form)
+  return(p)
+}
+
+#' @keywords internal
+#' @noRd
+.brmStaticPlot <- function(fit, form, df = NULL, groups = NULL, facetGroups = TRUE,
+                           vir_option = "plasma", fitData, parsed_form) {
   y <- parsed_form$y
   x <- parsed_form$x
   individual <- parsed_form$individual
@@ -57,13 +70,86 @@ brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
   }
   group <- parsed_form$group
   df <- parsed_form$data
-
   probs <- seq(from = 99, to = 1, by = -2) / 100
+  newData <- data.frame(
+    x = unique(fitData[[x]])
+  )
+  colnames(newData) <- x
+  predictions <- cbind(newData, predict(fit, newData, probs = probs))
+  if (!is.null(groups)) {
+    predictions <- predictions[predictions$group %in% groups, ]
+    if (!is.null(df)) {
+      df <- df[df[[group]] %in% groups, ]
+    }
+  }
+  #* `facetGroups`
+  facetLayer <- NULL
+  if (facetGroups && length(unique(fitData[[group]])) > 1) {
+    facetLayer <- ggplot2::facet_wrap(as.formula(paste0("~", group)))
+  }
+  #* `lengthen predictions`
+  max_prime <- 0.99
+  min_prime <- 0.01
+  max_obs <- 49
+  min_obs <- 1
+  c1 <- (max_prime - min_prime) / (max_obs - min_obs)
+  longPreds <- do.call(rbind, lapply(seq_len(nrow(predictions)), function(r) {
+    sub <- predictions[r, ]
+    do.call(rbind, lapply(seq(1, 49, 2), function(i) {
+      min <- paste0("Q", i)
+      max <- paste0("Q", 100 - i)
+      iter <- sub[, c(x,"Estimate")]
+      iter$q <- round(1 - (c1 * (i - max_obs) + max_prime), 2)
+      iter$min <- sub[[min]]
+      iter$max <- sub[[max]]
+      iter
+    }))
+  }))
+  #* `Make Numeric Groups`
+  longPreds$numericGroup <- as.numeric(as.factor(longPreds[[x]]))
+  #* `Make plot`
+  p <- ggplot2::ggplot(longPreds, ggplot2::aes(x = .data[[x]], y = .data$Estimate)) +
+    facetLayer +
+    ggplot2::labs(x = x, y = y) +
+    pcv_theme()
+  p <- p +
+    lapply(unique(longPreds$q), function(q) {
+      ggplot2::geom_rect(
+        data = longPreds[longPreds$q == q, ],
+        ggplot2::aes(
+          xmin = .data[["numericGroup"]] - c(0.45 * (1 - .data[["q"]])),
+          xmax = .data[["numericGroup"]] + c(0.45 * (1 - .data[["q"]])),
+          ymin = .data[["min"]],
+          ymax = .data[["max"]],
+          group = .data[[x]],
+          fill = .data[["q"]]
+        ), alpha = 0.5
+      )
+    }) +
+    viridis::scale_fill_viridis(direction = -1, option = vir_option) +
+    ggplot2::labs(fill = "Credible\nInterval")
+  return(p)
+}
+#' @keywords internal
+#' @noRd
 
+.brmLongitudinalPlot <- function(fit, form, df = NULL, groups = NULL,
+                                 timeRange = NULL, facetGroups = TRUE,
+                                 hierarchy_value = NULL, vir_option = "plasma",
+                                 fitData, parsed_form) {
+  y <- parsed_form$y
+  x <- parsed_form$x
+  individual <- parsed_form$individual
+  hierarchical_predictor <- parsed_form$hierarchical_predictor
+  if (individual == "dummyIndividual") {
+    individual <- NULL
+  }
+  group <- parsed_form$group
+  df <- parsed_form$data
+  probs <- seq(from = 99, to = 1, by = -2) / 100
   if (is.null(timeRange)) {
     timeRange <- unique(fitData[[x]])
   }
-
   newData <- data.frame(
     x = rep(timeRange, times = length(unique(fitData[[group]]))),
     group = rep(unique(fitData[[group]]), each = length(timeRange)),
@@ -77,14 +163,13 @@ brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
     newData[[hierarchical_predictor]] <- hierarchy_value
   }
   predictions <- cbind(newData, predict(fit, newData, probs = probs))
-
+  
   if (!is.null(groups)) {
     predictions <- predictions[predictions$group %in% groups, ]
     if (!is.null(df)) {
       df <- df[df[[group]] %in% groups, ]
     }
   }
-
   #* `facetGroups`
   facetLayer <- NULL
   if (facetGroups && length(unique(fitData[[group]])) > 1) {
@@ -96,7 +181,6 @@ brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
   max_obs <- 49
   min_obs <- 1
   c1 <- (max_prime - min_prime) / (max_obs - min_obs)
-
   longPreds <- do.call(rbind, lapply(seq_len(nrow(predictions)), function(r) {
     sub <- predictions[r, ]
     do.call(rbind, lapply(seq(1, 49, 2), function(i) {
@@ -109,12 +193,11 @@ brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
       iter
     }))
   }))
-
+  #* `Make plot`
   p <- ggplot2::ggplot(longPreds, ggplot2::aes(x = .data[[x]], y = .data$Estimate)) +
     facetLayer +
     ggplot2::labs(x = x, y = y) +
     pcv_theme()
-
   p <- p +
     lapply(unique(longPreds$q), function(q) {
       ggplot2::geom_ribbon(
@@ -129,14 +212,21 @@ brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
     }) +
     viridis::scale_fill_viridis(direction = -1, option = vir_option) +
     ggplot2::labs(fill = "Credible\nInterval")
-
+  
   if (!is.null(df) && !is.null(individual)) {
     p <- p + ggplot2::geom_line(
       data = df, ggplot2::aes(.data[[x]], .data[[y]],
-        group = interaction(.data[[individual]], .data[[group]])
+                              group = interaction(.data[[individual]], .data[[group]])
       ),
       color = "gray20", linewidth = 0.2
     )
   }
   return(p)
 }
+
+
+
+
+
+
+
