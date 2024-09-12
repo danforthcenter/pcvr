@@ -70,7 +70,7 @@ nlsPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL,
   x <- parsed_form$x
   df <- parsed_form$data
   #* `when implemented SE can be added here, see ?predict.nls`
-  summary_df <- as.data.frame(coef(summary(mod1)))
+  summary_df <- as.data.frame(coef(summary(fit)))
   colnames(summary_df) <- c("est", "err", "t", "p")
   summary_df[[x]] <- rownames(summary_df)
   summary_df[1, x] <- paste0(x, unique(df[[x]])[1])
