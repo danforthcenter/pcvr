@@ -61,9 +61,10 @@ mv_df <- mv_df[mv_df$value > 0, ]
 mv_df$label <- as.numeric(gsub("sim_", "", mv_df$variable))
 
 ss1 <- mvSS(model = "linear", form = label | value ~ group, df = mv_df,
-            start = list("A" = 5), type = "brms", spectral_index = "none")
+            start = list("A" = 5), type = "brms", spectral_index = "ci_rededge")
 \donttest{
-fitGrowth(ss1, backend = "cmdstanr", iter = 1000, chains = 1, cores = 1)
+mod1 <- fitGrowth(ss1, backend = "cmdstanr", iter = 1000, chains = 1, cores = 1)
+growthPlot(mod1, ss1$pcvrForm, df = ss1$df)
 }
 
 # when the model is longitudinal the same model is possible with growthSS
@@ -101,6 +102,11 @@ if(!identical(ss_mv1[[nm]], ss_mv2[[nm]], ignore.environment = TRUE,
   }
 }
 }))
+
+\donttest{
+m2 <- fitGrowth(ss_mv1, backend = "cmdstanr", iter = 1000, chains = 1, cores = 1)
+growthPlot(m2, ss_mv1$pcvrForm, df = ss_mv1$df)
+}
 
 }
 \keyword{multi-value}
