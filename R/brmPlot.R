@@ -47,7 +47,7 @@ brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
   fitData <- fit$data
   parsed_form <- .parsePcvrForm(form, df)
   if (!is.numeric(fitData[, parsed_form$x]) && !parsed_form$USEG && !parsed_form$USEID) {
-    p <- .brmStaticPlot(fit, form, df, groups, facetGroups, vir_option, fitData, parsed_form)
+    p <- .brmStaticPlot(fit, form, df, groups, vir_option, fitData, parsed_form)
     return(p)
   }
   p <- .brmLongitudinalPlot(
@@ -59,7 +59,7 @@ brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
 
 #' @keywords internal
 #' @noRd
-.brmStaticPlot <- function(fit, form, df = NULL, groups = NULL, facetGroups = TRUE,
+.brmStaticPlot <- function(fit, form, df = NULL, groups = NULL,
                            vir_option = "plasma", fitData, parsed_form) {
   y <- parsed_form$y
   x <- parsed_form$x
@@ -76,15 +76,10 @@ brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
   colnames(newData) <- x
   predictions <- cbind(newData, predict(fit, newData, probs = probs))
   if (!is.null(groups)) {
-    predictions <- predictions[predictions$group %in% groups, ]
+    predictions <- predictions[predictions[[x]] %in% groups, ]
     if (!is.null(df)) {
-      df <- df[df[[group]] %in% groups, ]
+      df <- df[df[[x]] %in% groups, ]
     }
-  }
-  #* `facetGroups`
-  facetLayer <- NULL
-  if (facetGroups && length(unique(fitData[[group]])) > 1) {
-    facetLayer <- ggplot2::facet_wrap(as.formula(paste0("~", group)))
   }
   #* `lengthen predictions`
   max_prime <- 0.99
@@ -108,7 +103,6 @@ brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
   longPreds$numericGroup <- as.numeric(as.factor(longPreds[[x]]))
   #* `Make plot`
   p <- ggplot2::ggplot(longPreds, ggplot2::aes(x = .data[[x]], y = .data$Estimate)) +
-    facetLayer +
     ggplot2::labs(x = x, y = y) +
     pcv_theme()
   p <- p +

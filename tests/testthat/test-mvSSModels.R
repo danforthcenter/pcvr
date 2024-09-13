@@ -1,5 +1,21 @@
 library(testthat)
 
+test_that("Test spectral index helpers", {
+  indices <- c(
+    "none", "ari", "ci_rededge", "cri550", "cri700",
+    "egi", "evi", "gdvi", "mari", "mcari", "mtci", "ndre",
+    "ndvi", "pri", "psnd_chlorophyll_a", "psnd_chlorophyll_b",
+    "psnd_caroteniods", "psri", "pssr_chlorophyll_a",
+    "pssr_chlorophyll_b", "pssr_caroteniods", "rgri",
+    "rvsi", "savi", "sipi", "sr", "vari", "vi_green", "wi",
+    "fvfm", "fqfm"
+  )
+  for (index in indices) {
+    fun <- get(paste0(".", index, "_mvss_hlp"))
+    expect_equal(names(fun()), c("trunc", "family"))
+  }
+})
+
 #* `Non-Longitudinal Multi-Value Trait Models`
 
 set.seed(123)
@@ -9,7 +25,7 @@ mv_df <- mv_df[mv_df$value > 0, ]
 mv_df$label <- as.numeric(gsub("sim_", "", mv_df$variable))
 
 
-test_that("Test brms mv trait non-longitudinal model", {
+test_that("Test brms mv trait non-longitudinal model skew model", {
   skip_if_not_installed("brms")
   skip_if_not_installed("cmdstanr")
   skip_if_not_installed("mnormt")
@@ -25,6 +41,21 @@ test_that("Test brms mv trait non-longitudinal model", {
   expect_s3_class(p, "ggplot")
 })
 
+test_that("Test brms mv trait non-longitudinal model", {
+  skip_if_not_installed("brms")
+  skip_if_not_installed("cmdstanr")
+  skip_on_cran()
+  ss1 <- mvSS(
+    model = "linear", form = label | value ~ group, df = mv_df,
+    start = list("A" = 5), type = "brms", spectral_index = "none"
+  )
+  expect_equal(ss1$family, "student")
+  mod1 <- fitGrowth(ss1, backend = "cmdstanr", iter = 1000, chains = 1, cores = 1)
+  expect_s3_class(mod1, "brmsfit")
+  p <- growthPlot(mod1, ss1$pcvrForm, df = ss1$df)
+  expect_s3_class(p, "ggplot")
+})
+
 test_that("Test nls mv trait non-longitudinal model", {
   skip_on_cran()
   ss1 <- mvSS(
@@ -34,6 +65,8 @@ test_that("Test nls mv trait non-longitudinal model", {
   mod1 <- fitGrowth(ss1)
   expect_s3_class(mod1, "lm")
   p <- growthPlot(mod1, ss1$pcvrForm, df = ss1$df)
+  expect_s3_class(p, "ggplot")
+  p2 <- growthPlot(mod1, ss1$pcvrForm, df = ss1$df, groups = "groupa")
   expect_s3_class(p, "ggplot")
 })
 
@@ -54,7 +87,7 @@ test_that("Test nlrq mv trait non-longitudinal model", {
   )
   suppressWarnings(mod2 <- fitGrowth(ss2))
   expect_s3_class(mod2[[1]], "rq")
-  p2 <- growthPlot(mod2, ss2$pcvrForm, df = ss2$df)
+  p2 <- growthPlot(mod2, ss2$pcvrForm, df = ss2$df, groups = "groupa")
   expect_s3_class(p2, "ggplot")
 })
 
@@ -88,7 +121,6 @@ mv_df2$label <- as.numeric(gsub("sim_", "", mv_df2$variable))
 test_that("Test brms mv trait longitudinal model", {
   skip_if_not_installed("brms")
   skip_if_not_installed("cmdstanr")
-  skip_if_not_installed("mnormt")
   skip_on_cran()
   ss_mv1 <- mvSS(
     model = "linear", form = label | value ~ time | group, df = mv_df2,

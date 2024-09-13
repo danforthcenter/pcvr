@@ -107,6 +107,14 @@ rqPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facetG
   }
   #* `groupFill`
   n_taus <- length(unique(summary_df$tau))
+
+  virpal_p1 <- viridis::plasma(ceiling(n_taus / 2), direction = 1, end = 1)
+  virpal_p2 <- viridis::plasma(ceiling(n_taus / 2), direction = -1, end = 1)[-1]
+  virpal <- c(virpal_p1, virpal_p2)
+  virList <- lapply(seq_along(unique(summary_df[[x]])), function(i) {
+    virpal
+  })
+
   if (groupFill) {
     virList <- lapply(rep(virMaps, length.out = length(unique(summary_df[[x]]))), function(pal) {
       virpal_p1 <- viridis::viridis(ceiling(n_taus / 2),
@@ -117,14 +125,8 @@ rqPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facetG
       )[-1]
       c(virpal_p1, virpal_p2)
     })
-  } else {
-    virpal_p1 <- viridis::plasma(ceiling(n_taus / 2), direction = 1, end = 1)
-    virpal_p2 <- viridis::plasma(ceiling(n_taus / 2), direction = -1, end = 1)[-1]
-    virpal <- c(virpal_p1, virpal_p2)
-    virList <- lapply(seq_along(unique(summary_df[[x]])), function(i) {
-      virpal
-    })
   }
+
   #* `plot`
   plot <- ggplot(summary_df, ggplot2::aes(group = interaction(.data[[x]]))) +
     facet_layer +

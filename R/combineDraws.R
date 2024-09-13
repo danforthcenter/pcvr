@@ -139,10 +139,8 @@ combineDraws <- function(..., message = TRUE) {
 
     if (nrow(draws) < limit_size) {
       if (message) {
-        message(paste0(
-          mn, " has fewer than ", limit_size, " draws and will be padded with ",
-          limit_size - nrow(draws), " NAs\n"
-        ))
+        message(paste0(mn, " has fewer than ", limit_size, " draws and will be padded with ",
+                       limit_size - nrow(draws), " NAs\n"))
       }
       draws[(nrow(draws) + 1):limit_size, ] <- NA
       draws
@@ -156,10 +154,8 @@ combineDraws <- function(..., message = TRUE) {
       dn <- df_names[[i]]
       if (nrow(df) < limit_size) {
         if (message) {
-          message(paste0(
-            dn, " has fewer than ", limit_size, " draws and will be padded with ",
-            limit_size - nrow(df), " NAs\n"
-          ))
+          message(paste0(dn, " has fewer than ", limit_size, " draws and will be padded with ",
+                         limit_size - nrow(df), " NAs\n"))
         }
         df[(nrow(df) + 1):limit_size, ] <- NA
       }

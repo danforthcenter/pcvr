@@ -85,15 +85,14 @@ nlsPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL,
     facet_layer <- ggplot2::facet_wrap(stats::as.formula(paste0("~", x)))
   }
   #* `groupFill`
-  if (groupFill) {
-    virVals <- unlist(lapply(
-      rep(virMaps, length.out = length(unique(summary_df[[x]]))),
-      function(pal) {
-        viridis::viridis(1, begin = 0.5, option = pal)
-      }
-    ))
-    color_scale <- ggplot2::scale_color_manual(values = virVals)
-  } else {
+  virVals <- unlist(lapply(
+    rep(virMaps, length.out = length(unique(summary_df[[x]]))),
+    function(pal) {
+      viridis::viridis(1, begin = 0.5, option = pal)
+    }
+  ))
+  color_scale <- ggplot2::scale_color_manual(values = virVals)
+  if (!groupFill) {
     color_scale <- ggplot2::scale_color_manual(values = rep("#CC4678FF", length(unique(df[[x]]))))
   }
   #* `plot`
