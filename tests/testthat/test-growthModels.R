@@ -413,19 +413,19 @@ gomp_df <- growthSim("gompertz",
 
 test_that("Test nls gam modeling", {
   skip_on_cran()
-  ss <- suppressMessages(growthSS(
+  ss1 <- suppressMessages(growthSS(
     model = "gam", form = y ~ time | id / group,
     df = gomp_df, type = "nls"
   ))
-  expect_equal(as.character(ss$formula), as.character(y ~ bs(time) * group))
+  expect_equal(as.character(ss1$formula), as.character(y ~ bs(time) * group))
 
-  fit <- fitGrowth(ss)
+  fit <- fitGrowth(ss1)
   expect_s3_class(fit, "lm")
 
-  p <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
+  p <- growthPlot(fit = fit, form = ss1$pcvrForm, df = ss1$df)
   expect_s3_class(p, "ggplot")
 
-  av <- testGrowth(ss = ss, fit)$anova
+  av <- testGrowth(ss = ss1, fit)$anova
   expect_s3_class(av, "anova")
 })
 

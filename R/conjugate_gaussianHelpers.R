@@ -6,9 +6,9 @@
 #' @param s1 A vector of numerics drawn from a gaussian distribution.
 #' @examples
 #' .conj_gaussian_sv(
-#'  s1 = rnorm(100, 50, 10),
-#'  priors = list(mu = c(0, 0), n = c(1, 1), s2 = c(20, 20)),
-#'  plot = FALSE, support = NULL
+#'   s1 = rnorm(100, 50, 10),
+#'   priors = list(mu = c(0, 0), n = c(1, 1), s2 = c(20, 20)),
+#'   plot = FALSE, support = NULL
 #' )
 #' @keywords internal
 #' @noRd

@@ -274,15 +274,19 @@ if (FALSE) {
     }, mc.cores = 10))
   }))
 
-  ggplot(res_main[res_main$param == "kappa", ],
-         aes(x = value, group = data, fill = data)) +
+  ggplot(
+    res_main[res_main$param == "kappa", ],
+    aes(x = value, group = data, fill = data)
+  ) +
     facet_wrap(~n) +
     geom_histogram(alpha = 0.75, position = "identity") +
     pcv_theme() +
     labs(title = "kappa")
 
-  ggplot(res_main[res_main$param == "mu" & res_main$quantity == "hde", ],
-         aes(x = value, group = data, fill = data)) +
+  ggplot(
+    res_main[res_main$param == "mu" & res_main$quantity == "hde", ],
+    aes(x = value, group = data, fill = data)
+  ) +
     facet_wrap(~n) +
     geom_histogram(alpha = 0.75, position = "identity") +
     pcv_theme() +

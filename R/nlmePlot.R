@@ -123,9 +123,13 @@ nlmePlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, face
     iteration_group <- unique(preds[[group]])[g]
     sub <- preds[preds[[group]] == iteration_group, ]
     plot <- plot +
-      ggplot2::geom_ribbon(data = sub, ggplot2::aes(ymin = .data[["sigma_ymin"]],
-                                                    ymax = .data[["sigma_ymax"]]),
-                           fill = virList[[g]][1], alpha = 0.5) +
+      ggplot2::geom_ribbon(
+        data = sub, ggplot2::aes(
+          ymin = .data[["sigma_ymin"]],
+          ymax = .data[["sigma_ymax"]]
+        ),
+        fill = virList[[g]][1], alpha = 0.5
+      ) +
       ggplot2::geom_line(data = sub, color = virList[[g]][2], linewidth = 0.75)
   }
 
@@ -149,8 +153,10 @@ nlmePlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, face
     } else if (methods::is(fit$modelStruct$varStruct, "varIdent")) {
       baseSigma <- fit$sigma
       varSummary <- summary(fit$modelStruct$varStruct)
-      coefs <- data.frame(x = 1 / unique(attr(varSummary, "weight")),
-                          g = unique(attr(varSummary, "groups")))
+      coefs <- data.frame(
+        x = 1 / unique(attr(varSummary, "weight")),
+        g = unique(attr(varSummary, "groups"))
+      )
       out <- baseSigma * coefs[coefs$g == grp, "x"]
     }
 

@@ -53,11 +53,15 @@
 
   #* `make bayesian formula`
   if (model == "binomial") {
-    form_ret <- .brmsurv_binomial_formula(x = makeSurvDataRet$x, group = makeSurvDataRet$group,
-                                          df = out_df)
+    form_ret <- .brmsurv_binomial_formula(
+      x = makeSurvDataRet$x, group = makeSurvDataRet$group,
+      df = out_df
+    )
   } else if (model == "weibull") {
-    form_ret <- .brmsurv_weibull_formula(x = makeSurvDataRet$x, group = makeSurvDataRet$group,
-                                         df = out_df)
+    form_ret <- .brmsurv_weibull_formula(
+      x = makeSurvDataRet$x, group = makeSurvDataRet$group,
+      df = out_df
+    )
   }
   out[["family"]] <- form_ret$family
   out[["formula"]] <- form_ret$formula
@@ -92,7 +96,8 @@
       "Prior is numeric, replicating to ", length(unique(out_df[[makeSurvDataRet$group]])),
       " length 2 elements (mu, sd) and assuming order ",
       paste(unique(out_df[[makeSurvDataRet$group]]),
-            collapse = ", ")
+        collapse = ", "
+      )
     )
   }
   pars <- brms::get_prior(formula = form_ret$formula, data = out_df, family = form_ret$family)$coef

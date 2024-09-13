@@ -14,8 +14,8 @@
 #' @examples
 #'
 #' .conj_poisson_sv(
-#'  s1 = rpois(20, 10), priors = list(a = c(0.5, 0.5), b = c(0.5, 0.5)),
-#'  plot = FALSE
+#'   s1 = rpois(20, 10), priors = list(a = c(0.5, 0.5), b = c(0.5, 0.5)),
+#'   plot = FALSE
 #' )
 #'
 #' @keywords internal
@@ -62,8 +62,10 @@
   out$pdf <- pdf1
   #* `keep data for plotting`
   if (plot) {
-    out$plot_df <- data.frame("range" = support, "prob" = pdf1,
-                              "sample" = rep("Sample 1", length(support)))
+    out$plot_df <- data.frame(
+      "range" = support, "prob" = pdf1,
+      "sample" = rep("Sample 1", length(support))
+    )
   }
   return(out)
 }

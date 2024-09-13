@@ -1,5 +1,6 @@
-#' Ease of use growth model helper function. Output from this should be passed to \link{fitGrowth} to
-#' fit the specified model.
+#' Ease of use growth model helper function.
+#'
+#' Output from this should be passed to \link{fitGrowth} to fit the specified model.
 #'
 #' @param model The name of a model as a character string.
 #'  Supported options are c("logistic", "gompertz", "weibull", "frechet", "gumbel", "monomolecular",
@@ -217,7 +218,9 @@
 #' then this may be helpful, one situation may be canopy coverage percentage which is naturally bounded
 #' at an upper and lower limit.
 #' To specify these limits add square brackets to the Y term with upper and lower limits such as
-#' \code{"y[0,100] ~ time|id/group"}.
+#' \code{"y[0,100] ~ time|id/group"}. Other "Additional response information" such as resp_weights or
+#' standard errors can be specified using the \code{brms} backend, with those options documented fully
+#' in the \code{brms::brmsformula} details.
 #'
 #' There are also three supported submodel options for \code{nlme} models, but a \code{varFunc} object
 #' can also be supplied, see \code{?nlme::varClasses}.
@@ -319,10 +322,10 @@
 #' # the next step would typically be compiling/fitting the model
 #' # here we use very few chains and very few iterations for speed, but more of both is better.
 #' \donttest{
-#'   fit_test <- fitGrowth(ss,
-#'     iter = 500, cores = 1, chains = 1, backend = "cmdstanr",
-#'     control = list(adapt_delta = 0.999, max_treedepth = 20)
-#'   )
+#' fit_test <- fitGrowth(ss,
+#'   iter = 500, cores = 1, chains = 1, backend = "cmdstanr",
+#'   control = list(adapt_delta = 0.999, max_treedepth = 20)
+#' )
 #' }
 #'
 #'
@@ -344,7 +347,6 @@
 #' )
 #' ex2_ss$prior # has coef level grouping for priors
 #' ex2_ss$formula # specifies an A intercept for each group and splines by group for sigma
-#'
 #'
 #' @export
 
@@ -377,8 +379,10 @@ growthSS <- function(model, form, sigma = NULL, df, start = NULL,
     }
   } else {
     if (type_matched == "brms") {
-      res <- .brmSS(model = model, form = form, sigma = sigma, df = df, priors = start, int = int,
-                    hierarchy = hierarchy)
+      res <- .brmSS(
+        model = model, form = form, sigma = sigma, df = df, priors = start, int = int,
+        hierarchy = hierarchy
+      )
     } else if (type_matched %in% c("nlrq", "nls")) {
       res <- .nlrqSS(
         model = model, form = form, tau = tau, df = df, start = start, pars = pars,
@@ -388,8 +392,10 @@ growthSS <- function(model, form, sigma = NULL, df, start = NULL,
       if (is.null(sigma)) {
         sigma <- "power"
       }
-      res <- .nlmeSS(model = model, form = form, sigma = sigma, df = df, pars = pars,
-                     start = start, int = int)
+      res <- .nlmeSS(
+        model = model, form = form, sigma = sigma, df = df, pars = pars,
+        start = start, int = int
+      )
     } else if (type_matched == "mgcv") {
       res <- .mgcvSS(model = model, form = form, df = df)
     }

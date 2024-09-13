@@ -1,0 +1,893 @@
+---
+title: "Intermediate Growth Modeling with `pcvr`"
+subtitle: "pcvr v1.0.0"
+author: Josh Sumner
+format:
+  revealjs:
+    standalone: true
+    self-contained: true
+    theme: [moon, ../quartoSupport/solarizedDark.scss]
+    scrollable: true
+    template-partials: 
+      - ../quartoSupport/title-slide.html
+    title-slide-attributes: 
+      data-background-image: ../quartoSupport/datascience.png
+      data-background-size: 15%
+      data-background-position: 2% 2%
+output: ioslides_presentation
+editor: source
+---
+
+## Outline {.smaller}
+
+-   `pcvr` Goals
+-   Load Package
+-   Why Longitudinal Modeling?
+-   Supported Model Builders
+-   Supported Curves
+-   `growthSS`
+-   `fitGrowth`
+-   `growthPlot`
+-   `testGrowth`
+-   Resources
+
+## `pcvr` Goals
+
+Currently `pcvr` aims to:
+
+-   Make common tasks easier and consistent
+-   Make select Bayesian statistics easier
+
+There is room for goals to evolve based on feedback and scientific needs.
+
+## Load package {.smaller}
+
+Pre-work was to install R, Rstudio, and `pcvr` with dependencies.
+
+```{r}
+#| echo: false
+#| eval: true
+if (!"pcvr" %in% installed.packages()) {
+  if (!"devtools" %in% installed.packages()) {
+    install.packages("devtools")
+  }
+  devtools::install_github("danforthcenter/pcvr", dependencies = TRUE)
+}
+```
+
+```{r}
+#| echo: true
+library(pcvr) # or devtools::load_all() if you are editing
+library(ggplot2)
+library(patchwork)
+```
+
+## Why Longitudinal Modeling?
+
+`plantCV` allows for user friendly high throughput image based phenotyping
+
+. . .
+
+Resulting data follows individuals over time, which changes our statistical needs.
+
+## Why Longitudinal Modeling? 2
+
+Longitudinal Data is:
+
+-   Autocorrelated
+-   Often non-linear
+-   Heteroskedastic
+
+## Why Longitudinal Modeling? 3
+
+```{r}
+#| echo: false
+#| eval: true
+
+set.seed(123)
+simdf <- growthSim("logistic",
+  n = 10, t = 25,
+  params = list("A" = 200, "B" = 10, "C" = 2.25)
+)
+
+x1 <- 14
+x2 <- 15
+y1 <- simdf[simdf$time == x1 & simdf$id == "id_1", "y"]
+y2 <- simdf[simdf$time == x2 & simdf$id == "id_1", "y"]
+
+
+ggplot(simdf, aes(time, y, group = interaction(group, id))) +
+  geom_line() +
+  annotate("segment", x = x1, y = y1, xend = x1, yend = y2, color = "red") +
+  annotate("segment", x = x1, y = y2, xend = x2, yend = y2, color = "red") +
+  labs(title = "Autocorrelation") +
+  pcv_theme()
+
+
+#* simulate data
+#* show autocorrelation in a plot
+#* aka add rise/run segments to some line from the data from a day to the next day
+```
+
+## Why Longitudinal Modeling? 4
+
+```{r}
+#| echo: false
+#| eval: true
+simdf2 <- simdf
+
+nlPlot <- ggplot(simdf2, aes(time, y, group = interaction(group, id))) +
+  geom_line() +
+  geom_abline(slope = 8, intercept = 0, color = "red") +
+  labs(title = "Non-Linearity") +
+  pcv_theme() +
+  theme(axis.title.x = element_blank(), axis.text.x = element_blank())
+
+simdf2$lmResid <- residuals(lm(y ~ time, simdf2))
+
+residPlot <- ggplot(simdf2, aes(time, lmResid, group = interaction(group, id))) +
+  geom_line(color = "gray70") +
+  geom_hline(yintercept = 0, color = "red", linetype = 5) +
+  labs(y = "lm Residuals") +
+  pcv_theme() +
+  theme(plot.title = element_blank())
+
+design <- c(
+  area(1, 1, 4, 4),
+  area(5, 1, 6, 4)
+)
+nlPatch <- nlPlot / residPlot + plot_layout(design = design)
+nlPatch
+```
+
+## Why Longitudinal Modeling? 5
+
+```{r}
+r1 <- range(simdf[simdf$time == 1, "y"])
+r2 <- range(simdf[simdf$time == 5, "y"])
+r3 <- range(simdf[simdf$time == 10, "y"])
+r4 <- range(simdf[simdf$time == 20, "y"])
+
+main <- ggplot(simdf, aes(time, y, group = interaction(group, id))) +
+  geom_line() +
+  annotate("segment", x = 1, xend = 1, y = r1[1], yend = r1[2], color = "blue", linewidth = 2) +
+  annotate("segment", x = 5, xend = 5, y = r2[1], yend = r2[2], color = "blue", linewidth = 2) +
+  annotate("segment", x = 10, xend = 10, y = r3[1], yend = r3[2], color = "blue", linewidth = 2) +
+  annotate("segment", x = 20, xend = 20, y = r4[1], yend = r4[2], color = "blue", linewidth = 2) +
+  labs(title = "Heteroskedasticity") +
+  pcv_theme() +
+  theme(axis.title.x = element_blank(), axis.text.x = element_blank())
+
+sigma_df <- aggregate(y ~ group + time, data = simdf, FUN = sd)
+
+sigmaPlot <- ggplot(sigma_df, aes(x = time, y = y, group = group)) +
+  geom_line(color = "blue") +
+  pcv_theme() +
+  labs(y = "SD of y") +
+  theme(plot.title = element_blank())
+
+
+design <- c(
+  area(1, 1, 4, 4),
+  area(5, 1, 6, 4)
+)
+hetPatch <- main / sigmaPlot + plot_layout(design = design)
+hetPatch
+```
+
+## Supported Model Builders {.smaller}
+
+Five model building options are supported through the `type` argument of growthSS:
+
+`nls`, `nlrq`, `nlme`, `mgcv`, and `brms`
+
+Other than `mgcv` all model builders can fit 9 types of growth models.
+
+## Supported Model Builders 2 {.smaller}
+
+| "nls"        | "nlrq"           | "nlme"       | "mgcv"      | "brms"       |
+|--------------|------------------|--------------|-------------|--------------|
+| `stats::nls` | `quantreg::nlrq` | `nlme::nlme` | `mgcv::gam` | `brms::brms` |
+
+## type = "nls" {.smaller}
+
+Non-linear least squares regression.
+
+| Longitudinal Trait | nls |
+|--------------------|-----|
+| Non-linearity      | ✅  |
+| Autocorrelation    | ❌  |
+| Heteroskedasticity | ❌  |
+
+## type = "nlrq" {.smaller}
+
+| Linear Regression                  | Quantile Regression              |
+|------------------------------------|----------------------------------|
+| Predicts mean E(Y\|X)              | Predicts quantiles Q(Y\|X)       |
+| Works with small N                 | Requires higher N                |
+| Assumes Normality                  | No distributional assumptions    |
+| E(Y\|X) breaks with transformation | Q(Y\|X) robust to transformation |
+| Sensitive to outliers              | Robust to outliers               |
+| Computationally cheap              | Computationally more expensive   |
+
+## type = "nlrq" {.smaller}
+
+Non-linear quantile regression.
+
+| Longitudinal Trait | nlrq |
+|--------------------|------|
+| Non-linearity      | ✅   |
+| Autocorrelation    | ❌   |
+| Heteroskedasticity | ✅   |
+
+## type = "nlme" {.smaller}
+
+Non-linear Mixed Effect Models
+
+| Longitudinal Trait | nlme |
+|--------------------|------|
+| Non-linearity      | ✅   |
+| Autocorrelation\*  | ✅   |
+| Heteroskedasticity | ✅   |
+| Being a headache   | ✅   |
+
+## type = "mgcv" {.smaller}
+
+General Additive Models Only
+
+| Longitudinal Trait | gam |
+|--------------------|-----|
+| Non-linearity      | ✅  |
+| Autocorrelation    | ❌  |
+| Heteroskedasticity | ❌  |
+| Unparameterized    | ✅  |
+
+## type = "brms" {.smaller}
+
+Bayesian hierarchical Models
+
+| Longitudinal Trait | brms |
+|--------------------|------|
+| Non-linearity      | ✅   |
+| Autocorrelation    | ✅   |
+| Heteroskedasticity | ✅   |
+
+## Supported Growth Models {.smaller}
+
+There are 6 main growth models supported in `pcvr`.
+
+3 are asymptotic, 3 are non-asympototic.
+
+## Supported Growth Models {.smaller}
+
+```{r}
+#| echo: false
+#| eval: true
+
+simdf <- growthSim("logistic",
+  n = 20, t = 25,
+  params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
+)
+l <- ggplot(simdf, aes(time, y, group = interaction(group, id))) +
+  geom_line(aes(color = group)) +
+  labs(title = "Logistic") +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+simdf <- growthSim("gompertz",
+  n = 20, t = 25,
+  params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(0.2, 0.25))
+)
+g <- ggplot(simdf, aes(time, y, group = interaction(group, id))) +
+  geom_line(aes(color = group)) +
+  labs(title = "Gompertz") +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+simdf <- growthSim("monomolecular",
+  n = 20, t = 25,
+  params = list("A" = c(200, 160), "B" = c(0.08, 0.1))
+)
+m <- ggplot(simdf, aes(time, y, group = interaction(group, id))) +
+  geom_line(aes(color = group)) +
+  labs(title = "Monomolecular") +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+simdf <- growthSim("exponential",
+  n = 20, t = 25,
+  params = list("A" = c(15, 20), "B" = c(0.095, 0.095))
+)
+e <- ggplot(simdf, aes(time, y, group = interaction(group, id))) +
+  geom_line(aes(color = group)) +
+  labs(title = "Exponential") +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+simdf <- growthSim("linear", n = 20, t = 25, params = list("A" = c(1.1, 0.95)))
+ln <- ggplot(simdf, aes(time, y, group = interaction(group, id))) +
+  geom_line(aes(color = group)) +
+  labs(title = "Linear") +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+simdf <- growthSim("power law",
+  n = 20, t = 25,
+  params = list("A" = c(16, 11), "B" = c(0.75, 0.7))
+)
+pl <- ggplot(simdf, aes(time, y, group = interaction(group, id))) +
+  geom_line(aes(color = group)) +
+  labs(title = "Power Law") +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+patch6 <- (l + g + m) / (e + ln + pl)
+patch6
+```
+
+## Supported Growth Models {.smaller}
+
+There are an additional 3 sigmoidal models based on the Extreme Value Distribution. Those are Weibull, Frechet, and Gumbel. The authors generally prefer Gompertz to these options but for your data it is possible that these could be a better fit.
+
+```{r}
+#| echo: false
+#| eval: true
+simdf <- growthSim("weibull",
+  n = 20, t = 25,
+  params = list("A" = c(100, 100), "B" = c(1, 0.75), "C" = c(2, 3))
+)
+w <- ggplot(simdf, aes(time, y, group = interaction(group, id))) +
+  geom_line(aes(color = group)) +
+  labs(title = "weibull") +
+  theme(legend.position = "none")
+
+simdf <- growthSim("frechet",
+  n = 20, t = 25,
+  params = list("A" = c(100, 110), "B" = c(2, 1.5), "C" = c(5, 2))
+)
+f <- ggplot(simdf, aes(time, y, group = interaction(group, id))) +
+  geom_line(aes(color = group)) +
+  labs(title = "frechet") +
+  theme(legend.position = "none")
+
+simdf <- growthSim("gumbel",
+  n = 20, t = 25,
+  list("A" = c(120, 140), "B" = c(6, 5), "C" = c(4, 3))
+)
+gb <- ggplot(simdf, aes(time, y, group = interaction(group, id))) +
+  geom_line(aes(color = group)) +
+  labs(title = "gumbel") +
+  theme(legend.position = "none")
+
+patch3 <- (w + f + gb)
+patch3
+```
+
+## Supported Growth Models 2 {.smaller}
+
+There are also two double sigmoid curves intended for use with recovery experiments.
+
+```{r}
+#| echo: false
+#| eval: true
+
+simdf <- growthSim("double logistic",
+  n = 20, t = 70,
+  params = list(
+    "A" = c(70, 50), "B" = c(20, 15), "C" = c(3, 3),
+    "A2" = c(160, 210), "B2" = c(45, 45), "C2" = c(4, 4)
+  )
+)
+
+dl <- ggplot(simdf, aes(time, y, group = interaction(group, id))) +
+  geom_line(aes(color = group)) +
+  labs(title = "Double Logistic") +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+
+simdf <- growthSim("double gompertz",
+  n = 20, t = 70,
+  params = list(
+    "A" = c(70, 50), "B" = c(8, 8), "C" = c(0.2, 0.2),
+    "A2" = c(160, 210), "B2" = c(35, 40), "C2" = c(0.1, 0.1)
+  )
+)
+
+dg <- ggplot(simdf, aes(time, y, group = interaction(group, id))) +
+  geom_line(aes(color = group)) +
+  labs(title = "Double Gompertz") +
+  scale_y_continuous(limits = layer_scales(dl)$y$range$range) +
+  theme_minimal() +
+  theme(
+    legend.position = "bottom",
+    axis.text.y = element_blank(),
+    axis.title.y = element_blank()
+  )
+
+patchD <- dl + dg + plot_layout(guides = "collect") & theme(legend.position = "bottom")
+patchD
+```
+
+## Supported Growth Models 3 {.smaller}
+
+Generalized Additive Models ([GAMs](https://en.wikipedia.org/wiki/Generalized_additive_model)) are also supported.
+
+```{r}
+#| echo: false
+#| eval: true
+x <- seq(0, 20, 0.1)
+y <- 10 * sin(x) + rnorm(length(x), 0, 2)
+x2 <- seq(20, 40, 0.1)
+y2 <- 10 + (2 * sin(x2)) + rnorm(length(x), 0, 0.5)
+wiggles <- data.frame(x = c(x, x2), y = c(y, y2))
+```
+
+```{r}
+#| echo: false
+#| eval: true
+ggplot(wiggles, aes(x, y)) +
+  geom_point() +
+  geom_smooth(
+    method = "gam", formula = y ~ s(x, bs = "cs", k = 50),
+    aes(color = "50"), se = FALSE
+  ) +
+  geom_smooth(
+    method = "gam", formula = y ~ s(x, bs = "cs", k = 15),
+    aes(color = "15"), se = FALSE
+  ) +
+  geom_smooth(
+    method = "gam", formula = y ~ s(x, bs = "cs", k = 10),
+    aes(color = "10"), se = FALSE
+  ) +
+  geom_smooth(
+    method = "gam", formula = y ~ s(x, bs = "cs", k = 5),
+    aes(color = "5"), se = FALSE
+  ) +
+  scale_color_viridis_d(option = "viridis", limits = c("5", "10", "15", "50")) +
+  labs(color = "Knots") +
+  pcv_theme()
+```
+
+## Survival Models {.smaller}
+
+Survival models can also be specified using the "survival" keyword. These models can use the "survival" or "flexsurv" backends where distributions can be specified as `model = "survival {distribution}"`.
+
+For details please see the `growthSS` documentation.
+
+## GAMs
+
+```{r}
+#| echo: false
+#| eval: true
+simdf <- growthSim("logistic",
+  n = 20, t = 25,
+  params = list(
+    "A" = c(200, 160),
+    "B" = c(13, 11),
+    "C" = c(3, 3.5)
+  )
+)
+```
+
+```{r}
+#| echo: true
+#| eval: true
+m <- mgcv::gam(y ~ group + s(time, by = factor(group)), data = simdf)
+start <- min(simdf$time)
+end <- max(simdf$time)
+support <- expand.grid(
+  time = seq(start, end, length = 400),
+  group = factor(unique(simdf$group))
+)
+
+out <- gam_diff(
+  model = m, newdata = support, g1 = "a", g2 = "b",
+  byVar = "group", smoothVar = "time", plot = TRUE
+)
+```
+
+## `gam_diff` predictions
+
+```{r}
+out$plot$plot_preds +
+  geom_line(
+    data = simdf,
+    aes(
+      x = time, y = y, color = factor(group, levels = c("b", "a")),
+      group = paste0(group, id)
+    ),
+    linewidth = 0.1, show.legend = FALSE
+  )
+```
+
+## `gam_diff` differences
+
+```{r}
+gam_diff(
+  model = m, newdata = support, g1 = "a", g2 = "b",
+  byVar = "group", smoothVar = "time", plot = TRUE
+)$plot
+```
+
+## `growthSS`
+
+Any of these models shown can be specified easily using `growthSS`.
+
+## `growthSS` - form
+
+With a model specified a rough formula is required to parse your data to fit the model.
+
+The layout of that formula is:
+
+`outcome ~ time|individual/group`
+
+## `growthSS` - form 2
+
+Here we would use `y~time|id/group`
+
+```{r}
+#| echo: true
+#| eval: true
+head(simdf)
+```
+
+## `growthSS` - form 3
+
+We can check that the grouping in our formula is correct with a plot.
+
+```{r}
+#| echo: true
+#| code-line-numbers: "1,2"
+ggplot(simdf, aes(
+  x = time, y = y,
+  group = paste(group, id)
+)) +
+  geom_line(aes(color = group)) +
+  labs(
+    title = "Testing Formula",
+    subtitle = "y ~ time | id/group"
+  ) +
+  pcv_theme()
+```
+
+## `growthSS` - sigma {.smaller}
+
+"nlme" and "brms" models accept a `sigma` argument. Here we will only look at nlme models as brms models are the subject of the [Advanced Growth Modeling tutorial](https://github.com/danforthcenter/pcvr/tree/main/tutorials/pcvrTutorial_advancedGrowthModeling).
+
+## `growthSS` - sigma {.smaller}
+
+Recall the heteroskedasticity problem, shown again with our simulated data:
+
+```{r}
+# \ echo: false
+sigma_df <- aggregate(y ~ group + time, data = simdf, FUN = sd)
+
+ggplot(sigma_df, aes(x = time, y = y, group = group)) +
+  geom_line(aes(color = group)) +
+  pcv_theme() +
+  labs(y = "SD of y") +
+  theme(plot.title = element_blank())
+```
+
+## `growthSS` - sigma {.smaller}
+
+There are lots of ways to model a trend like that we see for sigma.
+
+`pcvr` offers three options through `growthSS` for nlme models.
+
+```{r}
+draw_power_sigma <- function(x) {
+  12 + (x * 0.75)^(2 * 0.26)
+} # difficult to recapitulate from nlme
+draw_exp_sigma <- function(x) {
+  12 + exp(2 * x * 0.75 * 0.05)
+}
+
+ggplot(sigma_df, aes(x = time, y = y)) +
+  geom_line(aes(group = group), color = "gray60") +
+  geom_hline(aes(yintercept = 15, color = "Homoskedastic"), linetype = 5, key_glyph = draw_key_path) +
+  geom_function(fun = draw_power_sigma, aes(color = "Power"), linetype = 5) +
+  geom_function(fun = draw_exp_sigma, aes(color = "Exp"), linetype = 5) +
+  scale_color_viridis_d(option = "plasma", begin = 0.1, end = 0.9) +
+  guides(color = guide_legend(override.aes = list(linewidth = 1, linetype = 1))) +
+  pcv_theme() +
+  theme(legend.position = "bottom") +
+  labs(
+    y = "SD of y", title = "growthSS nlme sigma options", color = "",
+    subtitle = "note: variance fits here are rough approximations"
+  )
+```
+
+## `growthSS` - "none" sigma {.smaller}
+
+Variance can be modeled as homoskedastic by group.
+
+```{r}
+ggplot(sigma_df, aes(x = time, y = y, group = group)) +
+  geom_hline(aes(yintercept = 13.8, color = "Homoskedastic"), linetype = 5, key_glyph = draw_key_path) +
+  geom_line(aes(color = group)) +
+  scale_color_manual(values = c(scales::hue_pal()(2), "gray40")) +
+  pcv_theme() +
+  labs(y = "SD of y", color = "Sigma") +
+  theme(plot.title = element_blank(), legend.position = "bottom")
+```
+
+## `growthSS` - "power" sigma {.smaller}
+
+Variance can be modeled using a power of the x term.
+
+```{r}
+ggplot(sigma_df, aes(x = time, y = y, group = group)) +
+  geom_function(fun = draw_power_sigma, aes(color = "Power"), linetype = 5) +
+  geom_line(aes(color = group)) +
+  scale_color_manual(values = c(scales::hue_pal()(2), "gray40")) +
+  pcv_theme() +
+  labs(y = "SD of y", color = "Sigma") +
+  theme(plot.title = element_blank(), legend.position = "bottom")
+```
+
+## `growthSS` - "exp" sigma {.smaller}
+
+Variance can be modeled using a exponent of the x term.
+
+```{r}
+ggplot(sigma_df, aes(x = time, y = y, group = group)) +
+  geom_function(fun = draw_exp_sigma, aes(color = "Exp"), linetype = 5) +
+  geom_line(aes(color = group)) +
+  scale_color_manual(values = c(scales::hue_pal()(2), "gray40")) +
+  pcv_theme() +
+  labs(y = "SD of y", color = "Sigma") +
+  theme(plot.title = element_blank(), legend.position = "bottom")
+```
+
+## `growthSS` - varFunc Options {.smaller}
+
+nlme varFunc objects can also be passed to the sigma argument in growthSS.
+
+See `?nlme::varClasses` for details.
+
+## `growthSS` - start {.smaller}
+
+One of the useful features in growthSS is that you do not need to specify starting values for the supported non-linear models (double sigmoid options notwithstanding).
+
+## `growthSS` - tau {.smaller}
+
+Finally, with mode="nlrq" the tau argument takes one or more quantiles to fit a model for. By default this is 0.5, corresponding to the median.
+
+## `growthSS` - nls {.smaller}
+
+```{r}
+#| echo: true
+#| eval: true
+nls_ss <- growthSS(
+  model = "logistic", form = y ~ time | id / group,
+  df = simdf, type = "nls"
+)
+lapply(nls_ss, class)
+```
+
+## `growthSS` - nlrq {.smaller}
+
+```{r}
+#| echo: true
+#| eval: true
+nlrq_ss <- growthSS(
+  model = "logistic", form = y ~ time | id / group,
+  df = simdf, type = "nlrq",
+  tau = seq(0.01, 0.99, 0.04)
+)
+lapply(nls_ss, class)
+```
+
+## `growthSS` - nlme {.smaller}
+
+```{r}
+#| echo: true
+#| eval: true
+nlme_ss <- growthSS(
+  model = "logistic", form = y ~ time | id / group,
+  df = simdf, sigma = "power", type = "nlme"
+)
+names(nlme_ss)
+names(nlme_ss$formula)
+```
+
+## `growthSS` - mgcv {.smaller}
+
+```{r}
+#| echo: true
+#| eval: true
+mgcv_ss <- growthSS(
+  model = "gam", form = y ~ time | id / group,
+  df = simdf, type = "mgcv"
+)
+lapply(mgcv_ss, class)
+```
+
+## `growthSS` - survival models {.smaller}
+
+```{r}
+#| echo: true
+#| eval: true
+surv_ss <- growthSS(
+  model = "survival weibull",
+  form = y > 100 ~ time | id / group,
+  df = simdf, type = "survreg"
+) # type = "flexsurv" has more distribution options
+lapply(surv_ss, class)
+```
+
+## `growthSS` - survival models {.smaller}
+
+```{r}
+#| echo: true
+#| eval: true
+#| code-line-numbers: "2"
+surv_ss <- growthSS(
+  model = "survival weibull",
+  form = y > 100 ~ time | id / group,
+  df = simdf, type = "survreg"
+) # type = "flexsurv" has more distribution options
+lapply(surv_ss, class)
+```
+
+Note that here we still supply the standard phenotype data but give a cutoff on the left hand side of the formula. That cutoff represents the "event". For example, given area in pixels germination might be `area_px>10 ~ time|id/group`.
+
+## `fitGrowth`
+
+Now that we have the components for our model from `growthSS` we can fit the model with `fitGrowth`.
+
+## `fitGrowth` 2
+
+With non-brms models the steps to fit a model specified by `growthSS` are very simple and can be left to `fitGrowth`.
+
+```{r}
+#| eval: true
+#| echo: true
+nls_fit <- fitGrowth(nls_ss)
+nlrq_fit <- fitGrowth(nlrq_ss, cores = 4)
+nlme_fit <- fitGrowth(nlme_ss)
+mgcv_fit <- fitGrowth(mgcv_ss)
+surv_fit <- fitGrowth(surv_ss)
+```
+
+## `fitGrowth` 3
+
+Additional arguments can be passed to `fitGrowth` and are used as follows:
+
+| type | ...                                                  |
+|------|------------------------------------------------------|
+| nls  | passed to `stats::nls`                               |
+| nlrq | cores to run in parallel, passed to `quantreg::nlrq` |
+| nlme | passed to `nlme::nlmeControl`                        |
+| mgcv | passed to `mgcv::gam`                                |
+
+## `growthPlot`
+
+Models fit by `fitGrowth` can be visualized using `growthPlot`.
+
+```{r}
+p_nls <- growthPlot(nls_fit, form = nls_ss$pcvrForm, df = nls_ss$df)
+p_nlrq <- growthPlot(nlrq_fit, form = nlrq_ss$pcvrForm, df = nlrq_ss$df)
+p_nlme <- growthPlot(nlme_fit, form = nlme_ss$pcvrForm, df = nlme_ss$df)
+p_mgcv <- growthPlot(mgcv_fit, form = mgcv_ss$pcvrForm, df = mgcv_ss$df)
+p_surv <- growthPlot(surv_fit, form = surv_ss$pcvrForm, df = surv_ss$df)
+```
+
+## `growthPlot` - nls
+
+```{r}
+p_nls
+```
+
+## `growthPlot` - nlrq
+
+```{r}
+p_nlrq
+```
+
+## `growthPlot` - nlme
+
+```{r}
+p_nlme
+```
+
+## `growthPlot` - mgcv
+
+```{r}
+p_mgcv
+```
+
+## `growthPlot` - surv
+
+```{r}
+p_surv
+```
+
+## Hypothesis Testing
+
+Hypothesis testing for frequentist non-linear growth models can be somewhat limited.
+
+Broadly, testing is implemented for all backends by comparing models against nested null models and for select backends non-linear testing is available using `testGrowth`.
+
+## `testGrowth` - nls
+
+```{r}
+#| echo: true
+#| eval: true
+testGrowth(nls_ss, nls_fit, test = "A")$anova
+```
+
+## `testGrowth` - nls 2
+
+```{r}
+#| echo: true
+#| eval: true
+testGrowth(nls_ss, nls_fit, test = list(
+  "A1 - A2",
+  "B1 - (B2*1.25)",
+  "(C1+1) - C2"
+))
+```
+
+## `testGrowth` - nlrq
+
+Here we only print out the comparison for the model of the 49th percentile, but all taus are returned.
+
+```{r}
+#| echo: true
+#| eval: true
+testGrowth(nlrq_ss, nlrq_fit, test = "A")[[13]]
+```
+
+## `testGrowth` - nlme
+
+```{r}
+#| echo: true
+#| eval: true
+testGrowth(nlme_ss, nlme_fit, test = "A")$anova
+```
+
+## `testGrowth` - nlme 2
+
+```{r}
+#| echo: true
+#| eval: true
+testGrowth(nls_ss, nlme_fit, test = list(
+  "A.groupa - A.groupb",
+  "B.groupa - (B.groupb*1.25)",
+  "(C.groupa+1) - C.groupa"
+))
+```
+
+## `testGrowth` - mgcv
+
+Due to GAMs nature we cannot test parameters individually.
+
+```{r}
+#| echo: true
+#| eval: true
+testGrowth(mgcv_ss, mgcv_fit)$anova
+```
+
+## `testGrowth` - surv
+
+The `flexsurv` backend provides more flexibility, but standard `survreg` models are tested using `survival::survdiff`
+
+```{r}
+#| echo: true
+#| eval: true
+testGrowth(surv_ss, surv_fit)
+```
+
+## Final Considerations
+
+-   Pick model builders and parameterizations based on your needs
+-   Use GAMs sparingly, they present interpretability problems compared to the parameterized models.
+-   Consider the biology behind your observed data while picking a growth model.
+
+## Resources
+
+If you run into a novel situation please reach out and we will try to come up with a solution and add it to `pcvr` if possible.
+
+Good ways to reach out are the help-datascience slack channel and [pcvr github repository](https://github.com/danforthcenter/pcvr).

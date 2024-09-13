@@ -90,9 +90,13 @@ mv_std <- function(d) {
 }
 sv_from_mv <- function(df, theta) { # note this should also return mean/median/std
   metaCols <- colnames(df)[-which(grepl("value|label|trait", colnames(df)))]
-  out <- aggregate(as.formula(paste0("value ~ ",
-                                     paste(metaCols, collapse = "+"))),
-                   data = df, sum, na.rm = TRUE)
+  out <- aggregate(
+    as.formula(paste0(
+      "value ~ ",
+      paste(metaCols, collapse = "+")
+    )),
+    data = df, sum, na.rm = TRUE
+  )
   colnames(out)[ncol(out)] <- "area"
   out$max_pixel <- unlist(lapply(split(df, interaction(df[, metaCols])), lastNonZeroBin))
   out$height <- tubeAngleToDepth(out$max_pixel, 0.35)

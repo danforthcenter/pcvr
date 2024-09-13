@@ -29,12 +29,16 @@
 #'   n = 20, t = 25,
 #'   params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
 #' )
-#' ss <- growthSS(model = "survival weibull", form = y > 100 ~ time | id / group,
-#'                df = df, type = "flexsurv")
+#' ss <- growthSS(
+#'   model = "survival weibull", form = y > 100 ~ time | id / group,
+#'   df = df, type = "flexsurv"
+#' )
 #' fit <- fitGrowth(ss)
 #' flexsurvregPlot(fit, form = ss$pcvrForm, df = ss$df, groups = "a")
-#' flexsurvregPlot(fit, form = ss$pcvrForm, df = ss$df,
-#'   facetGroups = FALSE, groupFill = TRUE)
+#' flexsurvregPlot(fit,
+#'   form = ss$pcvrForm, df = ss$df,
+#'   facetGroups = FALSE, groupFill = TRUE
+#' )
 #'
 #' @return Returns a ggplot showing an survival model's survival function.
 #'

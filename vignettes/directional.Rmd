@@ -198,9 +198,13 @@ coord_polar_linear <- function(theta = "x", start = 0, direction = 1, clip = "on
   } else {
     "x"
   }
-  ggproto(NULL, CoordPolar, theta = theta, r = r, start = start,
-          direction = sign(direction), clip = clip,
-          is_linear = function() {TRUE})
+  ggproto(NULL, CoordPolar,
+    theta = theta, r = r, start = start,
+    direction = sign(direction), clip = clip,
+    is_linear = function() {
+      TRUE
+    }
+  )
 }
 
 p <- vm_ex2$plot

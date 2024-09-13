@@ -42,7 +42,6 @@ Often in bellwether experiments we are curious about the effect of
   considering phenotypes as relative differences compared to a control.
 }
 \examples{
-
 \donttest{
 sv <- read.pcv(
   "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv",

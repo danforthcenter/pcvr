@@ -9,8 +9,9 @@
 #' @examples
 #'
 #' df <- growthSim("linear",
-#'                 n = 10, t = 10,
-#'                 params = list("A" = c(2, 1.5)))
+#'   n = 10, t = 10,
+#'   params = list("A" = c(2, 1.5))
+#' )
 #' checkGroups(df, c("time", "id", "group"))
 #' df$time[12] <- 3
 #' checkGroups(df, c("time", "id", "group"))
@@ -22,12 +23,20 @@ checkGroups <- function(df, group) {
   if (any(tab > 1)) {
     dataname <- deparse(substitute(df))
     nms <- names(tab)[which(as.numeric(tab) > 1)]
-    dupString <- paste0(dataname, "[duplicated(interaction(", paste(paste0(dataname, "$", c(group)),
-                                                                    collapse = ", "), ")),]")
-    firstDup <- paste0(dataname, "[interaction(",
-                       paste(paste0(dataname, "$",
-                                    c(group)), collapse = ", "), ")=='",
-                       nms[1], "',]")
+    dupString <- paste0(
+      dataname,
+      "[duplicated(interaction(",
+      paste(paste0(dataname, "$", c(group)), collapse = ", "),
+      ")),]"
+    )
+    firstDup <- paste0(
+      dataname, "[interaction(",
+      paste(paste0(
+        dataname, "$",
+        c(group)
+      ), collapse = ", "), ")=='",
+      nms[1], "',]"
+    )
     eval(parse(text = dupString))
     w <- paste0(
       "There are ", length(nms), " observations that are not uniquely identified.",

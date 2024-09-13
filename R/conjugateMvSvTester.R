@@ -9,7 +9,7 @@
 #' generating = list(
 #'   s1 = list(f = "rnorm", n = 20, mean = 20, sd = 5),
 #'   s2 = list(f = "rnorm", n = 20, mean = 170, sd = 5)
-#'   )
+#' )
 #' .conjugate.mv.sv.testing(method, prior, generating)
 #'
 #' @keywords internal

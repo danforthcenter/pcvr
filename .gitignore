@@ -10,3 +10,7 @@
 inst/doc
 tutorials/pcvr*/*.html
 vignettes/*.html
+vignettes/articles/*.html
+docs
+tools/lib
+tools/*.html

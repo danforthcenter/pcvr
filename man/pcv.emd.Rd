@@ -118,46 +118,51 @@ head(x2)
 
 \donttest{
 library(data.table)
-  file <- paste0(
-    "https://media.githubusercontent.com/media/joshqsumner/",
-    "pcvrTestData/main/pcv4-multi-value-traits.csv"
-  )
-  df1 <- read.pcv(file, "wide", reader = "fread")
+file <- paste0(
+  "https://media.githubusercontent.com/media/joshqsumner/",
+  "pcvrTestData/main/pcv4-multi-value-traits.csv"
+)
+df1 <- read.pcv(file, "wide", reader = "fread")
 
-  df1$genotype <- substr(df1$barcode, 3, 5)
-  df1$genotype <- ifelse(df1$genotype == "002", "B73",
-    ifelse(df1$genotype == "003", "W605S",
-      ifelse(df1$genotype == "004", "MM", "Mo17")
-    )
+df1$genotype <- substr(df1$barcode, 3, 5)
+df1$genotype <- ifelse(df1$genotype == "002", "B73",
+  ifelse(df1$genotype == "003", "W605S",
+    ifelse(df1$genotype == "004", "MM", "Mo17")
   )
-  df1$fertilizer <- substr(df1$barcode, 8, 8)
-  df1$fertilizer <- ifelse(df1$fertilizer == "A", "100",
-    ifelse(df1$fertilizer == "B", "50", "0")
-  )
+)
+df1$fertilizer <- substr(df1$barcode, 8, 8)
+df1$fertilizer <- ifelse(df1$fertilizer == "A", "100",
+  ifelse(df1$fertilizer == "B", "50", "0")
+)
 
-  tryCatch({
+tryCatch(
+  {
     w <- pcv.emd(df1,
       cols = "hue_frequencies", reorder = c("fertilizer", "genotype"),
-      mat = FALSE, plot = TRUE, parallel = 1)
-    }, error = function(err) {message(err)}
-  )
-
-  # Note on computational complexity
-  # This scales as O^2, see the plot below for some idea
-  # of the time for different input data sizes.
-  emdTime <- function(x, n = 1) {
-    x^2 / n * 0.0023
+      mat = FALSE, plot = TRUE, parallel = 1
+    )
+  },
+  error = function(err) {
+    message(err)
   }
-  plot(
-    x = c(18, 36, 54, 72, 108, 135), y = c(0.74, 2.89, 6.86, 10.99, 26.25, 42.44),
-    xlab = "N Input Images", ylab = "time (seconds)"
-  ) # benchmarked test data
-  lines(x = 1:150, y = emdTime(1:150)) # exponential function
+)
 
-  plot(
-    x = 1:1000, y = emdTime(1:1000), type = "l",
-    xlab = "N Input Images", ylab = "time (seconds)"
-  )
+# Note on computational complexity
+# This scales as O^2, see the plot below for some idea
+# of the time for different input data sizes.
+emdTime <- function(x, n = 1) {
+  x^2 / n * 0.0023
+}
+plot(
+  x = c(18, 36, 54, 72, 108, 135), y = c(0.74, 2.89, 6.86, 10.99, 26.25, 42.44),
+  xlab = "N Input Images", ylab = "time (seconds)"
+) # benchmarked test data
+lines(x = 1:150, y = emdTime(1:150)) # exponential function
+
+plot(
+  x = 1:1000, y = emdTime(1:1000), type = "l",
+  xlab = "N Input Images", ylab = "time (seconds)"
+)
 }
 
 }

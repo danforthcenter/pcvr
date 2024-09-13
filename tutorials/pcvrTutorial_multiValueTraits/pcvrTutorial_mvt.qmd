@@ -1,6 +1,6 @@
 ---
 title: "Multi Value Trait Analysis with `pcvr`"
-subtitle: "DDPSC Data Science Core, Ocotober 2023"
+subtitle: "DDPSC Data Science Core, pcvr v1.0.0"
 author: Josh Sumner
 format:
   revealjs:
@@ -14,7 +14,7 @@ format:
       data-background-image: ../quartoSupport/datascience.png
       data-background-size: 15%
       data-background-position: 2% 2%
-editor: visual
+editor: source
 ---
 
 ## Outline {.smaller}
@@ -46,17 +46,14 @@ Pre-work was to install R, Rstudio, and `pcvr` with dependencies.
 ```{r}
 #| echo: false
 #| eval: true
-if(!"pcvr" %in% installed.packages()){
-  if(!"devtools" %in% installed.packages()){
-   install.packages("devtools") 
-  }
-  devtools::install_github("danforthcenter/pcvr", dependencies = TRUE)
+if (!"pcvr" %in% installed.packages()) {
+  install.packages("pcvr")
 }
 ```
 
 ```{r}
 #| echo: true
-library(pcvr) # or devtools::load_all() if you are editing
+library(pcvr)
 library(ggplot2)
 library(patchwork)
 ```
@@ -75,9 +72,9 @@ Here our segmentation easily shows area, height, and other numeric phenotypes. T
 
 ## What are multi-value traits? {.smaller}
 
-There are many ways to describe color and many indices that can be calculated from those colors.
+There are many ways to describe color, many wavelengths to measure color in, and many indices that can be calculated from those wavelengths.
 
-Since each pixel has a color we describe the entire image using a histogram of those colors.
+Since each pixel has a color we describe the entire image using a histogram of those values
 
 ![Wikipedia HSV Color Space](HSV_color_solid_cylinder_saturation_gray.png)
 
@@ -86,19 +83,25 @@ Since each pixel has a color we describe the entire image using a histogram of t
 PlantCV returns multi-value traits as histograms in long format
 
 ```{r}
-#dput(hue_long[3641:3660,18:21 ])
-structure(list(sample = c("default", "default", "default", "default", 
-"default", "default", "default", "default", "default", "default", 
-"default", "default", "default", "default", "default"), trait = c("hue_frequencies", 
-"hue_frequencies", "hue_frequencies", "hue_frequencies", "hue_frequencies", 
-"hue_frequencies", "hue_frequencies", "hue_frequencies", "hue_frequencies", 
-"hue_frequencies", "hue_frequencies", "hue_frequencies", "hue_frequencies", 
-"hue_frequencies", "hue_frequencies"), value = c(0.805186656906828, 
-1.04569695702186, 1.19906584405173, 1.76025654432012, 2.43647390986092, 
-3.29220258635714, 4.97926034368573, 6.07201366377357, 8.33071909094078, 
-8.61131444107498, 8.26100596047266, 7.65624455366168, 6.45543588134825, 
-5.53347973090732, 5.05245913067726), label = c(81L, 83L, 85L, 
-87L, 89L, 91L, 93L, 95L, 97L, 99L, 101L, 103L, 105L, 107L, 109L
+structure(list(sample = c(
+  "default", "default", "default", "default",
+  "default", "default", "default", "default", "default", "default",
+  "default", "default", "default", "default", "default"
+), trait = c(
+  "hue_frequencies",
+  "hue_frequencies", "hue_frequencies", "hue_frequencies", "hue_frequencies",
+  "hue_frequencies", "hue_frequencies", "hue_frequencies", "hue_frequencies",
+  "hue_frequencies", "hue_frequencies", "hue_frequencies", "hue_frequencies",
+  "hue_frequencies", "hue_frequencies"
+), value = c(
+  0.805186656906828,
+  1.04569695702186, 1.19906584405173, 1.76025654432012, 2.43647390986092,
+  3.29220258635714, 4.97926034368573, 6.07201366377357, 8.33071909094078,
+  8.61131444107498, 8.26100596047266, 7.65624455366168, 6.45543588134825,
+  5.53347973090732, 5.05245913067726
+), label = c(
+  81L, 83L, 85L,
+  87L, 89L, 91L, 93L, 95L, 97L, 99L, 101L, 103L, 105L, 107L, 109L
 )), row.names = 3641:3655, class = "data.frame")
 ```
 
@@ -107,11 +110,19 @@ structure(list(sample = c("default", "default", "default", "default",
 In `pcvr` you can choose to read multi value traits in wide format with `mode="wide"` in `read.pcv`.
 
 ```{r}
-structure(list(hue_frequencies.45 = c(0.0154487872701993, 0, 
-0, 0, 0), hue_frequencies.47 = c(0, 0, 0, 0.0749063670411985, 
-0), hue_frequencies.49 = c(0.0308975745403986, 0.37593984962406, 
-0.0774593338497289, 0, 0), hue_frequencies.51 = c(0, 0, 0, 0, 
-0.0657894736842105)), row.names = 100:104, class = "data.frame")
+structure(list(hue_frequencies.45 = c(
+  0.0154487872701993, 0,
+  0, 0, 0
+), hue_frequencies.47 = c(
+  0, 0, 0, 0.0749063670411985,
+  0
+), hue_frequencies.49 = c(
+  0.0308975745403986, 0.37593984962406,
+  0.0774593338497289, 0, 0
+), hue_frequencies.51 = c(
+  0, 0, 0, 0,
+  0.0657894736842105
+)), row.names = 100:104, class = "data.frame")
 ```
 
 . . .
@@ -129,26 +140,37 @@ Either option will work for most `pcvr` functions.
 
 ```{r}
 set.seed(123)
-simFreqs<-function(vec, group){
-  s1<-hist(vec, breaks=seq(1,181,1), plot=FALSE)$counts
-  s1d<-as.data.frame(cbind(data.frame(group), matrix(s1,nrow=1)))
-  colnames(s1d)<-c('group', paste0("sim_",1:180))
+simFreqs <- function(vec, group) {
+  s1 <- hist(vec, breaks = seq(1, 181, 1), plot = FALSE)$counts
+  s1d <- as.data.frame(cbind(data.frame(group), matrix(s1, nrow = 1)))
+  colnames(s1d) <- c("group", paste0("sim_", 1:180))
   s1d
 }
-sim_df<-rbind(do.call(rbind, lapply(1:10, function(i){ simFreqs(rnorm(200, 70, 10), group="normal") })),
-              do.call(rbind, lapply(1:10, function(i){ simFreqs(rlnorm(200, log(30),0.35), group="lognormal") })),
-              do.call(rbind, lapply(1:10, function(i){ simFreqs( c(rlnorm(125, log(15),0.25), rnorm(75, 75,5) ), group="bimodal") })),
-              do.call(rbind, lapply(1:10, function(i){ simFreqs( c(rlnorm(80, log(20),0.3), rnorm(70, 70,10), rnorm(50, 120,5) ), group="trimodal") })),
-              do.call(rbind, lapply(1:10, function(i){ simFreqs( runif(200,1,180), group="uniform") }))
+sim_df <- rbind(
+  do.call(rbind, lapply(1:10, function(i) {
+    simFreqs(rnorm(200, 70, 10), group = "normal")
+  })),
+  do.call(rbind, lapply(1:10, function(i) {
+    simFreqs(rlnorm(200, log(30), 0.35), group = "lognormal")
+  })),
+  do.call(rbind, lapply(1:10, function(i) {
+    simFreqs(c(rlnorm(125, log(15), 0.25), rnorm(75, 75, 5)), group = "bimodal")
+  })),
+  do.call(rbind, lapply(1:10, function(i) {
+    simFreqs(c(rlnorm(80, log(20), 0.3), rnorm(70, 70, 10), rnorm(50, 120, 5)), group = "trimodal")
+  })),
+  do.call(rbind, lapply(1:10, function(i) {
+    simFreqs(runif(200, 1, 180), group = "uniform")
+  }))
 )
-sim_df_long<-as.data.frame(data.table::melt(data.table::as.data.table(sim_df), id.vars = "group"))
-sim_df_long$bin<-as.numeric(sub("sim_", "", sim_df_long$variable))
+sim_df_long <- as.data.frame(data.table::melt(data.table::as.data.table(sim_df), id.vars = "group"))
+sim_df_long$bin <- as.numeric(sub("sim_", "", sim_df_long$variable))
 
-sim_plot <- ggplot(sim_df_long, aes(x=bin, y=value, fill=group), alpha=0.25)+
-  geom_col(position="identity", show.legend = F)+
-  pcv_theme()+
-  labs(x="Color Histogram Bin")+
-  theme(axis.title.y = element_blank())+
+sim_plot <- ggplot(sim_df_long, aes(x = bin, y = value, fill = group), alpha = 0.25) +
+  geom_col(position = "identity", show.legend = FALSE) +
+  pcv_theme() +
+  labs(x = "Color Histogram Bin") +
+  theme(axis.title.y = element_blank()) +
   facet_wrap(~group)
 ```
 
@@ -160,12 +182,12 @@ sim_plot
 
 ## `pcv.joyplot` {.smaller}
 
-We can make joyplots and optionally perform some tests using `pcv.joyplot`
+We can make joyplots and using `pcv.joyplot`
 
 ```{r}
 #| echo: true
 #| warning: false
-(p<-pcv.joyplot(sim_df, index = "sim", group=c("group"), method=NULL, compare=NULL))
+(p <- pcv.joyplot(sim_df, index = "sim", group = c("group")))
 ```
 
 ## `pcv.joyplot` {.smaller}
@@ -174,23 +196,13 @@ The plot output is a `ggplot` object so we can change it to match our needs. Her
 
 ```{r}
 #| echo: true
-p +scale_fill_gradientn(colors = scales::hue_pal(l=55)(360))
+p + scale_fill_gradientn(colors = scales::hue_pal(l = 55)(360))
 ```
 
-## `pcv.joyplot` {.smaller}
-
-We can also run KS tests or compare PDFs, both of which also return a dataframe.
-
-```{r}
-#| echo: true
-p2<-pcv.joyplot(sim_df, index = "sim", group=c("group"),
-                method="pdf", hypothesis = "unequal", compare= NULL)
-p2$stats
-```
 
 ## `pcv.emd` {.smaller}
 
-Sometimes pairwise comparisons do not satisfactorily answer a research question or a more specific hypothesis should be tested than those possible through `pcv.joyplot`.
+Sometimes the multi-value trait histograms will not follow a unimodal distribution, or other aspects of what kind of test to use will be unclear.
 
 For those situations one option is to use earth mover's distance.
 
@@ -205,32 +217,37 @@ Here the EMD would be 0.01 since only 1 count has to move 1 space out of 100 tot
 ```{r}
 #* visual of emd
 set.seed(123)
-df <- data.frame(x = round(runif(101, 1,10)), y = c(rep("original",99),"old", "new"))
-df[100:101,"x"]<-c(5,6)
-p1 <- ggplot(df[df$y!="new",], aes(x = x))+
-  geom_histogram(binwidth=1, color="white")+
-  scale_x_continuous(breaks=c(1:10))+
-  scale_y_continuous(limits=c(0,15))+
-  labs(title = "Sample 1", y="Counts", x="Bin")+
+df <- data.frame(x = round(runif(101, 1, 10)), y = c(rep("original", 99), "old", "new"))
+df[100:101, "x"] <- c(5, 6)
+p1 <- ggplot(df[df$y != "new", ], aes(x = x)) +
+  geom_histogram(binwidth = 1, color = "white") +
+  scale_x_continuous(breaks = c(1:10)) +
+  scale_y_continuous(limits = c(0, 15)) +
+  labs(title = "Sample 1", y = "Counts", x = "Bin") +
   pcv_theme()
 
-p2 <- ggplot(df[df$y=="original",], aes(x = x))+
-  geom_histogram(binwidth=1, color="white")+
-  scale_x_continuous(breaks=c(1:10))+
-  scale_y_continuous(limits=c(0,15))+
-  geom_rect(data = data.frame(x=1), aes(xmin=4.5, xmax=5.5, ymin=14, ymax=15),
-            fill="blue",color="white", alpha=0.25)+
-  geom_rect(data = data.frame(x=1), aes(xmin=5.5, xmax=6.5, ymin=6, ymax=7),
-            fill="red",color="white", alpha=1)+
-  labs(title = "Sample 2")+
-  labs(x="Bin")+
-  pcv_theme()+
-  theme(axis.line.y.left = element_blank(),
-        axis.title.y=element_blank(),
-        axis.text.y=element_blank())
+p2 <- ggplot(df[df$y == "original", ], aes(x = x)) +
+  geom_histogram(binwidth = 1, color = "white") +
+  scale_x_continuous(breaks = c(1:10)) +
+  scale_y_continuous(limits = c(0, 15)) +
+  geom_rect(
+    data = data.frame(x = 1), aes(xmin = 4.5, xmax = 5.5, ymin = 14, ymax = 15),
+    fill = "blue", color = "white", alpha = 0.25
+  ) +
+  geom_rect(
+    data = data.frame(x = 1), aes(xmin = 5.5, xmax = 6.5, ymin = 6, ymax = 7),
+    fill = "red", color = "white", alpha = 1
+  ) +
+  labs(title = "Sample 2") +
+  labs(x = "Bin") +
+  pcv_theme() +
+  theme(
+    axis.line.y.left = element_blank(),
+    axis.title.y = element_blank(),
+    axis.text.y = element_blank()
+  )
 
 p1 + p2
-
 ```
 
 ## `pcv.emd` {.smaller}
@@ -245,8 +262,10 @@ For details see `?pcv.emd`
 
 ```{r}
 #| echo: true
-sim_emd<-pcv.emd(df = sim_df, cols="sim_", reorder=c("group"),
-                 mat =FALSE, plot=TRUE, parallel = 1, raiseError=FALSE)
+sim_emd <- pcv.emd(
+  df = sim_df, cols = "sim_", reorder = c("group"),
+  mat = FALSE, plot = TRUE, parallel = 1, raiseError = FALSE
+)
 ```
 
 ## `pcv.emd` {.smaller}
@@ -266,8 +285,8 @@ Note that the default behavior changes EMD from a distance to a dissimilarity.
 ```{r}
 #| echo: true
 set.seed(123)
-n<-pcv.net(sim_emd$data, filter = 0.5)
-lapply(n,class)
+n <- pcv.net(sim_emd$data, filter = 0.5)
+lapply(n, class)
 ```
 
 ## `net.plot` {.smaller}
@@ -276,11 +295,13 @@ Now we can visualize our network using `net.plot`.
 
 ```{r}
 #| echo: true
-net1 <- net.plot(n, fill="group")+
-  labs(color = "", title = "Network 1")+
-  theme(plot.title = element_text(hjust = 0.5))+
-  scale_color_discrete(limits = c("bimodal", "lognormal", "normal",
-                                  "trimodal", "uniform"))
+net1 <- net.plot(n, fill = "group") +
+  labs(color = "", title = "Network 1") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  scale_color_discrete(limits = c(
+    "bimodal", "lognormal", "normal",
+    "trimodal", "uniform"
+  ))
 ```
 
 ## `net.plot` {.smaller}
@@ -298,11 +319,13 @@ Here we specify our filter as a character, which is interpreted as a quantile he
 ```{r}
 #| echo: true
 set.seed(123)
-n<-pcv.net(sim_emd$data, filter = '0.5')
-net2 <- net.plot(n, fill="group")+
-  labs(color = "", title = "Network 2")+
-  theme(plot.title = element_text(hjust = 0.5), 
-        legend.position="bottom")
+n <- pcv.net(sim_emd$data, filter = "0.5")
+net2 <- net.plot(n, fill = "group") +
+  labs(color = "", title = "Network 2") +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    legend.position = "bottom"
+  )
 ```
 
 ## `pcv.net` {.smaller}
@@ -325,8 +348,8 @@ Multi-value traits can be provided to `conjugate` as matrices. Here we subset ou
 
 ```{r}
 #| echo: true
-s1 <- sim_df[sim_df$group=="normal", grepl("sim",colnames(sim_df))]
-s2 <- sim_df[sim_df$group=="lognormal", grepl("sim",colnames(sim_df))]
+s1 <- sim_df[sim_df$group == "normal", grepl("sim", colnames(sim_df))]
+s2 <- sim_df[sim_df$group == "lognormal", grepl("sim", colnames(sim_df))]
 ```
 
 ## `conjugate`
@@ -336,11 +359,12 @@ Now we can run `conjugate` on our samples. Here we use assume a lognormal distri
 ```{r}
 #| output: false
 #| echo: true
-res <- conjugate(s1, s2, method = "lognormal",
-                 priors = list( mu_log=c(log(10),log(10)),n=c(1,1),sigma_log=c(log(3),log(3)) ),
-                 plot=TRUE, rope_range = NULL, rope_ci = 0.89, 
-                 cred.int.level = 0.89, hypothesis="equal", support=NULL)
-
+res <- conjugate(s1, s2,
+  method = "lognormal",
+  priors = list(mu = 10, sd = 5),
+  plot = TRUE, rope_range = NULL, rope_ci = 0.89,
+  cred.int.level = 0.89, hypothesis = "equal", support = NULL
+)
 ```
 
 ## `conjugate`
@@ -348,10 +372,12 @@ res <- conjugate(s1, s2, method = "lognormal",
 We can also perform region of practical equivalence tests by specifying a `rope_range`.
 
 ```{r}
-res <- conjugate(s1, s2, method = "lognormal",
-                 priors = list( mu_log=c(log(10),log(10)),n=c(1,1),sigma_log=c(log(3),log(3)) ),
-                 plot=TRUE, rope_range = c(-10,10), rope_ci = 0.89, 
-                 cred.int.level = 0.89, hypothesis="equal", support=NULL)
+res <- conjugate(s1, s2,
+  method = "lognormal",
+  priors = list(mu = 10, sd = 5),
+  plot = TRUE, rope_range = c(-10, 10), rope_ci = 0.89,
+  cred.int.level = 0.89, hypothesis = "equal", support = NULL
+)
 ```
 
 ## `conjugate`
@@ -359,7 +385,7 @@ res <- conjugate(s1, s2, method = "lognormal",
 The results are also returned as a summary dataframe
 
 ```{r}
-res$summary
+res$summary[, -c(1:6)]
 ```
 
 ## Resources

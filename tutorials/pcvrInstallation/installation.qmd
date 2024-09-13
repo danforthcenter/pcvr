@@ -4,7 +4,7 @@ format:
   html:
     embed-resources: true
     self-contained: true
-editor: visual
+editor: source
 ---
 
 ## Installing R
@@ -17,20 +17,31 @@ If you do not have Rstudio or some IDE that you like to work with installed then
 
 ## Installing `pcvr`
 
-Open Rstudio (or some IDE you prefer) and run the following command to install the `devtools` package from CRAN.
+### Stable Release
+
+A stable version of `pcvr` can be installed from CRAN using:
+
+```{r, eval = FALSE}
+#| echo: true
+#| eval: false
+install.packages("pcvr")
+```
+
+### Development version
+
+Alternatively the development version can be installed from github using `devtools` or `remotes` through R. First install either `devtools` or `remotes` from CRAN:
+
 
 ```{r, eval=F}
 #| echo: true
 #| eval: false
 install.packages("devtools")
-library(devtools) # should prevent download problems
-# if you do get a download error run the next line and retry:
-# options(download.file.method = "libcurl")
+library(devtools)
 ```
 
 The `devtools` package makes developing your own R packages more straightforward and lets you easily install packages from places other than CRAN.
 
-With `devtools` installed we can use `install_github` to install `pcvr` from the Danforth center github account. By default this will install package dependencies and will not build the bellwether vignette. See the \textbf{Optional Extras} and \textbf{Bellwether Vignette} sections in this document for examples of different installation options.
+With `devtools` installed we can use `install_github` to install a more frequently updated version of `pcvr` from the Danforth center github account. By default this will install package dependencies and will not build the bellwether vignette. See the \textbf{Optional Extras} and \textbf{Bellwether Vignette} sections in this document for examples of different installation options.
 
 ```{r, eval=F}
 #| echo: true
@@ -45,7 +56,7 @@ Just to check that `pcvr` is installed and that your R session knows where to fi
 ```{r}
 #| echo: true
 library(pcvr)
-priors = list("A" = c(100, 130), "B" = c(10, 8), "C" = c(0.2, 0.1))
+priors <- list("A" = c(100, 130), "B" = c(10, 8), "C" = c(0.2, 0.1))
 plotPrior(priors, "gompertz")[[1]]
 ```
 
@@ -55,7 +66,7 @@ By default `install_github` will install the dependencies for `pcvr`, but there 
 
 ```{r}
 #| eval: false
-devtools::install_github("danforthcenter/pcvr", dependencies = T)
+devtools::install_github("danforthcenter/pcvr", dependencies = TRUE)
 ```
 
 Alternatively you can just install `brms` and `cmdstanr` using instructions below.
@@ -106,9 +117,18 @@ m <- brm(mpg ~ gear + hp, iter = 500, data = mtcars, backend = "cmdstanr")
 ```{r}
 #| echo: true
 #| eval: false
-simdf <- growthSim("linear", n=20, t=25, params = list("A"=c(1.1, 0.95)))
-ss <- growthSS(model = "linear", form=y~time|id/group, sigma="linear", df=simdf, priors = list("A"=1))
-fit_test <- fitGrowth(ss, iter = 1000, cores = 2, chains = 2, backend = "cmdstanr")
+simdf <- growthSim("linear",
+  n = 20, t = 25,
+  params = list("A" = c(1.1, 0.95))
+)
+ss <- growthSS(
+  model = "linear", form = y ~ time | id / group,
+  sigma = "linear", df = simdf, priors = list("A" = 1)
+)
+fit_test <- fitGrowth(ss,
+  iter = 1000, cores = 2, chains = 2,
+  backend = "cmdstanr"
+)
 ```
 
 ## Bellwether Vignette
@@ -117,7 +137,7 @@ The Bellwether Vignette shows an example workflow to analyze single and multi va
 
 ```{r}
 #| eval: false
-devtools::install_github("danforthcenter/pcvr", build_vignettes = T)
+devtools::install_github("danforthcenter/pcvr", build_vignettes = TRUE)
 ```
 
 Now check the available vignettes in your browser with `browseVignettes`

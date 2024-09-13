@@ -41,8 +41,10 @@
   )
   #* `Store summary`
   out$summary <- data.frame(HDE_1 = hde1, HDI_1_low = hdi1[1], HDI_1_high = hdi1[2])
-  out$posterior <- list("shape" = shape_prime, "scale" = scale_prime,
-                        "known_shape" = priors$known_shape)
+  out$posterior <- list(
+    "shape" = shape_prime, "scale" = scale_prime,
+    "known_shape" = priors$known_shape
+  )
   #* `save s1 data for plotting`
   if (plot) {
     out$plot_df <- data.frame(

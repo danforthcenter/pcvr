@@ -12,10 +12,25 @@ x <- lintr::lint_package(path = "~/pcvr",
                     ))
 x
 length(x)
-#* dry run styling
+#* run styling
 if (FALSE) {
-  style_pkg("~/pcvr", dry = "on")
+  style_pkg("~/pcvr", dry = "off", scope = "line_breaks")
 }
+
+
+
+x <- lintr::lint_dir(path = "~/pcvr/tutorials",
+                         linters = linters_with_defaults(line_length_linter(length = 105L),
+                                                         object_name_linter(styles = c("snake_case", "symbols",
+                                                                                       "camelCase", "dotted.case",
+                                                                                       "lowercase", "UPPERCASE")),
+                                                         brace_linter(allow_single_line = TRUE)
+                         ))
+x
+styler::style_dir(path = "~/pcvr/tutorials", scope = "tokens")
+
+
+
 
 if(FALSE){
   file = "~/pcvr/R/emd.R"

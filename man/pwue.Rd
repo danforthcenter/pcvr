@@ -61,19 +61,25 @@ The equation is then
 \eqn{\frac{P_{t}}{W_{t_{end-1}}-W_{t_{start}} }}{P_[t] / W_[t_(end-1)]-W_[t_start]}
 }
 \examples{
-sim_water <- data.frame("barcode" = "exampleBarcode1",
-"timestamp" = as.POSIXct(c("2023-04-13 23:28:17 UTC",
-                           "2023-04-22 05:30:42 UTC",
-                           "2023-05-04 18:55:38 UTC")),
-"DAS" = c(0.000000,  8.251675, 20.810660),
-"water_amount" = c(98, 12, -1)
+sim_water <- data.frame(
+  "barcode" = "exampleBarcode1",
+  "timestamp" = as.POSIXct(c(
+    "2023-04-13 23:28:17 UTC",
+    "2023-04-22 05:30:42 UTC",
+    "2023-05-04 18:55:38 UTC"
+  )),
+  "DAS" = c(0.000000, 8.251675, 20.810660),
+  "water_amount" = c(98, 12, -1)
 )
-sim_df <- data.frame("barcode" = "exampleBarcode1",
-                     "timestamp" = as.POSIXct(c("2023-04-13 23:28:17 UTC",
-                                                "2023-04-22 05:30:42 UTC",
-                                                "2023-05-04 18:55:38 UTC")),
-                     "DAS" = c(0.000000,  8, 20),
-                     "area_pixels" = c(20, 1000, 1500)
+sim_df <- data.frame(
+  "barcode" = "exampleBarcode1",
+  "timestamp" = as.POSIXct(c(
+    "2023-04-13 23:28:17 UTC",
+    "2023-04-22 05:30:42 UTC",
+    "2023-05-04 18:55:38 UTC"
+  )),
+  "DAS" = c(0.000000, 8, 20),
+  "area_pixels" = c(20, 1000, 1500)
 )
 pwue(
   df = sim_df, w = sim_water, pheno = "area_pixels",

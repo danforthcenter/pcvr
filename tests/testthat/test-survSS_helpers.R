@@ -1,4 +1,6 @@
-if (!interactive()) {pdf(NULL)}
+if (!interactive()) {
+  pdf(NULL)
+}
 library(testthat)
 library(pcvr)
 

@@ -68,6 +68,5 @@ ss <- growthSS(
 fit <- fitGrowth(ss)
 growthPlot(fit, form = ss$pcvrForm, df = ss$df)
 
-
 }
 \keyword{growth-curve}

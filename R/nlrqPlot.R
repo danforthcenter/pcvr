@@ -93,7 +93,8 @@ nlrqPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL,
     virList <- lapply(rep(virMaps, length.out = length(unique(df[[group]]))), function(pal) {
       virpal_p1 <- viridis::viridis(ceiling(length(predCols) / 2), direction = 1, end = 1, option = pal)
       virpal_p2 <- viridis::viridis(ceiling(length(predCols) / 2),
-                                    direction = -1, end = 1, option = pal)[-1]
+        direction = -1, end = 1, option = pal
+      )[-1]
       c(virpal_p1, virpal_p2)
     })
   } else {
@@ -131,8 +132,10 @@ nlrqPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL,
     sub <- plotdf[plotdf[[group]] == iteration_group, ]
     plot <- plot +
       lapply(seq_along(predCols), function(i) {
-        ggplot2::geom_line(data = sub, ggplot2::aes(x = .data[[x]], y = .data[[predCols[i]]]),
-                           color = virList[[g]][i], linewidth = 0.7)
+        ggplot2::geom_line(
+          data = sub, ggplot2::aes(x = .data[[x]], y = .data[[predCols[i]]]),
+          color = virList[[g]][i], linewidth = 0.7
+        )
       })
   }
 
