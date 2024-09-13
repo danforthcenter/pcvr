@@ -67,7 +67,6 @@ brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
   if (individual == "dummyIndividual") {
     individual <- NULL
   }
-  group <- parsed_form$group
   df <- parsed_form$data
   probs <- seq(from = 99, to = 1, by = -2) / 100
   newData <- data.frame(
