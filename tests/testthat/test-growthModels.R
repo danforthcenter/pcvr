@@ -422,10 +422,10 @@ test_that("Test nls gam modeling", {
   fit <- fitGrowth(ss1)
   expect_s3_class(fit, "lm")
 
-  p <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
+  p <- growthPlot(fit = fit, form = ss1$pcvrForm, df = ss1$df)
   expect_s3_class(p, "ggplot")
 
-  av <- testGrowth(ss = ss, fit)$anova
+  av <- testGrowth(ss = ss1, fit)$anova
   expect_s3_class(av, "anova")
 })
 
