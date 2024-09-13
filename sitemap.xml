@@ -3,7 +3,13 @@
 <url><loc>https://danforthcenter.github.io/pcvr/articles/bellwether.html</loc></url>
 <url><loc>https://danforthcenter.github.io/pcvr/articles/directional.html</loc></url>
 <url><loc>https://danforthcenter.github.io/pcvr/articles/index.html</loc></url>
+<url><loc>https://danforthcenter.github.io/pcvr/articles/installation.html</loc></url>
 <url><loc>https://danforthcenter.github.io/pcvr/articles/longitudinal.html</loc></url>
+<url><loc>https://danforthcenter.github.io/pcvr/articles/pcvrTutorial1.html</loc></url>
+<url><loc>https://danforthcenter.github.io/pcvr/articles/pcvrTutorial_agm.html</loc></url>
+<url><loc>https://danforthcenter.github.io/pcvr/articles/pcvrTutorial_conjugate.html</loc></url>
+<url><loc>https://danforthcenter.github.io/pcvr/articles/pcvrTutorial_igm.html</loc></url>
+<url><loc>https://danforthcenter.github.io/pcvr/articles/pcvrTutorial_mvt.html</loc></url>
 <url><loc>https://danforthcenter.github.io/pcvr/articles/roots.html</loc></url>
 <url><loc>https://danforthcenter.github.io/pcvr/authors.html</loc></url>
 <url><loc>https://danforthcenter.github.io/pcvr/index.html</loc></url>
@@ -24,6 +30,7 @@
 <url><loc>https://danforthcenter.github.io/pcvr/reference/fitGrowth.html</loc></url>
 <url><loc>https://danforthcenter.github.io/pcvr/reference/fitGrowthbrms.html</loc></url>
 <url><loc>https://danforthcenter.github.io/pcvr/reference/fitGrowthflexsurv.html</loc></url>
+<url><loc>https://danforthcenter.github.io/pcvr/reference/fitGrowthlm.html</loc></url>
 <url><loc>https://danforthcenter.github.io/pcvr/reference/fitGrowthmgcvgam.html</loc></url>
 <url><loc>https://danforthcenter.github.io/pcvr/reference/fitGrowthnlme.html</loc></url>
 <url><loc>https://danforthcenter.github.io/pcvr/reference/fitGrowthnlmegam.html</loc></url>
@@ -31,6 +38,7 @@
 <url><loc>https://danforthcenter.github.io/pcvr/reference/fitGrowthnlrqgam.html</loc></url>
 <url><loc>https://danforthcenter.github.io/pcvr/reference/fitGrowthnls.html</loc></url>
 <url><loc>https://danforthcenter.github.io/pcvr/reference/fitGrowthnlsgam.html</loc></url>
+<url><loc>https://danforthcenter.github.io/pcvr/reference/fitGrowthrq.html</loc></url>
 <url><loc>https://danforthcenter.github.io/pcvr/reference/fitGrowthsurvreg.html</loc></url>
 <url><loc>https://danforthcenter.github.io/pcvr/reference/flexsurvregPlot.html</loc></url>
 <url><loc>https://danforthcenter.github.io/pcvr/reference/frem.html</loc></url>
@@ -39,6 +47,7 @@
 <url><loc>https://danforthcenter.github.io/pcvr/reference/growthSS.html</loc></url>
 <url><loc>https://danforthcenter.github.io/pcvr/reference/growthSim.html</loc></url>
 <url><loc>https://danforthcenter.github.io/pcvr/reference/index.html</loc></url>
+<url><loc>https://danforthcenter.github.io/pcvr/reference/mvSS.html</loc></url>
 <url><loc>https://danforthcenter.github.io/pcvr/reference/mvSim.html</loc></url>
 <url><loc>https://danforthcenter.github.io/pcvr/reference/mv_ag.html</loc></url>
 <url><loc>https://danforthcenter.github.io/pcvr/reference/net.plot.html</loc></url>

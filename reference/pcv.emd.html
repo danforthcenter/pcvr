@@ -11,7 +11,7 @@ See also pcv.euc for euclidean distance between histograms."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">pcvr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -20,7 +20,18 @@ See also pcv.euc for euclidean distance between histograms."></head><body>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../index.html"><span class="fa fa-home fa-lg"></span></a></li>
-<li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-vignettes" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Vignettes</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-vignettes"><li><a class="dropdown-item" href="../articles/Bellwether.html">Bellwether</a></li>
+    <li><a class="dropdown-item" href="../articles/longitudinal.html">Longitudinal Modeling</a></li>
+    <li><a class="dropdown-item" href="../articles/roots.html">Root Phenotyping</a></li>
+    <li><a class="dropdown-item" href="../articles/directional.html">Directional Statistics</a></li>
+    <li><a class="dropdown-item" href="../articles/installation.html">Installation Tutorial</a></li>
+    <li><a class="dropdown-item" href="../articles/pcvrTutorial_conjugate.html">Conjugate Tutorial</a></li>
+    <li><a class="dropdown-item" href="../articles/pcvrTutorial_igm.html">Intermediate Growth Modeling Tutorial</a></li>
+    <li><a class="dropdown-item" href="../articles/pcvrTutorial_agm.html">Advanced Growth Modeling Tutorial</a></li>
+    <li><a class="dropdown-item" href="../articles/pcvrTutorial_mvt.html">Multi-Value Traits Tutorial</a></li>
+  </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Functions</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
 <li class="nav-item dropdown">
@@ -30,6 +41,7 @@ See also pcv.euc for euclidean distance between histograms."></head><body>
     <li><a class="external-link dropdown-item" href="https://github.com/danforthcenter/pcvr/tree/main/tutorials/pcvrTutorial_intermediateGrowthModeling">Growth Modeling</a></li>
     <li><a class="external-link dropdown-item" href="https://github.com/danforthcenter/pcvr/tree/main/tutorials/pcvrTutorial_advancedGrowthModeling">Advanced Growth Modeling</a></li>
     <li><a class="external-link dropdown-item" href="https://github.com/danforthcenter/pcvr/tree/main/tutorials/pcvrTutorial_conjugate">Bayesian Conjugate Priors</a></li>
+    <li><a class="external-link dropdown-item" href="https://github.com/danforthcenter/pcvr/tree/crop_reporter/tutorials/pcvrTutorial_multiValueTraits">Multi-Value Traits</a></li>
   </ul></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://plantcv.org/">PlantCV</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><a class="external-link nav-link" href="https://github.com/danforthcenter/pcvr"><span class="fa fa-github"></span></a></li>
@@ -210,49 +222,54 @@ a ggplot (if plot=TRUE). The returned data contains pairwise EMD values.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># \donttest{</span></span></span>
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="st">"https://media.githubusercontent.com/media/joshqsumner/"</span>,</span></span>
-<span class="r-in"><span>    <span class="st">"pcvrTestData/main/pcv4-multi-value-traits.csv"</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">df1</span> <span class="op">&lt;-</span> <span class="fu"><a href="read.pcv.html">read.pcv</a></span><span class="op">(</span><span class="va">file</span>, <span class="st">"wide"</span>, reader <span class="op">=</span> <span class="st">"fread"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="st">"https://media.githubusercontent.com/media/joshqsumner/"</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"pcvrTestData/main/pcv4-multi-value-traits.csv"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">df1</span> <span class="op">&lt;-</span> <span class="fu"><a href="read.pcv.html">read.pcv</a></span><span class="op">(</span><span class="va">file</span>, <span class="st">"wide"</span>, reader <span class="op">=</span> <span class="st">"fread"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span>  <span class="va">df1</span><span class="op">$</span><span class="va">genotype</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/substr.html" class="external-link">substr</a></span><span class="op">(</span><span class="va">df1</span><span class="op">$</span><span class="va">barcode</span>, <span class="fl">3</span>, <span class="fl">5</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">df1</span><span class="op">$</span><span class="va">genotype</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">df1</span><span class="op">$</span><span class="va">genotype</span> <span class="op">==</span> <span class="st">"002"</span>, <span class="st">"B73"</span>,</span></span>
-<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">df1</span><span class="op">$</span><span class="va">genotype</span> <span class="op">==</span> <span class="st">"003"</span>, <span class="st">"W605S"</span>,</span></span>
-<span class="r-in"><span>      <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">df1</span><span class="op">$</span><span class="va">genotype</span> <span class="op">==</span> <span class="st">"004"</span>, <span class="st">"MM"</span>, <span class="st">"Mo17"</span><span class="op">)</span></span></span>
-<span class="r-in"><span>    <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">df1</span><span class="op">$</span><span class="va">genotype</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/substr.html" class="external-link">substr</a></span><span class="op">(</span><span class="va">df1</span><span class="op">$</span><span class="va">barcode</span>, <span class="fl">3</span>, <span class="fl">5</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">df1</span><span class="op">$</span><span class="va">genotype</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">df1</span><span class="op">$</span><span class="va">genotype</span> <span class="op">==</span> <span class="st">"002"</span>, <span class="st">"B73"</span>,</span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">df1</span><span class="op">$</span><span class="va">genotype</span> <span class="op">==</span> <span class="st">"003"</span>, <span class="st">"W605S"</span>,</span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">df1</span><span class="op">$</span><span class="va">genotype</span> <span class="op">==</span> <span class="st">"004"</span>, <span class="st">"MM"</span>, <span class="st">"Mo17"</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">df1</span><span class="op">$</span><span class="va">fertilizer</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/substr.html" class="external-link">substr</a></span><span class="op">(</span><span class="va">df1</span><span class="op">$</span><span class="va">barcode</span>, <span class="fl">8</span>, <span class="fl">8</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">df1</span><span class="op">$</span><span class="va">fertilizer</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">df1</span><span class="op">$</span><span class="va">fertilizer</span> <span class="op">==</span> <span class="st">"A"</span>, <span class="st">"100"</span>,</span></span>
-<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">df1</span><span class="op">$</span><span class="va">fertilizer</span> <span class="op">==</span> <span class="st">"B"</span>, <span class="st">"50"</span>, <span class="st">"0"</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">df1</span><span class="op">$</span><span class="va">fertilizer</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/substr.html" class="external-link">substr</a></span><span class="op">(</span><span class="va">df1</span><span class="op">$</span><span class="va">barcode</span>, <span class="fl">8</span>, <span class="fl">8</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">df1</span><span class="op">$</span><span class="va">fertilizer</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">df1</span><span class="op">$</span><span class="va">fertilizer</span> <span class="op">==</span> <span class="st">"A"</span>, <span class="st">"100"</span>,</span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">df1</span><span class="op">$</span><span class="va">fertilizer</span> <span class="op">==</span> <span class="st">"B"</span>, <span class="st">"50"</span>, <span class="st">"0"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span>  <span class="kw"><a href="https://rdrr.io/r/base/conditions.html" class="external-link">tryCatch</a></span><span class="op">(</span><span class="op">{</span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/conditions.html" class="external-link">tryCatch</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="op">{</span></span></span>
 <span class="r-in"><span>    <span class="va">w</span> <span class="op">&lt;-</span> <span class="fu">pcv.emd</span><span class="op">(</span><span class="va">df1</span>,</span></span>
 <span class="r-in"><span>      cols <span class="op">=</span> <span class="st">"hue_frequencies"</span>, reorder <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"fertilizer"</span>, <span class="st">"genotype"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>      mat <span class="op">=</span> <span class="cn">FALSE</span>, plot <span class="op">=</span> <span class="cn">TRUE</span>, parallel <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
-<span class="r-in"><span>    <span class="op">}</span>, error <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">err</span><span class="op">)</span> <span class="op">{</span><span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">message</a></span><span class="op">(</span><span class="va">err</span><span class="op">)</span><span class="op">}</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span>      mat <span class="op">=</span> <span class="cn">FALSE</span>, plot <span class="op">=</span> <span class="cn">TRUE</span>, parallel <span class="op">=</span> <span class="fl">1</span></span></span>
+<span class="r-in"><span>    <span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">}</span>,</span></span>
+<span class="r-in"><span>  error <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">err</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">message</a></span><span class="op">(</span><span class="va">err</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">}</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in .emdRaiseError(raiseError, df, parallel, trait = NULL):</span> Stopping, estimated time of calculation is roughly 2.83 hours using 1 cores in parallel.</span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> If you wish to proceed then rerun this command with raiseError=FALSE</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span>  <span class="co"># Note on computational complexity</span></span></span>
-<span class="r-in"><span>  <span class="co"># This scales as O^2, see the plot below for some idea</span></span></span>
-<span class="r-in"><span>  <span class="co"># of the time for different input data sizes.</span></span></span>
-<span class="r-in"><span>  <span class="va">emdTime</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">n</span> <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span>    <span class="va">x</span><span class="op">^</span><span class="fl">2</span> <span class="op">/</span> <span class="va">n</span> <span class="op">*</span> <span class="fl">0.0023</span></span></span>
-<span class="r-in"><span>  <span class="op">}</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">18</span>, <span class="fl">36</span>, <span class="fl">54</span>, <span class="fl">72</span>, <span class="fl">108</span>, <span class="fl">135</span><span class="op">)</span>, y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.74</span>, <span class="fl">2.89</span>, <span class="fl">6.86</span>, <span class="fl">10.99</span>, <span class="fl">26.25</span>, <span class="fl">42.44</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>    xlab <span class="op">=</span> <span class="st">"N Input Images"</span>, ylab <span class="op">=</span> <span class="st">"time (seconds)"</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span> <span class="co"># benchmarked test data</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">150</span>, y <span class="op">=</span> <span class="fu">emdTime</span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">150</span><span class="op">)</span><span class="op">)</span> <span class="co"># exponential function</span></span></span>
+<span class="r-in"><span><span class="co"># Note on computational complexity</span></span></span>
+<span class="r-in"><span><span class="co"># This scales as O^2, see the plot below for some idea</span></span></span>
+<span class="r-in"><span><span class="co"># of the time for different input data sizes.</span></span></span>
+<span class="r-in"><span><span class="va">emdTime</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">n</span> <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="va">x</span><span class="op">^</span><span class="fl">2</span> <span class="op">/</span> <span class="va">n</span> <span class="op">*</span> <span class="fl">0.0023</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">18</span>, <span class="fl">36</span>, <span class="fl">54</span>, <span class="fl">72</span>, <span class="fl">108</span>, <span class="fl">135</span><span class="op">)</span>, y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.74</span>, <span class="fl">2.89</span>, <span class="fl">6.86</span>, <span class="fl">10.99</span>, <span class="fl">26.25</span>, <span class="fl">42.44</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  xlab <span class="op">=</span> <span class="st">"N Input Images"</span>, ylab <span class="op">=</span> <span class="st">"time (seconds)"</span></span></span>
+<span class="r-in"><span><span class="op">)</span> <span class="co"># benchmarked test data</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">150</span>, y <span class="op">=</span> <span class="fu">emdTime</span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">150</span><span class="op">)</span><span class="op">)</span> <span class="co"># exponential function</span></span></span>
 <span class="r-plt img"><img src="pcv.emd-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    x <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">1000</span>, y <span class="op">=</span> <span class="fu">emdTime</span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">1000</span><span class="op">)</span>, type <span class="op">=</span> <span class="st">"l"</span>,</span></span>
-<span class="r-in"><span>    xlab <span class="op">=</span> <span class="st">"N Input Images"</span>, ylab <span class="op">=</span> <span class="st">"time (seconds)"</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  x <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">1000</span>, y <span class="op">=</span> <span class="fu">emdTime</span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">1000</span><span class="op">)</span>, type <span class="op">=</span> <span class="st">"l"</span>,</span></span>
+<span class="r-in"><span>  xlab <span class="op">=</span> <span class="st">"N Input Images"</span>, ylab <span class="op">=</span> <span class="st">"time (seconds)"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="pcv.emd-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>

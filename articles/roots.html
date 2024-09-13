@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">pcvr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -30,7 +30,20 @@
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
 <li class="nav-item"><a class="nav-link" href="../index.html"><span class="fa fa-home fa-lg"></span></a></li>
-<li class="active nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
+<li class="active nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-vignettes" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Vignettes</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-vignettes">
+<li><a class="dropdown-item" href="../articles/Bellwether.html">Bellwether</a></li>
+    <li><a class="dropdown-item" href="../articles/longitudinal.html">Longitudinal Modeling</a></li>
+    <li><a class="dropdown-item" href="../articles/roots.html">Root Phenotyping</a></li>
+    <li><a class="dropdown-item" href="../articles/directional.html">Directional Statistics</a></li>
+    <li><a class="dropdown-item" href="../articles/installation.html">Installation Tutorial</a></li>
+    <li><a class="dropdown-item" href="../articles/pcvrTutorial_conjugate.html">Conjugate Tutorial</a></li>
+    <li><a class="dropdown-item" href="../articles/pcvrTutorial_igm.html">Intermediate Growth Modeling Tutorial</a></li>
+    <li><a class="dropdown-item" href="../articles/pcvrTutorial_agm.html">Advanced Growth Modeling Tutorial</a></li>
+    <li><a class="dropdown-item" href="../articles/pcvrTutorial_mvt.html">Multi-Value Traits Tutorial</a></li>
+  </ul>
+</li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Functions</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
 <li class="nav-item dropdown">
@@ -41,6 +54,7 @@
     <li><a class="external-link dropdown-item" href="https://github.com/danforthcenter/pcvr/tree/main/tutorials/pcvrTutorial_intermediateGrowthModeling">Growth Modeling</a></li>
     <li><a class="external-link dropdown-item" href="https://github.com/danforthcenter/pcvr/tree/main/tutorials/pcvrTutorial_advancedGrowthModeling">Advanced Growth Modeling</a></li>
     <li><a class="external-link dropdown-item" href="https://github.com/danforthcenter/pcvr/tree/main/tutorials/pcvrTutorial_conjugate">Bayesian Conjugate Priors</a></li>
+    <li><a class="external-link dropdown-item" href="https://github.com/danforthcenter/pcvr/tree/crop_reporter/tutorials/pcvrTutorial_multiValueTraits">Multi-Value Traits</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="external-link nav-link" href="https://plantcv.org/">PlantCV</a></li>
@@ -149,9 +163,13 @@ that will generate single value traits from the MV frequencies.</p>
 <span><span class="op">}</span></span>
 <span><span class="va">sv_from_mv</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">df</span>, <span class="va">theta</span><span class="op">)</span> <span class="op">{</span> <span class="co"># note this should also return mean/median/std</span></span>
 <span>  <span class="va">metaCols</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span><span class="op">[</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"value|label|trait"</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></span>
-<span>  <span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/aggregate.html" class="external-link">aggregate</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/formula.html" class="external-link">as.formula</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"value ~ "</span>,</span>
-<span>                                     <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">metaCols</span>, collapse <span class="op">=</span> <span class="st">"+"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>                   data <span class="op">=</span> <span class="va">df</span>, <span class="va">sum</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span>  <span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/aggregate.html" class="external-link">aggregate</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/stats/formula.html" class="external-link">as.formula</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span></span>
+<span>      <span class="st">"value ~ "</span>,</span>
+<span>      <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">metaCols</span>, collapse <span class="op">=</span> <span class="st">"+"</span><span class="op">)</span></span>
+<span>    <span class="op">)</span><span class="op">)</span>,</span>
+<span>    data <span class="op">=</span> <span class="va">df</span>, <span class="va">sum</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  <span class="op">)</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="st">"area"</span></span>
 <span>  <span class="va">out</span><span class="op">$</span><span class="va">max_pixel</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/split.html" class="external-link">split</a></span><span class="op">(</span><span class="va">df</span>, <span class="fu"><a href="https://rdrr.io/r/base/interaction.html" class="external-link">interaction</a></span><span class="op">(</span><span class="va">df</span><span class="op">[</span>, <span class="va">metaCols</span><span class="op">]</span><span class="op">)</span><span class="op">)</span>, <span class="va">lastNonZeroBin</span><span class="op">)</span><span class="op">)</span></span>
 <span>  <span class="va">out</span><span class="op">$</span><span class="va">height</span> <span class="op">&lt;-</span> <span class="fu">tubeAngleToDepth</span><span class="op">(</span><span class="va">out</span><span class="op">$</span><span class="va">max_pixel</span>, <span class="fl">0.35</span><span class="op">)</span></span>

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">pcvr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -16,7 +16,18 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../index.html"><span class="fa fa-home fa-lg"></span></a></li>
-<li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-vignettes" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Vignettes</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-vignettes"><li><a class="dropdown-item" href="../articles/Bellwether.html">Bellwether</a></li>
+    <li><a class="dropdown-item" href="../articles/longitudinal.html">Longitudinal Modeling</a></li>
+    <li><a class="dropdown-item" href="../articles/roots.html">Root Phenotyping</a></li>
+    <li><a class="dropdown-item" href="../articles/directional.html">Directional Statistics</a></li>
+    <li><a class="dropdown-item" href="../articles/installation.html">Installation Tutorial</a></li>
+    <li><a class="dropdown-item" href="../articles/pcvrTutorial_conjugate.html">Conjugate Tutorial</a></li>
+    <li><a class="dropdown-item" href="../articles/pcvrTutorial_igm.html">Intermediate Growth Modeling Tutorial</a></li>
+    <li><a class="dropdown-item" href="../articles/pcvrTutorial_agm.html">Advanced Growth Modeling Tutorial</a></li>
+    <li><a class="dropdown-item" href="../articles/pcvrTutorial_mvt.html">Multi-Value Traits Tutorial</a></li>
+  </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Functions</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
 <li class="nav-item dropdown">
@@ -26,6 +37,7 @@
     <li><a class="external-link dropdown-item" href="https://github.com/danforthcenter/pcvr/tree/main/tutorials/pcvrTutorial_intermediateGrowthModeling">Growth Modeling</a></li>
     <li><a class="external-link dropdown-item" href="https://github.com/danforthcenter/pcvr/tree/main/tutorials/pcvrTutorial_advancedGrowthModeling">Advanced Growth Modeling</a></li>
     <li><a class="external-link dropdown-item" href="https://github.com/danforthcenter/pcvr/tree/main/tutorials/pcvrTutorial_conjugate">Bayesian Conjugate Priors</a></li>
+    <li><a class="external-link dropdown-item" href="https://github.com/danforthcenter/pcvr/tree/crop_reporter/tutorials/pcvrTutorial_multiValueTraits">Multi-Value Traits</a></li>
   </ul></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://plantcv.org/">PlantCV</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><a class="external-link nav-link" href="https://github.com/danforthcenter/pcvr"><span class="fa fa-github"></span></a></li>
@@ -104,12 +116,11 @@ Defaults to NULL which will use all parameters from the top level model.</p></dd
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># \donttest{</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/load.html" class="external-link">load</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/connections.html" class="external-link">url</a></span><span class="op">(</span><span class="st">"https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/brmsFits.rdata"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># \donttest{</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/load.html" class="external-link">load</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/connections.html" class="external-link">url</a></span><span class="op">(</span><span class="st">"https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/brmsFits.rdata"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [1] "fit_3"  "fit_5"  "fit_7"  "fit_9"  "fit_11" "fit_13" "fit_15" "fit_17"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [9] "fit_19" "fit_21" "fit_23" "fit_25" "simdf" </span>
-<span class="r-in"><span>  <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/paul-buerkner/brms" class="external-link">brms</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/paul-buerkner/brms" class="external-link">brms</a></span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Loading required package: Rcpp</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Loading 'brms' package (version 2.21.0). Useful instructions</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> can be found by typing help('brms'). A more detailed introduction</span>
@@ -119,27 +130,27 @@ Defaults to NULL which will use all parameters from the top level model.</p></dd
 <span class="r-msg co"><span class="r-pr">#&gt;</span> The following object is masked from ‘package:stats’:</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>     ar</span>
-<span class="r-in"><span>  <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://patchwork.data-imaginist.com" class="external-link">patchwork</a></span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">fits</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">fit_3</span>, <span class="va">fit_15</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">form</span> <span class="op">&lt;-</span> <span class="va">y</span><span class="op">~</span><span class="va">time</span> <span class="op">|</span> <span class="va">id</span> <span class="op">/</span> <span class="va">group</span></span></span>
-<span class="r-in"><span>  <span class="va">priors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="st">"phi1"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Lognormal.html" class="external-link">rlnorm</a></span><span class="op">(</span><span class="fl">2000</span>, <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">130</span><span class="op">)</span>, <span class="fl">0.25</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>    <span class="st">"phi2"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Lognormal.html" class="external-link">rlnorm</a></span><span class="op">(</span><span class="fl">2000</span>, <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">12</span><span class="op">)</span>, <span class="fl">0.25</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>    <span class="st">"phi3"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Lognormal.html" class="external-link">rlnorm</a></span><span class="op">(</span><span class="fl">2000</span>, <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">3</span><span class="op">)</span>, <span class="fl">0.25</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">params</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">d</span> <span class="op">&lt;-</span> <span class="va">simdf</span></span></span>
-<span class="r-in"><span>  <span class="va">maxTime</span> <span class="op">&lt;-</span> <span class="cn">NULL</span></span></span>
-<span class="r-in"><span>  <span class="va">patch</span> <span class="op">&lt;-</span> <span class="cn">TRUE</span></span></span>
-<span class="r-in"><span>  <span class="va">from3to25</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="va">fit_3</span>, <span class="va">fit_5</span>, <span class="va">fit_7</span>, <span class="va">fit_9</span>, <span class="va">fit_11</span>,</span></span>
-<span class="r-in"><span>    <span class="va">fit_13</span>, <span class="va">fit_15</span>, <span class="va">fit_17</span>, <span class="va">fit_19</span>, <span class="va">fit_21</span>, <span class="va">fit_23</span>, <span class="va">fit_25</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="fu">distributionPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>    fits <span class="op">=</span> <span class="va">from3to25</span>, form <span class="op">=</span> <span class="va">y</span> <span class="op">~</span> <span class="va">time</span> <span class="op">|</span> <span class="va">id</span> <span class="op">/</span> <span class="va">group</span>,</span></span>
-<span class="r-in"><span>    params <span class="op">=</span> <span class="va">params</span>, d <span class="op">=</span> <span class="va">d</span>, priors <span class="op">=</span> <span class="va">priors</span>, patch <span class="op">=</span> <span class="cn">FALSE</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://patchwork.data-imaginist.com" class="external-link">patchwork</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">fits</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">fit_3</span>, <span class="va">fit_15</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">form</span> <span class="op">&lt;-</span> <span class="va">y</span><span class="op">~</span><span class="va">time</span> <span class="op">|</span> <span class="va">id</span> <span class="op">/</span> <span class="va">group</span></span></span>
+<span class="r-in"><span><span class="va">priors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="st">"phi1"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Lognormal.html" class="external-link">rlnorm</a></span><span class="op">(</span><span class="fl">2000</span>, <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">130</span><span class="op">)</span>, <span class="fl">0.25</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"phi2"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Lognormal.html" class="external-link">rlnorm</a></span><span class="op">(</span><span class="fl">2000</span>, <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">12</span><span class="op">)</span>, <span class="fl">0.25</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"phi3"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Lognormal.html" class="external-link">rlnorm</a></span><span class="op">(</span><span class="fl">2000</span>, <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">3</span><span class="op">)</span>, <span class="fl">0.25</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">params</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">d</span> <span class="op">&lt;-</span> <span class="va">simdf</span></span></span>
+<span class="r-in"><span><span class="va">maxTime</span> <span class="op">&lt;-</span> <span class="cn">NULL</span></span></span>
+<span class="r-in"><span><span class="va">patch</span> <span class="op">&lt;-</span> <span class="cn">TRUE</span></span></span>
+<span class="r-in"><span><span class="va">from3to25</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">fit_3</span>, <span class="va">fit_5</span>, <span class="va">fit_7</span>, <span class="va">fit_9</span>, <span class="va">fit_11</span>,</span></span>
+<span class="r-in"><span>  <span class="va">fit_13</span>, <span class="va">fit_15</span>, <span class="va">fit_17</span>, <span class="va">fit_19</span>, <span class="va">fit_21</span>, <span class="va">fit_23</span>, <span class="va">fit_25</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">distributionPlot</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  fits <span class="op">=</span> <span class="va">from3to25</span>, form <span class="op">=</span> <span class="va">y</span> <span class="op">~</span> <span class="va">time</span> <span class="op">|</span> <span class="va">id</span> <span class="op">/</span> <span class="va">group</span>,</span></span>
+<span class="r-in"><span>  params <span class="op">=</span> <span class="va">params</span>, d <span class="op">=</span> <span class="va">d</span>, priors <span class="op">=</span> <span class="va">priors</span>, patch <span class="op">=</span> <span class="cn">FALSE</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [[1]]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [[1]][[1]]</span>
 <span class="r-plt img"><img src="distributionPlot-1.png" alt="" width="700" height="433"></span>
@@ -172,10 +183,10 @@ Defaults to NULL which will use all parameters from the top level model.</p></dd
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-in"><span>  <span class="fu">distributionPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>    fits <span class="op">=</span> <span class="va">from3to25</span>, form <span class="op">=</span> <span class="va">y</span> <span class="op">~</span> <span class="va">time</span> <span class="op">|</span> <span class="va">id</span> <span class="op">/</span> <span class="va">group</span>,</span></span>
-<span class="r-in"><span>    params <span class="op">=</span> <span class="va">params</span>, d <span class="op">=</span> <span class="va">d</span>, patch <span class="op">=</span> <span class="cn">FALSE</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">distributionPlot</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  fits <span class="op">=</span> <span class="va">from3to25</span>, form <span class="op">=</span> <span class="va">y</span> <span class="op">~</span> <span class="va">time</span> <span class="op">|</span> <span class="va">id</span> <span class="op">/</span> <span class="va">group</span>,</span></span>
+<span class="r-in"><span>  params <span class="op">=</span> <span class="va">params</span>, d <span class="op">=</span> <span class="va">d</span>, patch <span class="op">=</span> <span class="cn">FALSE</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [[1]]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [[1]][[1]]</span>
 <span class="r-plt img"><img src="distributionPlot-9.png" alt="" width="700" height="433"></span>

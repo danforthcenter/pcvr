@@ -17,7 +17,7 @@ the output."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">pcvr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -26,7 +26,18 @@ the output."></head><body>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../index.html"><span class="fa fa-home fa-lg"></span></a></li>
-<li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-vignettes" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Vignettes</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-vignettes"><li><a class="dropdown-item" href="../articles/Bellwether.html">Bellwether</a></li>
+    <li><a class="dropdown-item" href="../articles/longitudinal.html">Longitudinal Modeling</a></li>
+    <li><a class="dropdown-item" href="../articles/roots.html">Root Phenotyping</a></li>
+    <li><a class="dropdown-item" href="../articles/directional.html">Directional Statistics</a></li>
+    <li><a class="dropdown-item" href="../articles/installation.html">Installation Tutorial</a></li>
+    <li><a class="dropdown-item" href="../articles/pcvrTutorial_conjugate.html">Conjugate Tutorial</a></li>
+    <li><a class="dropdown-item" href="../articles/pcvrTutorial_igm.html">Intermediate Growth Modeling Tutorial</a></li>
+    <li><a class="dropdown-item" href="../articles/pcvrTutorial_agm.html">Advanced Growth Modeling Tutorial</a></li>
+    <li><a class="dropdown-item" href="../articles/pcvrTutorial_mvt.html">Multi-Value Traits Tutorial</a></li>
+  </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Functions</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
 <li class="nav-item dropdown">
@@ -36,6 +47,7 @@ the output."></head><body>
     <li><a class="external-link dropdown-item" href="https://github.com/danforthcenter/pcvr/tree/main/tutorials/pcvrTutorial_intermediateGrowthModeling">Growth Modeling</a></li>
     <li><a class="external-link dropdown-item" href="https://github.com/danforthcenter/pcvr/tree/main/tutorials/pcvrTutorial_advancedGrowthModeling">Advanced Growth Modeling</a></li>
     <li><a class="external-link dropdown-item" href="https://github.com/danforthcenter/pcvr/tree/main/tutorials/pcvrTutorial_conjugate">Bayesian Conjugate Priors</a></li>
+    <li><a class="external-link dropdown-item" href="https://github.com/danforthcenter/pcvr/tree/crop_reporter/tutorials/pcvrTutorial_multiValueTraits">Multi-Value Traits</a></li>
   </ul></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://plantcv.org/">PlantCV</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><a class="external-link nav-link" href="https://github.com/danforthcenter/pcvr"><span class="fa fa-github"></span></a></li>
@@ -139,15 +151,18 @@ See details for interpretation.</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># \donttest{</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># \donttest{</span></span></span>
 <span class="r-in"><span><span class="va">simdf</span> <span class="op">&lt;-</span> <span class="fu"><a href="growthSim.html">growthSim</a></span><span class="op">(</span><span class="st">"logistic"</span>,</span></span>
 <span class="r-in"><span>  n <span class="op">=</span> <span class="fl">20</span>, t <span class="op">=</span> <span class="fl">25</span>,</span></span>
 <span class="r-in"><span>  params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"A"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">200</span>, <span class="fl">160</span><span class="op">)</span>, <span class="st">"B"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">13</span>, <span class="fl">11</span><span class="op">)</span>, <span class="st">"C"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">3.5</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">ss</span> <span class="op">&lt;-</span> <span class="fu"><a href="growthSS.html">growthSS</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  model <span class="op">=</span> <span class="st">"logistic"</span>, form <span class="op">=</span> <span class="va">y</span> <span class="op">~</span> <span class="va">time</span> <span class="op">|</span> <span class="va">id</span> <span class="op">/</span> <span class="va">group</span>, sigma <span class="op">=</span> <span class="st">"logistic"</span>,</span></span>
-<span class="r-in"><span>  df <span class="op">=</span> <span class="va">simdf</span>, start <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"A"</span> <span class="op">=</span> <span class="fl">130</span>, <span class="st">"B"</span> <span class="op">=</span> <span class="fl">12</span>, <span class="st">"C"</span> <span class="op">=</span> <span class="fl">3</span>,</span></span>
-<span class="r-in"><span>                           <span class="st">"sigmaA"</span> <span class="op">=</span> <span class="fl">20</span>, <span class="st">"sigmaB"</span> <span class="op">=</span> <span class="fl">10</span>, <span class="st">"sigmaC"</span> <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>, type <span class="op">=</span> <span class="st">"brms"</span></span></span>
+<span class="r-in"><span>  df <span class="op">=</span> <span class="va">simdf</span>, start <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="st">"A"</span> <span class="op">=</span> <span class="fl">130</span>, <span class="st">"B"</span> <span class="op">=</span> <span class="fl">12</span>, <span class="st">"C"</span> <span class="op">=</span> <span class="fl">3</span>,</span></span>
+<span class="r-in"><span>    <span class="st">"sigmaA"</span> <span class="op">=</span> <span class="fl">20</span>, <span class="st">"sigmaB"</span> <span class="op">=</span> <span class="fl">10</span>, <span class="st">"sigmaC"</span> <span class="op">=</span> <span class="fl">2</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span>, type <span class="op">=</span> <span class="st">"brms"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">fit_test</span> <span class="op">&lt;-</span> <span class="fu"><a href="fitGrowth.html">fitGrowth</a></span><span class="op">(</span><span class="va">ss</span>,</span></span>
 <span class="r-in"><span>  iter <span class="op">=</span> <span class="fl">600</span>, cores <span class="op">=</span> <span class="fl">1</span>, chains <span class="op">=</span> <span class="fl">1</span>, backend <span class="op">=</span> <span class="st">"cmdstanr"</span>,</span></span>
@@ -174,11 +189,18 @@ See details for interpretation.</p>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The ESS has been capped to avoid unstable estimates.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The ESS has been capped to avoid unstable estimates.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The ESS has been capped to avoid unstable estimates.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The ESS has been capped to avoid unstable estimates.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The ESS has been capped to avoid unstable estimates.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Coercing LHS to a list</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The ESS has been capped to avoid unstable estimates.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The ESS has been capped to avoid unstable estimates.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The ESS has been capped to avoid unstable estimates.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The ESS has been capped to avoid unstable estimates.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The ESS has been capped to avoid unstable estimates.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The ESS has been capped to avoid unstable estimates.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Coercing LHS to a list</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The ESS has been capped to avoid unstable estimates.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The ESS has been capped to avoid unstable estimates.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The ESS has been capped to avoid unstable estimates.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The ESS has been capped to avoid unstable estimates.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The ESS has been capped to avoid unstable estimates.</span>
@@ -189,82 +211,82 @@ See details for interpretation.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $Rhat</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $Rhat$summary</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         b_nu_Intercept b_A_groupa b_A_groupb b_B_groupa b_B_groupb b_C_groupa</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Min.          1.001618  0.9967738   1.001765   1.001057   1.024831   1.024172</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1st Qu.       1.001618  0.9967738   1.001765   1.001057   1.024831   1.024172</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Median        1.001618  0.9967738   1.001765   1.001057   1.024831   1.024172</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Mean          1.001618  0.9967738   1.001765   1.001057   1.024831   1.024172</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3rd Qu.       1.001618  0.9967738   1.001765   1.001057   1.024831   1.024172</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Max.          1.001618  0.9967738   1.001765   1.001057   1.024831   1.024172</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Min.          1.007256   1.003564    1.01621   1.011313  0.9982719   1.023324</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1st Qu.       1.007256   1.003564    1.01621   1.011313  0.9982719   1.023324</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Median        1.007256   1.003564    1.01621   1.011313  0.9982719   1.023324</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Mean          1.007256   1.003564    1.01621   1.011313  0.9982719   1.023324</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3rd Qu.       1.007256   1.003564    1.01621   1.011313  0.9982719   1.023324</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Max.          1.007256   1.003564    1.01621   1.011313  0.9982719   1.023324</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         b_C_groupb b_sigmaA_groupa b_sigmaA_groupb b_sigmaB_groupa</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Min.     0.9990064         1.00056        1.006477       0.9983977</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1st Qu.  0.9990064         1.00056        1.006477       0.9983977</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Median   0.9990064         1.00056        1.006477       0.9983977</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Mean     0.9990064         1.00056        1.006477       0.9983977</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3rd Qu.  0.9990064         1.00056        1.006477       0.9983977</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Max.     0.9990064         1.00056        1.006477       0.9983977</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Min.      1.014474        1.001622         1.01393        1.001079</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1st Qu.   1.014474        1.001622         1.01393        1.001079</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Median    1.014474        1.001622         1.01393        1.001079</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Mean      1.014474        1.001622         1.01393        1.001079</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3rd Qu.   1.014474        1.001622         1.01393        1.001079</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Max.      1.014474        1.001622         1.01393        1.001079</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         b_sigmaB_groupb b_sigmaC_groupa b_sigmaC_groupb Intercept_nu    lprior</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Min.           1.001042       0.9981376       0.9980364     1.001618 0.9990075</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1st Qu.        1.001042       0.9981376       0.9980364     1.001618 0.9990075</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Median         1.001042       0.9981376       0.9980364     1.001618 0.9990075</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Mean           1.001042       0.9981376       0.9980364     1.001618 0.9990075</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3rd Qu.        1.001042       0.9981376       0.9980364     1.001618 0.9990075</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Max.           1.001042       0.9981376       0.9980364     1.001618 0.9990075</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Min.           1.001481        1.002892       0.9997347     1.007256 0.9984929</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1st Qu.        1.001481        1.002892       0.9997347     1.007256 0.9984929</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Median         1.001481        1.002892       0.9997347     1.007256 0.9984929</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Mean           1.001481        1.002892       0.9997347     1.007256 0.9984929</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3rd Qu.        1.001481        1.002892       0.9997347     1.007256 0.9984929</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Max.           1.001481        1.002892       0.9997347     1.007256 0.9984929</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>              lp__</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Min.    0.9981965</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1st Qu. 0.9981965</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Median  0.9981965</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Mean    0.9981965</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3rd Qu. 0.9981965</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Max.    0.9981965</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Min.    0.9987048</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1st Qu. 0.9987048</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Median  0.9987048</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Mean    0.9987048</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3rd Qu. 0.9987048</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Max.    0.9987048</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $Rhat$complete</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $Rhat$complete[[1]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.001618</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.007256</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $Rhat$complete[[2]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.9967738</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.003564</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $Rhat$complete[[3]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.001765</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.01621</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $Rhat$complete[[4]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.001057</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.011313</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $Rhat$complete[[5]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.024831</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.9982719</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $Rhat$complete[[6]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.024172</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.023324</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $Rhat$complete[[7]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.9990064</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.014474</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $Rhat$complete[[8]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.00056</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.001622</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $Rhat$complete[[9]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.006477</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.01393</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $Rhat$complete[[10]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.9983977</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.001079</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $Rhat$complete[[11]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.001042</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.001481</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $Rhat$complete[[12]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.9981376</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.002892</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $Rhat$complete[[13]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.9980364</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.9997347</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $Rhat$complete[[14]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.001618</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.007256</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $Rhat$complete[[15]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.9990075</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.9984929</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $Rhat$complete[[16]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.9981965</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.9987048</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $Rhat$complete$model</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1</span>
@@ -274,82 +296,82 @@ See details for interpretation.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $NEFF</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $NEFF$summary</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         b_nu_Intercept b_A_groupa b_A_groupb b_B_groupa b_B_groupb b_C_groupa</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Min.         0.4783949   1.067449  0.7447126  0.7597834   0.726618  0.6355139</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1st Qu.      0.4783949   1.067449  0.7447126  0.7597834   0.726618  0.6355139</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Median       0.4783949   1.067449  0.7447126  0.7597834   0.726618  0.6355139</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Mean         0.4783949   1.067449  0.7447126  0.7597834   0.726618  0.6355139</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3rd Qu.      0.4783949   1.067449  0.7447126  0.7597834   0.726618  0.6355139</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Max.         0.4783949   1.067449  0.7447126  0.7597834   0.726618  0.6355139</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Min.         0.8077354  0.5884866  0.7148728  0.5149354  0.6861411   0.418486</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1st Qu.      0.8077354  0.5884866  0.7148728  0.5149354  0.6861411   0.418486</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Median       0.8077354  0.5884866  0.7148728  0.5149354  0.6861411   0.418486</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Mean         0.8077354  0.5884866  0.7148728  0.5149354  0.6861411   0.418486</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3rd Qu.      0.8077354  0.5884866  0.7148728  0.5149354  0.6861411   0.418486</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Max.         0.8077354  0.5884866  0.7148728  0.5149354  0.6861411   0.418486</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         b_C_groupb b_sigmaA_groupa b_sigmaA_groupb b_sigmaB_groupa</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Min.     0.7771057       0.9131724       0.7198256       0.7242603</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1st Qu.  0.7771057       0.9131724       0.7198256       0.7242603</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Median   0.7771057       0.9131724       0.7198256       0.7242603</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Mean     0.7771057       0.9131724       0.7198256       0.7242603</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3rd Qu.  0.7771057       0.9131724       0.7198256       0.7242603</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Max.     0.7771057       0.9131724       0.7198256       0.7242603</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Min.     0.8313222       0.8249887       0.2686725       0.9180275</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1st Qu.  0.8313222       0.8249887       0.2686725       0.9180275</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Median   0.8313222       0.8249887       0.2686725       0.9180275</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Mean     0.8313222       0.8249887       0.2686725       0.9180275</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3rd Qu.  0.8313222       0.8249887       0.2686725       0.9180275</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Max.     0.8313222       0.8249887       0.2686725       0.9180275</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         b_sigmaB_groupb b_sigmaC_groupa b_sigmaC_groupb Intercept_nu    lprior</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Min.          0.5840577       0.9790235       0.8042776    0.4783949 0.6229972</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1st Qu.       0.5840577       0.9790235       0.8042776    0.4783949 0.6229972</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Median        0.5840577       0.9790235       0.8042776    0.4783949 0.6229972</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Mean          0.5840577       0.9790235       0.8042776    0.4783949 0.6229972</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3rd Qu.       0.5840577       0.9790235       0.8042776    0.4783949 0.6229972</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Max.          0.5840577       0.9790235       0.8042776    0.4783949 0.6229972</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Min.          0.5739564        0.645482       0.7389399    0.8077354 0.4609321</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1st Qu.       0.5739564        0.645482       0.7389399    0.8077354 0.4609321</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Median        0.5739564        0.645482       0.7389399    0.8077354 0.4609321</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Mean          0.5739564        0.645482       0.7389399    0.8077354 0.4609321</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3rd Qu.       0.5739564        0.645482       0.7389399    0.8077354 0.4609321</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Max.          0.5739564        0.645482       0.7389399    0.8077354 0.4609321</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>              lp__</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Min.    0.5713659</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1st Qu. 0.5713659</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Median  0.5713659</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Mean    0.5713659</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3rd Qu. 0.5713659</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Max.    0.5713659</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Min.    0.4192135</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1st Qu. 0.4192135</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Median  0.4192135</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Mean    0.4192135</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3rd Qu. 0.4192135</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Max.    0.4192135</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $NEFF$complete</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $NEFF$complete[[1]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.4783949</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.8077354</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $NEFF$complete[[2]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.067449</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.5884866</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $NEFF$complete[[3]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.7447126</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.7148728</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $NEFF$complete[[4]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.7597834</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.5149354</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $NEFF$complete[[5]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.726618</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.6861411</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $NEFF$complete[[6]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.6355139</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.418486</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $NEFF$complete[[7]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.7771057</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.8313222</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $NEFF$complete[[8]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.9131724</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.8249887</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $NEFF$complete[[9]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.7198256</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.2686725</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $NEFF$complete[[10]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.7242603</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.9180275</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $NEFF$complete[[11]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.5840577</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.5739564</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $NEFF$complete[[12]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.9790235</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.645482</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $NEFF$complete[[13]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.8042776</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.7389399</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $NEFF$complete[[14]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.4783949</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.8077354</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $NEFF$complete[[15]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.6229972</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.4609321</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $NEFF$complete[[16]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.5713659</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.4192135</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $NEFF$complete$model</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1</span>
@@ -359,60 +381,60 @@ See details for interpretation.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $ESS</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $ESS$summary</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                  A_groupa A_groupb B_groupa B_groupb C_groupa C_groupb</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Bulk_ESS.Min.    522.7607 603.1687 743.1364 743.1364 563.9345 400.5792</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Bulk_ESS.1st Qu. 522.7607 603.1687 743.1364 743.1364 563.9345 400.5792</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Bulk_ESS.Median  522.7607 603.1687 743.1364 743.1364 563.9345 400.5792</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Bulk_ESS.Mean    522.7607 603.1687 743.1364 743.1364 563.9345 400.5792</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Bulk_ESS.3rd Qu. 522.7607 603.1687 743.1364 743.1364 563.9345 400.5792</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Bulk_ESS.Max.    522.7607 603.1687 743.1364 743.1364 563.9345 400.5792</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Tail_ESS.Min.    320.2346 223.4138 227.9350 217.9854 190.6542 233.1317</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Tail_ESS.1st Qu. 320.2346 223.4138 227.9350 217.9854 190.6542 233.1317</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Tail_ESS.Median  320.2346 223.4138 227.9350 217.9854 190.6542 233.1317</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Tail_ESS.Mean    320.2346 223.4138 227.9350 217.9854 190.6542 233.1317</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Tail_ESS.3rd Qu. 320.2346 223.4138 227.9350 217.9854 190.6542 233.1317</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Tail_ESS.Max.    320.2346 223.4138 227.9350 217.9854 190.6542 233.1317</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Bulk_ESS.Min.    714.7464 593.0616 621.8739 681.5482 561.5601 743.1364</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Bulk_ESS.1st Qu. 714.7464 593.0616 621.8739 681.5482 561.5601 743.1364</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Bulk_ESS.Median  714.7464 593.0616 621.8739 681.5482 561.5601 743.1364</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Bulk_ESS.Mean    714.7464 593.0616 621.8739 681.5482 561.5601 743.1364</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Bulk_ESS.3rd Qu. 714.7464 593.0616 621.8739 681.5482 561.5601 743.1364</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Bulk_ESS.Max.    714.7464 593.0616 621.8739 681.5482 561.5601 743.1364</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Tail_ESS.Min.    176.5460 214.4618 154.4806 205.8423 125.5458 249.3967</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Tail_ESS.1st Qu. 176.5460 214.4618 154.4806 205.8423 125.5458 249.3967</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Tail_ESS.Median  176.5460 214.4618 154.4806 205.8423 125.5458 249.3967</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Tail_ESS.Mean    176.5460 214.4618 154.4806 205.8423 125.5458 249.3967</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Tail_ESS.3rd Qu. 176.5460 214.4618 154.4806 205.8423 125.5458 249.3967</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Tail_ESS.Max.    176.5460 214.4618 154.4806 205.8423 125.5458 249.3967</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                  nu_Intercept sigmaA_groupa sigmaA_groupb sigmaB_groupa</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Bulk_ESS.Min.        703.2048      656.3577      694.6856      456.5762</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Bulk_ESS.1st Qu.     703.2048      656.3577      694.6856      456.5762</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Bulk_ESS.Median      703.2048      656.3577      694.6856      456.5762</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Bulk_ESS.Mean        703.2048      656.3577      694.6856      456.5762</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Bulk_ESS.3rd Qu.     703.2048      656.3577      694.6856      456.5762</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Bulk_ESS.Max.        703.2048      656.3577      694.6856      456.5762</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Tail_ESS.Min.        143.5185      273.9517      215.9477      217.2781</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Tail_ESS.1st Qu.     143.5185      273.9517      215.9477      217.2781</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Tail_ESS.Median      143.5185      273.9517      215.9477      217.2781</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Tail_ESS.Mean        143.5185      273.9517      215.9477      217.2781</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Tail_ESS.3rd Qu.     143.5185      273.9517      215.9477      217.2781</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Tail_ESS.Max.        143.5185      273.9517      215.9477      217.2781</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Bulk_ESS.Min.        743.1364      523.1536     625.59329      743.1364</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Bulk_ESS.1st Qu.     743.1364      523.1536     625.59329      743.1364</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Bulk_ESS.Median      743.1364      523.1536     625.59329      743.1364</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Bulk_ESS.Mean        743.1364      523.1536     625.59329      743.1364</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Bulk_ESS.3rd Qu.     743.1364      523.1536     625.59329      743.1364</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Bulk_ESS.Max.        743.1364      523.1536     625.59329      743.1364</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Tail_ESS.Min.        242.3206      247.4966      80.60176      275.4082</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Tail_ESS.1st Qu.     242.3206      247.4966      80.60176      275.4082</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Tail_ESS.Median      242.3206      247.4966      80.60176      275.4082</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Tail_ESS.Mean        242.3206      247.4966      80.60176      275.4082</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Tail_ESS.3rd Qu.     242.3206      247.4966      80.60176      275.4082</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Tail_ESS.Max.        242.3206      247.4966      80.60176      275.4082</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                  sigmaB_groupb sigmaC_groupa sigmaC_groupb</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Bulk_ESS.Min.         443.8936      380.3305      743.1364</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Bulk_ESS.1st Qu.      443.8936      380.3305      743.1364</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Bulk_ESS.Median       443.8936      380.3305      743.1364</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Bulk_ESS.Mean         443.8936      380.3305      743.1364</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Bulk_ESS.3rd Qu.      443.8936      380.3305      743.1364</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Bulk_ESS.Max.         443.8936      380.3305      743.1364</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Tail_ESS.Min.         175.2173      293.7070      241.2833</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Tail_ESS.1st Qu.      175.2173      293.7070      241.2833</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Tail_ESS.Median       175.2173      293.7070      241.2833</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Tail_ESS.Mean         175.2173      293.7070      241.2833</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Tail_ESS.3rd Qu.      175.2173      293.7070      241.2833</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Tail_ESS.Max.         175.2173      293.7070      241.2833</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Bulk_ESS.Min.         743.1364      579.3801      743.1364</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Bulk_ESS.1st Qu.      743.1364      579.3801      743.1364</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Bulk_ESS.Median       743.1364      579.3801      743.1364</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Bulk_ESS.Mean         743.1364      579.3801      743.1364</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Bulk_ESS.3rd Qu.      743.1364      579.3801      743.1364</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Bulk_ESS.Max.         743.1364      579.3801      743.1364</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Tail_ESS.Min.         172.1869      193.6446      221.6820</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Tail_ESS.1st Qu.      172.1869      193.6446      221.6820</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Tail_ESS.Median       172.1869      193.6446      221.6820</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Tail_ESS.Mean         172.1869      193.6446      221.6820</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Tail_ESS.3rd Qu.      172.1869      193.6446      221.6820</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Tail_ESS.Max.         172.1869      193.6446      221.6820</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $ESS$complete</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              par Bulk_ESS Tail_ESS model</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1   nu_Intercept 703.2048 143.5185     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2       A_groupa 522.7607 320.2346     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3       A_groupb 603.1687 223.4138     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4       B_groupa 743.1364 227.9350     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5       B_groupb 743.1364 217.9854     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6       C_groupa 563.9345 190.6542     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7       C_groupb 400.5792 233.1317     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8  sigmaA_groupa 656.3577 273.9517     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9  sigmaA_groupb 694.6856 215.9477     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10 sigmaB_groupa 456.5762 217.2781     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11 sigmaB_groupb 443.8936 175.2173     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12 sigmaC_groupa 380.3305 293.7070     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13 sigmaC_groupb 743.1364 241.2833     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              par Bulk_ESS  Tail_ESS model</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1   nu_Intercept 743.1364 242.32063     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2       A_groupa 714.7464 176.54597     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3       A_groupb 593.0616 214.46185     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4       B_groupa 621.8739 154.48062     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5       B_groupb 681.5482 205.84233     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6       C_groupa 561.5601 125.54581     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7       C_groupb 743.1364 249.39665     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8  sigmaA_groupa 523.1536 247.49661     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9  sigmaA_groupb 625.5933  80.60176     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10 sigmaB_groupa 743.1364 275.40825     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11 sigmaB_groupb 743.1364 172.18693     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12 sigmaC_groupa 579.3801 193.64461     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13 sigmaC_groupb 743.1364 221.68196     1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $priorPredictive</span>
@@ -434,6 +456,10 @@ See details for interpretation.</p>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The ESS has been capped to avoid unstable estimates.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The ESS has been capped to avoid unstable estimates.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The ESS has been capped to avoid unstable estimates.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The ESS has been capped to avoid unstable estimates.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The ESS has been capped to avoid unstable estimates.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The ESS has been capped to avoid unstable estimates.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The ESS has been capped to avoid unstable estimates.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Coercing LHS to a list</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The ESS has been capped to avoid unstable estimates.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The ESS has been capped to avoid unstable estimates.</span>
@@ -441,7 +467,17 @@ See details for interpretation.</p>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The ESS has been capped to avoid unstable estimates.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The ESS has been capped to avoid unstable estimates.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The ESS has been capped to avoid unstable estimates.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The ESS has been capped to avoid unstable estimates.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The ESS has been capped to avoid unstable estimates.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The ESS has been capped to avoid unstable estimates.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The ESS has been capped to avoid unstable estimates.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The ESS has been capped to avoid unstable estimates.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The ESS has been capped to avoid unstable estimates.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Coercing LHS to a list</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The ESS has been capped to avoid unstable estimates.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The ESS has been capped to avoid unstable estimates.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The ESS has been capped to avoid unstable estimates.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The ESS has been capped to avoid unstable estimates.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The ESS has been capped to avoid unstable estimates.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The ESS has been capped to avoid unstable estimates.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The ESS has been capped to avoid unstable estimates.</span>
@@ -449,6 +485,7 @@ See details for interpretation.</p>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The ESS has been capped to avoid unstable estimates.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The ESS has been capped to avoid unstable estimates.</span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

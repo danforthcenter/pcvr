@@ -9,7 +9,7 @@ model."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">pcvr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -18,7 +18,18 @@ model."></head><body>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../index.html"><span class="fa fa-home fa-lg"></span></a></li>
-<li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-vignettes" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Vignettes</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-vignettes"><li><a class="dropdown-item" href="../articles/Bellwether.html">Bellwether</a></li>
+    <li><a class="dropdown-item" href="../articles/longitudinal.html">Longitudinal Modeling</a></li>
+    <li><a class="dropdown-item" href="../articles/roots.html">Root Phenotyping</a></li>
+    <li><a class="dropdown-item" href="../articles/directional.html">Directional Statistics</a></li>
+    <li><a class="dropdown-item" href="../articles/installation.html">Installation Tutorial</a></li>
+    <li><a class="dropdown-item" href="../articles/pcvrTutorial_conjugate.html">Conjugate Tutorial</a></li>
+    <li><a class="dropdown-item" href="../articles/pcvrTutorial_igm.html">Intermediate Growth Modeling Tutorial</a></li>
+    <li><a class="dropdown-item" href="../articles/pcvrTutorial_agm.html">Advanced Growth Modeling Tutorial</a></li>
+    <li><a class="dropdown-item" href="../articles/pcvrTutorial_mvt.html">Multi-Value Traits Tutorial</a></li>
+  </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Functions</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
 <li class="nav-item dropdown">
@@ -28,6 +39,7 @@ model."></head><body>
     <li><a class="external-link dropdown-item" href="https://github.com/danforthcenter/pcvr/tree/main/tutorials/pcvrTutorial_intermediateGrowthModeling">Growth Modeling</a></li>
     <li><a class="external-link dropdown-item" href="https://github.com/danforthcenter/pcvr/tree/main/tutorials/pcvrTutorial_advancedGrowthModeling">Advanced Growth Modeling</a></li>
     <li><a class="external-link dropdown-item" href="https://github.com/danforthcenter/pcvr/tree/main/tutorials/pcvrTutorial_conjugate">Bayesian Conjugate Priors</a></li>
+    <li><a class="external-link dropdown-item" href="https://github.com/danforthcenter/pcvr/tree/crop_reporter/tutorials/pcvrTutorial_multiValueTraits">Multi-Value Traits</a></li>
   </ul></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://plantcv.org/">PlantCV</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><a class="external-link nav-link" href="https://github.com/danforthcenter/pcvr"><span class="fa fa-github"></span></a></li>
@@ -86,21 +98,22 @@ or should the components be shown individually (FALSE, the default).</p></dd>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rlang.r-lib.org/reference/is_installed.html" class="external-link">is_installed</a></span><span class="op">(</span><span class="st">"pls"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span><span class="va">dists</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  rlnorm <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>meanlog <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">40</span><span class="op">)</span>, sdlog <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  rlnorm <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>meanlog <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">60</span><span class="op">)</span>, sdlog <span class="op">=</span> <span class="fl">0.35</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">mv</span> <span class="op">&lt;-</span> <span class="fu"><a href="mvSim.html">mvSim</a></span><span class="op">(</span>dists <span class="op">=</span> <span class="va">dists</span>, n_samples <span class="op">=</span> <span class="fl">100</span>, counts <span class="op">=</span> <span class="fl">1000</span>,</span></span>
-<span class="r-in"><span>            min_bin <span class="op">=</span> <span class="fl">1</span>, max_bin <span class="op">=</span> <span class="fl">180</span>, wide <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">sv</span> <span class="op">&lt;-</span> <span class="fu"><a href="growthSim.html">growthSim</a></span><span class="op">(</span><span class="st">"logistic"</span>,</span></span>
-<span class="r-in"><span>                n <span class="op">=</span> <span class="fl">5</span>, t <span class="op">=</span> <span class="fl">20</span>,</span></span>
-<span class="r-in"><span>                params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"A"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">200</span>, <span class="fl">160</span><span class="op">)</span>, <span class="st">"B"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">13</span>, <span class="fl">11</span><span class="op">)</span>, <span class="st">"C"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">3.5</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">sv</span>, <span class="va">mv</span><span class="op">[</span>, <span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="pcv.plsr.html">pcv.plsr</a></span><span class="op">(</span>df <span class="op">=</span> <span class="va">d</span>, resps <span class="op">=</span> <span class="st">"y"</span>, spectra <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"^sim_"</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">plotVIP</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">dists</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    rlnorm <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>meanlog <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">40</span><span class="op">)</span>, sdlog <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    rlnorm <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>meanlog <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">60</span><span class="op">)</span>, sdlog <span class="op">=</span> <span class="fl">0.35</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">mv</span> <span class="op">&lt;-</span> <span class="fu"><a href="mvSim.html">mvSim</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    dists <span class="op">=</span> <span class="va">dists</span>, n_samples <span class="op">=</span> <span class="fl">100</span>, counts <span class="op">=</span> <span class="fl">1000</span>,</span></span>
+<span class="r-in"><span>    min_bin <span class="op">=</span> <span class="fl">1</span>, max_bin <span class="op">=</span> <span class="fl">180</span>, wide <span class="op">=</span> <span class="cn">TRUE</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">sv</span> <span class="op">&lt;-</span> <span class="fu"><a href="growthSim.html">growthSim</a></span><span class="op">(</span><span class="st">"logistic"</span>,</span></span>
+<span class="r-in"><span>    n <span class="op">=</span> <span class="fl">5</span>, t <span class="op">=</span> <span class="fl">20</span>,</span></span>
+<span class="r-in"><span>    params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"A"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">200</span>, <span class="fl">160</span><span class="op">)</span>, <span class="st">"B"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">13</span>, <span class="fl">11</span><span class="op">)</span>, <span class="st">"C"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">3.5</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">sv</span>, <span class="va">mv</span><span class="op">[</span>, <span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="pcv.plsr.html">pcv.plsr</a></span><span class="op">(</span>df <span class="op">=</span> <span class="va">d</span>, resps <span class="op">=</span> <span class="st">"y"</span>, spectra <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"^sim_"</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu">plotVIP</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
-<span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

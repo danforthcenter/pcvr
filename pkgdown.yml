@@ -4,9 +4,15 @@ pkgdown_sha: ~
 articles:
   bellwether: bellwether.html
   directional: directional.html
+  articles/installation: installation.html
   longitudinal: longitudinal.html
+  articles/pcvrTutorial_agm: pcvrTutorial_agm.html
+  articles/pcvrTutorial_conjugate: pcvrTutorial_conjugate.html
+  articles/pcvrTutorial_igm: pcvrTutorial_igm.html
+  articles/pcvrTutorial_mvt: pcvrTutorial_mvt.html
+  articles/pcvrTutorial1: pcvrTutorial1.html
   roots: roots.html
-last_built: 2024-09-06T19:37Z
+last_built: 2024-09-13T17:05Z
 urls:
   reference: https://danforthcenter.github.io/pcvr/reference
   article: https://danforthcenter.github.io/pcvr/articles

@@ -11,7 +11,7 @@ growthPlot."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">pcvr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -20,7 +20,18 @@ growthPlot."></head><body>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../index.html"><span class="fa fa-home fa-lg"></span></a></li>
-<li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-vignettes" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Vignettes</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-vignettes"><li><a class="dropdown-item" href="../articles/Bellwether.html">Bellwether</a></li>
+    <li><a class="dropdown-item" href="../articles/longitudinal.html">Longitudinal Modeling</a></li>
+    <li><a class="dropdown-item" href="../articles/roots.html">Root Phenotyping</a></li>
+    <li><a class="dropdown-item" href="../articles/directional.html">Directional Statistics</a></li>
+    <li><a class="dropdown-item" href="../articles/installation.html">Installation Tutorial</a></li>
+    <li><a class="dropdown-item" href="../articles/pcvrTutorial_conjugate.html">Conjugate Tutorial</a></li>
+    <li><a class="dropdown-item" href="../articles/pcvrTutorial_igm.html">Intermediate Growth Modeling Tutorial</a></li>
+    <li><a class="dropdown-item" href="../articles/pcvrTutorial_agm.html">Advanced Growth Modeling Tutorial</a></li>
+    <li><a class="dropdown-item" href="../articles/pcvrTutorial_mvt.html">Multi-Value Traits Tutorial</a></li>
+  </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Functions</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
 <li class="nav-item dropdown">
@@ -30,6 +41,7 @@ growthPlot."></head><body>
     <li><a class="external-link dropdown-item" href="https://github.com/danforthcenter/pcvr/tree/main/tutorials/pcvrTutorial_intermediateGrowthModeling">Growth Modeling</a></li>
     <li><a class="external-link dropdown-item" href="https://github.com/danforthcenter/pcvr/tree/main/tutorials/pcvrTutorial_advancedGrowthModeling">Advanced Growth Modeling</a></li>
     <li><a class="external-link dropdown-item" href="https://github.com/danforthcenter/pcvr/tree/main/tutorials/pcvrTutorial_conjugate">Bayesian Conjugate Priors</a></li>
+    <li><a class="external-link dropdown-item" href="https://github.com/danforthcenter/pcvr/tree/crop_reporter/tutorials/pcvrTutorial_multiValueTraits">Multi-Value Traits</a></li>
   </ul></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://plantcv.org/">PlantCV</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><a class="external-link nav-link" href="https://github.com/danforthcenter/pcvr"><span class="fa fa-github"></span></a></li>
@@ -116,17 +128,16 @@ intervals and optionally the individual growth lines.</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># \donttest{</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># \donttest{</span></span></span>
 <span class="r-in"><span><span class="va">simdf</span> <span class="op">&lt;-</span> <span class="fu"><a href="growthSim.html">growthSim</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span> <span class="st">"logistic"</span>, n <span class="op">=</span> <span class="fl">20</span>, t <span class="op">=</span> <span class="fl">25</span>,</span></span>
-<span class="r-in"><span> params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"A"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">200</span>, <span class="fl">160</span><span class="op">)</span>, <span class="st">"B"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">13</span>, <span class="fl">11</span><span class="op">)</span>, <span class="st">"C"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">3.5</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="st">"logistic"</span>,</span></span>
+<span class="r-in"><span>  n <span class="op">=</span> <span class="fl">20</span>, t <span class="op">=</span> <span class="fl">25</span>,</span></span>
+<span class="r-in"><span>  params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"A"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">200</span>, <span class="fl">160</span><span class="op">)</span>, <span class="st">"B"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">13</span>, <span class="fl">11</span><span class="op">)</span>, <span class="st">"C"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">3.5</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">ss</span> <span class="op">&lt;-</span> <span class="fu"><a href="growthSS.html">growthSS</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span> model <span class="op">=</span> <span class="st">"logistic"</span>, form <span class="op">=</span> <span class="va">y</span> <span class="op">~</span> <span class="va">time</span> <span class="op">|</span> <span class="va">id</span> <span class="op">/</span> <span class="va">group</span>, sigma <span class="op">=</span> <span class="st">"spline"</span>,</span></span>
-<span class="r-in"><span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"A"</span> <span class="op">=</span> <span class="fl">130</span>, <span class="st">"B"</span> <span class="op">=</span> <span class="fl">10</span>, <span class="st">"C"</span> <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span> df <span class="op">=</span> <span class="va">simdf</span>, type <span class="op">=</span> <span class="st">"brms"</span></span></span>
+<span class="r-in"><span>  model <span class="op">=</span> <span class="st">"logistic"</span>, form <span class="op">=</span> <span class="va">y</span> <span class="op">~</span> <span class="va">time</span> <span class="op">|</span> <span class="va">id</span> <span class="op">/</span> <span class="va">group</span>, sigma <span class="op">=</span> <span class="st">"spline"</span>,</span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"A"</span> <span class="op">=</span> <span class="fl">130</span>, <span class="st">"B"</span> <span class="op">=</span> <span class="fl">10</span>, <span class="st">"C"</span> <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  df <span class="op">=</span> <span class="va">simdf</span>, type <span class="op">=</span> <span class="st">"brms"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="fitGrowth.html">fitGrowth</a></span><span class="op">(</span><span class="va">ss</span>, backend <span class="op">=</span> <span class="st">"cmdstanr"</span>, iter <span class="op">=</span> <span class="fl">500</span>, chains <span class="op">=</span> <span class="fl">1</span>, cores <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Start sampling</span>
@@ -139,7 +150,22 @@ intervals and optionally the individual growth lines.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration:   1 / 500 [  0%]  (Warmup) </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Location parameter[1] is -nan, but must be finite! (in '/tmp/RtmpLZ5Mc8/model-1af3541ff4a1.stan', line 130, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/Rtmp4GmTLp/model-1b4d586c4f96.stan', line 130, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[5] is inf, but must be positive finite! (in '/tmp/Rtmp4GmTLp/model-1b4d586c4f96.stan', line 130, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Location parameter[1] is -nan, but must be finite! (in '/tmp/Rtmp4GmTLp/model-1b4d586c4f96.stan', line 130, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is 0, but must be positive finite! (in '/tmp/Rtmp4GmTLp/model-1b4d586c4f96.stan', line 130, column 4 to column 48)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
@@ -149,13 +175,12 @@ intervals and optionally the individual growth lines.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 350 / 500 [ 70%]  (Sampling) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 450 / 500 [ 90%]  (Sampling) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 500 / 500 [100%]  (Sampling) </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 finished in 25.5 seconds.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Warning: 2 of 250 (1.0%) transitions ended with a divergence.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 finished in 24.5 seconds.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Warning: 1 of 250 (0.0%) transitions ended with a divergence.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> See https://mc-stan.org/misc/warnings for details.</span>
 <span class="r-in"><span><span class="fu"><a href="growthPlot.html">growthPlot</a></span><span class="op">(</span>fit <span class="op">=</span> <span class="va">fit</span>, form <span class="op">=</span> <span class="va">y</span> <span class="op">~</span> <span class="va">time</span> <span class="op">|</span> <span class="va">group</span>, groups <span class="op">=</span> <span class="st">"a"</span>, df <span class="op">=</span> <span class="va">ss</span><span class="op">$</span><span class="va">df</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="brmPlot-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
-<span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

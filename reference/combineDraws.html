@@ -11,7 +11,7 @@ basic model metrics."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">pcvr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -20,7 +20,18 @@ basic model metrics."></head><body>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../index.html"><span class="fa fa-home fa-lg"></span></a></li>
-<li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-vignettes" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Vignettes</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-vignettes"><li><a class="dropdown-item" href="../articles/Bellwether.html">Bellwether</a></li>
+    <li><a class="dropdown-item" href="../articles/longitudinal.html">Longitudinal Modeling</a></li>
+    <li><a class="dropdown-item" href="../articles/roots.html">Root Phenotyping</a></li>
+    <li><a class="dropdown-item" href="../articles/directional.html">Directional Statistics</a></li>
+    <li><a class="dropdown-item" href="../articles/installation.html">Installation Tutorial</a></li>
+    <li><a class="dropdown-item" href="../articles/pcvrTutorial_conjugate.html">Conjugate Tutorial</a></li>
+    <li><a class="dropdown-item" href="../articles/pcvrTutorial_igm.html">Intermediate Growth Modeling Tutorial</a></li>
+    <li><a class="dropdown-item" href="../articles/pcvrTutorial_agm.html">Advanced Growth Modeling Tutorial</a></li>
+    <li><a class="dropdown-item" href="../articles/pcvrTutorial_mvt.html">Multi-Value Traits Tutorial</a></li>
+  </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Functions</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
 <li class="nav-item dropdown">
@@ -30,6 +41,7 @@ basic model metrics."></head><body>
     <li><a class="external-link dropdown-item" href="https://github.com/danforthcenter/pcvr/tree/main/tutorials/pcvrTutorial_intermediateGrowthModeling">Growth Modeling</a></li>
     <li><a class="external-link dropdown-item" href="https://github.com/danforthcenter/pcvr/tree/main/tutorials/pcvrTutorial_advancedGrowthModeling">Advanced Growth Modeling</a></li>
     <li><a class="external-link dropdown-item" href="https://github.com/danforthcenter/pcvr/tree/main/tutorials/pcvrTutorial_conjugate">Bayesian Conjugate Priors</a></li>
+    <li><a class="external-link dropdown-item" href="https://github.com/danforthcenter/pcvr/tree/crop_reporter/tutorials/pcvrTutorial_multiValueTraits">Multi-Value Traits</a></li>
   </ul></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://plantcv.org/">PlantCV</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><a class="external-link nav-link" href="https://github.com/danforthcenter/pcvr"><span class="fa fa-github"></span></a></li>
@@ -82,43 +94,51 @@ the objects, or if models have different formulations.</p></dd>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># note that this example will fit several bayesian models and may run for several minutes.</span></span></span>
 <span class="r-in"><span><span class="co"># \donttest{</span></span></span>
-<span class="r-in"><span>  <span class="va">simdf</span> <span class="op">&lt;-</span> <span class="fu"><a href="growthSim.html">growthSim</a></span><span class="op">(</span><span class="st">"logistic"</span>,</span></span>
-<span class="r-in"><span>    n <span class="op">=</span> <span class="fl">20</span>, t <span class="op">=</span> <span class="fl">25</span>,</span></span>
-<span class="r-in"><span>    params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>      <span class="st">"A"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">200</span>, <span class="fl">160</span>, <span class="fl">220</span>, <span class="fl">200</span>, <span class="fl">140</span>, <span class="fl">300</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>      <span class="st">"B"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">13</span>, <span class="fl">11</span>, <span class="fl">10</span>, <span class="fl">9</span>, <span class="fl">16</span>, <span class="fl">12</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>      <span class="st">"C"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">3.5</span>, <span class="fl">3.2</span>, <span class="fl">2.8</span>, <span class="fl">3.3</span>, <span class="fl">2.5</span><span class="op">)</span></span></span>
-<span class="r-in"><span>    <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">simdf</span> <span class="op">&lt;-</span> <span class="fu"><a href="growthSim.html">growthSim</a></span><span class="op">(</span><span class="st">"logistic"</span>,</span></span>
+<span class="r-in"><span>  n <span class="op">=</span> <span class="fl">20</span>, t <span class="op">=</span> <span class="fl">25</span>,</span></span>
+<span class="r-in"><span>  params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="st">"A"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">200</span>, <span class="fl">160</span>, <span class="fl">220</span>, <span class="fl">200</span>, <span class="fl">140</span>, <span class="fl">300</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    <span class="st">"B"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">13</span>, <span class="fl">11</span>, <span class="fl">10</span>, <span class="fl">9</span>, <span class="fl">16</span>, <span class="fl">12</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    <span class="st">"C"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">3.5</span>, <span class="fl">3.2</span>, <span class="fl">2.8</span>, <span class="fl">3.3</span>, <span class="fl">2.5</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">ss_ab</span> <span class="op">&lt;-</span> <span class="fu"><a href="growthSS.html">growthSS</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    model <span class="op">=</span> <span class="st">"logistic"</span>, form <span class="op">=</span> <span class="va">y</span> <span class="op">~</span> <span class="va">time</span> <span class="op">|</span> <span class="va">id</span> <span class="op">/</span> <span class="va">group</span>,</span></span>
-<span class="r-in"><span>    sigma <span class="op">=</span> <span class="st">"logistic"</span>, df <span class="op">=</span> <span class="va">simdf</span><span class="op">[</span><span class="va">simdf</span><span class="op">$</span><span class="va">group</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"a"</span>, <span class="st">"b"</span><span class="op">)</span>, <span class="op">]</span>,</span></span>
-<span class="r-in"><span>    start <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"A"</span> <span class="op">=</span> <span class="fl">130</span>, <span class="st">"B"</span> <span class="op">=</span> <span class="fl">12</span>, <span class="st">"C"</span> <span class="op">=</span> <span class="fl">3</span>,</span></span>
-<span class="r-in"><span>                 <span class="st">"sigmaA"</span> <span class="op">=</span> <span class="fl">15</span>, <span class="st">"sigmaB"</span> <span class="op">=</span> <span class="fl">10</span>, <span class="st">"sigmaC"</span> <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>, type <span class="op">=</span> <span class="st">"brms"</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">ss_ab</span> <span class="op">&lt;-</span> <span class="fu"><a href="growthSS.html">growthSS</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  model <span class="op">=</span> <span class="st">"logistic"</span>, form <span class="op">=</span> <span class="va">y</span> <span class="op">~</span> <span class="va">time</span> <span class="op">|</span> <span class="va">id</span> <span class="op">/</span> <span class="va">group</span>,</span></span>
+<span class="r-in"><span>  sigma <span class="op">=</span> <span class="st">"logistic"</span>, df <span class="op">=</span> <span class="va">simdf</span><span class="op">[</span><span class="va">simdf</span><span class="op">$</span><span class="va">group</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"a"</span>, <span class="st">"b"</span><span class="op">)</span>, <span class="op">]</span>,</span></span>
+<span class="r-in"><span>  start <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="st">"A"</span> <span class="op">=</span> <span class="fl">130</span>, <span class="st">"B"</span> <span class="op">=</span> <span class="fl">12</span>, <span class="st">"C"</span> <span class="op">=</span> <span class="fl">3</span>,</span></span>
+<span class="r-in"><span>    <span class="st">"sigmaA"</span> <span class="op">=</span> <span class="fl">15</span>, <span class="st">"sigmaB"</span> <span class="op">=</span> <span class="fl">10</span>, <span class="st">"sigmaC"</span> <span class="op">=</span> <span class="fl">3</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span>, type <span class="op">=</span> <span class="st">"brms"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span>  <span class="va">ss_cd</span> <span class="op">&lt;-</span> <span class="fu"><a href="growthSS.html">growthSS</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    model <span class="op">=</span> <span class="st">"logistic"</span>, form <span class="op">=</span> <span class="va">y</span> <span class="op">~</span> <span class="va">time</span> <span class="op">|</span> <span class="va">id</span> <span class="op">/</span> <span class="va">group</span>,</span></span>
-<span class="r-in"><span>    sigma <span class="op">=</span> <span class="st">"logistic"</span>, df <span class="op">=</span> <span class="va">simdf</span><span class="op">[</span><span class="va">simdf</span><span class="op">$</span><span class="va">group</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"c"</span>, <span class="st">"d"</span><span class="op">)</span>, <span class="op">]</span>,</span></span>
-<span class="r-in"><span>    start <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"A"</span> <span class="op">=</span> <span class="fl">130</span>, <span class="st">"B"</span> <span class="op">=</span> <span class="fl">12</span>, <span class="st">"C"</span> <span class="op">=</span> <span class="fl">3</span>,</span></span>
-<span class="r-in"><span>                 <span class="st">"sigmaA"</span> <span class="op">=</span> <span class="fl">15</span>, <span class="st">"sigmaB"</span> <span class="op">=</span> <span class="fl">10</span>, <span class="st">"sigmaC"</span> <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>, type <span class="op">=</span> <span class="st">"brms"</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">ss_cd</span> <span class="op">&lt;-</span> <span class="fu"><a href="growthSS.html">growthSS</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  model <span class="op">=</span> <span class="st">"logistic"</span>, form <span class="op">=</span> <span class="va">y</span> <span class="op">~</span> <span class="va">time</span> <span class="op">|</span> <span class="va">id</span> <span class="op">/</span> <span class="va">group</span>,</span></span>
+<span class="r-in"><span>  sigma <span class="op">=</span> <span class="st">"logistic"</span>, df <span class="op">=</span> <span class="va">simdf</span><span class="op">[</span><span class="va">simdf</span><span class="op">$</span><span class="va">group</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"c"</span>, <span class="st">"d"</span><span class="op">)</span>, <span class="op">]</span>,</span></span>
+<span class="r-in"><span>  start <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="st">"A"</span> <span class="op">=</span> <span class="fl">130</span>, <span class="st">"B"</span> <span class="op">=</span> <span class="fl">12</span>, <span class="st">"C"</span> <span class="op">=</span> <span class="fl">3</span>,</span></span>
+<span class="r-in"><span>    <span class="st">"sigmaA"</span> <span class="op">=</span> <span class="fl">15</span>, <span class="st">"sigmaB"</span> <span class="op">=</span> <span class="fl">10</span>, <span class="st">"sigmaC"</span> <span class="op">=</span> <span class="fl">3</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span>, type <span class="op">=</span> <span class="st">"brms"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span>  <span class="va">ss_ef</span> <span class="op">&lt;-</span> <span class="fu"><a href="growthSS.html">growthSS</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    model <span class="op">=</span> <span class="st">"logistic"</span>, form <span class="op">=</span> <span class="va">y</span> <span class="op">~</span> <span class="va">time</span> <span class="op">|</span> <span class="va">id</span> <span class="op">/</span> <span class="va">group</span>,</span></span>
-<span class="r-in"><span>    sigma <span class="op">=</span> <span class="st">"logistic"</span>, df <span class="op">=</span> <span class="va">simdf</span><span class="op">[</span><span class="va">simdf</span><span class="op">$</span><span class="va">group</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"e"</span>, <span class="st">"f"</span><span class="op">)</span>, <span class="op">]</span>,</span></span>
-<span class="r-in"><span>    start <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"A"</span> <span class="op">=</span> <span class="fl">130</span>, <span class="st">"B"</span> <span class="op">=</span> <span class="fl">12</span>, <span class="st">"C"</span> <span class="op">=</span> <span class="fl">3</span>,</span></span>
-<span class="r-in"><span>                 <span class="st">"sigmaA"</span> <span class="op">=</span> <span class="fl">15</span>, <span class="st">"sigmaB"</span> <span class="op">=</span> <span class="fl">10</span>, <span class="st">"sigmaC"</span> <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>, type <span class="op">=</span> <span class="st">"brms"</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">ss_ef2</span> <span class="op">&lt;-</span> <span class="fu"><a href="growthSS.html">growthSS</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    model <span class="op">=</span> <span class="st">"gompertz"</span>, form <span class="op">=</span> <span class="va">y</span> <span class="op">~</span> <span class="va">time</span> <span class="op">|</span> <span class="va">id</span> <span class="op">/</span> <span class="va">group</span>,</span></span>
-<span class="r-in"><span>    sigma <span class="op">=</span> <span class="st">"logistic"</span>, df <span class="op">=</span> <span class="va">simdf</span><span class="op">[</span><span class="va">simdf</span><span class="op">$</span><span class="va">group</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"e"</span>, <span class="st">"f"</span><span class="op">)</span>, <span class="op">]</span>,</span></span>
-<span class="r-in"><span>    start <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"A"</span> <span class="op">=</span> <span class="fl">130</span>, <span class="st">"B"</span> <span class="op">=</span> <span class="fl">12</span>, <span class="st">"C"</span> <span class="op">=</span> <span class="fl">3</span>,</span></span>
-<span class="r-in"><span>                 <span class="st">"sigmaA"</span> <span class="op">=</span> <span class="fl">15</span>, <span class="st">"sigmaB"</span> <span class="op">=</span> <span class="fl">10</span>, <span class="st">"sigmaC"</span> <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>, type <span class="op">=</span> <span class="st">"brms"</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">ss_ef</span> <span class="op">&lt;-</span> <span class="fu"><a href="growthSS.html">growthSS</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  model <span class="op">=</span> <span class="st">"logistic"</span>, form <span class="op">=</span> <span class="va">y</span> <span class="op">~</span> <span class="va">time</span> <span class="op">|</span> <span class="va">id</span> <span class="op">/</span> <span class="va">group</span>,</span></span>
+<span class="r-in"><span>  sigma <span class="op">=</span> <span class="st">"logistic"</span>, df <span class="op">=</span> <span class="va">simdf</span><span class="op">[</span><span class="va">simdf</span><span class="op">$</span><span class="va">group</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"e"</span>, <span class="st">"f"</span><span class="op">)</span>, <span class="op">]</span>,</span></span>
+<span class="r-in"><span>  start <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="st">"A"</span> <span class="op">=</span> <span class="fl">130</span>, <span class="st">"B"</span> <span class="op">=</span> <span class="fl">12</span>, <span class="st">"C"</span> <span class="op">=</span> <span class="fl">3</span>,</span></span>
+<span class="r-in"><span>    <span class="st">"sigmaA"</span> <span class="op">=</span> <span class="fl">15</span>, <span class="st">"sigmaB"</span> <span class="op">=</span> <span class="fl">10</span>, <span class="st">"sigmaC"</span> <span class="op">=</span> <span class="fl">3</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span>, type <span class="op">=</span> <span class="st">"brms"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">ss_ef2</span> <span class="op">&lt;-</span> <span class="fu"><a href="growthSS.html">growthSS</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  model <span class="op">=</span> <span class="st">"gompertz"</span>, form <span class="op">=</span> <span class="va">y</span> <span class="op">~</span> <span class="va">time</span> <span class="op">|</span> <span class="va">id</span> <span class="op">/</span> <span class="va">group</span>,</span></span>
+<span class="r-in"><span>  sigma <span class="op">=</span> <span class="st">"logistic"</span>, df <span class="op">=</span> <span class="va">simdf</span><span class="op">[</span><span class="va">simdf</span><span class="op">$</span><span class="va">group</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"e"</span>, <span class="st">"f"</span><span class="op">)</span>, <span class="op">]</span>,</span></span>
+<span class="r-in"><span>  start <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="st">"A"</span> <span class="op">=</span> <span class="fl">130</span>, <span class="st">"B"</span> <span class="op">=</span> <span class="fl">12</span>, <span class="st">"C"</span> <span class="op">=</span> <span class="fl">3</span>,</span></span>
+<span class="r-in"><span>    <span class="st">"sigmaA"</span> <span class="op">=</span> <span class="fl">15</span>, <span class="st">"sigmaB"</span> <span class="op">=</span> <span class="fl">10</span>, <span class="st">"sigmaC"</span> <span class="op">=</span> <span class="fl">3</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span>, type <span class="op">=</span> <span class="st">"brms"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span>  <span class="va">fit_ab</span> <span class="op">&lt;-</span> <span class="fu"><a href="fitGrowth.html">fitGrowth</a></span><span class="op">(</span><span class="va">ss_ab</span>, chains <span class="op">=</span> <span class="fl">1</span>, cores <span class="op">=</span> <span class="fl">1</span>, iter <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">fit_ab</span> <span class="op">&lt;-</span> <span class="fu"><a href="fitGrowth.html">fitGrowth</a></span><span class="op">(</span><span class="va">ss_ab</span>, chains <span class="op">=</span> <span class="fl">1</span>, cores <span class="op">=</span> <span class="fl">1</span>, iter <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Start sampling</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Init values were only set for a subset of parameters. </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Missing init values for the following parameters:</span>
@@ -129,32 +149,32 @@ the objects, or if models have different formulations.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration:   1 / 1000 [  0%]  (Warmup) </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is -nan, but must be positive finite! (in '/tmp/RtmpLZ5Mc8/model-1af36869616.stan', line 119, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is -nan, but must be positive finite! (in '/tmp/Rtmp4GmTLp/model-1b4d4b8662ff.stan', line 119, column 4 to column 48)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is -nan, but must be positive finite! (in '/tmp/RtmpLZ5Mc8/model-1af36869616.stan', line 119, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is -nan, but must be positive finite! (in '/tmp/Rtmp4GmTLp/model-1b4d4b8662ff.stan', line 119, column 4 to column 48)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[2] is inf, but must be positive finite! (in '/tmp/RtmpLZ5Mc8/model-1af36869616.stan', line 119, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[2] is inf, but must be positive finite! (in '/tmp/Rtmp4GmTLp/model-1b4d4b8662ff.stan', line 119, column 4 to column 48)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[501] is inf, but must be positive finite! (in '/tmp/RtmpLZ5Mc8/model-1af36869616.stan', line 119, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[501] is inf, but must be positive finite! (in '/tmp/Rtmp4GmTLp/model-1b4d4b8662ff.stan', line 119, column 4 to column 48)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[501] is inf, but must be positive finite! (in '/tmp/RtmpLZ5Mc8/model-1af36869616.stan', line 119, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[501] is inf, but must be positive finite! (in '/tmp/Rtmp4GmTLp/model-1b4d4b8662ff.stan', line 119, column 4 to column 48)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Location parameter[1] is -nan, but must be finite! (in '/tmp/RtmpLZ5Mc8/model-1af36869616.stan', line 119, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Location parameter[1] is -nan, but must be finite! (in '/tmp/Rtmp4GmTLp/model-1b4d4b8662ff.stan', line 119, column 4 to column 48)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
@@ -170,7 +190,7 @@ the objects, or if models have different formulations.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 900 / 1000 [ 90%]  (Sampling) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 1000 / 1000 [100%]  (Sampling) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 finished in 8.9 seconds.</span>
-<span class="r-in"><span>  <span class="va">fit_ab2</span> <span class="op">&lt;-</span> <span class="fu"><a href="fitGrowth.html">fitGrowth</a></span><span class="op">(</span><span class="va">ss_ab</span>, chains <span class="op">=</span> <span class="fl">1</span>, cores <span class="op">=</span> <span class="fl">1</span>, iter <span class="op">=</span> <span class="fl">1200</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">fit_ab2</span> <span class="op">&lt;-</span> <span class="fu"><a href="fitGrowth.html">fitGrowth</a></span><span class="op">(</span><span class="va">ss_ab</span>, chains <span class="op">=</span> <span class="fl">1</span>, cores <span class="op">=</span> <span class="fl">1</span>, iter <span class="op">=</span> <span class="fl">1200</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Start sampling</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Init values were only set for a subset of parameters. </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Missing init values for the following parameters:</span>
@@ -181,42 +201,42 @@ the objects, or if models have different formulations.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration:    1 / 1200 [  0%]  (Warmup) </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/RtmpLZ5Mc8/model-1af36869616.stan', line 119, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/Rtmp4GmTLp/model-1b4d4b8662ff.stan', line 119, column 4 to column 48)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/RtmpLZ5Mc8/model-1af36869616.stan', line 119, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/Rtmp4GmTLp/model-1b4d4b8662ff.stan', line 119, column 4 to column 48)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/RtmpLZ5Mc8/model-1af36869616.stan', line 119, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/Rtmp4GmTLp/model-1b4d4b8662ff.stan', line 119, column 4 to column 48)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/RtmpLZ5Mc8/model-1af36869616.stan', line 119, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/Rtmp4GmTLp/model-1b4d4b8662ff.stan', line 119, column 4 to column 48)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/RtmpLZ5Mc8/model-1af36869616.stan', line 119, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/Rtmp4GmTLp/model-1b4d4b8662ff.stan', line 119, column 4 to column 48)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Location parameter[1] is -nan, but must be finite! (in '/tmp/RtmpLZ5Mc8/model-1af36869616.stan', line 119, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Location parameter[1] is -nan, but must be finite! (in '/tmp/Rtmp4GmTLp/model-1b4d4b8662ff.stan', line 119, column 4 to column 48)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is -nan, but must be positive finite! (in '/tmp/RtmpLZ5Mc8/model-1af36869616.stan', line 119, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is -nan, but must be positive finite! (in '/tmp/Rtmp4GmTLp/model-1b4d4b8662ff.stan', line 119, column 4 to column 48)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/RtmpLZ5Mc8/model-1af36869616.stan', line 119, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/Rtmp4GmTLp/model-1b4d4b8662ff.stan', line 119, column 4 to column 48)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
@@ -234,7 +254,7 @@ the objects, or if models have different formulations.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 1100 / 1200 [ 91%]  (Sampling) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 1200 / 1200 [100%]  (Sampling) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 finished in 9.2 seconds.</span>
-<span class="r-in"><span>  <span class="va">fit_cd</span> <span class="op">&lt;-</span> <span class="fu"><a href="fitGrowth.html">fitGrowth</a></span><span class="op">(</span><span class="va">ss_cd</span>, chains <span class="op">=</span> <span class="fl">1</span>, cores <span class="op">=</span> <span class="fl">1</span>, iter <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">fit_cd</span> <span class="op">&lt;-</span> <span class="fu"><a href="fitGrowth.html">fitGrowth</a></span><span class="op">(</span><span class="va">ss_cd</span>, chains <span class="op">=</span> <span class="fl">1</span>, cores <span class="op">=</span> <span class="fl">1</span>, iter <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Start sampling</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Init values were only set for a subset of parameters. </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Missing init values for the following parameters:</span>
@@ -245,42 +265,42 @@ the objects, or if models have different formulations.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration:   1 / 1000 [  0%]  (Warmup) </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is -nan, but must be positive finite! (in '/tmp/RtmpLZ5Mc8/model-1af36869616.stan', line 119, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is -nan, but must be positive finite! (in '/tmp/Rtmp4GmTLp/model-1b4d4b8662ff.stan', line 119, column 4 to column 48)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is -nan, but must be positive finite! (in '/tmp/RtmpLZ5Mc8/model-1af36869616.stan', line 119, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is -nan, but must be positive finite! (in '/tmp/Rtmp4GmTLp/model-1b4d4b8662ff.stan', line 119, column 4 to column 48)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/RtmpLZ5Mc8/model-1af36869616.stan', line 119, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/Rtmp4GmTLp/model-1b4d4b8662ff.stan', line 119, column 4 to column 48)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/RtmpLZ5Mc8/model-1af36869616.stan', line 119, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/Rtmp4GmTLp/model-1b4d4b8662ff.stan', line 119, column 4 to column 48)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/RtmpLZ5Mc8/model-1af36869616.stan', line 119, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/Rtmp4GmTLp/model-1b4d4b8662ff.stan', line 119, column 4 to column 48)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[501] is inf, but must be positive finite! (in '/tmp/RtmpLZ5Mc8/model-1af36869616.stan', line 119, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[501] is inf, but must be positive finite! (in '/tmp/Rtmp4GmTLp/model-1b4d4b8662ff.stan', line 119, column 4 to column 48)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Location parameter[1] is -nan, but must be finite! (in '/tmp/RtmpLZ5Mc8/model-1af36869616.stan', line 119, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Location parameter[1] is -nan, but must be finite! (in '/tmp/Rtmp4GmTLp/model-1b4d4b8662ff.stan', line 119, column 4 to column 48)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/RtmpLZ5Mc8/model-1af36869616.stan', line 119, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/Rtmp4GmTLp/model-1b4d4b8662ff.stan', line 119, column 4 to column 48)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
@@ -296,7 +316,7 @@ the objects, or if models have different formulations.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 900 / 1000 [ 90%]  (Sampling) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 1000 / 1000 [100%]  (Sampling) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 finished in 6.4 seconds.</span>
-<span class="r-in"><span>  <span class="va">fit_ef</span> <span class="op">&lt;-</span> <span class="fu"><a href="fitGrowth.html">fitGrowth</a></span><span class="op">(</span><span class="va">ss_ef</span>, chains <span class="op">=</span> <span class="fl">1</span>, cores <span class="op">=</span> <span class="fl">1</span>, iter <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">fit_ef</span> <span class="op">&lt;-</span> <span class="fu"><a href="fitGrowth.html">fitGrowth</a></span><span class="op">(</span><span class="va">ss_ef</span>, chains <span class="op">=</span> <span class="fl">1</span>, cores <span class="op">=</span> <span class="fl">1</span>, iter <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Start sampling</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Init values were only set for a subset of parameters. </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Missing init values for the following parameters:</span>
@@ -307,37 +327,37 @@ the objects, or if models have different formulations.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration:   1 / 1000 [  0%]  (Warmup) </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[501] is inf, but must be positive finite! (in '/tmp/RtmpLZ5Mc8/model-1af36869616.stan', line 119, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[501] is inf, but must be positive finite! (in '/tmp/Rtmp4GmTLp/model-1b4d4b8662ff.stan', line 119, column 4 to column 48)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[501] is inf, but must be positive finite! (in '/tmp/RtmpLZ5Mc8/model-1af36869616.stan', line 119, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[501] is inf, but must be positive finite! (in '/tmp/Rtmp4GmTLp/model-1b4d4b8662ff.stan', line 119, column 4 to column 48)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[501] is inf, but must be positive finite! (in '/tmp/RtmpLZ5Mc8/model-1af36869616.stan', line 119, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[501] is inf, but must be positive finite! (in '/tmp/Rtmp4GmTLp/model-1b4d4b8662ff.stan', line 119, column 4 to column 48)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[503] is inf, but must be positive finite! (in '/tmp/RtmpLZ5Mc8/model-1af36869616.stan', line 119, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[503] is inf, but must be positive finite! (in '/tmp/Rtmp4GmTLp/model-1b4d4b8662ff.stan', line 119, column 4 to column 48)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[7] is inf, but must be positive finite! (in '/tmp/RtmpLZ5Mc8/model-1af36869616.stan', line 119, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[7] is inf, but must be positive finite! (in '/tmp/Rtmp4GmTLp/model-1b4d4b8662ff.stan', line 119, column 4 to column 48)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Location parameter[1] is -nan, but must be finite! (in '/tmp/RtmpLZ5Mc8/model-1af36869616.stan', line 119, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Location parameter[1] is -nan, but must be finite! (in '/tmp/Rtmp4GmTLp/model-1b4d4b8662ff.stan', line 119, column 4 to column 48)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[501] is inf, but must be positive finite! (in '/tmp/RtmpLZ5Mc8/model-1af36869616.stan', line 119, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[501] is inf, but must be positive finite! (in '/tmp/Rtmp4GmTLp/model-1b4d4b8662ff.stan', line 119, column 4 to column 48)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
@@ -352,8 +372,8 @@ the objects, or if models have different formulations.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 800 / 1000 [ 80%]  (Sampling) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 900 / 1000 [ 90%]  (Sampling) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 1000 / 1000 [100%]  (Sampling) </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 finished in 9.4 seconds.</span>
-<span class="r-in"><span>  <span class="va">fit_ef2</span> <span class="op">&lt;-</span> <span class="fu"><a href="fitGrowth.html">fitGrowth</a></span><span class="op">(</span><span class="va">ss_ef2</span>, chains <span class="op">=</span> <span class="fl">1</span>, cores <span class="op">=</span> <span class="fl">1</span>, iter <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 finished in 10.3 seconds.</span>
+<span class="r-in"><span><span class="va">fit_ef2</span> <span class="op">&lt;-</span> <span class="fu"><a href="fitGrowth.html">fitGrowth</a></span><span class="op">(</span><span class="va">ss_ef2</span>, chains <span class="op">=</span> <span class="fl">1</span>, cores <span class="op">=</span> <span class="fl">1</span>, iter <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Start sampling</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Init values were only set for a subset of parameters. </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Missing init values for the following parameters:</span>
@@ -364,7 +384,7 @@ the objects, or if models have different formulations.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration:   1 / 1000 [  0%]  (Warmup) </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Location parameter[1] is -nan, but must be finite! (in '/tmp/RtmpLZ5Mc8/model-1af3391954f3.stan', line 119, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Location parameter[1] is -nan, but must be finite! (in '/tmp/Rtmp4GmTLp/model-1b4d6481e123.stan', line 119, column 4 to column 48)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
@@ -379,15 +399,15 @@ the objects, or if models have different formulations.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 800 / 1000 [ 80%]  (Sampling) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 900 / 1000 [ 90%]  (Sampling) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 1000 / 1000 [100%]  (Sampling) </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 finished in 19.2 seconds.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 finished in 19.1 seconds.</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span>  <span class="va">x</span> <span class="op">&lt;-</span> <span class="fu">combineDraws</span><span class="op">(</span><span class="va">fit_ab</span>, <span class="va">fit_cd</span>, <span class="va">fit_ef</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">draws_ef</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">fit_ef</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">draws_ef</span> <span class="op">&lt;-</span> <span class="va">draws_ef</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"^b_"</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">draws_ef</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></span></span>
-<span class="r-in"><span>  <span class="va">x2</span> <span class="op">&lt;-</span> <span class="fu">combineDraws</span><span class="op">(</span><span class="va">fit_ab2</span>, <span class="va">fit_cd</span>, <span class="va">draws_ef</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu">combineDraws</span><span class="op">(</span><span class="va">fit_ab</span>, <span class="va">fit_cd</span>, <span class="va">fit_ef</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">draws_ef</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">fit_ef</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">draws_ef</span> <span class="op">&lt;-</span> <span class="va">draws_ef</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"^b_"</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">draws_ef</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></span></span>
+<span class="r-in"><span><span class="va">x2</span> <span class="op">&lt;-</span> <span class="fu">combineDraws</span><span class="op">(</span><span class="va">fit_ab2</span>, <span class="va">fit_cd</span>, <span class="va">draws_ef</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> fit_cd has fewer than 600 draws and will be padded with 100 NAs</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> draws_ef has fewer than 600 draws and will be padded with 100 NAs</span>
-<span class="r-in"><span>  <span class="va">x3</span> <span class="op">&lt;-</span> <span class="fu">combineDraws</span><span class="op">(</span><span class="va">fit_ab</span>, <span class="va">fit_cd</span>, <span class="va">fit_ef2</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">x3</span> <span class="op">&lt;-</span> <span class="fu">combineDraws</span><span class="op">(</span><span class="va">fit_ab</span>, <span class="va">fit_cd</span>, <span class="va">fit_ef2</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Some of these models have different growth formulas, consider if this is what you want.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> fit_ab: y~A/(1 + exp((B - time)/C)), fit_cd: y~A/(1 + exp((B - time)/C)), fit_ef2: y~A * exp(-B * exp(-C * time))</span>
 <span class="r-in"><span><span class="co"># }</span></span></span>

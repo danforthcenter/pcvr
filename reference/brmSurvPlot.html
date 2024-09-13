@@ -11,7 +11,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">pcvr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -20,7 +20,18 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../index.html"><span class="fa fa-home fa-lg"></span></a></li>
-<li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-vignettes" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Vignettes</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-vignettes"><li><a class="dropdown-item" href="../articles/Bellwether.html">Bellwether</a></li>
+    <li><a class="dropdown-item" href="../articles/longitudinal.html">Longitudinal Modeling</a></li>
+    <li><a class="dropdown-item" href="../articles/roots.html">Root Phenotyping</a></li>
+    <li><a class="dropdown-item" href="../articles/directional.html">Directional Statistics</a></li>
+    <li><a class="dropdown-item" href="../articles/installation.html">Installation Tutorial</a></li>
+    <li><a class="dropdown-item" href="../articles/pcvrTutorial_conjugate.html">Conjugate Tutorial</a></li>
+    <li><a class="dropdown-item" href="../articles/pcvrTutorial_igm.html">Intermediate Growth Modeling Tutorial</a></li>
+    <li><a class="dropdown-item" href="../articles/pcvrTutorial_agm.html">Advanced Growth Modeling Tutorial</a></li>
+    <li><a class="dropdown-item" href="../articles/pcvrTutorial_mvt.html">Multi-Value Traits Tutorial</a></li>
+  </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Functions</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
 <li class="nav-item dropdown">
@@ -30,6 +41,7 @@
     <li><a class="external-link dropdown-item" href="https://github.com/danforthcenter/pcvr/tree/main/tutorials/pcvrTutorial_intermediateGrowthModeling">Growth Modeling</a></li>
     <li><a class="external-link dropdown-item" href="https://github.com/danforthcenter/pcvr/tree/main/tutorials/pcvrTutorial_advancedGrowthModeling">Advanced Growth Modeling</a></li>
     <li><a class="external-link dropdown-item" href="https://github.com/danforthcenter/pcvr/tree/main/tutorials/pcvrTutorial_conjugate">Bayesian Conjugate Priors</a></li>
+    <li><a class="external-link dropdown-item" href="https://github.com/danforthcenter/pcvr/tree/crop_reporter/tutorials/pcvrTutorial_multiValueTraits">Multi-Value Traits</a></li>
   </ul></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://plantcv.org/">PlantCV</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><a class="external-link nav-link" href="https://github.com/danforthcenter/pcvr"><span class="fa fa-github"></span></a></li>
@@ -105,19 +117,18 @@ intervals and optionally the individual growth lines.</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># \donttest{</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="growthSim.html">growthSim</a></span><span class="op">(</span><span class="st">"exponential"</span>,</span></span>
-<span class="r-in"><span>    n <span class="op">=</span> <span class="fl">20</span>, t <span class="op">=</span> <span class="fl">50</span>,</span></span>
-<span class="r-in"><span>    params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"A"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>, <span class="st">"B"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.15</span>, <span class="fl">0.1</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">ss1</span> <span class="op">&lt;-</span> <span class="fu"><a href="growthSS.html">growthSS</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    model <span class="op">=</span> <span class="st">"survival weibull"</span>, form <span class="op">=</span> <span class="va">y</span> <span class="op">&gt;</span> <span class="fl">100</span> <span class="op">~</span> <span class="va">time</span> <span class="op">|</span> <span class="va">id</span> <span class="op">/</span> <span class="va">group</span>,</span></span>
-<span class="r-in"><span>    df <span class="op">=</span> <span class="va">df</span>, start <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">5</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># \donttest{</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="growthSim.html">growthSim</a></span><span class="op">(</span><span class="st">"exponential"</span>,</span></span>
+<span class="r-in"><span>  n <span class="op">=</span> <span class="fl">20</span>, t <span class="op">=</span> <span class="fl">50</span>,</span></span>
+<span class="r-in"><span>  params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"A"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>, <span class="st">"B"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.15</span>, <span class="fl">0.1</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">ss1</span> <span class="op">&lt;-</span> <span class="fu"><a href="growthSS.html">growthSS</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  model <span class="op">=</span> <span class="st">"survival weibull"</span>, form <span class="op">=</span> <span class="va">y</span> <span class="op">&gt;</span> <span class="fl">100</span> <span class="op">~</span> <span class="va">time</span> <span class="op">|</span> <span class="va">id</span> <span class="op">/</span> <span class="va">group</span>,</span></span>
+<span class="r-in"><span>  df <span class="op">=</span> <span class="va">df</span>, start <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">5</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Prior is numeric, replicating to 2 length 2 elements (mu, sd) and assuming order a, b</span>
-<span class="r-in"><span>  <span class="va">fit1</span> <span class="op">&lt;-</span> <span class="fu"><a href="fitGrowth.html">fitGrowth</a></span><span class="op">(</span><span class="va">ss1</span>, iter <span class="op">=</span> <span class="fl">600</span>, cores <span class="op">=</span> <span class="fl">2</span>, chains <span class="op">=</span> <span class="fl">2</span>, backend <span class="op">=</span> <span class="st">"cmdstanr"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">fit1</span> <span class="op">&lt;-</span> <span class="fu"><a href="fitGrowth.html">fitGrowth</a></span><span class="op">(</span><span class="va">ss1</span>, iter <span class="op">=</span> <span class="fl">600</span>, cores <span class="op">=</span> <span class="fl">2</span>, chains <span class="op">=</span> <span class="fl">2</span>, backend <span class="op">=</span> <span class="st">"cmdstanr"</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Start sampling</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Running MCMC with 2 parallel chains...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -130,52 +141,52 @@ intervals and optionally the individual growth lines.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 500 / 600 [ 83%]  (Sampling) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 600 / 600 [100%]  (Sampling) </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: gamma_lpdf: Random variable is 0, but must be positive finite! (in '/tmp/RtmpLZ5Mc8/model-1af3603e1dfc.stan', line 22, column 2 to column 43)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: gamma_lpdf: Random variable is 0, but must be positive finite! (in '/tmp/Rtmp4GmTLp/model-1b4d1c640cc5.stan', line 22, column 2 to column 43)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: gamma_lpdf: Random variable is 0, but must be positive finite! (in '/tmp/RtmpLZ5Mc8/model-1af3603e1dfc.stan', line 22, column 2 to column 43)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: gamma_lpdf: Random variable is 0, but must be positive finite! (in '/tmp/Rtmp4GmTLp/model-1b4d1c640cc5.stan', line 22, column 2 to column 43)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: weibull_lpdf: Scale parameter is 0, but must be positive finite! (in '/tmp/RtmpLZ5Mc8/model-1af3603e1dfc.stan', line 34, column 8 to column 76)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: weibull_lpdf: Scale parameter is 0, but must be positive finite! (in '/tmp/Rtmp4GmTLp/model-1b4d1c640cc5.stan', line 34, column 8 to column 76)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: weibull_lpdf: Scale parameter is 0, but must be positive finite! (in '/tmp/RtmpLZ5Mc8/model-1af3603e1dfc.stan', line 34, column 8 to column 76)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: weibull_lpdf: Scale parameter is 0, but must be positive finite! (in '/tmp/Rtmp4GmTLp/model-1b4d1c640cc5.stan', line 34, column 8 to column 76)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: weibull_lpdf: Scale parameter is 0, but must be positive finite! (in '/tmp/RtmpLZ5Mc8/model-1af3603e1dfc.stan', line 34, column 8 to column 76)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: weibull_lpdf: Scale parameter is 0, but must be positive finite! (in '/tmp/Rtmp4GmTLp/model-1b4d1c640cc5.stan', line 34, column 8 to column 76)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: weibull_lpdf: Scale parameter is 0, but must be positive finite! (in '/tmp/RtmpLZ5Mc8/model-1af3603e1dfc.stan', line 34, column 8 to column 76)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: weibull_lpdf: Scale parameter is 0, but must be positive finite! (in '/tmp/Rtmp4GmTLp/model-1b4d1c640cc5.stan', line 34, column 8 to column 76)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: gamma_lpdf: Random variable is 0, but must be positive finite! (in '/tmp/RtmpLZ5Mc8/model-1af3603e1dfc.stan', line 22, column 2 to column 43)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: gamma_lpdf: Random variable is 0, but must be positive finite! (in '/tmp/Rtmp4GmTLp/model-1b4d1c640cc5.stan', line 22, column 2 to column 43)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: gamma_lpdf: Random variable is 0, but must be positive finite! (in '/tmp/RtmpLZ5Mc8/model-1af3603e1dfc.stan', line 22, column 2 to column 43)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: gamma_lpdf: Random variable is 0, but must be positive finite! (in '/tmp/Rtmp4GmTLp/model-1b4d1c640cc5.stan', line 22, column 2 to column 43)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: weibull_lpdf: Scale parameter is 0, but must be positive finite! (in '/tmp/RtmpLZ5Mc8/model-1af3603e1dfc.stan', line 34, column 8 to column 76)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: weibull_lpdf: Scale parameter is 0, but must be positive finite! (in '/tmp/Rtmp4GmTLp/model-1b4d1c640cc5.stan', line 34, column 8 to column 76)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: weibull_lpdf: Scale parameter is 0, but must be positive finite! (in '/tmp/RtmpLZ5Mc8/model-1af3603e1dfc.stan', line 34, column 8 to column 76)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: weibull_lpdf: Scale parameter is 0, but must be positive finite! (in '/tmp/Rtmp4GmTLp/model-1b4d1c640cc5.stan', line 34, column 8 to column 76)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
@@ -188,47 +199,47 @@ intervals and optionally the individual growth lines.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Chain 2 Iteration: 500 / 600 [ 83%]  (Sampling) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Chain 2 Iteration: 600 / 600 [100%]  (Sampling) </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 2 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 2 Exception: gamma_lpdf: Random variable is 0, but must be positive finite! (in '/tmp/RtmpLZ5Mc8/model-1af3603e1dfc.stan', line 22, column 2 to column 43)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 2 Exception: gamma_lpdf: Random variable is 0, but must be positive finite! (in '/tmp/Rtmp4GmTLp/model-1b4d1c640cc5.stan', line 22, column 2 to column 43)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 2 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 2 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 2 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 2 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 2 Exception: gamma_lpdf: Random variable is 0, but must be positive finite! (in '/tmp/RtmpLZ5Mc8/model-1af3603e1dfc.stan', line 22, column 2 to column 43)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 2 Exception: gamma_lpdf: Random variable is 0, but must be positive finite! (in '/tmp/Rtmp4GmTLp/model-1b4d1c640cc5.stan', line 22, column 2 to column 43)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 2 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 2 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 2 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 2 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 2 Exception: weibull_lpdf: Scale parameter is 0, but must be positive finite! (in '/tmp/RtmpLZ5Mc8/model-1af3603e1dfc.stan', line 34, column 8 to column 76)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 2 Exception: weibull_lpdf: Scale parameter is 0, but must be positive finite! (in '/tmp/Rtmp4GmTLp/model-1b4d1c640cc5.stan', line 34, column 8 to column 76)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 2 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 2 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 2 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 2 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 2 Exception: weibull_lpdf: Scale parameter is 0, but must be positive finite! (in '/tmp/RtmpLZ5Mc8/model-1af3603e1dfc.stan', line 34, column 8 to column 76)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 2 Exception: weibull_lpdf: Scale parameter is 0, but must be positive finite! (in '/tmp/Rtmp4GmTLp/model-1b4d1c640cc5.stan', line 34, column 8 to column 76)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 2 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 2 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 2 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 2 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 2 Exception: weibull_lpdf: Scale parameter is 0, but must be positive finite! (in '/tmp/RtmpLZ5Mc8/model-1af3603e1dfc.stan', line 34, column 8 to column 76)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 2 Exception: weibull_lpdf: Scale parameter is 0, but must be positive finite! (in '/tmp/Rtmp4GmTLp/model-1b4d1c640cc5.stan', line 34, column 8 to column 76)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 2 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 2 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 2 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 2 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 2 Exception: weibull_lpdf: Scale parameter is 0, but must be positive finite! (in '/tmp/RtmpLZ5Mc8/model-1af3603e1dfc.stan', line 34, column 8 to column 76)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 2 Exception: weibull_lpdf: Scale parameter is 0, but must be positive finite! (in '/tmp/Rtmp4GmTLp/model-1b4d1c640cc5.stan', line 34, column 8 to column 76)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 2 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 2 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 2 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 2 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 2 Exception: gamma_lpdf: Random variable is 0, but must be positive finite! (in '/tmp/RtmpLZ5Mc8/model-1af3603e1dfc.stan', line 22, column 2 to column 43)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 2 Exception: gamma_lpdf: Random variable is 0, but must be positive finite! (in '/tmp/Rtmp4GmTLp/model-1b4d1c640cc5.stan', line 22, column 2 to column 43)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 2 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 2 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 2 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 2 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 2 Exception: gamma_lpdf: Random variable is 0, but must be positive finite! (in '/tmp/RtmpLZ5Mc8/model-1af3603e1dfc.stan', line 22, column 2 to column 43)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 2 Exception: gamma_lpdf: Random variable is 0, but must be positive finite! (in '/tmp/Rtmp4GmTLp/model-1b4d1c640cc5.stan', line 22, column 2 to column 43)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 2 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 2 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 2 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 2 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 2 Exception: weibull_lpdf: Scale parameter is 0, but must be positive finite! (in '/tmp/RtmpLZ5Mc8/model-1af3603e1dfc.stan', line 34, column 8 to column 76)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 2 Exception: weibull_lpdf: Scale parameter is 0, but must be positive finite! (in '/tmp/Rtmp4GmTLp/model-1b4d1c640cc5.stan', line 34, column 8 to column 76)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 2 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 2 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 2 </span>
@@ -239,18 +250,18 @@ intervals and optionally the individual growth lines.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Mean chain execution time: 0.0 seconds.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Total execution time: 0.2 seconds.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-in"><span>  <span class="fu">brmSurvPlot</span><span class="op">(</span><span class="va">fit1</span>, form <span class="op">=</span> <span class="va">ss1</span><span class="op">$</span><span class="va">pcvrForm</span>, df <span class="op">=</span> <span class="va">ss1</span><span class="op">$</span><span class="va">df</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">brmSurvPlot</span><span class="op">(</span><span class="va">fit1</span>, form <span class="op">=</span> <span class="va">ss1</span><span class="op">$</span><span class="va">pcvrForm</span>, df <span class="op">=</span> <span class="va">ss1</span><span class="op">$</span><span class="va">df</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="brmSurvPlot-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span>  <span class="co"># note that using the cumulative hazard to calculate survival is likely to underestimate</span></span></span>
-<span class="r-in"><span>  <span class="co"># survival in these plots if events do not start immediately.</span></span></span>
-<span class="r-in"><span>  <span class="va">ss2</span> <span class="op">&lt;-</span> <span class="fu"><a href="growthSS.html">growthSS</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    model <span class="op">=</span> <span class="st">"survival binomial"</span>, form <span class="op">=</span> <span class="va">y</span> <span class="op">&gt;</span> <span class="fl">100</span> <span class="op">~</span> <span class="va">time</span> <span class="op">|</span> <span class="va">id</span> <span class="op">/</span> <span class="va">group</span>,</span></span>
-<span class="r-in"><span>    df <span class="op">=</span> <span class="va">df</span>, start <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">4</span>, <span class="fl">3</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># note that using the cumulative hazard to calculate survival is likely to underestimate</span></span></span>
+<span class="r-in"><span><span class="co"># survival in these plots if events do not start immediately.</span></span></span>
+<span class="r-in"><span><span class="va">ss2</span> <span class="op">&lt;-</span> <span class="fu"><a href="growthSS.html">growthSS</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  model <span class="op">=</span> <span class="st">"survival binomial"</span>, form <span class="op">=</span> <span class="va">y</span> <span class="op">&gt;</span> <span class="fl">100</span> <span class="op">~</span> <span class="va">time</span> <span class="op">|</span> <span class="va">id</span> <span class="op">/</span> <span class="va">group</span>,</span></span>
+<span class="r-in"><span>  df <span class="op">=</span> <span class="va">df</span>, start <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">4</span>, <span class="fl">3</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Prior is numeric, replicating to 2 length 2 elements (mu, sd) and assuming order a, b</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Priors and parameters are not the same length. Output will assume that priors are for groups and are in order: a, b</span>
-<span class="r-in"><span>  <span class="va">fit2</span> <span class="op">&lt;-</span> <span class="fu"><a href="fitGrowth.html">fitGrowth</a></span><span class="op">(</span><span class="va">ss2</span>, iter <span class="op">=</span> <span class="fl">600</span>, cores <span class="op">=</span> <span class="fl">2</span>, chains <span class="op">=</span> <span class="fl">2</span>, backend <span class="op">=</span> <span class="st">"cmdstanr"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">fit2</span> <span class="op">&lt;-</span> <span class="fu"><a href="fitGrowth.html">fitGrowth</a></span><span class="op">(</span><span class="va">ss2</span>, iter <span class="op">=</span> <span class="fl">600</span>, cores <span class="op">=</span> <span class="fl">2</span>, chains <span class="op">=</span> <span class="fl">2</span>, backend <span class="op">=</span> <span class="st">"cmdstanr"</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Start sampling</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Running MCMC with 2 parallel chains...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -269,18 +280,17 @@ intervals and optionally the individual growth lines.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Chain 2 Iteration: 301 / 600 [ 50%]  (Sampling) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Chain 2 Iteration: 400 / 600 [ 66%]  (Sampling) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Chain 2 Iteration: 500 / 600 [ 83%]  (Sampling) </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 finished in 0.2 seconds.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Chain 2 Iteration: 600 / 600 [100%]  (Sampling) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 finished in 0.2 seconds.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Chain 2 finished in 0.2 seconds.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Both chains finished successfully.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Mean chain execution time: 0.2 seconds.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Total execution time: 0.4 seconds.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Total execution time: 0.3 seconds.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-in"><span>  <span class="fu">brmSurvPlot</span><span class="op">(</span><span class="va">fit2</span>, form <span class="op">=</span> <span class="va">ss2</span><span class="op">$</span><span class="va">pcvrForm</span>, df <span class="op">=</span> <span class="va">ss2</span><span class="op">$</span><span class="va">df</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">brmSurvPlot</span><span class="op">(</span><span class="va">fit2</span>, form <span class="op">=</span> <span class="va">ss2</span><span class="op">$</span><span class="va">pcvrForm</span>, df <span class="op">=</span> <span class="va">ss2</span><span class="op">$</span><span class="va">df</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="brmSurvPlot-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
-<span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
