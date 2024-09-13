@@ -80,7 +80,7 @@ test_that("Test nlrq mv trait non-longitudinal model", {
   )
   mod1 <- fitGrowth(ss1)
   expect_s3_class(mod1, "rq")
-  p <- growthPlot(mod1, ss1$pcvrForm, df = ss1$df)
+  p <- growthPlot(mod1, ss1$pcvrForm, df = ss1$df, groupFill = TRUE)
   expect_s3_class(p, "ggplot")
 
   ss2 <- mvSS(
