@@ -118,6 +118,7 @@ reference:
       - pcv.emd
       - pcv.joyplot
       - pcadf
+      - mvSS
       - pcv.net
       - pcv.plsr
   - title: "Reading PlantCV output"
@@ -154,4 +155,6 @@ reference:
       - pcv_theme
       - plotVIP
       - rqPlot
+      - fitGrowthlm
+      - fitGrowthrq
       - survregPlot
