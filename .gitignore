@@ -13,3 +13,4 @@ vignettes/*.html
 vignettes/articles/*.html
 docs
 tools/lib
+tools/*.html
