@@ -54,6 +54,8 @@ test_that("Test brms mv trait non-longitudinal model", {
   expect_s3_class(mod1, "brmsfit")
   p <- growthPlot(mod1, ss1$pcvrForm, df = ss1$df)
   expect_s3_class(p, "ggplot")
+  p2 <- growthPlot(mod1, ss1$pcvrForm, df = ss1$df, groups = "a")
+  expect_s3_class(p2, "ggplot")
 })
 
 test_that("Test nls mv trait non-longitudinal model", {
@@ -64,7 +66,7 @@ test_that("Test nls mv trait non-longitudinal model", {
   )
   mod1 <- fitGrowth(ss1)
   expect_s3_class(mod1, "lm")
-  p <- growthPlot(mod1, ss1$pcvrForm, df = ss1$df)
+  p <- growthPlot(mod1, ss1$pcvrForm, df = ss1$df, groupFill = TRUE)
   expect_s3_class(p, "ggplot")
   p2 <- growthPlot(mod1, ss1$pcvrForm, df = ss1$df, groups = "groupa")
   expect_s3_class(p, "ggplot")
