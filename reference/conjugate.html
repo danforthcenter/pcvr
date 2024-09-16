@@ -175,7 +175,12 @@ for support.</p></dd>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A list with named elements:</p><ul><li><p><strong>summary</strong>: A data frame containing HDI/HDE values for each sample and
-   the ROPE as well as posterior probability of the hypothesis.</p></li>
+   the ROPE as well as posterior probability of the hypothesis and ROPE test (if specified).
+   The HDE is the "Highest Density
+   Estimate" of the posterior, that is the tallest part of the probability density function. The
+   HDI is the Highest Density Interval, which is an interval that contains X% of the posterior
+   distribution, so <code>cred.int.level = 0.8</code> corresponds to an HDI that includes 80 percent
+   of the posterior probability.</p></li>
 <li><p><strong>posterior</strong>: A list of updated parameters in the same format as the prior
     for the given method. If desired this does allow for Bayesian updating.</p></li>
 <li><p><strong>plot_df</strong>: A data frame of probabilities along the support for each sample.
