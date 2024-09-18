@@ -39,6 +39,13 @@
 #' nlrqPlot(fit, form = ss$pcvrForm, df = ss$df, groups = "a", timeRange = 1:20)
 #' nlrqPlot(fit, form = ss$pcvrForm, df = ss$df, groupFill = TRUE, virMaps = c("plasma", "viridis"))
 #'
+#' ss <- growthSS(
+#'   model = "logistic", form = y ~ time,
+#'   tau = c(0.5, 0.9), df = simdf, start = NULL, type = "nlrq"
+#' )
+#' fit <- fitGrowth(ss)
+#' nlrqPlot(fit, form = ss$pcvrForm, df = ss$df)
+#'
 #' @return Returns a ggplot showing an nlrq model's quantiles
 #'  and optionally the individual growth lines.
 #'
@@ -55,6 +62,7 @@ nlrqPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL,
     individual <- NULL
   }
   group <- parsed_form$group
+  facetGroups <- .no_dummy_labels(group, facetGroups)
   df <- parsed_form$data
   #* `filter by groups if groups != NULL`
   if (!is.null(groups)) {

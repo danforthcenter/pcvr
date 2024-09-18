@@ -137,6 +137,7 @@ brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
     individual <- NULL
   }
   group <- parsed_form$group
+  facetGroups <- .no_dummy_labels(group, facetGroups)
   df <- parsed_form$data
   probs <- seq(from = 99, to = 1, by = -2) / 100
   if (is.null(timeRange)) {
@@ -164,7 +165,7 @@ brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
   }
   #* `facetGroups`
   facetLayer <- NULL
-  if (facetGroups && length(unique(fitData[[group]])) > 1) {
+  if (facetGroups) {
     facetLayer <- ggplot2::facet_wrap(as.formula(paste0("~", group)))
   }
   #* `lengthen predictions`

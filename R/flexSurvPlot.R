@@ -51,6 +51,7 @@ flexsurvregPlot <- function(fit, form, groups = NULL, df = NULL, timeRange = NUL
   parsed_form <- .parsePcvrForm(form, df)
   x <- parsed_form$x
   group <- parsed_form$group
+  facetGroups <- .no_dummy_labels(group, facetGroups)
   df <- parsed_form$data
   #* `filter by groups if groups != NULL`
   if (!is.null(groups)) {

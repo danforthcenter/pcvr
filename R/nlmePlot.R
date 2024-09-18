@@ -58,6 +58,7 @@ nlmePlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, face
     individual <- NULL
   }
   group <- parsed_form$group
+  facetGroups <- .no_dummy_labels(group, facetGroups)
   df <- parsed_form$data
   #* `filter by groups if groups != NULL`
   if (!is.null(groups)) {

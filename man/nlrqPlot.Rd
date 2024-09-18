@@ -63,5 +63,12 @@ fit <- fitGrowth(ss)
 nlrqPlot(fit, form = ss$pcvrForm, df = ss$df, groups = "a", timeRange = 1:20)
 nlrqPlot(fit, form = ss$pcvrForm, df = ss$df, groupFill = TRUE, virMaps = c("plasma", "viridis"))
 
+ss <- growthSS(
+  model = "logistic", form = y ~ time,
+  tau = c(0.5, 0.9), df = simdf, start = NULL, type = "nlrq"
+)
+fit <- fitGrowth(ss)
+nlrqPlot(fit, form = ss$pcvrForm, df = ss$df)
+
 }
 \keyword{growth-curve}
