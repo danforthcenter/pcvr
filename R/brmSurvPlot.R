@@ -76,6 +76,7 @@ brmSurvPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, f
   parsed_form <- .parsePcvrForm(form, df)
   x <- parsed_form$x
   group <- parsed_form$group
+  facetGroups <- .no_dummy_labels(group, facetGroups)
   df <- parsed_form$data
   #* `set groups to use`
   if (is.null(groups)) {
@@ -120,7 +121,7 @@ brmSurvPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, f
   quantiles <- quantiles[quantiles[[group]] %in% groups, ]
   #* `Decide faceting`
   facetLayer <- NULL
-  if (facetGroups && length(unique(fitData[[group]])) > 1) {
+  if (facetGroups) {
     facetLayer <- ggplot2::facet_wrap(as.formula(paste0("~", group)))
   }
   #* `lengthen quantiles`
@@ -200,6 +201,7 @@ brmSurvPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, f
   parsed_form <- .parsePcvrForm(form, df)
   x <- parsed_form$x
   group <- parsed_form$group
+  facetGroups <- .no_dummy_labels(group, facetGroups)
   df <- parsed_form$data
   #* `further survival formula steps`
 
@@ -243,7 +245,7 @@ brmSurvPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, f
   }))
   #* `Decide faceting`
   facetLayer <- NULL
-  if (facetGroups && length(unique(fitData[[group]])) > 1) {
+  if (facetGroups) {
     facetLayer <- ggplot2::facet_wrap(as.formula(paste0("~", group)))
   }
   #* `lengthen quantiles`

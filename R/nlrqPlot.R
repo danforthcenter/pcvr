@@ -55,6 +55,7 @@ nlrqPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL,
     individual <- NULL
   }
   group <- parsed_form$group
+  facetGroups <- .no_dummy_labels(group, facetGroups)
   df <- parsed_form$data
   #* `filter by groups if groups != NULL`
   if (!is.null(groups)) {
