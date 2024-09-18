@@ -1155,6 +1155,15 @@ reproducibility when using Bayesian methods.</p>
 <p>In pcvr some of what Kruschke recommends can be accessed from a
 model/list of models using the <code>barg</code> function, see
 <code><a href="../reference/barg.html">?barg</a></code> for details on what that entails.</p>
+<p>The <code><a href="https://paul-buerkner.github.io/brms/reference/add_criterion.html" class="external-link">brms::add_criterion</a></code> function can be used to add LOO
+IC or WAIC values to models, which can be easily compared against each
+other using <code><a href="https://mc-stan.org/loo/reference/loo_compare.html" class="external-link">brms::loo_compare</a></code>. The best fitting model is
+displayed first, with others ranked relative to that model. Differences
+in elpd of at least 5 times the standard error are generally considered
+meaningful. These information criteria are unlikely to help make
+decisions about small changes to a model but may be useful in
+considering whether a changepoint improves the model fit or not, as an
+example.</p>
 </div>
 <div class="section level2 smaller">
 <h2 class="smaller" id="using-brms-directly">Using <code>brms</code> directly<a class="anchor" aria-label="anchor" href="#using-brms-directly"></a>
