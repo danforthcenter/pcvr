@@ -1,5 +1,9 @@
 #* there are lots of options and until one obviously breaks I am not going to try to test all of them.
 
+test_that("inv_logit function", {
+  expect_equal(inv_logit(100), 1)
+})
+
 test_that("Logistic brms model pipeline", {
   skip_if_not_installed("brms")
   skip_if_not_installed("cmdstanr")

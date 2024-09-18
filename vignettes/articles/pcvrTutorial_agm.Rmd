@@ -1286,6 +1286,8 @@ John Kruschke wrote a paper on the [Bayesian Analysis and Reporting Guidelines](
 
 In pcvr some of what Kruschke recommends can be accessed from a model/list of models using the `barg` function, see `?barg` for details on what that entails.
 
+The `brms::add_criterion` function can be used to add LOO IC or WAIC values to models, which can be easily compared against each other using `brms::loo_compare`. The best fitting model is displayed first, with others ranked relative to that model. Differences in elpd of at least 5 times the standard error are generally considered meaningful. These information criteria are unlikely to help make decisions about small changes to a model but may be useful in considering whether a changepoint improves the model fit or not, as an example.
+
 ## Using `brms` directly {.smaller}
 
 These functions are all to help use common growth models more easily.

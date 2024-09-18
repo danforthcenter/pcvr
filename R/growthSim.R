@@ -351,7 +351,8 @@ growthSim <- function(
       }
       n_df <- do.call(rbind, lapply(seq_along(iterChangepointsRand), function(g) {
         if (u == length(component_models)) {
-          gt <- t - max(df1[df1$id == paste0("id_", i), "time"])
+          grp <- unique(df1$group)[g]
+          gt <- t - max(df1[df1$id == paste0("id_", i) & df1$group == grp, "time"])
         } else {
           gt <- iterChangepointsRand[[g]]
         }

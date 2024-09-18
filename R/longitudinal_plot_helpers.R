@@ -8,3 +8,11 @@
   }
   return(facetGroups)
 }
+
+#' Helper for plotting changepoint models
+#' @keywords internal
+#' @noRd
+
+inv_logit <- function(x) {
+  1 / (1 + exp(-x))
+}
