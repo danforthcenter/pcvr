@@ -70,15 +70,13 @@ pcv.joyplot <- function(df = NULL, index = NULL, group = NULL, y = NULL, id = NU
 
   sub <- .joyPlotFormatData(mode, df, index, trait, bin, freq, group, y, id)
 
-  if (is.null(group)) {
-    group <- "dummy"
-    df$dummy <- "dummy"
-    sub$dummy <- "dummy"
-  }
-
   joyPlotFacetHelperResult <- .joyPlotFacetHelper(y, group, sub)
   facet_layer <- joyPlotFacetHelperResult[["facet"]]
   sub <- joyPlotFacetHelperResult[["data"]]
+  if (is.null(group)) {
+    group <- "dummy"
+    sub$dummy <- "dummy"
+  }
   sub$grouping <- interaction(sub[, c(y, group)], drop = TRUE)
 
   #* `if ID is null then aggregate, else draw with ID`
@@ -129,7 +127,7 @@ pcv.joyplot <- function(df = NULL, index = NULL, group = NULL, y = NULL, id = NU
 
 
 #' ***********************************************************************************************
-#' *************** `format data` ****************************************
+#' *************** `facet plot` ****************************************
 #' ***********************************************************************************************
 #'
 #' @description
@@ -139,17 +137,18 @@ pcv.joyplot <- function(df = NULL, index = NULL, group = NULL, y = NULL, id = NU
 #' @noRd
 
 .joyPlotFacetHelper <- function(y, group, sub) {
+  facet_layer <- NULL # if group is NULL (length of 0)
   if (!is.null(y)) {
+    sub$y <- sub[[y]]
     if (length(group) == 1) {
-      sub$y <- sub[[y]]
       facet_layer <- ggplot2::facet_grid(as.formula(paste0("~", group[1])))
     }
     if (length(group) == 2) {
-      sub$y <- sub[[y]]
       facet_layer <- ggplot2::facet_grid(as.formula(paste0(group[1], "~", group[2])))
     }
     sub$y <- as.character(sub$y)
   } else { # if y is not provided then one less layer of faceting
+    sub$y <- 1 # if group is NULL (length of 0)
     if (length(group) == 1) {
       sub$y <- sub[[group]]
       facet_layer <- list()
