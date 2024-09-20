@@ -22,7 +22,7 @@
 #'    Multiple numbers will include those timepoints.
 #'     The string "all" will include all timepoints.
 #' @param time_format Format for non-integer time, passed to \code{strptime},
-#' defaults to "%Y-%m-%d".
+#' defaults to "\%Y-\%m-\%d".
 #' @param ... Additional arguments passed to \code{lme4::lmer}.
 #'
 #' @import lme4

@@ -48,7 +48,7 @@ This can be left NULL which will use the maximum time if \code{timeCol} is speci
    The string "all" will include all timepoints.}
 
 \item{time_format}{Format for non-integer time, passed to \code{strptime},
-defaults to "%Y-%m-%d".}
+defaults to "\%Y-\%m-\%d".}
 
 \item{...}{Additional arguments passed to \code{lme4::lmer}.}
 }
