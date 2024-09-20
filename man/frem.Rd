@@ -14,7 +14,7 @@ frem(
   combine = TRUE,
   markSingular = FALSE,
   time = NULL,
-  time_format = "",
+  time_format = "\%Y-\%m-\%d",
   ...
 )
 }
@@ -47,7 +47,8 @@ This can be left NULL which will use the maximum time if \code{timeCol} is speci
   Multiple numbers will include those timepoints.
    The string "all" will include all timepoints.}
 
-\item{time_format}{Format for non-integer time, passed to \code{strptime}.}
+\item{time_format}{Format for non-integer time, passed to \code{strptime},
+defaults to "%Y-%m-%d".}
 
 \item{...}{Additional arguments passed to \code{lme4::lmer}.}
 }
@@ -67,6 +68,7 @@ df <- data.frame(
   genotype = rep(c("g1", "g2"), each = 10),
   treatment = rep(c("C", "T"), times = 10),
   time = rep(c(1:5), times = 2),
+  date_time = rep(paste0("2024-08-", 21:25), times = 2),
   pheno1 = rnorm(20, 10, 1),
   pheno2 = sort(rnorm(20, 5, 1)),
   pheno3 = sort(runif(20))
@@ -88,6 +90,10 @@ frem(df,
 frem(df,
   des = "genotype", phenotypes = c("pheno1", "pheno2", "pheno3"),
   cor = FALSE, timeCol = "time", time = 3:5, markSingular = TRUE
+)
+frem(df,
+  des = "genotype", phenotypes = c("pheno1", "pheno2", "pheno3"),
+  cor = FALSE, timeCol = "date_time", time = "all", markSingular = TRUE
 )
 
 }

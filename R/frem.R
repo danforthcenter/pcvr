@@ -21,7 +21,8 @@
 #'   If a single number is provided then that time value will be used.
 #'    Multiple numbers will include those timepoints.
 #'     The string "all" will include all timepoints.
-#' @param time_format Format for non-integer time, passed to \code{strptime}.
+#' @param time_format Format for non-integer time, passed to \code{strptime},
+#' defaults to "%Y-%m-%d".
 #' @param ... Additional arguments passed to \code{lme4::lmer}.
 #'
 #' @import lme4
@@ -42,6 +43,7 @@
 #'   genotype = rep(c("g1", "g2"), each = 10),
 #'   treatment = rep(c("C", "T"), times = 10),
 #'   time = rep(c(1:5), times = 2),
+#'   date_time = rep(paste0("2024-08-", 21:25), times = 2),
 #'   pheno1 = rnorm(20, 10, 1),
 #'   pheno2 = sort(rnorm(20, 5, 1)),
 #'   pheno3 = sort(runif(20))
@@ -64,11 +66,15 @@
 #'   des = "genotype", phenotypes = c("pheno1", "pheno2", "pheno3"),
 #'   cor = FALSE, timeCol = "time", time = 3:5, markSingular = TRUE
 #' )
+#' frem(df,
+#'   des = "genotype", phenotypes = c("pheno1", "pheno2", "pheno3"),
+#'   cor = FALSE, timeCol = "date_time", time = "all", markSingular = TRUE
+#' )
 #'
 #' @export
 
 frem <- function(df, des, phenotypes, timeCol = NULL, cor = TRUE, returnData = FALSE, combine = TRUE,
-                 markSingular = FALSE, time = NULL, time_format = "", ...) {
+                 markSingular = FALSE, time = NULL, time_format = "%Y-%m-%d", ...) {
   dummyX <- FALSE
   if (is.null(timeCol)) {
     timeCol <- "dummy_x_axis"
@@ -77,7 +83,7 @@ frem <- function(df, des, phenotypes, timeCol = NULL, cor = TRUE, returnData = F
   }
   #* `Format a time column if non-integer`
   formatted <- .formatNonIntegerTime(df, timeCol, format = time_format, index = NULL)
-  df <- formatted$df
+  df <- formatted$data
   timeCol <- formatted$timeCol
   #* `Make formulas`
   ext <- FALSE
