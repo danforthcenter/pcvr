@@ -118,7 +118,7 @@ bw.time <- function(df = NULL, mode = c("DAS", "DAP", "DAE"), plantingDelay = NU
 #' @noRd
 
 .formatNonIntegerTime <- function(df, timeCol, format, index) {
-  if (!is.integer(df[[timeCol]])) {
+  if (!is.numeric(df[[timeCol]])) {
     df[[timeCol]] <- as.POSIXct(strptime(df[[timeCol]], format = format))
     beg <- as.POSIXct(index, tz = "UTC")
     if (is.null(index)) {
