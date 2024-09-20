@@ -21,6 +21,7 @@
 #'   If a single number is provided then that time value will be used.
 #'    Multiple numbers will include those timepoints.
 #'     The string "all" will include all timepoints.
+#' @param time_format Format for non-integer time, passed to \code{strptime}.
 #' @param ... Additional arguments passed to \code{lme4::lmer}.
 #'
 #' @import lme4
@@ -67,13 +68,17 @@
 #' @export
 
 frem <- function(df, des, phenotypes, timeCol = NULL, cor = TRUE, returnData = FALSE, combine = TRUE,
-                 markSingular = FALSE, time = NULL, ...) {
+                 markSingular = FALSE, time = NULL, time_format = "", ...) {
   dummyX <- FALSE
   if (is.null(timeCol)) {
     timeCol <- "dummy_x_axis"
     df[[timeCol]] <- 1
     dummyX <- TRUE
   }
+  #* `Format a time column if non-integer`
+  formatted <- .formatNonIntegerTime(df, timeCol, format = time_format, index = NULL)
+  df <- formatted$df
+  timeCol <- formatted$timeCol
   #* `Make formulas`
   ext <- FALSE
   if (length(des) == 2) {

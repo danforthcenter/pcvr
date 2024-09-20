@@ -14,6 +14,7 @@ frem(
   combine = TRUE,
   markSingular = FALSE,
   time = NULL,
+  time_format = "",
   ...
 )
 }
@@ -45,6 +46,8 @@ This can be left NULL which will use the maximum time if \code{timeCol} is speci
  If a single number is provided then that time value will be used.
   Multiple numbers will include those timepoints.
    The string "all" will include all timepoints.}
+
+\item{time_format}{Format for non-integer time, passed to \code{strptime}.}
 
 \item{...}{Additional arguments passed to \code{lme4::lmer}.}
 }
