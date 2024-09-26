@@ -91,6 +91,7 @@ frem(df,
   des = "genotype", phenotypes = c("pheno1", "pheno2", "pheno3"),
   cor = FALSE, timeCol = "time", time = 3:5, markSingular = TRUE
 )
+df[df$time == 3, "genotype"] <- "g1"
 frem(df,
   des = "genotype", phenotypes = c("pheno1", "pheno2", "pheno3"),
   cor = FALSE, timeCol = "date_time", time = "all", markSingular = TRUE
