@@ -839,7 +839,7 @@ load("agm_sim_fit.rdata")
 
 ```{r}
 #| echo: true
-#| echo: false
+#| eval: false
 growthPlot(fit, form = ss$pcvrForm, df = ss$df)
 ```
 
@@ -851,7 +851,7 @@ Here we check our model predictions to 35 days.
 
 ```{r}
 #| echo: true
-#| echo: false
+#| eval: false
 growthPlot(fit, form = ss$pcvrForm, df = ss$df, timeRange = 1:35)
 ```
 
@@ -861,7 +861,7 @@ And now we check those predictions from a spline model, where the basis function
 
 ```{r}
 #| echo: true
-#| echo: false
+#| eval: false
 growthPlot(fit_spline, form = ss_spline$pcvrForm, df = ss_spline$df, timeRange = 1:35)
 ```
 
