@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">pcvr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -386,7 +386,7 @@ which correspond to the functions shown in this table.</p>
 <td><code><a href="https://rdrr.io/pkg/quantreg/man/nlrq.html" class="external-link">quantreg::nlrq</a></code></td>
 <td><code><a href="https://rdrr.io/pkg/nlme/man/nlme.html" class="external-link">nlme::nlme</a></code></td>
 <td><code><a href="https://rdrr.io/pkg/mgcv/man/gam.html" class="external-link">mgcv::gam</a></code></td>
-<td><code><a href="https://paul-buerkner.github.io/brms/reference/brms-package.html" class="external-link">brms::brms</a></code></td>
+<td><code><a href="https://paulbuerkner.com/brms/reference/brms-package.html" class="external-link">brms::brms</a></code></td>
 </tr></tbody>
 </table>
 <div class="section level3">
@@ -454,7 +454,7 @@ heteroskedastic sub models.</p></li>
 <li><p><code>testGrowth</code> tests model parameters against nested
 versions of the same models to allow for straightforward hypothesis
 testing on frequentist (non-<code>brms</code>) models. For
-<code>brms</code> models the <code><a href="https://paul-buerkner.github.io/brms/reference/hypothesis.brmsfit.html" class="external-link">brms::hypothesis</a></code> function
+<code>brms</code> models the <code><a href="https://paulbuerkner.com/brms/reference/hypothesis.brmsfit.html" class="external-link">brms::hypothesis</a></code> function
 should be used.</p></li>
 </ul>
 <div class="section level3">
@@ -491,7 +491,7 @@ your data a set of parameters will be estimated. If you have lots of
 groups in your data then it may make sense to fit models to only a few
 groups at a time. If you do that then the models can still be compared
 by extracting the MCMC draws, combining them into a dataframe, then
-using <code><a href="https://paul-buerkner.github.io/brms/reference/hypothesis.brmsfit.html" class="external-link">brms::hypothesis</a></code> per normal.</p>
+using <code><a href="https://paulbuerkner.com/brms/reference/hypothesis.brmsfit.html" class="external-link">brms::hypothesis</a></code> per normal.</p>
 <p>For model backends that do not account for autocorrelation the
 individual will not be used and can be omitted leaving
 <code>outcome ~ time|group_id</code>, but there is no harm in including
@@ -516,7 +516,7 @@ Student T, which has sigma and nu parameters. Other distributions can be
 specified in the main growth model as
 <code>model = "family_name: model_name"</code>
 (<code>model = "poisson: linear"</code> as an example). For details on
-available families see <code><a href="https://paul-buerkner.github.io/brms/reference/brmsfamily.html" class="external-link">?brms::brmsfamily</a></code>. There is also an
+available families see <code><a href="https://paulbuerkner.com/brms/reference/brmsfamily.html" class="external-link">?brms::brmsfamily</a></code>. There is also an
 “int” model type which fits a 0 slope intercept only model. While “int”
 can be used in any <code>brms</code> model the option is meant to be
 used specifying a homoskedastic sub model, or a period of noise before
@@ -707,10 +707,10 @@ many ways to model variance as there are to model growth using the
 IC). For frequentist models a more familiar metric like BIC or AIC might
 be used.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">loo_spline</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://paul-buerkner.github.io/brms/reference/add_criterion.html" class="external-link">add_criterion</a></span><span class="op">(</span><span class="va">fit_s</span>, <span class="st">"loo"</span><span class="op">)</span></span>
-<span><span class="va">loo_homo</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://paul-buerkner.github.io/brms/reference/add_criterion.html" class="external-link">add_criterion</a></span><span class="op">(</span><span class="va">fit_h</span>, <span class="st">"loo"</span><span class="op">)</span></span>
-<span><span class="va">loo_linear</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://paul-buerkner.github.io/brms/reference/add_criterion.html" class="external-link">add_criterion</a></span><span class="op">(</span><span class="va">fit_l</span>, <span class="st">"loo"</span><span class="op">)</span></span>
-<span><span class="va">loo_gomp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://paul-buerkner.github.io/brms/reference/add_criterion.html" class="external-link">add_criterion</a></span><span class="op">(</span><span class="va">fit_g</span>, <span class="st">"loo"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">loo_spline</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://paulbuerkner.com/brms/reference/add_criterion.html" class="external-link">add_criterion</a></span><span class="op">(</span><span class="va">fit_s</span>, <span class="st">"loo"</span><span class="op">)</span></span>
+<span><span class="va">loo_homo</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://paulbuerkner.com/brms/reference/add_criterion.html" class="external-link">add_criterion</a></span><span class="op">(</span><span class="va">fit_h</span>, <span class="st">"loo"</span><span class="op">)</span></span>
+<span><span class="va">loo_linear</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://paulbuerkner.com/brms/reference/add_criterion.html" class="external-link">add_criterion</a></span><span class="op">(</span><span class="va">fit_l</span>, <span class="st">"loo"</span><span class="op">)</span></span>
+<span><span class="va">loo_gomp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://paulbuerkner.com/brms/reference/add_criterion.html" class="external-link">add_criterion</a></span><span class="op">(</span><span class="va">fit_g</span>, <span class="st">"loo"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">h</span> <span class="op">&lt;-</span> <span class="va">loo_homo</span><span class="op">$</span><span class="va">criteria</span><span class="op">$</span><span class="va">loo</span><span class="op">$</span><span class="va">estimates</span><span class="op">[</span><span class="fl">3</span>, <span class="fl">1</span><span class="op">]</span></span>
 <span><span class="va">s</span> <span class="op">&lt;-</span> <span class="va">loo_spline</span><span class="op">$</span><span class="va">criteria</span><span class="op">$</span><span class="va">loo</span><span class="op">$</span><span class="va">estimates</span><span class="op">[</span><span class="fl">3</span>, <span class="fl">1</span><span class="op">]</span></span>
@@ -765,9 +765,9 @@ results.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">345</span><span class="op">)</span></span>
 <span><span class="va">ln</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/growthSim.html">growthSim</a></span><span class="op">(</span><span class="st">"linear"</span>, n <span class="op">=</span> <span class="fl">5</span>, t <span class="op">=</span> <span class="fl">10</span>, params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"A"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">3</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">strongPrior</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://paul-buerkner.github.io/brms/reference/set_prior.html" class="external-link">prior</a></span><span class="op">(</span><span class="fu">student_t</span><span class="op">(</span><span class="fl">3</span>, <span class="fl">0</span>, <span class="fl">5</span><span class="op">)</span>, dpar <span class="op">=</span> <span class="st">"sigma"</span>, class <span class="op">=</span> <span class="st">"b"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://paul-buerkner.github.io/brms/reference/set_prior.html" class="external-link">prior</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Special.html" class="external-link">gamma</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">0.1</span><span class="op">)</span>, class <span class="op">=</span> <span class="st">"nu"</span>, lb <span class="op">=</span> <span class="fl">0.001</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://paul-buerkner.github.io/brms/reference/set_prior.html" class="external-link">prior</a></span><span class="op">(</span><span class="fu">normal</span><span class="op">(</span><span class="fl">10</span>, <span class="fl">.05</span><span class="op">)</span>, nlpar <span class="op">=</span> <span class="st">"A"</span>, lb <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
+<span><span class="va">strongPrior</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://paulbuerkner.com/brms/reference/set_prior.html" class="external-link">prior</a></span><span class="op">(</span><span class="fu">student_t</span><span class="op">(</span><span class="fl">3</span>, <span class="fl">0</span>, <span class="fl">5</span><span class="op">)</span>, dpar <span class="op">=</span> <span class="st">"sigma"</span>, class <span class="op">=</span> <span class="st">"b"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://paulbuerkner.com/brms/reference/set_prior.html" class="external-link">prior</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Special.html" class="external-link">gamma</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">0.1</span><span class="op">)</span>, class <span class="op">=</span> <span class="st">"nu"</span>, lb <span class="op">=</span> <span class="fl">0.001</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://paulbuerkner.com/brms/reference/set_prior.html" class="external-link">prior</a></span><span class="op">(</span><span class="fu">normal</span><span class="op">(</span><span class="fl">10</span>, <span class="fl">.05</span><span class="op">)</span>, nlpar <span class="op">=</span> <span class="st">"A"</span>, lb <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">ss</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/growthSS.html">growthSS</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="st">"linear"</span>, form <span class="op">=</span> <span class="va">y</span> <span class="op">~</span> <span class="va">time</span> <span class="op">|</span> <span class="va">id</span> <span class="op">/</span> <span class="va">group</span>, sigma <span class="op">=</span> <span class="st">"homo"</span>,</span>
@@ -808,9 +808,9 @@ forward with strong priors if you specify them.</p>
 with these is to constrict our sampler to possible values so that it
 moves faster and to introduce evidence driven domain expertise.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">weakPrior</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://paul-buerkner.github.io/brms/reference/set_prior.html" class="external-link">prior</a></span><span class="op">(</span><span class="fu">student_t</span><span class="op">(</span><span class="fl">3</span>, <span class="fl">0</span>, <span class="fl">5</span><span class="op">)</span>, dpar <span class="op">=</span> <span class="st">"sigma"</span>, class <span class="op">=</span> <span class="st">"b"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://paul-buerkner.github.io/brms/reference/set_prior.html" class="external-link">prior</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Special.html" class="external-link">gamma</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">0.1</span><span class="op">)</span>, class <span class="op">=</span> <span class="st">"nu"</span>, lb <span class="op">=</span> <span class="fl">0.001</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://paul-buerkner.github.io/brms/reference/set_prior.html" class="external-link">prior</a></span><span class="op">(</span><span class="fu"><a href="https://paul-buerkner.github.io/brms/reference/brmsfamily.html" class="external-link">lognormal</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span>, <span class="fl">0.25</span><span class="op">)</span>, nlpar <span class="op">=</span> <span class="st">"A"</span>, lb <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">weakPrior</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://paulbuerkner.com/brms/reference/set_prior.html" class="external-link">prior</a></span><span class="op">(</span><span class="fu">student_t</span><span class="op">(</span><span class="fl">3</span>, <span class="fl">0</span>, <span class="fl">5</span><span class="op">)</span>, dpar <span class="op">=</span> <span class="st">"sigma"</span>, class <span class="op">=</span> <span class="st">"b"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://paulbuerkner.com/brms/reference/set_prior.html" class="external-link">prior</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Special.html" class="external-link">gamma</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">0.1</span><span class="op">)</span>, class <span class="op">=</span> <span class="st">"nu"</span>, lb <span class="op">=</span> <span class="fl">0.001</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://paulbuerkner.com/brms/reference/set_prior.html" class="external-link">prior</a></span><span class="op">(</span><span class="fu"><a href="https://paulbuerkner.com/brms/reference/brmsfamily.html" class="external-link">lognormal</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span>, <span class="fl">0.25</span><span class="op">)</span>, nlpar <span class="op">=</span> <span class="st">"A"</span>, lb <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">ss</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/growthSS.html">growthSS</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="st">"linear"</span>, form <span class="op">=</span> <span class="va">y</span> <span class="op">~</span> <span class="va">time</span> <span class="op">|</span> <span class="va">id</span> <span class="op">/</span> <span class="va">group</span>, sigma <span class="op">=</span> <span class="st">"homo"</span>,</span>
@@ -1025,7 +1025,7 @@ complicated model parameters and meaningful testing can be a little more
 involved, typically requiring contrast statements or nested models. In
 <code>pcvr</code> the <code>testGrowth</code> function allows for
 hypothesis testing on model parameters for frequentist models. For
-Bayesian models the <code><a href="https://paul-buerkner.github.io/brms/reference/hypothesis.brmsfit.html" class="external-link">brms::hypothesis</a></code> function is
+Bayesian models the <code><a href="https://paulbuerkner.com/brms/reference/hypothesis.brmsfit.html" class="external-link">brms::hypothesis</a></code> function is
 recommended.</p>
 <div class="section level4">
 <h4 id="testgrowth">
@@ -1087,7 +1087,7 @@ non-linear growth models and should serve as a good starting point for
 frequentist model analysis.</p>
 <p>The second kind of hypothesis test in <code>testGrowth</code> is used
 if the <code>test</code> argument is a hypothesis or list of hypotheses
-similar to those used in <code><a href="https://paul-buerkner.github.io/brms/reference/hypothesis.brmsfit.html" class="external-link">brms::hypothesis</a></code> syntax. These can
+similar to those used in <code><a href="https://paulbuerkner.com/brms/reference/hypothesis.brmsfit.html" class="external-link">brms::hypothesis</a></code> syntax. These can
 test more complex non-linear hypotheses by using
 <code><a href="https://rdrr.io/pkg/car/man/deltaMethod.html" class="external-link">car::deltaMethod</a></code> to calculate standard errors for model
 parameters. Note that this kind of testing is only supported with
@@ -1127,7 +1127,7 @@ parameters.</p>
 </h4>
 <p>With the <code>brms</code> backend our options expand dramatically.
 We can write arbitrarily complex hypotheses about our models and test
-the posterior probability using <code><a href="https://paul-buerkner.github.io/brms/reference/hypothesis.brmsfit.html" class="external-link">brms::hypothesis</a></code>. Here we
+the posterior probability using <code><a href="https://paulbuerkner.com/brms/reference/hypothesis.brmsfit.html" class="external-link">brms::hypothesis</a></code>. Here we
 keep it simple and test that group A has an asymptote 10% larger than
 group B’s asymptote. If we had a more complicated dataset then there is
 no reason we could not expand this hypothesis instead to something like
@@ -1137,11 +1137,11 @@ would be out of scope to go over all the potentially interesting
 hypotheses since those will depend on your experimental design and
 questions, but hopefully this communicates the flexibility in using
 these models once they are fit. Access to the
-<code><a href="https://paul-buerkner.github.io/brms/reference/hypothesis.brmsfit.html" class="external-link">brms::hypothesis</a></code> function is generally a compelling reason
+<code><a href="https://paulbuerkner.com/brms/reference/hypothesis.brmsfit.html" class="external-link">brms::hypothesis</a></code> function is generally a compelling reason
 to use the <code>brms</code> backend if you have questions beyond “are
 these groups different?”</p>
 <div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="op">(</span><span class="va">hyp</span> <span class="op">&lt;-</span> <span class="fu">brms</span><span class="fu">::</span><span class="fu"><a href="https://paul-buerkner.github.io/brms/reference/hypothesis.brmsfit.html" class="external-link">hypothesis</a></span><span class="op">(</span><span class="va">brms_fit</span>, <span class="st">"(A_groupa) &gt; 1.1 * (A_groupb)"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="op">(</span><span class="va">hyp</span> <span class="op">&lt;-</span> <span class="fu">brms</span><span class="fu">::</span><span class="fu"><a href="https://paulbuerkner.com/brms/reference/hypothesis.brmsfit.html" class="external-link">hypothesis</a></span><span class="op">(</span><span class="va">brms_fit</span>, <span class="st">"(A_groupa) &gt; 1.1 * (A_groupb)"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##                          Hypothesis Estimate Est.Error CI.Lower CI.Upper</span></span>
 <span><span class="co">## 1 ((A_groupa))-(1.1*(A_groupb)) &gt; 0 16.78802  3.135185 12.01271  21.9525</span></span>
 <span><span class="co">##   Evid.Ratio Post.Prob Star</span></span>

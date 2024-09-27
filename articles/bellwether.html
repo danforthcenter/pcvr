@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">pcvr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -753,7 +753,7 @@ who could benefit from using very robust models. To help get around this
 potential issue for the specific case of measuring growth over time
 <code>pcvr</code> includes several functions to work with
 <code>brms</code>, the first of which is <code>growthSS</code>, a
-self-starter helper function for use with <code><a href="https://paul-buerkner.github.io/brms/reference/brm.html" class="external-link">brms::brm</a></code>.</p>
+self-starter helper function for use with <code><a href="https://paulbuerkner.com/brms/reference/brm.html" class="external-link">brms::brm</a></code>.</p>
 <div class="section level6">
 <h6 id="submodel-options">submodel options<a class="anchor" aria-label="anchor" href="#submodel-options"></a>
 </h6>
@@ -878,9 +878,9 @@ problems.</p>
 <h5 id="running-models">Running Models<a class="anchor" aria-label="anchor" href="#running-models"></a>
 </h5>
 <p>The <code>fitGrowth</code> function in this case will call
-<code><a href="https://paul-buerkner.github.io/brms/reference/brm.html" class="external-link">brms::brm</a></code> which automatically uses the output from
+<code><a href="https://paulbuerkner.com/brms/reference/brm.html" class="external-link">brms::brm</a></code> which automatically uses the output from
 <code>growthSS</code>. Any additional arguments to
-<code><a href="https://paul-buerkner.github.io/brms/reference/brm.html" class="external-link">brms::brm</a></code> can still be specified, a few examples of which
+<code><a href="https://paulbuerkner.com/brms/reference/brm.html" class="external-link">brms::brm</a></code> can still be specified, a few examples of which
 are shown here.</p>
 <div class="sourceCode" id="cb59"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fitGrowth.html">fitGrowth</a></span><span class="op">(</span><span class="va">ss</span>,</span>
@@ -906,10 +906,10 @@ run this locally if you have brms installed and choose to.</p>
 <h5 id="test-hypotheses">Test Hypotheses<a class="anchor" aria-label="anchor" href="#test-hypotheses"></a>
 </h5>
 <p>Now we probably have some ideas about what we want to test in our
-data. The <code><a href="https://paul-buerkner.github.io/brms/reference/hypothesis.brmsfit.html" class="external-link">brms::hypothesis</a></code> function offers incredible
+data. The <code><a href="https://paulbuerkner.com/brms/reference/hypothesis.brmsfit.html" class="external-link">brms::hypothesis</a></code> function offers incredible
 flexibility to test all kinds of hypotheses. For consistency with other
 backends the <code>testGrowth</code> function calls
-<code><a href="https://paul-buerkner.github.io/brms/reference/hypothesis.brmsfit.html" class="external-link">brms::hypothesis</a></code> to evaluate hypotheses. For some
+<code><a href="https://paulbuerkner.com/brms/reference/hypothesis.brmsfit.html" class="external-link">brms::hypothesis</a></code> to evaluate hypotheses. For some
 comparisons <code>pcvr</code> has a helper function called
 <code>brmViolin</code> to visualize posterior distributions and the
 posterior probability of some hypotheses associated with them.</p>
@@ -929,7 +929,7 @@ experiment the plants would be more mature but here the asymptote
 parameter is artificially inflated for the 100 soil treatment group due
 to their slower growth rate.</p>
 <p>There are a lot of options for how to use this function and even more
-ways to use <code><a href="https://paul-buerkner.github.io/brms/reference/hypothesis.brmsfit.html" class="external-link">brms::hypothesis</a></code>, so this example should not be
+ways to use <code><a href="https://paulbuerkner.com/brms/reference/hypothesis.brmsfit.html" class="external-link">brms::hypothesis</a></code>, so this example should not be
 seen as the only way to compare your models.</p>
 </div>
 </div>

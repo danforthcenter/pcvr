@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">pcvr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -116,7 +116,7 @@ it may be worth using segments that are simpler to fit
 (gompertz instead of EVD options, for instance). Currently "homo" and "int" are treated the same
 and "spline" and "gam" are interchangeable. Time-to-event models can be specified using the
 "survival" keyword, see details for an explanation of the changes that entails.
-Similarly, using the brms backend response distributions (see <code><a href="https://paul-buerkner.github.io/brms/reference/brmsfamily.html" class="external-link">brms::brmsfamily</a></code>)
+Similarly, using the brms backend response distributions (see <code><a href="https://paulbuerkner.com/brms/reference/brmsfamily.html" class="external-link">brms::brmsfamily</a></code>)
 can be specified in the model as "family: model" so that a model
 of logistic increasing counts may be written as <code>model = "poisson: logistic"</code>.</p></dd>
 
@@ -179,7 +179,7 @@ If this is not provided then starting values are picked with <code><a href="http
   having been chosen for heavy but not unmanageable tails.
   If this argument is not provided then priors are made using brms::get_prior.
   Those priors are unlikely to be suitable and a different set of priors will need to be made
-  for the model using <code><a href="https://paul-buerkner.github.io/brms/reference/set_prior.html" class="external-link">brms::set_prior</a></code> for good convergence. When specifying starting
+  for the model using <code><a href="https://paulbuerkner.com/brms/reference/set_prior.html" class="external-link">brms::set_prior</a></code> for good convergence. When specifying starting
   values/prior means think of this as being similar to the <code>params</code> argument
   in <code>growthSim</code>. Names should correspond to parameter names from the
   <code>model</code> argument. A numeric vector can also be used, but specifying
@@ -223,7 +223,7 @@ predictor variable. This is only used with the brms backend.</p></dd>
     <p>A named list of elements to make it easier to fit non linear growth models with several R
 packages.</p>
 <p>For <code>brms</code> models the output contains:</p>
-<p><code>formula</code>: A <code><a href="https://paul-buerkner.github.io/brms/reference/brmsformula.html" class="external-link">brms::bf</a></code> formula specifying the growth model, autocorrelation,
+<p><code>formula</code>: A <code><a href="https://paulbuerkner.com/brms/reference/brmsformula.html" class="external-link">brms::bf</a></code> formula specifying the growth model, autocorrelation,
 variance submodel, and models for each variable in the growth model.
 <code>prior</code>: A brmsprior/data.frame object.
 <code>initfun</code>: A function to randomly initialize chains using a random draw from a gamma
@@ -345,7 +345,7 @@ at an upper and lower limit.
 To specify these limits add square brackets to the Y term with upper and lower limits such as
 <code>"y[0,100] ~ time|id/group"</code>. Other "Additional response information" such as resp_weights or
 standard errors can be specified using the <code>brms</code> backend, with those options documented fully
-in the <code><a href="https://paul-buerkner.github.io/brms/reference/brmsformula.html" class="external-link">brms::brmsformula</a></code> details.</p>
+in the <code><a href="https://paulbuerkner.com/brms/reference/brmsformula.html" class="external-link">brms::brmsformula</a></code> details.</p>
 <p>There are also three supported submodel options for <code>nlme</code> models, but a <code>varFunc</code> object
 can also be supplied, see <code><a href="https://rdrr.io/pkg/nlme/man/varClasses.html" class="external-link">?nlme::varClasses</a></code>.</p>
 <ul><li><p><b>none</b>: <code>varIdent(1|group)</code>, which models a constant variance separately for each
@@ -450,22 +450,22 @@ Further additional arguments should be supplied via <code>fitGrowth</code> if de
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration:   1 / 500 [  0%]  (Warmup) </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/Rtmp8TAvLv/model-1a9458ab0ccd.stan', line 130, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/Rtmp17gYJR/model-1ae95fa751ec.stan', line 130, column 4 to column 48)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/Rtmp8TAvLv/model-1a9458ab0ccd.stan', line 130, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/Rtmp17gYJR/model-1ae95fa751ec.stan', line 130, column 4 to column 48)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Location parameter[1] is -nan, but must be finite! (in '/tmp/Rtmp8TAvLv/model-1a9458ab0ccd.stan', line 130, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Location parameter[1] is -nan, but must be finite! (in '/tmp/Rtmp17gYJR/model-1ae95fa751ec.stan', line 130, column 4 to column 48)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/Rtmp8TAvLv/model-1a9458ab0ccd.stan', line 130, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/Rtmp17gYJR/model-1ae95fa751ec.stan', line 130, column 4 to column 48)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
@@ -475,7 +475,7 @@ Further additional arguments should be supplied via <code>fitGrowth</code> if de
 <span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 350 / 500 [ 70%]  (Sampling) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 450 / 500 [ 90%]  (Sampling) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 500 / 500 [100%]  (Sampling) </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 finished in 72.7 seconds.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 finished in 73.0 seconds.</span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>

@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">pcvr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -128,7 +128,7 @@ dependencies.</p>
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/danforthcenter/pcvr" class="external-link">pcvr</a></span><span class="op">)</span> <span class="co"># or devtools::load_all() if you are editing</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/paul-buerkner/brms" class="external-link">brms</a></span><span class="op">)</span> <span class="co"># for bayesian models</span></span></code></pre></div>
 <pre><code><span><span class="co">## Loading required package: Rcpp</span></span></code></pre>
-<pre><code><span><span class="co">## Loading 'brms' package (version 2.21.0). Useful instructions</span></span>
+<pre><code><span><span class="co">## Loading 'brms' package (version 2.22.0). Useful instructions</span></span>
 <span><span class="co">## can be found by typing help('brms'). A more detailed introduction</span></span>
 <span><span class="co">## to the package is available through vignette('brms_overview').</span></span></code></pre>
 <pre><code><span><span class="co">## </span></span>
@@ -627,7 +627,7 @@ slower than other options</td>
 <code class="sourceCode R"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">sigma_df</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">time</span>, y <span class="op">=</span> <span class="va">y</span>, group <span class="op">=</span> <span class="va">group</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_smooth.html" class="external-link">geom_smooth</a></span><span class="op">(</span></span>
 <span>    method <span class="op">=</span> <span class="st">"gam"</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>group <span class="op">=</span> <span class="st">"Spline"</span>, color <span class="op">=</span> <span class="st">"Spline"</span><span class="op">)</span>,</span>
-<span>    linetype <span class="op">=</span> <span class="fl">5</span>, se <span class="op">=</span> <span class="cn">FALSE</span>, formula <span class="op">=</span> <span class="va">y</span> <span class="op">~</span> <span class="fu"><a href="https://paul-buerkner.github.io/brms/reference/s.html" class="external-link">s</a></span><span class="op">(</span><span class="va">x</span>, bs <span class="op">=</span> <span class="st">"cs"</span><span class="op">)</span></span>
+<span>    linetype <span class="op">=</span> <span class="fl">5</span>, se <span class="op">=</span> <span class="cn">FALSE</span>, formula <span class="op">=</span> <span class="va">y</span> <span class="op">~</span> <span class="fu"><a href="https://paulbuerkner.com/brms/reference/s.html" class="external-link">s</a></span><span class="op">(</span><span class="va">x</span>, bs <span class="op">=</span> <span class="st">"cs"</span><span class="op">)</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>color <span class="op">=</span> <span class="va">group</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_color_manual</a></span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/pal_hue.html" class="external-link">hue_pal</a></span><span class="op">(</span><span class="op">)</span><span class="op">(</span><span class="fl">2</span><span class="op">)</span>, <span class="st">"gray40"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
@@ -801,7 +801,7 @@ defaults.</p>
 <code>fitGrowth</code> 2<a class="anchor" aria-label="anchor" href="#fitgrowth-2-2"></a>
 </h2>
 <p>Note that there are lots of arguments that can be passed to
-<code><a href="https://paul-buerkner.github.io/brms/reference/brm.html" class="external-link">brms::brm</a></code> via <code>fitGrowth</code>.</p>
+<code><a href="https://paulbuerkner.com/brms/reference/brm.html" class="external-link">brms::brm</a></code> via <code>fitGrowth</code>.</p>
 <p>. . .</p>
 <p>One that can be very helpful for fitting complex models is the
 <code>control</code> argument, where we can control the sampler’s
@@ -827,7 +827,7 @@ the results.</p>
 <code>fitGrowth</code> 3<a class="anchor" aria-label="anchor" href="#fitgrowth-3"></a>
 </h2>
 <p><code>fitGrowth</code> returns a <code>brmsfit</code> object, see
-<code><a href="https://paul-buerkner.github.io/brms/reference/brmsfit-class.html" class="external-link">?brmsfit</a></code> and <code>methods(class="brmsfit")</code> for
+<code><a href="https://paulbuerkner.com/brms/reference/brmsfit-class.html" class="external-link">?brmsfit</a></code> and <code>methods(class="brmsfit")</code> for
 general information.</p>
 <p>. . .</p>
 <p>Within <code>pcvr</code> there are several functions for visualizing
@@ -841,7 +841,6 @@ these objects.</p>
 your model.</p>
 <div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/growthPlot.html">growthPlot</a></span><span class="op">(</span><span class="va">fit</span>, form <span class="op">=</span> <span class="va">ss</span><span class="op">$</span><span class="va">pcvrForm</span>, df <span class="op">=</span> <span class="va">ss</span><span class="op">$</span><span class="va">df</span><span class="op">)</span></span></code></pre></div>
-<p><img src="pcvrTutorial_agm_files/figure-html/unnamed-chunk-31-1.png" width="700"></p>
 </div>
 <div class="section level2 smaller">
 <h2 class="smaller" id="model-visualization-2">Model Visualization 2<a class="anchor" aria-label="anchor" href="#model-visualization-2"></a>
@@ -850,8 +849,7 @@ your model.</p>
 well.</p>
 <p>Here we check our model predictions to 35 days.</p>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/brmPlot.html">brmPlot</a></span><span class="op">(</span><span class="va">fit</span>, form <span class="op">=</span> <span class="va">ss</span><span class="op">$</span><span class="va">pcvrForm</span>, df <span class="op">=</span> <span class="va">ss</span><span class="op">$</span><span class="va">df</span>, timeRange <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">35</span><span class="op">)</span></span></code></pre></div>
-<p><img src="pcvrTutorial_agm_files/figure-html/unnamed-chunk-32-1.png" width="700"></p>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/growthPlot.html">growthPlot</a></span><span class="op">(</span><span class="va">fit</span>, form <span class="op">=</span> <span class="va">ss</span><span class="op">$</span><span class="va">pcvrForm</span>, df <span class="op">=</span> <span class="va">ss</span><span class="op">$</span><span class="va">df</span>, timeRange <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">35</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2 smaller">
 <h2 class="smaller" id="model-visualization-2-1">Model Visualization 2<a class="anchor" aria-label="anchor" href="#model-visualization-2-1"></a>
@@ -859,31 +857,41 @@ well.</p>
 <p>And now we check those predictions from a spline model, where the
 basis functions are not suited for data past day 25.</p>
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/brmPlot.html">brmPlot</a></span><span class="op">(</span><span class="va">fit_spline</span>, form <span class="op">=</span> <span class="va">ss_spline</span><span class="op">$</span><span class="va">pcvrForm</span>, df <span class="op">=</span> <span class="va">ss_spline</span><span class="op">$</span><span class="va">df</span>, timeRange <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">35</span><span class="op">)</span></span></code></pre></div>
-<p><img src="pcvrTutorial_agm_files/figure-html/unnamed-chunk-33-1.png" width="700"></p>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/growthPlot.html">growthPlot</a></span><span class="op">(</span><span class="va">fit_spline</span>, form <span class="op">=</span> <span class="va">ss_spline</span><span class="op">$</span><span class="va">pcvrForm</span>, df <span class="op">=</span> <span class="va">ss_spline</span><span class="op">$</span><span class="va">df</span>, timeRange <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">35</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2 smaller">
 <h2 class="smaller" id="model-visualization-3">Model Visualization 3<a class="anchor" aria-label="anchor" href="#model-visualization-3"></a>
 </h2>
 <p>We can also plot the posterior distributions and test hypotheses with
 <code>brmViolin</code>.</p>
-<p>Here hypotheses are tested with <code><a href="https://paul-buerkner.github.io/brms/reference/hypothesis.brmsfit.html" class="external-link">brms::hypothesis</a></code>.</p>
+<p>Here hypotheses are tested with <code><a href="https://paulbuerkner.com/brms/reference/hypothesis.brmsfit.html" class="external-link">brms::hypothesis</a></code>.</p>
 <div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/brmViolin.html">brmViolin</a></span><span class="op">(</span><span class="va">fit</span>,</span>
 <span>  hyp <span class="op">=</span> <span class="st">"num/denom&gt;1.05"</span>,</span>
 <span>  compareX <span class="op">=</span> <span class="st">"a"</span>, againstY <span class="op">=</span> <span class="st">"b"</span>, x <span class="op">=</span> <span class="st">"group"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Loading required package: rstan</span></span></code></pre>
+<pre><code><span><span class="co">## Loading required package: StanHeaders</span></span></code></pre>
+<pre><code><span><span class="co">## </span></span>
+<span><span class="co">## rstan version 2.32.6 (Stan version 2.32.2)</span></span></code></pre>
+<pre><code><span><span class="co">## For execution on a local, multicore CPU with excess RAM we recommend calling</span></span>
+<span><span class="co">## options(mc.cores = parallel::detectCores()).</span></span>
+<span><span class="co">## To avoid recompilation of unchanged Stan programs, we recommend calling</span></span>
+<span><span class="co">## rstan_options(auto_write = TRUE)</span></span>
+<span><span class="co">## For within-chain threading using `reduce_sum()` or `map_rect()` Stan functions,</span></span>
+<span><span class="co">## change `threads_per_chain` option:</span></span>
+<span><span class="co">## rstan_options(threads_per_chain = 1)</span></span></code></pre>
 <p><img src="pcvrTutorial_agm_files/figure-html/unnamed-chunk-34-1.png" width="700"></p>
 </div>
 <div class="section level2 smaller">
 <h2 class="smaller" id="hypothesis-testing">Hypothesis Testing<a class="anchor" aria-label="anchor" href="#hypothesis-testing"></a>
 </h2>
-<p><code><a href="https://paul-buerkner.github.io/brms/reference/hypothesis.brmsfit.html" class="external-link">brms::hypothesis</a></code> allows for incredibly flexible
+<p><code><a href="https://paulbuerkner.com/brms/reference/hypothesis.brmsfit.html" class="external-link">brms::hypothesis</a></code> allows for incredibly flexible
 hypothesis testing.</p>
 <p>Here we test for an asymptote for group A at least 20% larger than
 that of group B.</p>
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">brms</span><span class="fu">::</span><span class="fu"><a href="https://paul-buerkner.github.io/brms/reference/hypothesis.brmsfit.html" class="external-link">hypothesis</a></span><span class="op">(</span><span class="va">fit</span>, <span class="st">"A_groupa &gt; 1.2 * A_groupb"</span><span class="op">)</span><span class="op">$</span><span class="va">hyp</span></span></code></pre></div>
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">brms</span><span class="fu">::</span><span class="fu"><a href="https://paulbuerkner.com/brms/reference/hypothesis.brmsfit.html" class="external-link">hypothesis</a></span><span class="op">(</span><span class="va">fit</span>, <span class="st">"A_groupa &gt; 1.2 * A_groupb"</span><span class="op">)</span><span class="op">$</span><span class="va">hyp</span></span></code></pre></div>
 <pre><code><span><span class="co">##                      Hypothesis Estimate Est.Error CI.Lower CI.Upper Evid.Ratio</span></span>
 <span><span class="co">## 1 (A_groupa)-(1.2*A_groupb) &gt; 0 6.290106  4.925797 -1.74309 14.41414    8.90099</span></span>
 <span><span class="co">##   Post.Prob Star</span></span>
@@ -905,7 +913,7 @@ distributional parameters.</p>
 <div class="section level2 smaller">
 <h2 class="smaller" id="linear-linear">linear + linear<a class="anchor" aria-label="anchor" href="#linear-linear"></a>
 </h2>
-<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">simdf</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/growthSim.html">growthSim</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="st">"linear + linear"</span>,</span>
 <span>  n <span class="op">=</span> <span class="fl">20</span>, t <span class="op">=</span> <span class="fl">25</span>,</span>
@@ -929,7 +937,7 @@ distributional parameters.</p>
 <div class="section level2 smaller">
 <h2 class="smaller" id="linear-logistic">linear + logistic<a class="anchor" aria-label="anchor" href="#linear-logistic"></a>
 </h2>
-<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">simdf</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/growthSim.html">growthSim</a></span><span class="op">(</span><span class="st">"linear + logistic"</span>,</span>
 <span>  n <span class="op">=</span> <span class="fl">20</span>, t <span class="op">=</span> <span class="fl">25</span>,</span>
 <span>  params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
@@ -959,7 +967,7 @@ distributional parameters.</p>
 <div class="section level2 smaller">
 <h2 class="smaller" id="linear-gam">linear + gam<a class="anchor" aria-label="anchor" href="#linear-gam"></a>
 </h2>
-<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ss</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/growthSS.html">growthSS</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="st">"linear + gam"</span>, form <span class="op">=</span> <span class="va">y</span> <span class="op">~</span> <span class="va">time</span> <span class="op">|</span> <span class="va">id</span> <span class="op">/</span> <span class="va">group</span>, sigma <span class="op">=</span> <span class="st">"int"</span>,</span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"linear1A"</span> <span class="op">=</span> <span class="fl">10</span>, <span class="st">"changePoint1"</span> <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>,</span>
@@ -977,7 +985,7 @@ distributional parameters.</p>
 <div class="section level2 smaller">
 <h2 class="smaller" id="linear-linear-linear">linear + linear + linear<a class="anchor" aria-label="anchor" href="#linear-linear-linear"></a>
 </h2>
-<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">simdf</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/growthSim.html">growthSim</a></span><span class="op">(</span><span class="st">"linear + linear + linear"</span>,</span>
 <span>  n <span class="op">=</span> <span class="fl">25</span>, t <span class="op">=</span> <span class="fl">50</span>,</span>
 <span>  params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
@@ -1007,7 +1015,7 @@ distributional parameters.</p>
 <div class="section level2 smaller">
 <h2 class="smaller" id="int-int-with-segmented-sigma">int + int with segmented sigma<a class="anchor" aria-label="anchor" href="#int-int-with-segmented-sigma"></a>
 </h2>
-<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ss</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/growthSS.html">growthSS</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="st">"int + int"</span>, form <span class="op">=</span> <span class="va">y</span> <span class="op">~</span> <span class="va">time</span> <span class="op">|</span> <span class="va">id</span> <span class="op">/</span> <span class="va">group</span>, sigma <span class="op">=</span> <span class="st">"int + int"</span>,</span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
@@ -1029,7 +1037,7 @@ distributional parameters.</p>
 <div class="section level2 smaller">
 <h2 class="smaller" id="int-linear-model-and-submodel">int + linear model and submodel<a class="anchor" aria-label="anchor" href="#int-linear-model-and-submodel"></a>
 </h2>
-<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ss</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/growthSS.html">growthSS</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="st">"int + linear"</span>, form <span class="op">=</span> <span class="va">y</span> <span class="op">~</span> <span class="va">time</span> <span class="op">|</span> <span class="va">id</span> <span class="op">/</span> <span class="va">group</span>, sigma <span class="op">=</span> <span class="st">"int + linear"</span>,</span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
@@ -1049,7 +1057,7 @@ distributional parameters.</p>
 <div class="section level2 smaller">
 <h2 class="smaller" id="intlogistic-with-intgam-sub-model">int+logistic with int+gam sub model<a class="anchor" aria-label="anchor" href="#intlogistic-with-intgam-sub-model"></a>
 </h2>
-<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ss</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/growthSS.html">growthSS</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="st">"int+logistic"</span>, form <span class="op">=</span> <span class="va">y</span> <span class="op">~</span> <span class="va">time</span> <span class="op">|</span> <span class="va">id</span> <span class="op">/</span> <span class="va">group</span>, sigma <span class="op">=</span> <span class="st">"int + spline"</span>,</span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
@@ -1070,7 +1078,7 @@ distributional parameters.</p>
 <div class="section level2 smaller">
 <h2 class="smaller" id="example-survival-model">Example survival model<a class="anchor" aria-label="anchor" href="#example-survival-model"></a>
 </h2>
-<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/growthSim.html">growthSim</a></span><span class="op">(</span><span class="st">"logistic"</span>,</span>
 <span>  n <span class="op">=</span> <span class="fl">20</span>, t <span class="op">=</span> <span class="fl">25</span>,</span>
 <span>  params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"A"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">200</span>, <span class="fl">160</span><span class="op">)</span>, <span class="st">"B"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">13</span>, <span class="fl">11</span><span class="op">)</span>, <span class="st">"C"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">3.5</span><span class="op">)</span><span class="op">)</span></span>
@@ -1094,7 +1102,7 @@ the formula.</p>
 <div class="section level2 smaller">
 <h2 class="smaller" id="example-count-model">Example count model<a class="anchor" aria-label="anchor" href="#example-count-model"></a>
 </h2>
-<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/growthSim.html">growthSim</a></span><span class="op">(</span><span class="st">"count: logistic"</span>,</span>
 <span>  n <span class="op">=</span> <span class="fl">20</span>, t <span class="op">=</span> <span class="fl">25</span>,</span>
 <span>  params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"A"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">12</span><span class="op">)</span>, <span class="st">"B"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">13</span>, <span class="fl">11</span><span class="op">)</span>, <span class="st">"C"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">3.5</span><span class="op">)</span><span class="op">)</span></span>
@@ -1116,7 +1124,7 @@ the formula.</p>
 <div class="section level2 smaller">
 <h2 class="smaller" id="example-hierarchical-model">Example hierarchical model<a class="anchor" aria-label="anchor" href="#example-hierarchical-model"></a>
 </h2>
-<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">simdf</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/growthSim.html">growthSim</a></span><span class="op">(</span></span>
 <span>  <span class="st">"logistic"</span>,</span>
 <span>  n <span class="op">=</span> <span class="fl">20</span>, t <span class="op">=</span> <span class="fl">25</span>,</span>
@@ -1155,7 +1163,7 @@ reproducibility when using Bayesian methods.</p>
 <p>In pcvr some of what Kruschke recommends can be accessed from a
 model/list of models using the <code>barg</code> function, see
 <code><a href="../reference/barg.html">?barg</a></code> for details on what that entails.</p>
-<p>The <code><a href="https://paul-buerkner.github.io/brms/reference/add_criterion.html" class="external-link">brms::add_criterion</a></code> function can be used to add LOO
+<p>The <code><a href="https://paulbuerkner.com/brms/reference/add_criterion.html" class="external-link">brms::add_criterion</a></code> function can be used to add LOO
 IC or WAIC values to models, which can be easily compared against each
 other using <code><a href="https://mc-stan.org/loo/reference/loo_compare.html" class="external-link">brms::loo_compare</a></code>. The best fitting model is
 displayed first, with others ranked relative to that model. Differences
@@ -1178,23 +1186,23 @@ possible with <code>brms</code>, which itself is more limited than
 <h2 class="smaller" id="using-brms-directly-1">Using <code>brms</code> directly<a class="anchor" aria-label="anchor" href="#using-brms-directly-1"></a>
 </h2>
 <p>Our gompertz sigma model looks like this in <code>brms</code>:</p>
-<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">prior1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://paul-buerkner.github.io/brms/reference/set_prior.html" class="external-link">prior</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Special.html" class="external-link">gamma</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">0.1</span><span class="op">)</span>, class <span class="op">=</span> <span class="st">"nu"</span>, lb <span class="op">=</span> <span class="fl">0.001</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://paul-buerkner.github.io/brms/reference/set_prior.html" class="external-link">prior</a></span><span class="op">(</span><span class="fu"><a href="https://paul-buerkner.github.io/brms/reference/brmsfamily.html" class="external-link">lognormal</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">130</span><span class="op">)</span>, <span class="fl">.25</span><span class="op">)</span>, nlpar <span class="op">=</span> <span class="st">"A"</span>, lb <span class="op">=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://paul-buerkner.github.io/brms/reference/set_prior.html" class="external-link">prior</a></span><span class="op">(</span><span class="fu"><a href="https://paul-buerkner.github.io/brms/reference/brmsfamily.html" class="external-link">lognormal</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">12</span><span class="op">)</span>, <span class="fl">.25</span><span class="op">)</span>, nlpar <span class="op">=</span> <span class="st">"B"</span>, lb <span class="op">=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://paul-buerkner.github.io/brms/reference/set_prior.html" class="external-link">prior</a></span><span class="op">(</span><span class="fu"><a href="https://paul-buerkner.github.io/brms/reference/brmsfamily.html" class="external-link">lognormal</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">1.2</span><span class="op">)</span>, <span class="fl">.25</span><span class="op">)</span>, nlpar <span class="op">=</span> <span class="st">"C"</span>, lb <span class="op">=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://paul-buerkner.github.io/brms/reference/set_prior.html" class="external-link">prior</a></span><span class="op">(</span><span class="fu"><a href="https://paul-buerkner.github.io/brms/reference/brmsfamily.html" class="external-link">lognormal</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">25</span><span class="op">)</span>, <span class="fl">.25</span><span class="op">)</span>, nlpar <span class="op">=</span> <span class="st">"subA"</span>, lb <span class="op">=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://paul-buerkner.github.io/brms/reference/set_prior.html" class="external-link">prior</a></span><span class="op">(</span><span class="fu"><a href="https://paul-buerkner.github.io/brms/reference/brmsfamily.html" class="external-link">lognormal</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">20</span><span class="op">)</span>, <span class="fl">.25</span><span class="op">)</span>, nlpar <span class="op">=</span> <span class="st">"subB"</span>, lb <span class="op">=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://paul-buerkner.github.io/brms/reference/set_prior.html" class="external-link">prior</a></span><span class="op">(</span><span class="fu"><a href="https://paul-buerkner.github.io/brms/reference/brmsfamily.html" class="external-link">lognormal</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">1.2</span><span class="op">)</span>, <span class="fl">.25</span><span class="op">)</span>, nlpar <span class="op">=</span> <span class="st">"subC"</span>, lb <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">prior1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://paulbuerkner.com/brms/reference/set_prior.html" class="external-link">prior</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Special.html" class="external-link">gamma</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">0.1</span><span class="op">)</span>, class <span class="op">=</span> <span class="st">"nu"</span>, lb <span class="op">=</span> <span class="fl">0.001</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://paulbuerkner.com/brms/reference/set_prior.html" class="external-link">prior</a></span><span class="op">(</span><span class="fu"><a href="https://paulbuerkner.com/brms/reference/brmsfamily.html" class="external-link">lognormal</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">130</span><span class="op">)</span>, <span class="fl">.25</span><span class="op">)</span>, nlpar <span class="op">=</span> <span class="st">"A"</span>, lb <span class="op">=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://paulbuerkner.com/brms/reference/set_prior.html" class="external-link">prior</a></span><span class="op">(</span><span class="fu"><a href="https://paulbuerkner.com/brms/reference/brmsfamily.html" class="external-link">lognormal</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">12</span><span class="op">)</span>, <span class="fl">.25</span><span class="op">)</span>, nlpar <span class="op">=</span> <span class="st">"B"</span>, lb <span class="op">=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://paulbuerkner.com/brms/reference/set_prior.html" class="external-link">prior</a></span><span class="op">(</span><span class="fu"><a href="https://paulbuerkner.com/brms/reference/brmsfamily.html" class="external-link">lognormal</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">1.2</span><span class="op">)</span>, <span class="fl">.25</span><span class="op">)</span>, nlpar <span class="op">=</span> <span class="st">"C"</span>, lb <span class="op">=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://paulbuerkner.com/brms/reference/set_prior.html" class="external-link">prior</a></span><span class="op">(</span><span class="fu"><a href="https://paulbuerkner.com/brms/reference/brmsfamily.html" class="external-link">lognormal</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">25</span><span class="op">)</span>, <span class="fl">.25</span><span class="op">)</span>, nlpar <span class="op">=</span> <span class="st">"subA"</span>, lb <span class="op">=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://paulbuerkner.com/brms/reference/set_prior.html" class="external-link">prior</a></span><span class="op">(</span><span class="fu"><a href="https://paulbuerkner.com/brms/reference/brmsfamily.html" class="external-link">lognormal</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">20</span><span class="op">)</span>, <span class="fl">.25</span><span class="op">)</span>, nlpar <span class="op">=</span> <span class="st">"subB"</span>, lb <span class="op">=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://paulbuerkner.com/brms/reference/set_prior.html" class="external-link">prior</a></span><span class="op">(</span><span class="fu"><a href="https://paulbuerkner.com/brms/reference/brmsfamily.html" class="external-link">lognormal</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">1.2</span><span class="op">)</span>, <span class="fl">.25</span><span class="op">)</span>, nlpar <span class="op">=</span> <span class="st">"subC"</span>, lb <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">form_b</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://paul-buerkner.github.io/brms/reference/brmsformula.html" class="external-link">bf</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="va">A</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="op">-</span><span class="va">B</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="op">-</span><span class="va">C</span> <span class="op">*</span> <span class="va">time</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>  <span class="fu"><a href="https://paul-buerkner.github.io/brms/reference/brmsformula-helpers.html" class="external-link">nlf</a></span><span class="op">(</span><span class="va">sigma</span> <span class="op">~</span> <span class="va">subA</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="op">-</span><span class="va">subB</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="op">-</span><span class="va">subC</span> <span class="op">*</span> <span class="va">time</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span>
+<span><span class="va">form_b</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://paulbuerkner.com/brms/reference/brmsformula.html" class="external-link">bf</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="va">A</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="op">-</span><span class="va">B</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="op">-</span><span class="va">C</span> <span class="op">*</span> <span class="va">time</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://paulbuerkner.com/brms/reference/brmsformula-helpers.html" class="external-link">nlf</a></span><span class="op">(</span><span class="va">sigma</span> <span class="op">~</span> <span class="va">subA</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="op">-</span><span class="va">subB</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="op">-</span><span class="va">subC</span> <span class="op">*</span> <span class="va">time</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  <span class="va">A</span> <span class="op">+</span> <span class="va">B</span> <span class="op">+</span> <span class="va">C</span> <span class="op">+</span> <span class="va">subA</span> <span class="op">+</span> <span class="va">subB</span> <span class="op">+</span> <span class="va">subC</span> <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">group</span>,</span>
-<span>  autocor <span class="op">=</span> <span class="op">~</span> <span class="fu"><a href="https://paul-buerkner.github.io/brms/reference/arma.html" class="external-link">arma</a></span><span class="op">(</span><span class="op">~</span> <span class="va">time</span> <span class="op">|</span> <span class="va">sample</span><span class="op">:</span><span class="va">group</span>, <span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>,</span>
+<span>  autocor <span class="op">=</span> <span class="op">~</span> <span class="fu"><a href="https://paulbuerkner.com/brms/reference/arma.html" class="external-link">arma</a></span><span class="op">(</span><span class="op">~</span> <span class="va">time</span> <span class="op">|</span> <span class="va">sample</span><span class="op">:</span><span class="va">group</span>, <span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>,</span>
 <span>  nl <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">fit_g2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://paul-buerkner.github.io/brms/reference/brm.html" class="external-link">brm</a></span><span class="op">(</span><span class="va">form_b</span>,</span>
+<span><span class="va">fit_g2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://paulbuerkner.com/brms/reference/brm.html" class="external-link">brm</a></span><span class="op">(</span><span class="va">form_b</span>,</span>
 <span>  family <span class="op">=</span> <span class="va">student</span>, prior <span class="op">=</span> <span class="va">prior1</span>, data <span class="op">=</span> <span class="va">simdf</span>,</span>
 <span>  iter <span class="op">=</span> <span class="fl">1000</span>, cores <span class="op">=</span> <span class="fl">4</span>, chains <span class="op">=</span> <span class="fl">4</span>, backend <span class="op">=</span> <span class="st">"cmdstanr"</span>, silent <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  control <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>adapt_delta <span class="op">=</span> <span class="fl">0.999</span>, max_treedepth <span class="op">=</span> <span class="fl">20</span><span class="op">)</span>,</span>
