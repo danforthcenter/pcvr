@@ -19,7 +19,7 @@ if (FALSE) {
 
 
 
-x <- lintr::lint(filename = "~/pcvr/R/emd.R",
+x <- lintr::lint(filename = "~/pcvr/vignettes/articles/pcvrTutorial_agm.Rmd",
                          linters = linters_with_defaults(line_length_linter(length = 105L),
                                                          object_name_linter(styles = c("snake_case", "symbols",
                                                                                        "camelCase", "dotted.case",
@@ -33,7 +33,7 @@ styler::style_dir(path = "~/pcvr/tutorials", scope = "tokens")
 
 
 if(FALSE){
-  file = "~/pcvr/R/emd.R"
+  file = "~/pcvr/vignettes/articles/pcvrTutorial_agm.Rmd"
   styler::style_file(file, scope = "line_breaks")
   lintr::lint(file, linters = lintr::linters_with_defaults(lintr::line_length_linter(length = 105L),
                                                            lintr::object_name_linter(styles = c("snake_case", "symbols",
