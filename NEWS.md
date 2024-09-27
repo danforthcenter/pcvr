@@ -1,3 +1,8 @@
+# pcvr 1.0.0.3
+
+Changes to `frem` to allow for using datetimes and for cases where a single timepoint cannot be modeled
+due to singular grouping.
+
 # pcvr 1.0.0.2
 
 Change plotting methods to avoid printing internal labels.

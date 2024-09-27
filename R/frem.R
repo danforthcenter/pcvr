@@ -66,6 +66,7 @@
 #'   des = "genotype", phenotypes = c("pheno1", "pheno2", "pheno3"),
 #'   cor = FALSE, timeCol = "time", time = 3:5, markSingular = TRUE
 #' )
+#' df[df$time == 3, "genotype"] <- "g1"
 #' frem(df,
 #'   des = "genotype", phenotypes = c("pheno1", "pheno2", "pheno3"),
 #'   cor = FALSE, timeCol = "date_time", time = "all", markSingular = TRUE
@@ -280,6 +281,14 @@ frem <- function(df, des, phenotypes, timeCol = NULL, cor = TRUE, returnData = F
 .partitionVarianceFrem <- function(dat, timeCol, phenotypes, ind_fmla, ext, des, ...) {
   H2 <- data.frame(do.call(rbind, lapply(sort(unique(dat[[timeCol]])), function(tm) {
     sub <- dat[dat[[timeCol]] == tm, ]
+    des_bools <- unlist(lapply(des, function(var) {
+      des_numbers <- as.numeric(table(sub[[var]]))
+      sum(des_numbers != 0) > 1
+    }))
+    if (any(!des_bools)) {
+      message(paste("Skipping", timeCol, tm, "as grouping contains a variable that is singular"))
+      return(NULL)
+    }
     do.call(rbind, lapply(phenotypes, function(e) {
       fmla <- as.formula(paste0("as.numeric(", e, ") ~ ", ind_fmla))
       model <- suppressMessages(lme4::lmer(fmla, data = sub, ...))
