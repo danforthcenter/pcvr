@@ -839,7 +839,11 @@ load("agm_sim_fit.rdata")
 
 ```{r}
 #| echo: true
-growthPlot(fit, form = ss$pcvrForm, df = ss$df)
+tryCatch({
+  growthPlot(fit, form = ss$pcvrForm, df = ss$df)
+  },
+  error = function(e){message(e)}
+  )
 ```
 
 ## Model Visualization 2 {.smaller}
@@ -850,7 +854,11 @@ Here we check our model predictions to 35 days.
 
 ```{r}
 #| echo: true
-brmPlot(fit, form = ss$pcvrForm, df = ss$df, timeRange = 1:35)
+tryCatch({
+  growthPlot(fit, form = ss$pcvrForm, df = ss$df, timeRange = 1:35)
+  },
+  error = function(e){message(e)}
+  )
 ```
 
 ## Model Visualization 2 {.smaller}
@@ -859,7 +867,11 @@ And now we check those predictions from a spline model, where the basis function
 
 ```{r}
 #| echo: true
-brmPlot(fit_spline, form = ss_spline$pcvrForm, df = ss_spline$df, timeRange = 1:35)
+tryCatch({
+  growthPlot(fit_spline, form = ss_spline$pcvrForm, df = ss_spline$df, timeRange = 1:35)
+  },
+  error = function(e){message(e)}
+  )
 ```
 
 ## Model Visualization 3 {.smaller}
