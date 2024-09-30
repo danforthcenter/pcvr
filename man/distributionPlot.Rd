@@ -42,9 +42,10 @@ Function for plotting iterations of posterior distributions
 }
 \examples{
 \donttest{
+f <- "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/brmsFits.rdata"
 tryCatch(
   {
-    print(load(url("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/brmsFits.rdata")))
+    print(load(url(f)))
     library(brms)
     library(ggplot2)
     library(patchwork)

@@ -27,10 +27,11 @@
 #' @keywords single-value-trait
 #' @examples
 #' \donttest{
+#' f <- "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv"
 #' tryCatch(
 #'   {
 #'     sv <- read.pcv(
-#'       "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv",
+#'       f,
 #'       reader = "fread"
 #'     )
 #'     sv$genotype <- substr(sv$barcode, 3, 5)

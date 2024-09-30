@@ -24,10 +24,11 @@
 #' @importFrom stats setNames
 #' @examples
 #' \donttest{
+#' f <- "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv"
 #' tryCatch(
 #'   {
 #'     sv <- read.pcv(
-#'       "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv",
+#'       f,
 #'       reader = "fread"
 #'     )
 #'     sv$genotype <- substr(sv$barcode, 3, 5)
@@ -65,7 +66,7 @@
 #'
 #'
 #'     sv_l <- read.pcv(
-#'       "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv",
+#'       f,
 #'       mode = "long", reader = "fread"
 #'     )
 #'     sv_l$genotype <- substr(sv_l$barcode, 3, 5)

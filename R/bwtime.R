@@ -36,10 +36,11 @@
 #' @export
 #' @examples
 #' \donttest{
+#' f <- "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv"
 #' tryCatch(
 #'   {
 #'     sv <- read.pcv(
-#'       "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv",
+#'       f,
 #'       mode = "wide", reader = "fread"
 #'     )
 #'     sv$genotype = substr(sv$barcode, 3, 5)
@@ -57,9 +58,8 @@
 #'       timeCol = "timestamp", group = c("barcode", "rotation"), plot = FALSE
 #'     )
 #'
-#'
 #'     svl <- read.pcv(
-#'       "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv",
+#'       f,
 #'       mode = "long", reader = "fread"
 #'     )
 #'     svl$genotype = substr(svl$barcode, 3, 5)
