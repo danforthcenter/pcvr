@@ -14,7 +14,7 @@
 #' )
 #' .conj_lognormal2_mv(
 #'   s1 = mv_ln[, -1],
-#'   priors = NULL
+#'   priors = NULL,
 #'   plot = FALSE,
 #'   cred.int.level = 0.89,
 #' )
