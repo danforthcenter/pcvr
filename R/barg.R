@@ -79,7 +79,6 @@
 #' @importFrom rlang is_installed
 #'
 #' @examples
-#'
 #' \donttest{
 #' simdf <- growthSim("logistic",
 #'   n = 20, t = 25,

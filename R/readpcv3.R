@@ -40,28 +40,33 @@
 #'
 #' @examples
 #' \donttest{
-#' tryCatch({
-#' base_url <- "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/"
-#' bw <- read.pcv.3(
-#'   file = paste0(base_url, "pcv3Phenos.csv"),
-#'   metaCol = NULL,
-#'   reader = "fread"
+#' tryCatch(
+#'   {
+#'     base_url <- "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/"
+#'     bw <- read.pcv.3(
+#'       file = paste0(base_url, "pcv3Phenos.csv"),
+#'       metaCol = NULL,
+#'       reader = "fread"
+#'     )
+#'     bw <- read.pcv.3(
+#'       file = paste0(base_url, "pcv3Phenos.csv"),
+#'       metaCol = "meta", metaForm = "vis_view_angle_zoom_horizontal_gain_exposure_v_new_n_rep",
+#'       joinSnapshot = "id",
+#'       reader = "fread"
+#'     )
+#'     bw <- read.pcv.3(
+#'       file = paste0(base_url, "pcv3Phenos.csv"),
+#'       snapshotFile = paste0(base_url, "pcv3Snapshot.csv"),
+#'       designFile = paste0(base_url, "pcv3Design.csv"),
+#'       metaCol = "meta", metaForm = "vis_view_angle_zoom_horizontal_gain_exposure_v_new_n_rep",
+#'       joinSnapshot = "id", conversions = list(area = 13.2 * 3.7 / 46856),
+#'       reader = "fread"
+#'     )
+#'   },
+#'   error = function(e) {
+#'     message(e)
+#'   }
 #' )
-#' bw <- read.pcv.3(
-#'   file = paste0(base_url, "pcv3Phenos.csv"),
-#'   metaCol = "meta", metaForm = "vis_view_angle_zoom_horizontal_gain_exposure_v_new_n_rep",
-#'   joinSnapshot = "id",
-#'   reader = "fread"
-#' )
-#' bw <- read.pcv.3(
-#'   file = paste0(base_url, "pcv3Phenos.csv"),
-#'   snapshotFile = paste0(base_url, "pcv3Snapshot.csv"),
-#'   designFile = paste0(base_url, "pcv3Design.csv"),
-#'   metaCol = "meta", metaForm = "vis_view_angle_zoom_horizontal_gain_exposure_v_new_n_rep",
-#'   joinSnapshot = "id", conversions = list(area = 13.2 * 3.7 / 46856),
-#'   reader = "fread"
-#' )
-#' }, error = function(e) {message(e)})
 #' }
 #'
 #' @export
