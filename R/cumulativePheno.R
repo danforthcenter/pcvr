@@ -24,65 +24,73 @@
 #' @importFrom stats setNames
 #' @examples
 #' \donttest{
-#' sv <- read.pcv(
-#'   "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv",
-#'   reader = "fread"
-#' )
-#' sv$genotype <- substr(sv$barcode, 3, 5)
-#' sv$genotype <- ifelse(sv$genotype == "002", "B73",
-#'   ifelse(sv$genotype == "003", "W605S",
-#'     ifelse(sv$genotype == "004", "MM", "Mo17")
-#'   )
-#' )
-#' sv$fertilizer <- substr(sv$barcode, 8, 8)
-#' sv$fertilizer <- ifelse(sv$fertilizer == "A", "100",
-#'   ifelse(sv$fertilizer == "B", "50", "0")
-#' )
+#' f <- "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv"
+#' tryCatch(
+#'   {
+#'     sv <- read.pcv(
+#'       f,
+#'       reader = "fread"
+#'     )
+#'     sv$genotype <- substr(sv$barcode, 3, 5)
+#'     sv$genotype <- ifelse(sv$genotype == "002", "B73",
+#'       ifelse(sv$genotype == "003", "W605S",
+#'         ifelse(sv$genotype == "004", "MM", "Mo17")
+#'       )
+#'     )
+#'     sv$fertilizer <- substr(sv$barcode, 8, 8)
+#'     sv$fertilizer <- ifelse(sv$fertilizer == "A", "100",
+#'       ifelse(sv$fertilizer == "B", "50", "0")
+#'     )
 #'
-#' sv <- bw.time(sv,
-#'   plantingDelay = 0, phenotype = "area_pixels", cutoff = 10,
-#'   timeCol = "timestamp", group = c("barcode", "rotation"), plot = TRUE
-#' )$data
-#' sv <- bw.outliers(sv,
-#'   phenotype = "area_pixels", group = c("DAS", "genotype", "fertilizer"),
-#'   plotgroup = c("barcode", "rotation")
-#' )$data
-#' phenotypes <- colnames(sv)[19:35]
-#' phenoForm <- paste0("cbind(", paste0(phenotypes, collapse = ", "), ")")
-#' groupForm <- "DAS+DAP+barcode+genotype+fertilizer"
-#' form <- as.formula(paste0(phenoForm, "~", groupForm))
-#' sv <- aggregate(form, data = sv, mean, na.rm = TRUE)
-#' pixels_per_cmsq <- 42.5^2 # pixel per cm^2
-#' sv$area_cm2 <- sv$area_pixels / pixels_per_cmsq
-#' sv$height_cm <- sv$height_pixels / 42.5
-#' df <- sv
-#' phenotypes <- c("area_cm2", "height_cm")
-#' group <- c("barcode")
-#' timeCol <- "DAS"
-#' df <- cumulativePheno(df, phenotypes, group, timeCol)
+#'     sv <- bw.time(sv,
+#'       plantingDelay = 0, phenotype = "area_pixels", cutoff = 10,
+#'       timeCol = "timestamp", group = c("barcode", "rotation"), plot = TRUE
+#'     )$data
+#'     sv <- bw.outliers(sv,
+#'       phenotype = "area_pixels", group = c("DAS", "genotype", "fertilizer"),
+#'       plotgroup = c("barcode", "rotation")
+#'     )$data
+#'     phenotypes <- colnames(sv)[19:35]
+#'     phenoForm <- paste0("cbind(", paste0(phenotypes, collapse = ", "), ")")
+#'     groupForm <- "DAS+DAP+barcode+genotype+fertilizer"
+#'     form <- as.formula(paste0(phenoForm, "~", groupForm))
+#'     sv <- aggregate(form, data = sv, mean, na.rm = TRUE)
+#'     pixels_per_cmsq <- 42.5^2 # pixel per cm^2
+#'     sv$area_cm2 <- sv$area_pixels / pixels_per_cmsq
+#'     sv$height_cm <- sv$height_pixels / 42.5
+#'     df <- sv
+#'     phenotypes <- c("area_cm2", "height_cm")
+#'     group <- c("barcode")
+#'     timeCol <- "DAS"
+#'     df <- cumulativePheno(df, phenotypes, group, timeCol)
 #'
 #'
-#' sv_l <- read.pcv(
-#'   "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv",
-#'   mode = "long", reader = "fread"
-#' )
-#' sv_l$genotype <- substr(sv_l$barcode, 3, 5)
-#' sv_l$genotype <- ifelse(sv_l$genotype == "002", "B73",
-#'   ifelse(sv_l$genotype == "003", "W605S",
-#'     ifelse(sv_l$genotype == "004", "MM", "Mo17")
-#'   )
-#' )
-#' sv_l$fertilizer <- substr(sv_l$barcode, 8, 8)
-#' sv_l$fertilizer <- ifelse(sv_l$fertilizer == "A", "100",
-#'   ifelse(sv_l$fertilizer == "B", "50", "0")
-#' )
-#' sv_l <- bw.time(sv_l,
-#'   plantingDelay = 0, phenotype = "area_pixels", cutoff = 10,
-#'   timeCol = "timestamp", group = c("barcode", "rotation")
-#' )$data
-#' sv_l <- cumulativePheno(sv_l,
-#'   phenotypes = c("area_pixels", "height_pixels"),
-#'   group = c("barcode", "rotation"), timeCol = "DAS"
+#'     sv_l <- read.pcv(
+#'       f,
+#'       mode = "long", reader = "fread"
+#'     )
+#'     sv_l$genotype <- substr(sv_l$barcode, 3, 5)
+#'     sv_l$genotype <- ifelse(sv_l$genotype == "002", "B73",
+#'       ifelse(sv_l$genotype == "003", "W605S",
+#'         ifelse(sv_l$genotype == "004", "MM", "Mo17")
+#'       )
+#'     )
+#'     sv_l$fertilizer <- substr(sv_l$barcode, 8, 8)
+#'     sv_l$fertilizer <- ifelse(sv_l$fertilizer == "A", "100",
+#'       ifelse(sv_l$fertilizer == "B", "50", "0")
+#'     )
+#'     sv_l <- bw.time(sv_l,
+#'       plantingDelay = 0, phenotype = "area_pixels", cutoff = 10,
+#'       timeCol = "timestamp", group = c("barcode", "rotation")
+#'     )$data
+#'     sv_l <- cumulativePheno(sv_l,
+#'       phenotypes = c("area_pixels", "height_pixels"),
+#'       group = c("barcode", "rotation"), timeCol = "DAS"
+#'     )
+#'   },
+#'   error = function(e) {
+#'     message(e)
+#'   }
 #' )
 #' }
 #'

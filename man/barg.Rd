@@ -81,7 +81,6 @@ the output.
     }
 }
 \examples{
-
 \donttest{
 simdf <- growthSim("logistic",
   n = 20, t = 25,

@@ -55,50 +55,57 @@
 #' )
 #' sv_res$plot
 #' \donttest{
-#' library(data.table)
-#' mvw <- read.pcv(paste0(
-#'   "https://media.githubusercontent.com/media/joshqsumner/",
-#'   "pcvrTestData/main/pcv4-multi-value-traits.csv"
-#' ), mode = "wide", reader = "fread")
-#' mvw$genotype <- substr(mvw$barcode, 3, 5)
-#' mvw$genotype <- ifelse(mvw$genotype == "002", "B73",
-#'   ifelse(mvw$genotype == "003", "W605S",
-#'     ifelse(mvw$genotype == "004", "MM", "Mo17")
-#'   )
-#' )
-#' mvw$fertilizer <- substr(mvw$barcode, 8, 8)
-#' mvw$fertilizer <- ifelse(mvw$fertilizer == "A", "100",
-#'   ifelse(mvw$fertilizer == "B", "50", "0")
-#' )
-#' mvw <- bw.time(mvw, timeCol = "timestamp", group = "barcode", plot = FALSE)
+#' tryCatch(
+#'   { # in case offline
+#'     library(data.table)
+#'     mvw <- read.pcv(paste0(
+#'       "https://media.githubusercontent.com/media/joshqsumner/",
+#'       "pcvrTestData/main/pcv4-multi-value-traits.csv"
+#'     ), mode = "wide", reader = "fread")
+#'     mvw$genotype <- substr(mvw$barcode, 3, 5)
+#'     mvw$genotype <- ifelse(mvw$genotype == "002", "B73",
+#'       ifelse(mvw$genotype == "003", "W605S",
+#'         ifelse(mvw$genotype == "004", "MM", "Mo17")
+#'       )
+#'     )
+#'     mvw$fertilizer <- substr(mvw$barcode, 8, 8)
+#'     mvw$fertilizer <- ifelse(mvw$fertilizer == "A", "100",
+#'       ifelse(mvw$fertilizer == "B", "50", "0")
+#'     )
+#'     mvw <- bw.time(mvw, timeCol = "timestamp", group = "barcode", plot = FALSE)
 #'
-#' phenotypes <- which(grepl("hue_freq", colnames(mvw)))
+#'     phenotypes <- which(grepl("hue_freq", colnames(mvw)))
 #'
-#' mvw2 <- bw.outliers(
-#'   df = mvw, phenotype = phenotypes, naTo0 = FALSE, outlierMethod = "cooks",
-#'   group = c("DAS", "genotype", "fertilizer"), cutoff = 3, plotgroup = c("barcode", "rotation")
-#' )
+#'     mvw2 <- bw.outliers(
+#'       df = mvw, phenotype = phenotypes, naTo0 = FALSE, outlierMethod = "cooks",
+#'       group = c("DAS", "genotype", "fertilizer"), cutoff = 3, plotgroup = c("barcode", "rotation")
+#'     )
 #'
 #'
-#' mvl <- read.pcv(paste0(
-#'   "https://media.githubusercontent.com/media/joshqsumner/",
-#'   "pcvrTestData/main/pcv4-multi-value-traits.csv"
-#' ), mode = "long")
-#' mvl$genotype <- substr(mvl$barcode, 3, 5)
-#' mvl$genotype <- ifelse(mvl$genotype == "002", "B73",
-#'   ifelse(mvl$genotype == "003", "W605S",
-#'     ifelse(mvl$genotype == "004", "MM", "Mo17")
-#'   )
-#' )
-#' mvl$fertilizer <- substr(mvl$barcode, 8, 8)
-#' mvl$fertilizer <- ifelse(mvl$fertilizer == "A", "100",
-#'   ifelse(mvl$fertilizer == "B", "50", "0")
-#' )
-#' mvl <- bw.time(mvl, timeCol = "timestamp", group = "barcode", plot = FALSE)
+#'     mvl <- read.pcv(paste0(
+#'       "https://media.githubusercontent.com/media/joshqsumner/",
+#'       "pcvrTestData/main/pcv4-multi-value-traits.csv"
+#'     ), mode = "long")
+#'     mvl$genotype <- substr(mvl$barcode, 3, 5)
+#'     mvl$genotype <- ifelse(mvl$genotype == "002", "B73",
+#'       ifelse(mvl$genotype == "003", "W605S",
+#'         ifelse(mvl$genotype == "004", "MM", "Mo17")
+#'       )
+#'     )
+#'     mvl$fertilizer <- substr(mvl$barcode, 8, 8)
+#'     mvl$fertilizer <- ifelse(mvl$fertilizer == "A", "100",
+#'       ifelse(mvl$fertilizer == "B", "50", "0")
+#'     )
+#'     mvl <- bw.time(mvl, timeCol = "timestamp", group = "barcode", plot = FALSE)
 #'
-#' mvl2 <- bw.outliers(
-#'   df = mvl, phenotype = "hue_frequencies", naTo0 = FALSE, outlierMethod = "cooks",
-#'   group = c("DAS", "genotype", "fertilizer"), cutoff = 3, plotgroup = c("barcode", "rotation")
+#'     mvl2 <- bw.outliers(
+#'       df = mvl, phenotype = "hue_frequencies", naTo0 = FALSE, outlierMethod = "cooks",
+#'       group = c("DAS", "genotype", "fertilizer"), cutoff = 3, plotgroup = c("barcode", "rotation")
+#'     )
+#'   },
+#'   error = function(e) {
+#'     message(e)
+#'   }
 #' )
 #' }
 #'

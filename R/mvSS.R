@@ -89,9 +89,9 @@
 #' }))
 #'
 #' \donttest{
-#' if (rlang::is_installed("mnormt")){
-#' m2 <- fitGrowth(ss_mv1, backend = "cmdstanr", iter = 1000, chains = 1, cores = 1)
-#' growthPlot(m2, ss_mv1$pcvrForm, df = ss_mv1$df)
+#' if (rlang::is_installed("mnormt")) {
+#'   m2 <- fitGrowth(ss_mv1, backend = "cmdstanr", iter = 1000, chains = 1, cores = 1)
+#'   growthPlot(m2, ss_mv1$pcvrForm, df = ss_mv1$df)
 #' }
 #' }
 #'
