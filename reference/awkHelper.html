@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">pcvr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0.4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -96,18 +96,22 @@ then is piped into awk, so an equivalent command line statement may be:
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">link1</span> <span class="op">&lt;-</span> <span class="st">"https://gist.githubusercontent.com/seankross/"</span></span></span>
-<span class="r-in"><span><span class="va">link2</span> <span class="op">&lt;-</span> <span class="st">"a412dfbd88b3db70b74b/raw/5f23f993cd87c283ce766e7ac6b329ee7cc2e1d1/mtcars.csv"</span></span></span>
-<span class="r-in"><span><span class="va">file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">link1</span>, <span class="va">link2</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">awkHelper</span><span class="op">(</span><span class="va">file</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"gear in 4, 3"</span><span class="op">)</span>, awk <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "sed 's/\"//g' https://gist.githubusercontent.com/seankross/a412dfbd88b3db70b74b/raw/5f23f993cd87c283ce766e7ac6b329ee7cc2e1d1/mtcars.csv |  awk -F  ','  '{ if ( ( ($11==\"4\") || ($11==\"3\") ) ) { print } }'"</span>
-<span class="r-in"><span><span class="fu">awkHelper</span><span class="op">(</span><span class="va">file</span>, <span class="st">"gear contains 3"</span>, awk <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "sed 's/\"//g' https://gist.githubusercontent.com/seankross/a412dfbd88b3db70b74b/raw/5f23f993cd87c283ce766e7ac6b329ee7cc2e1d1/mtcars.csv |  awk -F  ','  '{ if ( ( ($11 ~ /3/) ) ) { print } }'"</span>
-<span class="r-in"><span><span class="co"># note that to be filtered the file has to exist on your local system, this example is only to show</span></span></span>
-<span class="r-in"><span><span class="co"># the output of awkHelper, which would then be executed by read.pcv</span></span></span>
-<span class="r-in"><span><span class="fu">awkHelper</span><span class="op">(</span><span class="va">file</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"gear in 4, 3"</span><span class="op">)</span>, awk <span class="op">=</span> <span class="st">"existing_command"</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/conditions.html" class="external-link">tryCatch</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="op">{</span> <span class="co"># in case offline</span></span></span>
+<span class="r-in"><span>    <span class="va">link1</span> <span class="op">&lt;-</span> <span class="st">"https://gist.githubusercontent.com/seankross/"</span></span></span>
+<span class="r-in"><span>    <span class="va">link2</span> <span class="op">&lt;-</span> <span class="st">"a412dfbd88b3db70b74b/raw/5f23f993cd87c283ce766e7ac6b329ee7cc2e1d1/mtcars.csv"</span></span></span>
+<span class="r-in"><span>    <span class="va">file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">link1</span>, <span class="va">link2</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="fu">awkHelper</span><span class="op">(</span><span class="va">file</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"gear in 4, 3"</span><span class="op">)</span>, awk <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="fu">awkHelper</span><span class="op">(</span><span class="va">file</span>, <span class="st">"gear contains 3"</span>, awk <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="co"># note that to be filtered the file has to exist on your local system, this example only shows</span></span></span>
+<span class="r-in"><span>    <span class="co"># the output of awkHelper, which would then be executed by read.pcv on a unix system</span></span></span>
+<span class="r-in"><span>    <span class="fu">awkHelper</span><span class="op">(</span><span class="va">file</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"gear in 4, 3"</span><span class="op">)</span>, awk <span class="op">=</span> <span class="st">"existing_command"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">}</span>,</span></span>
+<span class="r-in"><span>  error <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">e</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">message</a></span><span class="op">(</span><span class="va">e</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">}</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "existing_command"</span>
-<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

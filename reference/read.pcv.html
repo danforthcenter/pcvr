@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">pcvr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0.4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -160,29 +160,33 @@ returned in R, not the format that the data saved as in your csv file.</p>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># \donttest{</span></span></span>
-<span class="r-in"><span><span class="va">mv</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="st">"https://media.githubusercontent.com/media/joshqsumner/"</span>,</span></span>
-<span class="r-in"><span>  <span class="st">"pcvrTestData/main/pcv4-multi-value-traits.csv"</span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/conditions.html" class="external-link">tryCatch</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="op">{</span></span></span>
+<span class="r-in"><span>    <span class="va">mv</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>      <span class="st">"https://media.githubusercontent.com/media/joshqsumner/"</span>,</span></span>
+<span class="r-in"><span>      <span class="st">"pcvrTestData/main/pcv4-multi-value-traits.csv"</span></span></span>
+<span class="r-in"><span>    <span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="va">sv</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>      <span class="st">"https://raw.githubusercontent.com/joshqsumner/"</span>,</span></span>
+<span class="r-in"><span>      <span class="st">"pcvrTestData/main/pcv4-single-value-traits.csv"</span></span></span>
+<span class="r-in"><span>    <span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>    <span class="va">w2w</span> <span class="op">&lt;-</span> <span class="fu">read.pcv</span><span class="op">(</span><span class="va">sv</span>, mode <span class="op">=</span> <span class="st">"wide"</span>, reader <span class="op">=</span> <span class="st">"fread"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">w2w</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>    <span class="va">w2l</span> <span class="op">&lt;-</span> <span class="fu">read.pcv</span><span class="op">(</span><span class="va">sv</span>, mode <span class="op">=</span> <span class="st">"long"</span>, reader <span class="op">=</span> <span class="st">"fread"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">w2l</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>    <span class="va">l2w</span> <span class="op">&lt;-</span> <span class="fu">read.pcv</span><span class="op">(</span><span class="va">mv</span>, mode <span class="op">=</span> <span class="st">"wide"</span>, reader <span class="op">=</span> <span class="st">"fread"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">l2w</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>    <span class="va">l2l</span> <span class="op">&lt;-</span> <span class="fu">read.pcv</span><span class="op">(</span><span class="va">mv</span>, mode <span class="op">=</span> <span class="st">"long"</span>, reader <span class="op">=</span> <span class="st">"fread"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">l2l</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">}</span>,</span></span>
+<span class="r-in"><span>  error <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">e</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">message</a></span><span class="op">(</span><span class="va">e</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">}</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">sv</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="st">"https://raw.githubusercontent.com/joshqsumner/"</span>,</span></span>
-<span class="r-in"><span>  <span class="st">"pcvrTestData/main/pcv4-single-value-traits.csv"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">w2w</span> <span class="op">&lt;-</span> <span class="fu">read.pcv</span><span class="op">(</span><span class="va">sv</span>, mode <span class="op">=</span> <span class="st">"wide"</span>, reader <span class="op">=</span> <span class="st">"fread"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">w2w</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2854   45</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">w2l</span> <span class="op">&lt;-</span> <span class="fu">read.pcv</span><span class="op">(</span><span class="va">sv</span>, mode <span class="op">=</span> <span class="st">"long"</span>, reader <span class="op">=</span> <span class="st">"fread"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">w2l</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 77058    20</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">l2w</span> <span class="op">&lt;-</span> <span class="fu">read.pcv</span><span class="op">(</span><span class="va">mv</span>, mode <span class="op">=</span> <span class="st">"wide"</span>, reader <span class="op">=</span> <span class="st">"fread"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">l2w</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2854  198</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">l2l</span> <span class="op">&lt;-</span> <span class="fu">read.pcv</span><span class="op">(</span><span class="va">mv</span>, mode <span class="op">=</span> <span class="st">"long"</span>, reader <span class="op">=</span> <span class="st">"fread"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">l2l</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 513720     21</span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
