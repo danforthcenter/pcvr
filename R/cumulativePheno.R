@@ -24,6 +24,7 @@
 #' @importFrom stats setNames
 #' @examples
 #' \donttest{
+#' tryCatch({
 #' sv <- read.pcv(
 #'   "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv",
 #'   reader = "fread"
@@ -84,6 +85,7 @@
 #'   phenotypes = c("area_pixels", "height_pixels"),
 #'   group = c("barcode", "rotation"), timeCol = "DAS"
 #' )
+#' }, error = function(e) {message(e)})
 #' }
 #'
 #' @export

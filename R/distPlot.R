@@ -22,6 +22,7 @@
 #' @export
 #' @examples
 #' \donttest{
+#' tryCatch({
 #' print(load(url("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/brmsFits.rdata")))
 #' library(brms)
 #' library(ggplot2)
@@ -49,6 +50,7 @@
 #'   fits = from3to25, form = y ~ time | id / group,
 #'   params = params, d = d, patch = FALSE
 #' )
+#' }, error = function(e) {message(e)})
 #' }
 #' ## End(Not run)
 distributionPlot <- function(fits, form, df, priors = NULL,

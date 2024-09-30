@@ -55,6 +55,7 @@
 #' )
 #' sv_res$plot
 #' \donttest{
+#' tryCatch({ # in case offline
 #' library(data.table)
 #' mvw <- read.pcv(paste0(
 #'   "https://media.githubusercontent.com/media/joshqsumner/",
@@ -100,6 +101,7 @@
 #'   df = mvl, phenotype = "hue_frequencies", naTo0 = FALSE, outlierMethod = "cooks",
 #'   group = c("DAS", "genotype", "fertilizer"), cutoff = 3, plotgroup = c("barcode", "rotation")
 #' )
+#' }, error = function(e) {message(e)})
 #' }
 #'
 #' @return The input dataframe with outliers removed and optionally a plot

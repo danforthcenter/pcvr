@@ -36,6 +36,7 @@
 #' @export
 #' @examples
 #' \donttest{
+#' tryCatch({
 #' sv <- read.pcv(
 #'   "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/pcv4-single-value-traits.csv",
 #'   mode = "wide", reader = "fread"
@@ -74,6 +75,7 @@
 #'   plantingDelay = 0, phenotype = "area_pixels", cutoff = 10, timeCol = "timestamp",
 #'   group = c("barcode", "rotation"), plot = FALSE
 #' )
+#' }, error = function(e) {message(e)})
 #' }
 #'
 bw.time <- function(df = NULL, mode = c("DAS", "DAP", "DAE"), plantingDelay = NULL,

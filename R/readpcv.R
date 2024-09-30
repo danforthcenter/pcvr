@@ -54,6 +54,7 @@
 #' @import data.table
 #' @examples
 #' \donttest{
+#' tryCatch({
 #' mv <- paste0(
 #'   "https://media.githubusercontent.com/media/joshqsumner/",
 #'   "pcvrTestData/main/pcv4-multi-value-traits.csv"
@@ -74,6 +75,7 @@
 #'
 #' l2l <- read.pcv(mv, mode = "long", reader = "fread")
 #' dim(l2l)
+#' }, error = function(e) {message(e)})
 #' }
 #'
 #' @export

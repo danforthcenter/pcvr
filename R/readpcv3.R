@@ -40,6 +40,7 @@
 #'
 #' @examples
 #' \donttest{
+#' tryCatch({
 #' base_url <- "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/"
 #' bw <- read.pcv.3(
 #'   file = paste0(base_url, "pcv3Phenos.csv"),
@@ -60,6 +61,7 @@
 #'   joinSnapshot = "id", conversions = list(area = 13.2 * 3.7 / 46856),
 #'   reader = "fread"
 #' )
+#' }, error = function(e) {message(e)})
 #' }
 #'
 #' @export

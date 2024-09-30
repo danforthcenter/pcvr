@@ -70,6 +70,8 @@
 #' head(x2)
 #'
 #' \donttest{
+#' tryCatch(
+#'   {
 #' library(data.table)
 #' file <- paste0(
 #'   "https://media.githubusercontent.com/media/joshqsumner/",
@@ -88,8 +90,6 @@
 #'   ifelse(df1$fertilizer == "B", "50", "0")
 #' )
 #'
-#' tryCatch(
-#'   {
 #'     w <- pcv.emd(df1,
 #'       cols = "hue_frequencies", reorder = c("fertilizer", "genotype"),
 #'       mat = FALSE, plot = TRUE, parallel = 1
