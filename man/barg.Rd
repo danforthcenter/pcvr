@@ -104,6 +104,9 @@ x <- barg(fit_list, list(ss, ss))
 }
 
 }
+\seealso{
+\link{plotPrior} for visual prior predictive checks.
+}
 \keyword{Bayesian}
 \keyword{brms}
 \keyword{prior}

@@ -20,6 +20,8 @@
 #' @import ggplot2
 #' @import patchwork
 #' @importFrom stats rlnorm dlnorm
+#' @seealso \link{barg} for Bayesian model reporting metrics, \link{growthSim} for simulating data using
+#' similar specification.
 #' @examples
 #'
 #' set.seed(123)

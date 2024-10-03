@@ -77,7 +77,7 @@
 #' @return A named list containing Rhat, ESS, NEFF, and Prior/Posterior Predictive plots.
 #' See details for interpretation.
 #' @importFrom rlang is_installed
-#'
+#' @seealso \link{plotPrior} for visual prior predictive checks.
 #' @examples
 #' \donttest{
 #' simdf <- growthSim("logistic",

@@ -304,7 +304,8 @@
 #' \code{pcvrForm} The form argument unchanged.
 #'
 #' For all models the type and model are also returned for simplicity downstream.
-#'
+#' @seealso \link{fitGrowth} for fitting the model specified by this list and \link{mvSS}
+#' for the multi-value trait equivalent.
 #' @examples
 #'
 #'

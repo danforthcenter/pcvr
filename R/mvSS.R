@@ -21,7 +21,7 @@
 #' @keywords multi-value
 #' @return A named list of plots showing prior distributions that \code{growthSS} would use,
 #' optionally with a plot of simulated growth curves using draws from those priors.
-#'
+#' @seealso \link{fitGrowth} for fitting the model specified by this list.
 #' @examples
 #' set.seed(123)
 #' mv_df <- mvSim(dists = list(rnorm = list(mean = 100, sd = 30)), wide = FALSE)

@@ -25,7 +25,8 @@
 #' @importFrom methods is
 #' @importFrom car deltaMethod
 #' @importFrom survival survdiff
-#'
+#' @seealso \link{growthSS} and \link{fitGrowth} for making compatible models, \link{growthPlot}
+#' for hypothesis testing on compatible models.
 #' @details
 #' For nls and nlme models an anova is run and returned as part of a list along with the null model.
 #'  For nlrq models several assumptions are made and a likelihood ratio test for each tau
