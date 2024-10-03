@@ -29,6 +29,8 @@
 #' hiearchical predictor be? If left NULL (the default) the mean value is used.
 #' @keywords growth-curve
 #' @importFrom methods is
+#' @seealso \link{growthSS} and \link{fitGrowth} for making compatible models, \link{testGrowth}
+#' for hypothesis testing on compatible models.
 #' @examples
 #'
 #' simdf <- growthSim("logistic",

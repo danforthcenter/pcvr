@@ -64,6 +64,10 @@ coef(fit2) # check options for contrast testing
 testGrowth(ss2, fit2, "A1 - A2*1.1")
 
 }
+\seealso{
+\link{growthSS} and \link{fitGrowth} for making compatible models, \link{growthPlot}
+for hypothesis testing on compatible models.
+}
 \keyword{brms}
 \keyword{hypothesis}
 \keyword{mgcv}

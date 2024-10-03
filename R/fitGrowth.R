@@ -8,7 +8,8 @@
 #' \link{fitGrowthflexsurv}.
 #' @keywords Bayesian brms nlme nls nlrq
 #' @return A fit model from the selected type.
-#'
+#' @seealso \link{growthPlot} for model visualization, \link{testGrowth} for hypothesis testing,
+#' \link{barg} for Bayesian model reporting metrics.
 #' @examples
 #'
 #' simdf <- growthSim("logistic",

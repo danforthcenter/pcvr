@@ -39,6 +39,10 @@ ss <- growthSS(
 fitGrowth(ss)
 
 }
+\seealso{
+\link{growthPlot} for model visualization, \link{testGrowth} for hypothesis testing,
+\link{barg} for Bayesian model reporting metrics.
+}
 \keyword{Bayesian}
 \keyword{brms}
 \keyword{nlme}

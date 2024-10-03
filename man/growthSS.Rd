@@ -370,6 +370,10 @@ ex2_ss$prior # has coef level grouping for priors
 ex2_ss$formula # specifies an A intercept for each group and splines by group for sigma
 
 }
+\seealso{
+\link{fitGrowth} for fitting the model specified by this list and \link{mvSS}
+for the multi-value trait equivalent.
+}
 \keyword{Bayesian}
 \keyword{brms}
 \keyword{longitudinal}

@@ -129,4 +129,7 @@ if (rlang::is_installed("mnormt")) {
 }
 
 }
+\seealso{
+\link{fitGrowth} for fitting the model specified by this list.
+}
 \keyword{multi-value}
