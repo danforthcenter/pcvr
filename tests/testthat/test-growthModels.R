@@ -60,7 +60,7 @@ test_that("Test Logistic nls modeling", {
       3.34892124655795, 3.34892124655795
     )
   )
-
+  invisible(print(ss))
   fit <- fitGrowth(ss)
   expect_s3_class(fit, "nls")
 
@@ -114,7 +114,7 @@ test_that("Test Logistic nlme modeling", {
       3.34892124655795, 3.34892124655795
     )
   )
-
+  invisible(print(ss))
   fit <- suppressWarnings(fitGrowth(ss))
   expect_s3_class(fit, "nlme")
 

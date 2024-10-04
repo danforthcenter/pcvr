@@ -140,6 +140,7 @@ mvSS <- function(model = "linear", form, sigma = NULL, df, start = NULL,
     out <- form_fun(form, df, start, family, model, tau, weights, pcvrForm)
   }
   out$call <- match.call()
+  out <- pcvrss(out)
   return(out)
 }
 
