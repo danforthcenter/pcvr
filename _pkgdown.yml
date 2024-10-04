@@ -160,3 +160,4 @@ reference:
       - survregPlot
       - summary.pcvrss
       - print.pcvrss
+      - pcvrss-class
