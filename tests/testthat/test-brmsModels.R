@@ -60,6 +60,15 @@ test_that("Logistic brms model pipeline", {
   fit_df <- fit_df[, grepl("^b_", colnames(fit_df))]
   cd <- combineDraws(fit, fit_df)
   expect_equal(dim(cd), c(250, 16))
+  expect_message(
+    cd <- combineDraws(fit, fit_df[1:100, ])
+  )
+  expect_equal(dim(cd), c(250, 16))
+  fit3 <- fitGrowth(ss2, backend = "cmdstanr", iter = 400, chains = 1, cores = 1, sample_prior = "only")
+  expect_message(
+    cd <- combineDraws(fit, fit3)
+  )
+  expect_equal(dim(cd), c(250, 21))
   expect_error(combineDraws(fit, list()))
   fit2 <- fit1 <- fit
   fit1$data <- fit1$data[fit1$data$time < 10, ]
