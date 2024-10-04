@@ -158,3 +158,5 @@ reference:
       - fitGrowthlm
       - fitGrowthrq
       - survregPlot
+      - summary.pcvrss
+      - print.pcvrss
