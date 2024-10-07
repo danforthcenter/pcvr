@@ -19,7 +19,7 @@ if (FALSE) {
 
 
 
-x <- lintr::lint(filename = "~/pcvr/vignettes/articles/pcvrTutorial_agm.Rmd",
+x <- lintr::lint(filename = "~/pcvr/R/pcvrss.R",
                          linters = linters_with_defaults(line_length_linter(length = 105L),
                                                          object_name_linter(styles = c("snake_case", "symbols",
                                                                                        "camelCase", "dotted.case",
