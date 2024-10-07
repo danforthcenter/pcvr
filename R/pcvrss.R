@@ -49,41 +49,61 @@ print.pcvrss <- function(x, ...) {
   print(summary.pcvrss(x), ...)
 }
 
-#' Print a summary for a \code{pcvrss} object.
+
+#' Summarize a \code{pcvrss} object.
 #'
 #' @aliases summary.pcvrss
 #'
-#' @param object An object of class \code{pcvrss}.
-#' @param ... further arguments, which are currently ignored.
+#' @param object An object of class \code{pcvrss}
+#'  to method \code{summary} of \code{pcvrss}.
+#' @param ... further arguments, passed to print.default.
 #'
-#' @seealso \code{\link{print.pcvrss}}
 #' @method summary pcvrss
 #' @export
+
 summary.pcvrss <- function(object, ...) {
-  model_type <- gsub("int_", "(Intercept)", object$model)
+  out <- object[which(names(object) %in% c("type", "family", "model", "formula", "df", "pcvrForm"))]
+  class(out) <- "pcvrsssummary"
+  return(out)
+}
+
+#' Print a \code{pcvrsssummary} object.
+#'
+#' @aliases print.pcvrsssummary
+#'
+#' @param x An object of class \code{pcvrsssummary}.
+#' @param ... further arguments, which are currently ignored.
+#'
+#' @seealso \code{\link{print.pcvrsssummary}}
+#' @method print pcvrsssummary
+#' @export
+print.pcvrsssummary <- function(x, ...) {
+  model_type <- gsub("int_", "(Intercept)", x$model)
   cat(paste(model_type,
-            object$type,
-            object$family,
+            x$type,
+            x$family,
             "model:\n"))
   cat("\npcvr formula variables:\n")
-  yxig <- .parsePcvrForm(object$pcvrForm)[1:4]
-  non_null <- !is.null(yxig)
-  yxig <- yxig[non_null]
+  yxig <- .parsePcvrForm(x$pcvrForm)[1:4]
+  non_null <- !unlist(lapply(yxig, is.null))
+  non_dummy <- !grepl("dummyIndividual|dummyGroup", yxig)
+  yxig <- yxig[non_null & non_dummy]
   yxig_key <- c("Outcome:", "X:", "Individual:", "Group:")
-  yxig_key <- yxig_key[non_null]
+  yxig_key <- yxig_key[non_null & non_dummy]
   cat(paste(yxig_key, yxig, collapse = "\n"))
   cat("\n\nModel Formula:\n")
-  if (object$type == "nlme") {
-    print(object$formula$model)
+  if (x$type == "nlme") {
+    print(x$formula$model)
     fixed <- apply(do.call(rbind,
-                           lapply(object$formula$fixed, as.character))[, c(2, 1, 3)],
+                           lapply(x$formula$fixed, as.character))[, c(2, 1, 3)],
                    1, paste, collapse = " ")
     cat(paste(fixed, collapse = "\n"))
   } else {
-    print(object$formula)
+    print(x$formula)
   }
   cat("\nData:\n")
-  print(object$df[1:3, ])
+  print(x$df[1:3, !grepl("dummyIndividual|dummyGroup", colnames(x$df))])
   cat(paste0("...\n"))
-  cat(paste0("(", nrow(object$df), " rows)"))
+  cat(paste0("(", nrow(x$df), " rows)"))
+  invisible(x)
 }

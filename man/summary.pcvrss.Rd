@@ -2,18 +2,16 @@
 % Please edit documentation in R/pcvrss.R
 \name{summary.pcvrss}
 \alias{summary.pcvrss}
-\title{Print a summary for a \code{pcvrss} object.}
+\title{Summarize a \code{pcvrss} object.}
 \usage{
 \method{summary}{pcvrss}(object, ...)
 }
 \arguments{
-\item{object}{An object of class \code{pcvrss}.}
+\item{object}{An object of class \code{pcvrss}
+to method \code{summary} of \code{pcvrss}.}
 
-\item{...}{further arguments, which are currently ignored.}
+\item{...}{further arguments, passed to print.default.}
 }
 \description{
-Print a summary for a \code{pcvrss} object.
-}
-\seealso{
-\code{\link{print.pcvrss}}
+Summarize a \code{pcvrss} object.
 }
