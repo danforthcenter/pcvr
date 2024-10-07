@@ -24,7 +24,7 @@
         USEGROUP <- TRUE
       } # if there is only one group then ignore grouping
     }
-  } else if (grepl("\\|", x)) { # Y ~ X by group
+  } else if (grepl("[\\]|[|]", x)) { # Y ~ X by group
     x2 <- trimws(strsplit(x, "[|]")[[1]])
     x <- x2[1]
     individual <- "dummyIndividual"
