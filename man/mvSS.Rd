@@ -26,7 +26,8 @@ mvSS(
 
 \item{form}{A formula similar to \code{label | value ~ time + id/group} where label is a column
 of histogram bins, value is the counts within those bins, time is an optional time variable,
-id identifies an individual, and group contains the treatment groups.}
+id identifies an individual, and group contains the treatment groups. If the time variable
+is not included then the individual variable should also not be included.}
 
 \item{sigma}{Distributional models passed to \link{growthSS}.}
 

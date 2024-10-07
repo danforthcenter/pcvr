@@ -6,7 +6,8 @@
 #' @param model A model specification as in \link{growthSS}.
 #' @param form A formula similar to \code{label | value ~ time + id/group} where label is a column
 #' of histogram bins, value is the counts within those bins, time is an optional time variable,
-#' id identifies an individual, and group contains the treatment groups.
+#' id identifies an individual, and group contains the treatment groups. If the time variable
+#' is not included then the individual variable should also not be included.
 #' @param sigma Distributional models passed to \link{growthSS}.
 #' @param df Data passed to \link{growthSS}.
 #' @param pars Parameters to vary, passed to \link{growthSS}.
@@ -196,7 +197,7 @@ mvSS <- function(model = "linear", form, sigma = NULL, df, start = NULL,
   bf1 <- as.formula(paste0(as.character(form)[2], "~ A"))
   bf2 <- as.formula(paste0("A ~ 0 + ", as.character(form)[3]))
 
-  out[["formula"]] <- brms::bf(bf1, bf2, nl = TRUE)
+  out[["formula"]] <- brms::bf(bf1, bf2, nl = TRUE, family = family)
   out[["prior"]] <- .makePriors(
     priors = start,
     pars = "A", df = df,
