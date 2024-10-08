@@ -597,11 +597,11 @@ if (file.exists("/home/josh/Desktop/") && interactive()) {
     set.seed(123)
     simdf <- growthSim("linear + linear",
       n = 20, t = 25,
-      params = list("linear1A" = c(15, 12), "changePoint1" = c(8, 6), "linear2A" = c(3, 5))
+      params = list("linear1A" = c(15), "changePoint1" = c(8), "linear2A" = c(3))
     )
 
     ss <- growthSS(
-      model = "linear + linear", form = y ~ time | id / group, sigma = "spline",
+      model = "linear + linear", form = y ~ time, sigma = "spline",
       list("linear1A" = 10, "changePoint1" = 5, "linear2A" = 2),
       df = simdf, type = "brms"
     )
