@@ -159,17 +159,22 @@ test_that("brms model warns about priors", {
   simdf <- growthSim(
     "linear",
     n = 20, t = 25,
-    params = list("A" = c(1, 1.1))
+    params = list("A" = c(1))
   )
   ss <- growthSS(
-    model = "linear", form = y ~ time | id / group, sigma = "spline",
+    model = "linear", form = y ~ time, sigma = "spline",
     df = simdf, type = "brms"
   )
   ss <- ss[-which(names(ss) == "prior")]
-  expect_warning(fitGrowth(ss,
-    backend = "cmdstanr",
-    iter = 100, chains = 1, cores = 1
-  ))
+  expect_warning(
+    fit <- fitGrowth(
+      ss,
+      backend = "cmdstanr",
+      iter = 100, chains = 1, cores = 1
+    )
+  )
+  plot <- growthPlot(fit, form = ss$pcvrForm)
+  expect_s3_class(plot, "ggplot")
 })
 
 test_that("Hierarchical Model Works", {
