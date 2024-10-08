@@ -386,7 +386,7 @@ test_that(".brmSurvSS options all work", {
 #* ***** `Not Run on the remote` *****
 #* ***********************************
 
-if (file.exists("/home/josh/Desktop/") && interactive()) {
+if (file.exists("/home/josh/Desktop/")) {
   # only run locally, don't test for each R-CMD Check
   test_that("Gompertz brms model pipeline", {
     set.seed(123)
