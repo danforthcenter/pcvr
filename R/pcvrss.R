@@ -84,11 +84,15 @@ print.pcvrsssummary <- function(x, ...) {
             x$family,
             "model:\n"))
   cat("\npcvr formula variables:\n")
-  yxig <- .parsePcvrForm(x$pcvrForm)[1:4]
+  parsed <- .parsePcvrForm(x$pcvrForm)
+  yxig <- parsed[1:4]
   non_null <- !unlist(lapply(yxig, is.null))
   non_dummy <- !grepl("dummyIndividual|dummyGroup", yxig)
   yxig <- yxig[non_null & non_dummy]
   yxig_key <- c("Outcome:", "X:", "Individual:", "Group:")
+  if (!is.numeric(x$df[, parsed$x]) && !parsed$USEG && !parsed$USEID) {
+    yxig_key <- c("Outcome:", "Group:", "Individual:", "Group 2:")
+  }
   yxig_key <- yxig_key[non_null & non_dummy]
   cat(paste(yxig_key, yxig, collapse = "\n"))
   cat("\n\nModel Formula:\n")
