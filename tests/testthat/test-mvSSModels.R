@@ -49,7 +49,6 @@ test_that("Test brms mv trait non-longitudinal model", {
     model = "linear", form = label | value ~ group, df = mv_df,
     start = list("A" = 5), type = "brms", spectral_index = "none"
   )
-  ss1
   expect_equal(ss1$family, "student")
   mod1 <- fitGrowth(ss1, backend = "cmdstanr", iter = 1000, chains = 1, cores = 1)
   expect_s3_class(mod1, "brmsfit")

@@ -320,6 +320,8 @@ ss <- growthSS(
   model = "gompertz", form = y ~ time | id / group, sigma = "int",
   df = gomp, start = list("A" = 130, "B" = 15, "C" = 0.25)
 )
+
+ss
 ```
 
 ```{r, eval=FALSE}
@@ -335,6 +337,8 @@ ss <- growthSS(
   model = "gompertz", form = y ~ time | id / group, sigma = "linear",
   df = gomp, start = list("A" = 130, "B" = 15, "C" = 0.25)
 )
+
+ss
 ```
 
 ```{r, eval=FALSE}
@@ -360,6 +364,8 @@ ss <- growthSS(
   model = "gompertz", form = y ~ time | id / group, sigma = "spline",
   df = gomp, start = list("A" = 130, "B" = 15, "C" = 0.25)
 )
+
+ss
 ```
 
 ```{r, eval=FALSE}
@@ -384,6 +390,8 @@ ss <- growthSS(
   ),
   type = "brms"
 )
+
+ss
 ```
 
 ```{r, eval=FALSE}
@@ -575,6 +583,30 @@ AA \sim 0 + \text{group}
 $$
 
 This can be helpful in modeling the effect of time on one phenotype given another or in including watering data, etc.
+
+#### Multi Value Traits
+
+Multi value traits can be modeled in the same ways using the `mvSS` function.
+
+For the most part `mvSS` has the same arguments as `growthSS` but with the addition of a `spectral_index` argument, which can be "none" or any of the indices listed in the `PlantCV` [docs](https://plantcv.readthedocs.io/en/latest/spectral_index/). If a spectral index is specified then any truncation of the response variable is handled for you and the model family is changed to skew_normal (if using the `brms` backend).
+
+Additionally, since there are generally fewer options for working with multi value traits the `mvSS` function can use non-longitudinal data, as in the example below, where the formula specifies `bins` given `value` per bin predicted by `group`.
+
+```{r}
+set.seed(123)
+mv_df <- mvSim(dists = list(rnorm = list(mean = 100, sd = 30)), wide = FALSE)
+mv_df$group <- rep(c("a", "b"), times = 900)
+mv_df <- mv_df[mv_df$value > 0, ]
+mv_df$label <- as.numeric(gsub("sim_", "", mv_df$variable))
+
+ss1 <- mvSS(
+  model = "linear", form = label | value ~ group, df = mv_df,
+  start = list("A" = 5), type = "brms", spectral_index = "ci_rededge"
+)
+
+ss1
+```
+
 
 ### Using `fitGrowth`
 
