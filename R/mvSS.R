@@ -6,7 +6,8 @@
 #' @param model A model specification as in \link{growthSS}.
 #' @param form A formula similar to \code{label | value ~ time + id/group} where label is a column
 #' of histogram bins, value is the counts within those bins, time is an optional time variable,
-#' id identifies an individual, and group contains the treatment groups.
+#' id identifies an individual, and group contains the treatment groups. If the time variable
+#' is not included then the individual variable should also not be included.
 #' @param sigma Distributional models passed to \link{growthSS}.
 #' @param df Data passed to \link{growthSS}.
 #' @param pars Parameters to vary, passed to \link{growthSS}.
@@ -69,12 +70,13 @@
 #'   model = "linear", form = label | value ~ time | group, df = mv_df2,
 #'   start = list("A" = 50), type = "brms", spectral_index = "ci_rededge"
 #' )
+#' ss_mv1
 #' ss_mv2 <- growthSS(
 #'   model = "skew_normal: linear",
 #'   form = label | resp_weights(value) + trunc(lb = -1, ub = Inf) ~ time | group,
 #'   df = mv_df2, start = list("A" = 50)
 #' )
-#' identical(names(ss_mv1), names(ss_mv2))
+#' ss_mv2
 #' # ignoring environments and other such details these are identical except for the
 #' # function call.
 #' unlist(lapply(names(ss_mv1), function(nm) {
@@ -140,6 +142,7 @@ mvSS <- function(model = "linear", form, sigma = NULL, df, start = NULL,
     out <- form_fun(form, df, start, family, model, tau, weights, pcvrForm)
   }
   out$call <- match.call()
+  out <- pcvrss(out)
   return(out)
 }
 
@@ -195,7 +198,7 @@ mvSS <- function(model = "linear", form, sigma = NULL, df, start = NULL,
   bf1 <- as.formula(paste0(as.character(form)[2], "~ A"))
   bf2 <- as.formula(paste0("A ~ 0 + ", as.character(form)[3]))
 
-  out[["formula"]] <- brms::bf(bf1, bf2, nl = TRUE)
+  out[["formula"]] <- brms::bf(bf1, bf2, nl = TRUE, family = family)
   out[["prior"]] <- .makePriors(
     priors = start,
     pars = "A", df = df,

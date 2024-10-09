@@ -2,7 +2,8 @@
 #'
 #' @param ss A list output from \link{growthSS}. This is not required for nls, nlme, and brms models
 #' if \code{test} is given in \code{brms::hypothesis} style as a written statement.
-#' @param fit A model (or list of nlrq models) output from \link{fitGrowth}.
+#' @param fit A model (or list of nlrq models) output from \link{fitGrowth}. For brms models this
+#' can also be a data.frame of draws.
 #' @param test A description of the hypothesis to test. This can take two main forms,
 #' either the parameter names to vary before comparing a nested model ("A", "B", "C") using an anova
 #' or a hypothesis test/list of hypothesis tests written as character strings.
@@ -135,7 +136,7 @@ testGrowth <- function(ss = NULL, fit, test = "A") {
     coefs <- nlme::fixef(fit)
   } else if (methods::is(fit, "nls")) {
     coefs <- stats::coef(fit)
-  } else if (methods::is(fit, "brmsfit")) {
+  } else if (methods::is(fit, "brmsfit") || methods::is(fit, "data.frame")) {
     out <- brms::hypothesis(fit, test)
     return(out)
   } else if (methods::is(fit, "nlrq") || is.list(fit)) {

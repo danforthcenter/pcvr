@@ -571,7 +571,7 @@
   if (useGroup) {
     by <- paste0(", by = ", group)
   } else {
-    by <- ","
+    by <- NULL
   }
   if (nTimes < 11) {
     k <- paste0(", k = ", nTimes)

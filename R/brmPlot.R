@@ -133,15 +133,15 @@ brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
   x <- parsed_form$x
   individual <- parsed_form$individual
   hierarchical_predictor <- parsed_form$hierarchical_predictor
-  if (individual == "dummyIndividual") {
-    individual <- NULL
-  }
   group <- parsed_form$group
   facetGroups <- .no_dummy_labels(group, facetGroups)
   df <- parsed_form$data
   probs <- seq(from = 99, to = 1, by = -2) / 100
   if (is.null(timeRange)) {
     timeRange <- unique(fitData[[x]])
+  }
+  if (!group %in% colnames(fitData)) {
+    fitData[[group]] <- ""
   }
   newData <- data.frame(
     x = rep(timeRange, times = length(unique(fitData[[group]]))),
@@ -206,7 +206,7 @@ brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
     viridis::scale_fill_viridis(direction = -1, option = vir_option) +
     ggplot2::labs(fill = "Credible\nInterval")
 
-  if (!is.null(df) && !is.null(individual)) {
+  if (!is.null(df) && individual != "dummyIndividual") {
     p <- p + ggplot2::geom_line(
       data = df, ggplot2::aes(.data[[x]], .data[[y]],
         group = interaction(.data[[individual]], .data[[group]])

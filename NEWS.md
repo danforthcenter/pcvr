@@ -1,4 +1,12 @@
-# pcv4 1.0.0.4
+# pcvr 1.0.0.5
+
+Added S3 class for `growthSS` and `mvSS` output (`pcvrss`) with print/summary methods.
+
+Bug fixes for brms models using splines without grouping variables.
+
+Bug fixes for brms model plotting without grouping variables.
+
+# pcvr 1.0.0.4
 
 Added error handling for examples that read data from github in case they run in a session without an
 internet connection.

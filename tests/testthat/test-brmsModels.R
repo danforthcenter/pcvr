@@ -60,6 +60,15 @@ test_that("Logistic brms model pipeline", {
   fit_df <- fit_df[, grepl("^b_", colnames(fit_df))]
   cd <- combineDraws(fit, fit_df)
   expect_equal(dim(cd), c(250, 16))
+  expect_message(
+    cd <- combineDraws(fit, fit_df[1:100, ])
+  )
+  expect_equal(dim(cd), c(250, 16))
+  fit3 <- fitGrowth(ss2, backend = "cmdstanr", iter = 400, chains = 1, cores = 1, sample_prior = "only")
+  expect_message(
+    cd <- combineDraws(fit, fit3)
+  )
+  expect_equal(dim(cd), c(250, 21))
   expect_error(combineDraws(fit, list()))
   fit2 <- fit1 <- fit
   fit1$data <- fit1$data[fit1$data$time < 10, ]
@@ -150,17 +159,22 @@ test_that("brms model warns about priors", {
   simdf <- growthSim(
     "linear",
     n = 20, t = 25,
-    params = list("A" = c(1, 1.1))
+    params = list("A" = c(1))
   )
   ss <- growthSS(
-    model = "linear", form = y ~ time | id / group, sigma = "spline",
+    model = "linear", form = y ~ time, sigma = "spline",
     df = simdf, type = "brms"
   )
   ss <- ss[-which(names(ss) == "prior")]
-  expect_warning(fitGrowth(ss,
-    backend = "cmdstanr",
-    iter = 100, chains = 1, cores = 1
-  ))
+  expect_warning(
+    fit <- fitGrowth(
+      ss,
+      backend = "cmdstanr",
+      iter = 100, chains = 1, cores = 1
+    )
+  )
+  plot <- growthPlot(fit, form = ss$pcvrForm)
+  expect_s3_class(plot, "ggplot")
 })
 
 test_that("Hierarchical Model Works", {
@@ -377,7 +391,7 @@ test_that(".brmSurvSS options all work", {
 #* ***** `Not Run on the remote` *****
 #* ***********************************
 
-if (file.exists("/home/josh/Desktop/") && interactive()) {
+if (file.exists("/home/josh/Desktop/")) {
   # only run locally, don't test for each R-CMD Check
   test_that("Gompertz brms model pipeline", {
     set.seed(123)
@@ -588,11 +602,11 @@ if (file.exists("/home/josh/Desktop/") && interactive()) {
     set.seed(123)
     simdf <- growthSim("linear + linear",
       n = 20, t = 25,
-      params = list("linear1A" = c(15, 12), "changePoint1" = c(8, 6), "linear2A" = c(3, 5))
+      params = list("linear1A" = c(15), "changePoint1" = c(8), "linear2A" = c(3))
     )
 
     ss <- growthSS(
-      model = "linear + linear", form = y ~ time | id / group, sigma = "spline",
+      model = "linear + linear", form = y ~ time, sigma = "spline",
       list("linear1A" = 10, "changePoint1" = 5, "linear2A" = 2),
       df = simdf, type = "brms"
     )

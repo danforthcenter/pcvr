@@ -26,7 +26,8 @@ mvSS(
 
 \item{form}{A formula similar to \code{label | value ~ time + id/group} where label is a column
 of histogram bins, value is the counts within those bins, time is an optional time variable,
-id identifies an individual, and group contains the treatment groups.}
+id identifies an individual, and group contains the treatment groups. If the time variable
+is not included then the individual variable should also not be included.}
 
 \item{sigma}{Distributional models passed to \link{growthSS}.}
 
@@ -102,12 +103,13 @@ ss_mv1 <- mvSS(
   model = "linear", form = label | value ~ time | group, df = mv_df2,
   start = list("A" = 50), type = "brms", spectral_index = "ci_rededge"
 )
+ss_mv1
 ss_mv2 <- growthSS(
   model = "skew_normal: linear",
   form = label | resp_weights(value) + trunc(lb = -1, ub = Inf) ~ time | group,
   df = mv_df2, start = list("A" = 50)
 )
-identical(names(ss_mv1), names(ss_mv2))
+ss_mv2
 # ignoring environments and other such details these are identical except for the
 # function call.
 unlist(lapply(names(ss_mv1), function(nm) {

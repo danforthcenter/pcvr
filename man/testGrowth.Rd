@@ -10,7 +10,8 @@ testGrowth(ss = NULL, fit, test = "A")
 \item{ss}{A list output from \link{growthSS}. This is not required for nls, nlme, and brms models
 if \code{test} is given in \code{brms::hypothesis} style as a written statement.}
 
-\item{fit}{A model (or list of nlrq models) output from \link{fitGrowth}.}
+\item{fit}{A model (or list of nlrq models) output from \link{fitGrowth}. For brms models this
+can also be a data.frame of draws.}
 
 \item{test}{A description of the hypothesis to test. This can take two main forms,
 either the parameter names to vary before comparing a nested model ("A", "B", "C") using an anova
