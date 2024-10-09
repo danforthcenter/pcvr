@@ -9,7 +9,7 @@ Output from this should be passed to fitGrowth to fit the specified model."></he
 
     <a class="navbar-brand me-2" href="../index.html">pcvr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0.5</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -93,7 +93,8 @@ Output from this should be passed to <a href="fitGrowth.html">fitGrowth</a> to f
 <dt id="arg-form">form<a class="anchor" aria-label="anchor" href="#arg-form"></a></dt>
 <dd><p>A formula similar to <code>label | value ~ time + id/group</code> where label is a column
 of histogram bins, value is the counts within those bins, time is an optional time variable,
-id identifies an individual, and group contains the treatment groups.</p></dd>
+id identifies an individual, and group contains the treatment groups. If the time variable
+is not included then the individual variable should also not be included.</p></dd>
 
 
 <dt id="arg-sigma">sigma<a class="anchor" aria-label="anchor" href="#arg-sigma"></a></dt>
@@ -160,27 +161,27 @@ optionally with a plot of simulated growth curves using draws from those priors.
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration:   1 / 1000 [  0%]  (Warmup) </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter is inf, but must be positive finite! (in '/tmp/RtmpfMH4tU/model-1b3d6f998c16.stan', line 76, column 6 to column 71)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter is inf, but must be positive finite! (in '/tmp/RtmpoL6QNx/model-1b11411fe8bd.stan', line 76, column 6 to column 71)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter is inf, but must be positive finite! (in '/tmp/RtmpfMH4tU/model-1b3d6f998c16.stan', line 76, column 6 to column 71)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter is inf, but must be positive finite! (in '/tmp/RtmpoL6QNx/model-1b11411fe8bd.stan', line 76, column 6 to column 71)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter is inf, but must be positive finite! (in '/tmp/RtmpfMH4tU/model-1b3d6f998c16.stan', line 76, column 6 to column 71)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter is inf, but must be positive finite! (in '/tmp/RtmpoL6QNx/model-1b11411fe8bd.stan', line 76, column 6 to column 71)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Location parameter is -nan, but must be finite! (in '/tmp/RtmpfMH4tU/model-1b3d6f998c16.stan', line 76, column 6 to column 71)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Location parameter is -nan, but must be finite! (in '/tmp/RtmpoL6QNx/model-1b11411fe8bd.stan', line 76, column 6 to column 71)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter is inf, but must be positive finite! (in '/tmp/RtmpfMH4tU/model-1b3d6f998c16.stan', line 76, column 6 to column 71)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter is inf, but must be positive finite! (in '/tmp/RtmpoL6QNx/model-1b11411fe8bd.stan', line 76, column 6 to column 71)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
@@ -231,13 +232,53 @@ optionally with a plot of simulated growth curves using draws from those priors.
 <span class="r-in"><span>  model <span class="op">=</span> <span class="st">"linear"</span>, form <span class="op">=</span> <span class="va">label</span> <span class="op">|</span> <span class="va">value</span> <span class="op">~</span> <span class="va">time</span> <span class="op">|</span> <span class="va">group</span>, df <span class="op">=</span> <span class="va">mv_df2</span>,</span></span>
 <span class="r-in"><span>  start <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"A"</span> <span class="op">=</span> <span class="fl">50</span><span class="op">)</span>, type <span class="op">=</span> <span class="st">"brms"</span>, spectral_index <span class="op">=</span> <span class="st">"ci_rededge"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">ss_mv1</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> skew_normal: linear brms skew_normal model:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> pcvr formula variables:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Outcome: label | resp_weights(value) + trunc(lb = -1, ub = Inf)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> X: time</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Group: group</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Model Formula:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> label | resp_weights(value) + trunc(lb = -1, ub = Inf) ~ A * time </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> sigma ~ 0 + group</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> alpha ~ 0 + group</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> A ~ 0 + group</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Data:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   group id variable value time label</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1     a  1    sim_1     1    1     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2     a  2    sim_1     1    2     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3     a  3    sim_1     1    3     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> (5119 rows)</span>
 <span class="r-in"><span><span class="va">ss_mv2</span> <span class="op">&lt;-</span> <span class="fu"><a href="growthSS.html">growthSS</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  model <span class="op">=</span> <span class="st">"skew_normal: linear"</span>,</span></span>
 <span class="r-in"><span>  form <span class="op">=</span> <span class="va">label</span> <span class="op">|</span> <span class="fu"><a href="https://paulbuerkner.com/brms/reference/addition-terms.html" class="external-link">resp_weights</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">trunc</a></span><span class="op">(</span>lb <span class="op">=</span> <span class="op">-</span><span class="fl">1</span>, ub <span class="op">=</span> <span class="cn">Inf</span><span class="op">)</span> <span class="op">~</span> <span class="va">time</span> <span class="op">|</span> <span class="va">group</span>,</span></span>
 <span class="r-in"><span>  df <span class="op">=</span> <span class="va">mv_df2</span>, start <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"A"</span> <span class="op">=</span> <span class="fl">50</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">ss_mv1</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">ss_mv2</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
+<span class="r-in"><span><span class="va">ss_mv2</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> skew_normal: linear brms skew_normal model:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> pcvr formula variables:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Outcome: label | resp_weights(value) + trunc(lb = -1, ub = Inf)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> X: time</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Group: group</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Model Formula:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> label | resp_weights(value) + trunc(lb = -1, ub = Inf) ~ A * time </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> sigma ~ 0 + group</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> alpha ~ 0 + group</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> A ~ 0 + group</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Data:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   group id variable value time label</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1     a  1    sim_1     1    1     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2     a  2    sim_1     1    2     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3     a  3    sim_1     1    3     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> (5119 rows)</span>
 <span class="r-in"><span><span class="co"># ignoring environments and other such details these are identical except for the</span></span></span>
 <span class="r-in"><span><span class="co"># function call.</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">ss_mv1</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">nm</span><span class="op">)</span> <span class="op">{</span></span></span>
