@@ -98,6 +98,11 @@ mv_df2 <- rbind(m1, m2)
 mv_df2$group <- rep(c("a", "b"), each = 4320)
 mv_df2 <- mv_df2[mv_df2$value > 0, ]
 mv_df2$label <- as.numeric(gsub("sim_", "", mv_df2$variable))
+ss_mv0 <- mvSS(
+  model = "linear", form = label | value ~ group, df = mv_df2,
+  start = list("A" = 50), type = "brms", spectral_index = "ci_rededge"
+)
+ss_mv0 # non longitudinal model setup
 
 ss_mv1 <- mvSS(
   model = "linear", form = label | value ~ time | group, df = mv_df2,
