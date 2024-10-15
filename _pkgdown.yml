@@ -24,7 +24,7 @@ navbar:
     - text: "Vignettes"
       menu:
         - text: "Bellwether"
-          href: articles/Bellwether.html
+          href: articles/bellwether.html
         - text: "Longitudinal Modeling"
           href: articles/longitudinal.html
         - text: "Root Phenotyping"
