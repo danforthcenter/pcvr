@@ -54,7 +54,7 @@
   if (!is.null(df)) {
     tryCatch(
       {
-        df <- df[complete.cases(df[, c(x, y, individual, group)]), ]
+        df <- df[complete.cases(df[, c(x, y, individual, group, hierarchical_predictor)]), ]
       },
       error = function(err) {}
     )
