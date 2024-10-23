@@ -366,6 +366,7 @@ growthSS <- function(model, form, sigma = NULL, df, start = NULL,
   int_res <- .intModelHelper(model)
   int <- int_res$int
   model <- int_res$model
+  df <- as.data.frame(df)
 
   if (survivalBool) {
     if (type_matched == "brms") {
@@ -402,7 +403,6 @@ growthSS <- function(model, form, sigma = NULL, df, start = NULL,
     }
     res$type <- type
   }
-  res$df <- as.data.frame(res$df)
   res$model <- model
   res$call <- match.call()
   res <- pcvrss(res)
