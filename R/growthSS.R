@@ -402,6 +402,7 @@ growthSS <- function(model, form, sigma = NULL, df, start = NULL,
     }
     res$type <- type
   }
+  res$df <- as.data.frame(res$df)
   res$model <- model
   res$call <- match.call()
   res <- pcvrss(res)
