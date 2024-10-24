@@ -17,7 +17,8 @@
 #' @keywords internal
 #' @noRd
 
-.brmDparHelper <- function(dpar, model, x, group, nTimes, useGroup, priors, int = FALSE) {
+.brmDparHelper <- function(dpar, model, x, group, nTimes, useGroup, priors, int = FALSE,
+                           force_nl = FALSE) {
   splineDparHelperForm <- NULL
   if (grepl("\\+", model)) {
     chngptHelperList <- .brmsChangePointHelper(model, x,
@@ -37,7 +38,7 @@
     brmsDparFormFun <- match.fun(stringBrmsDparFormFun)
     formResDpar <- brmsDparFormFun(x, dpar, group,
       dpar = TRUE, nTimes = nTimes,
-      useGroup = useGroup, prior = priors, int = int
+      useGroup = useGroup, prior = priors, int = int, force_nl = force_nl
     )
     dparForm <- formResDpar$form
     dpar_pars <- formResDpar$pars

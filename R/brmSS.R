@@ -242,7 +242,7 @@
       hrc_int <- intModelRes$int
       .brmDparHelper(
         dpar = pname, model = hrc_model, x = hierarchical_predictor,
-        group, nTimes, USEGROUP, priors, int = hrc_int
+        group, nTimes, USEGROUP, priors, int = hrc_int, force_nl = TRUE
       )
       #* here passing `pname` to the `dpar` argument of .brmDparHelper will make
       #* .brmDparHelper add that name as a prefix on all of the existing model parameters.

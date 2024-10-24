@@ -58,7 +58,9 @@
 #'  \code{y~time+other_covariate|individual/group} in which case the parameters of the main growth model
 #'  will themselves be estimated by models as specified in the \code{hierarchy} argument. For instance,
 #'  if normally "A" had an intercept for each \code{group}, now it would be predicted as
-#'  \code{A ~ AI + AA * covariate} where AI and AA now have an intercept for each \code{group}.
+#'  \code{A ~ AI + AA * covariate} where AI and AA now have an intercept for each \code{group}. Note
+#'  that if you specify a hierarchical model then priors are required for AI and AA in the previous
+#'  example.
 #' @param sigma Other models for distributional parameters.
 #' This argument is only used with "brms" and "nlme" models and is handled differently for each.
 #' When type="brms" this can be supplied as a model or as a list of models.
