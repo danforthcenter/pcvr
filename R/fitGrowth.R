@@ -87,6 +87,11 @@ fitGrowthbrms <- function(ss, iter = 2000, cores = getOption("mc.cores", 1), cha
   return(fit)
 }
 
+#' @rdname fitGrowthbrms
+#' @export
+fitGrowthbrmsgam <- fitGrowthbrms
+
+
 #' Ease of use nlme wrapper function for fitting growth models specified by \code{growthSS}
 #'
 #' Helper function generally called from \link{fitGrowth}.
