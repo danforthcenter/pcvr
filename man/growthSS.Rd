@@ -98,7 +98,8 @@ the 2nd then \code{sigma = list("not_estimated", "model")} would allow for that.
 \code{nlme::varIdent}, \code{nlme::varPower}, or \code{nlme::varExp} respectively where "power"
 is the default.}
 
-\item{df}{A dataframe to use. Must contain all the variables listed in the formula.}
+\item{df}{A dataframe to use. Must contain all the variables listed in the formula.
+Note that rows with NA or infinite values in x, y, or hierarchical predictors are removed.}
 
 \item{start}{An optional named list of starting values OR means for prior distributions.
 If this is not provided then starting values are picked with \code{stats::selfStart}.

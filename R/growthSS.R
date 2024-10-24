@@ -81,6 +81,7 @@
 #' \code{nlme::varIdent}, \code{nlme::varPower}, or \code{nlme::varExp} respectively where "power"
 #' is the default.
 #' @param df A dataframe to use. Must contain all the variables listed in the formula.
+#' Note that rows with NA or infinite values in x, y, or hierarchical predictors are removed.
 #' @param pars Optionally specify which parameters should change by group. Not this is model
 #' dependent and is not implemented for brms models due to their more flexible hypothesis testing.
 #' @param start An optional named list of starting values OR means for prior distributions.

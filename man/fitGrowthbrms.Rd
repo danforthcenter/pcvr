@@ -2,9 +2,21 @@
 % Please edit documentation in R/fitGrowth.R
 \name{fitGrowthbrms}
 \alias{fitGrowthbrms}
+\alias{fitGrowthbrmsgam}
 \title{Ease of use brms wrapper function for fitting growth models specified by \code{growthSS}}
 \usage{
 fitGrowthbrms(
+  ss,
+  iter = 2000,
+  cores = getOption("mc.cores", 1),
+  chains = 4,
+  prior = NULL,
+  backend = "cmdstanr",
+  silent = 0,
+  ...
+)
+
+fitGrowthbrmsgam(
   ss,
   iter = 2000,
   cores = getOption("mc.cores", 1),
