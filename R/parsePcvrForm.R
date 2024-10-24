@@ -55,6 +55,9 @@
     tryCatch(
       {
         df <- df[complete.cases(df[, c(x, y, individual, group, hierarchical_predictor)]), ]
+        df <- df[!is.infinite(df[[x]]), ]
+        df <- df[!is.infinite(df[[y]]), ]
+        df <- df[!is.infinite(df[[hierarchical_predictor]]), ]
       },
       error = function(err) {}
     )
