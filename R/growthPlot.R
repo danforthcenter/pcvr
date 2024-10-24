@@ -62,7 +62,8 @@ growthPlot <- function(fit, form, groups = NULL, df = NULL, timeRange = NULL,
     model_class <- class(fit[[1]])
   }
   if (methods::is(fit, "brmsfit")) {
-    if (attr(fit$formula$formula, "nl")) { # non linear models are growth models
+    if (attr(fit$formula$formula, "nl") || as.logical(length(fit$basis$dpars[[fit$family$dpars[1]]]))) {
+      # non linear models are growth models, gams are linear but have spline dpars for the first param
       plot <- brmPlot(
         fit = fit, form = form, groups = groups, df = df, timeRange = timeRange,
         facetGroups = facetGroups, hierarchy_value = hierarchy_value, vir_option = virMaps[1]
