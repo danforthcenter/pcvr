@@ -105,7 +105,7 @@ pcv.net <- function(emd = NULL, meta = NULL, dissim = TRUE, distCol = "emd", fil
   gg$strength <- igraph::strength(g)
   gg$harmonic_centrality <- igraph::harmonic_centrality(g)
   gg$eigen_centrality <- igraph::eigen_centrality(g)[[1]]
-  gg$authority_score <- igraph::authority_score(g)[[1]]
+  gg$authority_score <- igraph::hits_scores(g)$authority
   gg$page_rank <- igraph::page_rank(g)[[1]]
   #* add coordinates for plotting edges
   eg$from.x <- gg$V1[match(eg$from, gg$index)]
