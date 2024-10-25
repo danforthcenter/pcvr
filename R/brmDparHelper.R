@@ -10,6 +10,7 @@
 #' @param useGroup Logical, should groups be used?
 #' @param priors Priors in growthSS syntax, passed to .brmsChangePointHelper for thresholded models.
 #' @param int logical, should an intercept be included in the model?
+#' @param force_nl logical, should non-linear parameterization of a linear model be forced?
 #'
 #' @return A list of elements to pass brmSS for fitting distributional models
 #'
