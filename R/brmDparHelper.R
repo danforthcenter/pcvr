@@ -10,6 +10,7 @@
 #' @param useGroup Logical, should groups be used?
 #' @param priors Priors in growthSS syntax, passed to .brmsChangePointHelper for thresholded models.
 #' @param int logical, should an intercept be included in the model?
+#' @param force_nl logical, should non-linear parameterization of a linear model be forced?
 #'
 #' @return A list of elements to pass brmSS for fitting distributional models
 #'
@@ -17,7 +18,8 @@
 #' @keywords internal
 #' @noRd
 
-.brmDparHelper <- function(dpar, model, x, group, nTimes, useGroup, priors, int = FALSE) {
+.brmDparHelper <- function(dpar, model, x, group, nTimes, useGroup, priors, int = FALSE,
+                           force_nl = FALSE) {
   splineDparHelperForm <- NULL
   if (grepl("\\+", model)) {
     chngptHelperList <- .brmsChangePointHelper(model, x,
@@ -37,7 +39,7 @@
     brmsDparFormFun <- match.fun(stringBrmsDparFormFun)
     formResDpar <- brmsDparFormFun(x, dpar, group,
       dpar = TRUE, nTimes = nTimes,
-      useGroup = useGroup, prior = priors, int = int
+      useGroup = useGroup, prior = priors, int = int, force_nl = force_nl
     )
     dparForm <- formResDpar$form
     dpar_pars <- formResDpar$pars

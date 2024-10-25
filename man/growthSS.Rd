@@ -74,7 +74,9 @@ The right hand side needs at least the x variable
  \code{y~time+other_covariate|individual/group} in which case the parameters of the main growth model
  will themselves be estimated by models as specified in the \code{hierarchy} argument. For instance,
  if normally "A" had an intercept for each \code{group}, now it would be predicted as
- \code{A ~ AI + AA * covariate} where AI and AA now have an intercept for each \code{group}.}
+ \code{A ~ AI + AA * covariate} where AI and AA now have an intercept for each \code{group}. Note
+ that if you specify a hierarchical model then priors are required for AI and AA in the previous
+ example.}
 
 \item{sigma}{Other models for distributional parameters.
 This argument is only used with "brms" and "nlme" models and is handled differently for each.
@@ -98,7 +100,8 @@ the 2nd then \code{sigma = list("not_estimated", "model")} would allow for that.
 \code{nlme::varIdent}, \code{nlme::varPower}, or \code{nlme::varExp} respectively where "power"
 is the default.}
 
-\item{df}{A dataframe to use. Must contain all the variables listed in the formula.}
+\item{df}{A dataframe to use. Must contain all the variables listed in the formula.
+Note that rows with NA or infinite values in x, y, or hierarchical predictors are removed.}
 
 \item{start}{An optional named list of starting values OR means for prior distributions.
 If this is not provided then starting values are picked with \code{stats::selfStart}.

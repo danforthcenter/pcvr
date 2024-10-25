@@ -54,7 +54,13 @@
   if (!is.null(df)) {
     tryCatch(
       {
-        df <- df[complete.cases(df[, c(x, y, individual, group)]), ]
+        df <- df[complete.cases(df[, c(x, y, individual, group, hierarchical_predictor)]), ]
+        df <- df[!is.infinite(df[[x]]), ]
+        df <- df[!is.infinite(df[[y]]), ]
+        df <- df[!is.infinite(df[[hierarchical_predictor]]), ]
+        formatted <- .formatNonIntegerTime(df, x, format = "%Y-%m-%d %H:%M:%S", index = NULL)
+        df <- formatted$data
+        x <- formatted$timeCol
       },
       error = function(err) {}
     )

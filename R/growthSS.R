@@ -58,7 +58,9 @@
 #'  \code{y~time+other_covariate|individual/group} in which case the parameters of the main growth model
 #'  will themselves be estimated by models as specified in the \code{hierarchy} argument. For instance,
 #'  if normally "A" had an intercept for each \code{group}, now it would be predicted as
-#'  \code{A ~ AI + AA * covariate} where AI and AA now have an intercept for each \code{group}.
+#'  \code{A ~ AI + AA * covariate} where AI and AA now have an intercept for each \code{group}. Note
+#'  that if you specify a hierarchical model then priors are required for AI and AA in the previous
+#'  example.
 #' @param sigma Other models for distributional parameters.
 #' This argument is only used with "brms" and "nlme" models and is handled differently for each.
 #' When type="brms" this can be supplied as a model or as a list of models.
@@ -81,6 +83,7 @@
 #' \code{nlme::varIdent}, \code{nlme::varPower}, or \code{nlme::varExp} respectively where "power"
 #' is the default.
 #' @param df A dataframe to use. Must contain all the variables listed in the formula.
+#' Note that rows with NA or infinite values in x, y, or hierarchical predictors are removed.
 #' @param pars Optionally specify which parameters should change by group. Not this is model
 #' dependent and is not implemented for brms models due to their more flexible hypothesis testing.
 #' @param start An optional named list of starting values OR means for prior distributions.
@@ -366,6 +369,7 @@ growthSS <- function(model, form, sigma = NULL, df, start = NULL,
   int_res <- .intModelHelper(model)
   int <- int_res$int
   model <- int_res$model
+  df <- as.data.frame(df)
 
   if (survivalBool) {
     if (type_matched == "brms") {
