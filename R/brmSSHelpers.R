@@ -297,7 +297,7 @@
 #' @noRd
 
 .brms_form_gompertz <- function(x, y, group, dpar = FALSE,
-                                nTimes = NULL, useGroup = TRUE, prior = NULL, int, ...) {
+                                nTimes = NULL, useGroup = TRUE, prior = NULL, int, force_nl = TRUE) {
   if (dpar) {
     if (int) {
       form <- brms::nlf(stats::as.formula(paste0(
@@ -330,7 +330,7 @@
 
 
 .brms_form_doublelogistic <- function(x, y, group, dpar = FALSE,
-                                      nTimes = NULL, useGroup = TRUE, prior = NULL, int, ...) {
+                                      nTimes = NULL, useGroup = TRUE, prior = NULL, int, force_nl = TRUE) {
   if (dpar) {
     if (int) {
       form <- brms::nlf(stats::as.formula(paste0(
@@ -371,7 +371,7 @@
 
 
 .brms_form_doublegompertz <- function(x, y, group, dpar = FALSE,
-                                      nTimes = NULL, useGroup = TRUE, prior = NULL, int, ...) {
+                                      nTimes = NULL, useGroup = TRUE, prior = NULL, int, force_nl = TRUE) {
   if (dpar) {
     if (int) {
       form <- brms::nlf(stats::as.formula(paste0(
@@ -412,7 +412,7 @@
 
 
 .brms_form_monomolecular <- function(x, y, group, dpar = FALSE, nTimes = NULL,
-                                     useGroup = TRUE, prior = NULL, int, ...) {
+                                     useGroup = TRUE, prior = NULL, int, force_nl = TRUE) {
   if (dpar) {
     if (int) {
       form <- brms::nlf(stats::as.formula(paste0(
@@ -442,7 +442,7 @@
 
 
 .brms_form_exponential <- function(x, y, group, dpar = FALSE,
-                                   nTimes = NULL, useGroup = TRUE, prior = NULL, int, ...) {
+                                   nTimes = NULL, useGroup = TRUE, prior = NULL, int, force_nl = TRUE) {
   if (dpar) {
     if (int) {
       form <- brms::nlf(stats::as.formula(paste0(
@@ -472,7 +472,7 @@
 
 
 .brms_form_linear <- function(x, y, group, dpar = FALSE, nTimes = NULL,
-                              useGroup = TRUE, prior = NULL, int, force_nl = FALSE, ...) {
+                              useGroup = TRUE, prior = NULL, int, force_nl = FALSE) {
   if (dpar) {
     if (!is.null(prior) && any(grepl(paste0(y, "A"), names(prior))) || force_nl) {
       #* use non-linear parameterization with subA
@@ -512,7 +512,7 @@
 
 
 .brms_form_logarithmic <- function(x, y, group, dpar = FALSE, nTimes = NULL,
-                                   useGroup = TRUE, prior = NULL, int, ...) {
+                                   useGroup = TRUE, prior = NULL, int, force_nl = TRUE) {
   if (dpar) {
     if (int) {
       form <- brms::nlf(stats::as.formula(paste0(y, " ~ ", y, "I + (", y, "A*log(", x, "))")))
@@ -540,7 +540,7 @@
 
 
 .brms_form_powerlaw <- function(x, y, group, dpar = FALSE, nTimes = NULL,
-                                useGroup = TRUE, prior = NULL, int, ...) {
+                                useGroup = TRUE, prior = NULL, int, force_nl = TRUE) {
   if (dpar) {
     if (int) {
       form <- brms::nlf(stats::as.formula(paste0(y, " ~ ", y, "I + (", y, "A*", x, "^", y, "B)")))
@@ -567,7 +567,7 @@
 
 
 .brms_form_gam <- function(x, y, group, dpar = FALSE, nTimes = NULL,
-                           useGroup = TRUE, prior = NULL, int, ...) {
+                           useGroup = TRUE, prior = NULL, int, force_nl = TRUE) {
   if (useGroup) {
     by <- paste0(", by = ", group)
   } else {
@@ -591,7 +591,7 @@
 
 
 .brms_form_int <- function(x, y, group, dpar = FALSE, nTimes = NULL,
-                           useGroup = TRUE, prior = NULL, int, ...) {
+                           useGroup = TRUE, prior = NULL, int, force_nl = TRUE) {
   if (useGroup) {
     rhs <- paste0("0 + ", group)
   } else {
@@ -609,7 +609,7 @@
 
 
 .brms_form_not_estimated <- function(x, y, group, dpar = FALSE, nTimes = NULL,
-                                     useGroup = TRUE, prior = NULL, int, ...) {
+                                     useGroup = TRUE, prior = NULL, int, force_nl = TRUE) {
   form <- stats::as.formula(paste0(y, " ~ 1"))
   pars <- c()
   return(list(form = form, pars = pars))
@@ -639,7 +639,7 @@
 #' @noRd
 
 .brms_form_frechet <- function(x, y, group, dpar = FALSE, nTimes = NULL,
-                               useGroup = TRUE, prior = NULL, int, ...) {
+                               useGroup = TRUE, prior = NULL, int, force_nl = TRUE) {
   if (dpar) {
     if (int) {
       form <- brms::nlf(stats::as.formula(paste0(
@@ -670,7 +670,7 @@
 #' @noRd
 
 .brms_form_weibull <- function(x, y, group, dpar = FALSE, nTimes = NULL,
-                               useGroup = TRUE, prior = NULL, int, ...) {
+                               useGroup = TRUE, prior = NULL, int, force_nl = TRUE) {
   if (dpar) {
     if (int) {
       form <- brms::nlf(stats::as.formula(paste0(
@@ -701,7 +701,7 @@
 #' @noRd
 
 .brms_form_gumbel <- function(x, y, group, dpar = FALSE, nTimes = NULL,
-                              useGroup = TRUE, prior = NULL, int, ...) {
+                              useGroup = TRUE, prior = NULL, int, force_nl = TRUE) {
   if (dpar) {
     if (int) {
       form <- brms::nlf(stats::as.formula(paste0(
@@ -732,7 +732,7 @@
 #' @noRd
 
 .brms_form_bragg <- function(x, y, group, dpar = FALSE, nTimes = NULL,
-                             useGroup = TRUE, prior = NULL, int, ...) {
+                             useGroup = TRUE, prior = NULL, int, force_nl = TRUE) {
   if (dpar) {
     if (int) {
       form <- brms::nlf(stats::as.formula(paste0(
@@ -763,7 +763,7 @@
 #' @noRd
 
 .brms_form_lorentz <- function(x, y, group, dpar = FALSE, nTimes = NULL,
-                               useGroup = TRUE, prior = NULL, int, ...) {
+                               useGroup = TRUE, prior = NULL, int, force_nl = TRUE) {
   if (dpar) {
     if (int) {
       form <- brms::nlf(stats::as.formula(paste0(
@@ -794,7 +794,7 @@
 #' @noRd
 
 .brms_form_beta <- function(x, y, group, dpar = FALSE, nTimes = NULL,
-                            useGroup = TRUE, prior = NULL, int, ...) {
+                            useGroup = TRUE, prior = NULL, int, force_nl = TRUE) {
   if (dpar) {
     if (int) {
       form <- brms::nlf(stats::as.formula(paste0(
