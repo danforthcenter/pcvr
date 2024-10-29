@@ -873,10 +873,7 @@ Here hypotheses are tested with `brms::hypothesis`.
 
 ```{r}
 #| echo: true
-brmViolin(fit,
-  hyp = "num/denom>1.05",
-  compareX = "a", againstY = "b", x = "group"
-)
+brmViolin(fit, ss, hypothesis = ".../A_groupa > 1.05")
 ```
 
 ## Hypothesis Testing {.smaller}
