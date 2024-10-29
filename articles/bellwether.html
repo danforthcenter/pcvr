@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">pcvr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -914,12 +914,8 @@ comparisons <code>pcvr</code> has a helper function called
 <code>brmViolin</code> to visualize posterior distributions and the
 posterior probability of some hypotheses associated with them.</p>
 <div class="sourceCode" id="cb61"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/brmViolin.html">brmViolin</a></span><span class="op">(</span></span>
-<span>  model <span class="op">=</span> <span class="va">fit</span>, params <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  hyp <span class="op">=</span> <span class="st">"num/denom&gt;1.05"</span>, compareX <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"0.B73"</span>, <span class="st">"50.B73"</span>, <span class="st">"100.B73"</span><span class="op">)</span>, againstY <span class="op">=</span> <span class="st">"0.B73"</span>,</span>
-<span>  group_sep <span class="op">=</span> <span class="st">"[.]"</span>, groups_into <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"soil"</span>, <span class="st">"genotype"</span><span class="op">)</span>, x <span class="op">=</span> <span class="st">"soil"</span>, facet <span class="op">=</span> <span class="st">"genotype"</span>,</span>
-<span>  returnData <span class="op">=</span> <span class="cn">FALSE</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/brmViolin.html">brmViolin</a></span><span class="op">(</span><span class="va">fit</span>, <span class="va">ss</span>, <span class="st">".../A_group0.B73 &gt; 1.05"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>axis.text.x.bottom <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>angle <span class="op">=</span> <span class="fl">90</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>This shows that we have a posterior probability greater than 99
 percent of an asymptotic size at least 5 percent higher with the 100
 type soil when compared against the 0 type soil. Note that this data

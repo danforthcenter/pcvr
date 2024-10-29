@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">pcvr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -866,10 +866,7 @@ basis functions are not suited for data past day 25.</p>
 <code>brmViolin</code>.</p>
 <p>Here hypotheses are tested with <code><a href="https://paulbuerkner.com/brms/reference/hypothesis.brmsfit.html" class="external-link">brms::hypothesis</a></code>.</p>
 <div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/brmViolin.html">brmViolin</a></span><span class="op">(</span><span class="va">fit</span>,</span>
-<span>  hyp <span class="op">=</span> <span class="st">"num/denom&gt;1.05"</span>,</span>
-<span>  compareX <span class="op">=</span> <span class="st">"a"</span>, againstY <span class="op">=</span> <span class="st">"b"</span>, x <span class="op">=</span> <span class="st">"group"</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/brmViolin.html">brmViolin</a></span><span class="op">(</span><span class="va">fit</span>, <span class="va">ss</span>, hypothesis <span class="op">=</span> <span class="st">".../A_groupa &gt; 1.05"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Loading required package: rstan</span></span></code></pre>
 <pre><code><span><span class="co">## Loading required package: StanHeaders</span></span></code></pre>
 <pre><code><span><span class="co">## </span></span>
