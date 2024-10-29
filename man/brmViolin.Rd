@@ -4,58 +4,20 @@
 \alias{brmViolin}
 \title{Function to visualize hypotheses tested on brms models similar to those made using growthSS outputs.}
 \usage{
-brmViolin(
-  fit,
-  params = NULL,
-  hyp = "num/denom>1.05",
-  compareX = "a",
-  againstY = "b",
-  group_sep = "[.]",
-  groups_into = c("group2"),
-  x = NULL,
-  facet = NULL,
-  cores = getOption("mc.cores", 1),
-  returnData = FALSE
-)
+brmViolin(fit, ss, hypothesis)
 }
 \arguments{
-\item{fit}{A brmsfit object or a list of brmsfit objects}
+\item{fit}{A brmsfit object or a dataframe of draws. If you need to combine multiple models then
+use \link{combineDraws} to merge their draws into a single dataframe for testing.}
 
-\item{params}{A list of parameters to use from the fit.
-Defaults to NULL in which case all growth model parameters are used.}
+\item{ss}{A \code{pcvrss} object. The only component that is currently used is the pcvrForm.}
 
-\item{hyp}{A character string defining the hypothesis to be tested.
-Defaults to "num/denom > 1.05". The "num" and "denom" names should be kept,
-but the direction and magnitude can be changed.}
-
-\item{compareX}{Which groups in the model should be compared as numerator options?
-Defaults to NULL in which case a plot will not be made but the data will be returned.}
-
-\item{againstY}{Which group in the model should be used as the
-denominator (typically a control group to compare against)?
-Defaults to NULL in which case a plot will not be made but the data will be returned.}
-
-\item{group_sep}{A regex pattern to match the separation of grouping
-terms in the models group term (see the formula argument of \code{\link{growthSS}}).
-The default uses "[.]" to break on a single period.}
-
-\item{groups_into}{A vector of column names to make after groups are split by group_sep.
-If this or groups_sep are NULL then no groups are assumed.}
-
-\item{x}{The variable to be plotted on the x axis (should be from groups_into).}
-
-\item{facet}{The variable to be used to facet the
-ggplot (should be another option from groups_into).
-If left NULL then the plot will only be faceted by params.
-Note that with the nature of againstY this faceting is often redundant
-but it does add labels which are helpful for keeping results organized..}
-
-\item{cores}{Optional number of cores to run hypotheses in parallel.
-Defaults to 1 unless the "mc.cores" option is set.}
-
-\item{returnData}{Logical, should data be returned?
-This is treated as TRUE if a plot will not be generated but
-otherwise defaults to FALSE.}
+\item{hypothesis}{A hypothesis expressed as a character string in the style of that used by
+\code{brms::hypothesis} and \link{testGrowth}. Note that currently this only supports hypotheses
+using two parameters from the model at a time (ie, "groupA / groupB > 1.05" works but
+"(groupA / groupB) - (groupC / groupD) > 1" does not). In the hypothesis "..." can be used to mean
+"all groups for this parameter" so that the hypothesis "... / A_group1 > 1.05" would include all
+the "A" coefficients for groups 1:N along the x axis, see examples.}
 }
 \value{
 Returns a ggplot showing a brms model's posterior distributions
@@ -70,22 +32,20 @@ set.seed(123)
 simdf <- growthSim(
   "logistic",
   n = 20, t = 25,
-  params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
+  params = list("A" = c(200, 180, 190, 160), "B" = c(13, 11, 10, 10), "C" = c(3, 3, 3.25, 3.5))
 )
 ss <- growthSS(
-  model = "logistic", form = y ~ time | id / group, sigma = "spline",
+  model = "logistic", form = y ~ time | id / group, sigma = "int",
   list("A" = 130, "B" = 10, "C" = 3),
   df = simdf, type = "brms"
 )
 
 fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1)
-brmViolin(fit,
-  hyp = "num/denom>1.05",
-  compareX = "a",
-  againstY = "b", returnData = TRUE
-)
+brmViolin(fit, ss, ".../A_groupd > 1.05") # all groups used
+brmViolin(fit, ss, "A_groupa/A_groupd > 1.05") # only these two groups
 }
 
 }
+\keyword{Bayesian}
 \keyword{brms}
-\keyword{ggplot2}
+\keyword{pcvrss}
