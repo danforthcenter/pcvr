@@ -616,12 +616,8 @@ brmPlot(fit, form = area_cm2 ~ DAS | barcode / group, df = ss$df) +
 Now we probably have some ideas about what we want to test in our data. The `brms::hypothesis` function offers incredible flexibility to test all kinds of hypotheses. For consistency with other backends the `testGrowth` function calls `brms::hypothesis` to evaluate hypotheses. For some comparisons `pcvr` has a helper function called `brmViolin` to visualize posterior distributions and the posterior probability of some hypotheses associated with them.
 
 ```{r, eval=FALSE}
-brmViolin(
-  model = fit, params = NULL,
-  hyp = "num/denom>1.05", compareX = c("0.B73", "50.B73", "100.B73"), againstY = "0.B73",
-  group_sep = "[.]", groups_into = c("soil", "genotype"), x = "soil", facet = "genotype",
-  returnData = FALSE
-)
+brmViolin(fit, ss, ".../A_group0.B73 > 1.05") +
+  ggplot2::theme(axis.text.x.bottom = ggplot2::element_text(angle = 90))
 ```
 
 
