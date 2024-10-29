@@ -28,22 +28,10 @@ test_that("Logistic brms model pipeline", {
   expect_s3_class(plot, "ggplot")
   plot1.5 <- growthPlot(fit = fit, form = y ~ time | group, groups = "a", df = ss$df)
   expect_s3_class(plot1.5, "ggplot")
-  plot2 <- brmViolin(fit,
-    hyp = "num/denom>1.05",
-    compareX = "a",
-    againstY = "b", returnData = TRUE
-  )
-  expect_s3_class(plot2$plot, "ggplot")
-  plot2.5 <- brmViolin(fit,
-    hyp = "num/denom>1.05",
-    facet = "group", returnData = FALSE
-  )
-  d3 <- brmViolin(fit,
-    hyp = "num/denom>1.05", compareX = NULL, againstY = NULL,
-    facet = "group", returnData = FALSE
-  )
+  plot2 <- brmViolin(fit, ss, ".../A_groupa > 1.05")
+  expect_s3_class(plot2, "ggplot")
+  plot2.5 <- brmViolin(fit, ss, "B_groupb/B_groupa > 1.05")
   expect_s3_class(plot2.5, "ggplot")
-  expect_equal(nrow(d3), 3000)
   ss2 <- growthSS(
     model = "gompertz", form = y ~ time | id / group, sigma = "logistic",
     list("A" = 130, "B" = 10, "C" = 1, "sigmaA" = 20, "sigmaB" = 10, "sigmaC" = 2),
