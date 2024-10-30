@@ -13,4 +13,4 @@
 ^docs$
 ^pkgdown$
 ^vignettes/articles$
-*DO_NOT_COMMIT*
+^DO_NOT_COMMIT*
