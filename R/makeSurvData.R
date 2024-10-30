@@ -32,7 +32,7 @@
   y_condition <- as.numeric(trimws(strsplit(y, ">|[|]")[[1]][2]))
   df[[y_var]] <- as.numeric(df[[y_var]] >= y_condition)
 
-  df$remove_interaction <- interaction(df[[individual]], df[[group]])
+  df$remove_interaction <- interaction(df[[individual]], df[, group])
 
   if (model == "weibull") {
     out_df <- do.call(rbind, lapply(unique(df$remove_interaction), function(i) {
@@ -50,13 +50,13 @@
         prev <- sub
       }
       lt <- stats::setNames(
-        aggregate(as.formula(paste0(y_var, " ~ ", group)), sub, sum),
+        aggregate(as.formula(paste0(y_var, " ~ ", paste(group, collapse = ":"))), sub, sum),
         c("group", "n_events")
       )
-      lt$n_no_event <- aggregate(as.formula(paste0(y_var, " ~ ", group)), sub, function(x) {
-        sum(x == 0)
-      })[, 2]
-      lt$n_eligible <- aggregate(as.formula(paste0(y_var, " ~ ", group)), prev, length)[, 2]
+      lt$n_no_event <- aggregate(as.formula(paste0(y_var, " ~ ", paste(group, collapse = ":"))), sub,
+                                 function(x) {sum(x == 0)})[, 2]
+      lt$n_eligible <- aggregate(as.formula(paste0(y_var, " ~ ", paste(group, collapse = ":"))),
+                                 prev, length)[, 2]
       lt$pct_event <- lt$n_events / lt$n_eligible
       lt[[x]] <- time
       lt
