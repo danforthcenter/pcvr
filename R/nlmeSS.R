@@ -565,15 +565,18 @@
 
 
 .nlme_form_gam <- function(x, y, group, individual, matched_sigma, pars, int) {
-  model_form <- as.formula(paste0(y, " ~", x, "*", group))
+  model_form <- as.formula(paste0(y, " ~", x, "*", paste(group, collapse = "*") ))
   #* `random effects formula`
-  random_form <- stats::setNames(list(nlme::pdIdent(~ splines - 1, data = pars)), group)
+  random_form <- stats::setNames(list(
+    rep(nlme::pdIdent(~ splines - 1, data = pars), length(group)),
+    group)
   #* `variance formula`
   weights_form <- .nlme_sigma_form(matched_sigma, x, group)
   #* `correlation formula`
   #* nlme insists that correlation and RE formulas use the same grouping,
   #* so i will not be able to account for individual autocorrelation in the GAM option
-  correlation_form <- nlme::corAR1(0.8, form = stats::as.formula(paste0("~ 1 |", group)))
+  correlation_form <- nlme::corAR1(0.8, form = stats::as.formula(paste0("~ 1 |",
+                                                                        paste(group, collapse = ":"))))
 
   formulas <- list(
     "model" = model_form, "random" = random_form,
