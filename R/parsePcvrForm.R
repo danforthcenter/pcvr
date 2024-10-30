@@ -10,26 +10,19 @@
   #* `parse form argument`
   y <- as.character(form)[2]
   x <- as.character(form)[3]
-  USEGROUP <- FALSE
   if (grepl("\\|", x) && grepl("\\/", x)) { # Y ~ X per id within group
     x3 <- trimws(strsplit(x, "[|]|[/]")[[1]])
     x <- x3[1]
     individual <- x3[2]
-    group <- x3[length(x3)]
+    group <- trimws(strsplit(x3[length(x3)], "[+]")[[1]])
+    USEGROUP <- TRUE
     USEINDIVIDUAL <- TRUE
-    if (!is.null(df)) {
-      if (length(unique(df[[group]])) == 1) {
-        USEGROUP <- FALSE
-      } else {
-        USEGROUP <- TRUE
-      } # if there is only one group then ignore grouping
-    }
   } else if (grepl("[\\]|[|]", x)) { # Y ~ X by group
     x2 <- trimws(strsplit(x, "[|]")[[1]])
     x <- x2[1]
     individual <- "dummyIndividual"
     df[[individual]] <- "dummyIndividual"
-    group <- x2[length(x2)]
+    group <- trimws(strsplit(x2[length(x2)], "[+]")[[1]])
     USEGROUP <- TRUE
     USEINDIVIDUAL <- FALSE
   } else { # Y ~ X
@@ -52,6 +45,11 @@
     hierarchical_predictor <- NULL
   }
   if (!is.null(df)) {
+    if (length(unique(interaction(df[, group]))) == 1) {
+      USEGROUP <- FALSE
+    } else {
+      USEGROUP <- TRUE
+    } # if there is only one group then ignore grouping
     tryCatch(
       {
         df <- df[complete.cases(df[, c(x, y, individual, group, hierarchical_predictor)]), ]
