@@ -567,8 +567,10 @@
 .nlme_form_gam <- function(x, y, group, individual, matched_sigma, pars, int) {
   model_form <- as.formula(paste0(y, " ~", x, "*", paste(group, collapse = "*") ))
   #* `random effects formula`
-  random_form <- stats::setNames(list(
-    rep(nlme::pdIdent(~ splines - 1, data = pars), length(group)),
+  random_form <- stats::setNames(
+    lapply(seq_along(group), function(i) {
+      nlme::pdIdent(~ splines - 1, data = pars)
+    }),
     group)
   #* `variance formula`
   weights_form <- .nlme_sigma_form(matched_sigma, x, group)
