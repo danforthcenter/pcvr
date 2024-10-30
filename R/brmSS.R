@@ -148,10 +148,14 @@
   hierarchical_predictor <- parsed_form$hierarchical_predictor
 
   #* `convert group to character to avoid unexpected factor stuff`
-  df[[group]] <- as.character(df[[group]])
+  df[, group] <- lapply(group, function(grp) {
+    as.character(df[[grp]])
+  })
   #* `Make autocorrelation formula`
   if (USEINDIVIDUAL) {
-    corForm <- as.formula(paste0("~arma(~", x, "|", individual, ":", group, ",1,1)"))
+    corForm <- as.formula(paste0("~arma(~", x, "|",
+                                 paste(c(individual, group), collapse = ":"),
+                                 ",1,1)"))
   } else {
     corForm <- NULL
   }
@@ -167,7 +171,7 @@
   matched_model <- matchGrowthModelRes[["model"]]
   decay <- matchGrowthModelRes[["decay"]]
   #* `Make growth formula`
-  nTimes <- min(unlist(lapply(split(df, df[[group]]), function(d) {
+  nTimes <- min(unlist(lapply(split(df, interaction(df[, group])), function(d) {
     length(unique(d[[x]]))
   }))) # for spline knots
   splineHelperForm <- NULL
@@ -274,7 +278,7 @@
 
   if (!is.null(pars)) {
     if (USEGROUP) {
-      parForm <- as.formula(paste0(paste(pars, collapse = "+"), "~0+", group))
+      parForm <- as.formula(paste0(paste(pars, collapse = "+"), "~0+", paste(group, collapse = "*")))
     } else {
       parForm <- as.formula(paste0(paste(pars, collapse = "+"), "~1"))
     }
@@ -307,7 +311,7 @@
       init
     }
     formals(initFun)$pars <- pars
-    formals(initFun)$nPerChain <- length(unique(df[[group]]))
+    formals(initFun)$nPerChain <- length(unique(interaction(df[, group])))
     wrapper <- function() {
       initFun()
     }
@@ -317,7 +321,7 @@
 
   #* ***** `Raise Message for complex models` *****
 
-  if (length(pars) * length(unique(df[[group]])) > 50) {
+  if (length(pars) * length(unique(interaction(df[, group]))) > 50) {
     message(paste0(
       "This model will estimate >50 parameters (excluding any smooth terms). \n\n",
       "If the MCMC is very slow then consider fitting separate models and using `combineDraws()` ",
