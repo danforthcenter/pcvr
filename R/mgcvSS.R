@@ -28,12 +28,17 @@
   df <- parsed_form$data
 
   if (USEGROUP) {
-    df[[group]] <- factor(df[[group]])
-    df[[paste0(group, "_numericLabel")]] <- unclass(df[[group]])
+    df[, group] <- lapply(group, function(grp) {
+      factor(df[[grp]])
+    })
+    df[, paste0(group, "_numericLabel")] <- lapply(group, function(grp) {
+      unclass(df[[grp]])
+    })
   }
   #* `assemble gam formula`
   if (USEGROUP) {
-    gam_form <- stats::as.formula(paste0(y, "~0+", group, "+s(", x, ", by=", group, ")"))
+    gam_form <- stats::as.formula(paste0(y, "~0+", group, "+s(", x, ", by=",
+                                         paste(group, collapse = ":"), ")"))
   } else {
     gam_form <- stats::as.formula(paste0(y, "~0+s(", x, ")"))
   }
