@@ -66,13 +66,20 @@ nlrqPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL,
   df <- parsed_form$data
   #* `filter by groups if groups != NULL`
   if (!is.null(groups)) {
-    df <- df[df[[group]] %in% groups, ]
+    keep_index_df <- do.call(intersect, lapply(seq_along(groups), function(i) {
+      grp <- groups[i]
+      which(df[[group[i]]] %in% grp)
+    }))
+    df <- df[keep_index_df, ]
   }
   #* `make new data if timerange is not NULL`
   if (!is.null(timeRange)) {
-    new_data <- do.call(rbind, lapply(unique(df[[group]]), function(g) {
-      stats::setNames(data.frame(g, timeRange), c(group, x))
-    }))
+    new_data <- do.call(expand.grid,
+                       append(list(timeRange),
+                              c(lapply(group, function(grp) {unique(df[[grp]])}))
+                       ))
+    colnames(new_data) <- c(x, group)
+    df <- df[df[[x]] >= min(timeRange) & df[[x]] <= max(timeRange), ]
   } else {
     new_data <- NULL
   }
@@ -90,15 +97,17 @@ nlrqPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL,
   keep <- which(!duplicated(preds))
   plotdf <- cbind(df[keep, ], preds[keep, ])
   colnames(plotdf) <- c(colnames(df), colnames(preds))
+  plotdf$group_interaction <- interaction(plotdf[, group])
 
   #* `facetGroups`
   facet_layer <- NULL
   if (facetGroups) {
-    facet_layer <- ggplot2::facet_wrap(stats::as.formula(paste0("~", group)))
+    facet_layer <- ggplot2::facet_wrap(stats::as.formula(paste0("~", paste(group, collapse = "+"))))
   }
   #* `groupFill`
   if (groupFill) {
-    virList <- lapply(rep(virMaps, length.out = length(unique(df[[group]]))), function(pal) {
+    virList <- lapply(rep(virMaps, length.out = length(unique(interaction(df[, group])))),
+                      function(pal) {
       virpal_p1 <- viridis::viridis(ceiling(length(predCols) / 2), direction = 1, end = 1, option = pal)
       virpal_p2 <- viridis::viridis(ceiling(length(predCols) / 2),
         direction = -1, end = 1, option = pal
@@ -109,18 +118,19 @@ nlrqPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL,
     virpal_p1 <- viridis::plasma(ceiling(length(predCols) / 2), direction = 1, end = 1)
     virpal_p2 <- viridis::plasma(ceiling(length(predCols) / 2), direction = -1, end = 1)[-1]
     virpal <- c(virpal_p1, virpal_p2)
-    virList <- lapply(seq_along(unique(df[[group]])), function(i) {
+    virList <- lapply(seq_along(unique(interaction(df[, group]))), function(i) {
       virpal
     })
   }
   #* `layer for individual lines if formula was complete`
   if (!is.null(individual)) {
+    df$group_interaction <- interaction(df[, group])
     individual_lines <- ggplot2::geom_line(
       data = df, ggplot2::aes(
         x = .data[[x]], y = .data[[y]],
         group = interaction(
           .data[[individual]],
-          .data[[group]]
+          .data[["group_interaction"]]
         )
       ),
       linewidth = 0.25, color = "gray40"
@@ -129,15 +139,15 @@ nlrqPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL,
     individual_lines <- list()
   }
   #* `plot`
-  plot <- ggplot(plotdf, ggplot2::aes(group = interaction(.data[[group]]))) +
+  plot <- ggplot(plotdf, ggplot2::aes(group = .data[["group_interaction"]])) +
     facet_layer +
     individual_lines +
     labs(x = x, y = as.character(form)[2]) +
     pcv_theme()
 
-  for (g in seq_along(unique(plotdf[[group]]))) {
-    iteration_group <- unique(plotdf[[group]])[g]
-    sub <- plotdf[plotdf[[group]] == iteration_group, ]
+  for (g in seq_along(unique(plotdf[["group_interaction"]]))) {
+    iteration_group <- unique(plotdf[["group_interaction"]])[g]
+    sub <- plotdf[plotdf[["group_interaction"]] == iteration_group, ]
     plot <- plot +
       lapply(seq_along(predCols), function(i) {
         ggplot2::geom_line(
