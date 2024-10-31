@@ -189,6 +189,9 @@
 #' @noRd
 
 .stanStringHelper <- function(priors, pars, USEGROUP) {
+  if (is.null(pars)) {
+    return(NULL)
+  }
   priorStanStrings <- lapply(pars, function(par) {
     if (!grepl("changePoint|I$", par)) {
       paste0("lognormal(log(", priors[[par]], "), 0.25)") # growth parameters are LN
@@ -623,7 +626,8 @@
 .brms_form_gam <- function(x, y, group, dpar = FALSE, nTimes = NULL,
                            useGroup = TRUE, prior = NULL, int, ...) {
   if (useGroup) {
-    by <- paste0(", by = ", paste(group, collapse = ":"))
+    by <- paste0(", by = ", paste(group, collapse = ".")) # special variable that is made if there are
+    # multiple groups and a gam involved.
   } else {
     by <- NULL
   }
@@ -647,7 +651,7 @@
 .brms_form_int <- function(x, y, group, dpar = FALSE, nTimes = NULL,
                            useGroup = TRUE, prior = NULL, int, ...) {
   if (useGroup) {
-    rhs <- paste0("0 + ", group)
+    rhs <- paste0("0 + ", paste(group, collapse = "+"))
   } else {
     rhs <- paste0("1")
   }
