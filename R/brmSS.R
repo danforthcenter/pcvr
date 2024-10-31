@@ -151,6 +151,10 @@
   df[, group] <- lapply(group, function(grp) {
     as.character(df[[grp]])
   })
+  #* `if there are gams involved and multiple groups then make a group interaction variable`
+  if (length(group) > 1 && any(grepl("spline|gam", c(model, sigma)))) {
+    df[[paste(group, collapse = ".")]] <- interaction(df[, group])
+  }
   #* `Make autocorrelation formula`
   if (USEINDIVIDUAL) {
     corForm <- as.formula(paste0("~arma(~", x, "|",
