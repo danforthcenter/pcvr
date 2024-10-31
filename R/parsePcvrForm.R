@@ -21,7 +21,9 @@
     x2 <- trimws(strsplit(x, "[|]")[[1]])
     x <- x2[1]
     individual <- "dummyIndividual"
-    df[[individual]] <- "dummyIndividual"
+    if (!is.null(df)) {
+      df[[individual]] <- "dummyIndividual"
+    }
     group <- trimws(strsplit(x2[length(x2)], "[+]")[[1]])
     USEGROUP <- TRUE
     USEINDIVIDUAL <- FALSE
