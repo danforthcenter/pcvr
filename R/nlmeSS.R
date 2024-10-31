@@ -64,7 +64,7 @@
   df <- parsed_form$data
 
   #* `make group a factor for nlme`
-  if (USEGROUP) {
+  if (parsed_form$USEG) {
     df[, group] <- lapply(group, function(grp) {
       factor(df[[grp]])
     })
