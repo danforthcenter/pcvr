@@ -145,7 +145,7 @@ brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
   }
   newData <- do.call(expand.grid,
           append(list(timeRange),
-                 c(lapply(group, function(grp) {unique(df[[grp]])}),
+                 c(lapply(group, function(grp) {unique(fitData[[grp]])}),
                  list(
                    "new_1"
                  ))
@@ -163,13 +163,13 @@ brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
   predictions <- cbind(newData, predict(fit, newData, probs = probs))
 
   if (!is.null(groups)) {
-    keep_index <- do.call(intersect, lapply(seq_along(groups), function(i) {
+    keep_index <- Reduce(intersect, lapply(seq_along(groups), function(i) {
       grp <- groups[i]
       which(predictions[[group[i]]] %in% grp)
     }))
     predictions <- predictions[keep_index, ]
     if (!is.null(df)) {
-      keep_index_df <- do.call(intersect, lapply(seq_along(groups), function(i) {
+      keep_index_df <- Reduce(intersect, lapply(seq_along(groups), function(i) {
         grp <- groups[i]
         which(df[[group[i]]] %in% grp)
       }))
