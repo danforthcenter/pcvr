@@ -36,6 +36,12 @@ test_that("Logistic brms model with multiple groups", {
   expect_s3_class(p3, "ggplot")
   p4 <- brmViolin(fit, ss, "A_group1a/A_group1b > 1.05")
   expect_s3_class(p4, "ggplot")
+  ss2 <- growthSS(
+    model = "logistic", form = y ~ time | id / group1 + group2, sigma = "spline",
+    list("A" = c(130, 120, 110, 100), "B" = 10, "C" = 3),
+    df = df, type = "brms"
+  )
+  expect_s3_class(ss, "pcvrss")
 })
 
 test_that("Logistic nls model with multiple groups", {

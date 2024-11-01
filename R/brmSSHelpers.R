@@ -189,25 +189,24 @@
 #' @noRd
 
 .stanStringHelper <- function(priors, pars, USEGROUP) {
-  if (is.null(pars)) {
-    return(NULL)
-  }
-  priorStanStrings <- lapply(pars, function(par) {
-    if (!grepl("changePoint|I$", par)) {
-      paste0("lognormal(log(", priors[[par]], "), 0.25)") # growth parameters are LN
+  if (!is.null(pars)) {
+    priorStanStrings <- lapply(pars, function(par) {
+      if (!grepl("changePoint|I$", par)) {
+        paste0("lognormal(log(", priors[[par]], "), 0.25)") # growth parameters are LN
+      } else {
+        paste0("student_t(5,", priors[[par]], ", 3)") # changepoints/intercepts are T_5(mu, 3)
+      }
+    })
+    priorStanStrings <- unlist(priorStanStrings)
+    parNames <- rep(names(priors), each = length(priors[[1]]))
+    if (USEGROUP) {
+      groupNames <- rep(names(priors[[1]]), length.out = length(priorStanStrings))
+      names(priorStanStrings) <- paste(parNames, groupNames, sep = "_")
     } else {
-      paste0("student_t(5,", priors[[par]], ", 3)") # changepoints/intercepts are T_5(mu, 3)
+      names(priorStanStrings) <- parNames
     }
-  })
-  priorStanStrings <- unlist(priorStanStrings)
-  parNames <- rep(names(priors), each = length(priors[[1]]))
-  if (USEGROUP) {
-    groupNames <- rep(names(priors[[1]]), length.out = length(priorStanStrings))
-    names(priorStanStrings) <- paste(parNames, groupNames, sep = "_")
-  } else {
-    names(priorStanStrings) <- parNames
+    return(priorStanStrings)
   }
-  return(priorStanStrings)
 }
 
 
