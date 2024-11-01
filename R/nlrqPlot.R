@@ -66,7 +66,7 @@ nlrqPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL,
   df <- parsed_form$data
   #* `filter by groups if groups != NULL`
   if (!is.null(groups)) {
-    keep_index_df <- do.call(intersect, lapply(seq_along(groups), function(i) {
+    keep_index_df <- Reduce(intersect, lapply(seq_along(groups), function(i) {
       grp <- groups[i]
       which(df[[group[i]]] %in% grp)
     }))
