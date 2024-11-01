@@ -26,7 +26,8 @@
     message(paste0("Individual is not used with type = 'gam'."))
   }
   df <- parsed_form$data
-
+  df[[paste(group, collapse = ".")]] <- interaction(df[, group])
+  group <- paste(group, collapse = ".")
   if (USEGROUP) {
     df[, group] <- lapply(group, function(grp) {
       factor(df[[grp]])
