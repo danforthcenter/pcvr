@@ -47,6 +47,10 @@
     message(paste0("Individual is not used with type = '", type, "'."))
   }
   df <- parsed_form$data
+  if (model == "gam") {
+    df[[paste(group, collapse = ".")]] <- interaction(df[, group])
+    group <- paste(group, collapse = ".")
+  }
   #* `if there are multiple groups combine them for nlrq/nls models`
   #* Also assign numeric labels to factor groups
   if (USEGROUP) {
