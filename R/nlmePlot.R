@@ -60,14 +60,16 @@ nlmePlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, face
   group <- parsed_form$group
   facetGroups <- .no_dummy_labels(group, facetGroups)
   df <- parsed_form$data
+  df[[paste(group, collapse = ".")]] <- interaction(df[, group])
+  group <- paste(group, collapse = ".")
   #* `filter by groups if groups != NULL`
   if (!is.null(groups)) {
-    df <- df[df[[group]] %in% groups, ]
+    df <- df[df[[group]] %in% paste(groups, collapse = "."), ]
   }
   intVar <- paste0(group, individual)
   #* `make new data if timerange is not NULL`
   if (!is.null(timeRange)) {
-    new_data <- do.call(rbind, lapply(unique(df[[intVar]]), function(g) {
+    new_data <- do.call(rbind, lapply(unique(df[["autocor"]]), function(g) {
       stats::setNames(data.frame(g, timeRange), c(intVar, x))
     }))
     new_data[[group]] <- gsub("[.].*", "", new_data[[intVar]])
@@ -76,14 +78,11 @@ nlmePlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, face
   } else {
     new_data <- df
   }
-
   preds <- new_data
   preds$trendline <- round(predict(fit, preds), 4)
   preds <- preds[!duplicated(preds$trendline), ]
   preds <- .add_sigma_bounds(preds, fit, x, group)
-
   #* `plot`
-
   #* `facetGroups`
   facet_layer <- NULL
   if (facetGroups) {
