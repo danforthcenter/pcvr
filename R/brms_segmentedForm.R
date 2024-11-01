@@ -163,7 +163,7 @@
 .handleSplineSegments <- function(splineSegments, useGroup, group, nTimes, formulae, x) {
   if (length(splineSegments) > 0) {
     if (useGroup) {
-      by <- paste0(", by = ", group)
+      by <- paste0(", by = ", paste(group, collapse = ":"))
     } else {
       by <- ","
     }

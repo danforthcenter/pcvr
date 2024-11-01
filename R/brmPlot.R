@@ -140,15 +140,27 @@ brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
   if (is.null(timeRange)) {
     timeRange <- unique(fitData[[x]])
   }
-  if (!group %in% colnames(fitData)) {
-    fitData[[group]] <- ""
+  if (!all(group %in% colnames(fitData))) {
+    fitData[, group] <- ""
   }
-  newData <- data.frame(
-    x = rep(timeRange, times = length(unique(fitData[[group]]))),
-    group = rep(unique(fitData[[group]]), each = length(timeRange)),
-    individual = rep(paste0("new_", seq_along(unique(fitData[[group]]))), each = length(timeRange))
+  newData <- do.call(
+    expand.grid,
+    append(
+      list(timeRange),
+      c(
+        lapply(group, function(grp) {
+          unique(fitData[[grp]])
+        }),
+        list(
+          "new_1"
+        )
+      )
+    )
   )
   colnames(newData) <- c(x, group, individual)
+  if (length(group) > 1 && paste(group, collapse = ".") %in% colnames(fitData)) {
+    newData[[paste(group, collapse = ".")]] <- interaction(newData[, group])
+  }
   if (!is.null(hierarchical_predictor)) {
     if (is.null(hierarchy_value)) {
       hierarchy_value <- mean(fitData[[hierarchical_predictor]])
@@ -158,15 +170,23 @@ brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
   predictions <- cbind(newData, predict(fit, newData, probs = probs))
 
   if (!is.null(groups)) {
-    predictions <- predictions[predictions$group %in% groups, ]
+    keep_index <- Reduce(intersect, lapply(seq_along(groups), function(i) {
+      grp <- groups[i]
+      which(predictions[[group[i]]] %in% grp)
+    }))
+    predictions <- predictions[keep_index, ]
     if (!is.null(df)) {
-      df <- df[df[[group]] %in% groups, ]
+      keep_index_df <- Reduce(intersect, lapply(seq_along(groups), function(i) {
+        grp <- groups[i]
+        which(df[[group[i]]] %in% grp)
+      }))
+      df <- df[keep_index_df, ]
     }
   }
   #* `facetGroups`
   facetLayer <- NULL
   if (facetGroups) {
-    facetLayer <- ggplot2::facet_wrap(as.formula(paste0("~", group)))
+    facetLayer <- ggplot2::facet_wrap(as.formula(paste0("~", paste(group, collapse = "+"))))
   }
   #* `lengthen predictions`
   max_prime <- 0.99
@@ -186,6 +206,7 @@ brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
       iter
     }))
   }))
+  longPreds$plot_group <- as.character(interaction(longPreds[, group]))
   #* `Make plot`
   p <- ggplot2::ggplot(longPreds, ggplot2::aes(x = .data[[x]], y = .data$Estimate)) +
     facetLayer +
@@ -198,7 +219,7 @@ brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
         ggplot2::aes(
           ymin = .data[["min"]],
           ymax = .data[["max"]],
-          group = .data[[group]],
+          group = .data[["plot_group"]],
           fill = .data[["q"]]
         ), alpha = 0.5
       )
@@ -207,9 +228,10 @@ brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
     ggplot2::labs(fill = "Credible\nInterval")
 
   if (!is.null(df) && individual != "dummyIndividual") {
+    df$plot_group <- as.character(interaction(df[, group]))
     p <- p + ggplot2::geom_line(
       data = df, ggplot2::aes(.data[[x]], .data[[y]],
-        group = interaction(.data[[individual]], .data[[group]])
+        group = interaction(.data[[individual]], .data[["plot_group"]])
       ),
       color = "gray20", linewidth = 0.2
     )

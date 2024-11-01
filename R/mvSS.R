@@ -226,14 +226,8 @@ mvSS <- function(model = "linear", form, sigma = NULL, df, start = NULL,
 
 .nls_mvss <- function(form = NULL, df = NULL, start = NULL, family = NULL, model = NULL, tau = NULL,
                       weights = NULL, pcvrForm = NULL) {
-  out <- list()
-  out[["formula"]] <- form
-  out[["start"]] <- NULL
-  out[["df"]] <- df
-  out[["pcvrForm"]] <- pcvrForm
-  out[["type"]] <- "lm"
-  out[["model"]] <- trimws(gsub(".*:", "", model))
-  out[["weights"]] <- df[[weights]]
+  out <- list("formula" = form, "start" = NULL, "df" = df, "pcvrForm" = pcvrForm, "type" = "lm",
+              "model" = trimws(gsub(".*:", "", model)), "weights" = df[[weights]])
   return(out)
 }
 
@@ -241,16 +235,9 @@ mvSS <- function(model = "linear", form, sigma = NULL, df, start = NULL,
 #' @noRd
 
 .nlrq_mvss <- function(form = NULL, df = NULL, start = NULL, family = NULL, model = NULL, tau = NULL,
-                       weights = NULL, pcvrform = NULL) {
-  out <- list()
-  out[["formula"]] <- form
-  out[["start"]] <- NULL
-  out[["df"]] <- df
-  out[["pcvrForm"]] <- pcvrform
-  out[["type"]] <- "rq"
-  out[["model"]] <- trimws(gsub(".*:", "", model))
-  out[["taus"]] <- tau
-  out[["weights"]] <- df[[weights]]
+                       weights = NULL, pcvrForm = NULL) {
+  out <- list("formula" = form, "start" = NULL, "df" = df, "pcvrForm" = pcvrForm, "type" = "rq",
+              "model" = trimws(gsub(".*:", "", model)), "taus" = tau, "weights" = df[[weights]])
   return(out)
 }
 

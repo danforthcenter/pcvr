@@ -84,10 +84,17 @@ brmViolin <- function(fit, ss, hypothesis) {
   hsplit <- hsplit[!grepl("\\.\\.\\.", hsplit)]
   hsplit <- hsplit[suppressWarnings(is.na(as.numeric(hsplit)))]
   grouping <- .parsePcvrForm(ss$pcvrForm)$group
+  which_grouping <- which(unlist(lapply(grouping, function(grp) {
+    any(grepl(grp, hsplit))
+  })))
+  grouping <- grouping[which_grouping]
   par <- hsplit[which(!grepl(grouping, hsplit))]
   ref_group <- hsplit[which(grepl(grouping, hsplit))]
-  draws <- fitdf[, grepl(paste0("^b_", par), colnames(fitdf))]
+  draws <- fitdf[, grepl(paste0("^b_", par, ".*", grouping), colnames(fitdf))]
   colnames(draws) <- sub("^b_", "", colnames(draws))
+  if (!grepl("[:]", grouping)) {
+    draws <- draws[, !grepl("[:]", colnames(draws))] # drop interaction terms
+  }
   if (length(par) > 0) {
     colnames(draws) <- sub(paste0(par, "_"), "", colnames(draws))
     colnames(draws) <- paste0(par, "_", colnames(draws))

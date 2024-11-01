@@ -179,6 +179,8 @@ rqPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facetG
   group <- parsed_form$group
   facetGroups <- .no_dummy_labels(group, facetGroups)
   df <- parsed_form$data
+  df[[paste(group, collapse = ".")]] <- interaction(df[, group])
+  group <- paste(group, collapse = ".")
   #* `filter by groups if groups != NULL`
   if (!is.null(groups)) {
     df <- df[df[[group]] %in% groups, ]

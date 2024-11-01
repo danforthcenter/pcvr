@@ -62,16 +62,23 @@
   individual <- parsed_form$individual
   group <- parsed_form$group
   df <- parsed_form$data
-
+  df[[paste(group, collapse = ".")]] <- interaction(df[, group])
+  group <- paste(group, collapse = ".")
   #* `make group a factor for nlme`
-  df[[group]] <- as.factor(df[[group]])
-  df[[paste0(group, "_numericLabel")]] <- unclass(df[[group]])
+  if (parsed_form$USEG) {
+    df[, group] <- lapply(group, function(grp) {
+      factor(df[[grp]])
+    })
+    df[, paste0(group, "_numericLabel")] <- lapply(group, function(grp) {
+      unclass(df[[grp]])
+    })
+  }
   #* `make an interaction variable for autocorrelation`
   #* Note that nlme does not allow random effects and correlations to apply at different "scales"
   #* so A,B,C can either vary by this interaction variable to have autocorrelation accurately modeled
   #* OR A,B,C can be estimated by group and autocorrelation can be by group. Currently this option is
   #* used. This note is kept here for reference.
-  df[[paste0(group, individual)]] <- interaction(df[[group]], df[[individual]])
+  df$autocor <- interaction(df[, c(group, individual)])
 
   #* `assemble growth formula with FE, RE, Groups, and Weights`
   if (grepl("decay", model)) {
@@ -123,7 +130,7 @@
     startingValuesList <- unlist(lapply(names(startingValues), function(nm) {
       val <- startingValues[nm]
       if (nm %in% pars) {
-        rep(val, length(unique(df[[group]])))
+        rep(val, length(unique(interaction(df[, group]))))
         # if this is one of pars then make starting value per group
       } else {
         val
@@ -147,27 +154,28 @@
 #* `Sigma matching helper function`
 
 .nlme_sigma_form <- function(matched_sigma, x, group) {
-  if (group == "dummyGroup") {
+  if (all(group == "dummyGroup")) {
     group <- NULL
+  }
+  var_group <- paste(group, collapse = "*")
+  if (nchar(var_group) == 0) {
+    var_group <- NULL
   }
   #* `variance formula`
   if (methods::is(matched_sigma, "varFunc")) {
     weights_form <- matched_sigma
   } else if (matched_sigma %in% c("int", "none")) {
     weights_form <- nlme::varIdent(
-      form = stats::as.formula(paste(c("~1", group), collapse = "|"))
+      form = stats::as.formula(paste(c("~1", var_group), collapse = "|"))
     )
   } else if (matched_sigma == "power") {
     weights_form <- nlme::varPower(
-      form = stats::as.formula(paste(c(paste0("~", x), group), collapse = "|"))
+      form = stats::as.formula(paste(c(paste0("~", x), var_group), collapse = "|"))
     )
   } else if (matched_sigma == "exp") {
     weights_form <- nlme::varExp(
-      form = stats::as.formula(paste(c(paste0("~", x), group), collapse = "|"))
+      form = stats::as.formula(paste(c(paste0("~", x), var_group), collapse = "|"))
     )
-  }
-  if (is.null(group)) {
-
   }
   return(weights_form)
 }
@@ -190,22 +198,25 @@
   if (is.null(pars)) {
     pars <- total_pars
   }
-  if (is.null(group) || group == "dummyGroup") {
+  if (is.null(group) || all(group == "dummyGroup")) {
     pars <- ""
   }
   fixed_form <- lapply(total_pars, function(par) {
     if (par %in% pars) {
-      stats::as.formula(paste0(par, " ~ 0 + ", group))
+      stats::as.formula(paste0(par, " ~ 0 + ", paste(group, collapse = "*")))
     } else {
       stats::as.formula(paste0(par, " ~ 1"))
     }
   })
   #* `groups formula`
-  groups_form <- stats::as.formula(paste0("~", group))
+  groups_form <- stats::as.formula(paste0("~", paste(group, collapse = "*")))
   #* `variance formula`
   weights_form <- .nlme_sigma_form(matched_sigma, x, group)
   #* `correlation formula`
-  correlation_form <- nlme::corAR1(0.8, form = as.formula(paste0("~ 1 |", group)))
+  correlation_form <- nlme::corAR1(0.8, form = as.formula(paste0(
+    "~ 1 |",
+    paste(group, collapse = "*")
+  )))
 
   formulas <- list(
     "model" = model_form, "random" = random_form,
@@ -230,22 +241,25 @@
   if (is.null(pars)) {
     pars <- total_pars
   }
-  if (is.null(group) || group == "dummyGroup") {
+  if (is.null(group) || all(group == "dummyGroup")) {
     pars <- ""
   }
   fixed_form <- lapply(total_pars, function(par) {
     if (par %in% pars) {
-      stats::as.formula(paste0(par, " ~ 0 + ", group))
+      stats::as.formula(paste0(par, " ~ 0 + ", paste(group, collapse = "*")))
     } else {
       stats::as.formula(paste0(par, " ~ 1"))
     }
   })
   #* `groups formula`
-  groups_form <- stats::as.formula(paste0("~", group))
+  groups_form <- stats::as.formula(paste0("~", paste(group, collapse = "*")))
   #* `variance formula`
   weights_form <- .nlme_sigma_form(matched_sigma, x, group)
   #* `correlation formula`
-  correlation_form <- nlme::corAR1(0.8, form = as.formula(paste0("~ 1 |", group)))
+  correlation_form <- nlme::corAR1(0.8, form = as.formula(paste0(
+    "~ 1 |",
+    paste(group, collapse = "*")
+  )))
 
   formulas <- list(
     "model" = model_form, "random" = random_form,
@@ -278,22 +292,25 @@
   if (is.null(pars)) {
     pars <- total_pars
   }
-  if (is.null(group) || group == "dummyGroup") {
+  if (is.null(group) || all(group == "dummyGroup")) {
     pars <- ""
   }
   fixed_form <- lapply(total_pars, function(par) {
     if (par %in% pars) {
-      stats::as.formula(paste0(par, " ~ 0 + ", group))
+      stats::as.formula(paste0(par, " ~ 0 + ", paste(group, collapse = "*")))
     } else {
       stats::as.formula(paste0(par, " ~ 1"))
     }
   })
   #* `groups formula`
-  groups_form <- stats::as.formula(paste0("~", group))
+  groups_form <- stats::as.formula(paste0("~", paste(group, collapse = "*")))
   #* `variance formula`
   weights_form <- .nlme_sigma_form(matched_sigma, x, group)
   #* `correlation formula`
-  correlation_form <- nlme::corAR1(0.8, form = as.formula(paste0("~ 1 |", group)))
+  correlation_form <- nlme::corAR1(0.8, form = as.formula(paste0(
+    "~ 1 |",
+    paste(group, collapse = "*")
+  )))
 
   formulas <- list(
     "model" = model_form, "random" = random_form,
@@ -324,22 +341,25 @@
   if (is.null(pars)) {
     pars <- total_pars
   }
-  if (is.null(group) || group == "dummyGroup") {
+  if (is.null(group) || all(group == "dummyGroup")) {
     pars <- ""
   }
   fixed_form <- lapply(total_pars, function(par) {
     if (par %in% pars) {
-      stats::as.formula(paste0(par, " ~ 0 + ", group))
+      stats::as.formula(paste0(par, " ~ 0 + ", paste(group, collapse = "*")))
     } else {
       stats::as.formula(paste0(par, " ~ 1"))
     }
   })
   #* `groups formula`
-  groups_form <- stats::as.formula(paste0("~", group))
+  groups_form <- stats::as.formula(paste0("~", paste(group, collapse = "*")))
   #* `variance formula`
   weights_form <- .nlme_sigma_form(matched_sigma, x, group)
   #* `correlation formula`
-  correlation_form <- nlme::corAR1(0.8, form = as.formula(paste0("~ 1 |", group)))
+  correlation_form <- nlme::corAR1(0.8, form = as.formula(paste0(
+    "~ 1 |",
+    paste(group, collapse = "*")
+  )))
 
   formulas <- list(
     "model" = model_form, "random" = random_form,
@@ -364,22 +384,25 @@
   if (is.null(pars)) {
     pars <- total_pars
   }
-  if (is.null(group) || group == "dummyGroup") {
+  if (is.null(group) || all(group == "dummyGroup")) {
     pars <- ""
   }
   fixed_form <- lapply(total_pars, function(par) {
     if (par %in% pars) {
-      stats::as.formula(paste0(par, " ~ 0 + ", group))
+      stats::as.formula(paste0(par, " ~ 0 + ", paste(group, collapse = "*")))
     } else {
       stats::as.formula(paste0(par, " ~ 1"))
     }
   })
   #* `groups formula`
-  groups_form <- stats::as.formula(paste0("~", group))
+  groups_form <- stats::as.formula(paste0("~", paste(group, collapse = "*")))
   #* `variance formula`
   weights_form <- .nlme_sigma_form(matched_sigma, x, group)
   #* `correlation formula`
-  correlation_form <- nlme::corAR1(0.8, form = as.formula(paste0("~ 1 |", group)))
+  correlation_form <- nlme::corAR1(0.8, form = as.formula(paste0(
+    "~ 1 |",
+    paste(group, collapse = "*")
+  )))
 
   formulas <- list(
     "model" = model_form, "random" = random_form,
@@ -404,22 +427,25 @@
   if (is.null(pars)) {
     pars <- total_pars
   }
-  if (is.null(group) || group == "dummyGroup") {
+  if (is.null(group) || all(group == "dummyGroup")) {
     pars <- ""
   }
   fixed_form <- lapply(total_pars, function(par) {
     if (par %in% pars) {
-      stats::as.formula(paste0(par, " ~ 0 + ", group))
+      stats::as.formula(paste0(par, " ~ 0 + ", paste(group, collapse = "*")))
     } else {
       stats::as.formula(paste0(par, " ~ 1"))
     }
   })
   #* `groups formula`
-  groups_form <- stats::as.formula(paste0("~", group))
+  groups_form <- stats::as.formula(paste0("~", paste(group, collapse = "*")))
   #* `variance formula`
   weights_form <- .nlme_sigma_form(matched_sigma, x, group)
   #* `correlation formula`
-  correlation_form <- nlme::corAR1(0.8, form = as.formula(paste0("~ 1 |", group)))
+  correlation_form <- nlme::corAR1(0.8, form = as.formula(paste0(
+    "~ 1 |",
+    paste(group, collapse = "*")
+  )))
 
   formulas <- list(
     "model" = model_form, "random" = random_form,
@@ -444,22 +470,25 @@
   if (is.null(pars)) {
     pars <- total_pars
   }
-  if (is.null(group) || group == "dummyGroup") {
+  if (is.null(group) || all(group == "dummyGroup")) {
     pars <- ""
   }
   fixed_form <- lapply(total_pars, function(par) {
     if (par %in% pars) {
-      stats::as.formula(paste0(par, " ~ 0 + ", group))
+      stats::as.formula(paste0(par, " ~ 0 + ", paste(group, collapse = "*")))
     } else {
       stats::as.formula(paste0(par, " ~ 1"))
     }
   })
   #* `groups formula`
-  groups_form <- stats::as.formula(paste0("~", group))
+  groups_form <- stats::as.formula(paste0("~", paste(group, collapse = "*")))
   #* `variance formula`
   weights_form <- .nlme_sigma_form(matched_sigma, x, group)
   #* `correlation formula`
-  correlation_form <- nlme::corAR1(0.8, form = as.formula(paste0("~ 1 |", group)))
+  correlation_form <- nlme::corAR1(0.8, form = as.formula(paste0(
+    "~ 1 |",
+    paste(group, collapse = "*")
+  )))
 
   formulas <- list(
     "model" = model_form, "random" = random_form,
@@ -484,22 +513,25 @@
   if (is.null(pars)) {
     pars <- total_pars
   }
-  if (is.null(group) || group == "dummyGroup") {
+  if (is.null(group) || all(group == "dummyGroup")) {
     pars <- ""
   }
   fixed_form <- lapply(total_pars, function(par) {
     if (par %in% pars) {
-      stats::as.formula(paste0(par, " ~ 0 + ", group))
+      stats::as.formula(paste0(par, " ~ 0 + ", paste(group, collapse = "*")))
     } else {
       stats::as.formula(paste0(par, " ~ 1"))
     }
   })
   #* `groups formula`
-  groups_form <- stats::as.formula(paste0("~", group))
+  groups_form <- stats::as.formula(paste0("~", paste(group, collapse = "*")))
   #* `variance formula`
   weights_form <- .nlme_sigma_form(matched_sigma, x, group)
   #* `correlation formula`
-  correlation_form <- nlme::corAR1(0.8, form = as.formula(paste0("~ 1 |", group)))
+  correlation_form <- nlme::corAR1(0.8, form = as.formula(paste0(
+    "~ 1 |",
+    paste(group, collapse = "*")
+  )))
 
   formulas <- list(
     "model" = model_form, "random" = random_form,
@@ -525,22 +557,25 @@
   if (is.null(pars)) {
     pars <- total_pars
   }
-  if (is.null(group) || group == "dummyGroup") {
+  if (is.null(group) || all(group == "dummyGroup")) {
     pars <- ""
   }
   fixed_form <- lapply(total_pars, function(par) {
     if (par %in% pars) {
-      stats::as.formula(paste0(par, " ~ 0 + ", group))
+      stats::as.formula(paste0(par, " ~ 0 + ", paste(group, collapse = "*")))
     } else {
       stats::as.formula(paste0(par, " ~ 1"))
     }
   })
   #* `groups formula`
-  groups_form <- stats::as.formula(paste0("~", group))
+  groups_form <- stats::as.formula(paste0("~", paste(group, collapse = "*")))
   #* `variance formula`
   weights_form <- .nlme_sigma_form(matched_sigma, x, group)
   #* `correlation formula`
-  correlation_form <- nlme::corAR1(0.8, form = as.formula(paste0("~ 1 |", group)))
+  correlation_form <- nlme::corAR1(0.8, form = as.formula(paste0(
+    "~ 1 |",
+    paste(group, collapse = "*")
+  )))
 
   formulas <- list(
     "model" = model_form, "random" = random_form,
@@ -553,15 +588,23 @@
 
 
 .nlme_form_gam <- function(x, y, group, individual, matched_sigma, pars, int) {
-  model_form <- as.formula(paste0(y, " ~", x, "*", group))
+  model_form <- as.formula(paste0(y, " ~", x, "*", paste(group, collapse = "*")))
   #* `random effects formula`
-  random_form <- stats::setNames(list(nlme::pdIdent(~ splines - 1, data = pars)), group)
+  random_form <- stats::setNames(
+    lapply(seq_along(group), function(i) {
+      nlme::pdIdent(~ splines - 1, data = pars)
+    }),
+    group
+  )
   #* `variance formula`
   weights_form <- .nlme_sigma_form(matched_sigma, x, group)
   #* `correlation formula`
   #* nlme insists that correlation and RE formulas use the same grouping,
   #* so i will not be able to account for individual autocorrelation in the GAM option
-  correlation_form <- nlme::corAR1(0.8, form = stats::as.formula(paste0("~ 1 |", group)))
+  correlation_form <- nlme::corAR1(0.8, form = stats::as.formula(paste0(
+    "~ 1 |",
+    paste(group, collapse = "*")
+  )))
 
   formulas <- list(
     "model" = model_form, "random" = random_form,
@@ -594,22 +637,25 @@
   if (is.null(pars)) {
     pars <- total_pars
   }
-  if (is.null(group) || group == "dummyGroup") {
+  if (is.null(group) || all(group == "dummyGroup")) {
     pars <- ""
   }
   fixed_form <- lapply(total_pars, function(par) {
     if (par %in% pars) {
-      stats::as.formula(paste0(par, " ~ 0 + ", group))
+      stats::as.formula(paste0(par, " ~ 0 + ", paste(group, collapse = "*")))
     } else {
       stats::as.formula(paste0(par, " ~ 1"))
     }
   })
   #* `groups formula`
-  groups_form <- stats::as.formula(paste0("~", group))
+  groups_form <- stats::as.formula(paste0("~", paste(group, collapse = "*")))
   #* `variance formula`
   weights_form <- .nlme_sigma_form(matched_sigma, x, group)
   #* `correlation formula`
-  correlation_form <- nlme::corAR1(0.8, form = as.formula(paste0("~ 1 |", group)))
+  correlation_form <- nlme::corAR1(0.8, form = as.formula(paste0(
+    "~ 1 |",
+    paste(group, collapse = "*")
+  )))
 
   formulas <- list(
     "model" = model_form, "random" = random_form,
@@ -634,22 +680,25 @@
   if (is.null(pars)) {
     pars <- total_pars
   }
-  if (is.null(group) || group == "dummyGroup") {
+  if (is.null(group) || all(group == "dummyGroup")) {
     pars <- ""
   }
   fixed_form <- lapply(total_pars, function(par) {
     if (par %in% pars) {
-      stats::as.formula(paste0(par, " ~ 0 + ", group))
+      stats::as.formula(paste0(par, " ~ 0 + ", paste(group, collapse = "*")))
     } else {
       stats::as.formula(paste0(par, " ~ 1"))
     }
   })
   #* `groups formula`
-  groups_form <- stats::as.formula(paste0("~", group))
+  groups_form <- stats::as.formula(paste0("~", paste(group, collapse = "*")))
   #* `variance formula`
   weights_form <- .nlme_sigma_form(matched_sigma, x, group)
   #* `correlation formula`
-  correlation_form <- nlme::corAR1(0.8, form = as.formula(paste0("~ 1 |", group)))
+  correlation_form <- nlme::corAR1(0.8, form = as.formula(paste0(
+    "~ 1 |",
+    paste(group, collapse = "*")
+  )))
 
   formulas <- list(
     "model" = model_form, "random" = random_form,
@@ -675,22 +724,25 @@
   if (is.null(pars)) {
     pars <- total_pars
   }
-  if (is.null(group) || group == "dummyGroup") {
+  if (is.null(group) || all(group == "dummyGroup")) {
     pars <- ""
   }
   fixed_form <- lapply(total_pars, function(par) {
     if (par %in% pars) {
-      stats::as.formula(paste0(par, " ~ 0 + ", group))
+      stats::as.formula(paste0(par, " ~ 0 + ", paste(group, collapse = "*")))
     } else {
       stats::as.formula(paste0(par, " ~ 1"))
     }
   })
   #* `groups formula`
-  groups_form <- stats::as.formula(paste0("~", group))
+  groups_form <- stats::as.formula(paste0("~", paste(group, collapse = "*")))
   #* `variance formula`
   weights_form <- .nlme_sigma_form(matched_sigma, x, group)
   #* `correlation formula`
-  correlation_form <- nlme::corAR1(0.8, form = as.formula(paste0("~ 1 |", group)))
+  correlation_form <- nlme::corAR1(0.8, form = as.formula(paste0(
+    "~ 1 |",
+    paste(group, collapse = "*")
+  )))
 
   formulas <- list(
     "model" = model_form, "random" = random_form,
@@ -715,22 +767,25 @@
   if (is.null(pars)) {
     pars <- total_pars
   }
-  if (is.null(group) || group == "dummyGroup") {
+  if (is.null(group) || all(group == "dummyGroup")) {
     pars <- ""
   }
   fixed_form <- lapply(total_pars, function(par) {
     if (par %in% pars) {
-      stats::as.formula(paste0(par, " ~ 0 + ", group))
+      stats::as.formula(paste0(par, " ~ 0 + ", paste(group, collapse = "*")))
     } else {
       stats::as.formula(paste0(par, " ~ 1"))
     }
   })
   #* `groups formula`
-  groups_form <- stats::as.formula(paste0("~", group))
+  groups_form <- stats::as.formula(paste0("~", paste(group, collapse = "*")))
   #* `variance formula`
   weights_form <- .nlme_sigma_form(matched_sigma, x, group)
   #* `correlation formula`
-  correlation_form <- nlme::corAR1(0.8, form = as.formula(paste0("~ 1 |", group)))
+  correlation_form <- nlme::corAR1(0.8, form = as.formula(paste0(
+    "~ 1 |",
+    paste(group, collapse = "*")
+  )))
 
   formulas <- list(
     "model" = model_form, "random" = random_form,
@@ -755,22 +810,25 @@
   if (is.null(pars)) {
     pars <- total_pars
   }
-  if (is.null(group) || group == "dummyGroup") {
+  if (is.null(group) || all(group == "dummyGroup")) {
     pars <- ""
   }
   fixed_form <- lapply(total_pars, function(par) {
     if (par %in% pars) {
-      stats::as.formula(paste0(par, " ~ 0 + ", group))
+      stats::as.formula(paste0(par, " ~ 0 + ", paste(group, collapse = "*")))
     } else {
       stats::as.formula(paste0(par, " ~ 1"))
     }
   })
   #* `groups formula`
-  groups_form <- stats::as.formula(paste0("~", group))
+  groups_form <- stats::as.formula(paste0("~", paste(group, collapse = "*")))
   #* `variance formula`
   weights_form <- .nlme_sigma_form(matched_sigma, x, group)
   #* `correlation formula`
-  correlation_form <- nlme::corAR1(0.8, form = as.formula(paste0("~ 1 |", group)))
+  correlation_form <- nlme::corAR1(0.8, form = as.formula(paste0(
+    "~ 1 |",
+    paste(group, collapse = "*")
+  )))
 
   formulas <- list(
     "model" = model_form, "random" = random_form,
@@ -801,22 +859,25 @@
   if (is.null(pars)) {
     pars <- total_pars
   }
-  if (is.null(group) || group == "dummyGroup") {
+  if (is.null(group) || all(group == "dummyGroup")) {
     pars <- ""
   }
   fixed_form <- lapply(total_pars, function(par) {
     if (par %in% pars) {
-      stats::as.formula(paste0(par, " ~ 0 + ", group))
+      stats::as.formula(paste0(par, " ~ 0 + ", paste(group, collapse = "*")))
     } else {
       stats::as.formula(paste0(par, " ~ 1"))
     }
   })
   #* `groups formula`
-  groups_form <- stats::as.formula(paste0("~", group))
+  groups_form <- stats::as.formula(paste0("~", paste(group, collapse = "*")))
   #* `variance formula`
   weights_form <- .nlme_sigma_form(matched_sigma, x, group)
   #* `correlation formula`
-  correlation_form <- nlme::corAR1(0.8, form = as.formula(paste0("~ 1 |", group)))
+  correlation_form <- nlme::corAR1(0.8, form = as.formula(paste0(
+    "~ 1 |",
+    paste(group, collapse = "*")
+  )))
 
   formulas <- list(
     "model" = model_form, "random" = random_form,

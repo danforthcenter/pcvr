@@ -3,7 +3,7 @@
 #' @noRd
 
 .no_dummy_labels <- function(group, facetGroups) {
-  if (group == "dummyGroup") {
+  if (all(group == "dummyGroup")) {
     facetGroups <- FALSE
   }
   return(facetGroups)

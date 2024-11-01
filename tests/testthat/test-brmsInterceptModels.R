@@ -1,5 +1,8 @@
 test_that("Logistic brms Model with Intercept", {
+  skip_if_not_installed("brms")
+  skip_if_not_installed("cmdstanr")
   skip_on_cran()
+  options(cmdstanr_warn_inits = FALSE)
   set.seed(123)
   simdf <- growthSim("logistic",
     n = 20, t = 25,
@@ -13,7 +16,8 @@ test_that("Logistic brms Model with Intercept", {
   )
   expect_equal(ss$prior$nlpar, c("", "A", "B", "C", "I"))
 
-  fit <- fitGrowth(ss, backend = "cmdstanr", iter = 200, chains = 1, cores = 1)
+  fit <- fitGrowth(ss, backend = "cmdstanr", iter = 200, chains = 1, cores = 1,
+                   refresh = 0, silent = 2)
   expect_s3_class(fit, "brmsfit")
 
   plot <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
@@ -21,7 +25,10 @@ test_that("Logistic brms Model with Intercept", {
 })
 
 test_that("Logistic Decay brms Model with Intercept", {
+  skip_if_not_installed("brms")
+  skip_if_not_installed("cmdstanr")
   skip_on_cran()
+  options(cmdstanr_warn_inits = FALSE)
   set.seed(123)
   logistic_df <- growthSim(
     "logistic decay",
@@ -34,14 +41,18 @@ test_that("Logistic Decay brms Model with Intercept", {
     list("A" = 130, "B" = 10, "C" = 3, "I" = 150),
     df = logistic_df, type = "brms"
   )
-  fit <- fitGrowth(ss, backend = "cmdstanr", iter = 200, chains = 1, cores = 1)
+  fit <- fitGrowth(ss, backend = "cmdstanr", iter = 200, chains = 1, cores = 1,
+                   refresh = 0, silent = 2)
   expect_s3_class(fit, "brmsfit")
   plot <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
   expect_s3_class(plot, "ggplot")
 })
 
 test_that("Gompertz brms model pipeline", {
+  skip_if_not_installed("brms")
+  skip_if_not_installed("cmdstanr")
   skip_on_cran()
+  options(cmdstanr_warn_inits = FALSE)
   set.seed(123)
   simdf <- growthSim(
     "gompertz",
@@ -56,7 +67,8 @@ test_that("Gompertz brms model pipeline", {
   )
   expect_equal(ss$prior$nlpar, c("", "A", "B", "C", "I"))
 
-  fit <- fitGrowth(ss, backend = "cmdstanr", iter = 200, chains = 1, cores = 1)
+  fit <- fitGrowth(ss, backend = "cmdstanr", iter = 200, chains = 1, cores = 1,
+                   refresh = 0, silent = 2)
   expect_s3_class(fit, "brmsfit")
 
   plot <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
@@ -64,7 +76,10 @@ test_that("Gompertz brms model pipeline", {
 })
 
 test_that("intercept in submodel works", {
+  skip_if_not_installed("brms")
+  skip_if_not_installed("cmdstanr")
   skip_on_cran()
+  options(cmdstanr_warn_inits = FALSE)
   set.seed(123)
   simdf <- growthSim("gompertz",
     n = 20, t = 25,
@@ -77,7 +92,8 @@ test_that("intercept in submodel works", {
   )
   expect_equal(ss$prior$nlpar, c("", "A", "B", "C", "sigmaI", "sigmaA"))
 
-  fit <- fitGrowth(ss, backend = "cmdstanr", iter = 200, chains = 1, cores = 1)
+  fit <- fitGrowth(ss, backend = "cmdstanr", iter = 200, chains = 1, cores = 1,
+                   refresh = 0, silent = 2)
   expect_s3_class(fit, "brmsfit")
 
   plot <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
@@ -86,7 +102,10 @@ test_that("intercept in submodel works", {
 
 
 test_that("intercepts work in a changepoint model", {
+  skip_if_not_installed("brms")
+  skip_if_not_installed("cmdstanr")
   skip_on_cran()
+  options(cmdstanr_warn_inits = FALSE)
   set.seed(123)
   simdf <- growthSim("linear + linear",
     n = 20, t = 25,
@@ -104,6 +123,7 @@ test_that("intercepts work in a changepoint model", {
   )
   expect_equal(ss$prior$nlpar, c("", "", "linear1A", "changePoint1", "linear2A", "I"))
 
-  fit <- fitGrowth(ss, backend = "cmdstanr", iter = 200, chains = 1, cores = 1)
+  fit <- fitGrowth(ss, backend = "cmdstanr", iter = 200, chains = 1, cores = 1,
+                   refresh = 0, silent = 2)
   expect_s3_class(fit, "brmsfit")
 })
