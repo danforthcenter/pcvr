@@ -251,7 +251,7 @@ test_that("Test Logistic nlme modeling without individuals", {
 test_that("Test Logistic nlme modeling without individuals or groups", {
   skip_on_cran()
   ss <- growthSS(
-    model = "logistic", form = y ~ time, sigma = "power", # failing on this so far
+    model = "logistic", form = y ~ time, sigma = "power",
     df = logistic_df, type = "nlme"
   )
   expect_equal(
