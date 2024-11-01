@@ -69,7 +69,10 @@ The right hand side needs at least the x variable
  so autocorrelation using the "nlme" backend works at the group level, so will slightly underestimate
  the autocorrelation at the individual level. If group has only one level or is not included then
  it will be ignored in formulas for growth and variance (this may be the case if
- you split data before fitting models to be able to run more smaller models each more quickly).
+ you split data before fitting models to be able to run more smaller models each more quickly). To
+ include multiple grouping variables they should be separated with "+" as in
+ \code{y~time|individual/groupingVariable1 + groupingVariable2}. For some backends multiple grouping
+ variables will be combined into a single factor of their interaction.
  Hierarchical models can be specified for the brms backend as
  \code{y~time+other_covariate|individual/group} in which case the parameters of the main growth model
  will themselves be estimated by models as specified in the \code{hierarchy} argument. For instance,
