@@ -62,7 +62,8 @@
   individual <- parsed_form$individual
   group <- parsed_form$group
   df <- parsed_form$data
-
+  df[[paste(group, collapse = ".")]] <- interaction(df[, group])
+  group <- paste(group, collapse = ".")
   #* `make group a factor for nlme`
   if (parsed_form$USEG) {
     df[, group] <- lapply(group, function(grp) {
@@ -77,7 +78,7 @@
   #* so A,B,C can either vary by this interaction variable to have autocorrelation accurately modeled
   #* OR A,B,C can be estimated by group and autocorrelation can be by group. Currently this option is
   #* used. This note is kept here for reference.
-  df[[paste0(group, individual)]] <- interaction(df[[group]], df[[individual]])
+  df$autocor <- interaction(df[, c(group, individual)])
 
   #* `assemble growth formula with FE, RE, Groups, and Weights`
   if (grepl("decay", model)) {
@@ -129,7 +130,7 @@
     startingValuesList <- unlist(lapply(names(startingValues), function(nm) {
       val <- startingValues[nm]
       if (nm %in% pars) {
-        rep(val, length(unique(df[[group]])))
+        rep(val, length(unique(interaction(df[, group]))))
         # if this is one of pars then make starting value per group
       } else {
         val
@@ -156,20 +157,24 @@
   if (all(group == "dummyGroup")) {
     group <- NULL
   }
+  var_group <- paste(group, collapse = "*")
+  if (nchar(var_group) == 0) {
+    var_group <- NULL
+  }
   #* `variance formula`
   if (methods::is(matched_sigma, "varFunc")) {
     weights_form <- matched_sigma
   } else if (matched_sigma %in% c("int", "none")) {
     weights_form <- nlme::varIdent(
-      form = stats::as.formula(paste(c("~1", paste(group, collapse = ":")), collapse = "|"))
+      form = stats::as.formula(paste(c("~1", var_group), collapse = "|"))
     )
   } else if (matched_sigma == "power") {
     weights_form <- nlme::varPower(
-      form = stats::as.formula(paste(c(paste0("~", x), paste(group, collapse = ":")), collapse = "|"))
+      form = stats::as.formula(paste(c(paste0("~", x), var_group), collapse = "|"))
     )
   } else if (matched_sigma == "exp") {
     weights_form <- nlme::varExp(
-      form = stats::as.formula(paste(c(paste0("~", x), paste(group, collapse = ":")), collapse = "|"))
+      form = stats::as.formula(paste(c(paste0("~", x), var_group), collapse = "|"))
     )
   }
   return(weights_form)
@@ -209,7 +214,7 @@
   weights_form <- .nlme_sigma_form(matched_sigma, x, group)
   #* `correlation formula`
   correlation_form <- nlme::corAR1(0.8, form = as.formula(paste0("~ 1 |",
-                                                                 paste(group, collapse = ":"))))
+                                                                 paste(group, collapse = "*"))))
 
   formulas <- list(
     "model" = model_form, "random" = random_form,
@@ -250,7 +255,7 @@
   weights_form <- .nlme_sigma_form(matched_sigma, x, group)
   #* `correlation formula`
   correlation_form <- nlme::corAR1(0.8, form = as.formula(paste0("~ 1 |",
-                                                                 paste(group, collapse = ":"))))
+                                                                 paste(group, collapse = "*"))))
 
   formulas <- list(
     "model" = model_form, "random" = random_form,
@@ -299,7 +304,7 @@
   weights_form <- .nlme_sigma_form(matched_sigma, x, group)
   #* `correlation formula`
   correlation_form <- nlme::corAR1(0.8, form = as.formula(paste0("~ 1 |",
-                                                                 paste(group, collapse = ":"))))
+                                                                 paste(group, collapse = "*"))))
 
   formulas <- list(
     "model" = model_form, "random" = random_form,
@@ -346,7 +351,7 @@
   weights_form <- .nlme_sigma_form(matched_sigma, x, group)
   #* `correlation formula`
   correlation_form <- nlme::corAR1(0.8, form = as.formula(paste0("~ 1 |",
-                                                                 paste(group, collapse = ":"))))
+                                                                 paste(group, collapse = "*"))))
 
   formulas <- list(
     "model" = model_form, "random" = random_form,
@@ -387,7 +392,7 @@
   weights_form <- .nlme_sigma_form(matched_sigma, x, group)
   #* `correlation formula`
   correlation_form <- nlme::corAR1(0.8, form = as.formula(paste0("~ 1 |",
-                                                                 paste(group, collapse = ":"))))
+                                                                 paste(group, collapse = "*"))))
 
   formulas <- list(
     "model" = model_form, "random" = random_form,
@@ -428,7 +433,7 @@
   weights_form <- .nlme_sigma_form(matched_sigma, x, group)
   #* `correlation formula`
   correlation_form <- nlme::corAR1(0.8, form = as.formula(paste0("~ 1 |",
-                                                                 paste(group, collapse = ":"))))
+                                                                 paste(group, collapse = "*"))))
 
   formulas <- list(
     "model" = model_form, "random" = random_form,
@@ -469,7 +474,7 @@
   weights_form <- .nlme_sigma_form(matched_sigma, x, group)
   #* `correlation formula`
   correlation_form <- nlme::corAR1(0.8, form = as.formula(paste0("~ 1 |",
-                                                                 paste(group, collapse = ":"))))
+                                                                 paste(group, collapse = "*"))))
 
   formulas <- list(
     "model" = model_form, "random" = random_form,
@@ -510,7 +515,7 @@
   weights_form <- .nlme_sigma_form(matched_sigma, x, group)
   #* `correlation formula`
   correlation_form <- nlme::corAR1(0.8, form = as.formula(paste0("~ 1 |",
-                                                                 paste(group, collapse = ":"))))
+                                                                 paste(group, collapse = "*"))))
 
   formulas <- list(
     "model" = model_form, "random" = random_form,
@@ -552,7 +557,7 @@
   weights_form <- .nlme_sigma_form(matched_sigma, x, group)
   #* `correlation formula`
   correlation_form <- nlme::corAR1(0.8, form = as.formula(paste0("~ 1 |",
-                                                                 paste(group, collapse = ":"))))
+                                                                 paste(group, collapse = "*"))))
 
   formulas <- list(
     "model" = model_form, "random" = random_form,
@@ -578,7 +583,7 @@
   #* nlme insists that correlation and RE formulas use the same grouping,
   #* so i will not be able to account for individual autocorrelation in the GAM option
   correlation_form <- nlme::corAR1(0.8, form = stats::as.formula(paste0("~ 1 |",
-                                                                        paste(group, collapse = ":"))))
+                                                                        paste(group, collapse = "*"))))
 
   formulas <- list(
     "model" = model_form, "random" = random_form,
@@ -627,7 +632,7 @@
   weights_form <- .nlme_sigma_form(matched_sigma, x, group)
   #* `correlation formula`
   correlation_form <- nlme::corAR1(0.8, form = as.formula(paste0("~ 1 |",
-                                                                 paste(group, collapse = ":"))))
+                                                                 paste(group, collapse = "*"))))
 
   formulas <- list(
     "model" = model_form, "random" = random_form,
@@ -668,7 +673,7 @@
   weights_form <- .nlme_sigma_form(matched_sigma, x, group)
   #* `correlation formula`
   correlation_form <- nlme::corAR1(0.8, form = as.formula(paste0("~ 1 |",
-                                                                 paste(group, collapse = ":"))))
+                                                                 paste(group, collapse = "*"))))
 
   formulas <- list(
     "model" = model_form, "random" = random_form,
@@ -710,7 +715,7 @@
   weights_form <- .nlme_sigma_form(matched_sigma, x, group)
   #* `correlation formula`
   correlation_form <- nlme::corAR1(0.8, form = as.formula(paste0("~ 1 |",
-                                                                 paste(group, collapse = ":"))))
+                                                                 paste(group, collapse = "*"))))
 
   formulas <- list(
     "model" = model_form, "random" = random_form,
@@ -751,7 +756,7 @@
   weights_form <- .nlme_sigma_form(matched_sigma, x, group)
   #* `correlation formula`
   correlation_form <- nlme::corAR1(0.8, form = as.formula(paste0("~ 1 |",
-                                                                 paste(group, collapse = ":"))))
+                                                                 paste(group, collapse = "*"))))
 
   formulas <- list(
     "model" = model_form, "random" = random_form,
@@ -792,7 +797,7 @@
   weights_form <- .nlme_sigma_form(matched_sigma, x, group)
   #* `correlation formula`
   correlation_form <- nlme::corAR1(0.8, form = as.formula(paste0("~ 1 |",
-                                                                 paste(group, collapse = ":"))))
+                                                                 paste(group, collapse = "*"))))
 
   formulas <- list(
     "model" = model_form, "random" = random_form,
@@ -839,7 +844,7 @@
   weights_form <- .nlme_sigma_form(matched_sigma, x, group)
   #* `correlation formula`
   correlation_form <- nlme::corAR1(0.8, form = as.formula(paste0("~ 1 |",
-                                                                 paste(group, collapse = ":"))))
+                                                                 paste(group, collapse = "*"))))
 
   formulas <- list(
     "model" = model_form, "random" = random_form,
