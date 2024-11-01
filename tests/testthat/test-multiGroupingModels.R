@@ -1,9 +1,12 @@
 set.seed(123)
 df <- growthSim("logistic",
-                n = 20, t = 25,
-                params = list("A" = c(200, 190, 175, 160),
-                              "B" = c(13, 11, 12, 14),
-                              "C" = c(3, 3.25, 2.8, 3.1)))
+  n = 20, t = 25,
+  params = list(
+    "A" = c(200, 190, 175, 160),
+    "B" = c(13, 11, 12, 14),
+    "C" = c(3, 3.25, 2.8, 3.1)
+  )
+)
 df$group1 <- ifelse(df$group %in% c("a", "b"), "a", "b")
 df$group2 <- ifelse(df$group %in% c("a", "c"), "c", "d")
 df$group3 <- sample(c("e", "f"), nrow(df), replace = TRUE)
@@ -20,8 +23,10 @@ test_that("Logistic brms model with multiple groups", {
     df = df, type = "brms"
   )
   expect_s3_class(ss, "pcvrss")
-  fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1,
-                   refresh = 0, silent = 2)
+  fit <- fitGrowth(ss,
+    backend = "cmdstanr", iter = 500, chains = 1, cores = 1,
+    refresh = 0, silent = 2
+  )
   expect_s3_class(fit, "brmsfit")
   p <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
   expect_s3_class(p, "ggplot")
@@ -149,12 +154,3 @@ test_that("Logistic mgcv model with multiple groups", {
   p2 <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df, groups = "a.d")
   expect_s3_class(p2, "ggplot")
 })
-
-
-
-
-
-
-
-
-

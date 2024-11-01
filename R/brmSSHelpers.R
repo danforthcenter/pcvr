@@ -88,12 +88,12 @@
       sd <- ifelse(nlp %in% names(tenth_of_priors), tenth_of_priors[[nlp]], 3)
       default_interaction_prior[
         default_interaction_prior$nlpar == nlp, "prior"
-        ] <- paste0("normal(0, ", sd ,")")
+      ] <- paste0("normal(0, ", sd, ")")
     }
     return(default_interaction_prior)
   } else {
-      return(NULL)
-    }
+    return(NULL)
+  }
 }
 
 #' Helper function to fix numeric priors
@@ -542,8 +542,10 @@
     } else {
       #* linear parameterization using x directly
       if (int) {
-        form <- brms::nlf(as.formula(paste0(y, " ~ ", y, "I + (", x, "+", x, ":",
-                                            paste(group, collapse = ":"), ")")))
+        form <- brms::nlf(as.formula(paste0(
+          y, " ~ ", y, "I + (", x, "+", x, ":",
+          paste(group, collapse = ":"), ")"
+        )))
         pars <- paste0(y, "I")
       } else {
         form <- as.formula(paste0(y, " ~ ", x, "+", x, ":", paste(group, collapse = ":")))

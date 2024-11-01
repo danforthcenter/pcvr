@@ -137,10 +137,15 @@ nlsPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL,
   }
   #* `make new data if timerange is not NULL`
   if (!is.null(timeRange)) {
-    new_data <- do.call(expand.grid,
-                        append(list(timeRange),
-                               c(lapply(group, function(grp) {unique(df[[grp]])}))
-                        ))
+    new_data <- do.call(
+      expand.grid,
+      append(
+        list(timeRange),
+        c(lapply(group, function(grp) {
+          unique(df[[grp]])
+        }))
+      )
+    )
     colnames(new_data) <- c(x, group)
     df <- df[df[[x]] >= min(timeRange) & df[[x]] <= max(timeRange), ]
   } else {
@@ -174,22 +179,29 @@ nlsPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL,
   }
   #* `groupFill`
   if (groupFill) {
-    virVals <- unlist(lapply(rep(virMaps, length.out = length(unique(df[["group_interaction"]]))),
-                             function(pal) {
-      viridis::viridis(1, begin = 0.5, option = pal)
-    }))
+    virVals <- unlist(lapply(
+      rep(virMaps, length.out = length(unique(df[["group_interaction"]]))),
+      function(pal) {
+        viridis::viridis(1, begin = 0.5, option = pal)
+      }
+    ))
     color_scale <- ggplot2::scale_color_manual(values = virVals)
   } else {
-    color_scale <- ggplot2::scale_color_manual(values = rep("#CC4678FF",
-                                                            length(unique(df[["group_interaction"]]))))
+    color_scale <- ggplot2::scale_color_manual(values = rep(
+      "#CC4678FF",
+      length(unique(df[["group_interaction"]]))
+    ))
   }
 
   #* `plot`
   plot <- ggplot(plotdf, ggplot2::aes(group = interaction(.data[["group_interaction"]]))) +
     facet_layer +
     individual_lines +
-    ggplot2::geom_line(ggplot2::aes(x = .data[[x]], y = .data[["pred"]],
-                                    color = .data[["group_interaction"]]),
+    ggplot2::geom_line(
+      ggplot2::aes(
+        x = .data[[x]], y = .data[["pred"]],
+        color = .data[["group_interaction"]]
+      ),
       linewidth = 0.7,
       show.legend = groupFill
     ) + # using middle of plasma pal
@@ -245,10 +257,15 @@ gamPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
   }
   #* `make new data if timerange is not NULL`
   if (!is.null(timeRange)) {
-    new_data <- do.call(expand.grid,
-                        append(list(timeRange),
-                               c(lapply(group, function(grp) {unique(df[[grp]])}))
-                        ))
+    new_data <- do.call(
+      expand.grid,
+      append(
+        list(timeRange),
+        c(lapply(group, function(grp) {
+          unique(df[[grp]])
+        }))
+      )
+    )
     colnames(new_data) <- c(x, group)
     df <- df[df[[x]] >= min(timeRange) & df[[x]] <= max(timeRange), ]
   } else {
@@ -287,22 +304,29 @@ gamPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
   }
   #* `groupFill`
   if (groupFill) {
-    virVals <- unlist(lapply(rep(virMaps, length.out = length(unique(df[["group_interaction"]]))),
-                             function(pal) {
-      viridis::viridis(1, begin = 0.5, option = pal)
-    }))
+    virVals <- unlist(lapply(
+      rep(virMaps, length.out = length(unique(df[["group_interaction"]]))),
+      function(pal) {
+        viridis::viridis(1, begin = 0.5, option = pal)
+      }
+    ))
     color_scale <- ggplot2::scale_color_manual(values = virVals)
   } else {
-    color_scale <- ggplot2::scale_color_manual(values = rep("#CC4678FF",
-                                                            length(unique(df[["group_interaction"]]))))
+    color_scale <- ggplot2::scale_color_manual(values = rep(
+      "#CC4678FF",
+      length(unique(df[["group_interaction"]]))
+    ))
   }
 
   #* `plot`
   plot <- ggplot(plotdf, ggplot2::aes(group = interaction(.data[["group_interaction"]]))) +
     facet_layer +
     individual_lines +
-    ggplot2::geom_line(ggplot2::aes(x = .data[[x]], y = .data[["pred"]],
-                                    color = .data[["group_interaction"]]),
+    ggplot2::geom_line(
+      ggplot2::aes(
+        x = .data[[x]], y = .data[["pred"]],
+        color = .data[["group_interaction"]]
+      ),
       linewidth = 0.7,
       show.legend = groupFill
     ) + # using middle of plasma pal

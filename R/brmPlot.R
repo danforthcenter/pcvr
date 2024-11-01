@@ -143,13 +143,20 @@ brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
   if (!all(group %in% colnames(fitData))) {
     fitData[, group] <- ""
   }
-  newData <- do.call(expand.grid,
-          append(list(timeRange),
-                 c(lapply(group, function(grp) {unique(fitData[[grp]])}),
-                 list(
-                   "new_1"
-                 ))
-                 ))
+  newData <- do.call(
+    expand.grid,
+    append(
+      list(timeRange),
+      c(
+        lapply(group, function(grp) {
+          unique(fitData[[grp]])
+        }),
+        list(
+          "new_1"
+        )
+      )
+    )
+  )
   colnames(newData) <- c(x, group, individual)
   if (length(group) > 1 && paste(group, collapse = ".") %in% colnames(fitData)) {
     newData[[paste(group, collapse = ".")]] <- interaction(newData[, group])

@@ -74,10 +74,15 @@ nlrqPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL,
   }
   #* `make new data if timerange is not NULL`
   if (!is.null(timeRange)) {
-    new_data <- do.call(expand.grid,
-                       append(list(timeRange),
-                              c(lapply(group, function(grp) {unique(df[[grp]])}))
-                       ))
+    new_data <- do.call(
+      expand.grid,
+      append(
+        list(timeRange),
+        c(lapply(group, function(grp) {
+          unique(df[[grp]])
+        }))
+      )
+    )
     colnames(new_data) <- c(x, group)
     df <- df[df[[x]] >= min(timeRange) & df[[x]] <= max(timeRange), ]
   } else {
@@ -107,14 +112,18 @@ nlrqPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL,
   }
   #* `groupFill`
   if (groupFill) {
-    virList <- lapply(rep(virMaps, length.out = length(unique(interaction(df[, group])))),
-                      function(pal) {
-      virpal_p1 <- viridis::viridis(ceiling(length(predCols) / 2), direction = 1, end = 1, option = pal)
-      virpal_p2 <- viridis::viridis(ceiling(length(predCols) / 2),
-        direction = -1, end = 1, option = pal
-      )[-1]
-      c(virpal_p1, virpal_p2)
-    })
+    virList <- lapply(
+      rep(virMaps, length.out = length(unique(interaction(df[, group])))),
+      function(pal) {
+        virpal_p1 <- viridis::viridis(ceiling(length(predCols) / 2),
+          direction = 1, end = 1, option = pal
+        )
+        virpal_p2 <- viridis::viridis(ceiling(length(predCols) / 2),
+          direction = -1, end = 1, option = pal
+        )[-1]
+        c(virpal_p1, virpal_p2)
+      }
+    )
   } else {
     virpal_p1 <- viridis::plasma(ceiling(length(predCols) / 2), direction = 1, end = 1)
     virpal_p2 <- viridis::plasma(ceiling(length(predCols) / 2), direction = -1, end = 1)[-1]
