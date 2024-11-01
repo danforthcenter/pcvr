@@ -41,7 +41,7 @@ test_that("Logistic brms model with multiple groups", {
     list("A" = c(130, 120, 110, 100), "B" = 10, "C" = 3),
     df = df, type = "brms"
   )
-  expect_s3_class(ss, "pcvrss")
+  expect_s3_class(ss2, "pcvrss")
 })
 
 test_that("Logistic nls model with multiple groups", {
