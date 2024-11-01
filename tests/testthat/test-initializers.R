@@ -1,11 +1,9 @@
 if (!interactive()) {
   pdf(NULL)
 }
-library(testthat)
-library(pcvr)
 
 test_that("double sigmoid models warn about starting values", {
-  df <- data.frame()
+  df <- data.frame(y = 1, time = 1, id = 1, group = 1)
   expect_warning(
     ss <- suppressMessages(
       .nlrqSS(
