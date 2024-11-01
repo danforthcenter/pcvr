@@ -81,7 +81,7 @@ nlrqPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL,
     colnames(new_data) <- c(x, group)
     df <- df[df[[x]] >= min(timeRange) & df[[x]] <= max(timeRange), ]
   } else {
-    new_data <- NULL
+    new_data <- df
   }
   #* `standardize fit class`
   if (methods::is(fit, "nlrq")) {
@@ -95,8 +95,9 @@ nlrqPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL,
   }))
   predCols <- colnames(preds)
   keep <- which(!duplicated(preds))
-  plotdf <- cbind(df[keep, ], preds[keep, ])
+  plotdf <- cbind(df, preds)
   colnames(plotdf) <- c(colnames(df), colnames(preds))
+  plotdf <- plotdf[keep, ]
   plotdf$group_interaction <- interaction(plotdf[, group])
 
   #* `facetGroups`
