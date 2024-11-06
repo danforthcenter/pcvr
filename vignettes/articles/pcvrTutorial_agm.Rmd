@@ -1,6 +1,6 @@
 ---
 title: "Advanced Growth Modeling with `pcvr`"
-subtitle: "pcvr v1.0.0"
+subtitle: "pcvr v1.1.0.0"
 author: Josh Sumner
 format:
   revealjs:
