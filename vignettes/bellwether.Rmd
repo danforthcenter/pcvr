@@ -69,235 +69,62 @@ plot(support, dbeta(support, 5, 5), type = "l", main = "simulated example")
 ```
 
 
-## Read In Data
+## Load Data
 
-### `read.pcv`
+In this vignette we will use simulated data but there are examples on [github](https://danforthcenter.github.io/pcvr/) using `PlantCV` output read from online if you run into metadata handling problems. This simulated data picks up roughly where the `Reading pcv data` article ends.
 
-Bellwether data can be very large so this vignette will use a small bellwether dataset that is already subset to remove most multi-value traits (most color histograms). Both the [single value data](https://github.com/joshqsumner/pcvrTestData) and [multi value data](https://github.com/joshqsumner/pcvrTestData) are available on github. For single value traits being read into wide format there is not a compelling reason to use `read.pcv` in place directly calling `fread` or `read.csv`. The benefits of `read.pcv` are only shown if you need to filter data outside of R or if you want to use your data in a different format than it is stored in (wide going to long and vice versa).
-
-The single value traits can be read in with `read.pcv`, here using `data.table::fread` for speed.
-
-```{r}
-base_url <- "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/"
-base_url2 <- "https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/"
-sv <- read.pcv(
-  filepath = paste0(base_url, "pcv4-single-value-traits.csv"),
-  reader = "fread"
-)
-```
-
-You will generally want to join some metadata to your phenotypes or parse metadata from your barcodes. Metadata key files will generally look and be used like this:
-
-```{r}
-key <- read.csv(paste0(base_url, "smallPhenotyperRun_key.csv"))
-head(key)
-sv <- merge(sv, key, by = "barcode")
-table(sv$genotype, sv$fertilizer)
-```
-
-If we did not have a key file then we would parse our barcodes doing something like this:
-
-```{r}
-genotype <- substr(sv$barcode, 3, 5)
-genotype <- ifelse(genotype == "002", "B73",
-  ifelse(genotype == "003", "W605S",
-    ifelse(genotype == "004", "MM", "Mo17")
+```{r, class.source="simulated", eval = T}
+set.seed(123)
+d <- growthSim("logistic",
+  n = 30, t = 25,
+  params = list(
+    "A" = c(140, 155, 150, 165, 180, 190, 175, 185, 200, 220, 210, 205),
+    "B" = c(13, 11, 12, 11, 10, 11, 12, 13, 14, 12, 12, 13),
+    "C" = c(3, 3.25, 3.5, 3.1, 2.9, 3.4, 3.75, 2.9, 3, 3.1, 3.25, 3.3)
   )
 )
-fertilizer <- substr(sv$barcode, 8, 8)
-fertilizer <- ifelse(fertilizer == "A", 100,
-  ifelse(fertilizer == "B", 50, 0)
-)
-table(genotype, fertilizer)
-```
-
-Here we'll also convert some of the phenotypes from pixel units to meaningful units. Here we know that the chips on our color card are 1.2cm on each side, so we can use the following conversion. You can convert these phenotypes to whatever units you like, but you need to know the size of the color card chips in some real unit and color correct in plantCV so that the color chip measurements are returned.
-
-```{r}
-chip_size_px <- mean(c(sv$median_color_chip_height_median, sv$median_color_chip_width_median)) # ~52
-
-px_per_cm <- chip_size_px / 1.2 # ~ 43.5
-pixels_per_cmsq <- px_per_cm^2 # ~ 1890
-
-sv$area_cm2 <- sv$area_pixels / pixels_per_cmsq
-sv$height_cm <- sv$height_pixels / px_per_cm
-```
-
-
-### Very large datasets
-
-Sometimes large plantCV output may be too large to be read into memory for R. In that case `read.pcv` has a `filter` argument which will filter rows using awk through linux/unix outside of R. That feature would work as shown below to read only single value traits into memory. This can take a few minutes but allows the entirely workflow to be documented in one R file. 
-
-
-```{r, class.source="static-code", eval=F}
-example <- read.pcv("prohibitivelyLargeFile.csv",
-  filters = list(
-    "trait in area_pixels, area_above_reference_pixels, area_below_reference_pixels",
-    "sample in default"
+d$genotype <- ifelse(d$group %in% letters[1:3], "MM",
+  ifelse(d$group %in% letters[4:6], "B73",
+    ifelse(d$group %in% letters[7:9], "Mo17", "W605S")
   )
 )
-```
-
-### `read.pcv.4.x`
-
-Before the release of PlantCV version 4 there were several widely used branches of PlantCV that output results as a single long format csv file. The original goal of `read.pcv` was to make it easier to work with those files. Now that the default output has changed the `read.pcv` function has been somewhat simplified but it can still be used for these "PlantCV 4.x" legacy style data.
-
-```{r, class.source="static-code", eval=F}
-sv <- read.pcv(paste0(base_url2, "smallPhenotyperRun.csv"),
-  mode = "wide",
-  reader = "fread"
+d$fertilizer <- ifelse(d$group %in% letters[seq(1, 12, 3)], 0,
+  ifelse(d$group %in% letters[seq(2, 12, 3)], 50, 100)
 )
-
-if (TRUE) { # we can parse barcodes for the metadata that we need
-  sv$genotype <- substr(sv$barcode, 3, 5)
-  sv$genotype <- ifelse(sv$genotype == "002", "B73",
-    ifelse(sv$genotype == "003", "W605S",
-      ifelse(sv$genotype == "004", "MM", "Mo17")
+colnames(d)[c(1, 3, 4)] <- c("barcode", "DAS", "area_cm2")
+d$height_cm <- growthSim("monomolecular",
+  n = 30, t = 25,
+  params = list(
+    "A" = c(
+      25, 30, 35, 32, 34, 30,
+      37, 36, 34, 33, 35, 38
+    ),
+    "B" = c(
+      0.12, 0.08, 0.1, 0.11, 0.1,
+      0.12, 0.07, 0.12, 0.11, 0.09, 0.08, 0.09
     )
   )
-  sv$fertilizer <- substr(sv$barcode, 8, 8)
-  sv$fertilizer <- ifelse(sv$fertilizer == "A", "100",
-    ifelse(sv$fertilizer == "B", "50", "0")
+)$y
+d$width_cm <- growthSim("power law",
+  n = 30, t = 25,
+  params = list(
+    "A" = c(
+      10, 14, 13, 11, 12, 13,
+      10, 13, 14, 11, 14, 14
+    ),
+    "B" = c(
+      1.05, 1.13, 1.17, 1.01, 1.2,
+      1, 1.04, 1.07, 1.17, 1.04, 1.16, 1.17
+    )
   )
-} else { # or we might use a key file and join it to our data
-  key <- read.csv(paste0(base_url, "smallPhenotyperRun_key.csv"))
-  sv <- merge(sv, key, by = "barcode")
-}
+)$y
+d$hue_circular_mean_degrees <- growthSim("linear",
+  n = 30, t = 25,
+  params = list("A" = c(runif(12, 1, 3)))
+)$y +
+  round(runif(nrow(d), 50, 60))
+sv_ag <- d
 ```
-
-
-### `read.pcv.3`
-
-Legacy Bellwether data (plantCV version 3 output) can also be read in with `read.pcv.3` which is a wrapper around `read.pcv` which attempts to do several common tasks related bellwether data joining internally. This should be considered experimental as it is based on plantCV version 3 and earlier outputs/bellwether experiments can take many formats and this has only been considered with a few datasets. With the older plantCV output the data is already in a wider format so here the default mode is "long". Note that while `read.pcv` works fine with this older data and still has some added benefits the reasons to use it in place of `data.table::fread` or `base::read.csv` are less compelling.
-
-Here we have examples of reading in various amounts of plantCV 3 bellwether data. In the final example we also list a conversion to take area from pixels to $\text{cm}^2$ for the 5MP camera that was used prior to 2023. Note that the conversion would change for a different camera such as the current 18MP camera. It is a good idea to check your color chip sizes if you are not sure about the appropriate conversion.
-
-```{r, eval=F}
-onlyPhenos <- read.pcv.3(file = paste0(base_url, "pcv3Phenos.csv"), metaCol = NULL)
-colnames(onlyPhenos)
-
-phenosAndMeta <- read.pcv.3(
-  file = paste0(base_url, "pcv3Phenos.csv"), metaCol = "meta",
-  metaForm = "vis_view_angle_zoom_horizontal_gain_exposure_v_new_n_rep",
-  joinSnapshot = "id"
-)
-colnames(phenosAndMeta)
-
-all <- read.pcv.3(
-  file = paste0(base_url, "pcv3Phenos.csv"),
-  snapshotFile = paste0(base_url, "pcv3Snapshot.csv"),
-  designFile = paste0(base_url, "pcv3Design.csv"),
-  metaCol = "meta", metaForm = "vis_view_angle_zoom_horizontal_gain_exposure_v_new_n_rep",
-  joinSnapshot = "id", conversions = list(area = 13.2 * 3.7 / 46856)
-)
-colnames(all)
-```
-
-
-### Other metadata
-
-Often we want to convert our timestamp data from the lemnatech into either days after start (DAS), days after planting (DAP), or days after emergence (DAE). By default the `bw.time` function will add columns called DAS, DAP, and DAE to your data. Days after emergence requires using a phenotype and a value to classify emergence. Here an area greater than 10 pixels is considered an emerged plant. In this example with a planting delay of 0 DAP and DAE will be the same, but both are still created for the purpose of the example.
-
-```{r}
-out <- bw.time(sv,
-  plantingDelay = 0, phenotype = "area_pixels", cutoff = 10,
-  timeCol = "timestamp", group = c("barcode", "rotation"), plot = TRUE
-)
-out$plot
-sv <- out$data
-dim(sv)
-```
-
-Note that in these plots, and particularly clearly in the DAE plot, there are lots of plants which show a vertical line on their last day, indicating that our grouping might be incorrect. For this data that is due to the imaging schedule changing and getting 2 separate images at each rotation on the last day.
-
-Before moving on we'll also check the grouping in our data. Here we see that we have lots of plants with more than one image per day.
-
-```{r}
-checkGroups(sv, c("DAS", "barcode", "rotation", "genotype", "fertilizer"))
-```
-
-
-We can combine images taken at different angles of the same plant on a given day with `aggregate`, where we will also remove some columns we aren't using. In this case we use the mean of observations, but some people prefer a sum. Either way is fine. Here we also remove the DAE and DAP columns since we will not be using them. 
-
-```{r}
-phenotypes <- colnames(sv)[c(19:35, 43:45, 48:49)]
-phenoForm <- paste0("cbind(", paste0(phenotypes, collapse = ", "), ")")
-groupForm <- "DAS+timestamp+barcode+genotype+fertilizer"
-form <- as.formula(paste0(phenoForm, "~", groupForm))
-sv_ag_with_outliers <- aggregate(form, data = sv, mean, na.rm = TRUE)
-dim(sv_ag_with_outliers)
-```
-
-
-### Outlier Removal
-
-The `bw.outliers` function can be used to remove outliers relative to a phenotype using cook's distance. Here due to the experimental design having these plants germinate on the machine around 1 percent of data are removed as outliers. The plot shows removed data points in red, although here that is hard to see.
-
-```{r}
-out <- bw.outliers(
-  df = sv_ag_with_outliers, phenotype = "area_pixels",
-  group = c("DAS", "genotype", "fertilizer"), plotgroup = c("barcode")
-)
-sv_ag <- out$data
-out$plot
-dim(sv_ag)
-```
-
-It is also useful to check our grouping assumptions again, here we see that there are some plants with multiple images from a single day.
-
-```{r}
-checkGroups(sv_ag, c("DAS", "barcode", "genotype", "fertilizer"))
-```
-
-
-### Watering Data
-
-We might also want to check the watering data, which can be read easily from json with `bw.water`.
-
-```{r}
-water <- bw.water(paste0(base_url, "metadata.json"))
-
-water$genotype <- substr(water$barcode, 3, 5)
-water$genotype <- ifelse(water$genotype == "002", "B73",
-  ifelse(water$genotype == "003", "W605S",
-    ifelse(water$genotype == "004", "MM", "Mo17")
-  )
-)
-water$fertilizer <- substr(water$barcode, 8, 8)
-water$fertilizer <- ifelse(water$fertilizer == "A", "100",
-  ifelse(water$fertilizer == "B", "50", "0")
-)
-
-ggplot(water[water$weight_after != -1, ], aes(
-  x = DAS,
-  y = water_amount, group = barcode, color = genotype
-)) +
-  facet_wrap(~ factor(fertilizer, levels = c("0", "50", "100"))) +
-  geom_line() +
-  pcv_theme() +
-  guides(color = guide_legend(title = "Condition", override.aes = list(linewidth = 5))) +
-  labs(y = "Watering Amount (g)") +
-  theme(legend.position = "bottom")
-```
-
-A common use for watering data is to look at water use efficiency (WUE). Here we can calculate an approximation of WUE based on the change in some phenotype (area) over the change in weight between waterings. Note that the plants in this example are very young and as such the data in this example is dominated by noise.
-
-
-```{r}
-test <- pwue(df = sv_ag, w = water, pheno = "area_pixels", time = "timestamp", id = "barcode")
-
-ggplot(test, aes(x = DAS, y = pWUE, color = genotype, group = barcode)) +
-  geom_line() +
-  guides(color = guide_legend(override.aes = list(linewidth = 5))) +
-  labs(y = expression("Pseudo WUE (" ~ frac(
-    Delta ~ textstyle("Area")[" pixels"],
-    Delta ~ textstyle("Weight")[" g"]
-  ) ~ ")")) +
-  pcv_theme()
-```
-
-
-
 
 ## FREM
 
@@ -306,14 +133,7 @@ Now that our data is read in and has undergone some basic quality control we wan
 ```{r, warning = FALSE, message = FALSE}
 frem(sv_ag,
   des = c("genotype", "fertilizer"),
-  phenotypes = c(
-    "area_pixels", "area_above_reference_pixels", "area_below_reference_pixels",
-    "convex_hull_area_pixels", "convex_hull_vertices_none", "ellipse_angle_degrees",
-    "ellipse_eccentricity_none", "ellipse_major_axis_pixels", "ellipse_minor_axis_pixels",
-    "height_pixels", "height_above_reference_pixels", "height_below_reference_pixels",
-    "horizontal_reference_position_none", "hue_circular_mean_degrees", "hue_circular_std_degrees",
-    "hue_median_degrees", "perimeter_pixels", "solidity_none", "width_pixels"
-  ),
+  phenotypes = c("area_cm2", "height_cm", "width_cm", "hue_circular_mean_degrees"),
   timeCol = "DAS", cor = TRUE, returnData = FALSE, combine = FALSE, markSingular = TRUE, time = NULL
 )
 ```
@@ -323,15 +143,7 @@ Here we look at how much variance in each phenotype was explained over the cours
 ```{r, warning = FALSE, message = FALSE}
 frem(sv_ag,
   des = c("genotype", "fertilizer"),
-  phenotypes = c(
-    "area_pixels", "area_above_reference_pixels", "area_below_reference_pixels",
-    "convex_hull_area_pixels", "convex_hull_vertices_none", "ellipse_angle_degrees",
-    "ellipse_eccentricity_none", "ellipse_major_axis_pixels",
-    "ellipse_minor_axis_pixels",
-    "height_pixels", "height_above_reference_pixels", "height_below_reference_pixels",
-    "horizontal_reference_position_none", "hue_circular_mean_degrees", "hue_circular_std_degrees",
-    "hue_median_degrees", "perimeter_pixels", "solidity_none", "width_pixels"
-  ),
+  phenotypes = c("area_cm2", "height_cm", "width_cm"),
   timeCol = "DAS", cor = FALSE, returnData = FALSE, combine = FALSE, markSingular = FALSE, time = "all"
 )
 ```
@@ -388,7 +200,6 @@ rt <- relativeTolerance(sv_ag,
   phenotypes = c("area_cm2", "height_cm"),
   grouping = c("fertilizer", "genotype", "DAS"), control = "fertilizer", controlGroup = "100"
 )
-
 
 ggplot(
   rt[rt$phenotype == "area_cm2" & rt$DAS %in% c(10:12), ],
@@ -646,43 +457,34 @@ ggplot(sv_ag[sv_ag$DAS == 18, ], aes(
 
 
 ```{r}
-hue_wide <- read.pcv(paste0(base_url2, "pcv4-multi-value-traits.csv"),
-  mode = "wide", reader = "fread"
+set.seed(123)
+dists <- stats::setNames(lapply(runif(12, 50, 60), function(i) {
+  list(mean = i, sd = 15)
+}), rep("rnorm", 12))
+d <- mvSim(dists,
+  wide = TRUE, n_samples = 5,
+  t = 25, model = "linear",
+  params = list("A" = runif(12, 1, 3))
 )
-hue_wide$genotype <- substr(hue_wide$barcode, 3, 5)
-hue_wide$genotype <- ifelse(hue_wide$genotype == "002", "B73",
-  ifelse(hue_wide$genotype == "003", "W605S",
-    ifelse(hue_wide$genotype == "004", "MM", "Mo17")
+d$group <- sapply(sub(".*_", "", d$group), function(x) {
+  letters[as.numeric(x)]
+})
+d$genotype <- ifelse(d$group %in% letters[1:3], "MM",
+  ifelse(d$group %in% letters[4:6], "B73",
+    ifelse(d$group %in% letters[7:9], "Mo17", "W605S")
   )
 )
-hue_wide$fertilizer <- substr(hue_wide$barcode, 8, 8)
-hue_wide$fertilizer <- ifelse(hue_wide$fertilizer == "A", "100",
-  ifelse(hue_wide$fertilizer == "B", "50", "0")
+d$fertilizer <- ifelse(d$group %in% letters[seq(1, 12, 3)], 0,
+  ifelse(d$group %in% letters[seq(2, 12, 3)], 50, 100)
 )
-hue_wide <- bw.time(hue_wide, timeCol = "timestamp", group = "barcode", plot = FALSE)
-
-phenotypes <- colnames(hue_wide)[grepl("hue_frequencies", colnames(hue_wide))]
-phenoForm <- paste0("cbind(", paste0(phenotypes, collapse = ", "), ")")
-groupForm <- "DAS+barcode+genotype+fertilizer"
-form <- as.formula(paste0(phenoForm, "~", groupForm))
-hue_wide <- aggregate(form, data = hue_wide, mean, na.rm = TRUE)
+colnames(d)[1] <- "DAS"
+colnames(d) <- gsub("sim_", "hue_frequencies_", colnames(d))
+hue_wide <- d
 ```
-
 
 ### Joyplots
 
-Joyplots are a common way to look at lots of distributions. Here we check the hue histograms as joyplots using the 18th day and add a new fill for the hue colorspace.
-
-```{r, message=FALSE}
-p <- pcv.joyplot(hue_wide[hue_wide$DAS == 18, ],
-  index = "hue_frequencies",
-  group = c("fertilizer", "genotype")
-)
-p + scale_fill_gradientn(colors = scales::hue_pal(l = 65)(360)) +
-  scale_y_discrete(limits = c("0", "50", "100"))
-```
-
-We can also specify a y argument to show multiple days across several variables.
+Joyplots are a common way to look at lots of distributions. Here we check the hue histograms as joyplots using three days and add a new fill for the hue colorspace. Joyplots can be made with long or wide multi-value traits.
 
 ```{r, message=FALSE}
 p <- pcv.joyplot(hue_wide[hue_wide$DAS %in% c(5, 10, 15), ],
@@ -714,7 +516,7 @@ hue_res_ln <- conjugate(
 
 ### Ordination
 
-Ordinations are another common way to look at multi value traits. The `pcadf` function runs ordinations and optionally returns the PCs with metadata.
+Ordinations are another common way to look at multi value traits. The `pcadf` function runs ordinations and optionally returns the PCs with metadata. Here our simulated data does has a very deterministic pattern due.
 
 ```{r}
 pcadf(hue_wide, cols = "hue_frequencies", color = "genotype", returnData = FALSE) +
@@ -836,6 +638,8 @@ net <- pcv.net(EMD$data, meta = c("fertilizer", "genotype", "DAS"), filter = 0.5
 ```{r, eval=FALSE}
 net.plot(net, fill = "DAS", shape = "fertilizer", size = 2)
 ```
+
+Our example network shows some clustering but real data's patterns are likely to be more complex:
 
 ![](network.png)
 

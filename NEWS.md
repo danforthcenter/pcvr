@@ -1,3 +1,7 @@
+# pcvr 1.1.1.0
+
+Fixing inelegant failure on `cran` when building the bellwether vignette without wifi and resubmitting to `cran`.
+
 # pcvr 1.1.0.1
 
 Adding arguments to `mvSim` to allow for easier simulation of longitudinal multi-value traits from the growth model options supported in `growthSim`.
