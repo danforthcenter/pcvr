@@ -77,26 +77,51 @@ In this vignette we will use simulated data but there are examples on [github](h
 set.seed(123)
 d <- growthSim("logistic",
   n = 30, t = 25,
-  params = list("A" = c(140, 155, 150, 165, 180, 190, 175, 185, 200, 220, 210, 205),
-                "B" = c(13, 11, 12, 11, 10, 11, 12, 13, 14, 12, 12, 13),
-                "C" = c(3, 3.25, 3.5, 3.1, 2.9, 3.4, 3.75, 2.9, 3, 3.1, 3.25, 3.3))
+  params = list(
+    "A" = c(140, 155, 150, 165, 180, 190, 175, 185, 200, 220, 210, 205),
+    "B" = c(13, 11, 12, 11, 10, 11, 12, 13, 14, 12, 12, 13),
+    "C" = c(3, 3.25, 3.5, 3.1, 2.9, 3.4, 3.75, 2.9, 3, 3.1, 3.25, 3.3)
+  )
 )
 d$genotype <- ifelse(d$group %in% letters[1:3], "MM",
-                     ifelse(d$group %in% letters[4:6], "B73",
-                            ifelse(d$group %in% letters[7:9], "Mo17", "W605S")))
+  ifelse(d$group %in% letters[4:6], "B73",
+    ifelse(d$group %in% letters[7:9], "Mo17", "W605S")
+  )
+)
 d$fertilizer <- ifelse(d$group %in% letters[seq(1, 12, 3)], 0,
-                       ifelse(d$group %in% letters[seq(2, 12, 3)], 50, 100))
+  ifelse(d$group %in% letters[seq(2, 12, 3)], 50, 100)
+)
 colnames(d)[c(1, 3, 4)] <- c("barcode", "DAS", "area_cm2")
 d$height_cm <- growthSim("monomolecular",
   n = 30, t = 25,
-  params = list("A" = c(25, 30, 35, 32, 34, 30, 37, 36, 34, 33, 35, 38),
-                "B" = c(0.12, 0.08, 0.1, 0.11, 0.1, 0.12, 0.07, 0.12, 0.11, 0.09, 0.08, 0.09)))$y
+  params = list(
+    "A" = c(
+      25, 30, 35, 32, 34, 30,
+      37, 36, 34, 33, 35, 38
+    ),
+    "B" = c(
+      0.12, 0.08, 0.1, 0.11, 0.1,
+      0.12, 0.07, 0.12, 0.11, 0.09, 0.08, 0.09
+    )
+  )
+)$y
 d$width_cm <- growthSim("power law",
   n = 30, t = 25,
-  params = list("A" = c(10, 14, 13, 11, 12, 13, 10, 13, 14, 11, 14, 14),
-                "B" = c(1.05, 1.13, 1.17, 1.01, 1.2, 1, 1.04, 1.07, 1.17, 1.04, 1.16, 1.17)))$y
-d$hue_circular_mean_degrees <- growthSim("linear", n = 30, t = 25,
-                                         params = list("A" = c(runif(12, 1, 3))))$y +
+  params = list(
+    "A" = c(
+      10, 14, 13, 11, 12, 13,
+      10, 13, 14, 11, 14, 14
+    ),
+    "B" = c(
+      1.05, 1.13, 1.17, 1.01, 1.2,
+      1, 1.04, 1.07, 1.17, 1.04, 1.16, 1.17
+    )
+  )
+)$y
+d$hue_circular_mean_degrees <- growthSim("linear",
+  n = 30, t = 25,
+  params = list("A" = c(runif(12, 1, 3)))
+)$y +
   round(runif(nrow(d), 50, 60))
 sv_ag <- d
 ```
@@ -436,15 +461,22 @@ set.seed(123)
 dists <- stats::setNames(lapply(runif(12, 50, 60), function(i) {
   list(mean = i, sd = 15)
 }), rep("rnorm", 12))
-d <- mvSim(dists, wide = TRUE, n_samples = 5,
-           t = 25, model = "linear",
-           params = list("A" = runif(12, 1, 3)))
-d$group <- sapply(sub(".*_", "", d$group), function(x) {letters[as.numeric(x)]})
+d <- mvSim(dists,
+  wide = TRUE, n_samples = 5,
+  t = 25, model = "linear",
+  params = list("A" = runif(12, 1, 3))
+)
+d$group <- sapply(sub(".*_", "", d$group), function(x) {
+  letters[as.numeric(x)]
+})
 d$genotype <- ifelse(d$group %in% letters[1:3], "MM",
-                     ifelse(d$group %in% letters[4:6], "B73",
-                            ifelse(d$group %in% letters[7:9], "Mo17", "W605S")))
+  ifelse(d$group %in% letters[4:6], "B73",
+    ifelse(d$group %in% letters[7:9], "Mo17", "W605S")
+  )
+)
 d$fertilizer <- ifelse(d$group %in% letters[seq(1, 12, 3)], 0,
-                       ifelse(d$group %in% letters[seq(2, 12, 3)], 50, 100))
+  ifelse(d$group %in% letters[seq(2, 12, 3)], 50, 100)
+)
 colnames(d)[1] <- "DAS"
 colnames(d) <- gsub("sim_", "hue_frequencies_", colnames(d))
 hue_wide <- d
