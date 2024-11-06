@@ -76,16 +76,18 @@ ggplot(x, aes(
   pcv_theme() +
   labs(x = "bin")
 dists = list(rnorm = list(mean = 30, sd = 15), rnorm = list(mean = 25, sd = 10))
-x3 <- mvSim(dists = dists, wide = FALSE, # here we make longitudinal data
-            t = 10, model = "linear", params = list("A" = c(10, 5)))
+x3 <- mvSim(
+  dists = dists, wide = FALSE, # here we make longitudinal data
+  t = 10, model = "linear", params = list("A" = c(10, 5))
+)
 ggplot(x3, aes(
   x = as.numeric(sub("sim_", "", variable)),
-  y = value, group = interaction(group, id), fill = group)) +
-facet_wrap(~times) +
-geom_col(position = "identity", alpha = 0.25) +
-pcv_theme() +
-labs(x = "bin")
-
+  y = value, group = interaction(group, id), fill = group
+)) +
+  facet_wrap(~times) +
+  geom_col(position = "identity", alpha = 0.25) +
+  pcv_theme() +
+  labs(x = "bin")
 
 }
 \keyword{multi-value}
