@@ -124,6 +124,7 @@ test_that("distPlot works with many models", {
   skip_if_not_installed("brms")
   skip_if_not_installed("cmdstanr")
   skip_on_cran()
+  skip_if_offline("r-project.org")
   options(cmdstanr_warn_inits = FALSE)
   load(url("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/brmsFits.rdata"))
   fits <- list(fit_3, fit_15)
