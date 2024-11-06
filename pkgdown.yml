@@ -11,8 +11,9 @@ articles:
   articles/pcvrTutorial_igm: pcvrTutorial_igm.html
   articles/pcvrTutorial_mvt: pcvrTutorial_mvt.html
   articles/pcvrTutorial1: pcvrTutorial1.html
+  articles/reading_pcv_data: reading_pcv_data.html
   roots: roots.html
-last_built: 2024-11-06T13:12Z
+last_built: 2024-11-06T20:54Z
 urls:
   reference: https://danforthcenter.github.io/pcvr/reference
   article: https://danforthcenter.github.io/pcvr/articles
