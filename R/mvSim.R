@@ -50,16 +50,18 @@
 #'   pcv_theme() +
 #'   labs(x = "bin")
 #' dists = list(rnorm = list(mean = 30, sd = 15), rnorm = list(mean = 25, sd = 10))
-#' x3 <- mvSim(dists = dists, wide = FALSE, # here we make longitudinal data
-#'             t = 10, model = "linear", params = list("A" = c(10, 5)))
+#' x3 <- mvSim(
+#'   dists = dists, wide = FALSE, # here we make longitudinal data
+#'   t = 10, model = "linear", params = list("A" = c(10, 5))
+#' )
 #' ggplot(x3, aes(
 #'   x = as.numeric(sub("sim_", "", variable)),
-#'   y = value, group = interaction(group, id), fill = group)) +
-#' facet_wrap(~times) +
-#' geom_col(position = "identity", alpha = 0.25) +
-#' pcv_theme() +
-#' labs(x = "bin")
-#'
+#'   y = value, group = interaction(group, id), fill = group
+#' )) +
+#'   facet_wrap(~times) +
+#'   geom_col(position = "identity", alpha = 0.25) +
+#'   pcv_theme() +
+#'   labs(x = "bin")
 #'
 #' @export
 
@@ -79,14 +81,22 @@ mvSim <- function(dists = list(rnorm = list(mean = 100, sd = 15)),
   vecs <- .makeVecs(dists2, counts, n_samples)
   out <- .simFreqs(vecs, max_bin, min_bin, binwidth, times)
   if (!wide) {
-    out <- cbind(data.frame(id = seq_len(nrow(out))),
-                 out)
+    out <- cbind(
+      data.frame(id = seq_len(nrow(out))),
+      out
+    )
     out <- as.data.frame(
       data.table::melt(
         data.table::as.data.table(out),
-        id.vars = seq_len(min(which(grepl("sim_", colnames(out))))-1)
+        id.vars = seq_len(
+          min(
+            which(
+              grepl("sim_", colnames(out))
+            )
+          ) - 1
         )
       )
+    )
   }
   return(out)
 }
@@ -151,7 +161,9 @@ mvSim <- function(dists = list(rnorm = list(mean = 100, sd = 15)),
   times <- 0
   if (!is.null(t)) {
     pred <- growthSim(model = model, n = 1, t = t, params = params)[, c("group", "y")]
-    pred$group <- sapply(pred$group, function(i) {which(letters == i)})
+    pred$group <- sapply(pred$group, function(i) {
+      which(letters == i)
+    })
     times <- rep(seq_len(t), times = length(dists))
     nms <- sub("_[0-9]+$", "", names(dists))
     dists <- Reduce(append, lapply(seq_along(nms), function(i) {
@@ -171,4 +183,3 @@ mvSim <- function(dists = list(rnorm = list(mean = 100, sd = 15)),
   }
   return(list("dist" = dists, "times" = times))
 }
-
