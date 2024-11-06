@@ -1,3 +1,15 @@
+# pcvr 1.1.0.1
+
+Adding arguments to `mvSim` to allow for easier simulation of longitudinal multi-value traits from the growth model options supported in `growthSim`.
+
+# pcvr 1.1.0.0
+
+Allowing for multiple grouping variables to be used in `growthSS` and downstream functions.
+
+# pcvr 1.0.0.6
+
+Fixing `growthSS` behavior with non-integer time options.
+
 # pcvr 1.0.0.5
 
 Added S3 class for `growthSS` and `mvSS` output (`pcvrss`) with print/summary methods.
