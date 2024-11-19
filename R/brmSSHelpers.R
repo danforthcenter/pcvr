@@ -194,7 +194,8 @@
       if (!grepl("changePoint|I$", par)) {
         paste0("lognormal(log(", priors[[par]], "), 0.25)") # growth parameters are LN
       } else {
-        paste0("student_t(5,", priors[[par]], ", 3)") # changepoints/intercepts are T_5(mu, 3)
+        # changepoints/intercepts are T_5(mu, mu / 5) by default
+        paste0("student_t(5,", priors[[par]], ", ", abs(priors[[par]] / 5), ")")
       }
     })
     priorStanStrings <- unlist(priorStanStrings)
