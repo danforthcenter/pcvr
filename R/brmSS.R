@@ -315,7 +315,7 @@
       init
     }
     formals(initFun)$pars <- pars
-    formals(initFun)$nPerChain <- length(unique(interaction(df[, group])))
+    formals(initFun)$nPerChain <- length(table(df[, group]))
     wrapper <- function() {
       initFun()
     }
