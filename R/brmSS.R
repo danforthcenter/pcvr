@@ -280,7 +280,7 @@
 
   #* `Make parameter grouping formulae`
 
-  if (!is.null(pars)) {
+  if (as.logical(length(pars))) {
     if (USEGROUP) {
       parForm <- as.formula(paste0(paste(pars, collapse = "+"), "~0+", paste(group, collapse = "*")))
     } else {
