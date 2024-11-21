@@ -291,7 +291,7 @@
   }
 
   #* `Combine formulas into brms.formula object`
-  if (is.null(parForm)) {
+  if (is.null(pars)) {
     NL <- FALSE
   } else {
     NL <- TRUE
@@ -308,7 +308,7 @@
   #* ***** `Make priors` *****
   out[["prior"]] <- .makePriors(priors, pars, df, group, USEGROUP, sigma, family, bayesForm)
   #* ***** `Make initializer function` *****
-  if (!is.null(pars)) {
+  if (as.logical(length(pars))) {
     initFun <- function(pars = "?", nPerChain = 1) {
       init <- lapply(pars, function(i) array(rgamma(nPerChain, 1)))
       names(init) <- paste0("b_", pars)

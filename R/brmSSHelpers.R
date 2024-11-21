@@ -3,7 +3,7 @@
 #' @noRd
 
 .makePriors <- function(priors, pars, df, group, USEGROUP, sigma, family, formula) {
-  if (is.null(priors)) {
+  if (is.null(priors) || !as.logical(length(pars))) {
     prior <- .explicitDefaultPrior(formula, df, family)
     return(prior)
   }
@@ -630,8 +630,10 @@
   if (useGroup) {
     by <- paste0(", by = ", paste(group, collapse = ".")) # special variable that is made if there are
     # multiple groups and a gam involved.
+    group <- paste0("0 + ", group)
   } else {
     by <- NULL
+    group <- "1"
   }
   if (nTimes < 11) {
     k <- paste0(", k = ", nTimes)
@@ -640,16 +642,24 @@
   }
   if (dpar) {
     if (int) {
-      form <- brms::nlf(stats::as.formula(paste0(y, " ~ ", y, "I + s(", x, by, k, ")")))
-      pars <- paste0(y, "I")
+      form <- list(
+        brms::nlf(stats::as.formula(paste0(y, " ~ ", y, "I + ", y, "spline"))),
+        stats::as.formula(paste0(y, "I ~ ", group)),
+        stats::as.formula(paste0(y, "spline ~ s(", x, by, k, ")"))
+      )
+      pars <- paste0(y, c("I", "spline"))
     } else {
       form <- stats::as.formula(paste0(y, " ~ s(", x, by, k, ")"))
       pars <- NULL
     }
   } else {
     if (int) {
-      form <- brms::nlf(stats::as.formula(paste0(y, " ~ I + s(", x, by, k, ")")))
-      pars <- "I"
+      form <- list(
+        brms::nlf(stats::as.formula(paste0(y, " ~ I + spline"))),
+        stats::as.formula(paste0("I ~ ", group)),
+        stats::as.formula(paste0("spline ~ s(", x, by, k, ")"))
+      )
+      pars <- c("I", "spline")
     } else {
       form <- stats::as.formula(paste0(y, " ~ s(", x, by, k, ")"))
       pars <- NULL
