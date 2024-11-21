@@ -638,10 +638,23 @@
   } else {
     k <- NULL
   }
-
-  form <- stats::as.formula(paste0(y, " ~ s(", x, by, k, ")"))
-  pars <- NULL
-
+  if (dpar) {
+    if (int) {
+      form <- brms::nlf(stats::as.formula(paste0(y, " ~ ", y, "I + s(", x, by, k, ")")))
+      pars <- paste0(y, "I")
+    } else {
+      form <- stats::as.formula(paste0(y, " ~ s(", x, by, k, ")"))
+      pars <- NULL
+    }
+  } else {
+    if (int) {
+      form <- brms::nlf(stats::as.formula(paste0(y, " ~ I + s(", x, by, k, ")")))
+      pars <- "I"
+    } else {
+      form <- stats::as.formula(paste0(y, " ~ s(", x, by, k, ")"))
+      pars <- NULL
+    }
+  }
   return(list(form = form, pars = pars))
 }
 #' Helper function for brms formulas
