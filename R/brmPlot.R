@@ -131,6 +131,9 @@ brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
                                  fitData, parsed_form) {
   y <- parsed_form$y
   x <- parsed_form$x
+  x_plot_var <- x
+  x_plot_label <- x
+  allow_data_lines <- TRUE
   individual <- parsed_form$individual
   hierarchical_predictor <- parsed_form$hierarchical_predictor
   group <- parsed_form$group
@@ -140,32 +143,40 @@ brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
   if (is.null(timeRange)) {
     timeRange <- unique(fitData[[x]])
   }
+  if (length(hierarchy_value) > 1) {
+    timeRange <- mean(timeRange, na.rm = TRUE)
+    x_plot_var <- hierarchical_predictor
+    x_plot_label <- paste0(hierarchical_predictor, " (", x, " = ", round(timeRange, 1), ")")
+    allow_data_lines <- FALSE
+  }
   if (!all(group %in% colnames(fitData))) {
     fitData[, group] <- ""
   }
-  newData <- do.call(
-    expand.grid,
+  if (!is.null(hierarchical_predictor) && is.null(hierarchy_value)) {
+    hierarchy_value <- mean(fitData[[hierarchical_predictor]])
+  }
+  if (length(hierarchy_value) == 1) {
+    x_plot_label <- paste0(x, " (", hierarchical_predictor, " = ", round(hierarchy_value, 1), ")")
+  }
+  newDataArgs <- append(
+    c(
+      lapply(group, function(grp) {
+        unique(fitData[[grp]])
+      }),
+      list(
+        "new_1"
+      )
+    ),
     append(
       list(timeRange),
-      c(
-        lapply(group, function(grp) {
-          unique(fitData[[grp]])
-        }),
-        list(
-          "new_1"
-        )
-      )
+      list(hierarchy_value)
     )
   )
-  colnames(newData) <- c(x, group, individual)
+  newDataArgs <- newDataArgs[!unlist(lapply(newDataArgs, is.null))]
+  newData <- do.call(expand.grid, newDataArgs)
+  colnames(newData) <- c(group, individual, x, hierarchical_predictor)
   if (length(group) > 1 && paste(group, collapse = ".") %in% colnames(fitData)) {
     newData[[paste(group, collapse = ".")]] <- interaction(newData[, group])
-  }
-  if (!is.null(hierarchical_predictor)) {
-    if (is.null(hierarchy_value)) {
-      hierarchy_value <- mean(fitData[[hierarchical_predictor]])
-    }
-    newData[[hierarchical_predictor]] <- hierarchy_value
   }
   predictions <- cbind(newData, predict(fit, newData, probs = probs))
 
@@ -199,7 +210,7 @@ brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
     do.call(rbind, lapply(seq(1, 49, 2), function(i) {
       min <- paste0("Q", i)
       max <- paste0("Q", 100 - i)
-      iter <- sub[, c(x, group, individual, "Estimate")]
+      iter <- sub[, c(x, group, individual, "Estimate", hierarchical_predictor)]
       iter$q <- round(1 - (c1 * (i - max_obs) + max_prime), 2)
       iter$min <- sub[[min]]
       iter$max <- sub[[max]]
@@ -208,9 +219,9 @@ brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
   }))
   longPreds$plot_group <- as.character(interaction(longPreds[, group]))
   #* `Make plot`
-  p <- ggplot2::ggplot(longPreds, ggplot2::aes(x = .data[[x]], y = .data$Estimate)) +
+  p <- ggplot2::ggplot(longPreds, ggplot2::aes(x = .data[[x_plot_var]], y = .data$Estimate)) +
     facetLayer +
-    ggplot2::labs(x = x, y = y) +
+    ggplot2::labs(x = x_plot_label, y = y) +
     pcv_theme()
   p <- p +
     lapply(unique(longPreds$q), function(q) {
@@ -227,11 +238,11 @@ brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
     viridis::scale_fill_viridis(direction = -1, option = vir_option) +
     ggplot2::labs(fill = "Credible\nInterval")
 
-  if (!is.null(df) && individual != "dummyIndividual") {
+  if (!is.null(df) && individual != "dummyIndividual" && allow_data_lines) {
     df$plot_group <- as.character(interaction(df[, group]))
     p <- p + ggplot2::geom_line(
-      data = df, ggplot2::aes(.data[[x]], .data[[y]],
-        group = interaction(.data[[individual]], .data[["plot_group"]])
+      data = df, ggplot2::aes(.data[[x_plot_var]], .data[[y]],
+                              group = interaction(.data[[individual]], .data[["plot_group"]])
       ),
       color = "gray20", linewidth = 0.2
     )
