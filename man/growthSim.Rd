@@ -22,7 +22,8 @@ Alternatively this can be a pseudo formula to generate data from a segmented gro
 specifying "model1 + model2", see examples and \code{\link{growthSS}}.
 Decay can be specified by including "decay" as part of the model such as "logistic decay" or
 "linear + linear decay". Count data can be specified with the "count: " prefix,
-similar to using "poisson: model" in \link{growthSS}.
+similar to using "poisson: model" in \link{growthSS}. Similarly intercepts can be added with the
+"int_" prefix, in which case an "I" parameter should be specified.
 While "gam" models are supported by \code{growthSS}
 they are not simulated by this function.}
 
@@ -186,6 +187,14 @@ simdf <- growthSim("linear",
 ggplot(simdf, aes(time, y, group = interaction(group, id))) +
   geom_line(aes(color = group)) +
   labs(title = "Linear")
+
+simdf <- growthSim("int_linear",
+  n = 20, t = 25,
+  params = list("A" = c(1.1, 0.95), I = c(100, 120))
+)
+ggplot(simdf, aes(time, y, group = interaction(group, id))) +
+  geom_line(aes(color = group)) +
+  labs(title = "Linear with Intercept")
 
 simdf <- growthSim("logarithmic",
   n = 20, t = 25,

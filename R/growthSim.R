@@ -10,7 +10,8 @@
 #' specifying "model1 + model2", see examples and \code{\link{growthSS}}.
 #' Decay can be specified by including "decay" as part of the model such as "logistic decay" or
 #' "linear + linear decay". Count data can be specified with the "count: " prefix,
-#' similar to using "poisson: model" in \link{growthSS}.
+#' similar to using "poisson: model" in \link{growthSS}. Similarly intercepts can be added with the
+#' "int_" prefix, in which case an "I" parameter should be specified.
 #' While "gam" models are supported by \code{growthSS}
 #' they are not simulated by this function.
 #' @param n Number of individuals to simulate over time per each group in params
@@ -114,6 +115,14 @@
 #' ggplot(simdf, aes(time, y, group = interaction(group, id))) +
 #'   geom_line(aes(color = group)) +
 #'   labs(title = "Linear")
+#'
+#' simdf <- growthSim("int_linear",
+#'   n = 20, t = 25,
+#'   params = list("A" = c(1.1, 0.95), I = c(100, 120))
+#' )
+#' ggplot(simdf, aes(time, y, group = interaction(group, id))) +
+#'   geom_line(aes(color = group)) +
+#'   labs(title = "Linear with Intercept")
 #'
 #' simdf <- growthSim("logarithmic",
 #'   n = 20, t = 25,
@@ -243,6 +252,11 @@ growthSim <- function(
   } else {
     COUNT <- FALSE
   }
+  int <- FALSE
+  if (grepl("^int", model)) {
+    int <- TRUE
+    model <- trimws(sub("^int_?", "", model))
+  }
   if (is.null(names(params))) {
     names(params) <- c(LETTERS[seq_along(params)])
   }
@@ -275,9 +289,9 @@ growthSim <- function(
   }
   #* decide which internal funciton to use
   if (!grepl("\\+", model)) {
-    out <- .singleGrowthSim(model, n, t, params, noise, D)
+    out <- .singleGrowthSim(model, n, t, params, noise, D, int)
   } else {
-    out <- .multiGrowthSim(model, n, t, params, noise, D)
+    out <- .multiGrowthSim(model, n, t, params, noise, D, int)
   }
   if (COUNT) {
     out <- do.call(rbind, lapply(split(out, interaction(out$group, out$id)), function(sub) {
@@ -293,7 +307,7 @@ growthSim <- function(
 #' @keywords internal
 #' @noRd
 
-.multiGrowthSim <- function(model, n = 20, t = 25, params = list(), noise = NULL, D = 0) {
+.multiGrowthSim <- function(model, n = 20, t = 25, params = list(), noise = NULL, D = 0, int) {
   component_models <- trimws(strsplit(model, "\\+")[[1]])
 
   firstModel <- component_models[1]
@@ -363,7 +377,7 @@ growthSim <- function(
             lapply(iterParams, function(l) l[[g]]),
             c(sub(paste0(iterModelFindParams, u), "", names(iterParams)))
           ),
-          noise = iterNoise, D
+          noise = iterNoise, D, int
         )
         inner_df$group <- letters[g]
         inner_df
@@ -397,7 +411,7 @@ growthSim <- function(
 #' @keywords internal
 #' @noRd
 
-.singleGrowthSim <- function(model, n = 20, t = 25, params = list(), noise = NULL, D) {
+.singleGrowthSim <- function(model, n = 20, t = 25, params = list(), noise = NULL, D, int) {
   models <- c(
     "logistic", "gompertz", "double logistic", "double gompertz",
     "monomolecular", "exponential", "linear", "power law", "frechet", "weibull", "gumbel",
@@ -427,10 +441,14 @@ growthSim <- function(
   out <- do.call(rbind, lapply(seq_along(params[[1]]), function(i) {
     pars <- lapply(params, function(p) p[i])
     as.data.frame(rbind(do.call(rbind, lapply(1:n, function(e) {
-      data.frame(
+      iter_data <- data.frame(
         "id" = paste0("id_", e), "group" = letters[i], "time" = 1:t,
         "y" = gsid(D = D, 1:t, pars, noise), stringsAsFactors = FALSE
       )
+      if (int) {
+        iter_data$y <- iter_data$y + rnorm(1, mean = pars[["I"]], sd = noise[["I"]])
+      }
+      iter_data
     }))))
   }))
 
