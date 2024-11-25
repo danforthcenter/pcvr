@@ -322,7 +322,7 @@ growthSim <- function(
     stop("Simulating segmented data requires 'changePointX' parameters as described in growthSS.")
   }
 
-  df1 <- do.call(rbind, lapply(1:n, function(i) {
+  df1 <- do.call(rbind, lapply(seq_len(n), function(i) {
     firstChangepointsRand <- lapply(firstChangepoints, function(fc) {
       round(rnorm(1, fc, firstNoise$change))
     })
@@ -334,7 +334,7 @@ growthSim <- function(
           lapply(firstParams, function(l) l[[g]]),
           c(sub(paste0(firstModel, "1"), "", names(firstParams)))
         ),
-        noise = firstNoise, D
+        noise = firstNoise, D, int
       )
     }))
     n_df$group <- rep(letters[seq_along(firstChangepointsRand)],
@@ -377,7 +377,7 @@ growthSim <- function(
             lapply(iterParams, function(l) l[[g]]),
             c(sub(paste0(iterModelFindParams, u), "", names(iterParams)))
           ),
-          noise = iterNoise, D, int
+          noise = iterNoise, D, int = FALSE
         )
         inner_df$group <- letters[g]
         inner_df
