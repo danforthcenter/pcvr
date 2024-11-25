@@ -124,24 +124,15 @@ brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
     ggplot2::labs(fill = "Credible\nInterval")
   return(p)
 }
+
 #' @keywords internal
 #' @noRd
 
-.brmLongitudinalPlot <- function(fit, form, df = NULL, groups = NULL,
-                                 timeRange = NULL, facetGroups = TRUE,
-                                 hierarchy_value = NULL, vir_option = "plasma",
-                                 fitData, parsed_form) {
-  y <- parsed_form$y
-  x <- parsed_form$x
+.brmLongitudinalPlotSetup <- function(fitData, timeRange, x,
+                                      hierarchy_value, group, hierarchical_predictor) {
   x_plot_var <- x
   x_plot_label <- x
   allow_data_lines <- TRUE
-  individual <- parsed_form$individual
-  hierarchical_predictor <- parsed_form$hierarchical_predictor
-  group <- parsed_form$group
-  facetGroups <- .no_dummy_labels(group, facetGroups)
-  df <- parsed_form$data
-  probs <- seq(from = 99, to = 1, by = -2) / 100
   if (is.null(timeRange)) {
     timeRange <- unique(fitData[[x]])
   }
@@ -160,6 +151,40 @@ brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
   if (length(hierarchy_value) == 1) {
     x_plot_label <- paste0(x, " (", hierarchical_predictor, " = ", round(hierarchy_value, 1), ")")
   }
+  return(
+    list(
+      "timeRange" = timeRange, "x_plot_var" = x_plot_var,
+      "x_plot_label" = x_plot_label,
+      "allow_data_lines" = allow_data_lines, "fitData" = fitData, "hierarchy_value" = hierarchy_value
+    )
+  )
+}
+
+#' @keywords internal
+#' @noRd
+
+.brmLongitudinalPlot <- function(fit, form, df = NULL, groups = NULL,
+                                 timeRange = NULL, facetGroups = TRUE,
+                                 hierarchy_value = NULL, vir_option = "plasma",
+                                 fitData, parsed_form) {
+  y <- parsed_form$y
+  x <- parsed_form$x
+  individual <- parsed_form$individual
+  hierarchical_predictor <- parsed_form$hierarchical_predictor
+  group <- parsed_form$group
+  facetGroups <- .no_dummy_labels(group, facetGroups)
+  df <- parsed_form$data
+  probs <- seq(from = 99, to = 1, by = -2) / 100
+  blp_setup <- .brmLongitudinalPlotSetup(
+    fitData, timeRange, x,
+    hierarchy_value, group, hierarchical_predictor
+  )
+  timeRange <- blp_setup$timeRange
+  x_plot_var <- blp_setup$x_plot_var
+  x_plot_label <- blp_setup$x_plot_label
+  allow_data_lines <- blp_setup$allow_data_lines
+  fitData <- blp_setup$fitData
+  hierarchy_value <- blp_setup$hierarchy_value
   newDataArgs <- append(
     c(
       lapply(group, function(grp) {
@@ -243,8 +268,10 @@ brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
   if (!is.null(df) && individual != "dummyIndividual" && allow_data_lines) {
     df$plot_group <- as.character(interaction(df[, group]))
     p <- p + ggplot2::geom_line(
-      data = df, ggplot2::aes(.data[[x_plot_var]], .data[[y]],
-                              group = interaction(.data[[individual]], .data[["plot_group"]])
+      data = df,
+      ggplot2::aes(
+        .data[[x_plot_var]], .data[[y]],
+        group = interaction(.data[[individual]], .data[["plot_group"]])
       ),
       color = "gray20", linewidth = 0.2
     )

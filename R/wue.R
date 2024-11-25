@@ -48,7 +48,7 @@
 #'   area_pixels = round(130 / (1 + exp( (12 - seq_along(weight_before))/3) ), 0),
 #'   weight_before,
 #'   weight_after,
-#'   barcode = 1 
+#'   barcode = 1
 #' )
 #' ex <- pwue(df, time = "time", method = "rate")
 #' w <- df[, c("time", "weight_before", "weight_after", "barcode")]
@@ -57,8 +57,8 @@
 #' @export
 
 pwue <- function(df, w = NULL, pheno = "area_pixels", time = "timestamp", id = "barcode",
-                  offset = 0, pre_watering = "weight_before", post_watering = "weight_after",
-                  method = "rate") {
+                 offset = 0, pre_watering = "weight_before", post_watering = "weight_after",
+                 method = "rate") {
   if (length(time) == 2) {
     time1 <- time[1]
     time2 <- time[2]
