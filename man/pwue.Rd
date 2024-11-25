@@ -6,7 +6,7 @@
 \usage{
 pwue(
   df,
-  w,
+  w = NULL,
   pheno = "area_pixels",
   time = "timestamp",
   id = "barcode",
@@ -93,5 +93,11 @@ pwue(
   waterCol = "water_amount", method = "abs"
 )
 
+both <- merge(sim_water, sim_df, by = c("timestamp", "barcode"))
+pwue(
+  df = both, pheno = "area_pixels",
+  time = "timestamp", id = "barcode", offset = 0,
+  waterCol = "water_amount", method = "abs"
+)
 }
 \keyword{WUE}

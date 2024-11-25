@@ -68,15 +68,24 @@
 #'   waterCol = "water_amount", method = "abs"
 #' )
 #'
+#' both <- merge(sim_water, sim_df, by = c("timestamp", "barcode"))
+#' pwue(
+#'   df = both, pheno = "area_pixels",
+#'   time = "timestamp", id = "barcode", offset = 0,
+#'   waterCol = "water_amount", method = "abs"
+#' )
 #' @export
 
-pwue <- function(df, w, pheno = "area_pixels", time = "timestamp", id = "barcode",
+pwue <- function(df, w = NULL, pheno = "area_pixels", time = "timestamp", id = "barcode",
                  offset = 0, waterCol = "water_amount", method = "rate") {
   if (length(time) == 2) {
     time1 <- time[1]
     time2 <- time[2]
   } else {
     time1 <- time2 <- time
+  }
+  if (is.null(w)) {
+    w <- df[, c(time2, id, waterCol)]
   }
   if (!time1 %in% colnames(df) || !time2 %in% colnames(w)) {
     stop(paste0(paste0(time, collapse = ", "), " must be in colnames of df and w"))
