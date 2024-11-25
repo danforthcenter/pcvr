@@ -24,7 +24,10 @@
 #' account. This defaults to 0, meaning that if a plant were watered directly before being imaged then
 #' that water would be counted towards WUE between the current image and the prior one.
 #' This argument is taken to be in seconds.
-#' @param waterCol Column containing watering amounts in \code{w}. This defaults to "watering_amount".
+#' @param pre_watering Column containing weight before watering in \code{w},
+#' defaults to "weight_before".
+#' @param post_watering Column containing weight after watering in \code{w},
+#' defaults to "weight_after".
 #' @param method Which method to use, options are "rate" and "abs". The "rate" method considers WUE as
 #' the change in a phenotype divided by the amount of water added. The "abs" method considers WUE as
 #' the amount of water used by a plant given its absolute size. The former is for questions more
@@ -36,48 +39,26 @@
 #'     to phenotype data with new columns for change in the phenotype,
 #'     change in the pre-watering weight, and pseudo-water use efficiency (pWUE).
 #' @examples
-#' sim_water <- data.frame(
-#'   "barcode" = "exampleBarcode1",
-#'   "timestamp" = as.POSIXct(c(
-#'     "2023-04-13 23:28:17 UTC",
-#'     "2023-04-22 05:30:42 UTC",
-#'     "2023-05-04 18:55:38 UTC"
-#'   )),
-#'   "DAS" = c(0.000000, 8.251675, 20.810660),
-#'   "water_amount" = c(98, 12, -1)
-#' )
-#' sim_df <- data.frame(
-#'   "barcode" = "exampleBarcode1",
-#'   "timestamp" = as.POSIXct(c(
-#'     "2023-04-13 23:28:17 UTC",
-#'     "2023-04-22 05:30:42 UTC",
-#'     "2023-05-04 18:55:38 UTC"
-#'   )),
-#'   "DAS" = c(0.000000, 8, 20),
-#'   "area_pixels" = c(20, 1000, 1500)
-#' )
-#' pwue(
-#'   df = sim_df, w = sim_water, pheno = "area_pixels",
-#'   time = "timestamp", id = "barcode", offset = 0,
-#'   waterCol = "water_amount", method = "rate"
-#' )
 #'
-#' pwue(
-#'   df = sim_df, w = sim_water, pheno = "area_pixels",
-#'   time = c("timestamp", "timestamp"), id = "barcode", offset = 0,
-#'   waterCol = "water_amount", method = "abs"
+#' set.seed(123)
+#' weight_before <- sort(round(rnorm(20, 100, 10), 0))
+#' weight_after <- sort(round(rnorm(20, 120, 10), 0))
+#' df <- data.frame(
+#'   time = seq_along(weight_before),
+#'   area_pixels = round(130 / (1 + exp( (12 - seq_along(weight_before))/3) ), 0),
+#'   weight_before,
+#'   weight_after,
+#'   barcode = 1 
 #' )
+#' ex <- pwue(df, time = "time", method = "rate")
+#' w <- df[, c("time", "weight_before", "weight_after", "barcode")]
+#' ex2 <- pwue(df, w, time = c("time", "time"), method = "abs")
 #'
-#' both <- merge(sim_water, sim_df, by = c("timestamp", "barcode"))
-#' pwue(
-#'   df = both, pheno = "area_pixels",
-#'   time = "timestamp", id = "barcode", offset = 0,
-#'   waterCol = "water_amount", method = "abs"
-#' )
 #' @export
 
 pwue <- function(df, w = NULL, pheno = "area_pixels", time = "timestamp", id = "barcode",
-                 offset = 0, waterCol = "water_amount", method = "rate") {
+                  offset = 0, pre_watering = "weight_before", post_watering = "weight_after",
+                  method = "rate") {
   if (length(time) == 2) {
     time1 <- time[1]
     time2 <- time[2]
@@ -85,22 +66,21 @@ pwue <- function(df, w = NULL, pheno = "area_pixels", time = "timestamp", id = "
     time1 <- time2 <- time
   }
   if (is.null(w)) {
-    w <- df[, c(time2, id, waterCol)]
+    w <- df[, c(time2, id, pre_watering, post_watering)]
   }
   if (!time1 %in% colnames(df) || !time2 %in% colnames(w)) {
     stop(paste0(paste0(time, collapse = ", "), " must be in colnames of df and w"))
   }
-
+  #* order data
   w <- data.table::setorderv(data.table::as.data.table(w), cols = c(id, time2))
-  w <- w[w[[waterCol]] > 0, ]
   df <- data.table::setorderv(data.table::as.data.table(df), cols = c(id, time1))
   ids <- intersect(unique(w[, get(id)]), unique(df[, get(id)]))
   matched_method <- match.arg(method, choices = c("rate", "abs"))
-
+  #* apply method
   if (matched_method == "abs") {
-    out <- .absWUE(ids, w, df, offset, time1, time2, pheno, id, waterCol)
+    out <- .absWUE(ids, w, df, offset, time1, time2, pheno, id, pre_watering, post_watering)
   } else if (matched_method == "rate") {
-    out <- .rateWUE(ids, w, df, offset, time1, time2, pheno, id, waterCol)
+    out <- .rateWUE(ids, w, df, offset, time1, time2, pheno, id, pre_watering, post_watering)
   }
   return(as.data.frame(out))
 }
@@ -109,18 +89,21 @@ pwue <- function(df, w = NULL, pheno = "area_pixels", time = "timestamp", id = "
 #' @keywords internal
 #' @noRd
 
-.rateWUE <- function(ids, w, df, offset, time1, time2, pheno, id, waterCol) {
+.rateWUE <- function(ids, w, df, offset, time1, time2, pheno, id, pre_watering, post_watering) {
   out <- do.call(rbind, lapply(ids, function(iter_id) { # per id...
     w_i <- w[w[, get(id)] == iter_id, ]
     df_i <- df[df[, get(id)] == iter_id, ]
     #* reorder watering and pheno data
     w_i <- data.table::setorderv(w_i, cols = c(time2))
     df_i <- data.table::setorderv(df_i, cols = c(time1))
+    #* get post_watering_weight_[t-1] and pre_watering_weight_[t] difference as column
+    w_i$deltaw <- data.table::shift(w_i[[post_watering]],
+                                    n = 1, type = "lag") - w_i[[pre_watering]]
     #* get unique imaging times
     imaging_times <- unique(df_i[[time1]])
     #* set water from before first image to zero so that
     #* offset does not grab water from before imaging starts.
-    w_i[[waterCol]] <- as.numeric(ifelse(w_i[[time2]] < imaging_times[1], 0, w_i[[waterCol]]))
+    w_i[["deltaw"]] <- as.numeric(ifelse(w_i[[time2]] < imaging_times[1], 0, w_i[["deltaw"]]))
     #* per imaging time
     wue_i <- do.call(rbind, lapply(seq_along(imaging_times), function(t_i) {
       start <- if (t_i == 1) {
@@ -136,8 +119,8 @@ pwue <- function(df, w = NULL, pheno = "area_pixels", time = "timestamp", id = "
       end <- imaging_times[t_i] - offset
       endNonOffset <- imaging_times[t_i]
       if (!is.na(start)) {
-        w_i_t <- w_i[w_i[[time2]] > start & w_i[[time2]] < end, ]
-        total_water_i <- max(c(sum(w_i_t[[waterCol]]), 1))
+        w_i_t <- w_i[w_i[[time2]] > start & w_i[[time2]] <= end, ]
+        total_water_i <- max(c(sum(w_i_t[["deltaw"]]), 1))
         pheno_diff <- max(c(
           as.numeric(df_i[df_i[[time1]] == endNonOffset, get(pheno)] - df_i[
             df_i[[time1]] == startNonOffset, get(pheno)
@@ -147,7 +130,7 @@ pwue <- function(df, w = NULL, pheno = "area_pixels", time = "timestamp", id = "
         total_water_i <- NA
         pheno_diff <- NA
       }
-
+      # make data to return
       row <- data.frame(
         total_water = total_water_i,
         pheno_diff = pheno_diff,
@@ -170,18 +153,21 @@ pwue <- function(df, w = NULL, pheno = "area_pixels", time = "timestamp", id = "
 #' @noRd
 
 
-.absWUE <- function(ids, w, df, offset, time1, time2, pheno, id, waterCol) {
+.absWUE <- function(ids, w, df, offset, time1, time2, pheno, id, pre_watering, post_watering) {
   out <- do.call(rbind, lapply(ids, function(iter_id) { # per id...
     w_i <- w[w[[id]] == iter_id, ]
     df_i <- df[df[[id]] == iter_id, ]
     #* reorder watering and pheno data
     w_i <- data.table::setorderv(w_i, cols = c(time2))
     df_i <- data.table::setorderv(df_i, cols = c(time1))
+    #* get post_watering_weight_[t-1] and pre_watering_weight_[t] difference as column
+    w_i$deltaw <- data.table::shift(w_i[[post_watering]],
+                                    n = 1, type = "lag") - w_i[[pre_watering]]
     #* get unique imaging times
     imaging_times <- unique(df_i[[time1]])
     #* set water from before first image to zero so that offset
     #* does not grab water from before imaging starts.
-    w_i[[waterCol]] <- ifelse(w_i[[time2]] < imaging_times[1], 0, w_i[[time2]])
+    w_i[["deltaw"]] <- ifelse(w_i[[time2]] < imaging_times[1], 0, w_i[["deltaw"]])
     #* per imaging time
     wue_i <- do.call(rbind, lapply(seq_along(imaging_times), function(t_i) {
       start <- if (t_i == 1) {
@@ -196,16 +182,16 @@ pwue <- function(df, w = NULL, pheno = "area_pixels", time = "timestamp", id = "
       }
       end <- imaging_times[t_i] - offset
       endNonOffset <- imaging_times[t_i]
-
+      # here we use the phenotype at this time, not the change in phenotype
       if (!is.na(start)) {
-        w_i_t <- w_i[w_i[[time2]] > start & w_i[[time2]] < end, ]
-        total_water_i <- max(c(sum(w_i_t[[waterCol]]), 1))
+        w_i_t <- w_i[w_i[[time2]] > start & w_i[[time2]] <= end, ]
+        total_water_i <- max(c(sum(w_i_t[["deltaw"]]), 1))
         pheno_iter <- max(df_i[df_i[[time1]] == endNonOffset, get(pheno)], na.rm = TRUE)
       } else {
         total_water_i <- NA
         pheno_iter <- NA
       }
-
+      # make data to return
       row <- data.frame(
         total_water = total_water_i,
         pheno_iter = pheno_iter,
