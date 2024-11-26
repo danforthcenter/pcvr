@@ -194,10 +194,11 @@ test_that("Hierarchical Model Works", {
     df = simdf, type = "brms",
     hierarchy = list("A" = "int_linear")
   )
-  lapply(ss, head)
   fit <- fitGrowth(ss, iter = 600, cores = 1, chains = 1, backend = "cmdstanr")
   expect_s3_class(fit, "brmsfit")
   p <- growthPlot(fit, ss$pcvrForm, df = ss$df)
+  expect_s3_class(p, "ggplot")
+  p <- growthPlot(fit, ss$pcvrForm, df = ss$df, hierarchy_value = seq(8, 12, 1))
   expect_s3_class(p, "ggplot")
 })
 

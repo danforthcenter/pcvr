@@ -45,7 +45,9 @@ Note that for brms models this is ignored except if used to specify a different 
 to use.}
 
 \item{hierarchy_value}{If a hierarchical model is being plotted, what value should the
-hiearchical predictor be? If left NULL (the default) the mean value is used.}
+hiearchical predictor be? If left NULL (the default) the mean value is used. If this is >1L
+then the x axis will use the hierarchical variable from the model at the mean of the timeRange
+(mean of x values in the model if timeRange is not specified).}
 }
 \value{
 Returns a ggplot showing a brms model's credible

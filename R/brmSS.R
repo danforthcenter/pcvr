@@ -280,7 +280,7 @@
 
   #* `Make parameter grouping formulae`
 
-  if (!is.null(pars)) {
+  if (as.logical(length(pars))) {
     if (USEGROUP) {
       parForm <- as.formula(paste0(paste(pars, collapse = "+"), "~0+", paste(group, collapse = "*")))
     } else {
@@ -291,7 +291,7 @@
   }
 
   #* `Combine formulas into brms.formula object`
-  if (is.null(parForm)) {
+  if (is.null(pars)) {
     NL <- FALSE
   } else {
     NL <- TRUE
@@ -308,14 +308,14 @@
   #* ***** `Make priors` *****
   out[["prior"]] <- .makePriors(priors, pars, df, group, USEGROUP, sigma, family, bayesForm)
   #* ***** `Make initializer function` *****
-  if (!is.null(pars)) {
+  if (as.logical(length(pars))) {
     initFun <- function(pars = "?", nPerChain = 1) {
       init <- lapply(pars, function(i) array(rgamma(nPerChain, 1)))
       names(init) <- paste0("b_", pars)
       init
     }
     formals(initFun)$pars <- pars
-    formals(initFun)$nPerChain <- length(unique(interaction(df[, group])))
+    formals(initFun)$nPerChain <- length(table(df[, group]))
     wrapper <- function() {
       initFun()
     }

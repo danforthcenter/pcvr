@@ -15,7 +15,9 @@
 #' although prediction using splines outside of the observed range is not necessarily reliable.
 #' @param facetGroups logical, should groups be separated in facets? Defaults to TRUE.
 #' @param hierarchy_value If a hierarchical model is being plotted, what value should the
-#' hiearchical predictor be? If left NULL (the default) the mean value is used.
+#' hiearchical predictor be? If left NULL (the default) the mean value is used. If this is >1L
+#' then the x axis will use the hierarchical variable from the model at the mean of the timeRange
+#' (mean of x values in the model if timeRange is not specified).
 #' @param vir_option Viridis color scale to use for plotting credible intervals. Defaults to "plasma".
 #' @keywords growth-curve brms
 #' @import ggplot2
@@ -122,6 +124,42 @@ brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
     ggplot2::labs(fill = "Credible\nInterval")
   return(p)
 }
+
+#' @keywords internal
+#' @noRd
+
+.brmLongitudinalPlotSetup <- function(fitData, timeRange, x,
+                                      hierarchy_value, group, hierarchical_predictor) {
+  x_plot_var <- x
+  x_plot_label <- x
+  allow_data_lines <- TRUE
+  if (is.null(timeRange)) {
+    timeRange <- unique(fitData[[x]])
+  }
+  if (length(hierarchy_value) > 1) {
+    timeRange <- mean(timeRange, na.rm = TRUE)
+    x_plot_var <- hierarchical_predictor
+    x_plot_label <- paste0(hierarchical_predictor, " (", x, " = ", round(timeRange, 1), ")")
+    allow_data_lines <- FALSE
+  }
+  if (!all(group %in% colnames(fitData))) {
+    fitData[, group] <- ""
+  }
+  if (!is.null(hierarchical_predictor) && is.null(hierarchy_value)) {
+    hierarchy_value <- mean(fitData[[hierarchical_predictor]])
+  }
+  if (length(hierarchy_value) == 1) {
+    x_plot_label <- paste0(x, " (", hierarchical_predictor, " = ", round(hierarchy_value, 1), ")")
+  }
+  return(
+    list(
+      "timeRange" = timeRange, "x_plot_var" = x_plot_var,
+      "x_plot_label" = x_plot_label,
+      "allow_data_lines" = allow_data_lines, "fitData" = fitData, "hierarchy_value" = hierarchy_value
+    )
+  )
+}
+
 #' @keywords internal
 #' @noRd
 
@@ -137,35 +175,35 @@ brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
   facetGroups <- .no_dummy_labels(group, facetGroups)
   df <- parsed_form$data
   probs <- seq(from = 99, to = 1, by = -2) / 100
-  if (is.null(timeRange)) {
-    timeRange <- unique(fitData[[x]])
-  }
-  if (!all(group %in% colnames(fitData))) {
-    fitData[, group] <- ""
-  }
-  newData <- do.call(
-    expand.grid,
+  blp_setup <- .brmLongitudinalPlotSetup(
+    fitData, timeRange, x,
+    hierarchy_value, group, hierarchical_predictor
+  )
+  timeRange <- blp_setup$timeRange
+  x_plot_var <- blp_setup$x_plot_var
+  x_plot_label <- blp_setup$x_plot_label
+  allow_data_lines <- blp_setup$allow_data_lines
+  fitData <- blp_setup$fitData
+  hierarchy_value <- blp_setup$hierarchy_value
+  newDataArgs <- append(
+    c(
+      lapply(group, function(grp) {
+        unique(fitData[[grp]])
+      }),
+      list(
+        "new_1"
+      )
+    ),
     append(
       list(timeRange),
-      c(
-        lapply(group, function(grp) {
-          unique(fitData[[grp]])
-        }),
-        list(
-          "new_1"
-        )
-      )
+      list(hierarchy_value)
     )
   )
-  colnames(newData) <- c(x, group, individual)
+  newDataArgs <- newDataArgs[!unlist(lapply(newDataArgs, is.null))]
+  newData <- do.call(expand.grid, newDataArgs)
+  colnames(newData) <- c(group, individual, x, hierarchical_predictor)
   if (length(group) > 1 && paste(group, collapse = ".") %in% colnames(fitData)) {
     newData[[paste(group, collapse = ".")]] <- interaction(newData[, group])
-  }
-  if (!is.null(hierarchical_predictor)) {
-    if (is.null(hierarchy_value)) {
-      hierarchy_value <- mean(fitData[[hierarchical_predictor]])
-    }
-    newData[[hierarchical_predictor]] <- hierarchy_value
   }
   predictions <- cbind(newData, predict(fit, newData, probs = probs))
 
@@ -199,7 +237,7 @@ brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
     do.call(rbind, lapply(seq(1, 49, 2), function(i) {
       min <- paste0("Q", i)
       max <- paste0("Q", 100 - i)
-      iter <- sub[, c(x, group, individual, "Estimate")]
+      iter <- sub[, c(x, group, individual, "Estimate", hierarchical_predictor)]
       iter$q <- round(1 - (c1 * (i - max_obs) + max_prime), 2)
       iter$min <- sub[[min]]
       iter$max <- sub[[max]]
@@ -208,9 +246,9 @@ brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
   }))
   longPreds$plot_group <- as.character(interaction(longPreds[, group]))
   #* `Make plot`
-  p <- ggplot2::ggplot(longPreds, ggplot2::aes(x = .data[[x]], y = .data$Estimate)) +
+  p <- ggplot2::ggplot(longPreds, ggplot2::aes(x = .data[[x_plot_var]], y = .data$Estimate)) +
     facetLayer +
-    ggplot2::labs(x = x, y = y) +
+    ggplot2::labs(x = x_plot_label, y = y) +
     pcv_theme()
   p <- p +
     lapply(unique(longPreds$q), function(q) {
@@ -227,10 +265,12 @@ brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
     viridis::scale_fill_viridis(direction = -1, option = vir_option) +
     ggplot2::labs(fill = "Credible\nInterval")
 
-  if (!is.null(df) && individual != "dummyIndividual") {
+  if (!is.null(df) && individual != "dummyIndividual" && allow_data_lines) {
     df$plot_group <- as.character(interaction(df[, group]))
     p <- p + ggplot2::geom_line(
-      data = df, ggplot2::aes(.data[[x]], .data[[y]],
+      data = df,
+      ggplot2::aes(
+        .data[[x_plot_var]], .data[[y]],
         group = interaction(.data[[individual]], .data[["plot_group"]])
       ),
       color = "gray20", linewidth = 0.2

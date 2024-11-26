@@ -3,7 +3,7 @@
 #' @noRd
 
 .makePriors <- function(priors, pars, df, group, USEGROUP, sigma, family, formula) {
-  if (is.null(priors)) {
+  if (is.null(priors) || !as.logical(length(pars))) {
     prior <- .explicitDefaultPrior(formula, df, family)
     return(prior)
   }
@@ -194,7 +194,8 @@
       if (!grepl("changePoint|I$", par)) {
         paste0("lognormal(log(", priors[[par]], "), 0.25)") # growth parameters are LN
       } else {
-        paste0("student_t(5,", priors[[par]], ", 3)") # changepoints/intercepts are T_5(mu, 3)
+        # changepoints/intercepts are T_5(mu, mu / 5) by default
+        paste0("student_t(5,", priors[[par]], ", ", abs(priors[[par]] / 5), ")")
       }
     })
     priorStanStrings <- unlist(priorStanStrings)
@@ -629,18 +630,41 @@
   if (useGroup) {
     by <- paste0(", by = ", paste(group, collapse = ".")) # special variable that is made if there are
     # multiple groups and a gam involved.
+    group <- paste0("0 + ", group)
   } else {
     by <- NULL
+    group <- "1"
   }
   if (nTimes < 11) {
     k <- paste0(", k = ", nTimes)
   } else {
     k <- NULL
   }
-
-  form <- stats::as.formula(paste0(y, " ~ s(", x, by, k, ")"))
-  pars <- NULL
-
+  if (dpar) {
+    if (int) {
+      form <- list(
+        brms::nlf(stats::as.formula(paste0(y, " ~ ", y, "I + ", y, "spline"))),
+        stats::as.formula(paste0(y, "I ~ ", group)),
+        stats::as.formula(paste0(y, "spline ~ s(", x, by, k, ")"))
+      )
+      pars <- paste0(y, c("I", "spline"))
+    } else {
+      form <- stats::as.formula(paste0(y, " ~ s(", x, by, k, ")"))
+      pars <- NULL
+    }
+  } else {
+    if (int) {
+      form <- list(
+        brms::nlf(stats::as.formula(paste0(y, " ~ I + spline"))),
+        stats::as.formula(paste0("I ~ ", group)),
+        stats::as.formula(paste0("spline ~ s(", x, by, k, ")"))
+      )
+      pars <- c("I", "spline")
+    } else {
+      form <- stats::as.formula(paste0(y, " ~ s(", x, by, k, ")"))
+      pars <- NULL
+    }
+  }
   return(list(form = form, pars = pars))
 }
 #' Helper function for brms formulas
