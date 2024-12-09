@@ -58,7 +58,9 @@
         df <- df[!is.infinite(df[[x]]), ]
         df <- df[!is.infinite(df[[y]]), ]
         df <- df[!is.infinite(df[[hierarchical_predictor]]), ]
-        formatted <- .formatNonIntegerTime(df, x, format = "%Y-%m-%d %H:%M:%S", index = NULL)
+        formatted <- .formatNonIntegerTime(df, x,
+                                           format = "%Y-%m-%d %H:%M:%S",
+                                           index = NULL, digits = 2)
         df <- formatted$data
         x <- formatted$timeCol
       },

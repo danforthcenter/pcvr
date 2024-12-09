@@ -83,7 +83,7 @@ frem <- function(df, des, phenotypes, timeCol = NULL, cor = TRUE, returnData = F
     dummyX <- TRUE
   }
   #* `Format a time column if non-integer`
-  formatted <- .formatNonIntegerTime(df, timeCol, format = time_format, index = NULL)
+  formatted <- .formatNonIntegerTime(df, timeCol, format = time_format, index = NULL, digits = 0)
   df <- formatted$data
   timeCol <- formatted$timeCol
   #* `Make formulas`
