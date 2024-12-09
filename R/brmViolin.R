@@ -90,8 +90,8 @@ brmViolin <- function(fit, ss, hypothesis) {
   grouping <- grouping[which_grouping]
   par <- hsplit[which(!grepl(grouping, hsplit))]
   ref_group <- hsplit[which(grepl(grouping, hsplit))]
-  draws <- fitdf[, grepl(paste0("^b_", par, ".*", grouping), colnames(fitdf))]
-  colnames(draws) <- sub("^b_", "", colnames(draws))
+  colnames(fitdf) <- sub("^b_", "", colnames(fitdf))
+  draws <- fitdf[, grepl(paste0(par, ".*", grouping), colnames(fitdf))]
   if (!grepl("[:]", grouping)) {
     draws <- draws[, !grepl("[:]", colnames(draws))] # drop interaction terms
   }
