@@ -49,7 +49,8 @@ how efficient a plant is at maintaining size given some amount of water.}
 \value{
 A data frame containing the bellwether watering data joined
     to phenotype data with new columns for change in the phenotype,
-    change in the pre-watering weight, and pseudo-water use efficiency (pWUE).
+    change in the pre-watering weight, amount of water used,
+    and pseudo-water use efficiency (pWUE).
 }
 \description{
 Rate based water use efficiency (WUE) is the change in biomass per unit of water

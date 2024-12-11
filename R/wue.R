@@ -37,7 +37,8 @@
 #' @import data.table
 #' @return A data frame containing the bellwether watering data joined
 #'     to phenotype data with new columns for change in the phenotype,
-#'     change in the pre-watering weight, and pseudo-water use efficiency (pWUE).
+#'     change in the pre-watering weight, amount of water used,
+#'     and pseudo-water use efficiency (pWUE).
 #' @examples
 #'
 #' set.seed(123)
