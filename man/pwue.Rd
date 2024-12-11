@@ -47,10 +47,12 @@ related to efficiency in using water to grow while the latter is more suited to 
 how efficient a plant is at maintaining size given some amount of water.}
 }
 \value{
-A data frame containing the bellwether watering data joined
-    to phenotype data with new columns for change in the phenotype,
-    change in the pre-watering weight, amount of water used,
-    and pseudo-water use efficiency (pWUE).
+A data frame containing the watering data and
+    to phenotype data with new columns for change in the phenotype (\code{pheno_diff}),
+    amount of water used (\code{total_water}) over the interval between phenotype measurements
+    (water added post to pre phenotype measurement), \code{start} and \code{end} times for the
+    interval as well as their difference (\code{timeLengthSeconds}), and pseudo water use efficiency
+    (\code{pWUE}).
 }
 \description{
 Rate based water use efficiency (WUE) is the change in biomass per unit of water
