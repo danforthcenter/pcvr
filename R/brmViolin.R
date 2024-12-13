@@ -8,7 +8,9 @@
 #' using two parameters from the model at a time (ie, "groupA / groupB > 1.05" works but
 #' "(groupA / groupB) - (groupC / groupD) > 1" does not). In the hypothesis "..." can be used to mean
 #' "all groups for this parameter" so that the hypothesis "... / A_group1 > 1.05" would include all
-#' the "A" coefficients for groups 1:N along the x axis, see examples.
+#' the "A" coefficients for groups 1:N along the x axis, see examples. If a hypothesis is using
+#' several parameters per group (second example) then math around those parameters and any ellipses
+#' should be wrapped in parentheses.
 #'
 #' @keywords brms Bayesian pcvrss
 #'
@@ -32,6 +34,7 @@
 #'
 #' fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1)
 #' brmViolin(fit, ss, ".../A_groupd > 1.05") # all groups used
+#' brmViolin(fit, ss, "abs(1 - ((...)/(C_groupd - B_groupd))) > 0.05") # totally arbitrary
 #' brmViolin(fit, ss, "A_groupa/A_groupd > 1.05") # only these two groups
 #' }
 #'
@@ -78,7 +81,7 @@ brmViolin <- function(fit, ss, hypothesis) {
 #' @keywords internal
 
 .brmViolinEllipsis <- function(fitdf, ss, hypothesis) {
-  math_or_underscore <- "\\+|\\/|\\-|\\*|\\^|>|<|=|_"
+  math_or_underscore <- "\\+|\\/|\\-|\\*|\\^|>|<|=|_|\\(|\\)"
   hsplit <- trimws(strsplit(hypothesis, math_or_underscore)[[1]])
   hsplit <- hsplit[as.logical(nchar(hsplit))]
   hsplit <- hsplit[!grepl("\\.\\.\\.", hsplit)]
@@ -88,24 +91,36 @@ brmViolin <- function(fit, ss, hypothesis) {
     any(grepl(grp, hsplit))
   })))
   grouping <- grouping[which_grouping]
-  par <- hsplit[which(!grepl(grouping, hsplit))]
+  par <- hsplit[which(hsplit %in% names(ss$formula$pforms))]
   ref_group <- hsplit[which(grepl(grouping, hsplit))]
   colnames(fitdf) <- sub("^b_", "", colnames(fitdf))
-  draws <- fitdf[, grepl(paste0(par, ".*", grouping), colnames(fitdf))]
+  draws <- fitdf[, grepl(paste0(par, ".*", grouping, collapse = "|"), colnames(fitdf))]
   if (!grepl("[:]", grouping)) {
     draws <- draws[, !grepl("[:]", colnames(draws))] # drop interaction terms
   }
-  if (length(par) > 0) {
-    colnames(draws) <- sub(paste0(par, "_"), "", colnames(draws))
-    colnames(draws) <- paste0(par, "_", colnames(draws))
+  transformation <- paste(par, ref_group, sep = "_")
+  if (length(ref_group) > 1) {
+    pat <- paste0("\\(", paste(paste(par, ref_group, sep = "_"), collapse = ".*"), "\\)")
+    transformation <- regmatches(hypothesis, gregexpr(pat, hypothesis))
   }
-  hyps_df <- do.call(rbind, lapply(colnames(draws), function(grp) {
-    iter_hyp <- gsub("\\.{3,}", grp, hypothesis)
+  groupings <- unique(ss$df[[grouping]])
+  hyps_res <- lapply(groupings, function(grp) {
+    ellipse_replacement <- gsub(ref_group[1], paste0(grouping, grp), transformation)
+    transformed_posterior <- with(draws, expr = {eval(parse(text = ellipse_replacement))})
+    iter_hyp <- gsub("\\(?\\.{3,}\\)?", ellipse_replacement, hypothesis)
     x <- as.data.frame(brms::hypothesis(draws, iter_hyp)$h)
     x$ref_group <- ifelse(as.logical(length(par)), paste0(par, "_", ref_group), ref_group)
     x$comparison <- grp
-    x[, c("Post.Prob", "ref_group", "comparison")]
-  }))
+    return(
+      list(
+        "hyp_df" = x[, c("Post.Prob", "ref_group", "comparison")],
+        "transformed_posterior" = transformed_posterior
+      )
+    )
+  })
+  hyps_df <- do.call(rbind, lapply(hyps_res, \(l) {l$hyp_df}))
+  transformed_draws <- as.data.frame(do.call(cbind, lapply(hyps_res, \(l) {l$transformed_posterior})))
+  colnames(transformed_draws) <- paste0(groupings)
   hyps_df$discrete_post_prob <- factor(
     ifelse(hyps_df$Post.Prob >= 0.99, "A",
       ifelse(hyps_df$Post.Prob >= 0.95, "B",
@@ -116,12 +131,13 @@ brmViolin <- function(fit, ss, hypothesis) {
     ),
     levels = c("A", "B", "C", "D", "E"), ordered = TRUE
   )
-  longdraw <- as.data.frame(data.table::melt(data.table::as.data.table(draws),
-    measure.vars = colnames(draws), value.name = "draw"
+  longdraw <- as.data.frame(data.table::melt(data.table::as.data.table(transformed_draws),
+    measure.vars = colnames(transformed_draws), value.name = "draw"
   ))
   longdraw$param <- substr(longdraw$variable, 1, 1)
-  longdraw$group <- sub(paste0(par, "_"), "", longdraw$variable)
-  longdraw$ref <- grepl(ref_group, longdraw$variable)
+  longdraw$group <- sub(paste0(paste0(par, "_"), collapse = "|"), "", longdraw$variable)
+  longdraw$ref <- grepl(paste0(unique(gsub(grouping, "", ref_group)), collapse = "|"),
+                        longdraw$variable)
   ldj <- merge(longdraw, hyps_df, by.x = c("variable"), by.y = c("comparison"))
   return(ldj)
 }
@@ -138,6 +154,7 @@ brmViolin <- function(fit, ss, hypothesis) {
   colnames(draws) <- sub("^b_", "", colnames(draws))
   draws <- draws[, hsplit]
   hyps_df <- as.data.frame(brms::hypothesis(draws, hypothesis = hypothesis)$h)
+  # here I'd need to make the transformed draws if the hypothesis is weird like that?
   hyps_df$ref_group <- hsplit[2]
   hyps_df$comparison <- hsplit[1]
   hyps_df <- rbind(
