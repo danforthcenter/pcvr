@@ -6,7 +6,7 @@
 #' Note that if timeCol is not numeric then DAS is always returned.
 #' @param plantingDelay If `mode` includes "DAP" then `plantingDelay` is used to adjust "DAS"
 #' @param phenotype If `mode` includes "DAE" then this is the phenotype used to classify emergence.
-#' @param cutoff If `mode` inlcludes "DAE" then this value is used to classify emergence.
+#' @param cutoff If `mode` includes "DAE" then this value is used to classify emergence.
 #' Defaults to 1, meaning an image with a value of 1 or more for `phenotype` has "emerged".
 #' @param timeCol Column of input time values, defaults to "timestamp".
 #' If this is not numeric then it is assumed to be

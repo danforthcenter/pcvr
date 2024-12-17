@@ -4,13 +4,13 @@
 #' use \link{combineDraws} to merge their draws into a single dataframe for testing.
 #' @param ss A \code{pcvrss} object. The only component that is currently used is the pcvrForm.
 #' @param hypothesis A hypothesis expressed as a character string in the style of that used by
-#' \code{brms::hypothesis} and \link{testGrowth}. Note that currently this only supports hypotheses
-#' using two parameters from the model at a time (ie, "groupA / groupB > 1.05" works but
-#' "(groupA / groupB) - (groupC / groupD) > 1" does not). In the hypothesis "..." can be used to mean
+#' \code{brms::hypothesis} and \link{testGrowth}. In the hypothesis "..." can be used to mean
 #' "all groups for this parameter" so that the hypothesis "... / A_group1 > 1.05" would include all
 #' the "A" coefficients for groups 1:N along the x axis, see examples. If a hypothesis is using
 #' several parameters per group (second example) then math around those parameters and any ellipses
-#' should be wrapped in parentheses.
+#' should be wrapped in parentheses. Note that currently the single hypothesis option (no ...)
+#' only supports hypotheses using two parameters from the model at a time
+#' (ie, "groupA / groupB > 1.05" works but "(groupA / groupB) - (groupC / groupD) > 1" does not).
 #'
 #' @keywords brms Bayesian pcvrss
 #'
@@ -107,7 +107,7 @@ brmViolin <- function(fit, ss, hypothesis) {
   hyps_res <- lapply(groupings, function(grp) {
     ellipse_replacement <- gsub(ref_group[1], paste0(grouping, grp), transformation)
     transformed_posterior <- with(draws, expr = {eval(parse(text = ellipse_replacement))})
-    iter_hyp <- gsub("\\(?\\.{3,}\\)?", ellipse_replacement, hypothesis)
+    iter_hyp <- gsub("\\.{3,}", ellipse_replacement, hypothesis)
     x <- as.data.frame(brms::hypothesis(draws, iter_hyp)$h)
     x$ref_group <- ifelse(as.logical(length(par)), paste0(par, "_", ref_group), ref_group)
     x$comparison <- grp
@@ -150,6 +150,7 @@ brmViolin <- function(fit, ss, hypothesis) {
   math <- "\\+|\\/|\\-|\\*|\\^|>|<|=" # foreseeable math operators
   hsplit <- trimws(strsplit(hypothesis, math)[[1]])
   hsplit <- hsplit[suppressWarnings(is.na(as.numeric(hsplit)))]
+  hsplit <- hsplit[nchar(hsplit) > 0]
   draws <- fitdf
   colnames(draws) <- sub("^b_", "", colnames(draws))
   draws <- draws[, hsplit]

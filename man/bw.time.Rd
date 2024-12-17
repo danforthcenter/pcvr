@@ -31,7 +31,7 @@ Note that if timeCol is not numeric then DAS is always returned.}
 
 \item{phenotype}{If `mode` includes "DAE" then this is the phenotype used to classify emergence.}
 
-\item{cutoff}{If `mode` inlcludes "DAE" then this value is used to classify emergence.
+\item{cutoff}{If `mode` includes "DAE" then this value is used to classify emergence.
 Defaults to 1, meaning an image with a value of 1 or more for `phenotype` has "emerged".}
 
 \item{timeCol}{Column of input time values, defaults to "timestamp".
