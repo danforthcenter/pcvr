@@ -71,7 +71,7 @@ test_that("reading mv github data as long works", {
       outRows = 3000
     )
   )
-  expect_equal(dim(mv_ag1), c(42480, 6))
+  expect_equal(dim(mv_ag1), c(42840, 6))
 
   #* test EMD
   images <- unique(mv$image)[1:10]

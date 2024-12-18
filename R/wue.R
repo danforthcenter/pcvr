@@ -35,9 +35,12 @@
 #' how efficient a plant is at maintaining size given some amount of water.
 #' @keywords WUE
 #' @import data.table
-#' @return A data frame containing the bellwether watering data joined
-#'     to phenotype data with new columns for change in the phenotype,
-#'     change in the pre-watering weight, and pseudo-water use efficiency (pWUE).
+#' @return A data frame containing the watering data and
+#'     to phenotype data with new columns for change in the phenotype (\code{pheno_diff}),
+#'     amount of water used (\code{total_water}) over the interval between phenotype measurements
+#'     (water added post to pre phenotype measurement), \code{start} and \code{end} times for the
+#'     interval as well as their difference (\code{timeLengthSeconds}), and pseudo water use efficiency
+#'     (\code{pWUE}).
 #' @examples
 #'
 #' set.seed(123)

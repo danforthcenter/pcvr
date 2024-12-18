@@ -44,8 +44,8 @@
 #'  of logistic increasing counts may be written as \code{model = "poisson: logistic"}.
 #' @param form A formula describing the model. The left hand side should only be
 #' the outcome variable (phenotype), and a cutoff if you are making a survival model (see details).
-#' The right hand side needs at least the x variable
-#'  (typically time). Grouping is also described in this formula using roughly lme4
+#' The right hand side needs at least the x variable (which should be numeric and is
+#'  typically time). Grouping is also described in this formula using roughly lme4
 #'  style syntax,with formulas like \code{y~time|individual/group} to show that predictors
 #'  should vary by \code{group} and autocorrelation between \code{individual:group}
 #'  interactions should be modeled. Note that autocorrelation is only modeled with the "brms"

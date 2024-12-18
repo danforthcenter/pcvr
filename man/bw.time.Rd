@@ -16,7 +16,8 @@ bw.time(
   format = "\%Y-\%m-\%d \%H:\%M:\%S",
   traitCol = "trait",
   valueCol = "value",
-  index = NULL
+  index = NULL,
+  digits = 0
 )
 }
 \arguments{
@@ -24,17 +25,17 @@ bw.time(
 
 \item{mode}{One of "DAS", "DAP" or "DAE" (Days After Planting and Days After Emergence).
 Defaults to adding all columns.
-Note that if timeCol is not an integer then DAS is always returned.}
+Note that if timeCol is not numeric then DAS is always returned.}
 
 \item{plantingDelay}{If `mode` includes "DAP" then `plantingDelay` is used to adjust "DAS"}
 
 \item{phenotype}{If `mode` includes "DAE" then this is the phenotype used to classify emergence.}
 
-\item{cutoff}{If `mode` inlcludes "DAE" then this value is used to classify emergence.
+\item{cutoff}{If `mode` includes "DAE" then this value is used to classify emergence.
 Defaults to 1, meaning an image with a value of 1 or more for `phenotype` has "emerged".}
 
 \item{timeCol}{Column of input time values, defaults to "timestamp".
-If this is not an integer then it is assumed to be
+If this is not numeric then it is assumed to be
 a timestamp in the format of the format argument.}
 
 \item{group}{Grouping variables to specify unique plants as a character vector.
@@ -44,7 +45,7 @@ although often "angle" or "rotation" should be added.}
 \item{plot}{Logical, should plots of the new time variables be printed?}
 
 \item{format}{An R POSIXct format, defaults to lemnatech standard format.
-This is only used if timeCol is not an integer.}
+This is only used if timeCol is not a numeric.}
 
 \item{traitCol}{Column with phenotype names, defaults to "trait".
 This should generally not need to be changed from the default.
@@ -59,9 +60,11 @@ may be useful if you have multiple datasets or you are adding data from bw.water
 and plants were watered before being imaged or if you want to index days off of
 midnight. This defaults to NULL but will take any value coercible to POSIXct by
 \code{as.POSIXct(... , tz="UTC")} such as "2020-01-01 18:30:00"}
+
+\item{digits}{Number of digits to round DAS to if timeCol is not numeric, defaults to 0.}
 }
 \value{
-The input dataframe with new integer columns for different ways
+The input dataframe with new numeric columns for different ways
 of describing time in the experiment. If plot is TRUE then a ggplot is also returned as part of
 a list.
 }

@@ -3,20 +3,20 @@
 #' @param df Data frame to use, this can be in wide or long format.
 #' @param mode One of "DAS", "DAP" or "DAE" (Days After Planting and Days After Emergence).
 #' Defaults to adding all columns.
-#' Note that if timeCol is not an integer then DAS is always returned.
+#' Note that if timeCol is not numeric then DAS is always returned.
 #' @param plantingDelay If `mode` includes "DAP" then `plantingDelay` is used to adjust "DAS"
 #' @param phenotype If `mode` includes "DAE" then this is the phenotype used to classify emergence.
-#' @param cutoff If `mode` inlcludes "DAE" then this value is used to classify emergence.
+#' @param cutoff If `mode` includes "DAE" then this value is used to classify emergence.
 #' Defaults to 1, meaning an image with a value of 1 or more for `phenotype` has "emerged".
 #' @param timeCol Column of input time values, defaults to "timestamp".
-#' If this is not an integer then it is assumed to be
+#' If this is not numeric then it is assumed to be
 #' a timestamp in the format of the format argument.
 #' @param group  Grouping variables to specify unique plants as a character vector.
 #' This defaults to "Barcodes". These taken together should identify a unique plant across time,
 #' although often "angle" or "rotation" should be added.
 #' @param plot Logical, should plots of the new time variables be printed?
 #' @param format An R POSIXct format, defaults to lemnatech standard format.
-#' This is only used if timeCol is not an integer.
+#' This is only used if timeCol is not a numeric.
 #' @param traitCol Column with phenotype names, defaults to "trait".
 #' This should generally not need to be changed from the default.
 #'    If this and valueCol are present in colnames(df) then the data
@@ -28,9 +28,10 @@
 #' and plants were watered before being imaged or if you want to index days off of
 #' midnight. This defaults to NULL but will take any value coercible to POSIXct by
 #' \code{as.POSIXct(... , tz="UTC")} such as "2020-01-01 18:30:00"
+#' @param digits Number of digits to round DAS to if timeCol is not numeric, defaults to 0.
 #' @keywords DAS time ggplot
 #' @import ggplot2
-#' @return The input dataframe with new integer columns for different ways
+#' @return The input dataframe with new numeric columns for different ways
 #' of describing time in the experiment. If plot is TRUE then a ggplot is also returned as part of
 #' a list.
 #' @export
@@ -86,7 +87,7 @@
 bw.time <- function(df = NULL, mode = c("DAS", "DAP", "DAE"), plantingDelay = NULL,
                     phenotype = NULL, cutoff = 1, timeCol = "timestamp",
                     group = "Barcodes", plot = TRUE, format = "%Y-%m-%d %H:%M:%S",
-                    traitCol = "trait", valueCol = "value", index = NULL) {
+                    traitCol = "trait", valueCol = "value", index = NULL, digits = 0) {
   wide <- .detectWideData(df, traitCol, valueCol) # see bwoutliers
 
   if (is.null(plantingDelay) && "DAP" %in% mode) {
@@ -96,7 +97,7 @@ bw.time <- function(df = NULL, mode = c("DAS", "DAP", "DAE"), plantingDelay = NU
     mode <- mode[-which(mode == "DAE")]
   }
 
-  formatNonIntegerTimeRes <- .formatNonIntegerTime(df, timeCol, format, index)
+  formatNonIntegerTimeRes <- .formatNonIntegerTime(df, timeCol, format, index, digits)
   df <- formatNonIntegerTimeRes[["data"]]
   timeCol <- formatNonIntegerTimeRes[["timeCol"]]
 
@@ -124,14 +125,14 @@ bw.time <- function(df = NULL, mode = c("DAS", "DAP", "DAE"), plantingDelay = NU
 #' @keywords internal
 #' @noRd
 
-.formatNonIntegerTime <- function(df, timeCol, format, index) {
+.formatNonIntegerTime <- function(df, timeCol, format, index, digits) {
   if (!is.numeric(df[[timeCol]])) {
     df[[timeCol]] <- as.POSIXct(strptime(df[[timeCol]], format = format))
     beg <- as.POSIXct(index, tz = "UTC")
     if (is.null(index)) {
       beg <- min(df[[timeCol]], na.rm = TRUE)
     }
-    df$DAS <- floor(as.numeric((df[[timeCol]] - beg) / 60 / 60 / 24))
+    df$DAS <- round(as.numeric((df[[timeCol]] - beg) / 60 / 60 / 24), digits = digits)
     timeCol <- "DAS"
   }
   return(list("data" = df, "timeCol" = timeCol))
