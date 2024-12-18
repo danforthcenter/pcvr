@@ -74,7 +74,8 @@
 <span>  format <span class="op">=</span> <span class="st">"%Y-%m-%d %H:%M:%S"</span>,</span>
 <span>  traitCol <span class="op">=</span> <span class="st">"trait"</span>,</span>
 <span>  valueCol <span class="op">=</span> <span class="st">"value"</span>,</span>
-<span>  index <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  index <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  digits <span class="op">=</span> <span class="fl">0</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -89,7 +90,7 @@
 <dt id="arg-mode">mode<a class="anchor" aria-label="anchor" href="#arg-mode"></a></dt>
 <dd><p>One of "DAS", "DAP" or "DAE" (Days After Planting and Days After Emergence).
 Defaults to adding all columns.
-Note that if timeCol is not an integer then DAS is always returned.</p></dd>
+Note that if timeCol is not numeric then DAS is always returned.</p></dd>
 
 
 <dt id="arg-plantingdelay">plantingDelay<a class="anchor" aria-label="anchor" href="#arg-plantingdelay"></a></dt>
@@ -101,13 +102,13 @@ Note that if timeCol is not an integer then DAS is always returned.</p></dd>
 
 
 <dt id="arg-cutoff">cutoff<a class="anchor" aria-label="anchor" href="#arg-cutoff"></a></dt>
-<dd><p>If `mode` inlcludes "DAE" then this value is used to classify emergence.
+<dd><p>If `mode` includes "DAE" then this value is used to classify emergence.
 Defaults to 1, meaning an image with a value of 1 or more for `phenotype` has "emerged".</p></dd>
 
 
 <dt id="arg-timecol">timeCol<a class="anchor" aria-label="anchor" href="#arg-timecol"></a></dt>
 <dd><p>Column of input time values, defaults to "timestamp".
-If this is not an integer then it is assumed to be
+If this is not numeric then it is assumed to be
 a timestamp in the format of the format argument.</p></dd>
 
 
@@ -123,7 +124,7 @@ although often "angle" or "rotation" should be added.</p></dd>
 
 <dt id="arg-format">format<a class="anchor" aria-label="anchor" href="#arg-format"></a></dt>
 <dd><p>An R POSIXct format, defaults to lemnatech standard format.
-This is only used if timeCol is not an integer.</p></dd>
+This is only used if timeCol is not a numeric.</p></dd>
 
 
 <dt id="arg-traitcol">traitCol<a class="anchor" aria-label="anchor" href="#arg-traitcol"></a></dt>
@@ -145,10 +146,14 @@ and plants were watered before being imaged or if you want to index days off of
 midnight. This defaults to NULL but will take any value coercible to POSIXct by
 <code>as.POSIXct(... , tz="UTC")</code> such as "2020-01-01 18:30:00"</p></dd>
 
+
+<dt id="arg-digits">digits<a class="anchor" aria-label="anchor" href="#arg-digits"></a></dt>
+<dd><p>Number of digits to round DAS to if timeCol is not numeric, defaults to 0.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>The input dataframe with new integer columns for different ways
+    <p>The input dataframe with new numeric columns for different ways
 of describing time in the experiment. If plot is TRUE then a ggplot is also returned as part of
 a list.</p>
     </div>

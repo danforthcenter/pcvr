@@ -92,8 +92,11 @@ Sumner</h4>
 <h2 id="example-bellwether-lemnatech-workflow">Example Bellwether (Lemnatech) Workflow<a class="anchor" aria-label="anchor" href="#example-bellwether-lemnatech-workflow"></a>
 </h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/danforthcenter/pcvr" class="external-link">pcvr</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/danforthcenter/pcvr" class="external-link">pcvr</a></span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Error in get(paste0(generic, ".", class), envir = get_method_env()) : </span></span>
+<span><span class="co">##   object 'type_sum.accel' not found</span></span></code></pre>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span></code></pre></div>
 <p>The Bellwether phenotyping facility at the Donald Danforth Plant
 Science Center allows for high throughput image based phenotyping of up
@@ -135,7 +138,7 @@ data in a different format than it is stored in (wide going to long and
 vice versa).</p>
 <p>The single value traits can be read in with <code>read.pcv</code>,
 here using <code><a href="https://rdrr.io/pkg/data.table/man/fread.html" class="external-link">data.table::fread</a></code> for speed.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">base_url</span> <span class="op">&lt;-</span> <span class="st">"https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/"</span></span>
 <span><span class="va">base_url2</span> <span class="op">&lt;-</span> <span class="st">"https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/"</span></span>
 <span><span class="va">sv</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read.pcv.html">read.pcv</a></span><span class="op">(</span></span>
@@ -145,7 +148,7 @@ here using <code><a href="https://rdrr.io/pkg/data.table/man/fread.html" class="
 <p>You will generally want to join some metadata to your phenotypes or
 parse metadata from your barcodes. Metadata key files will generally
 look and be used like this:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">key</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">base_url</span>, <span class="st">"smallPhenotyperRun_key.csv"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">key</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##          barcode genotype fertilizer</span></span>
@@ -155,7 +158,7 @@ look and be used like this:</p>
 <span><span class="co">## 4 Em005ZDC130867     Mo17          0</span></span>
 <span><span class="co">## 5 Em005ZDA130872     Mo17        100</span></span>
 <span><span class="co">## 6 Em005ZDC130864     Mo17          0</span></span></code></pre>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sv</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/merge.html" class="external-link">merge</a></span><span class="op">(</span><span class="va">sv</span>, <span class="va">key</span>, by <span class="op">=</span> <span class="st">"barcode"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">sv</span><span class="op">$</span><span class="va">genotype</span>, <span class="va">sv</span><span class="op">$</span><span class="va">fertilizer</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##        </span></span>
@@ -166,7 +169,7 @@ look and be used like this:</p>
 <span><span class="co">##   W605S 182 168 263</span></span></code></pre>
 <p>If we did not have a key file then we would parse our barcodes doing
 something like this:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">genotype</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/substr.html" class="external-link">substr</a></span><span class="op">(</span><span class="va">sv</span><span class="op">$</span><span class="va">barcode</span>, <span class="fl">3</span>, <span class="fl">5</span><span class="op">)</span></span>
 <span><span class="va">genotype</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">genotype</span> <span class="op">==</span> <span class="st">"002"</span>, <span class="st">"B73"</span>,</span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">genotype</span> <span class="op">==</span> <span class="st">"003"</span>, <span class="st">"W605S"</span>,</span>
@@ -190,7 +193,7 @@ meaningful units. Here we know that the chips on our color card are
 convert these phenotypes to whatever units you like, but you need to
 know the size of the color card chips in some real unit and color
 correct in plantCV so that the color chip measurements are returned.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">chip_size_px</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">sv</span><span class="op">$</span><span class="va">median_color_chip_height_median</span>, <span class="va">sv</span><span class="op">$</span><span class="va">median_color_chip_width_median</span><span class="op">)</span><span class="op">)</span> <span class="co"># ~52</span></span>
 <span></span>
 <span><span class="va">px_per_cm</span> <span class="op">&lt;-</span> <span class="va">chip_size_px</span> <span class="op">/</span> <span class="fl">1.2</span> <span class="co"># ~ 43.5</span></span>
@@ -208,7 +211,7 @@ memory for R. In that case <code>read.pcv</code> has a
 linux/unix outside of R. That feature would work as shown below to read
 only single value traits into memory. This can take a few minutes but
 allows the entirely workflow to be documented in one R file.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">example</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read.pcv.html">read.pcv</a></span><span class="op">(</span><span class="st">"prohibitivelyLargeFile.csv"</span>,</span>
 <span>  filters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>    <span class="st">"trait in area_pixels, area_above_reference_pixels, area_below_reference_pixels"</span>,</span>
@@ -226,7 +229,7 @@ file. The original goal of <code>read.pcv</code> was to make it easier
 to work with those files. Now that the default output has changed the
 <code>read.pcv</code> function has been somewhat simplified but it can
 still be used for these “PlantCV 4.x” legacy style data.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sv</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read.pcv.html">read.pcv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">base_url2</span>, <span class="st">"smallPhenotyperRun.csv"</span><span class="op">)</span>,</span>
 <span>  mode <span class="op">=</span> <span class="st">"wide"</span>,</span>
 <span>  reader <span class="op">=</span> <span class="st">"fread"</span></span>
@@ -272,7 +275,7 @@ for the 5MP camera that was used prior to 2023. Note that the conversion
 would change for a different camera such as the current 18MP camera. It
 is a good idea to check your color chip sizes if you are not sure about
 the appropriate conversion.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">onlyPhenos</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read.pcv.3.html">read.pcv.3</a></span><span class="op">(</span>file <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">base_url</span>, <span class="st">"pcv3Phenos.csv"</span><span class="op">)</span>, metaCol <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">onlyPhenos</span><span class="op">)</span></span>
 <span></span>
@@ -303,7 +306,7 @@ requires using a phenotype and a value to classify emergence. Here an
 area greater than 10 pixels is considered an emerged plant. In this
 example with a planting delay of 0 DAP and DAE will be the same, but
 both are still created for the purpose of the example.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/bw.time.html">bw.time</a></span><span class="op">(</span><span class="va">sv</span>,</span>
 <span>  plantingDelay <span class="op">=</span> <span class="fl">0</span>, phenotype <span class="op">=</span> <span class="st">"area_pixels"</span>, cutoff <span class="op">=</span> <span class="fl">10</span>,</span>
 <span>  timeCol <span class="op">=</span> <span class="st">"timestamp"</span>, group <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"barcode"</span>, <span class="st">"rotation"</span><span class="op">)</span>, plot <span class="op">=</span> <span class="cn">TRUE</span></span>
@@ -317,7 +320,7 @@ both are still created for the purpose of the example.</p>
 <pre><code><span><span class="co">## </span></span>
 <span><span class="co">## [[3]]</span></span></code></pre>
 <p><img src="reading_pcv_data_files/figure-html/unnamed-chunk-9-3.png" width="700"></p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sv</span> <span class="op">&lt;-</span> <span class="va">out</span><span class="op">$</span><span class="va">data</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">sv</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] 2824   52</span></span></code></pre>
@@ -328,18 +331,15 @@ due to the imaging schedule changing and getting 2 separate images at
 each rotation on the last day.</p>
 <p>Before moving on we’ll also check the grouping in our data. Here we
 see that we have lots of plants with more than one image per day.</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/checkGroups.html">checkGroups</a></span><span class="op">(</span><span class="va">sv</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"DAS"</span>, <span class="st">"barcode"</span>, <span class="st">"rotation"</span>, <span class="st">"genotype"</span>, <span class="st">"fertilizer"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## There are 126 observations that are not uniquely identified.</span></span>
-<span><span class="co">## The max number of duplicates is 2.</span></span>
-<span><span class="co">## Run `sv[duplicated(interaction(sv$DAS, sv$barcode, sv$rotation, sv$genotype, sv$fertilizer)),]` to see the duplicated rows,</span></span>
-<span><span class="co">##  or sv[interaction(sv$DAS, sv$barcode, sv$rotation, sv$genotype, sv$fertilizer)=='19.Em002ZDC130765.0.B73.0',] to see the first duplicated instance.</span></span></code></pre>
+<pre><code><span><span class="co">## Grouping is unique</span></span></code></pre>
 <p>We can combine images taken at different angles of the same plant on
 a given day with <code>aggregate</code>, where we will also remove some
 columns we aren’t using. In this case we use the mean of observations,
 but some people prefer a sum. Either way is fine. Here we also remove
 the DAE and DAP columns since we will not be using them.</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">phenotypes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">sv</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">19</span><span class="op">:</span><span class="fl">35</span>, <span class="fl">43</span><span class="op">:</span><span class="fl">45</span>, <span class="fl">48</span><span class="op">:</span><span class="fl">49</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="va">phenoForm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"cbind("</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">phenotypes</span>, collapse <span class="op">=</span> <span class="st">", "</span><span class="op">)</span>, <span class="st">")"</span><span class="op">)</span></span>
 <span><span class="va">groupForm</span> <span class="op">&lt;-</span> <span class="st">"DAS+timestamp+barcode+genotype+fertilizer"</span></span>
@@ -356,39 +356,36 @@ relative to a phenotype using cook’s distance. Here due to the
 experimental design having these plants germinate on the machine around
 1 percent of data are removed as outliers. The plot shows removed data
 points in red, although here that is hard to see.</p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/bw.outliers.html">bw.outliers</a></span><span class="op">(</span></span>
 <span>  df <span class="op">=</span> <span class="va">sv_ag_with_outliers</span>, phenotype <span class="op">=</span> <span class="st">"area_pixels"</span>,</span>
 <span>  group <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"DAS"</span>, <span class="st">"genotype"</span>, <span class="st">"fertilizer"</span><span class="op">)</span>, plotgroup <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"barcode"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Warning in bw.outliers(df = sv_ag_with_outliers, phenotype = "area_pixels", :</span></span>
-<span><span class="co">## 18 groupings had all observations removed</span></span></code></pre>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<span><span class="co">## 16 groupings had all observations removed</span></span></code></pre>
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sv_ag</span> <span class="op">&lt;-</span> <span class="va">out</span><span class="op">$</span><span class="va">data</span></span>
 <span><span class="va">out</span><span class="op">$</span><span class="va">plot</span></span></code></pre></div>
 <p><img src="reading_pcv_data_files/figure-html/unnamed-chunk-12-1.png" width="700"></p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">sv_ag</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] 1335   27</span></span></code></pre>
+<pre><code><span><span class="co">## [1] 1327   27</span></span></code></pre>
 <p>It is also useful to check our grouping assumptions again, here we
 see that there are some plants with multiple images from a single
 day.</p>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/checkGroups.html">checkGroups</a></span><span class="op">(</span><span class="va">sv_ag</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"DAS"</span>, <span class="st">"barcode"</span>, <span class="st">"genotype"</span>, <span class="st">"fertilizer"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## There are 51 observations that are not uniquely identified.</span></span>
-<span><span class="co">## The max number of duplicates is 2.</span></span>
-<span><span class="co">## Run `sv_ag[duplicated(interaction(sv_ag$DAS, sv_ag$barcode, sv_ag$genotype, sv_ag$fertilizer)),]` to see the duplicated rows,</span></span>
-<span><span class="co">##  or sv_ag[interaction(sv_ag$DAS, sv_ag$barcode, sv_ag$genotype, sv_ag$fertilizer)=='19.Em002ZDC130765.B73.0',] to see the first duplicated instance.</span></span></code></pre>
+<pre><code><span><span class="co">## Grouping is unique</span></span></code></pre>
 </div>
 <div class="section level4">
 <h4 id="watering-data">Watering Data<a class="anchor" aria-label="anchor" href="#watering-data"></a>
 </h4>
 <p>We might also want to check the watering data, which can be read
 easily from json with <code>bw.water</code>.</p>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">water</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/bw.water.html">bw.water</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">base_url</span>, <span class="st">"metadata.json"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Using the first watering time, 2023-04-13 23:28:17.58, as beginning of experiment to assign DAS</span></span></code></pre>
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">water</span><span class="op">$</span><span class="va">genotype</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/substr.html" class="external-link">substr</a></span><span class="op">(</span><span class="va">water</span><span class="op">$</span><span class="va">barcode</span>, <span class="fl">3</span>, <span class="fl">5</span><span class="op">)</span></span>
 <span><span class="va">water</span><span class="op">$</span><span class="va">genotype</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">water</span><span class="op">$</span><span class="va">genotype</span> <span class="op">==</span> <span class="st">"002"</span>, <span class="st">"B73"</span>,</span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">water</span><span class="op">$</span><span class="va">genotype</span> <span class="op">==</span> <span class="st">"003"</span>, <span class="st">"W605S"</span>,</span>
@@ -416,7 +413,7 @@ easily from json with <code>bw.water</code>.</p>
 in some phenotype (area) over the change in weight between waterings.
 Note that the plants in this example are very young and as such the data
 in this example is dominated by noise.</p>
-<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">test</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pwue.html">pwue</a></span><span class="op">(</span>df <span class="op">=</span> <span class="va">sv_ag</span>, w <span class="op">=</span> <span class="va">water</span>, pheno <span class="op">=</span> <span class="st">"area_pixels"</span>, time <span class="op">=</span> <span class="st">"timestamp"</span>, id <span class="op">=</span> <span class="st">"barcode"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">test</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">DAS</span>, y <span class="op">=</span> <span class="va">pWUE</span>, color <span class="op">=</span> <span class="va">genotype</span>, group <span class="op">=</span> <span class="va">barcode</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
@@ -436,7 +433,7 @@ in this example is dominated by noise.</p>
 <h3 id="multi-value-traits">Multi Value Traits<a class="anchor" aria-label="anchor" href="#multi-value-traits"></a>
 </h3>
 <p>We take similar steps in working with multi-value trait data.</p>
-<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">hue_wide</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read.pcv.html">read.pcv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">base_url2</span>, <span class="st">"pcv4-multi-value-traits.csv"</span><span class="op">)</span>,</span>
 <span>  mode <span class="op">=</span> <span class="st">"wide"</span>, reader <span class="op">=</span> <span class="st">"fread"</span></span>
 <span><span class="op">)</span></span>

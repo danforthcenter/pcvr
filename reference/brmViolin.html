@@ -80,11 +80,13 @@ use <a href="combineDraws.html">combineDraws</a> to merge their draws into a sin
 
 <dt id="arg-hypothesis">hypothesis<a class="anchor" aria-label="anchor" href="#arg-hypothesis"></a></dt>
 <dd><p>A hypothesis expressed as a character string in the style of that used by
-<code><a href="https://paulbuerkner.com/brms/reference/hypothesis.brmsfit.html" class="external-link">brms::hypothesis</a></code> and <a href="testGrowth.html">testGrowth</a>. Note that currently this only supports hypotheses
-using two parameters from the model at a time (ie, "groupA / groupB &gt; 1.05" works but
-"(groupA / groupB) - (groupC / groupD) &gt; 1" does not). In the hypothesis "..." can be used to mean
+<code><a href="https://paulbuerkner.com/brms/reference/hypothesis.brmsfit.html" class="external-link">brms::hypothesis</a></code> and <a href="testGrowth.html">testGrowth</a>. In the hypothesis "..." can be used to mean
 "all groups for this parameter" so that the hypothesis "... / A_group1 &gt; 1.05" would include all
-the "A" coefficients for groups 1:N along the x axis, see examples.</p></dd>
+the "A" coefficients for groups 1:N along the x axis, see examples. If a hypothesis is using
+several parameters per group (second example) then math around those parameters and any ellipses
+should be wrapped in parentheses. Note that currently the single hypothesis option (no ...)
+only supports hypotheses using two parameters from the model at a time
+(ie, "groupA / groupB &gt; 1.05" works but "(groupA / groupB) - (groupC / groupD) &gt; 1" does not).</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -119,7 +121,7 @@ as violins and filled by posterior probability of some hypothesis.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration:   1 / 500 [  0%]  (Warmup) </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Location parameter[1] is -nan, but must be finite! (in '/tmp/Rtmp32g15l/model-1c862c6705b5.stan', line 97, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Location parameter[1] is -nan, but must be finite! (in '/tmp/RtmpCipByu/model-1c80baad006.stan', line 97, column 4 to column 48)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
@@ -129,11 +131,15 @@ as violins and filled by posterior probability of some hypothesis.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 350 / 500 [ 70%]  (Sampling) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 450 / 500 [ 90%]  (Sampling) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 500 / 500 [100%]  (Sampling) </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 finished in 11.4 seconds.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 finished in 10.9 seconds.</span>
 <span class="r-in"><span><span class="fu">brmViolin</span><span class="op">(</span><span class="va">fit</span>, <span class="va">ss</span>, <span class="st">".../A_groupd &gt; 1.05"</span><span class="op">)</span> <span class="co"># all groups used</span></span></span>
 <span class="r-plt img"><img src="brmViolin-1.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span><span class="fu">brmViolin</span><span class="op">(</span><span class="va">fit</span>, <span class="va">ss</span>, <span class="st">"A_groupa/A_groupd &gt; 1.05"</span><span class="op">)</span> <span class="co"># only these two groups</span></span></span>
+<span class="r-in"><span><span class="fu">brmViolin</span><span class="op">(</span><span class="va">fit</span>, <span class="va">ss</span>, <span class="st">"abs(1 - ((...)/(C_groupd - B_groupd))) &gt; 0.05"</span><span class="op">)</span> <span class="co"># rather arbitrary</span></span></span>
 <span class="r-plt img"><img src="brmViolin-2.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span><span class="fu">brmViolin</span><span class="op">(</span><span class="va">fit</span>, <span class="va">ss</span>, <span class="st">"abs(1 - ((...)/(C_groupa - B_groupd))) &gt; 0.05"</span><span class="op">)</span> <span class="co"># totally arbitrary</span></span></span>
+<span class="r-plt img"><img src="brmViolin-3.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span><span class="fu">brmViolin</span><span class="op">(</span><span class="va">fit</span>, <span class="va">ss</span>, <span class="st">"A_groupa/A_groupd &gt; 1.05"</span><span class="op">)</span> <span class="co"># only these two groups</span></span></span>
+<span class="r-plt img"><img src="brmViolin-4.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>

@@ -108,8 +108,11 @@ DDPSC Data Science Core Facility</h4>
 }
 </style>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/danforthcenter/pcvr" class="external-link">pcvr</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/paul-buerkner/brms" class="external-link">brms</a></span><span class="op">)</span> <span class="co"># for rvon_mises</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/danforthcenter/pcvr" class="external-link">pcvr</a></span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Error in get(paste0(generic, ".", class), envir = get_method_env()) : </span></span>
+<span><span class="co">##   object 'type_sum.accel' not found</span></span></code></pre>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/paul-buerkner/brms" class="external-link">brms</a></span><span class="op">)</span> <span class="co"># for rvon_mises</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://patchwork.data-imaginist.com" class="external-link">patchwork</a></span><span class="op">)</span> <span class="co"># for easy ggplot manipulation/combination</span></span></code></pre></div>
 <div class="section level2">
@@ -192,7 +195,7 @@ the output is of the same form as the prior.</p>
 <h4 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
 </h4>
 <p>First we’ll simulate some multi value data</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mv_gauss</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mvSim.html">mvSim</a></span><span class="op">(</span></span>
 <span>  dists <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>    rnorm <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>mean <span class="op">=</span> <span class="fl">50</span>, sd <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>,</span>
@@ -205,7 +208,7 @@ a circle defined over [0, 180] with an expected direction around 45 (90
 degrees on the full [0,360] or
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>π</mi><mi>/</mi><mn>2</mn></mrow><annotation encoding="application/x-tex">\pi/2</annotation></semantics></math>
 radians) and low precision.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">vm_ex1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/conjugate.html">conjugate</a></span><span class="op">(</span></span>
 <span>  s1 <span class="op">=</span> <span class="va">mv_gauss</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">30</span>, <span class="op">-</span><span class="fl">1</span><span class="op">]</span>,</span>
 <span>  s2 <span class="op">=</span> <span class="va">mv_gauss</span><span class="op">[</span><span class="fl">31</span><span class="op">:</span><span class="fl">70</span>, <span class="op">-</span><span class="fl">1</span><span class="op">]</span>,</span>
@@ -217,7 +220,7 @@ radians) and low precision.</p>
 <p>The summary shows normal <code>conjugate</code> output, here showing
 a posterior probability of ~91% that our samples have equal means
 (remember the difference in our simulated data is now on a circle).</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">vm_ex1</span><span class="op">$</span><span class="va">summary</span></span></code></pre></div>
 <pre><code><span><span class="co">##      HDE_1 HDI_1_low HDI_1_high    HDE_2 HDI_2_low HDI_2_high   hyp post.prob</span></span>
 <span><span class="co">## 1 49.41914  33.04564   64.95365 59.49722  39.77791   78.23893 equal 0.6345453</span></span>
@@ -233,11 +236,11 @@ whatever space the boundary in the prior specifies the support has to be
 very dense.</p>
 <p>Note also that our rope_range is specified in the boundary units
 space, which is not necessarily the unit circle.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">vm_ex1</span><span class="op">$</span><span class="va">plot</span> <span class="co"># not printed due to being a very dense ggplot</span></span></code></pre></div>
 <p>We get very similar results using roughly analogous single value
 traits.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">vm_ex1_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/conjugate.html">conjugate</a></span><span class="op">(</span></span>
 <span>  s1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">30</span>, <span class="fl">50</span>, <span class="fl">10</span><span class="op">)</span>,</span>
 <span>  s2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">40</span>, <span class="fl">60</span>, <span class="fl">12</span><span class="op">)</span>,</span>
@@ -253,7 +256,7 @@ traits.</p>
 <p>Single value traits work in the same way. Note that if we omit parts
 of the prior then they will be filled in with the default prior
 values.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span></span>
 <span><span class="va">vm_ex2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/conjugate.html">conjugate</a></span><span class="op">(</span></span>
 <span>  s1 <span class="op">=</span> <span class="fu">brms</span><span class="fu">::</span><span class="fu"><a href="https://paulbuerkner.com/brms/reference/VonMises.html" class="external-link">rvon_mises</a></span><span class="op">(</span><span class="fl">100</span>, <span class="op">-</span><span class="fl">3.1</span>, <span class="fl">2</span><span class="op">)</span>,</span>
@@ -265,25 +268,25 @@ values.</p>
 <span><span class="op">)</span></span></code></pre></div>
 <p>We check our summary and see around 75% chance that these are
 equal</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">vm_ex2</span><span class="op">$</span><span class="va">summary</span></span></code></pre></div>
 <pre><code><span><span class="co">##       HDE_1 HDI_1_low HDI_1_high    HDE_2 HDI_2_low HDI_2_high   hyp post.prob</span></span>
 <span><span class="co">## 1 -3.071143  2.393966  -2.224163 3.140433  2.381274  -2.297627 equal  0.940651</span></span>
 <span><span class="co">##     HDE_rope HDI_rope_low HDI_rope_high rope_prob</span></span>
 <span><span class="co">## 1 0.07243397    -1.081833      1.232842 0.1241434</span></span></code></pre>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="va">vm_ex2</span><span class="op">$</span><span class="va">posterior</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##      mu        kappa    known_kappa n   boundary </span></span>
 <span><span class="co">## [1,] -3.071143 4.204577 2           101 numeric,2</span></span>
 <span><span class="co">## [2,] 3.140433  4.499838 2           101 numeric,2</span></span></code></pre>
 <p>Here our plot is much faster to make since the support is a roughly a
 thirtieth the size of the previous example.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">vm_ex2</span><span class="op">$</span><span class="va">plot</span> <span class="co"># not printed due to being a very dense ggplot</span></span></code></pre></div>
 <p>Sometimes it may be helpful to use polar coordinates to consider this
 data, although limitations in plotting area style geometries in the
 polar coordinates can be frustrating.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="va">vm_ex2</span><span class="op">$</span><span class="va">plot</span></span>
 <span><span class="va">p</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">p</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span> <span class="op">+</span></span>
 <span>  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_polar.html" class="external-link">coord_polar</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
@@ -313,7 +316,7 @@ boundary/n are as above.</p>
 </h4>
 <p>Using the same test data as above we can run the “vonmises2”
 method.</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">vm2_ex1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/conjugate.html">conjugate</a></span><span class="op">(</span></span>
 <span>  s1 <span class="op">=</span> <span class="va">mv_gauss</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">30</span>, <span class="op">-</span><span class="fl">1</span><span class="op">]</span>,</span>
 <span>  s2 <span class="op">=</span> <span class="va">mv_gauss</span><span class="op">[</span><span class="fl">31</span><span class="op">:</span><span class="fl">70</span>, <span class="op">-</span><span class="fl">1</span><span class="op">]</span>,</span>
@@ -322,12 +325,12 @@ method.</p>
 <span>  plot <span class="op">=</span> <span class="cn">TRUE</span>, rope_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">5</span>, <span class="fl">5</span><span class="op">)</span>, rope_ci <span class="op">=</span> <span class="fl">0.89</span>,</span>
 <span>  cred.int.level <span class="op">=</span> <span class="fl">0.89</span>, hypothesis <span class="op">=</span> <span class="st">"equal"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="va">vm2_ex1</span><span class="op">$</span><span class="va">posterior</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##      mu       kappa    n  boundary </span></span>
 <span><span class="co">## [1,] 49.41914 8.518119 31 numeric,2</span></span>
 <span><span class="co">## [2,] 59.49722 6.128526 41 numeric,2</span></span></code></pre>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span></span>
 <span><span class="va">vm2_ex2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/conjugate.html">conjugate</a></span><span class="op">(</span></span>
 <span>  s1 <span class="op">=</span> <span class="fu">brms</span><span class="fu">::</span><span class="fu"><a href="https://paulbuerkner.com/brms/reference/VonMises.html" class="external-link">rvon_mises</a></span><span class="op">(</span><span class="fl">100</span>, <span class="op">-</span><span class="fl">3.1</span>, <span class="fl">2</span><span class="op">)</span>,</span>
@@ -337,10 +340,10 @@ method.</p>
 <span>  plot <span class="op">=</span> <span class="cn">TRUE</span>, rope_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">0.75</span>, <span class="fl">0.75</span><span class="op">)</span>, rope_ci <span class="op">=</span> <span class="fl">0.89</span>,</span>
 <span>  cred.int.level <span class="op">=</span> <span class="fl">0.89</span>, hypothesis <span class="op">=</span> <span class="st">"equal"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">vm2_ex2</span><span class="op">$</span><span class="va">plot</span> <span class="co"># much lighter to print this since it is in radians</span></span></code></pre></div>
 <p><img src="directional_files/figure-html/plot%20from%20conjugate%205-1.png" alt="Plot of the posterior distribution using the vonmises2 method" width="700"></p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="va">vm2_ex2</span><span class="op">$</span><span class="va">posterior</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##      mu        kappa    n   boundary </span></span>
 <span><span class="co">## [1,] -3.071143 2.091375 101 numeric,2</span></span>
@@ -367,7 +370,7 @@ fit but can be at least hypothetically very useful.</p>
 </h3>
 <p>Here we set up a model with <code>growthSS</code> only for example
 purposes</p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">nReps</span> <span class="op">&lt;-</span> <span class="fl">25</span></span>
 <span><span class="va">time</span> <span class="op">&lt;-</span> <span class="fl">1</span><span class="op">:</span><span class="fl">20</span></span>
 <span><span class="va">muTrend1</span> <span class="op">&lt;-</span> <span class="op">-</span><span class="fl">2</span> <span class="op">+</span> <span class="op">(</span><span class="fl">0.25</span> <span class="op">*</span> <span class="va">time</span><span class="op">)</span></span>
@@ -398,7 +401,7 @@ purposes</p>
 <span><span class="co">##  (flat)     b                   kappa                  default</span></span>
 <span><span class="co">##  (flat)     b groupa            kappa             (vectorized)</span></span>
 <span><span class="co">##  (flat)     b groupb            kappa             (vectorized)</span></span></code></pre>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ss</span><span class="op">$</span><span class="va">formula</span> <span class="co"># formula specifies kappa based on sigma argument</span></span></code></pre></div>
 <pre><code><span><span class="co">## y ~ I + A * x </span></span>
 <span><span class="co">## autocor ~ tructure(list(), class = "formula", .Environment = &lt;environment&gt;)</span></span>
@@ -412,7 +415,7 @@ purposes</p>
 <div class="section level4">
 <h4 id="single-timepoint-model">Single Timepoint Model<a class="anchor" aria-label="anchor" href="#single-timepoint-model"></a>
 </h4>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
 <span><span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">1000</span></span>
 <span><span class="va">vm1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
@@ -475,7 +478,7 @@ purposes</p>
 <div class="section level4">
 <h4 id="longitudinal-model">Longitudinal Model<a class="anchor" aria-label="anchor" href="#longitudinal-model"></a>
 </h4>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">nReps</span> <span class="op">&lt;-</span> <span class="fl">25</span></span>
 <span><span class="va">time</span> <span class="op">&lt;-</span> <span class="fl">1</span><span class="op">:</span><span class="fl">20</span></span>
 <span><span class="va">muTrend1</span> <span class="op">&lt;-</span> <span class="op">-</span><span class="fl">2</span> <span class="op">+</span> <span class="op">(</span><span class="fl">0.25</span> <span class="op">*</span> <span class="va">time</span><span class="op">)</span></span>

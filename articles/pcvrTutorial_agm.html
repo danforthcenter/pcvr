@@ -126,8 +126,11 @@ needs.</p>
 <p>Pre-work was to install R, Rstudio, and <code>pcvr</code> with
 dependencies.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/danforthcenter/pcvr" class="external-link">pcvr</a></span><span class="op">)</span> <span class="co"># or devtools::load_all() if you are editing</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/paul-buerkner/brms" class="external-link">brms</a></span><span class="op">)</span> <span class="co"># for bayesian models</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/danforthcenter/pcvr" class="external-link">pcvr</a></span><span class="op">)</span> <span class="co"># or devtools::load_all() if you are editing</span></span></code></pre></div>
+<pre><code><span><span class="co">## Error in get(paste0(generic, ".", class), envir = get_method_env()) : </span></span>
+<span><span class="co">##   object 'type_sum.accel' not found</span></span></code></pre>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/paul-buerkner/brms" class="external-link">brms</a></span><span class="op">)</span> <span class="co"># for bayesian models</span></span></code></pre></div>
 <pre><code><span><span class="co">## Loading required package: Rcpp</span></span></code></pre>
 <pre><code><span><span class="co">## Loading 'brms' package (version 2.22.0). Useful instructions</span></span>
 <span><span class="co">## can be found by typing help('brms'). A more detailed introduction</span></span>
@@ -137,7 +140,7 @@ dependencies.</p>
 <pre><code><span><span class="co">## The following object is masked from 'package:stats':</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">##     ar</span></span></code></pre>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span> <span class="co"># for fread</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span> <span class="co"># for plotting</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://patchwork.data-imaginist.com" class="external-link">patchwork</a></span><span class="op">)</span> <span class="co"># to arrange ggplots</span></span></code></pre></div>
@@ -174,7 +177,7 @@ statistical needs.</p>
 <div class="section level2 smaller">
 <h2 class="smaller" id="why-longitudinal-modeling-5">Why Longitudinal Modeling? 5<a class="anchor" aria-label="anchor" href="#why-longitudinal-modeling-5"></a>
 </h2>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">r1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">simdf</span><span class="op">[</span><span class="va">simdf</span><span class="op">$</span><span class="va">time</span> <span class="op">==</span> <span class="fl">1</span>, <span class="st">"y"</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="va">r2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">simdf</span><span class="op">[</span><span class="va">simdf</span><span class="op">$</span><span class="va">time</span> <span class="op">==</span> <span class="fl">5</span>, <span class="st">"y"</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="va">r3</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">simdf</span><span class="op">[</span><span class="va">simdf</span><span class="op">$</span><span class="va">time</span> <span class="op">==</span> <span class="fl">10</span>, <span class="st">"y"</span><span class="op">]</span><span class="op">)</span></span>
@@ -309,7 +312,7 @@ are supported but discouraged due to poor interpretability.</p>
 <p>Intercept only models are supported, although they are only intended
 for use in segmented models or to represent homoskedasticity as a
 sub-model.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
@@ -391,7 +394,7 @@ to fit the model.</p>
 <code>growthSS</code> - form 2<a class="anchor" aria-label="anchor" href="#growthss---form-2"></a>
 </h2>
 <p>Here we would use <code>y~time|id/group</code></p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">simdf</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/growthSim.html">growthSim</a></span><span class="op">(</span><span class="st">"gompertz"</span>,</span>
 <span>  n <span class="op">=</span> <span class="fl">20</span>, t <span class="op">=</span> <span class="fl">25</span>,</span>
 <span>  params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
@@ -417,7 +420,7 @@ to fit the model.</p>
 your experimental design.</p>
 <p>Note that it is fine for id to be duplicated between groups, but not
 within groups</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">simdf</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">y</span>,</span>
 <span>  group <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">group</span>, <span class="va">id</span><span class="op">)</span></span>
 <span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="co"># group on id</span></span>
@@ -432,7 +435,7 @@ within groups</p>
 </h2>
 <p>Recall the heteroskedasticity problem, shown again with our simulated
 data:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># \ echo: false</span></span>
 <span><span class="va">sigma_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/aggregate.html" class="external-link">aggregate</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="va">group</span> <span class="op">+</span> <span class="va">time</span>, data <span class="op">=</span> <span class="va">simdf</span>, FUN <span class="op">=</span> <span class="va">sd</span><span class="op">)</span></span>
 <span></span>
@@ -451,7 +454,7 @@ data:</p>
 sigma.</p>
 <p><code>pcvr</code> allows any of the model options in
 <code>growthSS</code> to also be applied to model variance.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">draw_gomp_sigma</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="fl">23</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="op">-</span><span class="fl">21</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="op">-</span><span class="fl">0.22</span> <span class="op">*</span> <span class="va">x</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
@@ -491,7 +494,7 @@ sigma.</p>
 <td>Very inaccurate intervals at early timepoints</td>
 </tr></tbody>
 </table>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">sigma_df</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">time</span>, y <span class="op">=</span> <span class="va">y</span>, group <span class="op">=</span> <span class="va">group</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_hline</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="fl">13.8</span>, color <span class="op">=</span> <span class="st">"Homoskedastic"</span><span class="op">)</span>, linetype <span class="op">=</span> <span class="fl">5</span>, key_glyph <span class="op">=</span> <span class="va">draw_key_path</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>color <span class="op">=</span> <span class="va">group</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
@@ -525,7 +528,7 @@ sigma.</p>
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">sigma_df</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">time</span>, y <span class="op">=</span> <span class="va">y</span>, group <span class="op">=</span> <span class="va">group</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_smooth.html" class="external-link">geom_smooth</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>group <span class="op">=</span> <span class="st">"linear"</span>, color <span class="op">=</span> <span class="st">"Linear"</span><span class="op">)</span>,</span>
 <span>    linetype <span class="op">=</span> <span class="fl">5</span>,</span>
@@ -541,7 +544,7 @@ sigma.</p>
 <h2 class="smaller" id="growthss---linear-sigma-1">
 <code>growthSS</code> - Linear sigma<a class="anchor" aria-label="anchor" href="#growthss---linear-sigma-1"></a>
 </h2>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">p</span></span></code></pre></div>
 <p><img src="pcvrTutorial_agm_files/figure-html/unnamed-chunk-18-1.png" width="700"></p>
 </div>
@@ -575,7 +578,7 @@ sigma.</p>
 </table>
 <p>Note that these traits are broadly true of logistic and monomolecular
 sub models as well.</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">draw_gomp_sigma</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="fl">22</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="op">-</span><span class="fl">9</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="op">-</span><span class="fl">0.27</span> <span class="op">*</span> <span class="va">x</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span> <span class="co"># guesses at parameters</span></span>
@@ -592,7 +595,7 @@ sub models as well.</p>
 <h2 class="smaller" id="growthss---gompertz-sigma-1">
 <code>growthSS</code> - Gompertz sigma<a class="anchor" aria-label="anchor" href="#growthss---gompertz-sigma-1"></a>
 </h2>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">p</span></span></code></pre></div>
 <p><img src="pcvrTutorial_agm_files/figure-html/unnamed-chunk-20-1.png" width="700"></p>
 </div>
@@ -624,7 +627,7 @@ slower than other options</td>
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">sigma_df</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">time</span>, y <span class="op">=</span> <span class="va">y</span>, group <span class="op">=</span> <span class="va">group</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_smooth.html" class="external-link">geom_smooth</a></span><span class="op">(</span></span>
 <span>    method <span class="op">=</span> <span class="st">"gam"</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>group <span class="op">=</span> <span class="st">"Spline"</span>, color <span class="op">=</span> <span class="st">"Spline"</span><span class="op">)</span>,</span>
@@ -640,7 +643,7 @@ slower than other options</td>
 <h2 class="smaller" id="growthss---spline-sigma-1">
 <code>growthSS</code> - Spline sigma<a class="anchor" aria-label="anchor" href="#growthss---spline-sigma-1"></a>
 </h2>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">p</span></span></code></pre></div>
 <p><img src="pcvrTutorial_agm_files/figure-html/unnamed-chunk-22-1.png" width="700"></p>
 </div>
@@ -731,7 +734,7 @@ positive values while only requiring us to provide
 </h2>
 <p>We can see what those log-normal distributions look like with
 <code>plotPrior</code>.</p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">priors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"A"</span> <span class="op">=</span> <span class="fl">130</span>, <span class="st">"B"</span> <span class="op">=</span> <span class="fl">10</span>, <span class="st">"C"</span> <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span></span>
 <span><span class="va">priorPlots</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plotPrior.html">plotPrior</a></span><span class="op">(</span><span class="va">priors</span><span class="op">)</span></span>
 <span><span class="va">priorPlots</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span> <span class="op">/</span> <span class="va">priorPlots</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span> <span class="op">/</span> <span class="va">priorPlots</span><span class="op">[[</span><span class="fl">3</span><span class="op">]</span><span class="op">]</span></span></code></pre></div>
@@ -744,7 +747,7 @@ positive values while only requiring us to provide
 <p>Those distributions can still be somewhat abstract, so we can
 simulate draws from the priors and see what those values yield in our
 growth model.</p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">twoPriors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"A"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fl">130</span><span class="op">)</span>, <span class="st">"B"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">6</span>, <span class="fl">12</span><span class="op">)</span>, <span class="st">"C"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">0.25</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/plotPrior.html">plotPrior</a></span><span class="op">(</span><span class="va">twoPriors</span>, <span class="st">"gompertz"</span>, n <span class="op">=</span> <span class="fl">100</span><span class="op">)</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span></code></pre></div>
 <p><img src="pcvrTutorial_agm_files/figure-html/unnamed-chunk-25-1.png" width="700"></p>
@@ -755,7 +758,7 @@ growth model.</p>
 </h2>
 <p>Our final call to <code>growthSS</code> will look like this for our
 sample data.</p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ss</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/growthSS.html">growthSS</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="st">"gompertz"</span>, form <span class="op">=</span> <span class="va">y</span> <span class="op">~</span> <span class="va">time</span> <span class="op">|</span> <span class="va">id</span> <span class="op">/</span> <span class="va">group</span>,</span>
 <span>  sigma <span class="op">=</span> <span class="st">"gompertz"</span>, df <span class="op">=</span> <span class="va">simdf</span>,</span>
@@ -791,7 +794,7 @@ output from <code>growthSS</code>.</p>
 <code>growthSS</code> and tell the model to use 4 cores so that the
 chains run entirely in parallel, but the rest of this model is using
 defaults.</p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fitGrowth.html">fitGrowth</a></span><span class="op">(</span></span>
 <span>  ss <span class="op">=</span> <span class="va">ss</span>, cores <span class="op">=</span> <span class="fl">4</span>,</span>
 <span>  iter <span class="op">=</span> <span class="fl">2000</span>, chains <span class="op">=</span> <span class="fl">4</span>, backend <span class="op">=</span> <span class="st">"cmdstanr"</span></span>
@@ -816,7 +819,7 @@ behavior.</p>
 reduce the number of “divergent transitions” which are times that the
 sampler has some departure from the True path and which can compromise
 the results.</p>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fitGrowth.html">fitGrowth</a></span><span class="op">(</span><span class="va">ss</span>,</span>
 <span>  cores <span class="op">=</span> <span class="fl">4</span>,</span>
 <span>  iter <span class="op">=</span> <span class="fl">2000</span>, chains <span class="op">=</span> <span class="fl">4</span>, backend <span class="op">=</span> <span class="st">"cmdstanr"</span>,</span>
@@ -840,7 +843,7 @@ these objects.</p>
 </h2>
 <p><code>growthPlot</code> can be used to plot credible intervals of
 your model.</p>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/growthPlot.html">growthPlot</a></span><span class="op">(</span><span class="va">fit</span>, form <span class="op">=</span> <span class="va">ss</span><span class="op">$</span><span class="va">pcvrForm</span>, df <span class="op">=</span> <span class="va">ss</span><span class="op">$</span><span class="va">df</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2 smaller">
@@ -849,7 +852,7 @@ your model.</p>
 <p>These plots can show one of the benefits of an asymptotic sub model
 well.</p>
 <p>Here we check our model predictions to 35 days.</p>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/growthPlot.html">growthPlot</a></span><span class="op">(</span><span class="va">fit</span>, form <span class="op">=</span> <span class="va">ss</span><span class="op">$</span><span class="va">pcvrForm</span>, df <span class="op">=</span> <span class="va">ss</span><span class="op">$</span><span class="va">df</span>, timeRange <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">35</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2 smaller">
@@ -857,7 +860,7 @@ well.</p>
 </h2>
 <p>And now we check those predictions from a spline model, where the
 basis functions are not suited for data past day 25.</p>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/growthPlot.html">growthPlot</a></span><span class="op">(</span><span class="va">fit_spline</span>, form <span class="op">=</span> <span class="va">ss_spline</span><span class="op">$</span><span class="va">pcvrForm</span>, df <span class="op">=</span> <span class="va">ss_spline</span><span class="op">$</span><span class="va">df</span>, timeRange <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">35</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2 smaller">
@@ -866,7 +869,7 @@ basis functions are not suited for data past day 25.</p>
 <p>We can also plot the posterior distributions and test hypotheses with
 <code>brmViolin</code>.</p>
 <p>Here hypotheses are tested with <code><a href="https://paulbuerkner.com/brms/reference/hypothesis.brmsfit.html" class="external-link">brms::hypothesis</a></code>.</p>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/brmViolin.html">brmViolin</a></span><span class="op">(</span><span class="va">fit</span>, <span class="va">ss</span>, hypothesis <span class="op">=</span> <span class="st">".../A_groupa &gt; 1.05"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Loading required package: rstan</span></span></code></pre>
 <pre><code><span><span class="co">## Loading required package: StanHeaders</span></span></code></pre>
@@ -888,7 +891,7 @@ basis functions are not suited for data past day 25.</p>
 hypothesis testing.</p>
 <p>Here we test for an asymptote for group A at least 20% larger than
 that of group B.</p>
-<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">brms</span><span class="fu">::</span><span class="fu"><a href="https://paulbuerkner.com/brms/reference/hypothesis.brmsfit.html" class="external-link">hypothesis</a></span><span class="op">(</span><span class="va">fit</span>, <span class="st">"A_groupa &gt; 1.2 * A_groupb"</span><span class="op">)</span><span class="op">$</span><span class="va">hyp</span></span></code></pre></div>
 <pre><code><span><span class="co">##                      Hypothesis Estimate Est.Error CI.Lower CI.Upper Evid.Ratio</span></span>
 <span><span class="co">## 1 (A_groupa)-(1.2*A_groupb) &gt; 0 6.290106  4.925797 -1.74309 14.41414    8.90099</span></span>
@@ -911,7 +914,7 @@ distributional parameters.</p>
 <div class="section level2 smaller">
 <h2 class="smaller" id="linear-linear">linear + linear<a class="anchor" aria-label="anchor" href="#linear-linear"></a>
 </h2>
-<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">simdf</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/growthSim.html">growthSim</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="st">"linear + linear"</span>,</span>
 <span>  n <span class="op">=</span> <span class="fl">20</span>, t <span class="op">=</span> <span class="fl">25</span>,</span>
@@ -935,7 +938,7 @@ distributional parameters.</p>
 <div class="section level2 smaller">
 <h2 class="smaller" id="linear-logistic">linear + logistic<a class="anchor" aria-label="anchor" href="#linear-logistic"></a>
 </h2>
-<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">simdf</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/growthSim.html">growthSim</a></span><span class="op">(</span><span class="st">"linear + logistic"</span>,</span>
 <span>  n <span class="op">=</span> <span class="fl">20</span>, t <span class="op">=</span> <span class="fl">25</span>,</span>
 <span>  params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
@@ -965,7 +968,7 @@ distributional parameters.</p>
 <div class="section level2 smaller">
 <h2 class="smaller" id="linear-gam">linear + gam<a class="anchor" aria-label="anchor" href="#linear-gam"></a>
 </h2>
-<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ss</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/growthSS.html">growthSS</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="st">"linear + gam"</span>, form <span class="op">=</span> <span class="va">y</span> <span class="op">~</span> <span class="va">time</span> <span class="op">|</span> <span class="va">id</span> <span class="op">/</span> <span class="va">group</span>, sigma <span class="op">=</span> <span class="st">"int"</span>,</span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"linear1A"</span> <span class="op">=</span> <span class="fl">10</span>, <span class="st">"changePoint1"</span> <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>,</span>
@@ -983,7 +986,7 @@ distributional parameters.</p>
 <div class="section level2 smaller">
 <h2 class="smaller" id="linear-linear-linear">linear + linear + linear<a class="anchor" aria-label="anchor" href="#linear-linear-linear"></a>
 </h2>
-<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">simdf</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/growthSim.html">growthSim</a></span><span class="op">(</span><span class="st">"linear + linear + linear"</span>,</span>
 <span>  n <span class="op">=</span> <span class="fl">25</span>, t <span class="op">=</span> <span class="fl">50</span>,</span>
 <span>  params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
@@ -1013,7 +1016,7 @@ distributional parameters.</p>
 <div class="section level2 smaller">
 <h2 class="smaller" id="int-int-with-segmented-sigma">int + int with segmented sigma<a class="anchor" aria-label="anchor" href="#int-int-with-segmented-sigma"></a>
 </h2>
-<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ss</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/growthSS.html">growthSS</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="st">"int + int"</span>, form <span class="op">=</span> <span class="va">y</span> <span class="op">~</span> <span class="va">time</span> <span class="op">|</span> <span class="va">id</span> <span class="op">/</span> <span class="va">group</span>, sigma <span class="op">=</span> <span class="st">"int + int"</span>,</span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
@@ -1035,7 +1038,7 @@ distributional parameters.</p>
 <div class="section level2 smaller">
 <h2 class="smaller" id="int-linear-model-and-submodel">int + linear model and submodel<a class="anchor" aria-label="anchor" href="#int-linear-model-and-submodel"></a>
 </h2>
-<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ss</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/growthSS.html">growthSS</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="st">"int + linear"</span>, form <span class="op">=</span> <span class="va">y</span> <span class="op">~</span> <span class="va">time</span> <span class="op">|</span> <span class="va">id</span> <span class="op">/</span> <span class="va">group</span>, sigma <span class="op">=</span> <span class="st">"int + linear"</span>,</span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
@@ -1055,7 +1058,7 @@ distributional parameters.</p>
 <div class="section level2 smaller">
 <h2 class="smaller" id="intlogistic-with-intgam-sub-model">int+logistic with int+gam sub model<a class="anchor" aria-label="anchor" href="#intlogistic-with-intgam-sub-model"></a>
 </h2>
-<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ss</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/growthSS.html">growthSS</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="st">"int+logistic"</span>, form <span class="op">=</span> <span class="va">y</span> <span class="op">~</span> <span class="va">time</span> <span class="op">|</span> <span class="va">id</span> <span class="op">/</span> <span class="va">group</span>, sigma <span class="op">=</span> <span class="st">"int + spline"</span>,</span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
@@ -1076,7 +1079,7 @@ distributional parameters.</p>
 <div class="section level2 smaller">
 <h2 class="smaller" id="example-survival-model">Example survival model<a class="anchor" aria-label="anchor" href="#example-survival-model"></a>
 </h2>
-<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/growthSim.html">growthSim</a></span><span class="op">(</span><span class="st">"logistic"</span>,</span>
 <span>  n <span class="op">=</span> <span class="fl">20</span>, t <span class="op">=</span> <span class="fl">25</span>,</span>
 <span>  params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"A"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">200</span>, <span class="fl">160</span><span class="op">)</span>, <span class="st">"B"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">13</span>, <span class="fl">11</span><span class="op">)</span>, <span class="st">"C"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">3.5</span><span class="op">)</span><span class="op">)</span></span>
@@ -1100,7 +1103,7 @@ the formula.</p>
 <div class="section level2 smaller">
 <h2 class="smaller" id="example-count-model">Example count model<a class="anchor" aria-label="anchor" href="#example-count-model"></a>
 </h2>
-<div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/growthSim.html">growthSim</a></span><span class="op">(</span><span class="st">"count: logistic"</span>,</span>
 <span>  n <span class="op">=</span> <span class="fl">20</span>, t <span class="op">=</span> <span class="fl">25</span>,</span>
 <span>  params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"A"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">12</span><span class="op">)</span>, <span class="st">"B"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">13</span>, <span class="fl">11</span><span class="op">)</span>, <span class="st">"C"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">3.5</span><span class="op">)</span><span class="op">)</span></span>
@@ -1122,7 +1125,7 @@ the formula.</p>
 <div class="section level2 smaller">
 <h2 class="smaller" id="example-hierarchical-model">Example hierarchical model<a class="anchor" aria-label="anchor" href="#example-hierarchical-model"></a>
 </h2>
-<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">simdf</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/growthSim.html">growthSim</a></span><span class="op">(</span></span>
 <span>  <span class="st">"logistic"</span>,</span>
 <span>  n <span class="op">=</span> <span class="fl">20</span>, t <span class="op">=</span> <span class="fl">25</span>,</span>
@@ -1184,7 +1187,7 @@ possible with <code>brms</code>, which itself is more limited than
 <h2 class="smaller" id="using-brms-directly-1">Using <code>brms</code> directly<a class="anchor" aria-label="anchor" href="#using-brms-directly-1"></a>
 </h2>
 <p>Our gompertz sigma model looks like this in <code>brms</code>:</p>
-<div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb50"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">prior1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://paulbuerkner.com/brms/reference/set_prior.html" class="external-link">prior</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Special.html" class="external-link">gamma</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">0.1</span><span class="op">)</span>, class <span class="op">=</span> <span class="st">"nu"</span>, lb <span class="op">=</span> <span class="fl">0.001</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://paulbuerkner.com/brms/reference/set_prior.html" class="external-link">prior</a></span><span class="op">(</span><span class="fu"><a href="https://paulbuerkner.com/brms/reference/brmsfamily.html" class="external-link">lognormal</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">130</span><span class="op">)</span>, <span class="fl">.25</span><span class="op">)</span>, nlpar <span class="op">=</span> <span class="st">"A"</span>, lb <span class="op">=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://paulbuerkner.com/brms/reference/set_prior.html" class="external-link">prior</a></span><span class="op">(</span><span class="fu"><a href="https://paulbuerkner.com/brms/reference/brmsfamily.html" class="external-link">lognormal</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">12</span><span class="op">)</span>, <span class="fl">.25</span><span class="op">)</span>, nlpar <span class="op">=</span> <span class="st">"B"</span>, lb <span class="op">=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">+</span></span>
