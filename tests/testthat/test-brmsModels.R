@@ -34,6 +34,8 @@ test_that("Logistic brms model pipeline", {
   expect_s3_class(plot2, "ggplot")
   plot2.5 <- brmViolin(fit, ss, "B_groupb/B_groupa > 1.05")
   expect_s3_class(plot2.5, "ggplot")
+  plot2.75 <- brmViolin(fit, ss, "abs(1 - ((...)/(C_groupb - B_groupa))) > 0.05")
+  expect_s3_class(plot2.75, "ggplot")
   ss2 <- growthSS(
     model = "gompertz", form = y ~ time | id / group, sigma = "logistic",
     list("A" = 130, "B" = 10, "C" = 1, "sigmaA" = 20, "sigmaB" = 10, "sigmaC" = 2),
