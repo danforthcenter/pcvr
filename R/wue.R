@@ -123,7 +123,7 @@ pwue <- function(df, w = NULL, pheno = "area_pixels", time = "timestamp", id = "
       endNonOffset <- imaging_times[t_i]
       if (!is.na(start)) {
         w_i_t <- w_i[w_i[[time2]] > start & w_i[[time2]] <= end, ]
-        total_water_i <- max(c(sum(w_i_t[["deltaw"]]), 1))
+        total_water_i <- sum(w_i_t[["deltaw"]])
         pheno_diff <- max(c(
           as.numeric(df_i[df_i[[time1]] == endNonOffset, get(pheno)] - df_i[
             df_i[[time1]] == startNonOffset, get(pheno)
@@ -188,7 +188,7 @@ pwue <- function(df, w = NULL, pheno = "area_pixels", time = "timestamp", id = "
       # here we use the phenotype at this time, not the change in phenotype
       if (!is.na(start)) {
         w_i_t <- w_i[w_i[[time2]] > start & w_i[[time2]] <= end, ]
-        total_water_i <- max(c(sum(w_i_t[["deltaw"]]), 1))
+        total_water_i <- sum(w_i_t[["deltaw"]])
         pheno_iter <- max(df_i[df_i[[time1]] == endNonOffset, get(pheno)], na.rm = TRUE)
       } else {
         total_water_i <- NA
