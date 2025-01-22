@@ -1,0 +1,64 @@
+---
+title: "Water data"
+subtitle: "pcvr v1.1.1.1"
+author: Josh Sumner
+format:
+  revealjs:
+    standalone: true
+    self-contained: true
+    theme: [moon, ../quartoSupport/solarizedDark.scss]
+    scrollable: true
+    template-partials: 
+      - ../quartoSupport/title-slide.html
+    title-slide-attributes: 
+      data-background-image: ../quartoSupport/datascience.png
+      data-background-size: 15%
+      data-background-position: 2% 2%
+output: ioslides_presentation
+editor: source
+---
+
+## Outline {.smaller}
+
+- why you'd work with water data
+- overview of WUE vs pWUE
+- information from the ditech presentation (vpd, etc)
+- reading in water data
+- water diagnostic plots
+  - annotating water diagnostic plots
+- Pwue
+  - rate
+  - abs
+  - normalized_daily_transpiration
+- plug for hierarchical models
+
+## Why water data?
+
+
+
+## WUE vs pWUE
+
+## Important water concepts
+
+### VPD
+
+### Other?
+
+## Reading in water data
+
+### Water data diagnostic plots
+
+## pWUE
+
+### Rate Based
+
+### Absolute Value Based
+
+### Normalized Daily Transpiration
+
+## field capacity equations
+
+## Next Steps
+
+
+
