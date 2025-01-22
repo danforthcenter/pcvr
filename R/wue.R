@@ -78,13 +78,11 @@ pwue <- function(df, w = NULL, pheno = "area_pixels", time = "timestamp", id = "
   w <- data.table::setorderv(data.table::as.data.table(w), cols = c(id, time2))
   df <- data.table::setorderv(data.table::as.data.table(df), cols = c(id, time1))
   ids <- intersect(unique(w[, get(id)]), unique(df[, get(id)]))
-  matched_method <- match.arg(method, choices = c("rate", "abs"))
+  matched_method <- match.arg(method, choices = c("rate", "abs", "ndt"))
   #* apply method
-  if (matched_method == "abs") {
-    out <- .absWUE(ids, w, df, offset, time1, time2, pheno, id, pre_watering, post_watering)
-  } else if (matched_method == "rate") {
-    out <- .rateWUE(ids, w, df, offset, time1, time2, pheno, id, pre_watering, post_watering)
-  }
+  matched_fun <- get(".", , matched_method, "WUE")
+  out <- matched_fun(ids, w, df, offset, time1, time2, pheno, id, pre_watering, post_watering)
+  # return data
   return(as.data.frame(out))
 }
 
@@ -209,5 +207,16 @@ pwue <- function(df, w = NULL, pheno = "area_pixels", time = "timestamp", id = "
     iter_out <- cbind(df_i, wue_i)
     return(iter_out)
   }))
+  return(out)
+}
+
+#' Function to calculate normalized daily transpiration
+#' @keywords internal
+#' @noRd
+
+
+.ndtWUE <- function(ids, w, df, offset, time1, time2, pheno, id, pre_watering, post_watering) {
+  out <- .absWUE(ids, w, df, offset, time1, time2, pheno, id, pre_watering, post_watering)
+  out$normalized_daily_transpiration <- 1 / out$pWUE
   return(out)
 }
