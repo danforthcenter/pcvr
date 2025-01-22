@@ -2,21 +2,16 @@
 title: "Water data"
 subtitle: "pcvr v1.1.1.1"
 author: Josh Sumner
-format:
-  revealjs:
-    standalone: true
-    self-contained: true
-    theme: [moon, ../quartoSupport/solarizedDark.scss]
-    scrollable: true
-    template-partials: 
-      - ../quartoSupport/title-slide.html
-    title-slide-attributes: 
-      data-background-image: ../quartoSupport/datascience.png
-      data-background-size: 15%
-      data-background-position: 2% 2%
-output: ioslides_presentation
+output: html_document
 editor: source
 ---
+
+```{r}
+library(ggplot2)
+library(patchwork)
+library(pcvr)
+```
+
 
 ## Outline {.smaller}
 
@@ -34,19 +29,215 @@ editor: source
 
 ## Why water data?
 
+- Water is fundamental to plant life.
+- Plants need water to survive.
+- Water is a critical farming resource.
+- Climate change affects water supply.
 
+## How does a plant use water?
 
-## WUE vs pWUE
+The "Pull Theory" says that water moves through a plant based on pressure differentials.
 
-## Important water concepts
+- 1: Water enters the plant through roots (note many root traits will affect how this happens).
+- 2: Water travels through the xylem (channels along plant tissue).
+- 3: Water is prepared for stomatal exit (stomata are small pores mostly along the underside of leaves).
+- 4: Water *Transpires* to the leaf surface (similar to us sweating).
+-- Water that has transpired to the surface will then evaporate, but the rate of evaporation depends on *Boundary Layer Conductance*.
+--- Boundary Layer Conductance (BLC) is a measure of how easily gas exchange happens in a small "boundary layer" around the plant.
+--- BLC is changed by qualities such as leaf shape and angle (think about facing the sun or standing at an angle) as well as phenotypes we don't generally measure with image data such as trichome (small hairs on leaf surface) length and density (think trapping humidity in your hair).
+--- Evaporation is also dependent on environmental conditions such as ambient temperature, wind speed, atmospheric pressure, light intensity, soil type, soil moisture content, etc.
+--- *Vapor Pressure Deficit* (VPD) is another important quantity for evaporation and transpiration. VPD is the difference in the amount of water in the air vs the amount of water the air can hold at the given temperature. Since warmer air can hold more water VPD is higher on a hot day even when relative humidity is held constant, this is an important consideration for experimental design particularly in growth chambers.
 
-### VPD
+Transpiration has to be balanced carefully by a plant since the plant is using water both to build new biomass and to cool off.
 
-### Other?
+There can be secondary consequences to increased transpiration depending on the experimental design and what you are measuring, for instance:
+- Higher transpiration means higher Transport of nutrients into the plant from soil.
+- Higher transpiration means faster transport of metabolites in the plant.
+- Higher transpiration reduces leaf temperature.
+- Higher transpiration allows for easier pathogen infection via open stomata.
+- Water pH and salt content affect uptake and the plant cells.
+
+## Measuring water use
+
+Measuring water use can be difficult. Broadly we can either measure water vapor released from the plant or measure the amount of water removed from the soil. Measuring gasses tends to be more difficult, so we tend to focus on weight changes to the pot.
+
+Measuring water use via weight changes in a planted pot has some caveats. First, we have to assume that there is a period of neglibible transpiration (we tend to assume that when lights are off and stomata are closed at night no water is transpired). Second, we have to assume that the only way that water is lost from the pot is via transpiration through the plant.
+
+In the following plot we look at a simulated plant's watering data. This plant has been weighed for 5 days, with water added in the middle of the night and plants weighed shortly before watering and when lights come on in the morning. The differences between adjacent waterings are what we will use later on to calculate transpiration and *water use efficiency* (WUE).
+
+```{r, eval = TRUE, echo = FALSE}
+set.seed(123)
+days <- 5
+n_plants <- 1
+ex <- data.frame(id = paste0("Plant ", rep(seq_len(n_plants), each = days * 2)),
+           DAS = rep(c(1:days - 0.5, 1:days + 0.1), times = n_plants),
+           variable = rep(c("weight_after_watering", "weight_before_watering"), each = days),
+           value = unlist(lapply(seq_len(n_plants), function(i) {
+             x <- sort(runif(days, 50, 100))
+             c(x, x - runif(days, 10, 20))
+           })))
+daybars <- data.frame(ymin = 0, ymax = 1.1 * max(ex$value),
+           xmin = seq(0, days, 0.5),
+           xmax = seq(0.5, days + 0.5, 0.5),
+           day_or_night = rep(c("lights off", "lights on"), length.out = 11))
+
+watering_1 <- data.frame(id = ex[1, "id"],
+                   water = ex[2, "value"],
+                   start = mean(c(ex[2, "value"], ex[c(days + 1), "value"])),
+                   DAS = ex[c(days + 1), "DAS"] + 0.75)
+
+watering_2 <- data.frame(id = ex[1, "id"],
+                   water = ex[3, "value"],
+                   start = mean(c(ex[3, "value"], ex[c(days + 2), "value"])),
+                   DAS = ex[c(days + 2), "DAS"] + 0.175)
+
+ggplot(ex, aes(x = DAS, y = value, color = variable)) +
+  facet_wrap(~id) +
+  geom_rect(data = daybars, aes(xmin = xmin, ymin = ymin, xmax = xmax, ymax = ymax,
+                                fill = day_or_night),
+            inherit.aes = FALSE, alpha = 0.5) +
+  scale_fill_manual(values = c("gray80", "antiquewhite")) +
+  scale_x_continuous(breaks = seq(1, 6, 1)) +
+  coord_cartesian(ylim = c(0.9 * round(min(ex$value)), 1.1 * round(max(ex$value))),
+                  expand = FALSE) +
+  geom_line(color = "black") +
+  geom_point() +
+  geom_segment(data = watering_1, aes(x = DAS, xend = DAS, y = start, yend = water),
+               linetype = 5, color = "gray40", inherit.aes = FALSE) +
+  geom_label(data = watering_1, aes(x = DAS, y = water), hjust = 0.75, vjust = -0.25,
+             label = "Water lost\nduring day", inherit.aes = FALSE)+
+  geom_segment(data = watering_2, aes(x = DAS, xend = DAS, y = start, yend = water),
+               linetype = 5, color = "gray40", inherit.aes = FALSE) +
+  geom_label(data = watering_2, aes(x = DAS, y = water), hjust = 0.5, vjust = -0.25,
+             label = "Water added\nat night", inherit.aes = FALSE) +
+  annotate("segment", x = seq(1.25, days, 1), xend = seq(1.25, days, 1),
+           y = round(min(ex$value))- 4,
+           yend = round(min(ex$value)), linetype = 3,  color = "navy") +
+  annotate("label", x = days - 1, y = round(min(ex$value)), label = "watering times",
+           vjust = -0.25, hjust = -0.25) +
+  labs(x = "Days After Start", y = "Pot Weight (g)",
+       fill = "Light", color = "Weight") +
+  pcv_theme() +
+  theme(legend.position = "bottom")
+```
+
+## Calculating Transpiration
+
+```{r, eval = TRUE, echo = FALSE}
+exw <- ex
+exw$DAS <- rep(seq(1, days, 1), times = 2) - 0.2
+exw <- reshape2::dcast(exw, DAS + id ~ variable, value.var = "value")
+exw$diff <- exw$weight_after_watering - exw$weight_before_watering
+
+ggplot(ex, aes(x = DAS, y = value, color = variable)) +
+  facet_wrap(~id) +
+  geom_rect(data = daybars, aes(xmin = xmin, ymin = ymin, xmax = xmax, ymax = ymax,
+                                fill = day_or_night),
+            inherit.aes = FALSE, alpha = 0.5) +
+  scale_fill_manual(values = c("gray80", "antiquewhite")) +
+  scale_x_continuous(breaks = seq(1, 6, 1)) +
+  coord_cartesian(ylim = c(0.9 * round(min(ex$value)), 1.1 * round(max(ex$value))),
+                  expand = FALSE) +
+  geom_line(color = "black") +
+  geom_point() +
+  geom_text(data = exw, aes(x = DAS, y = weight_after_watering, label = round(diff, 1)), 
+            inherit.aes = FALSE) +
+  labs(x = "Days After Start", y = "Pot Weight (g)",
+       fill = "Light", color = "Weight", title = "Amount of water transpired per day") +
+  pcv_theme() +
+  theme(legend.position = "bottom")
+```
+
+Transpiration doesn't generally give us enough information to use until it is normalized to biomass. We generally expect larger plants to transpire more since they have more area to draw water through and typically have more extensive root structures. Instead of using daily transpiration we often want to talk about *Normalized Transpiration* or *Water Use Efficiency*.
+
+**Note:** the values above are positive because we are framing the question as "the amount of water transpired", so despite the slope of the line (showing mass in the pot) going down we have positive numbers.
+
+To normalize transpiration we need a measure or a proxy of plant biomass.
+
+```{r, eval = TRUE, echo = FALSE}
+set.seed(345)
+exw$biomass <- sort(runif(days, 5, 15))
+
+p1 <- ggplot(exw, aes(x = DAS, y = biomass)) +
+  facet_wrap(~id) +
+  geom_line(color = "black") +
+  geom_point() +
+  labs(x = "Days After Start", y = "Plant Biomass (g)",
+       fill = "Light", color = "Weight", title = "Plant Biomass (g)") +
+  pcv_theme() +
+  theme(legend.position = "bottom")
+
+p2 <- ggplot(ex, aes(x = DAS, y = value, color = variable)) +
+  facet_wrap(~id) +
+  geom_rect(data = daybars, aes(xmin = xmin, ymin = ymin, xmax = xmax, ymax = ymax,
+                                fill = day_or_night),
+            inherit.aes = FALSE, alpha = 0.5, show.legend = FALSE) +
+  scale_fill_manual(values = c("gray80", "antiquewhite")) +
+  scale_x_continuous(breaks = seq(1, 6, 1)) +
+  coord_cartesian(ylim = c(0.9 * round(min(ex$value)), 1.1 * round(max(ex$value))),
+                  expand = FALSE) +
+  geom_line(color = "black") +
+  geom_point() +
+  geom_text(data = exw, aes(x = DAS + 0.1, y = weight_after_watering,
+                            label = paste0(round(diff, 1), "/", round(biomass, 1))), 
+            inherit.aes = FALSE, size = 3) +
+  labs(x = "Days After Start", y = "Pot Weight (g)",
+       fill = "Light", color = "Weight", title = "Normalized Transpiration (water/biomass)") +
+  pcv_theme() +
+  theme(legend.position = "bottom")
+
+p2 + p1 + patchwork::plot_layout(widths = c(2, 1))
+```
+
+## WUE
+
+Another important water metric is water use efficiency. Water use efficiency is generally calculated as a rate of biomass gained per unit of water.
+
+$\frac{\Delta(\text{Biomass})_t}{\text{Water Transpired}_t}$
+
+WUE might also be considered as the amount of water used to sustain a given biomass.
+
+$\frac{\text{Biomass}_t}{\text{Water Transpired}_t}$
+
+### PWUE
+
+Both WUE methods require a measure of biomass. Generally in high-throughput plant phenotyping we use a proxy for biomass, such as area (number of pixels labelled as a plant). Because we are using a proxy for biomass we have to call image-based WUE *Pseudo-Water Use Efficiency* (pWUE).
+
+In `pcvr` the `pwue` function calculates normalized transpiration, rate based pWUE, and absolute pWUE.
 
 ## Reading in water data
 
+In this article we'll use simulated data, but the `bw.water` function may be helpful for you reading in JSON Lemnatech metadata.
+
 ### Water data diagnostic plots
+
+```{r}
+set.seed(123)
+days <- 25
+n_plants <- 20
+ex <- data.frame(id = paste0("Plant ", rep(seq_len(n_plants), each = days * 2)),
+           DAS = rep(c(1:days - 0.5, 1:days + 0.1), times = n_plants),
+           variable = rep(c("weight_after_watering", "weight_before_watering"), each = days),
+           value = unlist(lapply(seq_len(n_plants), function(i) {
+             x <- sort(runif(days, 50, 100))
+             c(x, x - runif(days, 10, 20))
+           })))
+```
+
+```{r}
+ggplot(ex[ex$id %in% paste0("Plant ", 1:4), ], aes(x = DAS, y = value, color = variable)) +
+  facet_wrap(~id) +
+  scale_fill_manual(values = c("gray80", "antiquewhite")) +
+  coord_cartesian(ylim = c(0.9 * round(min(ex$value)), 1.1 * round(max(ex$value))),
+                  expand = FALSE) +
+  geom_line(color = "black") +
+  geom_point() +
+  labs(x = "Days After Start", y = "Pot Weight (g)",
+       fill = "Light", color = "Weight") +
+  pcv_theme() +
+  theme(legend.position = "bottom")
+```
+
 
 ## pWUE
 
