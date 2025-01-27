@@ -19,7 +19,8 @@
 #' @param pheno Phenotype column name, defaults to "area_pixels"
 #' @param time Variable(s) that identify a plant on a given day.
 #'     Defaults to \code{c("barcode", "DAS")}.
-#' @param id Variable(s) that identify a plant over time. Defaults to \code{"barcode"}.
+#' @param id Variable(s) that identify a plant over time. Defaults to \code{"barcode"}. Note that due
+#' to data.table evaluation this may behave strangely if the variable is named "id".
 #' @param offset Optionally you can specify how long before imaging a watering should not be taken into
 #' account. This defaults to 0, meaning that if a plant were watered directly before being imaged then
 #' that water would be counted towards WUE between the current image and the prior one.
