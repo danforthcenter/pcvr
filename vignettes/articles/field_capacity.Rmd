@@ -550,7 +550,41 @@ ggplot(rb[rb$group == "E", ],
 
 ### Absolute Value Based
 
+Now we'll walk through the data if we consider pWUE through the "absolute" definition. As a reminder, that means we are considering the absolute size of the plant at each timepoint with the formula now being:
+
+$\frac{\text{Biomass}_t}{\text{Water Transpired}_t}$
+
+```{r}
+a <- pwue(df = ex, w = NULL, pheno = "area", time = "time", id = c("id", "group"),
+           pre_watering = "weight_before",
+           post_watering = "weight_after", method = "abs")
+```
+
+The numerator here is the same as before, so we can check for some problems we already know about.
+
+```{r}
+table(a$group, ifelse(a$pWUE < 0, "negative", "positive"))
+```
+
+This time we'll plot it with the scales freed on the Y-axis and with values below 0 already removed.
+
+```{r}
+apos <- a[a$pWUE > 0, ]
+ggplot(apos[apos$id %in% paste0("id_", 1:5), ],
+       aes(x = time, y = pWUE, group = id)) +
+  facet_wrap(~group, scales = "free_y") +
+  geom_point(size = 0.5) +
+  geom_line() +
+  pcv_theme()
+```
+
+Here our pWUE data look a lot like the original phenotype data. That's because the phenotype data are used as-is in the numerator, and for the most part we don't have drastic changes to the water transpiration (weight changes) over time.
+
+As a summary of what we see, Group `B` starts out the same as Group `A` but at the halfway point when the water amount is lowered the values roughly double (since water was cut in half but the plant stayed the same size). Group `C` looks as expected, the decrease in the amount of water over time is less dramatic than the exponentially increasing phenotype. Groups `D` and `E` should be very similar in terms of their phenotype, but `E` is getting more water each day, which makes its curve end at a lower point despite having the same general shape (check the Y-axis values since the scale is freed).
+
 ### Normalized Daily Transpiration
+
+`Note, need to update pwue docs for this part`
 
 ## field capacity equations
 
