@@ -216,14 +216,16 @@ set.seed(123)
 days <- 25
 n_plants <- 20
 ex <- data.frame(id = paste0("Plant ", rep(seq_len(n_plants), each = days * 2)),
-           DAS = rep(c(1:days - 0.5, 1:days + 0.1), times = n_plants),
+           time = rep(c(1:days - 0.5, 1:days + 0.1), times = n_plants),
+           DAS = rep(seq(1, days, 1), times = n_plants),
            variable = rep(c("weight_after_watering", "weight_before_watering"), each = days),
            value = unlist(lapply(seq_len(n_plants), function(i) {
              x <- sort(runif(days, 50, 300))
              c(x, x - runif(days, 10, 20))
            })))
 pheno <- data.frame(
-  id = paste0("Plant ", rep(seq_len(n_plants), each = days * 2)),
+  id = paste0("Plant ", rep(seq_len(n_plants), each = days)),
+  time = rep(seq(1, days, 1), times = n_plants),
   DAS = rep(seq(1, days, 1), times = n_plants),
   variable = "area",
   value = unlist(lapply(seq_len(n_plants), function(i) {
@@ -239,7 +241,7 @@ Before working with water derived metrics it's generally good to get a feeling f
 
 ```{r, echo = FALSE}
 ggplot(ex[ex$id %in% paste0("Plant ", 1:4) & grepl("weight", ex$variable), ],
-       aes(x = DAS, y = value, color = variable)) +
+       aes(x = time, y = value, color = variable)) +
   facet_wrap(~id) +
   scale_fill_manual(values = c("gray80", "antiquewhite")) +
   geom_line(color = "black") +
@@ -260,19 +262,18 @@ The `offset` argument optionally controls how long before a phenotype's measurem
 `pre_watering` and `post_watering` should name columns of the dataframe containing water information corresponding to pre-watering weight and post-watering weight.
 Finally, the `method` argument controls which values are calculated. Currently it accepts "rate", "abs", and "ndt" for the rate based pWUE, absolute value pWUE, and Normalized Daily Transpiration.
 
+First we'll have to widen our data to fit the function's inputs.
+
 ```{r}
-exw <- ex
-exw$DAS <- unlist(lapply(split(exw, exw$id), function(d) {
-  rank(d$DAS)
-}))
-head(exw)
-exw <- reshape2::dcast(exw, DAS + id ~ variable, value.var = "value")
-head(exw)
-# pwue(ex, pheno = "")
+exw <- reshape2::dcast(ex, DAS + id ~ variable, value.var = "value")
 ```
 
-
 ### Rate Based
+
+```{r}
+
+```
+
 
 ### Absolute Value Based
 
