@@ -22,7 +22,7 @@ Encoding: UTF-8
 LazyData: true
 LazyDataCompression: xz
 Additional_repositories: https://mc-stan.org/r-packages/
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.2
 Imports: 
     FactoMineR,
     rlang,

@@ -28,11 +28,14 @@
 #' defaults to "weight_before".
 #' @param post_watering Column containing weight after watering in \code{w},
 #' defaults to "weight_after".
-#' @param method Which method to use, options are "rate" and "abs". The "rate" method considers WUE as
-#' the change in a phenotype divided by the amount of water added. The "abs" method considers WUE as
-#' the amount of water used by a plant given its absolute size. The former is for questions more
-#' related to efficiency in using water to grow while the latter is more suited to questions about
-#' how efficient a plant is at maintaining size given some amount of water.
+#' @param method Which method to use, options are "rate", "abs", and "ndt". The "rate" method considers
+#' WUE as the change in a phenotype divided by the amount of water added. The "abs" method considers WUE
+#' as the amount of water used by a plant given its absolute size.
+#' The "ndt" method calculates normalized daily transpiration,
+#' which is the reciprocal of the "abs" method. The "rate" method is for questions more
+#' related to efficiency in using water to grow while "abs"/"ndt" are more suited to questions about
+#' how efficient a plant is at maintaining size given some amount of water or how much water it uses
+#' at a given size.
 #' @keywords WUE
 #' @import data.table
 #' @return A data frame containing the watering data and
@@ -165,8 +168,8 @@ pwue <- function(df, w = NULL, pheno = "area_pixels", time = "timestamp", id = "
 
 .absWUE <- function(ids, w, df, offset, time1, time2, pheno, id, pre_watering, post_watering) {
   out <- do.call(rbind, lapply(ids, function(iter_id) { # per id...
-    w_i <- w[w[[id]] == iter_id, ]
-    df_i <- df[df[[id]] == iter_id, ]
+    w_i <- w[iter_id]
+    df_i <- df[iter_id]
     #* reorder watering and pheno data
     w_i <- data.table::setorderv(w_i, cols = c(time2))
     df_i <- data.table::setorderv(df_i, cols = c(time1))
