@@ -19,8 +19,7 @@
 #' @param pheno Phenotype column name, defaults to "area_pixels"
 #' @param time Variable(s) that identify a plant on a given day.
 #'     Defaults to \code{c("barcode", "DAS")}.
-#' @param id Variable(s) that identify a plant over time. Defaults to \code{"barcode"}. Note that due
-#' to data.table evaluation this may behave strangely if the variable is named "id".
+#' @param id Variable(s) that identify a plant over time. Defaults to \code{"barcode"}.
 #' @param offset Optionally you can specify how long before imaging a watering should not be taken into
 #' account. This defaults to 0, meaning that if a plant were watered directly before being imaged then
 #' that water would be counted towards WUE between the current image and the prior one.
@@ -75,16 +74,25 @@ pwue <- function(df, w = NULL, pheno = "area_pixels", time = "timestamp", id = "
   if (!time1 %in% colnames(df) || !time2 %in% colnames(w)) {
     stop(paste0(paste0(time, collapse = ", "), " must be in colnames of df and w"))
   }
+  if (length(id) > 1) {
+    df$temporary_pwue_id_column <- interaction(df[, c(id)])
+    w$temporary_pwue_id_column <- interaction(w[, c(id)])
+    id <- "temporary_pwue_id_column"
+  }
   #* order data
   w <- data.table::setorderv(data.table::as.data.table(w), cols = c(id, time2))
   df <- data.table::setorderv(data.table::as.data.table(df), cols = c(id, time1))
-  ids <- intersect(unique(w[, get(id)]), unique(df[, get(id)]))
+  data.table::setkeyv(w, id)
+  data.table::setkeyv(df, id)
+  ids <- intersect(unique(w[[id]]), unique(df[[id]]))
   matched_method <- match.arg(method, choices = c("rate", "abs", "ndt"))
   #* apply method
-  matched_fun <- get(".", , matched_method, "WUE")
+  matched_fun <- get(paste0(".", matched_method, "WUE"))
   out <- matched_fun(ids, w, df, offset, time1, time2, pheno, id, pre_watering, post_watering)
+  out <- as.data.frame(out)
+  out <- out[, which(colnames(out) != "temporary_pwue_id_column")]
   # return data
-  return(as.data.frame(out))
+  return(out)
 }
 
 #' Function to calculate rate based WUE
@@ -93,8 +101,8 @@ pwue <- function(df, w = NULL, pheno = "area_pixels", time = "timestamp", id = "
 
 .rateWUE <- function(ids, w, df, offset, time1, time2, pheno, id, pre_watering, post_watering) {
   out <- do.call(rbind, lapply(ids, function(iter_id) { # per id...
-    w_i <- w[w[, get(id)] == iter_id, ]
-    df_i <- df[df[, get(id)] == iter_id, ]
+    w_i <- w[iter_id]
+    df_i <- df[iter_id]
     #* reorder watering and pheno data
     w_i <- data.table::setorderv(w_i, cols = c(time2))
     df_i <- data.table::setorderv(df_i, cols = c(time1))
