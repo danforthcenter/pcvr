@@ -2,12 +2,17 @@
 title: "Water data"
 subtitle: "pcvr v1.1.1.1"
 author: Josh Sumner
-output: html_document
+output:
+  html_document:
+    toc: true
+    toc_depth: 5
+    toc_float:
+      collapsed: no
 editor: source
 ---
 
 ```{r}
-setwd("~/pcvr")
+setwd("~/pcvr") # note, working on field_capacity branch
 library(ggplot2)
 library(patchwork)
 library(devtools)
@@ -58,6 +63,29 @@ There can be secondary consequences to increased transpiration depending on the 
 - Higher transpiration reduces leaf temperature.
 - Higher transpiration allows for easier pathogen infection via open stomata.
 - Water pH and salt content affect uptake and the plant cells.
+
+
+## Field Capacity
+
+### What is field capacity
+
+Field capacity is the amount of water held in soil after excess water has been able to drain and the rate of macropore drainage (water seeping deeper into the ground) approaches 0. Field capacity depends on numerous factors and should not be considered a constant for a given soil type, but it can be useful as a measure of water capacity.
+
+
+### Why do we care about field capacity
+
+Field capacity matters for many types of phenotyping experiments because it's used to set target weights for watering. Particularly in a system like the Lemnatech where a cart has a plant in a pot and the normal watering scheme is to add water until the entire apparatus weighs a certain amount. Knowing field capacity can also let us evaluate whether or not plants are actually reaching landmarks we care about for drought stress as measured by soil water content.
+
+### Field capacity equations
+
+- **CS**: Weight of carriage + saucer = 345 g
+- **DW**: Weight of dry pot (pot + soil) = varies by experiment, will be provided by Leo (one number for the whole experiment)
+- **SW**: Weight of saturated pot (pot + soaked soil) = varies by experiment, will be provided by Leo (one number for the whole experiment)
+- **Saturated Water Volume**: SW - DW
+- **Current water content** = current weight - CS - DW
+- **Current field capacity (%)** = current water content / saturated water volume x 100
+- **Target field capacity (%)** = provided by Leo, varies by day and experiment
+
 
 ## Measuring water use
 
@@ -206,6 +234,8 @@ $\frac{\text{Biomass}_t}{\text{Water Transpired}_t}$
 Both WUE methods require a measure of biomass. Generally in high-throughput plant phenotyping we use a proxy for biomass, such as area (number of pixels labelled as a plant). Because we are using a proxy for biomass we have to call image-based WUE *Pseudo-Water Use Efficiency* (pWUE).
 
 In `pcvr` the `pwue` function calculates normalized transpiration, rate based pWUE, and absolute pWUE.
+
+
 
 ## Reading in water data
 
@@ -655,7 +685,7 @@ rbt <- rb[rb$wc == "target weight", ]
 ggplot(rbt, aes(x = time, y = pWUE, group = id)) +
   facet_wrap(~pc, scales = "free_y") +
   geom_line() +
-  labs(title = "Zooming in on the constant watering condition") +
+  labs(title = "Target Weight Watering") +
   pcv_theme()
 ```
 
@@ -825,82 +855,151 @@ ggplot(rbtd,
 #### Increasing Continuous
 - `increasing cont.`: Pre-watering weight increases with the phenotype (area), and every day a larger amount of water is added to that pre-watered weight.
 
+```{r}
+rbic <- rb[rb$wc == "increasing cont", ]
+ggplot(rbic, aes(x = time, y = pWUE, group = id)) +
+  facet_wrap(~pc, scales = "free_y") +
+  geom_line() +
+  labs(title = "Continuously Increasing Watering") +
+  pcv_theme()
+```
 
-##### Sigmoid
+Notice that here the trends look very similar to the `target weight` watering approach. That makes sense if we consider the trend we previously looked at for how much water is actually being used each day.
 
-##### Abrupt
+```{r}
+ggplot(ex[ex$id == "id_1" &
+            ex$wc %in% c("increasing cont", "target weight") &
+            ex$pc == "sigmoid", ],
+       aes(time, y = weight_after - weight_before, group = id)) +
+  facet_wrap(~wc) +
+  geom_line() +
+  labs(y = "Water Added",
+       x = "Time",
+       title = "Water added is very similar in these two conditions") +
+  pcv_theme() +
+  theme(legend.position = "none",
+        strip.text.x.top = element_text(size = 10),
+        strip.text.y.right = element_text(size = 10))
+```
 
-##### Exponential
+Those watering trends are different both conceptually and just in terms of how much water they add each day. They aren't so different that when used to make pWUE they change the denominator all that much. Essentially, for any pWUE trend you see there are several ways that it could have been generated in terms of the experimental design (target weight vs adding a constant) or the values put into the ratio (10/5 = 2/1).
 
-##### Slowing
-
-##### Linear
-
-##### Death
 
 #### Decreasing Continuous
 - `decreasing cont.`: Pre-watering weight increases with the phenotype (area), and every day a smaller amount of water is added to that pre-watered weight.
 
+Now that we are inverting the trend of the denominator we should see some real differences.
+
+```{r}
+rbdc <- rb[rb$wc == "decreasing cont", ]
+ggplot(rbdc, aes(x = time, y = pWUE, group = id)) +
+  facet_wrap(~pc, scales = "free_y") +
+  geom_line() +
+  labs(title = "Continuously Decreasing Watering") +
+  pcv_theme()
+```
 
 ##### Sigmoid
 
+With the continuously decreasing watering scheme we see a roughly mirrored version of what we saw with the increasing watering. pWUE starts low, goes through the "bell" shape, then ends higher since the denominator is at it's smallest at the end of the experiment when measurement-to-measurement phenotype change is back to about the same as it was in the beginning.
+
+```{r}
+rbdcs <- rbdc[rbdc$pc == "sigmoid", ]
+ggplot(rbdcs, aes(x = time, y = pWUE, group = id)) +
+  geom_line() +
+  labs(title = "Logistic growth and target weight watering") +
+  pcv_theme()
+```
+
+We do have one strong spike at the end which we can try to understand better by looking at each component of pWUE.
+
+```{r}
+ggplot(rbdcs,
+       aes(x = time, group = id)) +
+  facet_wrap(~id) +
+  geom_line(aes(y = total_water, color = "Water (denominator)")) +
+  geom_line(aes(y = pheno_diff, color = "Phenotype (numerator)")) +
+  labs(title = "Components of Rate pWUE",
+       subtitle = "Decreasing watering, logistic growth",
+       y = "Pheno Diff and Water Diff", x = "Time") +
+  pcv_theme() +
+  theme(legend.position = "bottom")
+```
+
+Now we can see the cause for that spike is just that the watering amount on the last day for the 4th plant was almost nothing.
+
 ##### Abrupt
+
+The abrupt logistic phenotype looks essentially the same as it has for other waterings since the numerator is only non-zero in the middle of the experiment, so any trend in the denominator makes relatively minor changes to the overall trend. This will be a theme with any growth curve that gets close to its asymptote.
 
 ##### Exponential
 
+Again here we remove negative values, which are caused normally by measurement error.
+
+```{r}
+rbdce <- rbdc[which(rbdc$pc == "exponential" & rbdc$pWUE > 0), ]
+ggplot(rbdce, aes(x = time, y = pWUE, group = id)) +
+  geom_line() +
+  facet_wrap(~id, scales = "free_y") +
+  labs(title = "Exponential growth and target weight watering") +
+  pcv_theme()
+```
+
+Once we remove the negative values we see the same basic trend (stronger this time as the denominator gets smaller as the exponential growth progresses) as we have been for exponentially increasing phenotype. It would be hard to design a watering protocol short of complete drought that would curb the trend for this phenotype.
+
 ##### Slowing
 
-##### Linear
+The `slowing`, `linear`, and `death` groups all show similar trends to each other. Since the numerators here are constant or slightly decreasing (the change in slope) the denominator can push the pWUE trend dramatically.
 
-##### Death
+```{r}
+ggplot(rbdc[rbdc$pc %in% c("slowing", "linear", "death"), ],
+       aes(x = time, group = id)) +
+  facet_wrap(~pc) +
+  geom_line(aes(y = total_water, color = "Water (denominator)")) +
+  geom_line(aes(y = pheno_diff, color = "Phenotype (numerator)")) +
+  labs(title = "The differences in phenotype trend are overpowered",
+       subtitle = "Decreasing watering, any slow growth",
+       y = "Pheno Diff and Water Diff", x = "Time") +
+  pcv_theme() +
+  theme(legend.position = "bottom")
+```
+
 
 #### Increasing Step
 - `increasing step`: Pre-watering weight increases with the phenotype (area), and a constant amount of water is added to that pre-watered weight every day, but half way through the experiment that amount of water increases from 20g to 75g.
 
-##### Sigmoid
+For both "step" function watering options we can easily compare the trends against the `constant` watering. Here everything has a large increase in the denominator halfway through the experiment, driving the total ratio down. Notice that for the exponentially increasing phenotype this is still a small blip.
 
-##### Abrupt
+```{r}
+rbic <- rb[rb$wc == "increasing step", ]
+ggplot(rbic, aes(x = time, y = pWUE, group = id)) +
+  facet_wrap(~pc, scales = "free_y") +
+  geom_line() +
+  labs(title = "Step Increasing Watering") +
+  pcv_theme()
+```
 
-##### Exponential
-
-##### Slowing
-
-##### Linear
-
-##### Death
 
 #### Decreasing Step
 - `decreasing step`: Pre-watering weight increases with the phenotype (area), and a constant amount of water is added to that pre-watered weight every day, but half way through the experiment that amount of water decreases from 75g to 20g.
 
-##### Sigmoid
+This is the same as the increasing step watering just with the order reversed.
 
-##### Abrupt
-
-##### Exponential
-
-##### Slowing
-
-##### Linear
-
-##### Death
-
+```{r}
+rbdc <- rb[which(rb$wc == "decreasing step" & rb$pWUE > 0), ]
+ggplot(rbdc, aes(x = time, y = pWUE, group = id)) +
+  facet_wrap(~pc, scales = "free_y") +
+  geom_line() +
+  labs(title = "Step Decreasing Watering") +
+  pcv_theme()
+```
 
 
 ### Absolute Value Based
 
-##### Sigmoid
+Since we went through all the possible combinations with the rate based pWUE we will move faster through the absolute value based version of pWUE once we establish the difference in the pWUE formula.
 
-##### Abrupt
-
-##### Exponential
-
-##### Slowing
-
-##### Linear
-
-##### Death
-
-Now we'll walk through the data if we consider pWUE through the "absolute" definition. As a reminder, that means we are considering the absolute size of the plant at each timepoint with the formula now being:
+As a reminder, this definition of pWUE means we are considering the absolute size of the plant at each timepoint with the formula now being:
 
 $\frac{\text{Biomass}_t}{\text{Water Transpired}_t}$
 
@@ -915,34 +1014,48 @@ a <- pwue(df = ex, w = NULL, pheno = "area", time = "time", id = c("id", "group"
 The numerator here is the same as before, so we can check for some problems we already know about.
 
 ```{r}
-table(a$group, ifelse(a$pWUE < 0, "negative", "positive"))
+colSums(table(a$group, ifelse(a$pWUE < 0, "negative", "positive")))
 ```
 
 This time we'll plot it with the scales freed on the Y-axis and with values below 0 already removed.
 
 ```{r}
 apos <- a[which(a$pWUE > 0), ]
-ggplot(apos[apos$id %in% paste0("id_", 1:5), ],
+ggplot(apos[apos$id %in% paste0("id_", 1:3), ],
        aes(x = time, y = pWUE, group = id)) +
-  facet_wrap(~group, scales = "free_y") +
-  geom_point(size = 0.5) +
+  facet_grid(wc~pc, scales = "free_y") +
   geom_line() +
-  pcv_theme()
+  pcv_theme() +
+  theme(strip.text.x.top = element_text(size = 10),
+        strip.text.y.right = element_text(size = 10))
 ```
 
-Here our pWUE data look a lot like the original phenotype data, with the exception of group `F` which we'll get to. That general similarity is because the phenotype data are used as-is in the numerator, and for the most part we don't have drastic changes to the water transpiration (weight changes) over time.
+Here our pWUE data look a lot like the original phenotype data, with the exception of which we'll get to. That general similarity is because the phenotype data are used as-is in the numerator, and for the most part we don't have drastic changes to the water transpiration (weight changes) over time.
 
-As a summary of what we see, Group `B` starts out the same as Group `A` but at the halfway point when the water amount is lowered the values roughly double (since water was cut in half but the plant stayed the same size). Group `C` looks as expected, the decrease in the amount of water over time is less dramatic than the exponentially increasing phenotype. Groups `D` and `E` should be very similar in terms of their phenotype, but `E` is getting more water each day, which makes its curve end at a lower point despite having the same general shape (check the Y-axis values since the scale is freed).
+Everything except for the `abrupt` logistic phenotype basically just looks like the phenotype it represents.
 
-Group `F` looks strange here though, what is going on there?
+The `abrupt` group looks strange here though, what is going on there?
+
+#### Abrupt Logistic Growth
 
 ```{r}
-ggplot(apos[apos$group == "F", ],
+ggplot(apos[apos$pc == "abrupt", ],
+       aes(x = time, y = pWUE, group = id)) +
+  facet_wrap(~wc, scales = "free_y") +
+  geom_line() +
+  pcv_theme() +
+  labs(title = "Why doesn't this look more like the raw phenotype?",
+       y = "Abs pWUE", x = "Time") +
+  theme(strip.text.x.top = element_text(size = 10),
+        strip.text.y.right = element_text(size = 10))
+```
+
+
+```{r}
+ggplot(apos[apos$pc == "abrupt", ],
        aes(x = time, group = id)) +
-  facet_wrap(~id)+
-  geom_point(aes(y = total_water, color = "Water (denominator)")) +
+  facet_wrap(~wc)+
   geom_line(aes(y = total_water, color = "Water (denominator)")) +
-  geom_point(aes(y = pheno_iter, color = "Phenotype (numerator)")) +
   geom_line(aes(y = pheno_iter, color = "Phenotype (numerator)")) +
   labs(title = "This view kind of helps, but it still doesn't explain our trend clearly",
        y = "Pheno Diff and Water Diff", x = "Time") +
@@ -950,33 +1063,40 @@ ggplot(apos[apos$group == "F", ],
   theme(legend.position = "bottom")
 ```
 
-What is happening here is that since our phenotype changes so quickly between measurements 10 and 14 (roughly) the "lag" where we look at the difference in weights becomes very important. Looking at the pre/post watering weights for the first 4 plants in group `F` the problem is more obvious. Between days 10 and 14 the line between those weights is much shorter. In this data the difference is smaller because it's a relatively low effort simulation. In the wild we can see trends like this when an image based phenotype changes more rapidly than the underlying "true quantity". To keep with our area example, if a plant's leaf presentation in 2 dimensions changes in a way that is different than how its biomass actually changes then we can see this. These sort of differences highlight why we say we are using *Pseudo-WUE*. A similar idea could be that when corn is heat-stressed and the leaves furl into a more helical shape when viewed in 2D we don't really think the corn plant lost biomass, it just rearranged itself in a way that an image has fewer plant pixels.
+What is happening here is that since our phenotype changes so quickly between measurements 10 and 14 (roughly) the "lag" where we look at the difference in weights becomes very important. Looking at the pre/post watering weights for the first 3 plants in each watering condition given `abrupt` logistic growth the problem is more obvious.
 
 ```{r}
-ggplot(l[l$group == "F" & l$id %in% paste0("id_", 1:4), ],
+l2 <- reshape2::melt(ex[ex$pc == "abrupt", ], id.vars = c("id", "group", "time", "wc"),
+                    measure.vars = c("weight_before", "weight_after"))
+ggplot(l2[l2$id %in% paste0("id_", 1:3), ],
        aes(x = time + ifelse(variable == "weight_before", -0.25, 0.25),
            y = value, color = variable, group = id)) +
-  facet_wrap(~id) +
+  facet_grid(id~wc) +
   geom_line(color = "black", linewidth = 0.1) +
   geom_point(size = 0.5) +
   labs(y = "Weight", x = "Time",
-       title = "Treatments with several different watering schemes") +
+       title = "Sharp phenotype changes drive small denominators") +
   pcv_theme() +
-  theme(legend.position = "bottom")
+  theme(legend.position = "none",
+        strip.text.x.top = element_text(size = 10),
+        strip.text.y.right = element_text(size = 10))
 ```
 
-So what do we do here?
+Between days 10 and 14 the line between those weights is much shorter. In this data the difference is smaller because it's a relatively low effort simulation. In the wild we can see trends like this when an *image based phenotype changes more rapidly than the underlying "true quantity"*. To keep with our area example, if a plant's leaf presentation in 2 dimensions changes in a way that is different than how its biomass actually changes then we can see this. These sort of differences highlight why we say we are using *Pseudo-WUE*. A similar idea could be that when corn is heat-stressed and the leaves furl into a more helical shape when viewed in 2D we don't really think the corn plant lost biomass, it just rearranged itself in a way that an image has fewer plant pixels.
 
-**I actually have no idea, if you zoom in though the trend is reasonable.**
+If we zoom in on our pWUE trends we can tell that despite being very noisy in the middle of the experiment from the discrepancy between area and a proxy for biomass and true biomass (rapid artificial weight gain in excess of the watering amount) the overall trend does look like our phenotype.
 
 ```{r}
-ggplot(apos[apos$group == "F", ],
+ggplot(apos[apos$pc == "abrupt", ],
        aes(x = time, y = pWUE, group = id)) +
-  facet_wrap(~group, scales = "free_y") +
-  geom_point(size = 0.5) +
+  facet_wrap(~wc, scales = "free_y") +
   geom_line() +
-  coord_cartesian(ylim = c(0, 40)) +
-  pcv_theme()
+  pcv_theme() +
+  labs(title = "Why doesn't this look more like the raw phenotype?",
+       y = "Abs pWUE", x = "Time") +
+  theme(strip.text.x.top = element_text(size = 10),
+        strip.text.y.right = element_text(size = 10)) +
+  coord_cartesian(ylim = c(0, 10))
 ```
 
 
@@ -992,40 +1112,29 @@ ndt <- pwue(df = ex, w = NULL, pheno = "area", time = "time", id = c("id", "grou
 ndt <- ndt[which(ndt$pWUE > 0), ]
 ```
 
-Again we'll plot our calculated phenotype with the scales freed on the Y-axis and with values below 0 already removed.
+Once again the `abrupt` group misbehaves relative to the other options. Suffice to say, most of the time this looks like an obvious reciprocal of the previous pWUE implementation. In our simulated data we see that when plants are smaller but apparently using the same amount of water (see top row with constant watering) NDT is high. This is most obvious in the exponential phenotype. Remember that how well you will be able to use NDT (any any water use phenotype) will depend entirely on how accurately you can measure transpiration.
 
 ```{r}
-ggplot(ndt[ndt$id %in% paste0("id_", 1:5), ],
+ggplot(ndt[ndt$id %in% paste0("id_", 1:3) & ndt$pc != "abrupt", ],
        aes(x = time, y = normalized_daily_transpiration, group = id)) +
-  facet_wrap(~group, scales = "free_y") +
-  geom_point(size = 0.5) +
+  facet_grid(wc~pc, scales = "free_y") +
   geom_line() +
-  pcv_theme()
+  pcv_theme() +
+  theme(strip.text.x.top = element_text(size = 10),
+        strip.text.y.right = element_text(size = 10))
 ```
 
-## Field Capacity
+The `abrupt` phenotype has much higher values for transpiration since we are dividing by close to 0 for a long time (in the beginning of the experiment these plants are barely detectable). This will be another caveat in real data, if there are some plants that fail to thrive then you can end up with dramatic outliers in water use phenotypes.
 
-### What is field capacity
-
-Field capacity is the amount of water held in soil after excess water has been able to drain and the rate of macropore drainage (water seeping deeper into the ground) approaches 0. Field capacity depends on numerous factors and should not be considered a constant for a given soil type, but it can be useful as a measure of water capacity.
-
-
-### Why do we care about field capacity
-
-**Why do we care about field capacity**
-
-
-### Field capacity equations
-
-- **CS**: Weight of carriage + saucer = 345 g
-- **DW**: Weight of dry pot (pot + soil) = varies by experiment, will be provided by Leo (one number for the whole experiment)
-- **SW**: Weight of saturated pot (pot + soaked soil) = varies by experiment, will be provided by Leo (one number for the whole experiment)
-- **Saturated Water Volume**: SW - DW
-- **Current water content** = current weight - CS - DW
-- **Current field capacity (%)** = current water content / saturated water volume x 100
-- **Target field capacity (%)** = provided by Leo, varies by day and experiment
-
-`~~~Guidance on how to use those?~~~`
+```{r}
+ggplot(ndt[ndt$id %in% paste0("id_", 1:3) & ndt$pc == "abrupt", ],
+       aes(x = time, y = normalized_daily_transpiration, group = id)) +
+  facet_grid(wc~pc, scales = "free_y") +
+  geom_line() +
+  pcv_theme() +
+  theme(strip.text.x.top = element_text(size = 10),
+        strip.text.y.right = element_text(size = 10))
+```
 
 ## Next Steps
 
