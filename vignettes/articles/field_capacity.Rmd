@@ -99,54 +99,82 @@ In the following plot we look at a simulated plant's watering data. This plant h
 set.seed(123)
 days <- 5
 n_plants <- 1
-ex <- data.frame(id = paste0("Plant ", rep(seq_len(n_plants), each = days * 2)),
-           DAS = rep(c(1:days - 0.5, 1:days + 0.1), times = n_plants),
-           variable = rep(c("weight_after_watering", "weight_before_watering"), each = days),
-           value = unlist(lapply(seq_len(n_plants), function(i) {
-             x <- sort(runif(days, 50, 100))
-             c(x, x - runif(days, 10, 20))
-           })))
-daybars <- data.frame(ymin = 0, ymax = 1.1 * max(ex$value),
-           xmin = seq(0, days, 0.5),
-           xmax = seq(0.5, days + 0.5, 0.5),
-           day_or_night = rep(c("lights off", "lights on"), length.out = 11))
+ex <- data.frame(
+  id = paste0("Plant ", rep(seq_len(n_plants), each = days * 2)),
+  DAS = rep(c(1:days - 0.5, 1:days + 0.1), times = n_plants),
+  variable = rep(c("weight_after_watering", "weight_before_watering"), each = days),
+  value = unlist(lapply(seq_len(n_plants), function(i) {
+    x <- sort(runif(days, 50, 100))
+    c(x, x - runif(days, 10, 20))
+  }))
+)
+daybars <- data.frame(
+  ymin = 0, ymax = 1.1 * max(ex$value),
+  xmin = seq(0, days, 0.5),
+  xmax = seq(0.5, days + 0.5, 0.5),
+  day_or_night = rep(c("lights off", "lights on"), length.out = 11)
+)
 
-watering_1 <- data.frame(id = ex[1, "id"],
-                   water = ex[2, "value"],
-                   start = mean(c(ex[2, "value"], ex[c(days + 1), "value"])),
-                   DAS = ex[c(days + 1), "DAS"] + 0.75)
+watering_1 <- data.frame(
+  id = ex[1, "id"],
+  water = ex[2, "value"],
+  start = mean(c(ex[2, "value"], ex[c(days + 1), "value"])),
+  DAS = ex[c(days + 1), "DAS"] + 0.75
+)
 
-watering_2 <- data.frame(id = ex[1, "id"],
-                   water = ex[3, "value"],
-                   start = mean(c(ex[3, "value"], ex[c(days + 2), "value"])),
-                   DAS = ex[c(days + 2), "DAS"] + 0.175)
+watering_2 <- data.frame(
+  id = ex[1, "id"],
+  water = ex[3, "value"],
+  start = mean(c(ex[3, "value"], ex[c(days + 2), "value"])),
+  DAS = ex[c(days + 2), "DAS"] + 0.175
+)
 
 ggplot(ex, aes(x = DAS, y = value, color = variable)) +
   facet_wrap(~id) +
-  geom_rect(data = daybars, aes(xmin = xmin, ymin = ymin, xmax = xmax, ymax = ymax,
-                                fill = day_or_night),
-            inherit.aes = FALSE, alpha = 0.5) +
+  geom_rect(
+    data = daybars, aes(
+      xmin = xmin, ymin = ymin, xmax = xmax, ymax = ymax,
+      fill = day_or_night
+    ),
+    inherit.aes = FALSE, alpha = 0.5
+  ) +
   scale_fill_manual(values = c("gray80", "antiquewhite")) +
   scale_x_continuous(breaks = seq(1, 6, 1)) +
-  coord_cartesian(ylim = c(0.9 * round(min(ex$value)), 1.1 * round(max(ex$value))),
-                  expand = FALSE) +
+  coord_cartesian(
+    ylim = c(0.9 * round(min(ex$value)), 1.1 * round(max(ex$value))),
+    expand = FALSE
+  ) +
   geom_line(color = "black") +
   geom_point() +
-  geom_segment(data = watering_1, aes(x = DAS, xend = DAS, y = start, yend = water),
-               linetype = 5, color = "gray40", inherit.aes = FALSE) +
-  geom_label(data = watering_1, aes(x = DAS, y = water), hjust = 0.75, vjust = -0.25,
-             label = "Water lost\nduring day", inherit.aes = FALSE)+
-  geom_segment(data = watering_2, aes(x = DAS, xend = DAS, y = start, yend = water),
-               linetype = 5, color = "gray40", inherit.aes = FALSE) +
-  geom_label(data = watering_2, aes(x = DAS, y = water), hjust = 0.5, vjust = -0.25,
-             label = "Water added\nat night", inherit.aes = FALSE) +
-  annotate("segment", x = seq(1.25, days, 1), xend = seq(1.25, days, 1),
-           y = round(min(ex$value))- 4,
-           yend = round(min(ex$value)), linetype = 3,  color = "navy") +
-  annotate("label", x = days - 1, y = round(min(ex$value)), label = "watering times",
-           vjust = -0.25, hjust = -0.25) +
-  labs(x = "Days After Start", y = "Pot Weight (g)",
-       fill = "Light", color = "Weight") +
+  geom_segment(
+    data = watering_1, aes(x = DAS, xend = DAS, y = start, yend = water),
+    linetype = 5, color = "gray40", inherit.aes = FALSE
+  ) +
+  geom_label(
+    data = watering_1, aes(x = DAS, y = water), hjust = 0.75, vjust = -0.25,
+    label = "Water lost\nduring day", inherit.aes = FALSE
+  ) +
+  geom_segment(
+    data = watering_2, aes(x = DAS, xend = DAS, y = start, yend = water),
+    linetype = 5, color = "gray40", inherit.aes = FALSE
+  ) +
+  geom_label(
+    data = watering_2, aes(x = DAS, y = water), hjust = 0.5, vjust = -0.25,
+    label = "Water added\nat night", inherit.aes = FALSE
+  ) +
+  annotate("segment",
+    x = seq(1.25, days, 1), xend = seq(1.25, days, 1),
+    y = round(min(ex$value)) - 4,
+    yend = round(min(ex$value)), linetype = 3, color = "navy"
+  ) +
+  annotate("label",
+    x = days - 1, y = round(min(ex$value)), label = "watering times",
+    vjust = -0.25, hjust = -0.25
+  ) +
+  labs(
+    x = "Days After Start", y = "Pot Weight (g)",
+    fill = "Light", color = "Weight"
+  ) +
   pcv_theme() +
   theme(legend.position = "bottom")
 ```
@@ -161,19 +189,29 @@ exw$diff <- exw$weight_after_watering - exw$weight_before_watering
 
 ggplot(ex, aes(x = DAS, y = value, color = variable)) +
   facet_wrap(~id) +
-  geom_rect(data = daybars, aes(xmin = xmin, ymin = ymin, xmax = xmax, ymax = ymax,
-                                fill = day_or_night),
-            inherit.aes = FALSE, alpha = 0.5) +
+  geom_rect(
+    data = daybars, aes(
+      xmin = xmin, ymin = ymin, xmax = xmax, ymax = ymax,
+      fill = day_or_night
+    ),
+    inherit.aes = FALSE, alpha = 0.5
+  ) +
   scale_fill_manual(values = c("gray80", "antiquewhite")) +
   scale_x_continuous(breaks = seq(1, 6, 1)) +
-  coord_cartesian(ylim = c(0.9 * round(min(ex$value)), 1.1 * round(max(ex$value))),
-                  expand = FALSE) +
+  coord_cartesian(
+    ylim = c(0.9 * round(min(ex$value)), 1.1 * round(max(ex$value))),
+    expand = FALSE
+  ) +
   geom_line(color = "black") +
   geom_point() +
-  geom_text(data = exw, aes(x = DAS, y = weight_after_watering, label = round(diff, 1)), 
-            inherit.aes = FALSE) +
-  labs(x = "Days After Start", y = "Pot Weight (g)",
-       fill = "Light", color = "Weight", title = "Amount of water transpired per day") +
+  geom_text(
+    data = exw, aes(x = DAS, y = weight_after_watering, label = round(diff, 1)),
+    inherit.aes = FALSE
+  ) +
+  labs(
+    x = "Days After Start", y = "Pot Weight (g)",
+    fill = "Light", color = "Weight", title = "Amount of water transpired per day"
+  ) +
   pcv_theme() +
   theme(legend.position = "bottom")
 ```
@@ -192,27 +230,41 @@ p1 <- ggplot(exw, aes(x = DAS, y = biomass)) +
   facet_wrap(~id) +
   geom_line(color = "black") +
   geom_point() +
-  labs(x = "Days After Start", y = "Plant Biomass (g)",
-       fill = "Light", color = "Weight", title = "Plant Biomass (g)") +
+  labs(
+    x = "Days After Start", y = "Plant Biomass (g)",
+    fill = "Light", color = "Weight", title = "Plant Biomass (g)"
+  ) +
   pcv_theme() +
   theme(legend.position = "bottom")
 
 p2 <- ggplot(ex, aes(x = DAS, y = value, color = variable)) +
   facet_wrap(~id) +
-  geom_rect(data = daybars, aes(xmin = xmin, ymin = ymin, xmax = xmax, ymax = ymax,
-                                fill = day_or_night),
-            inherit.aes = FALSE, alpha = 0.5, show.legend = FALSE) +
+  geom_rect(
+    data = daybars, aes(
+      xmin = xmin, ymin = ymin, xmax = xmax, ymax = ymax,
+      fill = day_or_night
+    ),
+    inherit.aes = FALSE, alpha = 0.5, show.legend = FALSE
+  ) +
   scale_fill_manual(values = c("gray80", "antiquewhite")) +
   scale_x_continuous(breaks = seq(1, 6, 1)) +
-  coord_cartesian(ylim = c(0.9 * round(min(ex$value)), 1.1 * round(max(ex$value))),
-                  expand = FALSE) +
+  coord_cartesian(
+    ylim = c(0.9 * round(min(ex$value)), 1.1 * round(max(ex$value))),
+    expand = FALSE
+  ) +
   geom_line(color = "black") +
   geom_point() +
-  geom_text(data = exw, aes(x = DAS + 0.1, y = weight_after_watering,
-                            label = paste0(round(diff, 1), "/", round(biomass, 1))), 
-            inherit.aes = FALSE, size = 3) +
-  labs(x = "Days After Start", y = "Pot Weight (g)",
-       fill = "Light", color = "Weight", title = "Normalized Transpiration (water/biomass)") +
+  geom_text(
+    data = exw, aes(
+      x = DAS + 0.1, y = weight_after_watering,
+      label = paste0(round(diff, 1), "/", round(biomass, 1))
+    ),
+    inherit.aes = FALSE, size = 3
+  ) +
+  labs(
+    x = "Days After Start", y = "Pot Weight (g)",
+    fill = "Light", color = "Weight", title = "Normalized Transpiration (water/biomass)"
+  ) +
   pcv_theme() +
   theme(legend.position = "bottom")
 
@@ -259,26 +311,39 @@ phenotype_conditions <- list(
   "slowing" = list("model" = "power law", params = list(A = 15, B = 0.6)),
   "linear" = list("model" = "linear", params = list(A = 8))
 )
-# 10 + (sub$area * rbeta(days, 200, 200))
 watering_conditions <- list(
-  "constant" = list("before" = NA,
-                    "after" = rep(25, days)),
-  "target weight" = list("before" = round(90 * exp(-0.1 * seq_len(days))),
-                         "after" = rep(100, days)),
-  "increasing cont" = list("before" = NA,
-                           "after" = (seq_len(days) * 4) + 10),
-  "decreasing cont" = list("before" = NA,
-                           "after" = (days * 4) + 10 - (4 * seq_len(days))),
-  "increasing step" = list("before" = NA,
-                           "after" = c(rep(20, floor(days/2)), rep(75, ceiling(days/2)))),
-  "decreasing step" = list("before" = NA,
-                           "after" = c(rep(75, floor(days/2)), rep(20, ceiling(days/2))))
+  "constant" = list(
+    "before" = NA,
+    "after" = rep(25, days)
+  ),
+  "target weight" = list(
+    "before" = round(90 * exp(-0.1 * seq_len(days))),
+    "after" = rep(100, days)
+  ),
+  "increasing cont" = list(
+    "before" = NA,
+    "after" = (seq_len(days) * 4) + 10
+  ),
+  "decreasing cont" = list(
+    "before" = NA,
+    "after" = (days * 4) + 10 - (4 * seq_len(days))
+  ),
+  "increasing step" = list(
+    "before" = NA,
+    "after" = c(rep(20, floor(days / 2)), rep(75, ceiling(days / 2)))
+  ),
+  "decreasing step" = list(
+    "before" = NA,
+    "after" = c(rep(75, floor(days / 2)), rep(20, ceiling(days / 2)))
+  )
 )
 
 ex <- do.call(rbind, lapply(names(phenotype_conditions), function(pc) {
   p_cond <- phenotype_conditions[[pc]]
-  df <- pcvr::growthSim(p_cond$model, n = n_plants, t = days,
-                        params = p_cond$params)
+  df <- pcvr::growthSim(p_cond$model,
+    n = n_plants, t = days,
+    params = p_cond$params
+  )
   df$group <- pc
   colnames(df)[c(2, 4)] <- c("pc", "area")
   #* for this phenotype data make a copy for each watering condition set
@@ -305,16 +370,24 @@ ex <- do.call(rbind, lapply(names(phenotype_conditions), function(pc) {
   }))
 }))
 
-key <- expand.grid(pc = names(phenotype_conditions), wc =  names(watering_conditions))
+key <- expand.grid(pc = names(phenotype_conditions), wc = names(watering_conditions))
 key$group <- as.character(seq_len(nrow(key)))
 ex <- plyr::join(ex, key)
-ex$pc <- factor(ex$pc, levels = c("sigmoid", "abrupt", "exponential",
-                                  "slowing", "linear", "death"),
-                ordered = TRUE)
-ex$wc <- factor(ex$wc, levels = c("constant", "target weight",
-                                  "increasing cont","decreasing cont",
-                                  "increasing step", "decreasing step"),
-                ordered = TRUE)
+ex$pc <- factor(ex$pc,
+  levels = c(
+    "sigmoid", "abrupt", "exponential",
+    "slowing", "linear", "death"
+  ),
+  ordered = TRUE
+)
+ex$wc <- factor(ex$wc,
+  levels = c(
+    "constant", "target weight",
+    "increasing cont", "decreasing cont",
+    "increasing step", "decreasing step"
+  ),
+  ordered = TRUE
+)
 ```
 
 #### Traits of the simulated data
@@ -332,9 +405,11 @@ The simulated data has 6 phenotype trends. Here we're using simulated area from 
 ggplot(ex[ex$wc == "constant", ], aes(time, area, group = id)) +
   facet_wrap(~pc) +
   geom_line() +
-  labs(y = expression("Area (cm"^2*")"),
-       x = "Time",
-       title = "Treatments with several different growth trends") +
+  labs(
+    y = expression("Area (cm"^2 * ")"),
+    x = "Time",
+    title = "Treatments with several different growth trends"
+  ) +
   pcv_theme() +
   theme(legend.position = "none")
 ```
@@ -349,16 +424,22 @@ There are also 6 watering data options in the simulated data.
 - `decreasing step`: Pre-watering weight increases with the phenotype (area), and a constant amount of water is added to that pre-watered weight every day, but half way through the experiment that amount of water decreases from 75g to 20g.
 
 ```{r}
-l <- reshape2::melt(ex[ex$pc == "sigmoid", ], id.vars = c("id", "group", "time", "wc"),
-                    measure.vars = c("weight_before", "weight_after"))
+l <- reshape2::melt(ex[ex$pc == "sigmoid", ],
+  id.vars = c("id", "group", "time", "wc"),
+  measure.vars = c("weight_before", "weight_after")
+)
 
-ggplot(l[l$id %in% paste0("id_", 1), ],
-       aes(x = time + ifelse(variable == "weight_before", -0.25, 0.25), y = value, color = variable)) +
+ggplot(
+  l[l$id %in% paste0("id_", 1), ],
+  aes(x = time + ifelse(variable == "weight_before", -0.25, 0.25), y = value, color = variable)
+) +
   facet_wrap(~wc) +
   geom_line(color = "black") +
   geom_point() +
-  labs(y = "Weight", x = "Time",
-       title = "Different watering schemes with sigmoid growth") +
+  labs(
+    y = "Weight", x = "Time",
+    title = "Different watering schemes with sigmoid growth"
+  ) +
   pcv_theme()
 ```
 
@@ -366,32 +447,42 @@ Combining everything from those sets of conditions we can look at the pre vs pos
 
 ```{r}
 ggplot(ex, aes(time, area, group = id)) +
-  facet_grid(wc~pc) +
+  facet_grid(wc ~ pc) +
   geom_line(color = "gray70", linewidth = 0.1) +
   geom_line(aes(y = weight_after), color = "blue") +
-  labs(y = "Weight After Watering",
-       x = "Time",
-       title = "Weight After Watering For all combinations of conditions") +
+  labs(
+    y = "Weight After Watering",
+    x = "Time",
+    title = "Weight After Watering For all combinations of conditions"
+  ) +
   pcv_theme() +
-  theme(legend.position = "none",
-        strip.text.x.top = element_text(size = 10),
-        strip.text.y.right = element_text(size = 10))
+  theme(
+    legend.position = "none",
+    strip.text.x.top = element_text(size = 10),
+    strip.text.y.right = element_text(size = 10)
+  )
 ```
 
 We can also look at this as the amount of water added for each condition. That will make everything constant across phenotypes (except target weight, which is the only option that is not a perfectly straight/stepped line).
 
 ```{r}
-ggplot(ex[ex$id == "id_1", ],
-       aes(time, y = weight_after - weight_before, group = id)) +
-  facet_grid(wc~pc) +
+ggplot(
+  ex[ex$id == "id_1", ],
+  aes(time, y = weight_after - weight_before, group = id)
+) +
+  facet_grid(wc ~ pc) +
   geom_line() +
-  labs(y = "Water Added",
-       x = "Time",
-       title = "Water added for all combinations of conditions") +
+  labs(
+    y = "Water Added",
+    x = "Time",
+    title = "Water added for all combinations of conditions"
+  ) +
   pcv_theme() +
-  theme(legend.position = "none",
-        strip.text.x.top = element_text(size = 10),
-        strip.text.y.right = element_text(size = 10))
+  theme(
+    legend.position = "none",
+    strip.text.x.top = element_text(size = 10),
+    strip.text.y.right = element_text(size = 10)
+  )
 ```
 
 ### Water data diagnostic plots
@@ -399,18 +490,26 @@ ggplot(ex[ex$id == "id_1", ],
 Before working with water derived metrics it's generally good to get a feeling for the raw watering data with similar plots as we used early on. Here we're checking that there are reasonable looking differences between subsequent weights, that any treatment groups have the expected watering pattern, and that the weight before watering is lower than the previous post-watering weight (indicating that transpiration happened). The length of the black lines between weights here shows the same information as the previous "water added" plot.
 
 ```{r, echo = FALSE}
-ggplot(l[l$id %in% paste0("id_", 1:3), ],
-       aes(x = time + ifelse(variable == "weight_before", -0.25, 0.25),
-           y = value, color = variable)) +
-  facet_grid(id~wc) +
+ggplot(
+  l[l$id %in% paste0("id_", 1:3), ],
+  aes(
+    x = time + ifelse(variable == "weight_before", -0.25, 0.25),
+    y = value, color = variable
+  )
+) +
+  facet_grid(id ~ wc) +
   geom_line(color = "black", linewidth = 0.1) +
   geom_point(size = 0.5) +
-  labs(y = "Weight", x = "Time",
-       title = "Treatments with several different watering schemes") +
+  labs(
+    y = "Weight", x = "Time",
+    title = "Treatments with several different watering schemes"
+  ) +
   pcv_theme() +
-  theme(legend.position = "none",
-        strip.text.x.top = element_text(size = 10),
-        strip.text.y.right = element_text(size = 10))
+  theme(
+    legend.position = "none",
+    strip.text.x.top = element_text(size = 10),
+    strip.text.y.right = element_text(size = 10)
+  )
 ```
 
 We don't see anything that raises red flags, so we'll move on.
@@ -428,9 +527,11 @@ Note that here we are using very coarse measurements of time and for some experi
 ### Rate Based
 
 ```{r}
-rb <- pwue(df = ex, w = NULL, pheno = "area", time = "time", id = c("id", "group"),
-           pre_watering = "weight_before",
-           post_watering = "weight_after", method = "rate")
+rb <- pwue(
+  df = ex, w = NULL, pheno = "area", time = "time", id = c("id", "group"),
+  pre_watering = "weight_before",
+  post_watering = "weight_after", method = "rate"
+)
 ```
 
 We'll look at an example rep of each group to get started. Using the grid faceting we can't free the scales, so we'll go over each watering condition in turn.
@@ -459,25 +560,33 @@ This follow the general trends we'd expect, but some things look strange and it 
 As mentioned above, we expect a roughly bell shaped plot of rate pWUE over time for our data with constant watering and logistic growth.
 
 ```{r}
-ggplot(rbc[rbc$pc == "sigmoid", ], 
-       aes(x = time, y = pWUE, group = id)) +
+ggplot(
+  rbc[rbc$pc == "sigmoid", ],
+  aes(x = time, y = pWUE, group = id)
+) +
   geom_line() +
-  labs(title = "Constant Watering with Logistic Growth",
-       y = "(Rate based) pWUE") +
+  labs(
+    title = "Constant Watering with Logistic Growth",
+    y = "(Rate based) pWUE"
+  ) +
   pcv_theme()
 ```
 
 The overall trend makes sense, but why is the data so spikey? We can sometimes get an easier grasp of pWUE if we plot the component parts, which are both returned from `pwue`.
 
 ```{r}
-ggplot(rbc[rbc$pc == "sigmoid", ],
-       aes(x = time, group = id)) +
+ggplot(
+  rbc[rbc$pc == "sigmoid", ],
+  aes(x = time, group = id)
+) +
   facet_wrap(~group) +
   geom_line(aes(y = total_water, color = "Water (denominator)")) +
   geom_line(aes(y = pheno_diff, color = "Phenotype (numerator)")) +
-  labs(title = "Components of Rate pWUE",
-       subtitle = "constant watering, logistic growth",
-       y = "Pheno Diff and Water Diff", x = "Time") +
+  labs(
+    title = "Components of Rate pWUE",
+    subtitle = "constant watering, logistic growth",
+    y = "Pheno Diff and Water Diff", x = "Time"
+  ) +
   pcv_theme() +
   theme(legend.position = "bottom")
 ```
@@ -489,22 +598,30 @@ Now we can see that the "spikey-ness" is a product of the water data having a lo
 The typical sigmoid data was pretty simple, but what happens if we have a different kind of sigmoid shape? First looks at the pWUE for our "abrupt" logistic growth are way less friendly.
 
 ```{r}
-ggplot(rbc[rbc$pc == "abrupt", ], 
-       aes(x = time, y = pWUE, group = id)) +
+ggplot(
+  rbc[rbc$pc == "abrupt", ],
+  aes(x = time, y = pWUE, group = id)
+) +
   geom_line() +
-  labs(title = "Constant Watering with Abrupt Growth",
-       y = "(Rate based) pWUE") +
+  labs(
+    title = "Constant Watering with Abrupt Growth",
+    y = "(Rate based) pWUE"
+  ) +
   pcv_theme()
 ```
 
 We're going to have to zoom in to understand the general trend, then we can look at each replicate to see what is going on with that large spike.
 
 ```{r}
-ggplot(rbc[rbc$pc == "abrupt", ], 
-       aes(x = time, y = pWUE, group = id)) +
+ggplot(
+  rbc[rbc$pc == "abrupt", ],
+  aes(x = time, y = pWUE, group = id)
+) +
   geom_line() +
-  labs(title = "Constant Watering with Abrupt Growth",
-       y = "(Rate based) pWUE") +
+  labs(
+    title = "Constant Watering with Abrupt Growth",
+    y = "(Rate based) pWUE"
+  ) +
   pcv_theme() +
   coord_cartesian(ylim = c(-3, 50))
 ```
@@ -522,14 +639,18 @@ rbcp <- rbcp[which(rbcp$total_water > 0), ]
 Now that we've removed the negative values we can think about the components of rate pWUE a little more clearly.
 
 ```{r}
-ggplot(rbcp,
-       aes(x = time, group = id)) +
+ggplot(
+  rbcp,
+  aes(x = time, group = id)
+) +
   facet_wrap(~id) +
   geom_line(aes(y = total_water, color = "Water (denominator)")) +
   geom_line(aes(y = pheno_diff, color = "Phenotype (numerator)")) +
-  labs(title = "Components of Rate pWUE",
-       subtitle = "constant watering, abrupt growth",
-       y = "Pheno Diff and Water Diff", x = "Time") +
+  labs(
+    title = "Components of Rate pWUE",
+    subtitle = "constant watering, abrupt growth",
+    y = "Pheno Diff and Water Diff", x = "Time"
+  ) +
   pcv_theme() +
   theme(legend.position = "bottom")
 ```
@@ -539,12 +660,16 @@ The peaks in measurement-to-measurement phenotype change have to happen with suc
 The troughs in amount of water used may be seen on a system where the weight of a pot changes noticeably with the measured phenotype (the plant is a non-neglible amount of the total weight of whatever pot/cart is being weighed), but that will depend on your equipment. This trend is very dramatic, it is likely that in your experiments the soil and pot would out weight the plant by several orders of magnitude which would make for less steep pWUE curves.
 
 ```{r}
-ggplot(rbcp,
-       aes(x = time, y = pWUE, group = id)) +
+ggplot(
+  rbcp,
+  aes(x = time, y = pWUE, group = id)
+) +
   facet_wrap(~id, scales = "free_y") +
   geom_line() +
-  labs(title = "Constant Watering with Abrupt Growth",
-       y = "(Rate based) pWUE") +
+  labs(
+    title = "Constant Watering with Abrupt Growth",
+    y = "(Rate based) pWUE"
+  ) +
   pcv_theme()
 ```
 
@@ -553,11 +678,15 @@ ggplot(rbcp,
 The previous two phenotype options were asymptotic. What happens with non-asymptotic growth?
 
 ```{r}
-ggplot(rbc[rbc$pc == "exponential", ], 
-       aes(x = time, y = pWUE, group = id)) +
+ggplot(
+  rbc[rbc$pc == "exponential", ],
+  aes(x = time, y = pWUE, group = id)
+) +
   geom_line() +
-  labs(title = "Constant Watering with Exponential Growth",
-       y = "(Rate based) pWUE") +
+  labs(
+    title = "Constant Watering with Exponential Growth",
+    y = "(Rate based) pWUE"
+  ) +
   pcv_theme()
 ```
 
@@ -566,41 +695,55 @@ As before we'll remove the negative values for `total_water`. Here they come fro
 ```{r}
 rbce <- rbc[which(rbc$pc == "exponential" & rbc$total_water > 0), ]
 
-ggplot(rbce,
-       aes(x = time, y = pWUE, group = id)) +
+ggplot(
+  rbce,
+  aes(x = time, y = pWUE, group = id)
+) +
   geom_line() +
-  labs(title = "Constant Watering with Exponential Growth",
-       y = "(Rate based) pWUE") +
+  labs(
+    title = "Constant Watering with Exponential Growth",
+    y = "(Rate based) pWUE"
+  ) +
   pcv_theme()
 ```
 
 With the negative values removed the trend here looks a lot like the raw phenotype data.
 
 ```{r}
-ggplot(ex[ex$pc == "exponential" & ex$wc == "constant", ],
-       aes(time, area, group = id)) +
-  facet_grid(wc~pc) +
+ggplot(
+  ex[ex$pc == "exponential" & ex$wc == "constant", ],
+  aes(time, area, group = id)
+) +
+  facet_grid(wc ~ pc) +
   geom_line() +
-  labs(y = "Area",
-       x = "Time",
-       title = "Exponential Phenotype") +
+  labs(
+    y = "Area",
+    x = "Time",
+    title = "Exponential Phenotype"
+  ) +
   pcv_theme() +
-  theme(legend.position = "none",
-        strip.text.x.top = element_text(size = 10),
-        strip.text.y.right = element_text(size = 10))
+  theme(
+    legend.position = "none",
+    strip.text.x.top = element_text(size = 10),
+    strip.text.y.right = element_text(size = 10)
+  )
 ```
 
 This is a feature of exponential growth, since the measurement-to-measurement difference increases exponentially when we have roughly constant water use the pWUE trend will look exponential.
 
 ```{r}
-ggplot(rbce,
-       aes(x = time, group = id)) +
+ggplot(
+  rbce,
+  aes(x = time, group = id)
+) +
   facet_wrap(~id) +
   geom_line(aes(y = total_water, color = "Water (denominator)")) +
   geom_line(aes(y = pheno_diff, color = "Phenotype (numerator)")) +
-  labs(title = "Components of Rate pWUE",
-       subtitle = "constant watering, abrupt growth",
-       y = "Pheno Diff and Water Diff", x = "Time") +
+  labs(
+    title = "Components of Rate pWUE",
+    subtitle = "constant watering, abrupt growth",
+    y = "Pheno Diff and Water Diff", x = "Time"
+  ) +
   pcv_theme() +
   theme(legend.position = "bottom")
 ```
@@ -610,11 +753,15 @@ ggplot(rbce,
 For non-asymptotic growth that is slowing down (exponent below 1) we should expect to see decreasing pWUE given constant watering.
 
 ```{r}
-ggplot(rbc[rbc$pc == "slowing", ], 
-       aes(x = time, y = pWUE, group = id)) +
+ggplot(
+  rbc[rbc$pc == "slowing", ],
+  aes(x = time, y = pWUE, group = id)
+) +
   geom_line() +
-  labs(title = "Constant Watering with Power law (B<1) Growth",
-       y = "(Rate based) pWUE") +
+  labs(
+    title = "Constant Watering with Power law (B<1) Growth",
+    y = "(Rate based) pWUE"
+  ) +
   pcv_theme()
 ```
 
@@ -625,11 +772,15 @@ While the growth is non-asymptotic pWUE is asymptotic since the numerator is mon
 The measurement-to-measurement change in linear data is the same between any two subsequent times. Since the water data is roughly constant (at least it has a 0 slope) we expect to see flat but noisy pWUE here.
 
 ```{r}
-ggplot(rbc[rbc$pc == "linear", ], 
-       aes(x = time, y = pWUE, group = id)) +
+ggplot(
+  rbc[rbc$pc == "linear", ],
+  aes(x = time, y = pWUE, group = id)
+) +
   geom_line() +
-  labs(title = "Constant Watering with Linear Growth",
-       y = "(Rate based) pWUE") +
+  labs(
+    title = "Constant Watering with Linear Growth",
+    y = "(Rate based) pWUE"
+  ) +
   pcv_theme()
 ```
 
@@ -639,14 +790,18 @@ ggplot(rbc[rbc$pc == "linear", ],
 Now we can look at the `death` group, which taken separately looks like a totally normal growth curve.
 
 ```{r}
-ggplot(rbc[rbc$pc == "death", ],
-       aes(time, area, group = interaction(group, id))) +
+ggplot(
+  rbc[rbc$pc == "death", ],
+  aes(time, area, group = interaction(group, id))
+) +
   facet_wrap(~group) +
   geom_line(aes(color = group)) +
   geom_point(aes(color = group), size = 0.7) +
-  labs(y = expression("Area (cm"^2*")"),
-       x = "Time",
-       title = "Zooming in on the phenotype data for death") +
+  labs(
+    y = expression("Area (cm"^2 * ")"),
+    x = "Time",
+    title = "Zooming in on the phenotype data for death"
+  ) +
   pcv_theme() +
   theme(legend.position = "none")
 ```
@@ -655,19 +810,27 @@ The measurement-to-measurement change for any asymptotic phenotype approaches 0 
 
 ```{r}
 pheno_diff_ag <- aggregate(cbind(area, pheno_diff) ~ time + group,
-                           rbc[rbc$time %% 2 == 0 & rbc$pc == "death", ],
-                           mean, na.rm = TRUE)
+  rbc[rbc$time %% 2 == 0 & rbc$pc == "death", ],
+  mean,
+  na.rm = TRUE
+)
 
-ggplot(rbc[rbc$pc == "death", ],
-       aes(time, area)) +
+ggplot(
+  rbc[rbc$pc == "death", ],
+  aes(time, area)
+) +
   facet_wrap(~group) +
   geom_line(aes(color = group, group = interaction(group, id))) +
   geom_point(aes(color = group), size = 0.7) +
-  geom_label(data = pheno_diff_ag,
-            aes(label = round(pheno_diff, 1))) +
-  labs(y = expression("Area (cm"^2*")"),
-       x = "Time",
-       title = "Labeling the average pheno_diff ever other day") +
+  geom_label(
+    data = pheno_diff_ag,
+    aes(label = round(pheno_diff, 1))
+  ) +
+  labs(
+    y = expression("Area (cm"^2 * ")"),
+    x = "Time",
+    title = "Labeling the average pheno_diff ever other day"
+  ) +
   pcv_theme() +
   theme(legend.position = "none")
 ```
@@ -706,13 +869,17 @@ ggplot(rbts, aes(x = time, y = pWUE, group = id)) +
 Broken into the component pieces the rationale behind the trend we see is obvious:
 
 ```{r}
-ggplot(rbts,
-       aes(x = time, group = id)) +
+ggplot(
+  rbts,
+  aes(x = time, group = id)
+) +
   geom_line(aes(y = total_water, color = "Water (denominator)")) +
   geom_line(aes(y = pheno_diff, color = "Phenotype (numerator)")) +
-  labs(title = "Components of Rate pWUE",
-       subtitle = "Target Weight watering, logistic growth",
-       y = "Pheno Diff and Water Diff", x = "Time") +
+  labs(
+    title = "Components of Rate pWUE",
+    subtitle = "Target Weight watering, logistic growth",
+    y = "Pheno Diff and Water Diff", x = "Time"
+  ) +
   pcv_theme() +
   theme(legend.position = "bottom")
 ```
@@ -732,13 +899,17 @@ ggplot(rbta, aes(x = time, y = pWUE, group = id)) +
 Why doesn't this plot show the same trend as the sigmoid phenotype did? The denominator should be the same between these two groups.
 
 ```{r}
-ggplot(rbta,
-       aes(x = time, group = id)) +
+ggplot(
+  rbta,
+  aes(x = time, group = id)
+) +
   geom_line(aes(y = total_water, color = "Water (denominator)")) +
   geom_line(aes(y = pheno_diff, color = "Phenotype (numerator)")) +
-  labs(title = "Components of Rate pWUE",
-       subtitle = "Target Weight watering, abrupt growth",
-       y = "Pheno Diff and Water Diff", x = "Time") +
+  labs(
+    title = "Components of Rate pWUE",
+    subtitle = "Target Weight watering, abrupt growth",
+    y = "Pheno Diff and Water Diff", x = "Time"
+  ) +
   pcv_theme() +
   theme(legend.position = "bottom")
 ```
@@ -760,13 +931,17 @@ ggplot(rbte, aes(x = time, y = pWUE, group = id)) +
 And that's what we get. The increase in measurement-to-measurement phenotype outpaces the increase in transpiration.
 
 ```{r}
-ggplot(rbte,
-       aes(x = time, group = id)) +
+ggplot(
+  rbte,
+  aes(x = time, group = id)
+) +
   geom_line(aes(y = total_water, color = "Water (denominator)")) +
   geom_line(aes(y = pheno_diff, color = "Phenotype (numerator)")) +
-  labs(title = "Components of Rate pWUE",
-       subtitle = "Target Weight watering, exponential growth",
-       y = "Pheno Diff and Water Diff", x = "Time") +
+  labs(
+    title = "Components of Rate pWUE",
+    subtitle = "Target Weight watering, exponential growth",
+    y = "Pheno Diff and Water Diff", x = "Time"
+  ) +
   pcv_theme() +
   theme(legend.position = "bottom")
 ```
@@ -786,14 +961,18 @@ ggplot(rbtsl, aes(x = time, y = pWUE, group = id)) +
 And that's what we get. We can check our intuition again by looking at the component pieces.
 
 ```{r}
-ggplot(rbtsl,
-       aes(x = time, group = id)) +
+ggplot(
+  rbtsl,
+  aes(x = time, group = id)
+) +
   facet_wrap(~group) +
   geom_line(aes(y = total_water, color = "Water (denominator)")) +
   geom_line(aes(y = pheno_diff, color = "Phenotype (numerator)")) +
-  labs(title = "Components of Rate pWUE",
-       subtitle = "Target Weight watering, slowing growth",
-       y = "Pheno Diff and Water Diff", x = "Time") +
+  labs(
+    title = "Components of Rate pWUE",
+    subtitle = "Target Weight watering, slowing growth",
+    y = "Pheno Diff and Water Diff", x = "Time"
+  ) +
   pcv_theme() +
   theme(legend.position = "bottom")
 ```
@@ -813,14 +992,18 @@ ggplot(rbtl, aes(x = time, y = pWUE, group = id)) +
 And that's what we get. We can check our intuition again by looking at the component pieces.
 
 ```{r}
-ggplot(rbtl,
-       aes(x = time, group = id)) +
+ggplot(
+  rbtl,
+  aes(x = time, group = id)
+) +
   facet_wrap(~group) +
   geom_line(aes(y = total_water, color = "Water (denominator)")) +
   geom_line(aes(y = pheno_diff, color = "Phenotype (numerator)")) +
-  labs(title = "Components of Rate pWUE",
-       subtitle = "Target Weight watering, linear growth",
-       y = "Pheno Diff and Water Diff", x = "Time") +
+  labs(
+    title = "Components of Rate pWUE",
+    subtitle = "Target Weight watering, linear growth",
+    y = "Pheno Diff and Water Diff", x = "Time"
+  ) +
   pcv_theme() +
   theme(legend.position = "bottom")
 ```
@@ -840,14 +1023,18 @@ ggplot(rbtd, aes(x = time, y = pWUE, group = id)) +
 It does look very similar to the slowing growth. We can check our intuition again by looking at the component pieces.
 
 ```{r}
-ggplot(rbtd,
-       aes(x = time, group = id)) +
+ggplot(
+  rbtd,
+  aes(x = time, group = id)
+) +
   facet_wrap(~group) +
   geom_line(aes(y = total_water, color = "Water (denominator)")) +
   geom_line(aes(y = pheno_diff, color = "Phenotype (numerator)")) +
-  labs(title = "Components of Rate pWUE",
-       subtitle = "Target Weight watering, poor growth",
-       y = "Pheno Diff and Water Diff", x = "Time") +
+  labs(
+    title = "Components of Rate pWUE",
+    subtitle = "Target Weight watering, poor growth",
+    y = "Pheno Diff and Water Diff", x = "Time"
+  ) +
   pcv_theme() +
   theme(legend.position = "bottom")
 ```
@@ -867,19 +1054,25 @@ ggplot(rbic, aes(x = time, y = pWUE, group = id)) +
 Notice that here the trends look very similar to the `target weight` watering approach. That makes sense if we consider the trend we previously looked at for how much water is actually being used each day.
 
 ```{r}
-ggplot(ex[ex$id == "id_1" &
-            ex$wc %in% c("increasing cont", "target weight") &
-            ex$pc == "sigmoid", ],
-       aes(time, y = weight_after - weight_before, group = id)) +
+ggplot(
+  ex[ex$id == "id_1" &
+       ex$wc %in% c("increasing cont", "target weight") &
+       ex$pc == "sigmoid", ],
+  aes(time, y = weight_after - weight_before, group = id)
+) +
   facet_wrap(~wc) +
   geom_line() +
-  labs(y = "Water Added",
-       x = "Time",
-       title = "Water added is very similar in these two conditions") +
+  labs(
+    y = "Water Added",
+    x = "Time",
+    title = "Water added is very similar in these two conditions"
+  ) +
   pcv_theme() +
-  theme(legend.position = "none",
-        strip.text.x.top = element_text(size = 10),
-        strip.text.y.right = element_text(size = 10))
+  theme(
+    legend.position = "none",
+    strip.text.x.top = element_text(size = 10),
+    strip.text.y.right = element_text(size = 10)
+  )
 ```
 
 Those watering trends are different both conceptually and just in terms of how much water they add each day. They aren't so different that when used to make pWUE they change the denominator all that much. Essentially, for any pWUE trend you see there are several ways that it could have been generated in terms of the experimental design (target weight vs adding a constant) or the values put into the ratio (10/5 = 2/1).
@@ -914,14 +1107,18 @@ ggplot(rbdcs, aes(x = time, y = pWUE, group = id)) +
 We do have one strong spike at the end which we can try to understand better by looking at each component of pWUE.
 
 ```{r}
-ggplot(rbdcs,
-       aes(x = time, group = id)) +
+ggplot(
+  rbdcs,
+  aes(x = time, group = id)
+) +
   facet_wrap(~id) +
   geom_line(aes(y = total_water, color = "Water (denominator)")) +
   geom_line(aes(y = pheno_diff, color = "Phenotype (numerator)")) +
-  labs(title = "Components of Rate pWUE",
-       subtitle = "Decreasing watering, logistic growth",
-       y = "Pheno Diff and Water Diff", x = "Time") +
+  labs(
+    title = "Components of Rate pWUE",
+    subtitle = "Decreasing watering, logistic growth",
+    y = "Pheno Diff and Water Diff", x = "Time"
+  ) +
   pcv_theme() +
   theme(legend.position = "bottom")
 ```
@@ -952,14 +1149,18 @@ Once we remove the negative values we see the same basic trend (stronger this ti
 The `slowing`, `linear`, and `death` groups all show similar trends to each other. Since the numerators here are constant or slightly decreasing (the change in slope) the denominator can push the pWUE trend dramatically.
 
 ```{r}
-ggplot(rbdc[rbdc$pc %in% c("slowing", "linear", "death"), ],
-       aes(x = time, group = id)) +
+ggplot(
+  rbdc[rbdc$pc %in% c("slowing", "linear", "death"), ],
+  aes(x = time, group = id)
+) +
   facet_wrap(~pc) +
   geom_line(aes(y = total_water, color = "Water (denominator)")) +
   geom_line(aes(y = pheno_diff, color = "Phenotype (numerator)")) +
-  labs(title = "The differences in phenotype trend are overpowered",
-       subtitle = "Decreasing watering, any slow growth",
-       y = "Pheno Diff and Water Diff", x = "Time") +
+  labs(
+    title = "The differences in phenotype trend are overpowered",
+    subtitle = "Decreasing watering, any slow growth",
+    y = "Pheno Diff and Water Diff", x = "Time"
+  ) +
   pcv_theme() +
   theme(legend.position = "bottom")
 ```
@@ -1006,9 +1207,11 @@ $\frac{\text{Biomass}_t}{\text{Water Transpired}_t}$
 This type of pWUE is useful for thinking about how much biomass can be maintained per unit of water.
 
 ```{r}
-a <- pwue(df = ex, w = NULL, pheno = "area", time = "time", id = c("id", "group"),
-           pre_watering = "weight_before",
-           post_watering = "weight_after", method = "abs")
+a <- pwue(
+  df = ex, w = NULL, pheno = "area", time = "time", id = c("id", "group"),
+  pre_watering = "weight_before",
+  post_watering = "weight_after", method = "abs"
+)
 ```
 
 The numerator here is the same as before, so we can check for some problems we already know about.
@@ -1021,13 +1224,17 @@ This time we'll plot it with the scales freed on the Y-axis and with values belo
 
 ```{r}
 apos <- a[which(a$pWUE > 0), ]
-ggplot(apos[apos$id %in% paste0("id_", 1:3), ],
-       aes(x = time, y = pWUE, group = id)) +
-  facet_grid(wc~pc, scales = "free_y") +
+ggplot(
+  apos[apos$id %in% paste0("id_", 1:3), ],
+  aes(x = time, y = pWUE, group = id)
+) +
+  facet_grid(wc ~ pc, scales = "free_y") +
   geom_line() +
   pcv_theme() +
-  theme(strip.text.x.top = element_text(size = 10),
-        strip.text.y.right = element_text(size = 10))
+  theme(
+    strip.text.x.top = element_text(size = 10),
+    strip.text.y.right = element_text(size = 10)
+  )
 ```
 
 Here our pWUE data look a lot like the original phenotype data, with the exception of which we'll get to. That general similarity is because the phenotype data are used as-is in the numerator, and for the most part we don't have drastic changes to the water transpiration (weight changes) over time.
@@ -1039,26 +1246,36 @@ The `abrupt` group looks strange here though, what is going on there?
 #### Abrupt Logistic Growth
 
 ```{r}
-ggplot(apos[apos$pc == "abrupt", ],
-       aes(x = time, y = pWUE, group = id)) +
+ggplot(
+  apos[apos$pc == "abrupt", ],
+  aes(x = time, y = pWUE, group = id)
+) +
   facet_wrap(~wc, scales = "free_y") +
   geom_line() +
   pcv_theme() +
-  labs(title = "Why doesn't this look more like the raw phenotype?",
-       y = "Abs pWUE", x = "Time") +
-  theme(strip.text.x.top = element_text(size = 10),
-        strip.text.y.right = element_text(size = 10))
+  labs(
+    title = "Why doesn't this look more like the raw phenotype?",
+    y = "Abs pWUE", x = "Time"
+  ) +
+  theme(
+    strip.text.x.top = element_text(size = 10),
+    strip.text.y.right = element_text(size = 10)
+  )
 ```
 
 
 ```{r}
-ggplot(apos[apos$pc == "abrupt", ],
-       aes(x = time, group = id)) +
-  facet_wrap(~wc)+
+ggplot(
+  apos[apos$pc == "abrupt", ],
+  aes(x = time, group = id)
+) +
+  facet_wrap(~wc) +
   geom_line(aes(y = total_water, color = "Water (denominator)")) +
   geom_line(aes(y = pheno_iter, color = "Phenotype (numerator)")) +
-  labs(title = "This view kind of helps, but it still doesn't explain our trend clearly",
-       y = "Pheno Diff and Water Diff", x = "Time") +
+  labs(
+    title = "This view kind of helps, but it still doesn't explain our trend clearly",
+    y = "Pheno Diff and Water Diff", x = "Time"
+  ) +
   pcv_theme() +
   theme(legend.position = "bottom")
 ```
@@ -1066,20 +1283,30 @@ ggplot(apos[apos$pc == "abrupt", ],
 What is happening here is that since our phenotype changes so quickly between measurements 10 and 14 (roughly) the "lag" where we look at the difference in weights becomes very important. Looking at the pre/post watering weights for the first 3 plants in each watering condition given `abrupt` logistic growth the problem is more obvious.
 
 ```{r}
-l2 <- reshape2::melt(ex[ex$pc == "abrupt", ], id.vars = c("id", "group", "time", "wc"),
-                    measure.vars = c("weight_before", "weight_after"))
-ggplot(l2[l2$id %in% paste0("id_", 1:3), ],
-       aes(x = time + ifelse(variable == "weight_before", -0.25, 0.25),
-           y = value, color = variable, group = id)) +
-  facet_grid(id~wc) +
+l2 <- reshape2::melt(ex[ex$pc == "abrupt", ],
+  id.vars = c("id", "group", "time", "wc"),
+  measure.vars = c("weight_before", "weight_after")
+)
+ggplot(
+  l2[l2$id %in% paste0("id_", 1:3), ],
+  aes(
+    x = time + ifelse(variable == "weight_before", -0.25, 0.25),
+    y = value, color = variable, group = id
+  )
+) +
+  facet_grid(id ~ wc) +
   geom_line(color = "black", linewidth = 0.1) +
   geom_point(size = 0.5) +
-  labs(y = "Weight", x = "Time",
-       title = "Sharp phenotype changes drive small denominators") +
+  labs(
+    y = "Weight", x = "Time",
+    title = "Sharp phenotype changes drive small denominators"
+  ) +
   pcv_theme() +
-  theme(legend.position = "none",
-        strip.text.x.top = element_text(size = 10),
-        strip.text.y.right = element_text(size = 10))
+  theme(
+    legend.position = "none",
+    strip.text.x.top = element_text(size = 10),
+    strip.text.y.right = element_text(size = 10)
+  )
 ```
 
 Between days 10 and 14 the line between those weights is much shorter. In this data the difference is smaller because it's a relatively low effort simulation. In the wild we can see trends like this when an *image based phenotype changes more rapidly than the underlying "true quantity"*. To keep with our area example, if a plant's leaf presentation in 2 dimensions changes in a way that is different than how its biomass actually changes then we can see this. These sort of differences highlight why we say we are using *Pseudo-WUE*. A similar idea could be that when corn is heat-stressed and the leaves furl into a more helical shape when viewed in 2D we don't really think the corn plant lost biomass, it just rearranged itself in a way that an image has fewer plant pixels.
@@ -1087,15 +1314,21 @@ Between days 10 and 14 the line between those weights is much shorter. In this d
 If we zoom in on our pWUE trends we can tell that despite being very noisy in the middle of the experiment from the discrepancy between area and a proxy for biomass and true biomass (rapid artificial weight gain in excess of the watering amount) the overall trend does look like our phenotype.
 
 ```{r}
-ggplot(apos[apos$pc == "abrupt", ],
-       aes(x = time, y = pWUE, group = id)) +
+ggplot(
+  apos[apos$pc == "abrupt", ],
+  aes(x = time, y = pWUE, group = id)
+) +
   facet_wrap(~wc, scales = "free_y") +
   geom_line() +
   pcv_theme() +
-  labs(title = "Why doesn't this look more like the raw phenotype?",
-       y = "Abs pWUE", x = "Time") +
-  theme(strip.text.x.top = element_text(size = 10),
-        strip.text.y.right = element_text(size = 10)) +
+  labs(
+    title = "Why doesn't this look more like the raw phenotype?",
+    y = "Abs pWUE", x = "Time"
+  ) +
+  theme(
+    strip.text.x.top = element_text(size = 10),
+    strip.text.y.right = element_text(size = 10)
+  ) +
   coord_cartesian(ylim = c(0, 10))
 ```
 
@@ -1106,34 +1339,44 @@ The last of the phenotypes calculated by `pwue` is normalized daily transpiratio
 
 
 ```{r}
-ndt <- pwue(df = ex, w = NULL, pheno = "area", time = "time", id = c("id", "group"),
-           pre_watering = "weight_before",
-           post_watering = "weight_after", method = "ndt")
+ndt <- pwue(
+  df = ex, w = NULL, pheno = "area", time = "time", id = c("id", "group"),
+  pre_watering = "weight_before",
+  post_watering = "weight_after", method = "ndt"
+)
 ndt <- ndt[which(ndt$pWUE > 0), ]
 ```
 
 Once again the `abrupt` group misbehaves relative to the other options. Suffice to say, most of the time this looks like an obvious reciprocal of the previous pWUE implementation. In our simulated data we see that when plants are smaller but apparently using the same amount of water (see top row with constant watering) NDT is high. This is most obvious in the exponential phenotype. Remember that how well you will be able to use NDT (any any water use phenotype) will depend entirely on how accurately you can measure transpiration.
 
 ```{r}
-ggplot(ndt[ndt$id %in% paste0("id_", 1:3) & ndt$pc != "abrupt", ],
-       aes(x = time, y = normalized_daily_transpiration, group = id)) +
-  facet_grid(wc~pc, scales = "free_y") +
+ggplot(
+  ndt[ndt$id %in% paste0("id_", 1:3) & ndt$pc != "abrupt", ],
+  aes(x = time, y = normalized_daily_transpiration, group = id)
+) +
+  facet_grid(wc ~ pc, scales = "free_y") +
   geom_line() +
   pcv_theme() +
-  theme(strip.text.x.top = element_text(size = 10),
-        strip.text.y.right = element_text(size = 10))
+  theme(
+    strip.text.x.top = element_text(size = 10),
+    strip.text.y.right = element_text(size = 10)
+  )
 ```
 
 The `abrupt` phenotype has much higher values for transpiration since we are dividing by close to 0 for a long time (in the beginning of the experiment these plants are barely detectable). This will be another caveat in real data, if there are some plants that fail to thrive then you can end up with dramatic outliers in water use phenotypes.
 
 ```{r}
-ggplot(ndt[ndt$id %in% paste0("id_", 1:3) & ndt$pc == "abrupt", ],
-       aes(x = time, y = normalized_daily_transpiration, group = id)) +
-  facet_grid(wc~pc, scales = "free_y") +
+ggplot(
+  ndt[ndt$id %in% paste0("id_", 1:3) & ndt$pc == "abrupt", ],
+  aes(x = time, y = normalized_daily_transpiration, group = id)
+) +
+  facet_grid(wc ~ pc, scales = "free_y") +
   geom_line() +
   pcv_theme() +
-  theme(strip.text.x.top = element_text(size = 10),
-        strip.text.y.right = element_text(size = 10))
+  theme(
+    strip.text.x.top = element_text(size = 10),
+    strip.text.y.right = element_text(size = 10)
+  )
 ```
 
 ## Next Steps
