@@ -41,6 +41,8 @@ navbar:
           href: articles/pcvrTutorial_agm.html
         - text: "Multi-Value Traits Tutorial"
           href: articles/pcvrTutorial_mvt.html
+        - text: "Water Derived Traits Tutorial"
+          href: articles/field_capacity.html
         - text: "Using online PlantCV Output"
           href: articles/reading_pcv_data.html
     - text: "Functions"
