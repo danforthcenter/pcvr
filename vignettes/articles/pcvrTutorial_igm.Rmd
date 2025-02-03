@@ -2,23 +2,16 @@
 title: "Intermediate Growth Modeling with `pcvr`"
 subtitle: "pcvr v1.0.0"
 author: Josh Sumner
-format:
-  revealjs:
-    standalone: true
-    self-contained: true
-    theme: [moon, ../quartoSupport/solarizedDark.scss]
-    scrollable: true
-    template-partials: 
-      - ../quartoSupport/title-slide.html
-    title-slide-attributes: 
-      data-background-image: ../quartoSupport/datascience.png
-      data-background-size: 15%
-      data-background-position: 2% 2%
-output: ioslides_presentation
+output:
+  html_document:
+    toc: true
+    toc_depth: 5
+    toc_float:
+      collapsed: no
 editor: source
 ---
 
-## Outline {.smaller}
+## Outline
 
 -   `pcvr` Goals
 -   Load Package
@@ -40,7 +33,7 @@ Currently `pcvr` aims to:
 
 There is room for goals to evolve based on feedback and scientific needs.
 
-## Load package {.smaller}
+## Load package
 
 Pre-work was to install R, Rstudio, and `pcvr` with dependencies.
 
@@ -175,7 +168,7 @@ hetPatch <- main / sigmaPlot + plot_layout(design = design)
 hetPatch
 ```
 
-## Supported Model Builders {.smaller}
+## Supported Model Builders
 
 Five model building options are supported through the `type` argument of growthSS:
 
@@ -183,13 +176,13 @@ Five model building options are supported through the `type` argument of growthS
 
 Other than `mgcv` all model builders can fit 9 types of growth models.
 
-## Supported Model Builders 2 {.smaller}
+## Supported Model Builders 2
 
 | "nls"        | "nlrq"           | "nlme"       | "mgcv"      | "brms"       |
 |--------------|------------------|--------------|-------------|--------------|
 | `stats::nls` | `quantreg::nlrq` | `nlme::nlme` | `mgcv::gam` | `brms::brms` |
 
-## type = "nls" {.smaller}
+## type = "nls"
 
 Non-linear least squares regression.
 
@@ -199,7 +192,7 @@ Non-linear least squares regression.
 | Autocorrelation    | ❌  |
 | Heteroskedasticity | ❌  |
 
-## type = "nlrq" {.smaller}
+## type = "nlrq"
 
 | Linear Regression                  | Quantile Regression              |
 |------------------------------------|----------------------------------|
@@ -210,7 +203,7 @@ Non-linear least squares regression.
 | Sensitive to outliers              | Robust to outliers               |
 | Computationally cheap              | Computationally more expensive   |
 
-## type = "nlrq" {.smaller}
+## type = "nlrq"
 
 Non-linear quantile regression.
 
@@ -220,7 +213,7 @@ Non-linear quantile regression.
 | Autocorrelation    | ❌   |
 | Heteroskedasticity | ✅   |
 
-## type = "nlme" {.smaller}
+## type = "nlme"
 
 Non-linear Mixed Effect Models
 
@@ -231,7 +224,7 @@ Non-linear Mixed Effect Models
 | Heteroskedasticity | ✅   |
 | Being a headache   | ✅   |
 
-## type = "mgcv" {.smaller}
+## type = "mgcv"
 
 General Additive Models Only
 
@@ -242,7 +235,7 @@ General Additive Models Only
 | Heteroskedasticity | ❌  |
 | Unparameterized    | ✅  |
 
-## type = "brms" {.smaller}
+## type = "brms"
 
 Bayesian hierarchical Models
 
@@ -252,13 +245,13 @@ Bayesian hierarchical Models
 | Autocorrelation    | ✅   |
 | Heteroskedasticity | ✅   |
 
-## Supported Growth Models {.smaller}
+## Supported Growth Models
 
 There are 6 main growth models supported in `pcvr`.
 
 3 are asymptotic, 3 are non-asympototic.
 
-## Supported Growth Models {.smaller}
+## Supported Growth Models
 
 ```{r}
 #| echo: false
@@ -325,7 +318,7 @@ patch6 <- (l + g + m) / (e + ln + pl)
 patch6
 ```
 
-## Supported Growth Models {.smaller}
+## Supported Growth Models
 
 There are an additional 3 sigmoidal models based on the Extreme Value Distribution. Those are Weibull, Frechet, and Gumbel. The authors generally prefer Gompertz to these options but for your data it is possible that these could be a better fit.
 
@@ -363,7 +356,7 @@ patch3 <- (w + f + gb)
 patch3
 ```
 
-## Supported Growth Models 2 {.smaller}
+## Supported Growth Models 2
 
 There are also two double sigmoid curves intended for use with recovery experiments.
 
@@ -408,7 +401,7 @@ patchD <- dl + dg + plot_layout(guides = "collect") & theme(legend.position = "b
 patchD
 ```
 
-## Supported Growth Models 3 {.smaller}
+## Supported Growth Models 3
 
 Generalized Additive Models ([GAMs](https://en.wikipedia.org/wiki/Generalized_additive_model)) are also supported.
 
@@ -448,7 +441,7 @@ ggplot(wiggles, aes(x, y)) +
   pcv_theme()
 ```
 
-## Survival Models {.smaller}
+## Survival Models
 
 Survival models can also be specified using the "survival" keyword. These models can use the "survival" or "flexsurv" backends where distributions can be specified as `model = "survival {distribution}"`.
 
@@ -550,11 +543,11 @@ ggplot(simdf, aes(
   pcv_theme()
 ```
 
-## `growthSS` - sigma {.smaller}
+## `growthSS` - sigma
 
 "nlme" and "brms" models accept a `sigma` argument. Here we will only look at nlme models as brms models are the subject of the [Advanced Growth Modeling tutorial](https://github.com/danforthcenter/pcvr/tree/main/tutorials/pcvrTutorial_advancedGrowthModeling).
 
-## `growthSS` - sigma {.smaller}
+## `growthSS` - sigma
 
 Recall the heteroskedasticity problem, shown again with our simulated data:
 
@@ -569,7 +562,7 @@ ggplot(sigma_df, aes(x = time, y = y, group = group)) +
   theme(plot.title = element_blank())
 ```
 
-## `growthSS` - sigma {.smaller}
+## `growthSS` - sigma
 
 There are lots of ways to model a trend like that we see for sigma.
 
@@ -598,7 +591,7 @@ ggplot(sigma_df, aes(x = time, y = y)) +
   )
 ```
 
-## `growthSS` - "none" sigma {.smaller}
+## `growthSS` - "none" sigma
 
 Variance can be modeled as homoskedastic by group.
 
@@ -612,7 +605,7 @@ ggplot(sigma_df, aes(x = time, y = y, group = group)) +
   theme(plot.title = element_blank(), legend.position = "bottom")
 ```
 
-## `growthSS` - "power" sigma {.smaller}
+## `growthSS` - "power" sigma
 
 Variance can be modeled using a power of the x term.
 
@@ -626,7 +619,7 @@ ggplot(sigma_df, aes(x = time, y = y, group = group)) +
   theme(plot.title = element_blank(), legend.position = "bottom")
 ```
 
-## `growthSS` - "exp" sigma {.smaller}
+## `growthSS` - "exp" sigma
 
 Variance can be modeled using a exponent of the x term.
 
@@ -640,21 +633,21 @@ ggplot(sigma_df, aes(x = time, y = y, group = group)) +
   theme(plot.title = element_blank(), legend.position = "bottom")
 ```
 
-## `growthSS` - varFunc Options {.smaller}
+## `growthSS` - varFunc Options
 
 nlme varFunc objects can also be passed to the sigma argument in growthSS.
 
 See `?nlme::varClasses` for details.
 
-## `growthSS` - start {.smaller}
+## `growthSS` - start
 
 One of the useful features in growthSS is that you do not need to specify starting values for the supported non-linear models (double sigmoid options notwithstanding).
 
-## `growthSS` - tau {.smaller}
+## `growthSS` - tau
 
 Finally, with mode="nlrq" the tau argument takes one or more quantiles to fit a model for. By default this is 0.5, corresponding to the median.
 
-## `growthSS` - nls {.smaller}
+## `growthSS` - nls
 
 ```{r}
 #| echo: true
@@ -666,7 +659,7 @@ nls_ss <- growthSS(
 lapply(nls_ss, class)
 ```
 
-## `growthSS` - nlrq {.smaller}
+## `growthSS` - nlrq
 
 ```{r}
 #| echo: true
@@ -679,7 +672,7 @@ nlrq_ss <- growthSS(
 lapply(nls_ss, class)
 ```
 
-## `growthSS` - nlme {.smaller}
+## `growthSS` - nlme
 
 ```{r}
 #| echo: true
@@ -692,7 +685,7 @@ names(nlme_ss)
 names(nlme_ss$formula)
 ```
 
-## `growthSS` - mgcv {.smaller}
+## `growthSS` - mgcv
 
 ```{r}
 #| echo: true
@@ -704,7 +697,7 @@ mgcv_ss <- growthSS(
 lapply(mgcv_ss, class)
 ```
 
-## `growthSS` - survival models {.smaller}
+## `growthSS` - survival models
 
 ```{r}
 #| echo: true
@@ -717,7 +710,7 @@ surv_ss <- growthSS(
 lapply(surv_ss, class)
 ```
 
-## `growthSS` - survival models {.smaller}
+## `growthSS` - survival models
 
 ```{r}
 #| echo: true

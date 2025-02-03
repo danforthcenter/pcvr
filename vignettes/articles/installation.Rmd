@@ -1,11 +1,12 @@
 ---
 title: "Installation"
 subtitle: "pcvr v1.0.0"
-format:
-  html:
-    embed-resources: true
-    self-contained: true
-output: ioslides_presentation
+output:
+  html_document:
+    toc: true
+    toc_depth: 5
+    toc_float:
+      collapsed: no
 editor: source
 ---
 

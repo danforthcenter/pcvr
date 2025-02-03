@@ -2,19 +2,12 @@
 title: "Considerations when using `PlantCV` data in `pcvr`"
 subtitle: "pcvr v1.1.0.0"
 author: Josh Sumner
-format:
-  revealjs:
-    standalone: true
-    self-contained: true
-    theme: [moon, ../quartoSupport/solarizedDark.scss]
-    scrollable: true
-    template-partials: 
-      - ../quartoSupport/title-slide.html
-    title-slide-attributes: 
-      data-background-image: ../quartoSupport/datascience.png
-      data-background-size: 15%
-      data-background-position: 2% 2%
-output: ioslides_presentation
+output:
+  html_document:
+    toc: true
+    toc_depth: 5
+    toc_float:
+      collapsed: no
 editor: source
 ---
 

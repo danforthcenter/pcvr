@@ -2,21 +2,16 @@
 title: "Bayesian Conjugacy"
 subtitle: "pcvr v1.0.0"
 author: Josh Sumner
-format:
-  revealjs:
-    standalone: true
-    self-contained: true
-    theme: [moon, ../quartoSupport/solarizedDark.scss]
-    scrollable: true
-    title-slide-attributes: 
-      data-background-image: ../quartoSupport/datascience.png
-      data-background-size: 15%
-      data-background-position: 2% 2%
-output: ioslides_presentation
+output:
+  html_document:
+    toc: true
+    toc_depth: 5
+    toc_float:
+      collapsed: no
 editor: source
 ---
 
-## Outline {.smaller}
+## Outline
 
 -   `pcvr` Goals
 -   Load Package
@@ -28,7 +23,7 @@ editor: source
 -   `pcvr::conjugate` arguments
 -   Reading `conjugate` output
 
-## `pcvr` Goals {.smaller}
+## `pcvr` Goals
 
 Currently `pcvr` aims to:
 
@@ -37,7 +32,7 @@ Currently `pcvr` aims to:
 
 There is room for goals to evolve based on feedback and scientific needs.
 
-## Load package {.smaller}
+## Load package
 
 Pre-work was to install R, Rstudio, and `pcvr`.
 
@@ -60,11 +55,11 @@ library(patchwork)
 library(extraDistr)
 ```
 
-## Bayesian Statistics Intro {.smaller}
+## Bayesian Statistics Intro
 
 Talk about probability, compare to frequentist, introduce theorem.
 
-## Bayesian Statistics Intro {.smaller}
+## Bayesian Statistics Intro
 
 ||Frequentist|Bayesian|
 |---|---|---|
@@ -72,13 +67,13 @@ Talk about probability, compare to frequentist, introduce theorem.
 |Random| [Observed Data]{style="color:purple;"} | [True Effect]{style="color:goldenrod;"} |
 |Interpretation| P[Data \| No Effect] | P[Hypothesis \| Observed Data] |
 
-## Bayesian Conjugacy Theory {.smaller}
+## Bayesian Conjugacy Theory
 
 \begin{equation}
 P(\theta|(x_1, \ldots, x_i)) = \frac{\pi(\theta) \cdot L(\theta|(x_1, \ldots, x_i))}{\int \pi(\theta) \cdot L(\theta|(x_1, \ldots, x_i))~d\theta}
 \end{equation}
 
-## Bayesian Conjugacy Theory {.smaller}
+## Bayesian Conjugacy Theory
 
 \begin{equation}
 P(\theta|(x_1, \ldots, x_i)) = \frac{\pi(\theta) \cdot L(\theta|(x_1, \ldots, x_i))}{\int \pi(\theta) \cdot L(\theta|(x_1, \ldots, x_i))~d\theta}
@@ -93,7 +88,7 @@ P(\theta|(x_1, \ldots, x_i)) = \frac{\pi(\theta) \cdot L(\theta|(x_1, \ldots, x_
 [$\int \pi(\theta) \cdot L(\theta|(x_1, \ldots, x_i))~d\theta$]{style="color:DarkRed;"} = Marginal Distribution (this is the problem area)
 
 
-## [$\int \pi(\theta) \cdot L(\theta|(x_1, \ldots, x_i))~d\theta$]{style="color:DarkRed;"} {.smaller}
+## [$\int \pi(\theta) \cdot L(\theta|(x_1, \ldots, x_i))~d\theta$]{style="color:DarkRed;"}
 
 Solving this integral is potentially a very difficult problem.
 
@@ -102,7 +97,7 @@ Historically there have been two answers:
 - Find pairs of likelihood functions and Priors that integrate easily
 - Numerical Methods
 
-## [$\int \pi(\theta) \cdot L(\theta|(x_1, \ldots, x_i))~d\theta$]{style="color:DarkRed;"} {.smaller}
+## [$\int \pi(\theta) \cdot L(\theta|(x_1, \ldots, x_i))~d\theta$]{style="color:DarkRed;"}
 
 Solving this integral is potentially a very difficult problem.
 
@@ -111,21 +106,21 @@ Historically there have been two answers:
 - Find pairs of likelihood functions and Priors that integrate easily ([these are the conjugate priors]{style="color:goldenrod;"})
 - Numerical Methods (Powerful computers making numeric approximations via MCMC, see advanced growth modeling tutorial)
 
-## Verb Conjugation {.smaller}
+## Verb Conjugation
 
 This may all still seem abstract, so we'll try to clear it up with two examples.
 
 <img src="tobe.png" width="325" height="200" />
 
-## Verb Conjugation {.smaller}
+## Verb Conjugation
 
 <img src="tobe2.png" width="600" height="500" />
 
-## Verb Conjugation {.smaller}
+## Verb Conjugation
 
 <img src="tobe3.png" width="700" height="600" />
 
-## Bayesian Beta-Binomial Conjugacy {.smaller}
+## Bayesian Beta-Binomial Conjugacy
 
 In the previous example we updated a fundamental verb with context.
 
@@ -141,7 +136,7 @@ Beta(\alpha', \beta' |(x_1, \ldots, x_n)) = Beta(\alpha, \beta) \cdot L(\alpha, 
 \beta` = \beta + \Sigma(\text{Failures} \in x)
 \end{equation}
 
-## Bayesian Beta-Binomial Conjugacy {.smaller}
+## Bayesian Beta-Binomial Conjugacy
 
 ```{r}
 #| echo: false
@@ -256,7 +251,7 @@ conjugacy_ex_beta_binom <- beta_binom_dist_plot / beta_dist_plot +
   plot_layout(design = layout, guides = "collect")
 ```
 
-## Bayesian Beta-Binomial Conjugacy {.smaller}
+## Bayesian Beta-Binomial Conjugacy
 
 ```{r}
 #| echo: false
@@ -264,7 +259,7 @@ conjugacy_ex_beta_binom <- beta_binom_dist_plot / beta_dist_plot +
 conjugacy_ex_beta_binom
 ```
 
-## Bayesian Beta-Binomial Conjugacy {.smaller}
+## Bayesian Beta-Binomial Conjugacy
 
 Generally we can think of conjugacy as when we know the distribution of a parameter in another distribution.
 
@@ -276,13 +271,13 @@ conjugacy_ex_beta_binom
 
 
 
-## `pcvr::conjugate` {.smaller}
+## `pcvr::conjugate`
 
 In `pcvr` 11 distributions are supported in the `conjugate` function.
 
 We'll go over those distributions, what they tend to represent, how they are updated, and what the common alternative tests would be for that kind of data.
 
-## `pcvr::conjugate` {.smaller}
+## `pcvr::conjugate`
 
 | Distribution | Data | Updating | Common Option |
 |-----------------|-----------------|-----------------|----------------------|
@@ -302,7 +297,7 @@ We'll go over those distributions, what they tend to represent, how they are upd
 | Exponential | Right Skew | $Rate \sim \Gamma(A, B)$ | Wilcox/glm |
 
 
-## `pcvr::conjugate` {.smaller}
+## `pcvr::conjugate`
 
 ```{r}
 #| echo: false
@@ -510,7 +505,7 @@ conjugate_patch <- (p1 + p2 + p3 + p4 + p5 + p6 + p7 + p8 + p9 + p10 + p11 + p12
 conjugate_patch
 ```
 
-## `pcvr::conjugate` arguments {.smaller}
+## `pcvr::conjugate` arguments
 
 `conjugate` takes one or two sets of SV (numeric) or MV (matrix/df) data. Alternatively this can be a formula and a dataframe, similar to `stats::t.test`.
 
@@ -536,7 +531,7 @@ pcvr::conjugate(
 )
 ```
 
-## `pcvr::conjugate` arguments {.smaller}
+## `pcvr::conjugate` arguments
 
 The `method` argument specifies the distribution to be used. See `?conjugate` for further details.
 
@@ -562,7 +557,7 @@ pcvr::conjugate(
 )
 ```
 
-## `pcvr::conjugate` arguments {.smaller}
+## `pcvr::conjugate` arguments
 
 The `priors` argument allows you to specify the prior distribution. If left NULL then default priors will be used
 
@@ -588,7 +583,7 @@ pcvr::conjugate(
 )
 ```
 
-## `pcvr::conjugate` default priors {.smaller}
+## `pcvr::conjugate` default priors
 
 ```{r}
 #| echo: false
@@ -780,7 +775,7 @@ default_priors_patch <- (p1 + p2 + p3 + p4 + p5 + p6 + p7 + p8 + p9 + p10 + p11 
 default_priors_patch
 ```
 
-## `pcvr::conjugate` arguments {.smaller}
+## `pcvr::conjugate` arguments
 
 The `plot` argument controls whether or not a ggplot is made of the results. See later examples.
 
@@ -806,7 +801,7 @@ pcvr::conjugate(
 )
 ```
 
-## `pcvr::conjugate` arguments {.smaller}
+## `pcvr::conjugate` arguments
 
 The `rope_range` and `rope_ci` arguments allow region-of-practical-equivalence (ROPE) testing using the difference in the posterior distributions if two samples are given.
 
@@ -833,7 +828,7 @@ pcvr::conjugate(
 ```
 
 
-## `pcvr::conjugate` arguments {.smaller}
+## `pcvr::conjugate` arguments
 
 `cred.int.level` controls the credible intervals that are calculated on the posterior distributions. The default of 89\% is arbitrary.
 
@@ -859,7 +854,7 @@ pcvr::conjugate(
 )
 ```
 
-## `pcvr::conjugate` arguments {.smaller}
+## `pcvr::conjugate` arguments
 
 The `hypothesis` argument sets which hypothesis is tested out of "greater", "lesser", "equal" and "unequal". These are read as "s1 equal to s2", etc.
 
@@ -885,7 +880,7 @@ pcvr::conjugate(
 )
 ```
 
-## `pcvr::conjugate` arguments {.smaller}
+## `pcvr::conjugate` arguments
 
 The `support` argument optionally lets you set the support range for the distribution. In practice this exists for internal use and is not something you would generally want to set.
 
@@ -911,7 +906,7 @@ pcvr::conjugate(
 )
 ```
 
-## Reading `conjugate` output {.smaller}
+## Reading `conjugate` output
 
 Lastly we'll show a few interpretations of `conjugate` output in the plant phenotyping context.
 
@@ -920,7 +915,7 @@ Lastly we'll show a few interpretations of `conjugate` output in the plant pheno
 - Leaf Counts
 - Hue
 
-## Germination Rates {.smaller}
+## Germination Rates
 
 Germination Rates (or other binary outocmes like flowering or death) can make good sense as Beta-Binomial data.
 
@@ -941,7 +936,7 @@ ggplot(df, aes(x = y, fill = geno)) +
   theme(legend.position = "none")
 ```
 
-## Germination Rates {.smaller}
+## Germination Rates
 
 ```{r}
 #| echo: true
@@ -958,7 +953,7 @@ res <- conjugate(
 res$plot
 ```
 
-## Germination Rates {.smaller}
+## Germination Rates
 
 Here we'd simply conclude that there is about a 19\% chance that the germination rate is the same between these two genotypes after 1 week. We could do more with ROPE testing, but we'll do that in the next example.
 
@@ -967,7 +962,7 @@ Here we'd simply conclude that there is about a 19\% chance that the germination
 res$plot
 ```
 
-## Area {.smaller}
+## Area
 
 Lots of phenotypes are gaussian and `conjugate` can be used similarly to a T-test with the "t" method. Consider area data that looks like this example.
 
@@ -987,7 +982,7 @@ ggplot(df, aes(x = geno, y = y, fill = geno)) +
   theme(legend.position = "none")
 ```
 
-## Area {.smaller}
+## Area
 
 Here we include a ROPE test corresponding to our belief that any difference in Area of $\pm2 cm^2$ is biologically insignificant. We also show the formula syntax and use non-default priors here (since default priors include negative values which can't happen with area).
 
@@ -1008,7 +1003,7 @@ res <- conjugate(
 res$plot
 ```
 
-## Area {.smaller}
+## Area
 
 Our plot shows about a 83\% chance that these distributions are unequal and a 24\% chance that the difference in means is within $\pm2 cm^2$.
 
@@ -1017,7 +1012,7 @@ Our plot shows about a 83\% chance that these distributions are unequal and a 24
 res$plot
 ```
 
-## Area {.smaller}
+## Area
 
 The other aspects of the output are a summary and the posterior parameters.
 
@@ -1035,7 +1030,7 @@ The summary is a data.frame with a summary of the information in the plot.
 res$summary
 ```
 
-## Area {.smaller}
+## Area
 
 The other aspects of the output are a summary and the posterior parameters.
 
@@ -1051,7 +1046,7 @@ The posterior is the prior list updated with the given data, this allows for Bay
 do.call(rbind, res$posterior)
 ```
 
-## Leaf Counts {.smaller}
+## Leaf Counts
 
 There are also several phenotypes that are counts. Numbers of vertices, leaves, flowers, etc could all be used with one of the count distributions. Here we consider Poisson distributed leaf counts between two genotypes.
 
@@ -1071,7 +1066,7 @@ ggplot(df, aes(x = geno, y = y, fill = geno)) +
   theme(legend.position = "none")
 ```
 
-## Leaf Counts {.smaller}
+## Leaf Counts
 
 Here we model $X \sim Poisson(\lambda)\\ \lambda \sim \Gamma(A, B)$
 
@@ -1092,7 +1087,7 @@ res <- conjugate(
 res$plot
 ```
 
-## Leaf Counts {.smaller}
+## Leaf Counts
 
 We can comfortably say that the difference in the posteriors is not in [-1, 1] and there is a 91\% chance that the Gamma distributions for $\lambda$ are different.
 
@@ -1101,7 +1096,7 @@ We can comfortably say that the difference in the posteriors is not in [-1, 1] a
 res$plot
 ```
 
-## Hue {.smaller}
+## Hue
 
 Finally, we'll show an example using what is likely the least-familiar distribution in `conjugate`, the Von-Mises distribution.
 
@@ -1126,7 +1121,7 @@ ggplot(df, aes(x = y, fill = geno)) +
   theme(legend.position = "none")
 ```
 
-## Hue {.smaller}
+## Hue
 
 Note this is a very exaggerated example for the plant phenotyping setting since green happens to be in the middle of the hue circle, which wraps in the red colors.
 
@@ -1142,7 +1137,7 @@ ggplot(df, aes(x = geno, y = y, fill = geno)) +
   theme(legend.position = "none")
 ```
 
-## Hue {.smaller}
+## Hue
 
 ```{r}
 #| echo: true
@@ -1158,7 +1153,7 @@ res <- conjugate(
 res$plot
 ```
 
-## Hue {.smaller}
+## Hue
 
 Here our distributions are very similar and there is about a 79\% chance that their parameters are the same given this data and our (very wide) priors.
 
@@ -1168,7 +1163,7 @@ Note that if you use data in a different `boundary` space than radians the `rope
 res$plot
 ```
 
-## Conclusion {.smaller}
+## Conclusion
 
 Hopefully this has been a useful introduction to Bayesian conjugacy.
 

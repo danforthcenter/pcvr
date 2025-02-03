@@ -2,23 +2,16 @@
 title: "Multi Value Trait Analysis with `pcvr`"
 subtitle: "pcvr v1.0.0"
 author: Josh Sumner
-format:
-  revealjs:
-    standalone: true
-    self-contained: true
-    theme: [moon, ../quartoSupport/solarizedDark.scss]
-    scrollable: true
-    template-partials: 
-      - ../quartoSupport/title-slide.html
-    title-slide-attributes: 
-      data-background-image: ../quartoSupport/datascience.png
-      data-background-size: 15%
-      data-background-position: 2% 2%
-output: ioslides_presentation
+output:
+  html_document:
+    toc: true
+    toc_depth: 5
+    toc_float:
+      collapsed: no
 editor: source
 ---
 
-## Outline {.smaller}
+## Outline
 
 -   `pcvr` Goals
 -   Load Package
@@ -40,7 +33,7 @@ Currently `pcvr` aims to:
 
 There is room for goals to evolve based on feedback and scientific needs.
 
-## Load package {.smaller}
+## Load package
 
 Pre-work was to install R, Rstudio, and `pcvr` with dependencies.
 
@@ -59,19 +52,19 @@ library(ggplot2)
 library(patchwork)
 ```
 
-## What are multi-value traits? {.smaller}
+## What are multi-value traits?
 
 Sometimes a single value cannot describe a phenotype adequately.
 
 ![](segImage2.png)
 
-## What are multi-value traits? {.smaller}
+## What are multi-value traits?
 
 Here our segmentation easily shows area, height, and other numeric phenotypes. To describe the color of this plant then we need a more complex phenotype.
 
 ![](segImage2.png)
 
-## What are multi-value traits? {.smaller}
+## What are multi-value traits?
 
 There are many ways to describe color, many wavelengths to measure color in, and many indices that can be calculated from those wavelengths.
 
@@ -79,7 +72,7 @@ Since each pixel has a color we describe the entire image using a histogram of t
 
 ![Wikipedia HSV Color Space](HSV_color_solid_cylinder_saturation_gray.png)
 
-## Multi value trait format {.smaller}
+## Multi value trait format
 
 PlantCV returns multi-value traits as histograms in long format
 
@@ -106,7 +99,7 @@ structure(list(sample = c(
 )), row.names = 3641:3655, class = "data.frame")
 ```
 
-## Multi value trait format {.smaller}
+## Multi value trait format
 
 In `pcvr` you can choose to read multi value traits in wide format with `mode="wide"` in `read.pcv`.
 
@@ -130,14 +123,14 @@ structure(list(hue_frequencies.45 = c(
 
 Either option will work for most `pcvr` functions.
 
-## Functions for multi-value trait analysis {.smaller}
+## Functions for multi-value trait analysis
 
 -   `pcv.joyplot`
 -   `pcv.emd`
 -   `pcv.net`
 -   `conjugate`
 
-## Simulated data {.smaller}
+## Simulated data
 
 ```{r}
 set.seed(123)
@@ -181,7 +174,7 @@ Here we simulate wide data, then lengthen it for plotting.
 sim_plot
 ```
 
-## `pcv.joyplot` {.smaller}
+## `pcv.joyplot`
 
 We can make joyplots and using `pcv.joyplot`
 
@@ -191,7 +184,7 @@ We can make joyplots and using `pcv.joyplot`
 (p <- pcv.joyplot(sim_df, index = "sim", group = c("group")))
 ```
 
-## `pcv.joyplot` {.smaller}
+## `pcv.joyplot`
 
 The plot output is a `ggplot` object so we can change it to match our needs. Here we show these distributions as if they are hues.
 
@@ -201,13 +194,13 @@ p + scale_fill_gradientn(colors = scales::hue_pal(l = 55)(360))
 ```
 
 
-## `pcv.emd` {.smaller}
+## `pcv.emd`
 
 Sometimes the multi-value trait histograms will not follow a unimodal distribution, or other aspects of what kind of test to use will be unclear.
 
 For those situations one option is to use earth mover's distance.
 
-## Earth Mover's Distance {.smaller}
+## Earth Mover's Distance
 
 EMD measures the amount of work needed to change one histogram into another.
 
@@ -251,7 +244,7 @@ p2 <- ggplot(df[df$y == "original", ], aes(x = x)) +
 p1 + p2
 ```
 
-## `pcv.emd` {.smaller}
+## `pcv.emd`
 
 Here we use the wide data (although long can also be used).
 
@@ -269,7 +262,7 @@ sim_emd <- pcv.emd(
 )
 ```
 
-## `pcv.emd` {.smaller}
+## `pcv.emd`
 
 Looking at the plot we can see that there are obvious differences between groups in our data.
 
@@ -277,7 +270,7 @@ Looking at the plot we can see that there are obvious differences between groups
 sim_emd$plot
 ```
 
-## `pcv.net` {.smaller}
+## `pcv.net`
 
 With non-matrix `pcv.emd` output we can make a network to better understand the color similarities in our data. Here we include a numeric filter which removes edges with an EMD below that value.
 
@@ -290,7 +283,7 @@ n <- pcv.net(sim_emd$data, filter = 0.5)
 lapply(n, class)
 ```
 
-## `net.plot` {.smaller}
+## `net.plot`
 
 Now we can visualize our network using `net.plot`.
 
@@ -305,7 +298,7 @@ net1 <- net.plot(n, fill = "group") +
   ))
 ```
 
-## `net.plot` {.smaller}
+## `net.plot`
 
 Our results show very clear clustering and highlight that the uniform distribution is most dissimilar to the others since it is excluded entirely. We can make another network to include it.
 
@@ -313,7 +306,7 @@ Our results show very clear clustering and highlight that the uniform distributi
 net1
 ```
 
-## `pcv.net` {.smaller}
+## `pcv.net`
 
 Here we specify our filter as a character, which is interpreted as a quantile here keeping only edges that are above median strength.
 
@@ -329,7 +322,7 @@ net2 <- net.plot(n, fill = "group") +
   )
 ```
 
-## `pcv.net` {.smaller}
+## `pcv.net`
 
 Now we can see the full layout of our five distributions.
 
