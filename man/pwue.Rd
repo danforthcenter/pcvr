@@ -86,6 +86,7 @@ df <- data.frame(
 ex <- pwue(df, time = "time", method = "rate")
 w <- df[, c("time", "weight_before", "weight_after", "barcode")]
 ex2 <- pwue(df, w, time = c("time", "time"), method = "abs")
+ex3 <- pwue(df, w, time = c("time", "time"), method = "ndt")
 
 }
 \keyword{WUE}
