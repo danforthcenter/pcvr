@@ -62,10 +62,6 @@ nlmePlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, face
   df <- parsed_form$data
   df[[paste(group, collapse = ".")]] <- interaction(df[, group])
   group <- paste(group, collapse = ".")
-  #* `filter by groups if groups != NULL`
-  if (!is.null(groups)) {
-    df <- df[df[[group]] %in% paste(groups, collapse = "."), ]
-  }
   intVar <- paste0(group, individual)
   #* `make new data if timerange is not NULL`
   if (!is.null(timeRange)) {
@@ -80,6 +76,11 @@ nlmePlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, face
   }
   preds <- new_data
   preds$trendline <- round(predict(fit, preds), 4)
+  #* `filter by groups if groups != NULL`
+  #* has to happen after predictions to avoid nlme errors in model matrix
+  if (!is.null(groups)) {
+    preds <- preds[preds[[group]] %in% paste(groups, collapse = "."), ]
+  }
   preds <- preds[!duplicated(preds$trendline), ]
   preds <- .add_sigma_bounds(preds, fit, x, group)
   #* `plot`

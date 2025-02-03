@@ -33,7 +33,7 @@ styler::style_dir(path = "~/pcvr/tutorials", scope = "tokens")
 
 
 if(FALSE){
-  file = "~/pcvr/R/brmPlot.R" # nlsPlot.R 
+  file = "~/pcvr/vignettes/articles/field_capacity.Rmd" # nlsPlot.R 
   styler::style_file(file, scope = "line_breaks")
   lintr::lint(file, linters = lintr::linters_with_defaults(lintr::line_length_linter(length = 105L),
                                                            lintr::object_name_linter(styles = c("snake_case", "symbols",
