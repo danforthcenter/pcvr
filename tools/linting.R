@@ -8,6 +8,7 @@ x <- lintr::lint_package(path = "~/pcvr",
                                                     object_name_linter(styles = c("snake_case", "symbols",
                                                                                   "camelCase", "dotted.case",
                                                                                   "lowercase", "UPPERCASE")),
+                                                    return_linter(return_style = "explicit"),
                                                     brace_linter(allow_single_line = TRUE)
                     ))
 x
@@ -24,6 +25,7 @@ x <- lintr::lint(filename = "~/pcvr/R/brmPlot.R",
                                                          object_name_linter(styles = c("snake_case", "symbols",
                                                                                        "camelCase", "dotted.case",
                                                                                        "lowercase", "UPPERCASE")),
+                                                         return_linter(return_style = "explicit"),
                                                          brace_linter(allow_single_line = TRUE)
                          ))
 x
@@ -39,6 +41,7 @@ if(FALSE){
                                                            lintr::object_name_linter(styles = c("snake_case", "symbols",
                                                                                                 "camelCase", "dotted.case",
                                                                                                 "lowercase", "UPPERCASE")),
+                                                           lintr::return_linter(return_style = "explicit"),
                                                            lintr::brace_linter(allow_single_line = TRUE)
   ))
   #* or for tokens
