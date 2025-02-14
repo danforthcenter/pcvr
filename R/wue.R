@@ -54,9 +54,10 @@
 #'   area_pixels = round(130 / (1 + exp( (12 - seq_along(weight_before))/3) ), 0),
 #'   weight_before,
 #'   weight_after,
-#'   barcode = 1
+#'   barcode = 1,
+#'   other = "x"
 #' )
-#' ex <- pwue(df, time = "time", method = "rate")
+#' ex <- pwue(df, time = "time", method = "rate", id = c("barcode", "other"))
 #' w <- df[, c("time", "weight_before", "weight_after", "barcode")]
 #' ex2 <- pwue(df, w, time = c("time", "time"), method = "abs")
 #' ex3 <- pwue(df, w, time = c("time", "time"), method = "ndt")
@@ -74,9 +75,6 @@ pwue <- function(df, w = NULL, pheno = "area_pixels", time = "timestamp", id = "
   }
   if (is.null(w)) {
     w <- df[, c(time2, id, pre_watering, post_watering)]
-  }
-  if (!time1 %in% colnames(df) || !time2 %in% colnames(w)) {
-    stop(paste0(paste0(time, collapse = ", "), " must be in colnames of df and w"))
   }
   if (length(id) > 1) {
     df$temporary_pwue_id_column <- interaction(df[, c(id)])
@@ -105,8 +103,8 @@ pwue <- function(df, w = NULL, pheno = "area_pixels", time = "timestamp", id = "
 
 .rateWUE <- function(ids, w, df, offset, time1, time2, pheno, id, pre_watering, post_watering) {
   out <- do.call(rbind, lapply(ids, function(iter_id) { # per id...
-    w_i <- w[iter_id]
-    df_i <- df[iter_id]
+    w_i <- w[.(iter_id)]
+    df_i <- df[.(iter_id)]
     #* reorder watering and pheno data
     w_i <- data.table::setorderv(w_i, cols = c(time2))
     df_i <- data.table::setorderv(df_i, cols = c(time1))
@@ -169,8 +167,8 @@ pwue <- function(df, w = NULL, pheno = "area_pixels", time = "timestamp", id = "
 
 .absWUE <- function(ids, w, df, offset, time1, time2, pheno, id, pre_watering, post_watering) {
   out <- do.call(rbind, lapply(ids, function(iter_id) { # per id...
-    w_i <- w[iter_id]
-    df_i <- df[iter_id]
+    w_i <- w[.(iter_id)]
+    df_i <- df[.(iter_id)]
     #* reorder watering and pheno data
     w_i <- data.table::setorderv(w_i, cols = c(time2))
     df_i <- data.table::setorderv(df_i, cols = c(time1))
