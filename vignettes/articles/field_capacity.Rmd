@@ -1,7 +1,7 @@
 ---
 title: "Water data"
 subtitle: "pcvr v1.1.1.1"
-author: Josh Sumner
+author: Josh Sumner, Katie Murphy
 output:
   html_document:
     toc: true
@@ -12,27 +12,26 @@ editor: source
 ---
 
 ```{r}
-setwd("~/pcvr") # note, working on field_capacity branch
+library(pcvr)
 library(ggplot2)
 library(patchwork)
 library(devtools)
-load_all() # CHANGE FOR RELEASE
 ```
 
 
 ## Outline
 
-- why you'd work with water data
-- overview of WUE vs pWUE
-- information from the ditech presentation (vpd, etc)
-- reading in water data
-- water diagnostic plots
-  - annotating water diagnostic plots
-- Pwue
+- Why water use data is important for plant science. 
+- Overview of WUE vs pWUE
+- Relevant equations. 
+- Reading in water data
+- Water diagnostic plots
+  - Annotating water diagnostic plots
+- pWUE calculations and plotting
   - rate
   - abs
   - normalized_daily_transpiration
-- plug for hierarchical models
+- How to make hierarchical models
 
 ## Why water data?
 
@@ -43,57 +42,67 @@ load_all() # CHANGE FOR RELEASE
 
 ## How does a plant use water?
 
-The "Pull Theory" says that water moves through a plant based on pressure differentials.
+Plant water use is controlled by a complex combination of physics, plant physiology, anatomy, and morphology. 
 
-- 1: Water enters the plant through roots (note many root traits will affect how this happens).
-- 2: Water travels through the xylem (channels along plant tissue).
-- 3: Water is prepared for stomatal exit (stomata are small pores mostly along the underside of leaves).
-- 4: Water *Transpires* to the leaf surface (similar to us sweating).
--- Water that has transpired to the surface will then evaporate, but the rate of evaporation depends on *Boundary Layer Conductance*.
+Here's a brief overview of the "pull theory" of how plants uptake water from the soil: 
+
+- 1: Differences in pressure are a driving force in water movement (lower pressure at the leaf surface and higher pressure in the soil).
+- 2: Water enters the plant through roots (note many root traits will affect how this happens).
+- 3: Water travels through the xylem (channels along plant tissue) due to capillary action (hydrogen bonds). 
+- 4: Water *Transpires* (aka evaporates) from plant leaves through stomata (stomata are small pores mostly along the underside of leaves). This process is similar to us sweating. 
+-- The rate of transpiration depends on *Boundary Layer Conductance*.
 --- Boundary Layer Conductance (BLC) is a measure of how easily gas exchange happens in a small "boundary layer" around the plant.
---- BLC is changed by qualities such as leaf shape and angle (think about facing the sun or standing at an angle) as well as phenotypes we don't generally measure with image data such as trichome (small hairs on leaf surface) length and density (think trapping humidity in your hair).
---- Evaporation is also dependent on environmental conditions such as ambient temperature, wind speed, atmospheric pressure, light intensity, soil type, soil moisture content, etc.
---- *Vapor Pressure Deficit* (VPD) is another important quantity for evaporation and transpiration. VPD is the difference in the amount of water in the air vs the amount of water the air can hold at the given temperature. Since warmer air can hold more water VPD is higher on a hot day even when relative humidity is held constant, this is an important consideration for experimental design particularly in growth chambers.
+--- BLC is changed by qualities such as leaf shape and angle (think about facing the sun or standing at an angle) as well as trichome (small hairs on leaf surface) length and density (think trapping humidity in your hair).
+-- Transpiration is also depends on stomatal conductance, a combination of how many stomata there are and how open they are. 
+-- Transpiration is also dependent on environmental conditions such as ambient temperature, wind speed, atmospheric pressure, light intensity, soil type, soil moisture content, etc.
+--- *Vapor Pressure Deficit* (VPD) is another important variable for transpiration, and is related to air temperature and humidity. VPD is the difference in the amount of water in the air vs the amount of water the air can hold at the given temperature. Since warmer air can hold more water VPD is higher on a hot day even when relative humidity is held constant, this is an important consideration for experimental design particularly in growth chambers.
 
-Transpiration has to be balanced carefully by a plant since the plant is using water both to build new biomass and to cool off.
+Transpiration has to be balanced carefully by a plant since the plant is using water both to build new biomass and to cool off; this is not a 1:1 trade-off, and is dependent on all the variables described above. 
 
 There can be secondary consequences to increased transpiration depending on the experimental design and what you are measuring, for instance:
-- Higher transpiration means higher Transport of nutrients into the plant from soil.
-- Higher transpiration means faster transport of metabolites in the plant.
+- Higher transpiration means higher transport of nutrients into the plant from soil.
+- Higher transpiration means more transport of xylem-mobile metabolites in the plant.
 - Higher transpiration reduces leaf temperature.
-- Higher transpiration allows for easier pathogen infection via open stomata.
-- Water pH and salt content affect uptake and the plant cells.
+- Open stomata (more transpiration) may provide an avenue for pathogen infection.
+- Water pH and salt content affect uptake and the plant health. 
 
 
 ## Field Capacity
 
 ### What is field capacity
 
-Field capacity is the amount of water held in soil after excess water has been able to drain and the rate of macropore drainage (water seeping deeper into the ground) approaches 0. Field capacity depends on numerous factors and should not be considered a constant for a given soil type, but it can be useful as a measure of water capacity.
+Field capacity is the amount of water held in soil after excess water has been able to drain and the rate of macropore drainage (water seeping deeper into the ground) approaches 0. Field capacity depends on numerous factors and is dependent on soil type. It is a useful measure of soil water capacity. 
 
 
 ### Why do we care about field capacity
 
-Field capacity matters for many types of phenotyping experiments because it's used to set target weights for watering. Particularly in a system like the Lemnatech where a cart has a plant in a pot and the normal watering scheme is to add water until the entire apparatus weighs a certain amount. Knowing field capacity can also let us evaluate whether or not plants are actually reaching landmarks we care about for drought stress as measured by soil water content.
+Field capacity matters for many types of phenotyping experiments because it's used to set target weights for watering. Many systems use a target field capacity to select the target pot weight, which determines how much water weight should be added to reach the target field capacity. Knowing field capacity can also let us evaluate whether or not plants are actually reaching landmarks we care about for drought stress as measured by soil water content.
 
 ### Field capacity equations
 
-- **CS**: Weight of carriage + saucer = 345 g
-- **DW**: Weight of dry pot (pot + soil) = varies by experiment, will be provided by Leo (one number for the whole experiment)
-- **SW**: Weight of saturated pot (pot + soaked soil) = varies by experiment, will be provided by Leo (one number for the whole experiment)
+- Constants in an experiment: 
+- Reminder: 1 g of water = 1 mL of water
+- **CSW**: Weight of carriage + saucer = 345 g
+- **DW**: Weight of dry pot (pot + dry soil) = varies by experiment, will be provided by Core Facility (one number for the whole experiment, which is an average of sample pots)
+- **SW**: Weight of saturated pot (pot + soaked soil) = varies by experiment, will be provided by Core Facility (one number for the whole experiment, which is an average of sample pots)
 - **Saturated Water Volume**: SW - DW
-- **Current water content** = current weight - CS - DW
-- **Current field capacity (%)** = current water content / saturated water volume x 100
-- **Target field capacity (%)** = provided by Leo, varies by day and experiment
+- **Target field capacity (%)** = water content / saturated water volume x 100 = varies by experiment, timepoint, and treatment, will be provided by Core Facility (number provided per pot)
 
+- Measured daily (or more frequently) in an experiment:
+- **Current water content** = current weight - CSW - DW
+- **Current field capacity (%)** = current water content / saturated water volume x 100
 
 ## Measuring water use
 
-Measuring water use can be difficult. Broadly we can either measure water vapor released from the plant or measure the amount of water removed from the soil. Measuring gasses tends to be more difficult, so we tend to focus on weight changes to the pot.
+Measuring water use can be difficult. Broadly, we can either measure water vapor released from the plant or measure the amount of water removed from the soil. Here we focus on weight changes to the pot.
 
-Measuring water use via weight changes in a planted pot has some caveats. First, we have to assume that there is a period of neglibible transpiration (we tend to assume that when lights are off and stomata are closed at night no water is transpired). Second, we have to assume that the only way that water is lost from the pot is via transpiration through the plant.
+Measuring water use via weight changes in a pot has some caveats. 
+Assumptions: 
+- Sometimes we assume there is negligible transpiration at night (when lights are off, stomata are closed); this is used for DiTech calculations, but not Bellwether.
+- We assume the only way that water is lost from the pot is via transpiration through the plant, and not via evaporation from the soil. 
+- Sometimes we ignore the plant growth in calculating the amount of water used each day as the change in weight over time; this is used for Bellwether, but not DiTech. We can make adjustments to this assumption based on previous experiments where we know how much biomass the plants gain each day, and adjust our target weights accordingly. 
 
-In the following plot we look at a simulated plant's watering data. This plant has been weighed for 5 days, with water added in the middle of the night and plants weighed shortly before watering and when lights come on in the morning. The differences between adjacent waterings are what we will use later on to calculate transpiration and *water use efficiency* (WUE).
+In the following plot we look at a simulated plant's watering data. This plant has been weighed for 5 days, with water added in the middle of the night. Plants were weighed shortly before and after watering. The weight before watering will be used to calculate the current water content and current field capacity. The target field capacity will be used to determine how much water to add. The difference in weight between the "after watering" weight and the following day's "before watering" weight are what we will use to calculate transpiration and *water use efficiency* (WUE).
 
 ```{r, eval = TRUE, echo = FALSE}
 set.seed(123)
@@ -181,6 +190,10 @@ ggplot(ex, aes(x = DAS, y = value, color = variable)) +
 
 ## Calculating Transpiration
 
+Transpiration is calculated as the difference in weight between two timepoints. Here, we use the weight after watering, and subtract the weight before watering in the following night to determine the total water transpired (g) in that time period (here, 1 day). 
+
+**Note:** the values below are positive because we are framing the question as "the amount of water transpired", so despite the slope of the line (showing mass in the pot) going down we have positive numbers.
+
 ```{r, eval = TRUE, echo = FALSE}
 exw <- ex
 exw$DAS <- rep(seq(1, days, 1), times = 2) - 0.2
@@ -216,11 +229,9 @@ ggplot(ex, aes(x = DAS, y = value, color = variable)) +
   theme(legend.position = "bottom")
 ```
 
-Transpiration doesn't generally give us enough information to use until it is normalized to biomass. We generally expect larger plants to transpire more since they have more area to draw water through and typically have more extensive root structures. Instead of using daily transpiration we often want to talk about *Normalized Transpiration* or *Water Use Efficiency*.
+The absolute amount of water transpired is interesting, but it is important to normalize this value to plant biomass. We generally expect larger plants to transpire more water; we may get excited that a genotype transpires more water than another, when really it was jut a bigger plant! We need to look at transpiration relative to plant biomass. We will do so with two measurements: *Normalized Transpiration* or *Water Use Efficiency*.
 
-**Note:** the values above are positive because we are framing the question as "the amount of water transpired", so despite the slope of the line (showing mass in the pot) going down we have positive numbers.
-
-To normalize transpiration we need a measure or a proxy of plant biomass.
+To normalize transpiration, we need to know the total plant biomass, or a proxy of this measurement. Below is an example where we know the plant biomass each day, and will divide the daily transpiration by the plant biomass that day to get *Normalized Transpiration*. 
 
 ```{r, eval = TRUE, echo = FALSE}
 set.seed(345)
@@ -273,20 +284,21 @@ p2 + p1 + patchwork::plot_layout(widths = c(2, 1))
 
 ## WUE
 
-Another important water metric is water use efficiency. Water use efficiency is generally calculated as a rate of biomass gained per unit of water.
+Another important water metric is water use efficiency. Water use efficiency is generally calculated as a rate of biomass gained per unit of water. In other words, how much biomass was added to the plant for the amount of water used in the same time period? A good analogy is the miles per gallon of fuel that a car may get; WUE is dependent on genotype and environment, just like a car's MPG is dependent on the type of car and the road it is driving on (freeway vs. city roads). 
 
 $\frac{\Delta(\text{Biomass})_t}{\text{Water Transpired}_t}$
 
-WUE might also be considered as the amount of water used to sustain a given biomass, which here is referred to as "absolute WUE".
+WUE might also be considered as the amount of water used to sustain a given biomass, which here is referred to as “absolute WUE”.
 
 $\frac{\text{Biomass}_t}{\text{Water Transpired}_t}$
 
+Other calculations of WUE include replacements for biomass, such as grain yield, net carbon dioxide uptake, and more, that are not covered here. 
+
 ### PWUE
 
-Both WUE methods require a measure of biomass. Generally in high-throughput plant phenotyping we use a proxy for biomass, such as area (number of pixels labelled as a plant). Because we are using a proxy for biomass we have to call image-based WUE *Pseudo-Water Use Efficiency* (pWUE).
+We may not always have daily measurements of plant biomass, since this would mean killing the plant in a destructive measurement. In high-throughput plant phenotyping we use a proxy for biomass, such as leaf area (number of pixels labelled as a plant) captured via plant images. Because we are using a proxy for biomass we have to call image-based WUE *Pseudo-Water Use Efficiency* (pWUE).
 
 In `pcvr` the `pwue` function calculates normalized transpiration, rate based pWUE, and absolute pWUE.
-
 
 
 ## Reading in water data
@@ -297,7 +309,7 @@ Here for more control we'll use simulated data:
 
 #### Simulated Data
 
-We'll simulate groups of data with distinct watering and growth trends that we will go over next.
+We'll simulate groups of data with distinct watering and growth trends.
 
 ```{r}
 set.seed(123)
@@ -311,6 +323,7 @@ phenotype_conditions <- list(
   "slowing" = list("model" = "power law", params = list(A = 15, B = 0.6)),
   "linear" = list("model" = "linear", params = list(A = 8))
 )
+
 watering_conditions <- list(
   "constant" = list(
     "before" = NA,
@@ -392,21 +405,21 @@ ex$wc <- factor(ex$wc,
 
 #### Traits of the simulated data
 
-The simulated data has 6 phenotype trends. Here we're using simulated area from a hypothetical 2D image.
+The simulated data has 6 phenotype trends. Here we're using simulated leaf area from a hypothetical 2D image, but the phenotype could be true plant biomass, or another measurement. 
 
-- `sigmoid`: This is pretty typical logistic growth.
-- `abrupt`: Logistic growth with a very abrupt growth period.
-- `exponential`: Exponential growth, non-asymptotic and speeding up.
+- `sigmoid`: This is typical logistic growth.
+- `abrupt`: Logistic growth with an abrupt growth period.
+- `exponential`: Exponential growth, non-asymptotic and speeding up over time.
 - `slowing`: Non-asymptotic growth, slower than linear.
 - `linear`: Non-asymptotic linear growth.
-- `death`: Slow asymptotic growth with a very low asymptote.
+- `death`: Slow asymptotic growth with a low asymptote.
 
 ```{r}
 ggplot(ex[ex$wc == "constant", ], aes(time, area, group = id)) +
   facet_wrap(~pc) +
   geom_line() +
   labs(
-    y = expression("Area (cm"^2 * ")"),
+    y = expression("Leaf Area (cm"^2 * ")"),
     x = "Time",
     title = "Treatments with several different growth trends"
   ) +
@@ -416,12 +429,12 @@ ggplot(ex[ex$wc == "constant", ], aes(time, area, group = id)) +
 
 There are also 6 watering data options in the simulated data.
 
-- `constant`: Pre-watering weight increases with the phenotype (area), and a constant amount of water is added to that pre-watered weight.
-- `target weight`: **Here we assume that the weight of the plant is negligible** (as we generally assume on Lemnatech style high-throughput phenotyping experiments). Every day the plant uses some amount of water and as the plant grows that amount increases, driving the pre-watering weight down over time. At each watering the pot is filled until it hits a target weight (100g here, just to use a nice round number).
-- `increasing cont.`: Pre-watering weight increases with the phenotype (area), and every day a larger amount of water is added to that pre-watered weight.
-- `decreasing cont.`: Pre-watering weight increases with the phenotype (area), and every day a smaller amount of water is added to that pre-watered weight.
-- `increasing step`: Pre-watering weight increases with the phenotype (area), and a constant amount of water is added to that pre-watered weight every day, but half way through the experiment that amount of water increases from 20g to 75g.
-- `decreasing step`: Pre-watering weight increases with the phenotype (area), and a constant amount of water is added to that pre-watered weight every day, but half way through the experiment that amount of water decreases from 75g to 20g.
+- `constant`: Pre-watering weight increases with the phenotype (area), and a constant, specific amount of water is added to that pre-watered weight. Field capacity is not considered. 
+- `target weight`: **Here we assume that the weight of the plant is negligible** (as we generally assume on Bellwether-style high-throughput phenotyping experiments). Every day the plant uses some amount of water and as the plant grows over time that amount increases, driving the pre-watering weight down over time. At each watering the pot is filled until it hits a target weight (100g here, just to use a nice round number) that is calculated based on the target field capacity.
+- `increasing cont.`: Pre-watering weight increases with the phenotype (area), and every day a larger, specific amount of water is added to that pre-watered weight. Field capacity is not considered and target weight is not used. 
+- `decreasing cont.`: Pre-watering weight increases with the phenotype (area), and every day a smaller, specific amount of water is added to that pre-watered weight. Field capacity is not considered and target weight is not used. 
+- `increasing step`: Pre-watering weight increases with the phenotype (area), and a constant, specific amount of water is added to that pre-watered weight every day, but half way through the experiment that amount of water increases from 20g to 75g. Field capacity is not considered and target weight is not used. 
+- `decreasing step`: Pre-watering weight increases with the phenotype (area), and a constant amount of water is added to that pre-watered weight every day, but half way through the experiment that amount of water decreases from 75g to 20g. Field capacity is not considered and target weight is not used. 
 
 ```{r}
 l <- reshape2::melt(ex[ex$pc == "sigmoid", ],
@@ -443,7 +456,29 @@ ggplot(
   pcv_theme()
 ```
 
-Combining everything from those sets of conditions we can look at the pre vs post watering weights for all 36 of our options. Phenotypes shown in light gray, pot weight after watering shown in blue.
+Here we've taken a roundabout way to simulate the amount of water used by simulated pre-watering weight and post-watering weight since that is how you'll get plant weight data most of the time. For water use the important thing about the above plot is not where the red or blue points are, only the length of the line between them is important since that represents the amount of water used. With that in mind we'll look at this plot a different way, focusing on the length of the black lines.
+
+```{r}
+ggplot(ex[ex$id == "id_1", ], aes(x = time, y = weight_after - weight_before, group = id)) +
+  facet_wrap(~wc) +
+  geom_line() +
+  labs(y = "Water Added",
+       x = "Time",
+       title = "Water added for all watering schemes shown") +
+  pcv_theme() +
+  theme(legend.position = "none",
+        strip.text.x.top = element_text(size = 10),
+        strip.text.y.right = element_text(size = 10))
+```
+
+Looking at the data this way helps drive home the point that water use can increase, decrease, or remain constant. There are different ways to increase or decrease, but the we'll focus on the overall trend now and limit our simulated data to the `constant`, `increasing continuous`, and `decreasing continuous` watering categories.
+
+```{r}
+ex <- ex[ex$wc %in% c("constant", "increasing cont", "decreasing cont"), ]
+```
+
+
+Combining everything from those sets of conditions we can look at the pre vs post watering weights for all 36 of our options. Phenotype (here, leaf area, but plant biomass could be used) shown in light gray, pot weight after watering shown in blue.
 
 ```{r}
 ggplot(ex, aes(time, area, group = id)) +
@@ -463,31 +498,13 @@ ggplot(ex, aes(time, area, group = id)) +
   )
 ```
 
-We can also look at this as the amount of water added for each condition. That will make everything constant across phenotypes (except target weight, which is the only option that is not a perfectly straight/stepped line).
+### Water data quality control plots
 
-```{r}
-ggplot(
-  ex[ex$id == "id_1", ],
-  aes(time, y = weight_after - weight_before, group = id)
-) +
-  facet_grid(wc ~ pc) +
-  geom_line() +
-  labs(
-    y = "Water Added",
-    x = "Time",
-    title = "Water added for all combinations of conditions"
-  ) +
-  pcv_theme() +
-  theme(
-    legend.position = "none",
-    strip.text.x.top = element_text(size = 10),
-    strip.text.y.right = element_text(size = 10)
-  )
-```
-
-### Water data diagnostic plots
-
-Before working with water derived metrics it's generally good to get a feeling for the raw watering data with similar plots as we used early on. Here we're checking that there are reasonable looking differences between subsequent weights, that any treatment groups have the expected watering pattern, and that the weight before watering is lower than the previous post-watering weight (indicating that transpiration happened). The length of the black lines between weights here shows the same information as the previous "water added" plot.
+Before working with water derived metrics it's generally good to get a feeling for the raw watering data with similar plots as we used early on. 
+Here we're checking that:
+- there are reasonable looking differences between subsequent weights
+- that any treatment groups have the expected watering pattern
+- that the weight before watering is lower than the previous post-watering weight (indicating that transpiration happened). The length of the black lines between weights here shows the water added. 
 
 ```{r, echo = FALSE}
 ggplot(
@@ -512,14 +529,14 @@ ggplot(
   )
 ```
 
-We don't see anything that raises red flags, so we'll move on.
+We don't see anything that raises red flags, so we'll move on. If water added was to spike incredibly high, or the different in water added was not what was intended by the design, it would be a sign that there was an issue with the equipment. 
 
 ## `pwue`
 
-The `pwue` function takes one or two dataframes as input. If one dataframe is given then it should include phenotypes and watering amounts and is expected in wide format. If two dataframes are given then one should contain phenotypes and the other should contain watering data.
+The `pwue` function takes one or two dataframes as input. If one dataframe is given then it should include phenotype(s) (such as leaf area or plant biomass) and watering data (pre- and post-watering weights), and is expected in wide format. If two dataframes are given then one should contain phenotypes and the other should contain watering data.
 The `pheno`, `time`, and `id` arguments control which variables are used to normalize for plant size (`pheno`), subset the data to a given time (`time`) and to identify a plant over time (`id`).
 The `offset` argument optionally controls how long before a phenotype's measurement water has to have been added to count towards that phenotype, normally this is left 0.
-`pre_watering` and `post_watering` should name columns of the dataframe containing water information corresponding to pre-watering weight and post-watering weight.
+`pre_watering` and `post_watering` should name columns of the dataframe containing water data corresponding to pre-watering weight and post-watering weight.
 Finally, the `method` argument controls which values are calculated. Currently it accepts "rate", "abs", and "ndt" for the rate based pWUE, absolute value pWUE, and Normalized Daily Transpiration.
 
 Note that here we are using very coarse measurements of time and for some experiments more granular time data is essential.
@@ -534,11 +551,11 @@ rb <- pwue(
 )
 ```
 
-We'll look at an example rep of each group to get started. Using the grid faceting we can't free the scales, so we'll go over each watering condition in turn.
+We'll look at an example replicate of each group to get started. Using the grid faceting we can't free the scales, so we'll go over each watering condition in turn.
 
 #### Constant Watering
 
-- `constant`: Pre-watering weight increases with the phenotype (area), and a constant amount of water is added to that pre-watered weight.
+- `constant`: Pre-watering weight increases with the phenotype (area), and a constant, specific amount of water is added to that pre-watered weight. Field capacity is not considered. 
 
 Remember that the rate-based pWUE formula we are using is $\frac{\Delta(\text{Biomass})_t}{\text{Water Transpired}_t}$. In this watering condition the denominator is a constant. Since the numerator is the measurement-to-measurement change it is essentially the derivative (slope) of the original phenotype.
 
@@ -657,7 +674,7 @@ ggplot(
 
 Notice that we have dips in the amount of water used that coincide with the peaks of measurement-to-measurement phenotype change. That's a combination that will make for some very high pWUE peaks and plenty of noise.
 The peaks in measurement-to-measurement phenotype change have to happen with such fast changes.
-The troughs in amount of water used may be seen on a system where the weight of a pot changes noticeably with the measured phenotype (the plant is a non-neglible amount of the total weight of whatever pot/cart is being weighed), but that will depend on your equipment. This trend is very dramatic, it is likely that in your experiments the soil and pot would out weight the plant by several orders of magnitude which would make for less steep pWUE curves.
+The troughs in amount of water used may be seen on a system where the weight of a pot changes noticeably with the measured phenotype (the plant is a non-negligible amount of the total weight of whatever pot/cart is being weighed), but that will depend on your equipment. This trend is very dramatic, it is likely that in your experiments the soil and pot would out weigh the plant by several orders of magnitude which would make for less steep pWUE curves.
 
 ```{r}
 ggplot(
@@ -835,209 +852,6 @@ ggplot(
   theme(legend.position = "none")
 ```
 
-```{r}
-names(watering_conditions)
-```
-
-#### Target Weight
-
-- `target weight`: **Here we assume that the weight of the plant is negligible** (as we generally assume on Lemnatech style high-throughput phenotyping experiments). Every day the plant uses some amount of water and as the plant grows that amount increases, driving the pre-watering weight down over time. At each watering the pot is filled until it hits a target weight (100g here, just to use a nice round number).
-
-```{r}
-rbt <- rb[rb$wc == "target weight", ]
-ggplot(rbt, aes(x = time, y = pWUE, group = id)) +
-  facet_wrap(~pc, scales = "free_y") +
-  geom_line() +
-  labs(title = "Target Weight Watering") +
-  pcv_theme()
-```
-
-Luckily, compared to the constant watering we can see that there aren't any crazy peaks or negative values here.
-
-##### Sigmoid
-
-If we were only looking at the numerator we would expect a bell curve. Since the denominator now increases over time (more water being added to reach the target weight since the plant transpires more each day as it grows larger), we should see bell curves that starts high, have a center "lump", then end low.
-
-```{r}
-rbts <- rbt[rbt$pc == "sigmoid", ]
-ggplot(rbts, aes(x = time, y = pWUE, group = id)) +
-  geom_line() +
-  labs(title = "Sigmoid growth and target weight watering") +
-  pcv_theme()
-```
-
-Broken into the component pieces the rationale behind the trend we see is obvious:
-
-```{r}
-ggplot(
-  rbts,
-  aes(x = time, group = id)
-) +
-  geom_line(aes(y = total_water, color = "Water (denominator)")) +
-  geom_line(aes(y = pheno_diff, color = "Phenotype (numerator)")) +
-  labs(
-    title = "Components of Rate pWUE",
-    subtitle = "Target Weight watering, logistic growth",
-    y = "Pheno Diff and Water Diff", x = "Time"
-  ) +
-  pcv_theme() +
-  theme(legend.position = "bottom")
-```
-
-##### Abrupt
-
-Now we can look at "sharper" logistic growth.
-
-```{r}
-rbta <- rbt[rbt$pc == "abrupt", ]
-ggplot(rbta, aes(x = time, y = pWUE, group = id)) +
-  geom_line() +
-  labs(title = "Abrupt growth and target weight watering") +
-  pcv_theme()
-```
-
-Why doesn't this plot show the same trend as the sigmoid phenotype did? The denominator should be the same between these two groups.
-
-```{r}
-ggplot(
-  rbta,
-  aes(x = time, group = id)
-) +
-  geom_line(aes(y = total_water, color = "Water (denominator)")) +
-  geom_line(aes(y = pheno_diff, color = "Phenotype (numerator)")) +
-  labs(
-    title = "Components of Rate pWUE",
-    subtitle = "Target Weight watering, abrupt growth",
-    y = "Pheno Diff and Water Diff", x = "Time"
-  ) +
-  pcv_theme() +
-  theme(legend.position = "bottom")
-```
-
-Again, breaking pWUE into the numerator and denominator helps understand the trend. In this data we see that since the phenotype jumps so quickly through the entire growth period with essentially 0 measurement-to-measurement change in the beginning (before it really starts growth) and the end (when it's at asymptotic size) we have very small numerators at either end of our experiment, thus the trend we see for pWUE is roughly symmetric.
-
-##### Exponential
-
-Here our numerator increases exponentially while our denominator increases asymptotically. The result we should expect is exponential growth.
-
-```{r}
-rbte <- rbt[rbt$pc == "exponential", ]
-ggplot(rbte, aes(x = time, y = pWUE, group = id)) +
-  geom_line() +
-  labs(title = "Exponential growth and target weight watering") +
-  pcv_theme()
-```
-
-And that's what we get. The increase in measurement-to-measurement phenotype outpaces the increase in transpiration.
-
-```{r}
-ggplot(
-  rbte,
-  aes(x = time, group = id)
-) +
-  geom_line(aes(y = total_water, color = "Water (denominator)")) +
-  geom_line(aes(y = pheno_diff, color = "Phenotype (numerator)")) +
-  labs(
-    title = "Components of Rate pWUE",
-    subtitle = "Target Weight watering, exponential growth",
-    y = "Pheno Diff and Water Diff", x = "Time"
-  ) +
-  pcv_theme() +
-  theme(legend.position = "bottom")
-```
-
-##### Slowing
-
-The derivative of our non-asymptotic but slowing in growth rate phenotype is asymptotic at 0. With our numerator decreasing and the denominator increasing we should see pWUE start high and approach 0 very quickly.
-
-```{r}
-rbtsl <- rbt[rbt$pc == "slowing", ]
-ggplot(rbtsl, aes(x = time, y = pWUE, group = id)) +
-  geom_line() +
-  labs(title = "Slowing growth and target weight watering") +
-  pcv_theme()
-```
-
-And that's what we get. We can check our intuition again by looking at the component pieces.
-
-```{r}
-ggplot(
-  rbtsl,
-  aes(x = time, group = id)
-) +
-  facet_wrap(~group) +
-  geom_line(aes(y = total_water, color = "Water (denominator)")) +
-  geom_line(aes(y = pheno_diff, color = "Phenotype (numerator)")) +
-  labs(
-    title = "Components of Rate pWUE",
-    subtitle = "Target Weight watering, slowing growth",
-    y = "Pheno Diff and Water Diff", x = "Time"
-  ) +
-  pcv_theme() +
-  theme(legend.position = "bottom")
-```
-
-##### Linear
-
-Here our numerator is constant and the denominator (transpiration) is increasing, so we should see pWUE decrease over time, but never getting to 0.
-
-```{r}
-rbtl <- rbt[rbt$pc == "linear", ]
-ggplot(rbtl, aes(x = time, y = pWUE, group = id)) +
-  geom_line() +
-  labs(title = "Linear growth and target weight watering") +
-  pcv_theme()
-```
-
-And that's what we get. We can check our intuition again by looking at the component pieces.
-
-```{r}
-ggplot(
-  rbtl,
-  aes(x = time, group = id)
-) +
-  facet_wrap(~group) +
-  geom_line(aes(y = total_water, color = "Water (denominator)")) +
-  geom_line(aes(y = pheno_diff, color = "Phenotype (numerator)")) +
-  labs(
-    title = "Components of Rate pWUE",
-    subtitle = "Target Weight watering, linear growth",
-    y = "Pheno Diff and Water Diff", x = "Time"
-  ) +
-  pcv_theme() +
-  theme(legend.position = "bottom")
-```
-
-##### Death
-
-Here we should see a very similar trend as we saw with non-asymptotic growth that is slowing down. Here our growth is asymptotic but the effect on the numerator should be the same.
-
-```{r}
-rbtd <- rbt[rbt$pc == "death", ]
-ggplot(rbtd, aes(x = time, y = pWUE, group = id)) +
-  geom_line() +
-  labs(title = "Linear growth and target weight watering") +
-  pcv_theme()
-```
-
-It does look very similar to the slowing growth. We can check our intuition again by looking at the component pieces.
-
-```{r}
-ggplot(
-  rbtd,
-  aes(x = time, group = id)
-) +
-  facet_wrap(~group) +
-  geom_line(aes(y = total_water, color = "Water (denominator)")) +
-  geom_line(aes(y = pheno_diff, color = "Phenotype (numerator)")) +
-  labs(
-    title = "Components of Rate pWUE",
-    subtitle = "Target Weight watering, poor growth",
-    y = "Pheno Diff and Water Diff", x = "Time"
-  ) +
-  pcv_theme() +
-  theme(legend.position = "bottom")
-```
 
 #### Increasing Continuous
 - `increasing cont.`: Pre-watering weight increases with the phenotype (area), and every day a larger amount of water is added to that pre-watered weight.
@@ -1051,32 +865,163 @@ ggplot(rbic, aes(x = time, y = pWUE, group = id)) +
   pcv_theme()
 ```
 
-Notice that here the trends look very similar to the `target weight` watering approach. That makes sense if we consider the trend we previously looked at for how much water is actually being used each day.
+Luckily, compared to the constant watering we can see that there aren't any crazy peaks or negative values here.
+
+##### Sigmoid
+
+If we were only looking at the numerator we would expect a bell curve. Since the denominator now increases over time (more water being added to reach the target weight since the plant transpires more each day as it grows larger), we should see bell curves that starts high, have a center "lump", then end low.
 
 ```{r}
-ggplot(
-  ex[ex$id == "id_1" &
-       ex$wc %in% c("increasing cont", "target weight") &
-       ex$pc == "sigmoid", ],
-  aes(time, y = weight_after - weight_before, group = id)
-) +
-  facet_wrap(~wc) +
+rbics <- rbic[rbic$pc == "sigmoid", ]
+ggplot(rbics, aes(x = time, y = pWUE, group = id)) +
   geom_line() +
-  labs(
-    y = "Water Added",
-    x = "Time",
-    title = "Water added is very similar in these two conditions"
-  ) +
-  pcv_theme() +
-  theme(
-    legend.position = "none",
-    strip.text.x.top = element_text(size = 10),
-    strip.text.y.right = element_text(size = 10)
-  )
+  labs(title = "Sigmoid growth and increasing water use") +
+  pcv_theme()
 ```
 
-Those watering trends are different both conceptually and just in terms of how much water they add each day. They aren't so different that when used to make pWUE they change the denominator all that much. Essentially, for any pWUE trend you see there are several ways that it could have been generated in terms of the experimental design (target weight vs adding a constant) or the values put into the ratio (10/5 = 2/1).
+And that's exactly what we see. To make the reason more clear we can plot the numerator and the denominator separately.
 
+```{r}
+ggplot(rbics,
+       aes(x = time, group = id)) +
+  geom_line(aes(y = total_water, color = "Water (denominator)")) +
+  geom_line(aes(y = pheno_diff, color = "Phenotype (numerator)")) +
+  labs(title = "Components of Rate pWUE",
+       subtitle = "Increasing Water Use, logistic growth",
+       y = "Pheno Diff and Water Diff", x = "Time") +
+  pcv_theme() +
+  theme(legend.position = "bottom")
+```
+
+There are lots of ways to increase watering over the course of an experiment, it could be constant, related to plant size (target weight watering tends to do this), or a step function, but they will generally follow a similar pattern to this example. Those approaches aren't so different that when used to make pWUE they change the denominator all that much. Essentially, for any pWUE trend you see there are several ways that it could have been generated in terms of the experimental design or the values put into the ratio (10/5 = 2/1).
+
+##### Aburpt
+
+Sharper logistic growth should yield a sharper bell curve and since the phenotype is not changing at the start then reaches asymptotic size quickly, pWUE should be 0 on either side of the "spike".
+
+```{r}
+rbica <- rbic[rbic$pc == "abrupt", ]
+ggplot(rbica, aes(x = time, y = pWUE, group = id)) +
+  geom_line() +
+  labs(title = "Fast Sigmoid growth and increasing water use") +
+  pcv_theme()
+```
+
+```{r}
+ggplot(rbica,
+       aes(x = time, group = id)) +
+  geom_line(aes(y = total_water, color = "Water (denominator)")) +
+  geom_line(aes(y = pheno_diff, color = "Phenotype (numerator)")) +
+  labs(title = "Components of Rate pWUE",
+       subtitle = "Increasing Water Use, abrupt growth",
+       y = "Pheno Diff and Water Diff", x = "Time") +
+  pcv_theme() +
+  theme(legend.position = "bottom")
+```
+
+##### Exponential
+
+Here our numerator increases exponentially while our denominator increases asymptotically. The result we should expect is exponential growth.
+
+```{r}
+rbice <- rbic[rbic$pc == "exponential", ]
+ggplot(rbice, aes(x = time, y = pWUE, group = id)) +
+  geom_line() +
+  labs(title = "Exponential growth and increasing water use") +
+  pcv_theme()
+```
+
+And that’s what we get. The increase in measurement-to-measurement phenotype outpaces the increase in transpiration.
+
+```{r}
+ggplot(rbice,
+       aes(x = time, group = id)) +
+  geom_line(aes(y = total_water, color = "Water (denominator)")) +
+  geom_line(aes(y = pheno_diff, color = "Phenotype (numerator)")) +
+  labs(title = "Components of Rate pWUE",
+       subtitle = "Increasing Water Use, expoenential growth",
+       y = "Pheno Diff and Water Diff", x = "Time") +
+  pcv_theme() +
+  theme(legend.position = "bottom")
+```
+
+##### Slowing
+
+The derivative of our non-asymptotic but slowing in growth rate phenotype is asymptotic at 0. With our numerator decreasing and the denominator increasing we should see pWUE start high and approach 0 very quickly.
+
+```{r}
+rbics <- rbic[rbic$pc == "slowing", ]
+ggplot(rbics, aes(x = time, y = pWUE, group = id)) +
+  geom_line() +
+  labs(title = "Slowing growth and increasing water use") +
+  pcv_theme()
+```
+
+And that's what we get. The increase in measurement-to-measurement phenotype outpaces the increase in transpiration.
+
+```{r}
+ggplot(rbics,
+       aes(x = time, group = id)) +
+  geom_line(aes(y = total_water, color = "Water (denominator)")) +
+  geom_line(aes(y = pheno_diff, color = "Phenotype (numerator)")) +
+  labs(title = "Components of Rate pWUE",
+       subtitle = "Increasing Water Use, slowing growth",
+       y = "Pheno Diff and Water Diff", x = "Time") +
+  pcv_theme() +
+  theme(legend.position = "bottom")
+```
+
+##### Linear
+
+Here our numerator is constant and the denominator (transpiration) is increasing, so we should see pWUE decrease over time, but never getting to 0.
+
+```{r}
+rbicl <- rbic[rbic$pc == "linear", ]
+ggplot(rbicl, aes(x = time, y = pWUE, group = id)) +
+  geom_line() +
+  labs(title = "Linear growth and increasing water use") +
+  pcv_theme()
+```
+
+Again we look at the component pieces to check our intuition.
+
+```{r}
+ggplot(rbicl,
+       aes(x = time, group = id)) +
+  geom_line(aes(y = total_water, color = "Water (denominator)")) +
+  geom_line(aes(y = pheno_diff, color = "Phenotype (numerator)")) +
+  labs(title = "Components of Rate pWUE",
+       subtitle = "Increasing Water Use, linear growth",
+       y = "Pheno Diff and Water Diff", x = "Time") +
+  pcv_theme() +
+  theme(legend.position = "bottom")
+```
+
+##### Death
+
+Here we should see a very similar trend as we saw with non-asymptotic growth that is slowing down. Here our growth is asymptotic but the effect on the numerator should be the same.
+
+```{r}
+rbicd <- rbic[rbic$pc == "death", ]
+ggplot(rbicd, aes(x = time, y = pWUE, group = id)) +
+  geom_line() +
+  labs(title = "Very little growth and increasing water use") +
+  pcv_theme()
+```
+
+Again we look at the component pieces to check our intuition.
+
+```{r}
+ggplot(rbicl,
+       aes(x = time, group = id)) +
+  geom_line(aes(y = total_water, color = "Water (denominator)")) +
+  geom_line(aes(y = pheno_diff, color = "Phenotype (numerator)")) +
+  labs(title = "Components of Rate pWUE",
+       subtitle = "Increasing Water Use, almost no growth",
+       y = "Pheno Diff and Water Diff", x = "Time") +
+  pcv_theme() +
+  theme(legend.position = "bottom")
+```
 
 #### Decreasing Continuous
 - `decreasing cont.`: Pre-watering weight increases with the phenotype (area), and every day a smaller amount of water is added to that pre-watered weight.
@@ -1164,37 +1109,6 @@ ggplot(
   pcv_theme() +
   theme(legend.position = "bottom")
 ```
-
-
-#### Increasing Step
-- `increasing step`: Pre-watering weight increases with the phenotype (area), and a constant amount of water is added to that pre-watered weight every day, but half way through the experiment that amount of water increases from 20g to 75g.
-
-For both "step" function watering options we can easily compare the trends against the `constant` watering. Here everything has a large increase in the denominator halfway through the experiment, driving the total ratio down. Notice that for the exponentially increasing phenotype this is still a small blip.
-
-```{r}
-rbic <- rb[rb$wc == "increasing step", ]
-ggplot(rbic, aes(x = time, y = pWUE, group = id)) +
-  facet_wrap(~pc, scales = "free_y") +
-  geom_line() +
-  labs(title = "Step Increasing Watering") +
-  pcv_theme()
-```
-
-
-#### Decreasing Step
-- `decreasing step`: Pre-watering weight increases with the phenotype (area), and a constant amount of water is added to that pre-watered weight every day, but half way through the experiment that amount of water decreases from 75g to 20g.
-
-This is the same as the increasing step watering just with the order reversed.
-
-```{r}
-rbdc <- rb[which(rb$wc == "decreasing step" & rb$pWUE > 0), ]
-ggplot(rbdc, aes(x = time, y = pWUE, group = id)) +
-  facet_wrap(~pc, scales = "free_y") +
-  geom_line() +
-  labs(title = "Step Decreasing Watering") +
-  pcv_theme()
-```
-
 
 ### Absolute Value Based
 
@@ -1381,7 +1295,9 @@ ggplot(
 
 ## Next Steps
 
-
+Hopefully this helps in working with whatever kind of water usage phenotype your experiment requires. These phenotypes are often very noisy and difficult to measure, so looking at the component pieces separately for any WUE or pWUE type phenotype you collect will be helpful. You may also take extra care in looking for outliers if water use metrics are a core part of your analysis.
+Additionally, some popular systems have an unfortunate tendency to return negative masses for plants. That will obviously be a problem, so having some ground truth data near the middle and end of the experiment can be helpful.
+Whatever setup you use, try to understand each component of your calculated water use metrics before interpreting them.
 
 
 
