@@ -15,7 +15,6 @@ editor: source
 library(pcvr)
 library(ggplot2)
 library(patchwork)
-library(devtools)
 ```
 
 
