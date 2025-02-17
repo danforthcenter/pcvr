@@ -337,7 +337,7 @@ growthSim <- function(
         ),
         noise = firstNoise, D, int
       )
-      return(gdf)
+      return(g_df)
     }))
     n_df$group <- rep(letters[seq_along(firstChangepointsRand)],
       times = unlist(firstChangepointsRand)
