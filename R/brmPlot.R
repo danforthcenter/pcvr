@@ -90,15 +90,16 @@ brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
   c1 <- (max_prime - min_prime) / (max_obs - min_obs)
   longPreds <- do.call(rbind, lapply(seq_len(nrow(predictions)), function(r) {
     sub <- predictions[r, ]
-    do.call(rbind, lapply(seq(1, 49, 2), function(i) {
+    lp <- do.call(rbind, lapply(seq(1, 49, 2), function(i) {
       min <- paste0("Q", i)
       max <- paste0("Q", 100 - i)
       iter <- sub[, c(x, "Estimate")]
       iter$q <- round(1 - (c1 * (i - max_obs) + max_prime), 2)
       iter$min <- sub[[min]]
       iter$max <- sub[[max]]
-      iter
+      return(iter)
     }))
+    return(lp)
   }))
   #* `Make Numeric Groups`
   longPreds$numericGroup <- as.numeric(as.factor(longPreds[[x]]))
@@ -188,7 +189,7 @@ brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
   newDataArgs <- append(
     c(
       lapply(group, function(grp) {
-        unique(fitData[[grp]])
+        return(unique(fitData[[grp]]))
       }),
       list(
         "new_1"
@@ -210,13 +211,13 @@ brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
   if (!is.null(groups)) {
     keep_index <- Reduce(intersect, lapply(seq_along(groups), function(i) {
       grp <- groups[i]
-      which(predictions[[group[i]]] %in% grp)
+      return(which(predictions[[group[i]]] %in% grp))
     }))
     predictions <- predictions[keep_index, ]
     if (!is.null(df)) {
       keep_index_df <- Reduce(intersect, lapply(seq_along(groups), function(i) {
         grp <- groups[i]
-        which(df[[group[i]]] %in% grp)
+        return(which(df[[group[i]]] %in% grp))
       }))
       df <- df[keep_index_df, ]
     }
@@ -234,15 +235,16 @@ brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
   c1 <- (max_prime - min_prime) / (max_obs - min_obs)
   longPreds <- do.call(rbind, lapply(seq_len(nrow(predictions)), function(r) {
     sub <- predictions[r, ]
-    do.call(rbind, lapply(seq(1, 49, 2), function(i) {
+    lp <- do.call(rbind, lapply(seq(1, 49, 2), function(i) {
       min <- paste0("Q", i)
       max <- paste0("Q", 100 - i)
       iter <- sub[, c(x, group, individual, "Estimate", hierarchical_predictor)]
       iter$q <- round(1 - (c1 * (i - max_obs) + max_prime), 2)
       iter$min <- sub[[min]]
       iter$max <- sub[[max]]
-      iter
+      return(iter)
     }))
+    return(lp)
   }))
   longPreds$plot_group <- as.character(interaction(longPreds[, group]))
   #* `Make plot`

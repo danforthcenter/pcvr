@@ -49,13 +49,13 @@
   })
   #* `Unlist parameters`
   a_prime <- mean(unlist(lapply(rep_distributions, function(i) {
-    i$a_prime
+    return(i$a_prime)
   })))
   b_prime <- mean(unlist(lapply(rep_distributions, function(i) {
-    i$b_prime
+    return(i$b_prime)
   })))
   ln_mu_prime <- mean(unlist(lapply(rep_distributions, function(i) {
-    i$ln_mu
+    return(i$ln_mu)
   })))
   #* `Define support if it is missing`
   if (is.null(support) && calculatingSupport) {

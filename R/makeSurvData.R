@@ -38,7 +38,8 @@
     out_df <- do.call(rbind, lapply(unique(df$remove_interaction), function(i) {
       sub <- df[df$remove_interaction == i, ]
       sub$censor <- ifelse(sub[[x]] == max(df[[x]]) & sub[[y_var]] == 0, 1, 0)
-      sub[sub$censor == 1 | sub[[x]] == min(c(sub[sub[[y_var]] == 1, x], Inf)), ]
+      row <- sub[sub$censor == 1 | sub[[x]] == min(c(sub[sub[[y_var]] == 1, x], Inf)), ]
+      return(row)
     }))
     colnames(out_df)[which(colnames(out_df) == y_var)] <- "event"
   } else if (model == "binomial") {
@@ -59,7 +60,7 @@
                                  prev, length)[, 2]
       lt$pct_event <- lt$n_events / lt$n_eligible
       lt[[x]] <- time
-      lt
+      return(lt)
     }))
     out_df[[x]] <- factor(out_df[[x]])
   }

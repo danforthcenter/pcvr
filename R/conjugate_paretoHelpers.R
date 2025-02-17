@@ -30,7 +30,7 @@
   #* `Min non-zero bin`
   obs_min <- min(unlist(lapply(seq_len(n_obs), function(i) {
     col <- colnames(s1)[which(s1[i, ] > 0)][1]
-    as.numeric(gsub("[a-zA-Z]_*", "", col))
+    return(as.numeric(gsub("[a-zA-Z]_*", "", col)))
   })), na.rm = TRUE)
   #* `make default prior if none provided`
   if (is.null(priors)) {

@@ -58,13 +58,13 @@
   })
   #* `Unlist parameters`
   mu_ls_prime <- mean(unlist(lapply(rep_distributions, function(i) {
-    i$mu
+    return(i$mu)
   })))
   sigma_ls_prime <- mean(unlist(lapply(rep_distributions, function(i) {
-    i$sd
+    return(i$sd)
   })))
   ln_sigma_prime <- mean(unlist(lapply(rep_distributions, function(i) {
-    i$ln_sd
+    return(i$ln_sd)
   })))
 
   #* `Define support if it is missing`

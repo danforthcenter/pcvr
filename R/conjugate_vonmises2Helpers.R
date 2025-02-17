@@ -262,13 +262,14 @@
 #' @noRd
 
 .bessel.inv <- function(x) {
-  ifelse(0 <= x & x < 0.53,
+  y <- ifelse(0 <= x & x < 0.53,
     2 * x + x^3 + (5 * x^5) / 6,
     ifelse(x < 0.85,
       -0.4 + 1.39 * x + 0.43 / (1 - x),
       1 / (x^3 - 4 * x^2 + 3 * x)
     )
   )
+  return(y)
 }
 
 #' @description
@@ -296,5 +297,5 @@
       kappa <- ((n - 1)^3 * kappa.biased) / (n^3 + n)
     }
   }
-  kappa
+  return(kappa)
 }

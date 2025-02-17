@@ -197,7 +197,7 @@ bw.time <- function(df = NULL, mode = c("DAS", "DAP", "DAE"), plantingDelay = NU
         colnames(subd) <- timeCol
       } # if all NA area then remove all rows
       d$DAE <- d[[timeCol]] - min(subd[[timeCol]], na.rm = TRUE)
-      d
+      return(d)
     }))
   } else {
     dae_split <- interaction(df[, group])
@@ -208,7 +208,7 @@ bw.time <- function(df = NULL, mode = c("DAS", "DAP", "DAE"), plantingDelay = NU
         colnames(subd) <- timeCol
       }
       d$DAE <- d[[timeCol]] - min(subd[[timeCol]], na.rm = TRUE)
-      d
+      return(d)
     }))
   }
   return(df)

@@ -111,9 +111,11 @@ mvSim <- function(dists = list(rnorm = list(mean = 100, sd = 15)),
     f <- funs[i]
     fun <- match.fun(f)
     dists[[i]]$n <- counts
-    lapply(seq_len(n_samples[i]), function(e) {
-      do.call(fun, args = dists[[i]])
+    vec_list <- lapply(seq_len(n_samples[i]), function(e) {
+      vec_e <- do.call(fun, args = dists[[i]])
+      return(vec_e)
     })
+    return(vec_list)
   })
   names(out) <- names(dists)
   return(out)
@@ -127,7 +129,7 @@ mvSim <- function(dists = list(rnorm = list(mean = 100, sd = 15)),
   out <- do.call(rbind, lapply(seq_along(vecs), function(i) {
     vecName <- names(vecs)[i]
     vec <- vecs[[i]]
-    do.call(rbind, lapply(vec, function(v) {
+    v_df <- do.call(rbind, lapply(vec, function(v) {
       if (grepl("rbeta", vecName)) {
         v[v > 1] <- 1
         v[v < 0] <- 0
@@ -141,8 +143,9 @@ mvSim <- function(dists = list(rnorm = list(mean = 100, sd = 15)),
         s1d <- as.data.frame(cbind(data.frame(vecName), matrix(s1, nrow = 1)))
         colnames(s1d) <- c("group", paste0("sim_", seq(min_bin, max_bin, binwidth)))
       }
-      s1d
+      return(s1d)
     }))
+    return(v_df)
   }))
   if (any(as.logical(times))) {
     out <- cbind(
@@ -162,7 +165,7 @@ mvSim <- function(dists = list(rnorm = list(mean = 100, sd = 15)),
   if (!is.null(t)) {
     pred <- growthSim(model = model, n = 1, t = t, params = params)[, c("group", "y")]
     pred$group <- sapply(pred$group, function(i) {
-      which(letters == i)
+      return(which(letters == i))
     })
     times <- rep(seq_len(t), times = length(dists))
     nms <- sub("_[0-9]+$", "", names(dists))
@@ -175,10 +178,10 @@ mvSim <- function(dists = list(rnorm = list(mean = 100, sd = 15)),
       tdists <- lapply(temporal_means, function(tm) {
         diter <- dists[[i]]
         diter[[vary]] <- tm
-        diter
+        return(diter)
       })
       names(tdists) <- rep(names(dists)[i], t)
-      tdists
+      return(tdists)
     }))
   }
   return(list("dist" = dists, "times" = times))

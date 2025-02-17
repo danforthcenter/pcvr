@@ -102,10 +102,11 @@ gam_diff <- function(model, newdata = NULL, g1, g2, byVar = NULL, smoothVar = NU
     crit <- stats::qt(1 - ((1 - ci) / 2), df.resid, lower.tail = TRUE)
     upr <- dif + (crit * se)
     lwr <- dif - (crit * se)
-    setNames(data.frame(upr, lwr), paste0(
+    bounds <- setNames(data.frame(upr, lwr), paste0(
       c("Q_diff_", "Q_diff_"),
       round(c(1 - ((1 - ci) / 2), 1 - (1 - ((1 - ci) / 2))), 3)
     ))
+    return(bounds)
   }))
   cis_diff_df <- cis_diff_df[, order(colnames(cis_diff_df))]
 
@@ -124,10 +125,11 @@ gam_diff <- function(model, newdata = NULL, g1, g2, byVar = NULL, smoothVar = NU
       crit <- stats::qt(1 - ((1 - ci) / 2), df.resid, lower.tail = TRUE)
       upr <- g1_vals + (crit * se_g1)
       lwr <- g1_vals - (crit * se_g1)
-      setNames(data.frame(upr, lwr), paste0(
+      bounds <- setNames(data.frame(upr, lwr), paste0(
         c("Q_g1_", "Q_g1_"),
         round(c(1 - ((1 - ci) / 2), 1 - (1 - ((1 - ci) / 2))), 3)
       ))
+      return(bounds)
     }))
     cis_g1_df <- cis_g1_df[, order(colnames(cis_g1_df))]
     #* `g2 model CIs`
@@ -143,10 +145,11 @@ gam_diff <- function(model, newdata = NULL, g1, g2, byVar = NULL, smoothVar = NU
       crit <- stats::qt(1 - ((1 - ci) / 2), df.resid, lower.tail = TRUE)
       upr <- g2_vals + (crit * se_g2)
       lwr <- g2_vals - (crit * se_g2)
-      setNames(data.frame(upr, lwr), paste0(
+      bounds <- setNames(data.frame(upr, lwr), paste0(
         c("Q_g2_", "Q_g2_"),
         round(c(1 - ((1 - ci) / 2), 1 - (1 - ((1 - ci) / 2))), 3)
       ))
+      return(bounds)
     }))
     cis_g2_df <- cis_g2_df[, order(colnames(cis_g2_df))]
 

@@ -185,12 +185,12 @@
   #* `Max non-zero bin`
   max_obs <- max(unlist(lapply(seq_len(n_obs), function(i) {
     col <- utils::tail(colnames(s1)[which(s1[i, ] > 0)], 1)
-    as.numeric(gsub("[a-zA-Z]_*", "", col))
+    return(as.numeric(gsub("[a-zA-Z]_*", "", col)))
   })), na.rm = TRUE)
   #* `Min non-zero bin`
   min_obs <- min(unlist(lapply(seq_len(n_obs), function(i) {
     col <- colnames(s1)[which(s1[i, ] > 0)][1]
-    as.numeric(gsub("[a-zA-Z]_*", "", col))
+    return(as.numeric(gsub("[a-zA-Z]_*", "", col)))
   })), na.rm = TRUE)
   #* `Update bivariate pareto prior with sufficient statistics`
   location_u_prime <- max(c(max_obs, priors$location_u[1]))

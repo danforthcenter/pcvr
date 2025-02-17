@@ -148,10 +148,11 @@ testGrowth <- function(ss = NULL, fit, test = "A") {
   hypotheses <- data.frame(form = unlist(test))
   colnames(hypotheses) <- c("Form")
   val <- do.call(rbind, lapply(seq_len(nrow(hypotheses)), function(i) {
-    car::deltaMethod(
+    dm <- car::deltaMethod(
       object = coefs, g = as.character(hypotheses$Form[i]),
       vcov. = vcMat, level = 0.95
     )
+    return(dm)
   }))
   row.names(val) <- seq_len(nrow(hypotheses))
   val <- cbind(hypotheses, val)
@@ -414,7 +415,7 @@ testGrowth <- function(ss = NULL, fit, test = "A") {
   modsList <- lapply(ss$taus, function(tau) list(fit[[paste0(tau)]], nullMods[[paste0(tau)]]))
 
   res <- lapply(modsList, function(modsPair) {
-    .nlrqPseudoLRT(modsPair)
+    return(.nlrqPseudoLRT(modsPair))
   })
   names(res) <- ss$taus
   return(res)
@@ -439,7 +440,7 @@ testGrowth <- function(ss = NULL, fit, test = "A") {
   rval[, 5] <- stats::pchisq(rval[, 4], round(abs(rval[, 3])), lower.tail = FALSE)
 
   variables <- lapply(nested_models, function(x) {
-    deparse(as.list(stats::getCall(x))$formula)
+    return(deparse(as.list(stats::getCall(x))$formula))
   })
   header <- paste("Model ", format(1:nModels), ": ", variables, sep = "", collapse = "\n")
   out <- structure(as.data.frame(rval),
@@ -473,7 +474,7 @@ testGrowth <- function(ss = NULL, fit, test = "A") {
   groupVar <- sub("\\]", "", sub("\\[", "", regmatches(xForm, rMatches2)))
   #* `parse test_pars formula`
   split_form <- lapply(strsplit(test_pars, ">|<")[[1]], function(s) {
-    stats::setNames(strsplit(trimws(s), "\\|")[[1]], c("group", "tau", "par"))
+    return(stats::setNames(strsplit(trimws(s), "\\|")[[1]], c("group", "tau", "par")))
   })
   direction <- ifelse(grepl(">", test_pars), "greater", "lesser")
   #* `select models based on tau`
@@ -546,13 +547,15 @@ testGrowth <- function(ss = NULL, fit, test = "A") {
 
 .survTest <- function(ss = NULL, fit = NULL) {
   if (ss$type == "survreg") {
-    survival::survdiff(formula = ss$formula, data = ss$df)
+    return(survival::survdiff(formula = ss$formula, data = ss$df))
   } else if (ss$type == "flexsurv") {
     x <- as.character(ss$pcvrForm)[3]
     x3 <- trimws(strsplit(x, "[|]|[/]")[[1]])
     group <- x3[length(x3)]
     groups <- unique(ss$df[[group]])
     at <- lapply(groups, function(i) stats::setNames(list(i), group))
-    as.data.frame(flexsurv::standsurv(fit, at = at, contrast = "difference", se = TRUE, ci = TRUE))
+    res <- as.data.frame(flexsurv::standsurv(fit, at = at, contrast = "difference",
+                                             se = TRUE, ci = TRUE))
+    return(res)
   }
 }

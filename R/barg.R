@@ -113,7 +113,7 @@ barg <- function(fit, ss = NULL) {
   }
   if (!is.null(names(ss)) && names(ss)[1] == "formula") {
     ssList <- lapply(seq_along(fitList), function(i) {
-      ss
+      return(ss)
     })
   } else {
     ssList <- ss
@@ -122,17 +122,18 @@ barg <- function(fit, ss = NULL) {
   general <- do.call(rbind, lapply(seq_along(fitList), function(i) {
     fitobj <- fitList[[i]]
     ms <- summary(fitobj)
-    data.frame(
+    df <- data.frame(
       chains = ms$chains,
       iter = ms$iter,
       num.divergent = rstan::get_num_divergent(fitobj$fit),
       model = i
     )
+    return(df)
   }))
   out[["General"]] <- general
   #* `Rhat summary`
   rhats <- do.call(rbind, lapply(fitList, function(fitobj) {
-    brms::rhat(fitobj)
+    return(brms::rhat(fitobj))
   }))
   rhat_metrics <- apply(rhats, MARGIN = 2, summary)
   rhats$model <- seq_along(fitList)
@@ -140,7 +141,7 @@ barg <- function(fit, ss = NULL) {
   out[["Rhat"]][["complete"]] <- rhats
   #* `NEFF summary`
   neff <- do.call(rbind, lapply(fitList, function(fitobj) {
-    brms::neff_ratio(fitobj)
+    return(brms::neff_ratio(fitobj))
   }))
   neff_metrics <- apply(neff, MARGIN = 2, summary)
   neff$model <- seq_along(fitList)
@@ -150,12 +151,13 @@ barg <- function(fit, ss = NULL) {
   ess <- do.call(rbind, lapply(seq_along(fitList), function(i) {
     fit <- fitList[[i]]
     ms <- summary(fit)
-    data.frame(
+    df <- data.frame(
       "par" = c(rownames(ms$fixed), rownames(ms$spec_pars)),
       "Bulk_ESS" = c(ms$fixed$Bulk_ESS, ms$spec_pars$Bulk_ESS),
       "Tail_ESS" = c(ms$fixed$Tail_ESS, ms$spec_pars$Tail_ESS),
       "model" = i
     )
+    return(df)
   }))
   ag_b_ess <- aggregate(Bulk_ESS ~ par, ess, summary)
   tag_b_ess <- t(ag_b_ess[-1])
@@ -173,14 +175,14 @@ barg <- function(fit, ss = NULL) {
       x <- trimws(gsub("[|].*|[/].*", "", as.character(ss$pcvrForm)[3]))
       t <- max(ss$df[[x]])
       pri_pred <- plotPrior(priors = eval(ss$call$start), type = ss$model, n = 200, t = t)
-      pri_pred$simulated
+      return(pri_pred$simulated)
     })
     out[["priorPredictive"]] <- pri_preds
   }
   #* `Posterior Predictive Check`
   if (methods::is(eval(ssList[[1]]$pcvrForm), "formula")) {
     post_preds <- lapply(seq_along(fitList), function(i) {
-      brmPlot(fitList[[i]], form = ssList[[i]]$pcvrForm, df = ssList[[i]]$df)
+      return(brmPlot(fitList[[i]], form = ssList[[i]]$pcvrForm, df = ssList[[i]]$df))
     })
     out[["posteriorPredictive"]] <- post_preds
   }

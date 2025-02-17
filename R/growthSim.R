@@ -283,7 +283,8 @@ growthSim <- function(
     params[diffLengths] <- lapply(
       diffLengths,
       function(i) {
-        rep(params[[i]], length.out = max(unlist(lapply(params, length))))
+        i_reps <- rep(params[[i]], length.out = max(unlist(lapply(params, length))))
+        return(i_reps)
       }
     )
   }
@@ -296,7 +297,7 @@ growthSim <- function(
   if (COUNT) {
     out <- do.call(rbind, lapply(split(out, interaction(out$group, out$id)), function(sub) {
       sub$y <- round(cummax(sub$y))
-      sub
+      return(sub)
     }))
     rownames(out) <- NULL
   }
@@ -324,11 +325,11 @@ growthSim <- function(
 
   df1 <- do.call(rbind, lapply(seq_len(n), function(i) {
     firstChangepointsRand <- lapply(firstChangepoints, function(fc) {
-      round(rnorm(1, fc, firstNoise$change))
+      return(round(rnorm(1, fc, firstNoise$change)))
     })
 
     n_df <- do.call(rbind, lapply(seq_along(firstChangepointsRand), function(g) {
-      .singleGrowthSim(firstModel,
+      g_df <- .singleGrowthSim(firstModel,
         n = 1, t = firstChangepointsRand[[g]],
         params = stats::setNames(
           lapply(firstParams, function(l) l[[g]]),
@@ -336,12 +337,13 @@ growthSim <- function(
         ),
         noise = firstNoise, D, int
       )
+      return(gdf)
     }))
     n_df$group <- rep(letters[seq_along(firstChangepointsRand)],
       times = unlist(firstChangepointsRand)
     )
     n_df$id <- paste0("id_", i)
-    n_df
+    return(n_df)
   }))
   dataList <- list(df1)
 
@@ -360,7 +362,7 @@ growthSim <- function(
         iterChangepointsRand <- rep(t, length(iterParams[[1]]))
       } else {
         iterChangepointsRand <- lapply(nextChangepoints, function(fc) {
-          round(rnorm(1, fc, iterNoise$change))
+          return(round(rnorm(1, fc, iterNoise$change)))
         })
       }
       n_df <- do.call(rbind, lapply(seq_along(iterChangepointsRand), function(g) {
@@ -380,10 +382,10 @@ growthSim <- function(
           noise = iterNoise, D, int = FALSE
         )
         inner_df$group <- letters[g]
-        inner_df
+        return(inner_df)
       }))
       n_df$id <- paste0("id_", i)
-      n_df
+      return(n_df)
     }))
 
     prev_data <- dataList[[(u - 1)]]
@@ -395,7 +397,7 @@ growthSim <- function(
       iter_data_sub$time <- iter_data_sub$time + max(prev_data_sub$time)
       iter_data_sub$y <- iter_data_sub$y - iter_data_sub$y[1]
       iter_data_sub$y <- y_end + iter_data_sub$y
-      iter_data_sub
+      return(iter_data_sub)
     }))
     dataList[[(u)]] <- new_data
   }
@@ -430,17 +432,17 @@ growthSim <- function(
 
   if (decay) {
     gsid <- function(D = 0, ...) {
-      D - gsi(...)
+      return(D - gsi(...))
     }
   } else {
     gsid <- function(D = 0, ...) {
-      0 + gsi(...)
+      return(0 + gsi(...))
     }
   }
 
   out <- do.call(rbind, lapply(seq_along(params[[1]]), function(i) {
     pars <- lapply(params, function(p) p[i])
-    as.data.frame(rbind(do.call(rbind, lapply(1:n, function(e) {
+    e_df <- as.data.frame(rbind(do.call(rbind, lapply(1:n, function(e) {
       iter_data <- data.frame(
         "id" = paste0("id_", e), "group" = letters[i], "time" = 1:t,
         "y" = gsid(D = D, 1:t, pars, noise), stringsAsFactors = FALSE
@@ -448,8 +450,9 @@ growthSim <- function(
       if (int) {
         iter_data$y <- iter_data$y + rnorm(1, mean = pars[["I"]], sd = noise[["I"]])
       }
-      iter_data
+      return(iter_data)
     }))))
+    return(e_df)
   }))
 
   return(out)

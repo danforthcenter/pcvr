@@ -9,7 +9,7 @@
 #' @export
 #'
 pcv_theme <- function() {
-  ggplot2::theme_minimal() %+replace%
+  thm <- ggplot2::theme_minimal() %+replace%
     ggplot2::theme(
       axis.text.x.bottom = ggplot2::element_text(hjust = 1),
       axis.line.y.left = ggplot2::element_line(),
@@ -18,4 +18,5 @@ pcv_theme <- function() {
       strip.text.x = ggplot2::element_text(size = 14, color = "white"),
       strip.text.y = ggplot2::element_text(size = 14, color = "white")
     )
+  return(thm)
 }

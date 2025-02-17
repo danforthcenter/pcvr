@@ -30,10 +30,10 @@
   group <- paste(group, collapse = ".")
   if (USEGROUP) {
     df[, group] <- lapply(group, function(grp) {
-      factor(df[[grp]])
+      return(factor(df[[grp]]))
     })
     df[, paste0(group, "_numericLabel")] <- lapply(group, function(grp) {
-      unclass(df[[grp]])
+      return(unclass(df[[grp]]))
     })
   }
   #* `assemble gam formula`

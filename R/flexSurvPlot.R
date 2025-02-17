@@ -69,7 +69,7 @@ flexsurvregPlot <- function(fit, form, groups = NULL, df = NULL, timeRange = NUL
     iter <- as.data.frame(preds[[1]][[i]])
     colnames(iter) <- c("pct", "est", "se")
     iter[[group]] <- groups[i]
-    iter
+    return(iter)
   }))
   preds$surv <- 1 - preds$pct
   #* `facetGroups`
@@ -81,13 +81,13 @@ flexsurvregPlot <- function(fit, form, groups = NULL, df = NULL, timeRange = NUL
   #* `groupFill`
   if (groupFill) {
     virVals <- lapply(rep(virMaps, length.out = length(unique(df[[group]]))), function(pal) {
-      viridis::viridis(3, begin = 0.1, option = pal)
+      return(viridis::viridis(3, begin = 0.1, option = pal))
     })
     names(virVals) <- groups
     color_scale <- ggplot2::scale_color_manual(values = unlist(lapply(virVals, function(pal) pal[3])))
   } else {
     virVals <- lapply(rep("plasma", length.out = length(unique(df[[group]]))), function(pal) {
-      viridis::viridis(3, begin = 0.1, option = pal)
+      return(viridis::viridis(3, begin = 0.1, option = pal))
     })
     names(virVals) <- groups
     color_scale <- ggplot2::scale_color_manual(values = unlist(lapply(virVals, function(pal) pal[3])))
@@ -120,7 +120,7 @@ flexsurvregPlot <- function(fit, form, groups = NULL, df = NULL, timeRange = NUL
   if (!is.null(df)) {
     km_df <- do.call(rbind, lapply(groups, function(grp) {
       sub <- df[df[[group]] == grp, ]
-      do.call(rbind, lapply(seq(0, max(df[[x]]), 1), function(ti) {
+      grp_df <- do.call(rbind, lapply(seq(0, max(df[[x]]), 1), function(ti) {
         sum_events <- sum(c(sub[as.numeric(sub[[x]]) <= ti, "event"], 0))
         n_at_risk <- nrow(sub) - sum_events
         surv_pct <- n_at_risk / nrow(sub)
@@ -129,8 +129,9 @@ flexsurvregPlot <- function(fit, form, groups = NULL, df = NULL, timeRange = NUL
           at_risk = n_at_risk, surv_pct = surv_pct
         )
         colnames(iter)[1] <- group
-        iter
+        return(iter)
       }))
+      return(grp_df)
     }))
     p <- p + ggplot2::geom_line(data = km_df, ggplot2::aes(
       x = .data[[x]],

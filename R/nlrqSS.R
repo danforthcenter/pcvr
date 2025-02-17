@@ -100,10 +100,10 @@
       startingValuesList <- lapply(names(startingValues), function(nm) {
         val <- startingValues[nm]
         if (nm %in% pars) {
-          rep(val, length(unique(df[[group]])))
+          return(rep(val, length(unique(df[[group]]))))
           # if this is one of pars then make starting value per group
         } else {
-          val
+          return(val)
         } # else return one starting value
       })
       names(startingValuesList) <- nms
@@ -739,7 +739,7 @@
 
 .nlrqDecay <- function(form) {
   chars <- as.character(form)
-  as.formula(paste0(chars[2], chars[1], "-(", chars[3], ")"))
+  return(as.formula(paste0(chars[2], chars[1], "-(", chars[3], ")")))
 }
 
 .nlrq_form_frechet <- function(x, y, USEGROUP, group, pars, int = FALSE) {

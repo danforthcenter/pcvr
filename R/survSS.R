@@ -88,7 +88,7 @@
     priors <- rep(priors, length.out = 2 * length(unique(out_df[[makeSurvDataRet$group]])))
     priors <- stats::setNames(
       lapply(seq(1, length(priors), 2), function(i) {
-        c(priors[i], priors[i + 1])
+        return(c(priors[i], priors[i + 1]))
       }),
       unique(out_df[[makeSurvDataRet$group]])
     )

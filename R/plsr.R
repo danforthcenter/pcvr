@@ -93,7 +93,7 @@ pcv.plsr <- function(df, resps = NULL, spectra = NULL, train = 0.8, cv = 10, ...
     )
     plot <- ggplot2::ggplot(model) +
       labs(title = paste0(resp))
-    list(
+    out_list <- list(
       "model_performance" = performance,
       "predictionTarget" = resp,
       "model" = model,
@@ -101,6 +101,7 @@ pcv.plsr <- function(df, resps = NULL, spectra = NULL, train = 0.8, cv = 10, ...
       "number_of_components" = model$finalModel$ncomp,
       "vip_df" = vip_df
     )
+    return(out_list)
   })
   names(outList) <- resps
   return(outList)
@@ -116,5 +117,5 @@ vip <- function(object) {
   SS <- c(object$Yloadings)^2 * colSums(object$scores^2)
   wnorm2 <- colSums(object$loading.weights^2)
   SSW <- sweep(object$loading.weights^2, 2, SS / wnorm2, "*")
-  sqrt(nrow(SSW) * apply(SSW, 1, cumsum) / cumsum(SS))
+  return(sqrt(nrow(SSW) * apply(SSW, 1, cumsum) / cumsum(SS)))
 }

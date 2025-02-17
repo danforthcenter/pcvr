@@ -87,10 +87,10 @@ read.pcv.3 <- function(
   if (!is.null(metaCol)) {
     metaToParse <- unlist(lapply(phenos[[metaCol]], function(meta) {
       x <- strsplit(meta, "/")[[1]]
-      sub("[.]png|[.]jpg|[.]jpeg|[.]INF", "", x[length(x)])
+      return(sub("[.]png|[.]jpg|[.]jpeg|[.]INF", "", x[length(x)]))
     }))
     phenoMeta <- do.call(rbind, lapply(metaToParse, function(meta) {
-      strsplit(meta, "[_]|[.]|[-]")[[1]]
+      return(strsplit(meta, "[_]|[.]|[-]")[[1]])
     }))
     if (!is.null(metaForm)) {
       if (length(metaForm == 1)) {
@@ -106,7 +106,7 @@ read.pcv.3 <- function(
       phenos[[joinSnapshot]] <- sapply(
         phenos[[metaCol]],
         function(i) {
-          strsplit(strsplit(i, "/snapshot")[[1]][2], "/")[[1]][1]
+          return(strsplit(strsplit(i, "/snapshot")[[1]][2], "/")[[1]][1])
         }
       )
     }
@@ -141,6 +141,7 @@ read.pcv.3 <- function(
         phenos$hour <- as.numeric(format(phenos[[timeCol]], "%H"))
       }, error = function(err) {
         warning("Error raised while parsing time, skipping time parsing.")
+        return(invisible(NULL))
       })
     }
   }

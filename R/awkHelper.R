@@ -47,11 +47,13 @@ awkHelper <- function(inputFile, filters, awk = NULL) {
       affector <- strsplit(filt, " ")[[1]][2]
       values <- trimws(gsub(",", " ", strsplit(filt, " ")[[1]][-c(1:2)]))
       if (affector %in% c("in", "is", "=")) {
-        paste(paste0("($", which(COLS == filtCol), '=="', values, '")'), collapse = " || ")
+        filt_string <- paste(paste0("($", which(COLS == filtCol), '=="', values, '")'),
+                             collapse = " || ")
       } else if (affector == "contains") {
         valReg <- paste0(values, collapse = "|")
-        paste0("($", which(COLS == filtCol), " ~ /", valReg, "/)")
+        filt_string <- paste0("($", which(COLS == filtCol), " ~ /", valReg, "/)")
       }
+      return(filt_string)
     })
     awkFilt <- paste(paste("(", awkFilts, ")"), collapse = " && ")
     awkCommand <- capture.output(cat(sed, awkStart, awkDelim, awkFiltStart, awkFilt, awkFiltEnd))

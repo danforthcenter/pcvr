@@ -47,12 +47,13 @@ plotPrior <- function(priors, type = "density", n = 200, t = 25) {
       support <- seq(0, max, length.out = 10000)
       dens <- dlnorm(support, meanlog = log(prio), sdlog = 0.25)
       pdf <- dens / sum(dens)
-      data.frame(
+      pri_df_o <- data.frame(
         support = support,
         dens = pdf,
         param = nm,
         item = as.character(o)
       )
+      return(pri_df_o)
     }))
 
     ggplot2::ggplot(pri_df, ggplot2::aes(
@@ -72,7 +73,7 @@ plotPrior <- function(priors, type = "density", n = 200, t = 25) {
       iter_params <- .prior_sampler(priors)
       x <- growthSim(model = type, n = 1, t = t, params = iter_params)
       x$id <- paste0("id_", i)
-      x
+      return(x)
     }))
 
     model_plot <- ggplot2::ggplot(
@@ -196,11 +197,13 @@ plotPrior <- function(priors, type = "density", n = 200, t = 25) {
 #' @noRd
 
 .prior_sampler <- function(priors) {
-  lapply(priors, function(pri) { # draw sample from prior
-    unlist(lapply(pri, function(mu) {
-      rlnorm(1, log(mu), 0.25)
+  pri_list <- lapply(priors, function(pri) { # draw sample from prior
+    pri_vec <- unlist(lapply(pri, function(mu) {
+      return(rlnorm(1, log(mu), 0.25))
     }))
+    return(pri_vec)
   })
+  return(pri_list)
 }
 
 #' @description

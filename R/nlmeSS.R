@@ -67,10 +67,10 @@
   #* `make group a factor for nlme`
   if (parsed_form$USEG) {
     df[, group] <- lapply(group, function(grp) {
-      factor(df[[grp]])
+      return(factor(df[[grp]]))
     })
     df[, paste0(group, "_numericLabel")] <- lapply(group, function(grp) {
-      unclass(df[[grp]])
+      return(unclass(df[[grp]]))
     })
   }
   #* `make an interaction variable for autocorrelation`
@@ -130,10 +130,10 @@
     startingValuesList <- unlist(lapply(names(startingValues), function(nm) {
       val <- startingValues[nm]
       if (nm %in% pars) {
-        rep(val, length(unique(interaction(df[, group]))))
+        return(rep(val, length(unique(interaction(df[, group])))))
         # if this is one of pars then make starting value per group
       } else {
-        val
+        return(val)
       } # else return one starting value
     }))
   } else {
@@ -203,9 +203,9 @@
   }
   fixed_form <- lapply(total_pars, function(par) {
     if (par %in% pars) {
-      stats::as.formula(paste0(par, " ~ 0 + ", paste(group, collapse = "*")))
+      return(stats::as.formula(paste0(par, " ~ 0 + ", paste(group, collapse = "*"))))
     } else {
-      stats::as.formula(paste0(par, " ~ 1"))
+      return(stats::as.formula(paste0(par, " ~ 1")))
     }
   })
   #* `groups formula`
@@ -246,9 +246,9 @@
   }
   fixed_form <- lapply(total_pars, function(par) {
     if (par %in% pars) {
-      stats::as.formula(paste0(par, " ~ 0 + ", paste(group, collapse = "*")))
+      return(stats::as.formula(paste0(par, " ~ 0 + ", paste(group, collapse = "*"))))
     } else {
-      stats::as.formula(paste0(par, " ~ 1"))
+      return(stats::as.formula(paste0(par, " ~ 1")))
     }
   })
   #* `groups formula`
@@ -297,9 +297,9 @@
   }
   fixed_form <- lapply(total_pars, function(par) {
     if (par %in% pars) {
-      stats::as.formula(paste0(par, " ~ 0 + ", paste(group, collapse = "*")))
+      return(stats::as.formula(paste0(par, " ~ 0 + ", paste(group, collapse = "*"))))
     } else {
-      stats::as.formula(paste0(par, " ~ 1"))
+      return(stats::as.formula(paste0(par, " ~ 1")))
     }
   })
   #* `groups formula`
@@ -346,9 +346,9 @@
   }
   fixed_form <- lapply(total_pars, function(par) {
     if (par %in% pars) {
-      stats::as.formula(paste0(par, " ~ 0 + ", paste(group, collapse = "*")))
+      return(stats::as.formula(paste0(par, " ~ 0 + ", paste(group, collapse = "*"))))
     } else {
-      stats::as.formula(paste0(par, " ~ 1"))
+      return(stats::as.formula(paste0(par, " ~ 1")))
     }
   })
   #* `groups formula`
@@ -389,9 +389,9 @@
   }
   fixed_form <- lapply(total_pars, function(par) {
     if (par %in% pars) {
-      stats::as.formula(paste0(par, " ~ 0 + ", paste(group, collapse = "*")))
+      return(stats::as.formula(paste0(par, " ~ 0 + ", paste(group, collapse = "*"))))
     } else {
-      stats::as.formula(paste0(par, " ~ 1"))
+      return(stats::as.formula(paste0(par, " ~ 1")))
     }
   })
   #* `groups formula`
@@ -432,9 +432,9 @@
   }
   fixed_form <- lapply(total_pars, function(par) {
     if (par %in% pars) {
-      stats::as.formula(paste0(par, " ~ 0 + ", paste(group, collapse = "*")))
+      return(stats::as.formula(paste0(par, " ~ 0 + ", paste(group, collapse = "*"))))
     } else {
-      stats::as.formula(paste0(par, " ~ 1"))
+      return(stats::as.formula(paste0(par, " ~ 1")))
     }
   })
   #* `groups formula`
@@ -475,9 +475,9 @@
   }
   fixed_form <- lapply(total_pars, function(par) {
     if (par %in% pars) {
-      stats::as.formula(paste0(par, " ~ 0 + ", paste(group, collapse = "*")))
+      return(stats::as.formula(paste0(par, " ~ 0 + ", paste(group, collapse = "*"))))
     } else {
-      stats::as.formula(paste0(par, " ~ 1"))
+      return(stats::as.formula(paste0(par, " ~ 1")))
     }
   })
   #* `groups formula`
@@ -518,9 +518,9 @@
   }
   fixed_form <- lapply(total_pars, function(par) {
     if (par %in% pars) {
-      stats::as.formula(paste0(par, " ~ 0 + ", paste(group, collapse = "*")))
+      return(stats::as.formula(paste0(par, " ~ 0 + ", paste(group, collapse = "*"))))
     } else {
-      stats::as.formula(paste0(par, " ~ 1"))
+      return(stats::as.formula(paste0(par, " ~ 1")))
     }
   })
   #* `groups formula`
@@ -562,9 +562,9 @@
   }
   fixed_form <- lapply(total_pars, function(par) {
     if (par %in% pars) {
-      stats::as.formula(paste0(par, " ~ 0 + ", paste(group, collapse = "*")))
+      return(stats::as.formula(paste0(par, " ~ 0 + ", paste(group, collapse = "*"))))
     } else {
-      stats::as.formula(paste0(par, " ~ 1"))
+      return(stats::as.formula(paste0(par, " ~ 1")))
     }
   })
   #* `groups formula`
@@ -592,7 +592,7 @@
   #* `random effects formula`
   random_form <- stats::setNames(
     lapply(seq_along(group), function(i) {
-      nlme::pdIdent(~ splines - 1, data = pars)
+      return(nlme::pdIdent(~ splines - 1, data = pars))
     }),
     group
   )
@@ -617,7 +617,7 @@
   modelForm <- formList$model
   chars <- as.character(modelForm)
   formList$model <- as.formula(paste0(chars[2], chars[1], "-(", chars[3], ")"))
-  formList
+  return(formList)
 }
 
 
@@ -642,9 +642,9 @@
   }
   fixed_form <- lapply(total_pars, function(par) {
     if (par %in% pars) {
-      stats::as.formula(paste0(par, " ~ 0 + ", paste(group, collapse = "*")))
+      return(stats::as.formula(paste0(par, " ~ 0 + ", paste(group, collapse = "*"))))
     } else {
-      stats::as.formula(paste0(par, " ~ 1"))
+      return(stats::as.formula(paste0(par, " ~ 1")))
     }
   })
   #* `groups formula`
@@ -685,9 +685,9 @@
   }
   fixed_form <- lapply(total_pars, function(par) {
     if (par %in% pars) {
-      stats::as.formula(paste0(par, " ~ 0 + ", paste(group, collapse = "*")))
+      return(stats::as.formula(paste0(par, " ~ 0 + ", paste(group, collapse = "*"))))
     } else {
-      stats::as.formula(paste0(par, " ~ 1"))
+      return(stats::as.formula(paste0(par, " ~ 1")))
     }
   })
   #* `groups formula`
@@ -729,9 +729,9 @@
   }
   fixed_form <- lapply(total_pars, function(par) {
     if (par %in% pars) {
-      stats::as.formula(paste0(par, " ~ 0 + ", paste(group, collapse = "*")))
+      return(stats::as.formula(paste0(par, " ~ 0 + ", paste(group, collapse = "*"))))
     } else {
-      stats::as.formula(paste0(par, " ~ 1"))
+      return(stats::as.formula(paste0(par, " ~ 1")))
     }
   })
   #* `groups formula`
@@ -772,9 +772,9 @@
   }
   fixed_form <- lapply(total_pars, function(par) {
     if (par %in% pars) {
-      stats::as.formula(paste0(par, " ~ 0 + ", paste(group, collapse = "*")))
+      return(stats::as.formula(paste0(par, " ~ 0 + ", paste(group, collapse = "*"))))
     } else {
-      stats::as.formula(paste0(par, " ~ 1"))
+      return(stats::as.formula(paste0(par, " ~ 1")))
     }
   })
   #* `groups formula`
@@ -815,9 +815,9 @@
   }
   fixed_form <- lapply(total_pars, function(par) {
     if (par %in% pars) {
-      stats::as.formula(paste0(par, " ~ 0 + ", paste(group, collapse = "*")))
+      return(stats::as.formula(paste0(par, " ~ 0 + ", paste(group, collapse = "*"))))
     } else {
-      stats::as.formula(paste0(par, " ~ 1"))
+      return(stats::as.formula(paste0(par, " ~ 1")))
     }
   })
   #* `groups formula`
@@ -864,9 +864,9 @@
   }
   fixed_form <- lapply(total_pars, function(par) {
     if (par %in% pars) {
-      stats::as.formula(paste0(par, " ~ 0 + ", paste(group, collapse = "*")))
+      return(stats::as.formula(paste0(par, " ~ 0 + ", paste(group, collapse = "*"))))
     } else {
-      stats::as.formula(paste0(par, " ~ 1"))
+      return(stats::as.formula(paste0(par, " ~ 1")))
     }
   })
   #* `groups formula`

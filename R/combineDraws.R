@@ -80,27 +80,27 @@
 combineDraws <- function(..., message = TRUE) {
   objects <- list(...)
   if (!all(unlist(lapply(objects, function(m) {
-    methods::is(m, "brmsfit") | methods::is(m, "data.frame")
+    return(methods::is(m, "brmsfit") | methods::is(m, "data.frame"))
   })))) {
     stop("Only brmsfit objects and data frames are accepted")
   }
 
   obj_names <- sapply(substitute(list(...)), deparse)[-1]
   models <- objects[unlist(lapply(objects, function(m) {
-    methods::is(m, "brmsfit")
+    return(methods::is(m, "brmsfit"))
   }))]
   model_names <- obj_names[unlist(lapply(objects, function(m) {
-    methods::is(m, "brmsfit")
+    return(methods::is(m, "brmsfit"))
   }))]
   supplied_draw_dfs <- objects[unlist(lapply(objects, function(m) {
-    methods::is(m, "data.frame")
+    return(methods::is(m, "data.frame"))
   }))]
   df_names <- obj_names[unlist(lapply(objects, function(m) {
-    methods::is(m, "data.frame")
+    return(methods::is(m, "data.frame"))
   }))]
 
   max_fit_draws <- max(unlist(lapply(models, function(m) {
-    nrow(as.data.frame(m))
+    return(nrow(as.data.frame(m)))
   })))
   max_nrow_supplied <- max(c(0, unlist(lapply(supplied_draw_dfs, nrow))))
   limit_size <- max(c(max_fit_draws, max_nrow_supplied))
@@ -145,7 +145,7 @@ combineDraws <- function(..., message = TRUE) {
       draws[(nrow(draws) + 1):limit_size, ] <- NA
       draws
     }
-    draws
+    return(draws)
   }))
   #* `bind any other dataframes of draws`
   if (length(supplied_draw_dfs) > 0) {
@@ -159,9 +159,9 @@ combineDraws <- function(..., message = TRUE) {
         }
         df[(nrow(df) + 1):limit_size, ] <- NA
       }
-      df
+      return(df)
     })
     new_draws <- do.call(cbind, args = list(supplied_draw_dfs, new_draws))
   }
-  new_draws
+  return(new_draws)
 }

@@ -14,5 +14,5 @@
 #' @noRd
 
 inv_logit <- function(x) {
-  1 / (1 + exp(-x))
+  return(1 / (1 + exp(-x)))
 }
