@@ -103,8 +103,8 @@ pwue <- function(df, w = NULL, pheno = "area_pixels", time = "timestamp", id = "
 
 .rateWUE <- function(ids, w, df, offset, time1, time2, pheno, id, pre_watering, post_watering) {
   out <- do.call(rbind, lapply(ids, function(iter_id) { # per id...
-    w_i <- w[.(iter_id)]
-    df_i <- df[.(iter_id)]
+    w_i <- w[list(iter_id)]
+    df_i <- df[list(iter_id)]
     #* reorder watering and pheno data
     w_i <- data.table::setorderv(w_i, cols = c(time2))
     df_i <- data.table::setorderv(df_i, cols = c(time1))
@@ -167,8 +167,8 @@ pwue <- function(df, w = NULL, pheno = "area_pixels", time = "timestamp", id = "
 
 .absWUE <- function(ids, w, df, offset, time1, time2, pheno, id, pre_watering, post_watering) {
   out <- do.call(rbind, lapply(ids, function(iter_id) { # per id...
-    w_i <- w[.(iter_id)]
-    df_i <- df[.(iter_id)]
+    w_i <- w[list(iter_id)]
+    df_i <- df[list(iter_id)]
     #* reorder watering and pheno data
     w_i <- data.table::setorderv(w_i, cols = c(time2))
     df_i <- data.table::setorderv(df_i, cols = c(time1))
