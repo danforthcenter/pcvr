@@ -229,7 +229,7 @@ if (FALSE) {
   library(brms)
   library(ggplot2)
   res_main <- do.call(rbind, lapply(c(10, 25, 50), function(n) {
-    do.call(rbind, parallel::mclapply(1:1000, function(i) {
+    n_df <- do.call(rbind, parallel::mclapply(1:1000, function(i) {
       sv_vm <- rvon_mises(1000 * n, 1, 4)
       mv_vm <- mvSim(
         dists = list(
@@ -272,6 +272,7 @@ if (FALSE) {
       )
       return(out)
     }, mc.cores = 10))
+    return(n_df)
   }))
 
   ggplot(

@@ -334,7 +334,7 @@ test_that("conjugate single value lognormal vs gaussian", {
   expect_equal(out$summary$rope_prob, 0.7193574, tolerance = 1e-3)
 
   expect_equal(unlist(lapply(out$posterior, function(p) {
-    names(p)
+    return(names(p))
   })), c("mu", "sd", "lognormal_sigma", "mu", "n", "s2"))
 
   expect_equal(names(out), c("summary", "posterior"))

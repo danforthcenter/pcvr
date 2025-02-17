@@ -210,7 +210,7 @@ test_that("Changepoint model can be specified", {
   set.seed(123)
   noise <- do.call(rbind, lapply(1:30, function(i) {
     chngpt <- c(20, 21)
-    rbind(
+    noise_i <- rbind(
       data.frame(
         id = paste0("id_", i), time = 1:chngpt[1], group = "a",
         y = c(runif(chngpt[1] - 1, 0, 20), rnorm(1, 5, 1))
@@ -220,11 +220,12 @@ test_that("Changepoint model can be specified", {
         y = c(runif(chngpt[2] - 1, 0, 20), rnorm(1, 5, 1))
       )
     )
+    return(noise_i)
   }))
   noise2 <- do.call(rbind, lapply(1:30, function(i) {
     start1 <- max(noise[noise$id == paste0("id_", i) & noise$group == "a", "time"])
     start2 <- max(noise[noise$id == paste0("id_", i) & noise$group == "b", "time"])
-    rbind(
+    noise2_i <- rbind(
       data.frame(
         id = paste0("id_", i), time = start1:40, group = "a",
         y = c(runif(length(start1:40), 15, 50))
@@ -234,6 +235,7 @@ test_that("Changepoint model can be specified", {
         y = c(runif(length(start2:40), 15, 50))
       )
     )
+    return(noise2_i)
   }))
   simdf <- rbind(noise, noise2)
   ss <- growthSS(
@@ -812,7 +814,7 @@ if (file.exists("/home/josh/Desktop/")) {
 
     noise <- do.call(rbind, lapply(1:30, function(i) {
       chngpt <- rnorm(2, 18, 2)
-      rbind(
+      noise_i <- rbind(
         data.frame(
           id = paste0("id_", i), time = 1:chngpt[1], group = "a",
           y = c(runif(chngpt[1] - 1, 0, 20), rnorm(1, 5, 1))
@@ -822,12 +824,13 @@ if (file.exists("/home/josh/Desktop/")) {
           y = c(runif(chngpt[2] - 1, 0, 20), rnorm(1, 5, 1))
         )
       )
+      return(noise_i)
     }))
     noise2 <- do.call(rbind, lapply(1:30, function(i) {
       start1 <- max(noise[noise$id == paste0("id_", i) & noise$group == "a", "time"])
       start2 <- max(noise[noise$id == paste0("id_", i) & noise$group == "b", "time"])
 
-      rbind(
+      noise2_i <- rbind(
         data.frame(
           id = paste0("id_", i), time = start1:40, group = "a",
           y = c(runif(length(start1:40), 15, 50))
@@ -837,6 +840,7 @@ if (file.exists("/home/josh/Desktop/")) {
           y = c(runif(length(start2:40), 15, 50))
         )
       )
+      return(noise2_i)
     }))
     simdf <- rbind(noise, noise2)
 
@@ -863,7 +867,7 @@ if (file.exists("/home/josh/Desktop/")) {
 
     noise <- do.call(rbind, lapply(1:30, function(i) {
       chngpt <- c(20, 21)
-      rbind(
+      noise_i <- rbind(
         data.frame(
           id = paste0("id_", i), time = 1:chngpt[1], group = "a",
           y = c(runif(chngpt[1] - 1, 0, 20), rnorm(1, 5, 1))
@@ -873,12 +877,13 @@ if (file.exists("/home/josh/Desktop/")) {
           y = c(runif(chngpt[2] - 1, 0, 20), rnorm(1, 5, 1))
         )
       )
+      return(noise_i)
     }))
     noise2 <- do.call(rbind, lapply(1:30, function(i) {
       start1 <- max(noise[noise$id == paste0("id_", i) & noise$group == "a", "time"])
       start2 <- max(noise[noise$id == paste0("id_", i) & noise$group == "b", "time"])
 
-      rbind(
+      noise2_i <- rbind(
         data.frame(
           id = paste0("id_", i), time = start1:40, group = "a",
           y = c(runif(length(start1:40), 15, 50))
@@ -888,6 +893,7 @@ if (file.exists("/home/josh/Desktop/")) {
           y = c(runif(length(start2:40), 15, 50))
         )
       )
+      return(noise2_i)
     }))
     simdf <- rbind(noise, noise2)
 
@@ -917,7 +923,7 @@ if (file.exists("/home/josh/Desktop/")) {
 
     noise <- do.call(rbind, lapply(1:30, function(i) {
       chngpt <- rnorm(2, 18, 2)
-      rbind(
+      noise_i <- rbind(
         data.frame(
           id = paste0("id_", i), time = 1:chngpt[1], group = "a",
           y = c(runif(chngpt[1] - 1, 0, 20), rnorm(1, 5, 1))
@@ -927,12 +933,13 @@ if (file.exists("/home/josh/Desktop/")) {
           y = c(runif(chngpt[2] - 1, 0, 20), rnorm(1, 5, 1))
         )
       )
+      return(noise_i)
     }))
     noise2 <- do.call(rbind, lapply(1:30, function(i) {
       start1 <- max(noise[noise$id == paste0("id_", i) & noise$group == "a", "time"])
       start2 <- max(noise[noise$id == paste0("id_", i) & noise$group == "b", "time"])
 
-      rbind(
+      noise2_i <- rbind(
         data.frame(
           id = paste0("id_", i), time = start1:40, group = "a",
           y = c(runif(length(start1:40), 15, 50))
@@ -942,6 +949,7 @@ if (file.exists("/home/josh/Desktop/")) {
           y = c(runif(length(start2:40), 15, 50))
         )
       )
+      return(noise2_i)
     }))
     simdf <- rbind(noise, noise2)
 
@@ -977,7 +985,7 @@ if (file.exists("/home/josh/Desktop/")) {
     set.seed(123)
     noise <- do.call(rbind, lapply(1:30, function(i) {
       chngpt <- rnorm(2, 18, 2)
-      rbind(
+      noise_i <- rbind(
         data.frame(
           id = paste0("id_", i), time = 1:chngpt[1], group = "a",
           y = c(runif(chngpt[1] - 1, 0, 20), rnorm(1, 5, 1))
@@ -987,6 +995,7 @@ if (file.exists("/home/josh/Desktop/")) {
           y = c(runif(chngpt[2] - 1, 0, 20), rnorm(1, 5, 1))
         )
       )
+      return(noise_i)
     }))
     signal <- growthSim("linear",
       n = 30, t = 20,
@@ -998,7 +1007,7 @@ if (file.exists("/home/josh/Desktop/")) {
       y_end <- noisesub[noisesub$time == max(noisesub$time), "y"]
       signalSub$time <- signalSub$time + max(noisesub$time)
       signalSub$y <- y_end + signalSub$y
-      signalSub
+      return(signalSub)
     }))
     simdf <- rbind(noise, signal)
     ss <- growthSS(
@@ -1031,7 +1040,7 @@ if (file.exists("/home/josh/Desktop/")) {
     set.seed(123)
     noise <- do.call(rbind, lapply(1:30, function(i) {
       chngpt <- rnorm(2, 18, 2)
-      rbind(
+      noise_i <- rbind(
         data.frame(
           id = paste0("id_", i), time = 1:chngpt[1], group = "a",
           y = c(runif(chngpt[1] - 1, 0, 20), rnorm(1, 5, 1))
@@ -1041,6 +1050,7 @@ if (file.exists("/home/josh/Desktop/")) {
           y = c(runif(chngpt[2] - 1, 0, 20), rnorm(1, 5, 1))
         )
       )
+      return(noise_i)
     }))
     signal <- growthSim("logistic",
       n = 20, t = 30,
@@ -1052,7 +1062,7 @@ if (file.exists("/home/josh/Desktop/")) {
       y_end <- noisesub[noisesub$time == max(noisesub$time), "y"]
       signalSub$time <- signalSub$time + max(noisesub$time)
       signalSub$y <- y_end + signalSub$y
-      signalSub
+      return(signalSub)
     }))
     simdf <- rbind(noise, signal)
     simdf <- simdf[simdf$time < 45, ]
@@ -1102,7 +1112,7 @@ if (file.exists("/home/josh/Desktop/")) {
       y_end_p1 <- p1[p1$time == max(p1$time), "y"]
       p2$time <- p2$time + max(p1$time)
       p2$y <- y_end_p1 + p2$y
-      p2
+      return(p2)
     }))
     simdf <- rbind(simdf1, simdf2_adj)
 
