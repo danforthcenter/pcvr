@@ -28,11 +28,14 @@
 #' defaults to "weight_before".
 #' @param post_watering Column containing weight after watering in \code{w},
 #' defaults to "weight_after".
-#' @param method Which method to use, options are "rate" and "abs". The "rate" method considers WUE as
-#' the change in a phenotype divided by the amount of water added. The "abs" method considers WUE as
-#' the amount of water used by a plant given its absolute size. The former is for questions more
-#' related to efficiency in using water to grow while the latter is more suited to questions about
-#' how efficient a plant is at maintaining size given some amount of water.
+#' @param method Which method to use, options are "rate", "abs", and "ndt". The "rate" method considers
+#' WUE as the change in a phenotype divided by the amount of water added. The "abs" method considers WUE
+#' as the amount of water used by a plant given its absolute size.
+#' The "ndt" method calculates normalized daily transpiration,
+#' which is the reciprocal of the "abs" method. The "rate" method is for questions more
+#' related to efficiency in using water to grow while "abs"/"ndt" are more suited to questions about
+#' how efficient a plant is at maintaining size given some amount of water or how much water it uses
+#' at a given size.
 #' @keywords WUE
 #' @import data.table
 #' @return A data frame containing the watering data and
@@ -51,11 +54,13 @@
 #'   area_pixels = round(130 / (1 + exp( (12 - seq_along(weight_before))/3) ), 0),
 #'   weight_before,
 #'   weight_after,
-#'   barcode = 1
+#'   barcode = 1,
+#'   other = "x"
 #' )
-#' ex <- pwue(df, time = "time", method = "rate")
+#' ex <- pwue(df, time = "time", method = "rate", id = c("barcode", "other"))
 #' w <- df[, c("time", "weight_before", "weight_after", "barcode")]
 #' ex2 <- pwue(df, w, time = c("time", "time"), method = "abs")
+#' ex3 <- pwue(df, w, time = c("time", "time"), method = "ndt")
 #'
 #' @export
 
@@ -71,21 +76,25 @@ pwue <- function(df, w = NULL, pheno = "area_pixels", time = "timestamp", id = "
   if (is.null(w)) {
     w <- df[, c(time2, id, pre_watering, post_watering)]
   }
-  if (!time1 %in% colnames(df) || !time2 %in% colnames(w)) {
-    stop(paste0(paste0(time, collapse = ", "), " must be in colnames of df and w"))
+  if (length(id) > 1) {
+    df$temporary_pwue_id_column <- interaction(df[, c(id)])
+    w$temporary_pwue_id_column <- interaction(w[, c(id)])
+    id <- "temporary_pwue_id_column"
   }
   #* order data
   w <- data.table::setorderv(data.table::as.data.table(w), cols = c(id, time2))
   df <- data.table::setorderv(data.table::as.data.table(df), cols = c(id, time1))
-  ids <- intersect(unique(w[, get(id)]), unique(df[, get(id)]))
-  matched_method <- match.arg(method, choices = c("rate", "abs"))
+  data.table::setkeyv(w, id)
+  data.table::setkeyv(df, id)
+  ids <- intersect(unique(w[[id]]), unique(df[[id]]))
+  matched_method <- match.arg(method, choices = c("rate", "abs", "ndt"))
   #* apply method
-  if (matched_method == "abs") {
-    out <- .absWUE(ids, w, df, offset, time1, time2, pheno, id, pre_watering, post_watering)
-  } else if (matched_method == "rate") {
-    out <- .rateWUE(ids, w, df, offset, time1, time2, pheno, id, pre_watering, post_watering)
-  }
-  return(as.data.frame(out))
+  matched_fun <- get(paste0(".", matched_method, "WUE"))
+  out <- matched_fun(ids, w, df, offset, time1, time2, pheno, id, pre_watering, post_watering)
+  out <- as.data.frame(out)
+  out <- out[, which(colnames(out) != "temporary_pwue_id_column")]
+  # return data
+  return(out)
 }
 
 #' Function to calculate rate based WUE
@@ -94,8 +103,8 @@ pwue <- function(df, w = NULL, pheno = "area_pixels", time = "timestamp", id = "
 
 .rateWUE <- function(ids, w, df, offset, time1, time2, pheno, id, pre_watering, post_watering) {
   out <- do.call(rbind, lapply(ids, function(iter_id) { # per id...
-    w_i <- w[w[, get(id)] == iter_id, ]
-    df_i <- df[df[, get(id)] == iter_id, ]
+    w_i <- w[list(iter_id)]
+    df_i <- df[list(iter_id)]
     #* reorder watering and pheno data
     w_i <- data.table::setorderv(w_i, cols = c(time2))
     df_i <- data.table::setorderv(df_i, cols = c(time1))
@@ -123,7 +132,7 @@ pwue <- function(df, w = NULL, pheno = "area_pixels", time = "timestamp", id = "
       endNonOffset <- imaging_times[t_i]
       if (!is.na(start)) {
         w_i_t <- w_i[w_i[[time2]] > start & w_i[[time2]] <= end, ]
-        total_water_i <- max(c(sum(w_i_t[["deltaw"]]), 1))
+        total_water_i <- sum(w_i_t[["deltaw"]])
         pheno_diff <- max(c(
           as.numeric(df_i[df_i[[time1]] == endNonOffset, get(pheno)] - df_i[
             df_i[[time1]] == startNonOffset, get(pheno)
@@ -158,8 +167,8 @@ pwue <- function(df, w = NULL, pheno = "area_pixels", time = "timestamp", id = "
 
 .absWUE <- function(ids, w, df, offset, time1, time2, pheno, id, pre_watering, post_watering) {
   out <- do.call(rbind, lapply(ids, function(iter_id) { # per id...
-    w_i <- w[w[[id]] == iter_id, ]
-    df_i <- df[df[[id]] == iter_id, ]
+    w_i <- w[list(iter_id)]
+    df_i <- df[list(iter_id)]
     #* reorder watering and pheno data
     w_i <- data.table::setorderv(w_i, cols = c(time2))
     df_i <- data.table::setorderv(df_i, cols = c(time1))
@@ -188,7 +197,7 @@ pwue <- function(df, w = NULL, pheno = "area_pixels", time = "timestamp", id = "
       # here we use the phenotype at this time, not the change in phenotype
       if (!is.na(start)) {
         w_i_t <- w_i[w_i[[time2]] > start & w_i[[time2]] <= end, ]
-        total_water_i <- max(c(sum(w_i_t[["deltaw"]]), 1))
+        total_water_i <- sum(w_i_t[["deltaw"]])
         pheno_iter <- max(df_i[df_i[[time1]] == endNonOffset, get(pheno)], na.rm = TRUE)
       } else {
         total_water_i <- NA
@@ -209,5 +218,16 @@ pwue <- function(df, w = NULL, pheno = "area_pixels", time = "timestamp", id = "
     iter_out <- cbind(df_i, wue_i)
     return(iter_out)
   }))
+  return(out)
+}
+
+#' Function to calculate normalized daily transpiration
+#' @keywords internal
+#' @noRd
+
+
+.ndtWUE <- function(ids, w, df, offset, time1, time2, pheno, id, pre_watering, post_watering) {
+  out <- .absWUE(ids, w, df, offset, time1, time2, pheno, id, pre_watering, post_watering)
+  out$normalized_daily_transpiration <- 1 / out$pWUE
   return(out)
 }

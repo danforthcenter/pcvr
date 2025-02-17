@@ -8,6 +8,7 @@ x <- lintr::lint_package(path = "~/pcvr",
                                                     object_name_linter(styles = c("snake_case", "symbols",
                                                                                   "camelCase", "dotted.case",
                                                                                   "lowercase", "UPPERCASE")),
+                                                    return_linter(return_style = "explicit"),
                                                     brace_linter(allow_single_line = TRUE)
                     ))
 x
@@ -24,6 +25,7 @@ x <- lintr::lint(filename = "~/pcvr/R/brmPlot.R",
                                                          object_name_linter(styles = c("snake_case", "symbols",
                                                                                        "camelCase", "dotted.case",
                                                                                        "lowercase", "UPPERCASE")),
+                                                         return_linter(return_style = "explicit"),
                                                          brace_linter(allow_single_line = TRUE)
                          ))
 x
@@ -33,12 +35,13 @@ styler::style_dir(path = "~/pcvr/tutorials", scope = "tokens")
 
 
 if(FALSE){
-  file = "~/pcvr/R/brmPlot.R" # nlsPlot.R 
+  file = "~/pcvr/vignettes/articles/field_capacity.Rmd" # nlsPlot.R 
   styler::style_file(file, scope = "line_breaks")
   lintr::lint(file, linters = lintr::linters_with_defaults(lintr::line_length_linter(length = 105L),
                                                            lintr::object_name_linter(styles = c("snake_case", "symbols",
                                                                                                 "camelCase", "dotted.case",
                                                                                                 "lowercase", "UPPERCASE")),
+                                                           lintr::return_linter(return_style = "explicit"),
                                                            lintr::brace_linter(allow_single_line = TRUE)
   ))
   #* or for tokens

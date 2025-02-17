@@ -40,11 +40,14 @@ defaults to "weight_before".}
 \item{post_watering}{Column containing weight after watering in \code{w},
 defaults to "weight_after".}
 
-\item{method}{Which method to use, options are "rate" and "abs". The "rate" method considers WUE as
-the change in a phenotype divided by the amount of water added. The "abs" method considers WUE as
-the amount of water used by a plant given its absolute size. The former is for questions more
-related to efficiency in using water to grow while the latter is more suited to questions about
-how efficient a plant is at maintaining size given some amount of water.}
+\item{method}{Which method to use, options are "rate", "abs", and "ndt". The "rate" method considers
+WUE as the change in a phenotype divided by the amount of water added. The "abs" method considers WUE
+as the amount of water used by a plant given its absolute size.
+The "ndt" method calculates normalized daily transpiration,
+which is the reciprocal of the "abs" method. The "rate" method is for questions more
+related to efficiency in using water to grow while "abs"/"ndt" are more suited to questions about
+how efficient a plant is at maintaining size given some amount of water or how much water it uses
+at a given size.}
 }
 \value{
 A data frame containing the watering data and
@@ -83,6 +86,7 @@ df <- data.frame(
 ex <- pwue(df, time = "time", method = "rate")
 w <- df[, c("time", "weight_before", "weight_after", "barcode")]
 ex2 <- pwue(df, w, time = c("time", "time"), method = "abs")
+ex3 <- pwue(df, w, time = c("time", "time"), method = "ndt")
 
 }
 \keyword{WUE}
