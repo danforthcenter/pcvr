@@ -42,6 +42,7 @@
     <li><a class="dropdown-item" href="../articles/pcvrTutorial_igm.html">Intermediate Growth Modeling Tutorial</a></li>
     <li><a class="dropdown-item" href="../articles/pcvrTutorial_agm.html">Advanced Growth Modeling Tutorial</a></li>
     <li><a class="dropdown-item" href="../articles/pcvrTutorial_mvt.html">Multi-Value Traits Tutorial</a></li>
+    <li><a class="dropdown-item" href="../articles/field_capacity.html">Water Derived Traits Tutorial</a></li>
     <li><a class="dropdown-item" href="../articles/reading_pcv_data.html">Using online PlantCV Output</a></li>
   </ul>
 </li>
@@ -88,8 +89,8 @@ Sumner</h4>
 
     
     
-<div class="section level2 smaller">
-<h2 class="smaller" id="outline">Outline<a class="anchor" aria-label="anchor" href="#outline"></a>
+<div class="section level2">
+<h2 id="outline">Outline<a class="anchor" aria-label="anchor" href="#outline"></a>
 </h2>
 <ul>
 <li>
@@ -105,8 +106,8 @@ Sumner</h4>
 <li>Reading <code>conjugate</code> output</li>
 </ul>
 </div>
-<div class="section level2 smaller">
-<h2 class="smaller" id="pcvr-goals">
+<div class="section level2">
+<h2 id="pcvr-goals">
 <code>pcvr</code> Goals<a class="anchor" aria-label="anchor" href="#pcvr-goals"></a>
 </h2>
 <p>Currently <code>pcvr</code> aims to:</p>
@@ -117,27 +118,24 @@ Sumner</h4>
 <p>There is room for goals to evolve based on feedback and scientific
 needs.</p>
 </div>
-<div class="section level2 smaller">
-<h2 class="smaller" id="load-package">Load package<a class="anchor" aria-label="anchor" href="#load-package"></a>
+<div class="section level2">
+<h2 id="load-package">Load package<a class="anchor" aria-label="anchor" href="#load-package"></a>
 </h2>
 <p>Pre-work was to install R, Rstudio, and <code>pcvr</code>.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/danforthcenter/pcvr" class="external-link">pcvr</a></span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Error in get(paste0(generic, ".", class), envir = get_method_env()) : </span></span>
-<span><span class="co">##   object 'type_sum.accel' not found</span></span></code></pre>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/danforthcenter/pcvr" class="external-link">pcvr</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://patchwork.data-imaginist.com" class="external-link">patchwork</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/twolodzko/extraDistr" class="external-link">extraDistr</a></span><span class="op">)</span></span></code></pre></div>
 </div>
-<div class="section level2 smaller">
-<h2 class="smaller" id="bayesian-statistics-intro">Bayesian Statistics Intro<a class="anchor" aria-label="anchor" href="#bayesian-statistics-intro"></a>
+<div class="section level2">
+<h2 id="bayesian-statistics-intro">Bayesian Statistics Intro<a class="anchor" aria-label="anchor" href="#bayesian-statistics-intro"></a>
 </h2>
 <p>Talk about probability, compare to frequentist, introduce
 theorem.</p>
 </div>
-<div class="section level2 smaller">
-<h2 class="smaller" id="bayesian-statistics-intro-1">Bayesian Statistics Intro<a class="anchor" aria-label="anchor" href="#bayesian-statistics-intro-1"></a>
+<div class="section level2">
+<h2 id="bayesian-statistics-intro-1">Bayesian Statistics Intro<a class="anchor" aria-label="anchor" href="#bayesian-statistics-intro-1"></a>
 </h2>
 <table class="table">
 <colgroup>
@@ -169,15 +167,15 @@ theorem.</p>
 </tbody>
 </table>
 </div>
-<div class="section level2 smaller">
-<h2 class="smaller" id="bayesian-conjugacy-theory">Bayesian Conjugacy Theory<a class="anchor" aria-label="anchor" href="#bayesian-conjugacy-theory"></a>
+<div class="section level2">
+<h2 id="bayesian-conjugacy-theory">Bayesian Conjugacy Theory<a class="anchor" aria-label="anchor" href="#bayesian-conjugacy-theory"></a>
 </h2>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>θ</mi><mo stretchy="false" form="prefix">|</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>x</mi><mn>1</mn></msub><mo>,</mo><mi>…</mi><mo>,</mo><msub><mi>x</mi><mi>i</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mfrac><mrow><mi>π</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>θ</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>⋅</mo><mi>L</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>θ</mi><mo stretchy="false" form="prefix">|</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>x</mi><mn>1</mn></msub><mo>,</mo><mi>…</mi><mo>,</mo><msub><mi>x</mi><mi>i</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mo>∫</mo><mi>π</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>θ</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>⋅</mo><mi>L</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>θ</mi><mo stretchy="false" form="prefix">|</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>x</mi><mn>1</mn></msub><mo>,</mo><mi>…</mi><mo>,</mo><msub><mi>x</mi><mi>i</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mspace width="0.222em"></mspace><mi>d</mi><mi>θ</mi></mrow></mfrac></mrow><annotation encoding="application/x-tex">\begin{equation}
 P(\theta|(x_1, \ldots, x_i)) = \frac{\pi(\theta) \cdot L(\theta|(x_1, \ldots, x_i))}{\int \pi(\theta) \cdot L(\theta|(x_1, \ldots, x_i))~d\theta}
 \end{equation}</annotation></semantics></math></p>
 </div>
-<div class="section level2 smaller">
-<h2 class="smaller" id="bayesian-conjugacy-theory-1">Bayesian Conjugacy Theory<a class="anchor" aria-label="anchor" href="#bayesian-conjugacy-theory-1"></a>
+<div class="section level2">
+<h2 id="bayesian-conjugacy-theory-1">Bayesian Conjugacy Theory<a class="anchor" aria-label="anchor" href="#bayesian-conjugacy-theory-1"></a>
 </h2>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>θ</mi><mo stretchy="false" form="prefix">|</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>x</mi><mn>1</mn></msub><mo>,</mo><mi>…</mi><mo>,</mo><msub><mi>x</mi><mi>i</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mfrac><mrow><mi>π</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>θ</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>⋅</mo><mi>L</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>θ</mi><mo stretchy="false" form="prefix">|</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>x</mi><mn>1</mn></msub><mo>,</mo><mi>…</mi><mo>,</mo><msub><mi>x</mi><mi>i</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mo>∫</mo><mi>π</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>θ</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>⋅</mo><mi>L</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>θ</mi><mo stretchy="false" form="prefix">|</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>x</mi><mn>1</mn></msub><mo>,</mo><mi>…</mi><mo>,</mo><msub><mi>x</mi><mi>i</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mspace width="0.222em"></mspace><mi>d</mi><mi>θ</mi></mrow></mfrac></mrow><annotation encoding="application/x-tex">\begin{equation}
 P(\theta|(x_1, \ldots, x_i)) = \frac{\pi(\theta) \cdot L(\theta|(x_1, \ldots, x_i))}{\int \pi(\theta) \cdot L(\theta|(x_1, \ldots, x_i))~d\theta}
@@ -191,8 +189,8 @@ P(\theta|(x_1, \ldots, x_i)) = \frac{\pi(\theta) \cdot L(\theta|(x_1, \ldots, x_
 <p><span style="color:DarkRed;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>∫</mo><mi>π</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>θ</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>⋅</mo><mi>L</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>θ</mi><mo stretchy="false" form="prefix">|</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>x</mi><mn>1</mn></msub><mo>,</mo><mi>…</mi><mo>,</mo><msub><mi>x</mi><mi>i</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mspace width="0.222em"></mspace><mi>d</mi><mi>θ</mi></mrow><annotation encoding="application/x-tex">\int \pi(\theta) \cdot L(\theta|(x_1, \ldots, x_i))~d\theta</annotation></semantics></math></span>
 = Marginal Distribution (this is the problem area)</p>
 </div>
-<div class="section level2 smaller">
-<h2 class="smaller" id="int-pitheta-cdot-lthetax_1-ldots-x_idtheta">
+<div class="section level2">
+<h2 id="int-pitheta-cdot-lthetax_1-ldots-x_idtheta">
 <span style="color:DarkRed;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>∫</mo><mi>π</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>θ</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>⋅</mo><mi>L</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>θ</mi><mo stretchy="false" form="prefix">|</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>x</mi><mn>1</mn></msub><mo>,</mo><mi>…</mi><mo>,</mo><msub><mi>x</mi><mi>i</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mspace width="0.222em"></mspace><mi>d</mi><mi>θ</mi></mrow><annotation encoding="application/x-tex">\int \pi(\theta) \cdot L(\theta|(x_1, \ldots, x_i))~d\theta</annotation></semantics></math></span><a class="anchor" aria-label="anchor" href="#int-pitheta-cdot-lthetax_1-ldots-x_idtheta"></a>
 </h2>
 <p>Solving this integral is potentially a very difficult problem.</p>
@@ -203,8 +201,8 @@ easily</li>
 <li>Numerical Methods</li>
 </ul>
 </div>
-<div class="section level2 smaller">
-<h2 class="smaller" id="int-pitheta-cdot-lthetax_1-ldots-x_idtheta-1">
+<div class="section level2">
+<h2 id="int-pitheta-cdot-lthetax_1-ldots-x_idtheta-1">
 <span style="color:DarkRed;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>∫</mo><mi>π</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>θ</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>⋅</mo><mi>L</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>θ</mi><mo stretchy="false" form="prefix">|</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>x</mi><mn>1</mn></msub><mo>,</mo><mi>…</mi><mo>,</mo><msub><mi>x</mi><mi>i</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mspace width="0.222em"></mspace><mi>d</mi><mi>θ</mi></mrow><annotation encoding="application/x-tex">\int \pi(\theta) \cdot L(\theta|(x_1, \ldots, x_i))~d\theta</annotation></semantics></math></span><a class="anchor" aria-label="anchor" href="#int-pitheta-cdot-lthetax_1-ldots-x_idtheta-1"></a>
 </h2>
 <p>Solving this integral is potentially a very difficult problem.</p>
@@ -217,25 +215,25 @@ priors</span>)</li>
 via MCMC, see advanced growth modeling tutorial)</li>
 </ul>
 </div>
-<div class="section level2 smaller">
-<h2 class="smaller" id="verb-conjugation">Verb Conjugation<a class="anchor" aria-label="anchor" href="#verb-conjugation"></a>
+<div class="section level2">
+<h2 id="verb-conjugation">Verb Conjugation<a class="anchor" aria-label="anchor" href="#verb-conjugation"></a>
 </h2>
 <p>This may all still seem abstract, so we’ll try to clear it up with
 two examples.</p>
 <p><img src="tobe.png" width="325" height="200"></p>
 </div>
-<div class="section level2 smaller">
-<h2 class="smaller" id="verb-conjugation-1">Verb Conjugation<a class="anchor" aria-label="anchor" href="#verb-conjugation-1"></a>
+<div class="section level2">
+<h2 id="verb-conjugation-1">Verb Conjugation<a class="anchor" aria-label="anchor" href="#verb-conjugation-1"></a>
 </h2>
 <p><img src="tobe2.png" width="600" height="500"></p>
 </div>
-<div class="section level2 smaller">
-<h2 class="smaller" id="verb-conjugation-2">Verb Conjugation<a class="anchor" aria-label="anchor" href="#verb-conjugation-2"></a>
+<div class="section level2">
+<h2 id="verb-conjugation-2">Verb Conjugation<a class="anchor" aria-label="anchor" href="#verb-conjugation-2"></a>
 </h2>
 <p><img src="tobe3.png" width="700" height="600"></p>
 </div>
-<div class="section level2 smaller">
-<h2 class="smaller" id="bayesian-beta-binomial-conjugacy">Bayesian Beta-Binomial Conjugacy<a class="anchor" aria-label="anchor" href="#bayesian-beta-binomial-conjugacy"></a>
+<div class="section level2">
+<h2 id="bayesian-beta-binomial-conjugacy">Bayesian Beta-Binomial Conjugacy<a class="anchor" aria-label="anchor" href="#bayesian-beta-binomial-conjugacy"></a>
 </h2>
 <p>In the previous example we updated a fundamental verb with
 context.</p>
@@ -251,25 +249,25 @@ L(\alpha, \beta|(x_1, \ldots, x_n)) \\
 \beta` = \beta + \Sigma(\text{Failures} \in x)
 \end{equation}$$</span></p>
 </div>
-<div class="section level2 smaller">
-<h2 class="smaller" id="bayesian-beta-binomial-conjugacy-1">Bayesian Beta-Binomial Conjugacy<a class="anchor" aria-label="anchor" href="#bayesian-beta-binomial-conjugacy-1"></a>
+<div class="section level2">
+<h2 id="bayesian-beta-binomial-conjugacy-1">Bayesian Beta-Binomial Conjugacy<a class="anchor" aria-label="anchor" href="#bayesian-beta-binomial-conjugacy-1"></a>
 </h2>
 <p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-3-1.png" width="700"></p>
 </div>
-<div class="section level2 smaller">
-<h2 class="smaller" id="bayesian-beta-binomial-conjugacy-2">Bayesian Beta-Binomial Conjugacy<a class="anchor" aria-label="anchor" href="#bayesian-beta-binomial-conjugacy-2"></a>
+<div class="section level2">
+<h2 id="bayesian-beta-binomial-conjugacy-2">Bayesian Beta-Binomial Conjugacy<a class="anchor" aria-label="anchor" href="#bayesian-beta-binomial-conjugacy-2"></a>
 </h2>
 <p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-4-1.png" width="700"></p>
 </div>
-<div class="section level2 smaller">
-<h2 class="smaller" id="bayesian-beta-binomial-conjugacy-3">Bayesian Beta-Binomial Conjugacy<a class="anchor" aria-label="anchor" href="#bayesian-beta-binomial-conjugacy-3"></a>
+<div class="section level2">
+<h2 id="bayesian-beta-binomial-conjugacy-3">Bayesian Beta-Binomial Conjugacy<a class="anchor" aria-label="anchor" href="#bayesian-beta-binomial-conjugacy-3"></a>
 </h2>
 <p>Generally we can think of conjugacy as when we know the distribution
 of a parameter in another distribution.</p>
 <p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-5-1.png" width="700"></p>
 </div>
-<div class="section level2 smaller">
-<h2 class="smaller" id="pcvrconjugate">
+<div class="section level2">
+<h2 id="pcvrconjugate">
 <code>pcvr::conjugate</code><a class="anchor" aria-label="anchor" href="#pcvrconjugate"></a>
 </h2>
 <p>In <code>pcvr</code> 11 distributions are supported in the
@@ -278,8 +276,8 @@ of a parameter in another distribution.</p>
 they are updated, and what the common alternative tests would be for
 that kind of data.</p>
 </div>
-<div class="section level2 smaller">
-<h2 class="smaller" id="pcvrconjugate-1">
+<div class="section level2">
+<h2 id="pcvrconjugate-1">
 <code>pcvr::conjugate</code><a class="anchor" aria-label="anchor" href="#pcvrconjugate-1"></a>
 </h2>
 <table style="width:100%;" class="table">
@@ -384,21 +382,69 @@ that kind of data.</p>
 </tbody>
 </table>
 </div>
-<div class="section level2 smaller">
-<h2 class="smaller" id="pcvrconjugate-2">
+<div class="section level2">
+<h2 id="pcvrconjugate-2">
 <code>pcvr::conjugate</code><a class="anchor" aria-label="anchor" href="#pcvrconjugate-2"></a>
 </h2>
 <pre><code><span><span class="co">## Warning: Removed 2 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">## (`geom_bar()`).</span></span></code></pre>
 <p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
 </div>
-<div class="section level2 smaller">
-<h2 class="smaller" id="pcvrconjugate-arguments">
+<div class="section level2">
+<h2 id="pcvrconjugate-arguments">
 <code>pcvr::conjugate</code> arguments<a class="anchor" aria-label="anchor" href="#pcvrconjugate-arguments"></a>
 </h2>
 <p><code>conjugate</code> takes one or two sets of SV (numeric) or MV
 (matrix/df) data. Alternatively this can be a formula and a dataframe,
 similar to <code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">stats::t.test</a></code>.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">pcvr</span><span class="fu">::</span><span class="fu"><a href="../reference/conjugate.html">conjugate</a></span><span class="op">(</span></span>
+<span>  s1 <span class="op">=</span> <span class="cn">NULL</span>, s2 <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>    <span class="st">"t"</span>, <span class="st">"gaussian"</span>, <span class="st">"beta"</span>,</span>
+<span>    <span class="st">"binomial"</span>, <span class="st">"lognormal"</span>, <span class="st">"lognormal2"</span>,</span>
+<span>    <span class="st">"poisson"</span>, <span class="st">"negbin"</span>,</span>
+<span>    <span class="st">"uniform"</span>, <span class="st">"pareto"</span>,</span>
+<span>    <span class="st">"vonmises"</span>, <span class="st">"vonmises2"</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  priors <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  plot <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  rope_range <span class="op">=</span> <span class="cn">NULL</span>, rope_ci <span class="op">=</span> <span class="fl">0.89</span>,</span>
+<span>  cred.int.level <span class="op">=</span> <span class="fl">0.89</span>,</span>
+<span>  hypothesis <span class="op">=</span> <span class="st">"equal"</span>,</span>
+<span>  support <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="pcvrconjugate-arguments-1">
+<code>pcvr::conjugate</code> arguments<a class="anchor" aria-label="anchor" href="#pcvrconjugate-arguments-1"></a>
+</h2>
+<p>The <code>method</code> argument specifies the distribution to be
+used. See <code><a href="../reference/conjugate.html">?conjugate</a></code> for further details.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">pcvr</span><span class="fu">::</span><span class="fu"><a href="../reference/conjugate.html">conjugate</a></span><span class="op">(</span></span>
+<span>  s1 <span class="op">=</span> <span class="cn">NULL</span>, s2 <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>    <span class="st">"t"</span>, <span class="st">"gaussian"</span>, <span class="st">"beta"</span>,</span>
+<span>    <span class="st">"binomial"</span>, <span class="st">"lognormal"</span>, <span class="st">"lognormal2"</span>,</span>
+<span>    <span class="st">"poisson"</span>, <span class="st">"negbin"</span>,</span>
+<span>    <span class="st">"uniform"</span>, <span class="st">"pareto"</span>,</span>
+<span>    <span class="st">"vonmises"</span>, <span class="st">"vonmises2"</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  priors <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  plot <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  rope_range <span class="op">=</span> <span class="cn">NULL</span>, rope_ci <span class="op">=</span> <span class="fl">0.89</span>,</span>
+<span>  cred.int.level <span class="op">=</span> <span class="fl">0.89</span>,</span>
+<span>  hypothesis <span class="op">=</span> <span class="st">"equal"</span>,</span>
+<span>  support <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="pcvrconjugate-arguments-2">
+<code>pcvr::conjugate</code> arguments<a class="anchor" aria-label="anchor" href="#pcvrconjugate-arguments-2"></a>
+</h2>
+<p>The <code>priors</code> argument allows you to specify the prior
+distribution. If left NULL then default priors will be used</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">pcvr</span><span class="fu">::</span><span class="fu"><a href="../reference/conjugate.html">conjugate</a></span><span class="op">(</span></span>
 <span>  s1 <span class="op">=</span> <span class="cn">NULL</span>, s2 <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -417,36 +463,20 @@ similar to <code><a href="https://rdrr.io/r/stats/t.test.html" class="external-l
 <span>  support <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
-<div class="section level2 smaller">
-<h2 class="smaller" id="pcvrconjugate-arguments-1">
-<code>pcvr::conjugate</code> arguments<a class="anchor" aria-label="anchor" href="#pcvrconjugate-arguments-1"></a>
+<div class="section level2">
+<h2 id="pcvrconjugate-default-priors">
+<code>pcvr::conjugate</code> default priors<a class="anchor" aria-label="anchor" href="#pcvrconjugate-default-priors"></a>
 </h2>
-<p>The <code>method</code> argument specifies the distribution to be
-used. See <code><a href="../reference/conjugate.html">?conjugate</a></code> for further details.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">pcvr</span><span class="fu">::</span><span class="fu"><a href="../reference/conjugate.html">conjugate</a></span><span class="op">(</span></span>
-<span>  s1 <span class="op">=</span> <span class="cn">NULL</span>, s2 <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
-<span>    <span class="st">"t"</span>, <span class="st">"gaussian"</span>, <span class="st">"beta"</span>,</span>
-<span>    <span class="st">"binomial"</span>, <span class="st">"lognormal"</span>, <span class="st">"lognormal2"</span>,</span>
-<span>    <span class="st">"poisson"</span>, <span class="st">"negbin"</span>,</span>
-<span>    <span class="st">"uniform"</span>, <span class="st">"pareto"</span>,</span>
-<span>    <span class="st">"vonmises"</span>, <span class="st">"vonmises2"</span></span>
-<span>  <span class="op">)</span>,</span>
-<span>  priors <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  plot <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  rope_range <span class="op">=</span> <span class="cn">NULL</span>, rope_ci <span class="op">=</span> <span class="fl">0.89</span>,</span>
-<span>  cred.int.level <span class="op">=</span> <span class="fl">0.89</span>,</span>
-<span>  hypothesis <span class="op">=</span> <span class="st">"equal"</span>,</span>
-<span>  support <span class="op">=</span> <span class="cn">NULL</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Warning: Removed 2 rows containing missing values or values outside the scale range</span></span>
+<span><span class="co">## (`geom_bar()`).</span></span></code></pre>
+<p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-10-1.png" width="700"></p>
 </div>
-<div class="section level2 smaller">
-<h2 class="smaller" id="pcvrconjugate-arguments-2">
-<code>pcvr::conjugate</code> arguments<a class="anchor" aria-label="anchor" href="#pcvrconjugate-arguments-2"></a>
+<div class="section level2">
+<h2 id="pcvrconjugate-arguments-3">
+<code>pcvr::conjugate</code> arguments<a class="anchor" aria-label="anchor" href="#pcvrconjugate-arguments-3"></a>
 </h2>
-<p>The <code>priors</code> argument allows you to specify the prior
-distribution. If left NULL then default priors will be used</p>
+<p>The <code>plot</code> argument controls whether or not a ggplot is
+made of the results. See later examples.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">pcvr</span><span class="fu">::</span><span class="fu"><a href="../reference/conjugate.html">conjugate</a></span><span class="op">(</span></span>
 <span>  s1 <span class="op">=</span> <span class="cn">NULL</span>, s2 <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -465,20 +495,38 @@ distribution. If left NULL then default priors will be used</p>
 <span>  support <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
-<div class="section level2 smaller">
-<h2 class="smaller" id="pcvrconjugate-default-priors">
-<code>pcvr::conjugate</code> default priors<a class="anchor" aria-label="anchor" href="#pcvrconjugate-default-priors"></a>
+<div class="section level2">
+<h2 id="pcvrconjugate-arguments-4">
+<code>pcvr::conjugate</code> arguments<a class="anchor" aria-label="anchor" href="#pcvrconjugate-arguments-4"></a>
 </h2>
-<pre><code><span><span class="co">## Warning: Removed 2 rows containing missing values or values outside the scale range</span></span>
-<span><span class="co">## (`geom_bar()`).</span></span></code></pre>
-<p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-10-1.png" width="700"></p>
+<p>The <code>rope_range</code> and <code>rope_ci</code> arguments allow
+region-of-practical-equivalence (ROPE) testing using the difference in
+the posterior distributions if two samples are given.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">pcvr</span><span class="fu">::</span><span class="fu"><a href="../reference/conjugate.html">conjugate</a></span><span class="op">(</span></span>
+<span>  s1 <span class="op">=</span> <span class="cn">NULL</span>, s2 <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>    <span class="st">"t"</span>, <span class="st">"gaussian"</span>, <span class="st">"beta"</span>,</span>
+<span>    <span class="st">"binomial"</span>, <span class="st">"lognormal"</span>, <span class="st">"lognormal2"</span>,</span>
+<span>    <span class="st">"poisson"</span>, <span class="st">"negbin"</span>,</span>
+<span>    <span class="st">"uniform"</span>, <span class="st">"pareto"</span>,</span>
+<span>    <span class="st">"vonmises"</span>, <span class="st">"vonmises2"</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  priors <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  plot <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  rope_range <span class="op">=</span> <span class="cn">NULL</span>, rope_ci <span class="op">=</span> <span class="fl">0.89</span>,</span>
+<span>  cred.int.level <span class="op">=</span> <span class="fl">0.89</span>,</span>
+<span>  hypothesis <span class="op">=</span> <span class="st">"equal"</span>,</span>
+<span>  support <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 </div>
-<div class="section level2 smaller">
-<h2 class="smaller" id="pcvrconjugate-arguments-3">
-<code>pcvr::conjugate</code> arguments<a class="anchor" aria-label="anchor" href="#pcvrconjugate-arguments-3"></a>
+<div class="section level2">
+<h2 id="pcvrconjugate-arguments-5">
+<code>pcvr::conjugate</code> arguments<a class="anchor" aria-label="anchor" href="#pcvrconjugate-arguments-5"></a>
 </h2>
-<p>The <code>plot</code> argument controls whether or not a ggplot is
-made of the results. See later examples.</p>
+<p><code>cred.int.level</code> controls the credible intervals that are
+calculated on the posterior distributions. The default of 89% is
+arbitrary.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">pcvr</span><span class="fu">::</span><span class="fu"><a href="../reference/conjugate.html">conjugate</a></span><span class="op">(</span></span>
 <span>  s1 <span class="op">=</span> <span class="cn">NULL</span>, s2 <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -497,13 +545,13 @@ made of the results. See later examples.</p>
 <span>  support <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
-<div class="section level2 smaller">
-<h2 class="smaller" id="pcvrconjugate-arguments-4">
-<code>pcvr::conjugate</code> arguments<a class="anchor" aria-label="anchor" href="#pcvrconjugate-arguments-4"></a>
+<div class="section level2">
+<h2 id="pcvrconjugate-arguments-6">
+<code>pcvr::conjugate</code> arguments<a class="anchor" aria-label="anchor" href="#pcvrconjugate-arguments-6"></a>
 </h2>
-<p>The <code>rope_range</code> and <code>rope_ci</code> arguments allow
-region-of-practical-equivalence (ROPE) testing using the difference in
-the posterior distributions if two samples are given.</p>
+<p>The <code>hypothesis</code> argument sets which hypothesis is tested
+out of “greater”, “lesser”, “equal” and “unequal”. These are read as “s1
+equal to s2”, etc.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">pcvr</span><span class="fu">::</span><span class="fu"><a href="../reference/conjugate.html">conjugate</a></span><span class="op">(</span></span>
 <span>  s1 <span class="op">=</span> <span class="cn">NULL</span>, s2 <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -522,13 +570,13 @@ the posterior distributions if two samples are given.</p>
 <span>  support <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
-<div class="section level2 smaller">
-<h2 class="smaller" id="pcvrconjugate-arguments-5">
-<code>pcvr::conjugate</code> arguments<a class="anchor" aria-label="anchor" href="#pcvrconjugate-arguments-5"></a>
+<div class="section level2">
+<h2 id="pcvrconjugate-arguments-7">
+<code>pcvr::conjugate</code> arguments<a class="anchor" aria-label="anchor" href="#pcvrconjugate-arguments-7"></a>
 </h2>
-<p><code>cred.int.level</code> controls the credible intervals that are
-calculated on the posterior distributions. The default of 89% is
-arbitrary.</p>
+<p>The <code>support</code> argument optionally lets you set the support
+range for the distribution. In practice this exists for internal use and
+is not something you would generally want to set.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">pcvr</span><span class="fu">::</span><span class="fu"><a href="../reference/conjugate.html">conjugate</a></span><span class="op">(</span></span>
 <span>  s1 <span class="op">=</span> <span class="cn">NULL</span>, s2 <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -547,58 +595,8 @@ arbitrary.</p>
 <span>  support <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
-<div class="section level2 smaller">
-<h2 class="smaller" id="pcvrconjugate-arguments-6">
-<code>pcvr::conjugate</code> arguments<a class="anchor" aria-label="anchor" href="#pcvrconjugate-arguments-6"></a>
-</h2>
-<p>The <code>hypothesis</code> argument sets which hypothesis is tested
-out of “greater”, “lesser”, “equal” and “unequal”. These are read as “s1
-equal to s2”, etc.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">pcvr</span><span class="fu">::</span><span class="fu"><a href="../reference/conjugate.html">conjugate</a></span><span class="op">(</span></span>
-<span>  s1 <span class="op">=</span> <span class="cn">NULL</span>, s2 <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
-<span>    <span class="st">"t"</span>, <span class="st">"gaussian"</span>, <span class="st">"beta"</span>,</span>
-<span>    <span class="st">"binomial"</span>, <span class="st">"lognormal"</span>, <span class="st">"lognormal2"</span>,</span>
-<span>    <span class="st">"poisson"</span>, <span class="st">"negbin"</span>,</span>
-<span>    <span class="st">"uniform"</span>, <span class="st">"pareto"</span>,</span>
-<span>    <span class="st">"vonmises"</span>, <span class="st">"vonmises2"</span></span>
-<span>  <span class="op">)</span>,</span>
-<span>  priors <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  plot <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  rope_range <span class="op">=</span> <span class="cn">NULL</span>, rope_ci <span class="op">=</span> <span class="fl">0.89</span>,</span>
-<span>  cred.int.level <span class="op">=</span> <span class="fl">0.89</span>,</span>
-<span>  hypothesis <span class="op">=</span> <span class="st">"equal"</span>,</span>
-<span>  support <span class="op">=</span> <span class="cn">NULL</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level2 smaller">
-<h2 class="smaller" id="pcvrconjugate-arguments-7">
-<code>pcvr::conjugate</code> arguments<a class="anchor" aria-label="anchor" href="#pcvrconjugate-arguments-7"></a>
-</h2>
-<p>The <code>support</code> argument optionally lets you set the support
-range for the distribution. In practice this exists for internal use and
-is not something you would generally want to set.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">pcvr</span><span class="fu">::</span><span class="fu"><a href="../reference/conjugate.html">conjugate</a></span><span class="op">(</span></span>
-<span>  s1 <span class="op">=</span> <span class="cn">NULL</span>, s2 <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
-<span>    <span class="st">"t"</span>, <span class="st">"gaussian"</span>, <span class="st">"beta"</span>,</span>
-<span>    <span class="st">"binomial"</span>, <span class="st">"lognormal"</span>, <span class="st">"lognormal2"</span>,</span>
-<span>    <span class="st">"poisson"</span>, <span class="st">"negbin"</span>,</span>
-<span>    <span class="st">"uniform"</span>, <span class="st">"pareto"</span>,</span>
-<span>    <span class="st">"vonmises"</span>, <span class="st">"vonmises2"</span></span>
-<span>  <span class="op">)</span>,</span>
-<span>  priors <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  plot <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  rope_range <span class="op">=</span> <span class="cn">NULL</span>, rope_ci <span class="op">=</span> <span class="fl">0.89</span>,</span>
-<span>  cred.int.level <span class="op">=</span> <span class="fl">0.89</span>,</span>
-<span>  hypothesis <span class="op">=</span> <span class="st">"equal"</span>,</span>
-<span>  support <span class="op">=</span> <span class="cn">NULL</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level2 smaller">
-<h2 class="smaller" id="reading-conjugate-output">Reading <code>conjugate</code> output<a class="anchor" aria-label="anchor" href="#reading-conjugate-output"></a>
+<div class="section level2">
+<h2 id="reading-conjugate-output">Reading <code>conjugate</code> output<a class="anchor" aria-label="anchor" href="#reading-conjugate-output"></a>
 </h2>
 <p>Lastly we’ll show a few interpretations of <code>conjugate</code>
 output in the plant phenotyping context.</p>
@@ -609,17 +607,17 @@ output in the plant phenotyping context.</p>
 <li>Hue</li>
 </ul>
 </div>
-<div class="section level2 smaller">
-<h2 class="smaller" id="germination-rates">Germination Rates<a class="anchor" aria-label="anchor" href="#germination-rates"></a>
+<div class="section level2">
+<h2 id="germination-rates">Germination Rates<a class="anchor" aria-label="anchor" href="#germination-rates"></a>
 </h2>
 <p>Germination Rates (or other binary outocmes like flowering or death)
 can make good sense as Beta-Binomial data.</p>
 <p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-16-1.png" width="700"></p>
 </div>
-<div class="section level2 smaller">
-<h2 class="smaller" id="germination-rates-1">Germination Rates<a class="anchor" aria-label="anchor" href="#germination-rates-1"></a>
+<div class="section level2">
+<h2 id="germination-rates-1">Germination Rates<a class="anchor" aria-label="anchor" href="#germination-rates-1"></a>
 </h2>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/conjugate.html">conjugate</a></span><span class="op">(</span></span>
 <span>  s1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>successes <span class="op">=</span> <span class="va">df</span><span class="op">[</span><span class="va">df</span><span class="op">$</span><span class="va">geno</span> <span class="op">==</span> <span class="st">"A"</span>, <span class="st">"y"</span><span class="op">]</span>, trials <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>,</span>
 <span>  s2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>successes <span class="op">=</span> <span class="va">df</span><span class="op">[</span><span class="va">df</span><span class="op">$</span><span class="va">geno</span> <span class="op">==</span> <span class="st">"B"</span>, <span class="st">"y"</span><span class="op">]</span>, trials <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>,</span>
@@ -628,8 +626,8 @@ can make good sense as Beta-Binomial data.</p>
 <span><span class="op">)</span></span></code></pre></div>
 <p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-18-1.png" width="700"></p>
 </div>
-<div class="section level2 smaller">
-<h2 class="smaller" id="germination-rates-2">Germination Rates<a class="anchor" aria-label="anchor" href="#germination-rates-2"></a>
+<div class="section level2">
+<h2 id="germination-rates-2">Germination Rates<a class="anchor" aria-label="anchor" href="#germination-rates-2"></a>
 </h2>
 <p>Here we’d simply conclude that there is about a 19% chance that the
 germination rate is the same between these two genotypes after 1 week.
@@ -637,16 +635,16 @@ We could do more with ROPE testing, but we’ll do that in the next
 example.</p>
 <p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-19-1.png" width="700"></p>
 </div>
-<div class="section level2 smaller">
-<h2 class="smaller" id="area">Area<a class="anchor" aria-label="anchor" href="#area"></a>
+<div class="section level2">
+<h2 id="area">Area<a class="anchor" aria-label="anchor" href="#area"></a>
 </h2>
 <p>Lots of phenotypes are gaussian and <code>conjugate</code> can be
 used similarly to a T-test with the “t” method. Consider area data that
 looks like this example.</p>
 <p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-20-1.png" width="700"></p>
 </div>
-<div class="section level2 smaller">
-<h2 class="smaller" id="area-1">Area<a class="anchor" aria-label="anchor" href="#area-1"></a>
+<div class="section level2">
+<h2 id="area-1">Area<a class="anchor" aria-label="anchor" href="#area-1"></a>
 </h2>
 <p>Here we include a ROPE test corresponding to our belief that any
 difference in Area of
@@ -654,7 +652,7 @@ difference in Area of
 is biologically insignificant. We also show the formula syntax and use
 non-default priors here (since default priors include negative values
 which can’t happen with area).</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/conjugate.html">conjugate</a></span><span class="op">(</span></span>
 <span>  s1 <span class="op">=</span> <span class="va">y</span> <span class="op">~</span> <span class="va">geno</span>, s2 <span class="op">=</span> <span class="va">df</span>,</span>
 <span>  method <span class="op">=</span> <span class="st">"t"</span>,</span>
@@ -665,20 +663,20 @@ which can’t happen with area).</p>
 <span><span class="op">)</span></span></code></pre></div>
 <p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-22-1.png" width="700"></p>
 </div>
-<div class="section level2 smaller">
-<h2 class="smaller" id="area-2">Area<a class="anchor" aria-label="anchor" href="#area-2"></a>
+<div class="section level2">
+<h2 id="area-2">Area<a class="anchor" aria-label="anchor" href="#area-2"></a>
 </h2>
 <p>Our plot shows about a 83% chance that these distributions are
 unequal and a 24% chance that the difference in means is within
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>±</mo><mn>2</mn><mi>c</mi><msup><mi>m</mi><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">\pm2 cm^2</annotation></semantics></math>.</p>
 <p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-23-1.png" width="700"></p>
 </div>
-<div class="section level2 smaller">
-<h2 class="smaller" id="area-3">Area<a class="anchor" aria-label="anchor" href="#area-3"></a>
+<div class="section level2">
+<h2 id="area-3">Area<a class="anchor" aria-label="anchor" href="#area-3"></a>
 </h2>
 <p>The other aspects of the output are a summary and the posterior
 parameters.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">res</span>, <span class="va">class</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## $summary</span></span>
 <span><span class="co">## [1] "data.frame"</span></span>
@@ -691,19 +689,19 @@ parameters.</p>
 <p>. . .</p>
 <p>The summary is a data.frame with a summary of the information in the
 plot.</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">res</span><span class="op">$</span><span class="va">summary</span></span></code></pre></div>
 <pre><code><span><span class="co">##      HDE_1 HDI_1_low HDI_1_high    HDE_2 HDI_2_low HDI_2_high     hyp post.prob</span></span>
 <span><span class="co">## 1 15.00699  13.38714   16.62685 11.93384  9.802616   14.06506 unequal 0.8206558</span></span>
 <span><span class="co">##   HDE_rope HDI_rope_low HDI_rope_high rope_prob</span></span>
 <span><span class="co">## 1 3.077311     0.245071      5.602771   0.23121</span></span></code></pre>
 </div>
-<div class="section level2 smaller">
-<h2 class="smaller" id="area-4">Area<a class="anchor" aria-label="anchor" href="#area-4"></a>
+<div class="section level2">
+<h2 id="area-4">Area<a class="anchor" aria-label="anchor" href="#area-4"></a>
 </h2>
 <p>The other aspects of the output are a summary and the posterior
 parameters.</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">res</span>, <span class="va">class</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## $summary</span></span>
 <span><span class="co">## [1] "data.frame"</span></span>
@@ -715,14 +713,14 @@ parameters.</p>
 <span><span class="co">## [1] "patchwork" "gg"        "ggplot"</span></span></code></pre>
 <p>The posterior is the prior list updated with the given data, this
 allows for Bayesian updating hypothetically.</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="va">res</span><span class="op">$</span><span class="va">posterior</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##      mu       n  s2      </span></span>
 <span><span class="co">## [1,] 15.00699 11 9.383789</span></span>
 <span><span class="co">## [2,] 11.93384 11 16.24362</span></span></code></pre>
 </div>
-<div class="section level2 smaller">
-<h2 class="smaller" id="leaf-counts">Leaf Counts<a class="anchor" aria-label="anchor" href="#leaf-counts"></a>
+<div class="section level2">
+<h2 id="leaf-counts">Leaf Counts<a class="anchor" aria-label="anchor" href="#leaf-counts"></a>
 </h2>
 <p>There are also several phenotypes that are counts. Numbers of
 vertices, leaves, flowers, etc could all be used with one of the count
@@ -730,12 +728,12 @@ distributions. Here we consider Poisson distributed leaf counts between
 two genotypes.</p>
 <p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-28-1.png" width="700"></p>
 </div>
-<div class="section level2 smaller">
-<h2 class="smaller" id="leaf-counts-1">Leaf Counts<a class="anchor" aria-label="anchor" href="#leaf-counts-1"></a>
+<div class="section level2">
+<h2 id="leaf-counts-1">Leaf Counts<a class="anchor" aria-label="anchor" href="#leaf-counts-1"></a>
 </h2>
 <p>Here we model <span class="math inline">$X \sim Poisson(\lambda)\\
 \lambda \sim \Gamma(A, B)$</span></p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/conjugate.html">conjugate</a></span><span class="op">(</span></span>
 <span>  s1 <span class="op">=</span> <span class="va">y</span> <span class="op">~</span> <span class="va">geno</span>, s2 <span class="op">=</span> <span class="va">df</span>,</span>
 <span>  method <span class="op">=</span> <span class="st">"poisson"</span>,</span>
@@ -746,8 +744,8 @@ two genotypes.</p>
 <span><span class="op">)</span></span></code></pre></div>
 <p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-30-1.png" width="700"></p>
 </div>
-<div class="section level2 smaller">
-<h2 class="smaller" id="leaf-counts-2">Leaf Counts<a class="anchor" aria-label="anchor" href="#leaf-counts-2"></a>
+<div class="section level2">
+<h2 id="leaf-counts-2">Leaf Counts<a class="anchor" aria-label="anchor" href="#leaf-counts-2"></a>
 </h2>
 <p>We can comfortably say that the difference in the posteriors is not
 in [-1, 1] and there is a 91% chance that the Gamma distributions for
@@ -755,8 +753,8 @@ in [-1, 1] and there is a 91% chance that the Gamma distributions for
 are different.</p>
 <p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-31-1.png" width="700"></p>
 </div>
-<div class="section level2 smaller">
-<h2 class="smaller" id="hue">Hue<a class="anchor" aria-label="anchor" href="#hue"></a>
+<div class="section level2">
+<h2 id="hue">Hue<a class="anchor" aria-label="anchor" href="#hue"></a>
 </h2>
 <p>Finally, we’ll show an example using what is likely the
 least-familiar distribution in <code>conjugate</code>, the Von-Mises
@@ -772,8 +770,8 @@ space. See <code><a href="../reference/conjugate.html">?conjugate</a></code> for
 <pre><code><span><span class="co">## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</span></span></code></pre>
 <p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-32-1.png" width="700"></p>
 </div>
-<div class="section level2 smaller">
-<h2 class="smaller" id="hue-1">Hue<a class="anchor" aria-label="anchor" href="#hue-1"></a>
+<div class="section level2">
+<h2 id="hue-1">Hue<a class="anchor" aria-label="anchor" href="#hue-1"></a>
 </h2>
 <p>Note this is a very exaggerated example for the plant phenotyping
 setting since green happens to be in the middle of the hue circle, which
@@ -782,7 +780,7 @@ wraps in the red colors.</p>
 non-circular space like this would be a problem. For values we normally
 get from plants other continuous methods can generally be a decent
 approximation.</p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">df</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">geno</span>, y <span class="op">=</span> <span class="va">y</span>, fill <span class="op">=</span> <span class="va">geno</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_boxplot.html" class="external-link">geom_boxplot</a></span><span class="op">(</span>outlier.shape <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_jitter.html" class="external-link">geom_jitter</a></span><span class="op">(</span>height <span class="op">=</span> <span class="fl">0</span>, width <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span> <span class="op">+</span></span>
@@ -792,22 +790,22 @@ approximation.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-33-1.png" width="700"></p>
 </div>
-<div class="section level2 smaller">
-<h2 class="smaller" id="hue-2">Hue<a class="anchor" aria-label="anchor" href="#hue-2"></a>
+<div class="section level2">
+<h2 id="hue-2">Hue<a class="anchor" aria-label="anchor" href="#hue-2"></a>
 </h2>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/conjugate.html">conjugate</a></span><span class="op">(</span></span>
 <span>  s1 <span class="op">=</span> <span class="va">y</span> <span class="op">~</span> <span class="va">geno</span>, s2 <span class="op">=</span> <span class="va">df</span>,</span>
 <span>  method <span class="op">=</span> <span class="st">"vonmises2"</span>,</span>
 <span>  priors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>mu <span class="op">=</span> <span class="fl">0</span>, kappa <span class="op">=</span> <span class="fl">0.5</span>, boundary <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="va">pi</span>, <span class="va">pi</span><span class="op">)</span>, n <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>,</span>
 <span>  plot <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">res</span><span class="op">$</span><span class="va">plot</span></span></code></pre></div>
 <p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-35-1.png" width="700"></p>
 </div>
-<div class="section level2 smaller">
-<h2 class="smaller" id="hue-3">Hue<a class="anchor" aria-label="anchor" href="#hue-3"></a>
+<div class="section level2">
+<h2 id="hue-3">Hue<a class="anchor" aria-label="anchor" href="#hue-3"></a>
 </h2>
 <p>Here our distributions are very similar and there is about a 79%
 chance that their parameters are the same given this data and our (very
@@ -815,12 +813,12 @@ wide) priors.</p>
 <p>Note that if you use data in a different <code>boundary</code> space
 than radians the <code>rope_range</code> would be given in the observed
 parameter space, not in radians.</p>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">res</span><span class="op">$</span><span class="va">plot</span></span></code></pre></div>
 <p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-36-1.png" width="700"></p>
 </div>
-<div class="section level2 smaller">
-<h2 class="smaller" id="conclusion">Conclusion<a class="anchor" aria-label="anchor" href="#conclusion"></a>
+<div class="section level2">
+<h2 id="conclusion">Conclusion<a class="anchor" aria-label="anchor" href="#conclusion"></a>
 </h2>
 <p>Hopefully this has been a useful introduction to Bayesian
 conjugacy.</p>
