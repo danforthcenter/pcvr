@@ -138,23 +138,29 @@ simFreqs <- function(vec, group) {
   s1 <- hist(vec, breaks = seq(1, 181, 1), plot = FALSE)$counts
   s1d <- as.data.frame(cbind(data.frame(group), matrix(s1, nrow = 1)))
   colnames(s1d) <- c("group", paste0("sim_", 1:180))
-  s1d
+  return(s1d)
 }
 sim_df <- rbind(
   do.call(rbind, lapply(1:10, function(i) {
-    simFreqs(rnorm(200, 70, 10), group = "normal")
+    sf <- simFreqs(rnorm(200, 70, 10), group = "normal")
+    return(sf)
   })),
   do.call(rbind, lapply(1:10, function(i) {
-    simFreqs(rlnorm(200, log(30), 0.35), group = "lognormal")
+    sf <- simFreqs(rlnorm(200, log(30), 0.35), group = "lognormal")
+    return(sf)
   })),
   do.call(rbind, lapply(1:10, function(i) {
-    simFreqs(c(rlnorm(125, log(15), 0.25), rnorm(75, 75, 5)), group = "bimodal")
+    sf <- simFreqs(c(rlnorm(125, log(15), 0.25), rnorm(75, 75, 5)), group = "bimodal")
+    return(sf)
   })),
   do.call(rbind, lapply(1:10, function(i) {
-    simFreqs(c(rlnorm(80, log(20), 0.3), rnorm(70, 70, 10), rnorm(50, 120, 5)), group = "trimodal")
+    sf <- simFreqs(c(rlnorm(80, log(20), 0.3), rnorm(70, 70, 10),
+                     rnorm(50, 120, 5)), group = "trimodal")
+    return(sf)
   })),
   do.call(rbind, lapply(1:10, function(i) {
-    simFreqs(runif(200, 1, 180), group = "uniform")
+    sf <- simFreqs(runif(200, 1, 180), group = "uniform")
+    return(sf)
   }))
 )
 sim_df_long <- as.data.frame(data.table::melt(data.table::as.data.table(sim_df), id.vars = "group"))

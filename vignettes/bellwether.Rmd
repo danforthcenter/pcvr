@@ -459,7 +459,7 @@ ggplot(sv_ag[sv_ag$DAS == 18, ], aes(
 ```{r}
 set.seed(123)
 dists <- stats::setNames(lapply(runif(12, 50, 60), function(i) {
-  list(mean = i, sd = 15)
+  return(list(mean = i, sd = 15))
 }), rep("rnorm", 12))
 d <- mvSim(dists,
   wide = TRUE, n_samples = 5,
@@ -467,7 +467,7 @@ d <- mvSim(dists,
   params = list("A" = runif(12, 1, 3))
 )
 d$group <- sapply(sub(".*_", "", d$group), function(x) {
-  letters[as.numeric(x)]
+  return(letters[as.numeric(x)])
 })
 d$genotype <- ifelse(d$group %in% letters[1:3], "MM",
   ifelse(d$group %in% letters[4:6], "B73",
@@ -539,24 +539,30 @@ simFreqs <- function(vec, group) {
   s1 <- hist(vec, breaks = seq(1, 181, 1), plot = FALSE)$counts
   s1d <- as.data.frame(cbind(data.frame(group), matrix(s1, nrow = 1)))
   colnames(s1d) <- c("group", paste0("sim_", 1:180))
-  s1d
+  return(s1d)
 }
 
 sim_df <- rbind(
   do.call(rbind, lapply(1:10, function(i) {
-    simFreqs(rnorm(200, 50, 10), group = "normal")
+    sf <- simFreqs(rnorm(200, 50, 10), group = "normal")
+    return(sf)
   })),
   do.call(rbind, lapply(1:10, function(i) {
-    simFreqs(rlnorm(200, log(30), 0.25), group = "lognormal")
+    sf <- simFreqs(rlnorm(200, log(30), 0.25), group = "lognormal")
+    return(sf)
   })),
   do.call(rbind, lapply(1:10, function(i) {
-    simFreqs(c(rlnorm(125, log(15), 0.25), rnorm(75, 75, 5)), group = "bimodal")
+    sf <- simFreqs(c(rlnorm(125, log(15), 0.25), rnorm(75, 75, 5)), group = "bimodal")
+    return(sf)
   })),
   do.call(rbind, lapply(1:10, function(i) {
-    simFreqs(c(rlnorm(100, log(15), 0.25), rnorm(50, 50, 5), rnorm(50, 90, 5)), group = "trimodal")
+    sf <- simFreqs(c(rlnorm(100, log(15), 0.25), rnorm(50, 50, 5),
+                     rnorm(50, 90, 5)), group = "trimodal")
+    return(sf)
   })),
   do.call(rbind, lapply(1:10, function(i) {
-    simFreqs(runif(200, 1, 180), group = "uniform")
+    sf <- simFreqs(runif(200, 1, 180), group = "uniform")
+    return(sf)
   }))
 )
 
