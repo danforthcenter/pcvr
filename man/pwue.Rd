@@ -81,9 +81,10 @@ df <- data.frame(
   area_pixels = round(130 / (1 + exp( (12 - seq_along(weight_before))/3) ), 0),
   weight_before,
   weight_after,
-  barcode = 1
+  barcode = 1,
+  other = "x"
 )
-ex <- pwue(df, time = "time", method = "rate")
+ex <- pwue(df, time = "time", method = "rate", id = c("barcode", "other"))
 w <- df[, c("time", "weight_before", "weight_after", "barcode")]
 ex2 <- pwue(df, w, time = c("time", "time"), method = "abs")
 ex3 <- pwue(df, w, time = c("time", "time"), method = "ndt")
