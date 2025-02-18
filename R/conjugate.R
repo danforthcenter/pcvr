@@ -848,7 +848,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
       ggplot2::theme(legend.position = "none")
     #* `Make marginal distribution plot of each parameter (x, y)`
     margin_plots <- lapply(params, function(par) {
-      ggplot2::ggplot(
+      par_plot <- ggplot2::ggplot(
         margin_plot_df[margin_plot_df$param == par, ],
         ggplot2::aes(x = .data$range, y = .data$prob)
       ) +
@@ -882,6 +882,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
         ggplot2::xlim(limits[[par]]) +
         ggplot2::theme_void() +
         ggplot2::theme(legend.title = ggplot2::element_blank())
+      return(par_plot)
     })
     #* `Write title if there is only 1 sample`
     SUBTITLE <- NULL
@@ -960,7 +961,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
     margin_plots <- lapply(params, function(par) {
       hdf <- res$summary
       hdf <- hdf[hdf$param == par, ]
-      ggplot2::ggplot() +
+      par_plot <- ggplot2::ggplot() +
         ggplot2::geom_area(
           data = margin_plot_df[margin_plot_df$param == par, ],
           alpha = 0.5, ggplot2::aes(
@@ -1021,6 +1022,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
           legend.position.inside = c(0.1, 0.5),
           legend.title = ggplot2::element_blank()
         )
+      return(par_plot)
     })
 
     post.probs <- lapply(params, function(par) {

@@ -221,13 +221,14 @@ gam_diff <- function(model, newdata = NULL, g1, g2, byVar = NULL, smoothVar = NU
   splinePlot <- ggplot2::ggplot(df, aes(x = .data[[x]])) +
     lapply(rev(seq_along(cis)), function(i) {
       ci <- cis[i]
-      ggplot2::geom_ribbon(
+      ribbon_layer <- ggplot2::geom_ribbon(
         ggplot2::aes(
           ymin = .data[[paste0(name_pattern, 1 - (1 - ((1 - ci) / 2)))]],
           ymax = .data[[paste0(name_pattern, 1 - ((1 - ci) / 2))]]
         ),
         fill = virPal[i], alpha = 0.5
       )
+      return(ribbon_layer)
     }) +
     lineLayer +
     pcv_theme()
@@ -237,13 +238,14 @@ gam_diff <- function(model, newdata = NULL, g1, g2, byVar = NULL, smoothVar = NU
     splinePlot <- splinePlot +
       lapply(rev(seq_along(cis)), function(i) {
         ci <- cis[i]
-        ggplot2::geom_ribbon(
+        ribbon_layer <- ggplot2::geom_ribbon(
           ggplot2::aes(
             ymin = .data[[paste0(name_pattern2, 1 - (1 - ((1 - ci) / 2)))]],
             ymax = .data[[paste0(name_pattern2, 1 - ((1 - ci) / 2))]]
           ),
           fill = virPal2[i], alpha = 0.5
         )
+        return(ribbon_layer)
       })
   }
 

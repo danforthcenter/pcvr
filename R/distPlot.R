@@ -116,7 +116,7 @@ distributionPlot <- function(fits, form, df, priors = NULL,
 
   growthTrendPlots <- lapply(seq_along(dSplit), function(i) {
     dt <- dSplit[[i]]
-    ggplot2::ggplot(dt, ggplot2::aes(
+    p <- ggplot2::ggplot(dt, ggplot2::aes(
       x = .data[[x]], y = .data[[y]], color = .data[[x]],
       group = .data[[individual]]
     )) +
@@ -124,6 +124,7 @@ distributionPlot <- function(fits, form, df, priors = NULL,
       viridis::scale_color_viridis(begin = 0.1, end = 1, option = virOptions[i], direction = 1) +
       ggplot2::scale_x_continuous(limits = c(startTime, endTime)) +
       pcv_theme()
+    return(p)
   })
 
   #* ***** `posterior distribution extraction`

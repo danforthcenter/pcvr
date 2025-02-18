@@ -104,16 +104,18 @@ survregPlot <- function(fit, form, groups = NULL, df = NULL, timeRange = NULL, f
   )) +
     facet_layer +
     lapply(groups, function(grp) {
-      ggplot2::geom_ribbon(data = preds[preds[[group]] == grp, ], ggplot2::aes(
+      ribbon_layer <- ggplot2::geom_ribbon(data = preds[preds[[group]] == grp, ], ggplot2::aes(
         xmin = .data[["est"]] - (2 * .data[["se"]]),
         xmax = .data[["est"]] + (2 * .data[["se"]])
       ), fill = virVals[[grp]][1], alpha = 0.5)
+      return(ribbon_layer)
     }) +
     lapply(groups, function(grp) {
-      ggplot2::geom_ribbon(data = preds[preds[[group]] == grp, ], ggplot2::aes(
+      ribbon_layer <- ggplot2::geom_ribbon(data = preds[preds[[group]] == grp, ], ggplot2::aes(
         xmin = .data[["est"]] - (1 * .data[["se"]]),
         xmax = .data[["est"]] + (1 * .data[["se"]])
       ), fill = virVals[[grp]][2], alpha = 0.5)
+      return(ribbon_layer)
     }) +
     ggplot2::geom_line(ggplot2::aes(color = .data[[group]]), show.legend = FALSE) +
     color_scale +

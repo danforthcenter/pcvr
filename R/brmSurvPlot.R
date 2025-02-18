@@ -155,7 +155,7 @@ brmSurvPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, f
   #* `Add Ribbons`
   p <- p +
     lapply(unique(longPreds$q), function(q) {
-      ggplot2::geom_ribbon(
+      ribbon_plot <- ggplot2::geom_ribbon(
         data = longPreds[longPreds$q == q, ],
         ggplot2::aes(
           ymin = min,
@@ -164,6 +164,7 @@ brmSurvPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, f
           fill = q
         ), alpha = 0.5
       )
+      return(ribbon_plot)
     }) +
     viridis::scale_fill_viridis(direction = -1, option = "plasma") +
     ggplot2::labs(fill = "Credible\nInterval")
@@ -280,7 +281,7 @@ brmSurvPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, f
   #* `Add Ribbons`
   p <- p +
     lapply(unique(longPreds$q), function(q) {
-      ggplot2::geom_ribbon(
+      ribbon_plot <- ggplot2::geom_ribbon(
         data = longPreds[longPreds$q == q, ],
         ggplot2::aes(
           ymin = min,
@@ -289,6 +290,7 @@ brmSurvPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, f
           fill = q
         ), alpha = 0.5
       )
+      return(ribbon_plot)
     }) +
     viridis::scale_fill_viridis(direction = -1, option = "plasma") +
     ggplot2::labs(fill = "Credible\nInterval")

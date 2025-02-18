@@ -256,10 +256,11 @@ rqPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facetG
     sub <- plotdf[plotdf[[group]] == iteration_group, ]
     plot <- plot +
       lapply(seq_along(predCols), function(i) {
-        ggplot2::geom_line(
+        line_layer <- ggplot2::geom_line(
           data = sub, ggplot2::aes(x = .data[[x]], y = .data[[predCols[i]]]),
           color = virList[[g]][i], linewidth = 0.7
         )
+        return(line_layer)
       })
   }
   return(plot)

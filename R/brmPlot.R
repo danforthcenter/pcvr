@@ -109,7 +109,7 @@ brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
     pcv_theme()
   p <- p +
     lapply(unique(longPreds$q), function(q) {
-      ggplot2::geom_rect(
+      ribbon_plot <- ggplot2::geom_rect(
         data = longPreds[longPreds$q == q, ],
         ggplot2::aes(
           xmin = .data[["numericGroup"]] - c(0.45 * (1 - .data[["q"]])),
@@ -120,6 +120,7 @@ brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
           fill = .data[["q"]]
         ), alpha = 0.5
       )
+      return(ribbon_plot)
     }) +
     viridis::scale_fill_viridis(direction = -1, option = vir_option) +
     ggplot2::labs(fill = "Credible\nInterval")
@@ -254,7 +255,7 @@ brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
     pcv_theme()
   p <- p +
     lapply(unique(longPreds$q), function(q) {
-      ggplot2::geom_ribbon(
+      ribbon_plot <- ggplot2::geom_ribbon(
         data = longPreds[longPreds$q == q, ],
         ggplot2::aes(
           ymin = .data[["min"]],
@@ -263,6 +264,7 @@ brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
           fill = .data[["q"]]
         ), alpha = 0.5
       )
+      return(ribbon_plot)
     }) +
     viridis::scale_fill_viridis(direction = -1, option = vir_option) +
     ggplot2::labs(fill = "Credible\nInterval")

@@ -439,9 +439,12 @@ pal <- viridis::plasma(n = length(probs))
 p2 <- ggplot(preds, aes(y = x)) +
   facet_wrap(~group) +
   lapply(seq(1, 49, 2), function(lower) {
-    geom_ribbon(aes(xmin = .data[[paste0("Q", lower)]], xmax = .data[[paste0("Q", 100 - lower)]]),
+    ribbon_layer <- geom_ribbon(
+      aes(xmin = .data[[paste0("Q", lower)]],
+          xmax = .data[[paste0("Q", 100 - lower)]]),
       fill = pal[lower]
     )
+    return(ribbon_layer)
   }) +
   theme_minimal() +
   coord_polar() +

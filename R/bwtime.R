@@ -153,26 +153,28 @@ bw.time <- function(df = NULL, mode = c("DAS", "DAP", "DAE"), plantingDelay = NU
     plotDat <- df
     plotDat$plotGroup <- interaction(plotDat[, c(group)])
     p <- lapply(mode, function(m) {
-      ggplot2::ggplot(plotDat, ggplot2::aes(
+      m_plot <- ggplot2::ggplot(plotDat, ggplot2::aes(
         x = .data[[m]], y = .data[[phenotype]],
         group = .data$plotGroup
       )) +
         ggplot2::geom_line() +
         ggplot2::labs(x = m, y = phenotype, title = m) +
         pcv_theme()
+      return(m_plot)
     })
     return(p)
   } else if (!wide) {
     plotDat <- df[df[[traitCol]] == phenotype, ]
     plotDat$plotGroup <- interaction(plotDat[, c(group)])
     p <- lapply(mode, function(m) {
-      ggplot2::ggplot(plotDat, ggplot2::aes(
+      m_plot <- ggplot2::ggplot(plotDat, ggplot2::aes(
         x = .data[[m]], y = .data[[valueCol]],
         group = .data$plotGroup
       )) +
         ggplot2::geom_line() +
         ggplot2::labs(x = m, y = phenotype, title = m) +
         pcv_theme()
+      return(m_plot)
     })
     return(p)
   }

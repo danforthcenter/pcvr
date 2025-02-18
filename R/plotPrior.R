@@ -56,13 +56,14 @@ plotPrior <- function(priors, type = "density", n = 200, t = 25) {
       return(pri_df_o)
     }))
 
-    ggplot2::ggplot(pri_df, ggplot2::aes(
+    p <- ggplot2::ggplot(pri_df, ggplot2::aes(
       x = .data$support, y = .data$dens,
       fill = .data$item, group = .data$item
     )) +
       ggplot2::geom_polygon(alpha = 0.5) +
       ggplot2::theme_minimal() +
       ggplot2::labs(y = "Density", title = nm, fill = "Prior")
+    return(p)
   })
   names(densPlots) <- names(priors)
 
