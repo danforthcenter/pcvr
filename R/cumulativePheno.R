@@ -116,18 +116,18 @@ cumulativePheno <- function(df, phenotypes = NULL, group = "barcode", timeCol = 
         di <- d[d[[traitCol]] == pheno, ]
         di[[valueCol]] <- cumsum(di[[valueCol]])
         di[[traitCol]] <- paste0(pheno, "_csum")
-        di
+        return(di)
       }))
-      rbind(d, newRows)
+      return(rbind(d, newRows))
     }))
   } else {
     dat_sp <- split(df, df[[group]])
     out <- do.call(rbind, lapply(dat_sp, function(d) {
       d <- d[sort(d[[timeCol]], index.return = TRUE)$ix, ]
       d2 <- setNames(as.data.frame(do.call(cbind, lapply(phenotypes, function(pheno) {
-        cumsum(d[[pheno]])
+        return(cumsum(d[[pheno]]))
       }))), paste0(phenotypes, "_csum"))
-      cbind(d, d2)
+      return(cbind(d, d2))
     }))
   }
   return(out)

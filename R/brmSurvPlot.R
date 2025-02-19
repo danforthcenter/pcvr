@@ -91,15 +91,16 @@ brmSurvPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, f
     do.call(rbind, lapply(groups, function(grp) {
       s_hat_grp <- s_hat[, grepl(paste0(group, grp, "$"), colnames(s_hat))]
       x <- do.call(cbind, lapply(seq_len(ncol(s_hat_grp)), function(j) {
-        do.call(rbind, lapply(seq_len(nrow(s_hat_grp)), function(i) {
-          cumprod(s_hat_grp[i, 1:j])[j]
+        j_df <- do.call(rbind, lapply(seq_len(nrow(s_hat_grp)), function(i) {
+          return(cumprod(s_hat_grp[i, 1:j])[j])
         }))
+        return(j_df)
       }))
       colnames(x) <- gsub("haz_", "surv_", colnames(s_hat_grp))
       colnames(x) <- gsub(paste0(":", group, grp), "", colnames(x))
       x <- as.data.frame(x)
       x[[group]] <- grp
-      x
+      return(x)
     }))
   )
 
@@ -109,13 +110,13 @@ brmSurvPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, f
     do.call(rbind, lapply(groups, function(grp) {
       s_hat_grp <- s_hat[s_hat[[group]] == grp, ]
       grp_quantile <- as.data.frame(do.call(rbind, lapply(1:(ncol(s_hat_grp) - 1), function(i) {
-        quantile(s_hat_grp[, i], probs)
+        return(quantile(s_hat_grp[, i], probs))
       })))
       colnames(grp_quantile) <- paste0("Q", seq(99, 1, -2))
       nms <- colnames(s_hat_grp)[grepl("surv_", colnames(s_hat_grp))]
       grp_quantile[[x]] <- as.numeric(gsub(paste0("surv_", x), "", nms))
       grp_quantile[[group]] <- grp
-      grp_quantile
+      return(grp_quantile)
     }))
   )
   quantiles <- quantiles[quantiles[[group]] %in% groups, ]
@@ -133,15 +134,16 @@ brmSurvPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, f
 
   longPreds <- do.call(rbind, lapply(seq_len(nrow(quantiles)), function(r) {
     sub <- quantiles[r, ]
-    do.call(rbind, lapply(seq(1, 49, 2), function(i) {
+    lp <- do.call(rbind, lapply(seq(1, 49, 2), function(i) {
       min <- paste0("Q", i)
       max <- paste0("Q", 100 - i)
       iter <- sub[, c(x, group)]
       iter$q <- round(1 - (c1 * (i - max_obs) + max_prime), 2)
       iter$min <- sub[[min]]
       iter$max <- sub[[max]]
-      iter
+      return(iter)
     }))
+    return(lp)
   }))
 
   #* `Initialize Plot`
@@ -153,7 +155,7 @@ brmSurvPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, f
   #* `Add Ribbons`
   p <- p +
     lapply(unique(longPreds$q), function(q) {
-      ggplot2::geom_ribbon(
+      ribbon_plot <- ggplot2::geom_ribbon(
         data = longPreds[longPreds$q == q, ],
         ggplot2::aes(
           ymin = min,
@@ -162,6 +164,7 @@ brmSurvPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, f
           fill = q
         ), alpha = 0.5
       )
+      return(ribbon_plot)
     }) +
     viridis::scale_fill_viridis(direction = -1, option = "plasma") +
     ggplot2::labs(fill = "Credible\nInterval")
@@ -193,7 +196,7 @@ brmSurvPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, f
   fdf <- as.data.frame(fit)
   mu_cols <- colnames(fdf)[grepl("b_", colnames(fdf))]
   scales <- do.call(cbind, lapply(mu_cols, function(col) {
-    exp(fdf[[col]]) / (gamma(1 + (1 / fdf$shape)))
+    return(exp(fdf[[col]]) / (gamma(1 + (1 / fdf$shape))))
   }))
   colnames(scales) <- paste0("scale_", mu_cols)
   fdf <- cbind(fdf, scales)
@@ -221,7 +224,7 @@ brmSurvPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, f
     metrics <- do.call(rbind, lapply(probs, function(i) {
       shape <- quantile(test[, "shape"], probs = i)
       scale <- quantile(test[, "scale"], probs = i)
-      do.call(rbind, lapply(timeRange, function(t) {
+      met_df <- do.call(rbind, lapply(timeRange, function(t) {
         t_row <- data.frame(
           probs = i,
           h = shape / scale * (t / scale)^(shape - 1),
@@ -231,8 +234,9 @@ brmSurvPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, f
         t_row[[x]] <- t
         t_row$St <- 1 - t_row$cdf
         t_row$c <- -log(t_row$St)
-        t_row
+        return(t_row)
       }))
+      return(met_df)
     }))
 
     metrics$probs2 <- round(metrics$probs * 100, 2)
@@ -241,7 +245,7 @@ brmSurvPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, f
       value.var = "St", fun.aggregate = mean
     ))
     wide_metrics[[group]] <- grp
-    wide_metrics
+    return(wide_metrics)
   }))
   #* `Decide faceting`
   facetLayer <- NULL
@@ -257,15 +261,16 @@ brmSurvPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, f
 
   longPreds <- do.call(rbind, lapply(seq_len(nrow(quantiles)), function(r) {
     sub <- quantiles[r, ]
-    do.call(rbind, lapply(seq(1, 49, 2), function(i) {
+    lp <- do.call(rbind, lapply(seq(1, 49, 2), function(i) {
       min <- paste0("Q", i)
       max <- paste0("Q", 100 - i)
       iter <- sub[, c("time", group)]
       iter$q <- round(1 - (c1 * (i - max_obs) + max_prime), 2)
       iter$min <- sub[[min]]
       iter$max <- sub[[max]]
-      iter
+      return(iter)
     }))
+    return(lp)
   }))
   #* `Initialize Plot`
   p <- ggplot2::ggplot(longPreds, ggplot2::aes(x = .data[["time"]])) +
@@ -276,7 +281,7 @@ brmSurvPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, f
   #* `Add Ribbons`
   p <- p +
     lapply(unique(longPreds$q), function(q) {
-      ggplot2::geom_ribbon(
+      ribbon_plot <- ggplot2::geom_ribbon(
         data = longPreds[longPreds$q == q, ],
         ggplot2::aes(
           ymin = min,
@@ -285,6 +290,7 @@ brmSurvPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, f
           fill = q
         ), alpha = 0.5
       )
+      return(ribbon_plot)
     }) +
     viridis::scale_fill_viridis(direction = -1, option = "plasma") +
     ggplot2::labs(fill = "Credible\nInterval")
@@ -292,15 +298,17 @@ brmSurvPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, f
   if (!is.null(df)) {
     km_df <- do.call(rbind, lapply(groups, function(grp) {
       sub <- df[df[[group]] == grp, ]
-      do.call(rbind, lapply(timeRange, function(ti) {
+      km_df_i <- do.call(rbind, lapply(timeRange, function(ti) {
         sum_events <- sum(c(sub[as.numeric(sub[[x]]) <= ti, "event"], 0))
         n_at_risk <- nrow(sub) - sum_events
         surv_pct <- n_at_risk / nrow(sub)
-        data.frame(
+        km_df_o <- data.frame(
           group = grp, time = ti, events = sum_events,
           at_risk = n_at_risk, surv_pct = surv_pct
         )
+        return(km_df_o)
       }))
+      return(km_df_i)
     }))
     p <- p + ggplot2::geom_line(data = km_df, ggplot2::aes(
       x = .data[["time"]],

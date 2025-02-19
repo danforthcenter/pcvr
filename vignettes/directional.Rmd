@@ -198,13 +198,14 @@ coord_polar_linear <- function(theta = "x", start = 0, direction = 1, clip = "on
   } else {
     "x"
   }
-  ggproto(NULL, CoordPolar,
+  ggp <- ggproto(NULL, CoordPolar,
     theta = theta, r = r, start = start,
     direction = sign(direction), clip = clip,
     is_linear = function() {
-      TRUE
+      return(TRUE)
     }
   )
+  return(ggp)
 }
 
 p <- vm_ex2$plot
@@ -288,11 +289,12 @@ kappaTrend1 <- (0.5 * time)
 kappaTrend2 <- (0.3 * time)
 set.seed(123)
 vm2 <- do.call(rbind, lapply(1:nReps, function(rep) {
-  do.call(rbind, lapply(time, function(ti) {
+  rep_df <- do.call(rbind, lapply(time, function(ti) {
     v1 <- brms::rvon_mises(1, muTrend1[ti], kappaTrend1[ti])
     v2 <- brms::rvon_mises(1, muTrend2[ti], kappaTrend2[ti])
-    data.frame(y = c(v1, v2), x = ti, group = c("a", "b"), rep = rep)
+    return(data.frame(y = c(v1, v2), x = ti, group = c("a", "b"), rep = rep))
   }))
+  return(rep_df)
 }))
 
 ss <- growthSS(
@@ -379,11 +381,12 @@ kappaTrend1 <- (0.5 * time)
 kappaTrend2 <- (0.3 * time)
 set.seed(123)
 vm2 <- do.call(rbind, lapply(1:nReps, function(rep) {
-  do.call(rbind, lapply(time, function(ti) {
+  rep_df <- do.call(rbind, lapply(time, function(ti) {
     v1 <- rvon_mises(1, muTrend1[ti], kappaTrend1[ti])
     v2 <- rvon_mises(1, muTrend2[ti], kappaTrend2[ti])
-    data.frame(y = c(v1, v2), x = ti, group = c("a", "b"), rep = rep)
+    return(data.frame(y = c(v1, v2), x = ti, group = c("a", "b"), rep = rep))
   }))
+  return(rep_df)
 }))
 
 ggplot(vm2, aes(x = x, y = y, color = group, group = interaction(group, rep))) +
@@ -436,9 +439,12 @@ pal <- viridis::plasma(n = length(probs))
 p2 <- ggplot(preds, aes(y = x)) +
   facet_wrap(~group) +
   lapply(seq(1, 49, 2), function(lower) {
-    geom_ribbon(aes(xmin = .data[[paste0("Q", lower)]], xmax = .data[[paste0("Q", 100 - lower)]]),
+    ribbon_layer <- geom_ribbon(
+      aes(xmin = .data[[paste0("Q", lower)]],
+          xmax = .data[[paste0("Q", 100 - lower)]]),
       fill = pal[lower]
     )
+    return(ribbon_layer)
   }) +
   theme_minimal() +
   coord_polar() +

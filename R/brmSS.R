@@ -149,7 +149,7 @@
 
   #* `convert group to character to avoid unexpected factor stuff`
   df[, group] <- lapply(group, function(grp) {
-    as.character(df[[grp]])
+    return(as.character(df[[grp]]))
   })
   #* `if there are gams involved and multiple groups then make a group interaction variable`
   if (length(group) > 1 && any(grepl("spline|gam", c(model, sigma)))) {
@@ -176,7 +176,7 @@
   decay <- matchGrowthModelRes[["decay"]]
   #* `Make growth formula`
   nTimes <- min(unlist(lapply(split(df, interaction(df[, group])), function(d) {
-    length(unique(d[[x]]))
+    return(length(unique(d[[x]])))
   }))) # for spline knots
   splineHelperForm <- NULL
   if (grepl("\\+", model)) {
@@ -212,17 +212,18 @@
     intModelRes <- .intModelHelper(model)
     model <- intModelRes$model
     sigmaInt <- intModelRes$int
-    .brmDparHelper(dpar, model, x, group, nTimes, USEGROUP, priors, sigmaInt)
+    dpar_res_i <- .brmDparHelper(dpar, model, x, group, nTimes, USEGROUP, priors, sigmaInt)
+    return(dpar_res_i)
   })
   names(dpar_res) <- names(sigma)
   dparForm <- unlist(lapply(dpar_res, function(res) {
-    res$dparForm
+    return(res$dparForm)
   }))
   dparSplineHelperForm <- unlist(lapply(dpar_res, function(res) {
-    res$dparSplineHelperForm
+    return(res$dparSplineHelperForm)
   }))
   dpar_pars <- unlist(lapply(dpar_res, function(res) {
-    res$dpar_pars
+    return(res$dpar_pars)
   }))
   names(dpar_pars) <- NULL
   pars <- append(pars, dpar_pars)
@@ -238,7 +239,7 @@
         ")."
       ))
       hierarchy <- lapply(pars, function(p) {
-        "int_linear"
+        return("int_linear")
       })
       names(hierarchy) <- pars
     }
@@ -248,10 +249,11 @@
       intModelRes <- .intModelHelper(hrc_model)
       hrc_model <- intModelRes$model
       hrc_int <- intModelRes$int
-      .brmDparHelper(
+      pname_dpars <- .brmDparHelper(
         dpar = pname, model = hrc_model, x = hierarchical_predictor,
         group, nTimes, USEGROUP, priors, int = hrc_int, force_nl = TRUE
       )
+      return(pname_dpars)
       #* here passing `pname` to the `dpar` argument of .brmDparHelper will make
       #* .brmDparHelper add that name as a prefix on all of the existing model parameters.
       #* Since all the parameter names are unique coming into this they will be unique coming
@@ -260,13 +262,13 @@
     })
     names(hrc_res) <- names(hierarchy)
     hrcForm <- unlist(lapply(hrc_res, function(res) {
-      res$dparForm
+      return(res$dparForm)
     }))
     hrcSplineHelperForm <- unlist(lapply(hrc_res, function(res) {
-      res$dparSplineHelperForm
+      return(res$dparSplineHelperForm)
     }))
     hrc_pars <- unlist(lapply(hrc_res, function(res) {
-      res$dpar_pars
+      return(res$dpar_pars)
     }))
     names(hrc_pars) <- NULL
     pars <- append(pars, hrc_pars)
@@ -312,12 +314,12 @@
     initFun <- function(pars = "?", nPerChain = 1) {
       init <- lapply(pars, function(i) array(rgamma(nPerChain, 1)))
       names(init) <- paste0("b_", pars)
-      init
+      return(init)
     }
     formals(initFun)$pars <- pars
     formals(initFun)$nPerChain <- length(table(df[, group]))
     wrapper <- function() {
-      initFun()
+      return(initFun())
     }
   } else {
     wrapper <- 0

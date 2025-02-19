@@ -283,13 +283,13 @@ frem <- function(df, des, phenotypes, timeCol = NULL, cor = TRUE, returnData = F
     sub <- dat[dat[[timeCol]] == tm, ]
     des_bools <- unlist(lapply(des, function(var) {
       des_numbers <- as.numeric(table(sub[[var]]))
-      sum(des_numbers != 0) > 1
+      return(sum(des_numbers != 0) > 1)
     }))
     if (any(!des_bools)) {
       message(paste("Skipping", timeCol, tm, "as grouping contains a variable that is singular"))
       return(NULL)
     }
-    do.call(rbind, lapply(phenotypes, function(e) {
+    pheno_df <- do.call(rbind, lapply(phenotypes, function(e) {
       fmla <- as.formula(paste0("as.numeric(", e, ") ~ ", ind_fmla))
       model <- suppressMessages(lme4::lmer(fmla, data = sub, ...))
       if (length(model@optinfo$conv$lme4) >= 1) {
@@ -318,7 +318,7 @@ frem <- function(df, des, phenotypes, timeCol = NULL, cor = TRUE, returnData = F
         )
       } else {
         var <- lapply(des, function(i) {
-          as.numeric(attr(re[[i]], "stddev"))^2
+          return(as.numeric(attr(re[[i]], "stddev"))^2)
         })
 
         tot.var <- sum(as.numeric(re), res)
@@ -328,6 +328,7 @@ frem <- function(df, des, phenotypes, timeCol = NULL, cor = TRUE, returnData = F
       }
       return(h2)
     }))
+    return(pheno_df)
   })))
   H2$Phenotypes <- rep(phenotypes, length.out = nrow(H2))
   return(H2)

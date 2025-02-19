@@ -127,7 +127,7 @@ relativeTolerance <- function(df, phenotypes = NULL, grouping = NULL, control = 
           #* relative center and propogated error
           mu_rel <- mu_eg / ctrl_mean
           se_rel <- sqrt(((se_eg / mu_eg)^2) + ((ctrl_se / ctrl_mean)^2)) * mu_rel
-          setNames(
+          cg_df <- setNames(
             data.frame(
               cg, d[1, group_no_control], pheno, mu_rel, se_rel,
               mu_eg, se_eg, ctrl_mean, ctrl_se
@@ -137,10 +137,11 @@ relativeTolerance <- function(df, phenotypes = NULL, grouping = NULL, control = 
               "mu_trt", "se_trt", "mu_control", "se_control"
             )
           )
+          return(cg_df)
         }))
-        pheno_res
+        return(pheno_res)
       }))
-      d_res
+      return(d_res)
     }))
     rownames(d2) <- NULL
   } else { #* `Long`
@@ -157,7 +158,7 @@ relativeTolerance <- function(df, phenotypes = NULL, grouping = NULL, control = 
           #* relative center and propogated error
           mu_rel <- mu_eg / ctrl_mean
           se_rel <- sqrt(((se_eg / mu_eg)^2) + ((ctrl_se / ctrl_mean)^2)) * mu_rel
-          setNames(
+          cg_df <- setNames(
             data.frame(
               cg, d[1, group_no_control], pheno, mu_rel, se_rel,
               mu_eg, se_eg, ctrl_mean, ctrl_se
@@ -167,10 +168,11 @@ relativeTolerance <- function(df, phenotypes = NULL, grouping = NULL, control = 
               "mu_trt", "se_trt", "mu_control", "se_control"
             )
           )
+          return(cg_df)
         }))
-        pheno_res
+        return(pheno_res)
       }))
-      d_res
+      return(d_res)
     }))
     rownames(d2) <- NULL
   }

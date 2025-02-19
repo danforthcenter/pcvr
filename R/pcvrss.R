@@ -31,7 +31,7 @@ NULL
 
 pcvrss <- function(x) {
   class(x) <- "pcvrss"
-  x
+  return(x)
 }
 
 #' Print a \code{pcvrss} object.
@@ -46,7 +46,7 @@ pcvrss <- function(x) {
 #' @method print pcvrss
 #' @export
 print.pcvrss <- function(x, ...) {
-  print(summary.pcvrss(x), ...)
+  return(print(summary.pcvrss(x), ...))
 }
 
 
@@ -109,5 +109,5 @@ print.pcvrsssummary <- function(x, ...) {
   print(x$df[1:3, !grepl("dummyIndividual|dummyGroup", colnames(x$df))])
   cat(paste0("...\n"))
   cat(paste0("(", nrow(x$df), " rows)"))
-  invisible(x)
+  return(invisible(x))
 }

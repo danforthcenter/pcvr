@@ -89,7 +89,7 @@ brmViolin <- function(fit, ss, hypothesis) {
   hsplit <- hsplit[suppressWarnings(is.na(as.numeric(hsplit)))]
   grouping <- .parsePcvrForm(ss$pcvrForm)$group
   which_grouping <- which(unlist(lapply(grouping, function(grp) {
-    any(grepl(grp, hsplit))
+    return(any(grepl(grp, hsplit)))
   })))
   grouping <- grouping[which_grouping]
   par <- hsplit[which(hsplit %in% names(ss$formula$pforms))]

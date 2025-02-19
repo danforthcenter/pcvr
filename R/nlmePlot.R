@@ -66,7 +66,7 @@ nlmePlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, face
   #* `make new data if timerange is not NULL`
   if (!is.null(timeRange)) {
     new_data <- do.call(rbind, lapply(unique(df[["autocor"]]), function(g) {
-      stats::setNames(data.frame(g, timeRange), c(intVar, x))
+      return(stats::setNames(data.frame(g, timeRange), c(intVar, x)))
     }))
     new_data[[group]] <- gsub("[.].*", "", new_data[[intVar]])
     new_data[[individual]] <- gsub(".*[.]", "", new_data[[intVar]])
@@ -92,11 +92,11 @@ nlmePlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, face
   #* `groupFill`
   pal <- viridis::plasma(2, begin = 0.1, end = 0.9)
   virList <- lapply(seq_along(unique(df[[group]])), function(i) {
-    pal
+    return(pal)
   })
   if (groupFill) {
     virList <- lapply(rep(virMaps, length.out = length(unique(df[[group]]))), function(pal) {
-      viridis::viridis(2, begin = 0.1, end = 0.9, option = pal)
+      return(viridis::viridis(2, begin = 0.1, end = 0.9, option = pal))
     })
   }
   #* `layer for individual lines if formula was complete`
@@ -175,5 +175,6 @@ nlmePlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, face
 
 lmePlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facetGroups = TRUE,
                     groupFill = FALSE, virMaps = c("plasma")) {
-  nlmePlot(fit, form, df, groups, timeRange, facetGroups, groupFill, virMaps)
+  p <- nlmePlot(fit, form, df, groups, timeRange, facetGroups, groupFill, virMaps)
+  return(p)
 }

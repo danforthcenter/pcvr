@@ -113,7 +113,7 @@ ex <- data.frame(
   variable = rep(c("weight_after_watering", "weight_before_watering"), each = days),
   value = unlist(lapply(seq_len(n_plants), function(i) {
     x <- sort(runif(days, 50, 100))
-    c(x, x - runif(days, 10, 20))
+    return(c(x, x - runif(days, 10, 20)))
   }))
 )
 daybars <- data.frame(
@@ -359,7 +359,7 @@ ex <- do.call(rbind, lapply(names(phenotype_conditions), function(pc) {
   df$group <- pc
   colnames(df)[c(2, 4)] <- c("pc", "area")
   #* for this phenotype data make a copy for each watering condition set
-  do.call(rbind, lapply(names(watering_conditions), function(wc) {
+  pc_df <- do.call(rbind, lapply(names(watering_conditions), function(wc) {
     w_cond <- watering_conditions[[wc]]
     #* per each individual make weight_before and weight_after columns
     wcdf <- do.call(rbind, lapply(unique(df$id), function(i) {
@@ -380,6 +380,7 @@ ex <- do.call(rbind, lapply(names(phenotype_conditions), function(pc) {
     wcdf$wc <- wc
     return(wcdf)
   }))
+  return(pc_df)
 }))
 
 key <- expand.grid(pc = names(phenotype_conditions), wc = names(watering_conditions))

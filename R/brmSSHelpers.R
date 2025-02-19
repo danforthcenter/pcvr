@@ -37,7 +37,7 @@
   #* `replicate lookup table for pars`
   lookup <- do.call(rbind, lapply(pars, function(pr) {
     lookup$par <- pr
-    lookup
+    return(lookup)
   }))
   #* `Make stan strings`
   priorStanStrings <- .stanStringHelper(priors, pars, USEGROUP)
@@ -82,7 +82,7 @@
     default_prior <- .explicitDefaultPrior(formula, df, family)
     default_interaction_prior <- default_prior[grepl(":", default_prior$coef), ]
     tenth_of_priors <- lapply(priors, function(x) {
-      mean(x) / 10
+      return(mean(x) / 10)
     })
     for (nlp in unique(default_interaction_prior$nlpar)) {
       sd <- ifelse(nlp %in% names(tenth_of_priors), tenth_of_priors[[nlp]], 3)
@@ -144,7 +144,7 @@
 
     if (groupedPriors) { # if more than one value is specified per parameter
       l <- sum(unlist(lapply(group, function(grp) {
-        length(unique(df[[grp]]))
+        return(length(unique(df[[grp]])))
       })))
       ml <- max(c(l, unlist(lapply(priors, length))))
       priors <- lapply(priors, function(p) rep(p, length.out = ml))
@@ -166,11 +166,11 @@
       # in which case they need to replicated per groups
       # this should also handle non-grouped formulae
       l <- sum(unlist(lapply(group, function(grp) {
-        length(unique(df[[grp]]))
+        return(length(unique(df[[grp]])))
       })))
       priors <- lapply(priors, rep, length.out = l)
       nms <- unlist(lapply(group, function(grp) {
-        unique(df[[grp]])
+        return(unique(df[[grp]]))
       }))
       if (USEGROUP) {
         for (i in seq_along(priors)) {
@@ -192,11 +192,12 @@
   if (!is.null(pars)) {
     priorStanStrings <- lapply(pars, function(par) {
       if (!grepl("changePoint|I$", par)) {
-        paste0("lognormal(log(", priors[[par]], "), 0.25)") # growth parameters are LN
+        par_string <- paste0("lognormal(log(", priors[[par]], "), 0.25)") # growth parameters are LN
       } else {
         # changepoints/intercepts are T_5(mu, mu / 5) by default
-        paste0("student_t(5,", priors[[par]], ", ", abs(priors[[par]] / 5), ")")
+        par_string <- paste0("student_t(5,", priors[[par]], ", ", abs(priors[[par]] / 5), ")")
       }
+      return(par_string)
     })
     priorStanStrings <- unlist(priorStanStrings)
     parNames <- rep(names(priors), each = length(priors[[1]]))
@@ -262,7 +263,7 @@
 .sigmaHelper <- function(sigma, dpars, family, models) {
   if (is.null(sigma)) {
     sigma <- lapply(dpars, function(i) {
-      "int"
+      return("int")
     })
   }
   if (methods::is(sigma, "formula")) {
@@ -713,7 +714,7 @@
     rhs <- trimws(gsub("I\\s?\\+", "", rhs))
     formList$form <- as.formula(paste0(chars[2], chars[1], "I - (", rhs, ")"))
   }
-  formList
+  return(formList)
 }
 
 #' Helper function for brms formulas

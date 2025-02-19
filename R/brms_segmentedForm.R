@@ -97,7 +97,7 @@
   })
 
   params <- unique(unlist(lapply(formulae, function(f) {
-    f$params
+    return(f$params)
   })))
   params <- params[-length(params)]
 
@@ -112,7 +112,7 @@
   #* Make cpInt cumulative
   for (i in 2:length(formulae)) {
     cumulativeCpInt <- do.call(paste, list(lapply(1:i, function(o) {
-      formulae[[o]]$cpInt
+      return(formulae[[o]]$cpInt)
     }), collapse = " + "))
     formulae[[i]]$cpInt <- cumulativeCpInt
   }
@@ -144,7 +144,7 @@
   }
 
   splineSegments <- which(unlist(lapply(formulae, function(fml) {
-    "splineVar" %in% names(fml)
+    return("splineVar" %in% names(fml))
   })))
 
   splineForm <- .handleSplineSegments(splineSegments, useGroup, group, nTimes, formulae, x)
@@ -963,7 +963,7 @@
 
 .decayChngptForm <- function(phaseList) {
   phaseList$form <- paste0("-", phaseList$form)
-  phaseList
+  return(phaseList)
 }
 
 #* ****************************************

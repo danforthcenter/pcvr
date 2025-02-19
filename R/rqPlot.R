@@ -91,7 +91,7 @@ rqPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facetG
     iter_df[1, x] <- paste0(x, unique(df[[x]])[1])
     iter_df[["est"]] <- cumsum(iter_df[["est"]])
     iter_df$tau <- model$tau
-    iter_df
+    return(iter_df)
   }))
 
   #* `filter by groups if groups != NULL`
@@ -112,7 +112,7 @@ rqPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facetG
   virpal_p2 <- viridis::plasma(ceiling(n_taus / 2), direction = -1, end = 1)[-1]
   virpal <- c(virpal_p1, virpal_p2)
   virList <- lapply(seq_along(unique(summary_df[[x]])), function(i) {
-    virpal
+    return(virpal)
   })
 
   if (groupFill) {
@@ -123,7 +123,7 @@ rqPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facetG
       virpal_p2 <- viridis::viridis(ceiling(n_taus / 2),
         direction = -1, end = 1, option = pal
       )[-1]
-      c(virpal_p1, virpal_p2)
+      return(c(virpal_p1, virpal_p2))
     })
   }
 
@@ -188,7 +188,7 @@ rqPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facetG
   #* `make new data if timerange is not NULL`
   if (!is.null(timeRange)) {
     new_data <- do.call(rbind, lapply(unique(df[[group]]), function(g) {
-      stats::setNames(data.frame(g, timeRange), c(group, x))
+      return(stats::setNames(data.frame(g, timeRange), c(group, x)))
     }))
     df <- df[df[[x]] >= min(timeRange) & df[[x]] <= max(timeRange), ]
   } else {
@@ -202,7 +202,7 @@ rqPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facetG
   #* `add predictions and record taus`
   preds <- do.call(cbind, lapply(fit, function(f) {
     tau <- f$tau
-    stats::setNames(data.frame(stats::predict(f, newdata = new_data)), paste0("Q_", tau))
+    return(stats::setNames(data.frame(stats::predict(f, newdata = new_data)), paste0("Q_", tau)))
   }))
   predCols <- colnames(preds)
   keep <- which(!duplicated(preds))
@@ -234,14 +234,14 @@ rqPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facetG
       virpal_p2 <- viridis::viridis(ceiling(length(predCols) / 2),
         direction = -1, end = 1, option = pal
       )[-1]
-      c(virpal_p1, virpal_p2)
+      return(c(virpal_p1, virpal_p2))
     })
   } else {
     virpal_p1 <- viridis::plasma(ceiling(length(predCols) / 2), direction = 1, end = 1)
     virpal_p2 <- viridis::plasma(ceiling(length(predCols) / 2), direction = -1, end = 1)[-1]
     virpal <- c(virpal_p1, virpal_p2)
     virList <- lapply(seq_along(unique(df[[group]])), function(i) {
-      virpal
+      return(virpal)
     })
   }
   #* `plot`
@@ -256,10 +256,11 @@ rqPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facetG
     sub <- plotdf[plotdf[[group]] == iteration_group, ]
     plot <- plot +
       lapply(seq_along(predCols), function(i) {
-        ggplot2::geom_line(
+        line_layer <- ggplot2::geom_line(
           data = sub, ggplot2::aes(x = .data[[x]], y = .data[[predCols[i]]]),
           color = virList[[g]][i], linewidth = 0.7
         )
+        return(line_layer)
       })
   }
   return(plot)

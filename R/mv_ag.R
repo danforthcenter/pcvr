@@ -117,7 +117,7 @@ mv_ag <- function(df, group, mvCols = "frequencies", n_per_group = 1, outRows = 
       do.call(rbind, lapply(
         group_df$group,
         function(s) {
-          matrix(strsplit(s, split = "[.]")[[1]], nrow = 1)
+          return(matrix(strsplit(s, split = "[.]")[[1]], nrow = 1))
         }
       ))
     ), original_group)
@@ -152,9 +152,9 @@ mv_ag <- function(df, group, mvCols = "frequencies", n_per_group = 1, outRows = 
     mv_ag <- data.frame(do.call(rbind, lapply(nms_split, function(rwnms) {
       mvi <- matrix(mv[rwnms, ], nrow = length(rwnms))
       if (nrow(mvi) > 1) {
-        matrix(colMeans(mvi), nrow = 1)
+        return(matrix(colMeans(mvi), nrow = 1))
       } else {
-        mvi
+        return(mvi)
       }
     })))
     colnames(mv_ag) <- mvCols
@@ -163,9 +163,9 @@ mv_ag <- function(df, group, mvCols = "frequencies", n_per_group = 1, outRows = 
       kept <- data.frame(do.call(rbind, lapply(nms_split, function(rwnms) {
         kp <- as.matrix(d[rwnms, keep])
         if (nrow(kp) > 1) {
-          matrix(colMeans(kp), nrow = 1)
+          return(matrix(colMeans(kp), nrow = 1))
         } else {
-          kp
+          return(kp)
         }
       })))
       colnames(kept) <- keep
@@ -209,7 +209,7 @@ mv_ag <- function(df, group, mvCols = "frequencies", n_per_group = 1, outRows = 
     #* mean of bin per groups
     mv_ag <- data.frame(do.call(rbind, lapply(ids_split, function(ids) {
       d_group <- d[d[[id]] %in% ids, ]
-      aggregate(
+      ids_ag <- aggregate(
         as.formula(paste0(
           valueCol, "~",
           paste0(c(labelCol, traitCol, group), collapse = "+")
@@ -217,6 +217,7 @@ mv_ag <- function(df, group, mvCols = "frequencies", n_per_group = 1, outRows = 
         d_group, mean,
         na.rm = TRUE
       )
+      return(ids_ag)
     })))
     #* add back in kept traits
     if (!is.null(keep)) {

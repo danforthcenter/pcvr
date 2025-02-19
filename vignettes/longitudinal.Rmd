@@ -289,7 +289,7 @@ Several options are shown here, ignoring grouping here since the data is already
 
 ```{r, message = FALSE}
 draw_gomp_sigma <- function(x) {
-  23 * exp(-21 * exp(-0.22 * x))
+  return(23 * exp(-21 * exp(-0.22 * x)))
 }
 ggplot(sigma_df, aes(x = time, y = y)) +
   geom_line(aes(group = group), color = "gray60") +
@@ -408,16 +408,16 @@ A few other options are shown here as further examples. There are as many ways t
 
 ```{r, message = FALSE}
 draw_gomp_sigma <- function(x) {
-  23 * exp(-21 * exp(-0.22 * x))
+  return(23 * exp(-21 * exp(-0.22 * x)))
 }
 draw_logistic_sigma <- function(x) {
-  20 / (1 + exp((15 - x) / 2))
+  return(20 / (1 + exp((15 - x) / 2)))
 }
 draw_logistic_exp <- function(x) {
-  2.5 * exp(0.08 * x)
+  return(2.5 * exp(0.08 * x))
 }
 draw_logistic_quad <- function(x) {
-  (0.3 * x) + (0.02 * x^2)
+  return((0.3 * x) + (0.02 * x^2))
 }
 
 ggplot(sigma_df, aes(x = time, y = y)) +
@@ -871,7 +871,7 @@ We can also fit thresholded models to the variance. Here we fit two part interce
 set.seed(123)
 noise <- do.call(rbind, lapply(1:30, function(i) {
   chngpt <- rnorm(2, 18, 2)
-  rbind(
+  noise_i <- rbind(
     data.frame(
       id = paste0("id_", i), time = 1:chngpt[1], group = "a",
       y = c(runif(chngpt[1] - 1, 0, 20), rnorm(1, 5, 1))
@@ -881,11 +881,12 @@ noise <- do.call(rbind, lapply(1:30, function(i) {
       y = c(runif(chngpt[2] - 1, 0, 20), rnorm(1, 5, 1))
     )
   )
+  return(noise_i)
 }))
 noise2 <- do.call(rbind, lapply(1:30, function(i) {
   start1 <- max(noise[noise$id == paste0("id_", i) & noise$group == "a", "time"])
   start2 <- max(noise[noise$id == paste0("id_", i) & noise$group == "b", "time"])
-  rbind(
+  noise2_i <- rbind(
     data.frame(
       id = paste0("id_", i), time = start1:40, group = "a",
       y = c(runif(length(start1:40), 15, 50))
@@ -895,6 +896,7 @@ noise2 <- do.call(rbind, lapply(1:30, function(i) {
       y = c(runif(length(start2:40), 15, 50))
     )
   )
+  return(noise2_i)
 }))
 simdf <- rbind(noise, noise2)
 ```
@@ -919,7 +921,7 @@ Here we fit int + linear models to the overall trend and the variance
 set.seed(123)
 noise <- do.call(rbind, lapply(1:30, function(i) {
   chngpt <- rnorm(2, 18, 2)
-  rbind(
+  noise_i <- rbind(
     data.frame(
       id = paste0("id_", i), time = 1:chngpt[1], group = "a",
       y = c(runif(chngpt[1] - 1, 0, 20), rnorm(1, 5, 1))
@@ -929,6 +931,7 @@ noise <- do.call(rbind, lapply(1:30, function(i) {
       y = c(runif(chngpt[2] - 1, 0, 20), rnorm(1, 5, 1))
     )
   )
+  return(noise_i)
 }))
 signal <- growthSim("linear",
   n = 30, t = 20,
@@ -940,7 +943,7 @@ signal <- do.call(rbind, lapply(unique(paste0(signal$id, signal$group)), functio
   y_end <- noisesub[noisesub$time == max(noisesub$time), "y"]
   signalSub$time <- signalSub$time + max(noisesub$time)
   signalSub$y <- y_end + signalSub$y
-  signalSub
+  return(signalSub)
 }))
 simdf <- rbind(noise, signal)
 ```
@@ -965,7 +968,7 @@ Finally we fit a model of "int + logistic" for the main growth trend and "int + 
 set.seed(123)
 noise <- do.call(rbind, lapply(1:30, function(i) {
   chngpt <- rnorm(2, 18, 2)
-  rbind(
+  noise_i <- rbind(
     data.frame(
       id = paste0("id_", i), time = 1:chngpt[1], group = "a",
       y = c(runif(chngpt[1] - 1, 0, 20), rnorm(1, 5, 1))
@@ -975,6 +978,7 @@ noise <- do.call(rbind, lapply(1:30, function(i) {
       y = c(runif(chngpt[2] - 1, 0, 20), rnorm(1, 5, 1))
     )
   )
+  return(noise_i)
 }))
 signal <- growthSim("logistic",
   n = 20, t = 30,
@@ -986,7 +990,7 @@ signal <- do.call(rbind, lapply(unique(paste0(signal$id, signal$group)), functio
   y_end <- noisesub[noisesub$time == max(noisesub$time), "y"]
   signalSub$time <- signalSub$time + max(noisesub$time)
   signalSub$y <- y_end + signalSub$y
-  signalSub
+  return(signalSub)
 }))
 simdf <- rbind(noise, signal)
 simdf <- simdf[simdf$time < 45, ]

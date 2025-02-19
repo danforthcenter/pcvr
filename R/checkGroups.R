@@ -48,4 +48,5 @@ checkGroups <- function(df, group) {
   } else {
     message("Grouping is unique")
   }
+  return(invisible(NULL))
 }

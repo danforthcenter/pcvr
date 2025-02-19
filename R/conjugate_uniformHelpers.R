@@ -35,7 +35,7 @@
   #* `Max non-zero bin`
   max_obs <- max(unlist(lapply(seq_len(n_obs), function(i) {
     col <- utils::tail(colnames(s1)[which(s1[i, ] > 0)], 1)
-    as.numeric(gsub("[a-zA-Z]_*", "", col))
+    return(as.numeric(gsub("[a-zA-Z]_*", "", col)))
   })), na.rm = TRUE)
   #* `Update pareto prior with sufficient statistics`
   scale_prime <- priors$scale + n_obs

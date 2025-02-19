@@ -192,7 +192,7 @@ read.pcv <- function(filepath, mode = NULL,
           iterCols <- histCols[grepl(umt, histCols)]
           iterColsNumeric <- as.numeric(gsub(paste0(umt, "."), "", iterCols))
           bins_order <- sort(iterColsNumeric, index.return = TRUE)$ix
-          iterCols[bins_order]
+          return(iterCols[bins_order])
         }))
         #* combine the histCols and the other columns, in the new order.
         sv_and_meta_cols <- colnames(wide)[!grepl("hist|frequencies", colnames(wide))]
@@ -216,7 +216,7 @@ read.pcv <- function(filepath, mode = NULL,
       sequence <- seq(ncol(df1), 1, -1)
       numeric_cols <- as.numeric(which(unlist(lapply(df1, is.numeric))))
       pheno_position_in_seq <- which(unlist(lapply(seq_along(numeric_cols), function(i) {
-        sequence[i] == rev(numeric_cols)[i]
+        return(sequence[i] == rev(numeric_cols)[i])
       })))
       pheno_cols <- rev(sequence[pheno_position_in_seq])
       #* ***** `melt data`

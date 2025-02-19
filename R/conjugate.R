@@ -372,7 +372,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
       s <- s[, !grepl("param", colnames(s))]
       colnames(s) <- gsub("1", "2", colnames(s))
     }
-    s
+    return(s)
   }))
   if (!is.null(s2)) {
     postProbRes <- .pdf.handling(sample_results[[1]]$pdf, sample_results[[2]]$pdf, hypothesis)
@@ -421,7 +421,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
       samples <- split(s2[[lhs]], s2[[rhs]])
     } else { # handle MV traits
       samples <- lapply(split(s2, s2[[rhs]]), function(d) {
-        d[, eval(str2lang(lhs))]
+        return(d[, eval(str2lang(lhs))])
       })
     }
     names(samples) <- c("s1", "s2")
@@ -491,9 +491,9 @@ conjugate <- function(s1 = NULL, s2 = NULL,
     pars <- names(support_quantiles[[1]])
     support <- lapply(pars, function(param) {
       qnts <- range(unlist(lapply(support_quantiles, function(sq) {
-        sq[[param]]
+        return(sq[[param]])
       })))
-      seq(qnts[1], qnts[2], length.out = 10000)
+      return(seq(qnts[1], qnts[2], length.out = 10000))
     })
     names(support) <- pars
   } else {
@@ -573,7 +573,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
   rope_res <- list()
   if (!is.list(rope_range)) {
     rope_range <- lapply(sample_results[[1]]$summary$param, function(par) {
-      rope_range
+      return(rope_range)
     })
     names(rope_range) <- sample_results[[1]]$summary$param
   }
@@ -585,15 +585,16 @@ conjugate <- function(s1 = NULL, s2 = NULL,
       s_res$pdf <- s_res$pdf[[nm]]
       s_res$summary <- s_res$summary[s_res$summary$param == nm, ]
       s_res$plot_df <- s_res$plot_df[s_res$plot_df$param == nm, ]
-      s_res
+      return(s_res)
     })
-    .conj_rope(sample_results_param,
+    nm_res <- .conj_rope(sample_results_param,
       rope_range = iter_rope_range,
       rope_ci = rope_ci, plot, method = "NONE"
     )
+    return(nm_res)
   })
   rope_res$summary <- do.call(rbind, lapply(rope_res, function(r) {
-    r$summary
+    return(r$summary)
   }))
   return(rope_res)
 }
@@ -607,7 +608,8 @@ conjugate <- function(s1 = NULL, s2 = NULL,
 .pdf.handling <- function(pdf1, pdf2, hypothesis) {
   if (is.list(pdf1) && is.list(pdf2)) {
     pdf.handling.output <- as.data.frame(do.call(rbind, lapply(seq_along(pdf1), function(i) {
-      .post.prob.from.pdfs(pdf1[[i]], pdf2[[i]], hypothesis)
+      pdf <- .post.prob.from.pdfs(pdf1[[i]], pdf2[[i]], hypothesis)
+      return(pdf)
     })))
   } else {
     pdf.handling.output <- as.data.frame(.post.prob.from.pdfs(pdf1, pdf2, hypothesis))
@@ -652,10 +654,11 @@ conjugate <- function(s1 = NULL, s2 = NULL,
 .conj_plot <- function(sample_results, rope_res = NULL, res,
                        rope_range, rope_ci, dirSymbol = NULL, support, method) {
   if (any(grepl("bivariate", method))) {
-    .conj_bivariate_plot(sample_results, rope_res, res, rope_range, rope_ci, dirSymbol)
+    p <- .conj_bivariate_plot(sample_results, rope_res, res, rope_range, rope_ci, dirSymbol)
   } else {
-    .conj_general_plot(sample_results, rope_res, res, rope_range, rope_ci, dirSymbol, support)
+    p <- .conj_general_plot(sample_results, rope_res, res, rope_range, rope_ci, dirSymbol, support)
   }
+  return(p)
 }
 
 #' ***********************************************************************************************
@@ -709,7 +712,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
     }
 
     fill_scale <- which(sapply(p$scales$scales, function(x) {
-      "fill" %in% x$aesthetics # avoid "replacing scale" non-messages that suppress doesn't catch
+      return("fill" %in% x$aesthetics) # avoid "replacing scale" non-messages
     }))
 
     p$scales$scales[[fill_scale]] <- NULL
@@ -806,7 +809,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
     joint_dist_s1 <- sample_results[[1]]$posteriorDraws
     limits <- lapply(params, function(p) {
       sub <- margin_plot_df[margin_plot_df$param == p, ]
-      range(sub$range)
+      return(range(sub$range))
     })
     names(limits) <- params
     x_lim <- limits[[1]]
@@ -845,7 +848,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
       ggplot2::theme(legend.position = "none")
     #* `Make marginal distribution plot of each parameter (x, y)`
     margin_plots <- lapply(params, function(par) {
-      ggplot2::ggplot(
+      par_plot <- ggplot2::ggplot(
         margin_plot_df[margin_plot_df$param == par, ],
         ggplot2::aes(x = .data$range, y = .data$prob)
       ) +
@@ -879,6 +882,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
         ggplot2::xlim(limits[[par]]) +
         ggplot2::theme_void() +
         ggplot2::theme(legend.title = ggplot2::element_blank())
+      return(par_plot)
     })
     #* `Write title if there is only 1 sample`
     SUBTITLE <- NULL
@@ -887,18 +891,18 @@ conjugate <- function(s1 = NULL, s2 = NULL,
     margin_plot_df <- do.call(rbind, lapply(1:2, function(i) {
       md <- sample_results[[i]]$plot_df
       md$sample <- paste0("Sample ", i)
-      md
+      return(md)
     }))
     params <- unique(margin_plot_df$param)
     joint_dist <- do.call(rbind, lapply(1:2, function(i) {
       pd <- sample_results[[i]]$posteriorDraws
       pd$sample <- paste0("Sample ", i)
-      pd
+      return(pd)
     }))
     #* `Define Limits`
     limits <- lapply(params, function(p) {
       sub <- margin_plot_df[margin_plot_df$param == p, ]
-      range(sub$range)
+      return(range(sub$range))
     })
     names(limits) <- params
     x_lim <- limits[[1]]
@@ -957,7 +961,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
     margin_plots <- lapply(params, function(par) {
       hdf <- res$summary
       hdf <- hdf[hdf$param == par, ]
-      ggplot2::ggplot() +
+      par_plot <- ggplot2::ggplot() +
         ggplot2::geom_area(
           data = margin_plot_df[margin_plot_df$param == par, ],
           alpha = 0.5, ggplot2::aes(
@@ -1018,6 +1022,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
           legend.position.inside = c(0.1, 0.5),
           legend.title = ggplot2::element_blank()
         )
+      return(par_plot)
     })
 
     post.probs <- lapply(params, function(par) {
@@ -1034,7 +1039,8 @@ conjugate <- function(s1 = NULL, s2 = NULL,
 
     #* `Write title if there are 2 samples`
     SUBTITLE <- paste(lapply(params, function(par) {
-      paste0(par, ": P[s1", dirSymbol[[1]], "s2] = ", post.probs[[par]])
+      par_string <- paste0(par, ": P[s1", dirSymbol[[1]], "s2] = ", post.probs[[par]])
+      return(par_string)
     }), collapse = "\n")
   }
   #* `Assemble Patchwork`

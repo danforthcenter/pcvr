@@ -570,10 +570,10 @@ There are lots of ways to model a trend like that we see for sigma.
 
 ```{r}
 draw_power_sigma <- function(x) {
-  12 + (x * 0.75)^(2 * 0.26)
+  return(12 + (x * 0.75)^(2 * 0.26))
 } # difficult to recapitulate from nlme
 draw_exp_sigma <- function(x) {
-  12 + exp(2 * x * 0.75 * 0.05)
+  return(12 + exp(2 * x * 0.75 * 0.05))
 }
 
 ggplot(sigma_df, aes(x = time, y = y)) +

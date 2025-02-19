@@ -501,7 +501,7 @@ There are lots of ways to model a trend like that we see for sigma.
 
 ```{r}
 draw_gomp_sigma <- function(x) {
-  23 * exp(-21 * exp(-0.22 * x))
+  return(23 * exp(-21 * exp(-0.22 * x)))
 }
 
 ggplot(sigma_df, aes(x = time, y = y)) +
@@ -578,7 +578,7 @@ Note that these traits are broadly true of logistic and monomolecular sub models
 
 ```{r}
 draw_gomp_sigma <- function(x) {
-  22 * exp(-9 * exp(-0.27 * x))
+  return(22 * exp(-9 * exp(-0.27 * x)))
 } # guesses at parameters
 
 p <- ggplot(sigma_df, aes(x = time, y = y, group = group)) +
@@ -630,19 +630,19 @@ You can always add a new sigma formula if something else fits your needs better.
 #| message: false
 #| echo: false
 draw_gomp_sigma <- function(x) {
-  22 * exp(-9 * exp(-0.27 * x))
+  return(22 * exp(-9 * exp(-0.27 * x)))
 }
 draw_logistic_sigma <- function(x) {
-  20 / (1 + exp((15 - x) / 2))
+  return(20 / (1 + exp((15 - x) / 2)))
 }
 draw_exp_sigma <- function(x) {
-  2.5 * exp(0.08 * x)
+  return(2.5 * exp(0.08 * x))
 }
 draw_gomp_sigma <- function(x) {
-  22 * exp(-9 * exp(-0.27 * x))
+  return(22 * exp(-9 * exp(-0.27 * x)))
 }
 draw_sigma_quad <- function(x) {
-  (0.3 * x) + (0.02 * x^2)
+  return((0.3 * x) + (0.02 * x^2))
 }
 
 ggplot(sigma_df, aes(x = time, y = y)) +
@@ -1011,7 +1011,7 @@ plot <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
 set.seed(123)
 noise <- do.call(rbind, lapply(1:30, function(i) {
   chngpt <- rnorm(2, 18, 2)
-  rbind(
+  noise_i <- rbind(
     data.frame(
       id = paste0("id_", i), time = 1:chngpt[1], group = "a",
       y = c(runif(chngpt[1] - 1, 0, 20), rnorm(1, 5, 1))
@@ -1021,11 +1021,12 @@ noise <- do.call(rbind, lapply(1:30, function(i) {
       y = c(runif(chngpt[2] - 1, 0, 20), rnorm(1, 5, 1))
     )
   )
+  return(noise_i)
 }))
 noise2 <- do.call(rbind, lapply(1:30, function(i) {
   start1 <- max(noise[noise$id == paste0("id_", i) & noise$group == "a", "time"])
   start2 <- max(noise[noise$id == paste0("id_", i) & noise$group == "b", "time"])
-  rbind(
+  noise2_i <- rbind(
     data.frame(
       id = paste0("id_", i), time = start1:40, group = "a",
       y = c(runif(length(start1:40), 15, 50))
@@ -1035,6 +1036,7 @@ noise2 <- do.call(rbind, lapply(1:30, function(i) {
       y = c(runif(length(start2:40), 15, 50))
     )
   )
+  return(noise2_i)
 }))
 simdf <- rbind(noise, noise2)
 ```
@@ -1069,7 +1071,7 @@ plot <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
 set.seed(123)
 noise <- do.call(rbind, lapply(1:30, function(i) {
   chngpt <- rnorm(2, 18, 2)
-  rbind(
+  noise_i <- rbind(
     data.frame(
       id = paste0("id_", i), time = 1:chngpt[1], group = "a",
       y = c(runif(chngpt[1] - 1, 0, 20), rnorm(1, 5, 1))
@@ -1079,6 +1081,7 @@ noise <- do.call(rbind, lapply(1:30, function(i) {
       y = c(runif(chngpt[2] - 1, 0, 20), rnorm(1, 5, 1))
     )
   )
+  return(noise_i)
 }))
 signal <- growthSim("linear",
   n = 30, t = 20,
@@ -1090,7 +1093,7 @@ signal <- do.call(rbind, lapply(unique(paste0(signal$id, signal$group)), functio
   y_end <- noisesub[noisesub$time == max(noisesub$time), "y"]
   signalSub$time <- signalSub$time + max(noisesub$time)
   signalSub$y <- y_end + signalSub$y
-  signalSub
+  return(signalSub)
 }))
 simdf <- rbind(noise, signal)
 ```
@@ -1123,7 +1126,7 @@ plot <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df, timeRange = 1:40)
 set.seed(123)
 noise <- do.call(rbind, lapply(1:30, function(i) {
   chngpt <- rnorm(2, 18, 2)
-  rbind(
+  noise_i <- rbind(
     data.frame(
       id = paste0("id_", i), time = 1:chngpt[1], group = "a",
       y = c(runif(chngpt[1] - 1, 0, 20), rnorm(1, 5, 1))
@@ -1133,6 +1136,7 @@ noise <- do.call(rbind, lapply(1:30, function(i) {
       y = c(runif(chngpt[2] - 1, 0, 20), rnorm(1, 5, 1))
     )
   )
+  return(noise_i)
 }))
 signal <- growthSim("logistic",
   n = 20, t = 30,
@@ -1144,7 +1148,7 @@ signal <- do.call(rbind, lapply(unique(paste0(signal$id, signal$group)), functio
   y_end <- noisesub[noisesub$time == max(noisesub$time), "y"]
   signalSub$time <- signalSub$time + max(noisesub$time)
   signalSub$y <- y_end + signalSub$y
-  signalSub
+  return(signalSub)
 }))
 simdf <- rbind(noise, signal)
 simdf <- simdf[simdf$time < 45, ]

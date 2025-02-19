@@ -190,6 +190,7 @@ pcv.emd <- function(df, cols = NULL, reorder = NULL, include = reorder, mat = FA
       ))
     }
   }
+  return(invisible(NULL))
 }
 
 #' Long EMD calculation
@@ -210,16 +211,18 @@ pcv.emd <- function(df, cols = NULL, reorder = NULL, include = reorder, mat = FA
       ncol = length(unique(df$INNER_ID_EMD))
     )
     values <- unlist(parallel::mclapply(seq_along(unique(df$INNER_ID_EMD)), function(i_n) {
-      lapply(seq_along(unique(df$INNER_ID_EMD)), function(j_n) {
+      i_res <- lapply(seq_along(unique(df$INNER_ID_EMD)), function(j_n) {
         i <- unique(df$INNER_ID_EMD)[i_n]
         j <- unique(df$INNER_ID_EMD)[j_n]
         if (i_n < j_n) {
-          dist_1d(
+          d <- dist_1d(
             as.numeric(df[df$INNER_ID_EMD == as.character(i), value]),
             as.numeric(df[df$INNER_ID_EMD == as.character(j), value])
           )
+          return(d)
         }
       })
+      return(i_res)
     }, mc.cores = parallel))
     mat_obj[lower.tri(mat_obj)] <- values
     tmat_obj <- t(mat_obj)
@@ -228,7 +231,7 @@ pcv.emd <- function(df, cols = NULL, reorder = NULL, include = reorder, mat = FA
     out_data <- mat_obj
   } else { # make long data
     out_data <- do.call(rbind, parallel::mclapply(seq_along(unique(df$INNER_ID_EMD)), function(i_n) {
-      do.call(rbind, lapply(seq_along(unique(df$INNER_ID_EMD)), function(j_n) {
+      i_df <- do.call(rbind, lapply(seq_along(unique(df$INNER_ID_EMD)), function(j_n) {
         i <- unique(df$INNER_ID_EMD)[i_n]
         j <- unique(df$INNER_ID_EMD)[j_n]
         emdOut <- NULL
@@ -258,9 +261,10 @@ pcv.emd <- function(df, cols = NULL, reorder = NULL, include = reorder, mat = FA
           } else {
             x <- data.frame(i = c(i, j), j = c(j, i), emd = emdOut)
           }
-          x
+          return(x)
         }
       }))
+      return(i_df)
     }, mc.cores = parallel))
   }
   return(out_data)
@@ -283,11 +287,12 @@ pcv.emd <- function(df, cols = NULL, reorder = NULL, include = reorder, mat = FA
   if (mat) { # make dist matrix
     mat_obj <- matrix(0, nrow = nrow(df), ncol = nrow(df))
     values <- unlist(parallel::mclapply(seq_len(nrow(df)), function(i) {
-      lapply(seq_len(nrow(df)), function(j) {
+      i_res <- lapply(seq_len(nrow(df)), function(j) {
         if (i < j) {
-          dist_1d(as.numeric(df[i, cols]), as.numeric(df[j, cols]))
+          return(dist_1d(as.numeric(df[i, cols]), as.numeric(df[j, cols])))
         }
       })
+      return(i_res)
     }, mc.cores = parallel))
     mat_obj[lower.tri(mat_obj)] <- values
     tmat_obj <- t(mat_obj)
@@ -299,7 +304,7 @@ pcv.emd <- function(df, cols = NULL, reorder = NULL, include = reorder, mat = FA
     }
   } else { # make long dataframe
     out_data <- do.call(rbind, parallel::mclapply(seq_len(nrow(df)), function(i) {
-      do.call(rbind, lapply(seq_len(nrow(df)), function(j) {
+      i_df <- do.call(rbind, lapply(seq_len(nrow(df)), function(j) {
         emdOut <- NULL
         if (i == j) {
           emdOut <- 0
@@ -316,9 +321,10 @@ pcv.emd <- function(df, cols = NULL, reorder = NULL, include = reorder, mat = FA
           } else {
             x <- data.frame(i = c(i, j), j = c(j, i), emd = emdOut)
           }
-          x
+          return(x)
         }
       }))
+      return(i_df)
     }, mc.cores = parallel))
   }
   return(out_data)
@@ -386,5 +392,6 @@ euc1d <- function(s1, s2) {
 pcv.euc <- function(df, cols = NULL, reorder = NULL, include = reorder, mat = FALSE, plot = TRUE,
                     parallel = getOption("mc.cores", 1), trait = "trait", id = "image",
                     value = "value", raiseError = TRUE, method = "euc") {
-  pcv.emd(df, cols, reorder, include, mat, plot, parallel, trait, id, value, raiseError, method)
+  out <- pcv.emd(df, cols, reorder, include, mat, plot, parallel, trait, id, value, raiseError, method)
+  return(out)
 }

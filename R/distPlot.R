@@ -71,25 +71,26 @@ distributionPlot <- function(fits, form, df, priors = NULL,
   fitData <- fits[[length(fits)]]$data
   dSplit <- split(d, d[[group]])
   startTime <- min(unlist(lapply(fits, function(ft) {
-    min(ft$data[[x]], na.rm = TRUE)
+    return(min(ft$data[[x]], na.rm = TRUE))
   })))
   if (is.null(maxTime)) {
     endTime <- max(unlist(lapply(fits, function(ft) {
-      max(ft$data[[x]], na.rm = TRUE)
+      return(max(ft$data[[x]], na.rm = TRUE))
     })))
   }
   byTime <- mean(diff(unlist(lapply(fits, function(ft) {
-    max(ft$data[[x]], na.rm = TRUE)
+    return(max(ft$data[[x]], na.rm = TRUE))
   }))))
   timeRange <- seq(startTime, endTime, byTime)
   virOptions <- c("C", "G", "B", "D", "A", "H", "E", "F")
   palettes <- lapply(
     seq_along(unique(fitData[[group]])),
     function(i) {
-      viridis::viridis(length(timeRange),
+      group_pal <- viridis::viridis(length(timeRange),
         begin = 0.1,
         end = 1, option = virOptions[i], direction = 1
       )
+      return(group_pal)
     }
   )
   names(palettes) <- unique(fitData[[group]])
@@ -115,7 +116,7 @@ distributionPlot <- function(fits, form, df, priors = NULL,
 
   growthTrendPlots <- lapply(seq_along(dSplit), function(i) {
     dt <- dSplit[[i]]
-    ggplot2::ggplot(dt, ggplot2::aes(
+    p <- ggplot2::ggplot(dt, ggplot2::aes(
       x = .data[[x]], y = .data[[y]], color = .data[[x]],
       group = .data[[individual]]
     )) +
@@ -123,6 +124,7 @@ distributionPlot <- function(fits, form, df, priors = NULL,
       viridis::scale_color_viridis(begin = 0.1, end = 1, option = virOptions[i], direction = 1) +
       ggplot2::scale_x_continuous(limits = c(startTime, endTime)) +
       pcv_theme()
+    return(p)
   })
 
   #* ***** `posterior distribution extraction`
@@ -137,19 +139,20 @@ distributionPlot <- function(fits, form, df, priors = NULL,
       splits <- strsplit(colnames(draws), split = "")
       mx <- max(unlist(lapply(splits, length)))
       ind <- which(unlist(lapply(1:mx, function(i) {
-        length(unique(rapply(splits, function(j) {
-          j[i]
+        l_over_1 <- length(unique(rapply(splits, function(j) {
+          return(j[i])
         }))) != 1
+        return(l_over_1)
       })))
       if (length(ind) > 0) {
         colnames(draws) <- paste(par, unlist(lapply(colnames(draws), function(c) {
-          substr(c, min(ind), max(c(ind, nchar(c))))
+          return(substr(c, min(ind), max(c(ind, nchar(c)))))
         })), sep = "_")
       }
-      draws
+      return(draws)
     }))
     fitDraws$time <- time
-    fitDraws
+    return(fitDraws)
   }))
 
   #* ***** `prior distribution extraction`
@@ -170,7 +173,8 @@ distributionPlot <- function(fits, form, df, priors = NULL,
 
   xlims <- lapply(params, function(par) {
     diff <- as.numeric(as.matrix(posts[, grepl(paste0("^", par, "_"), colnames(posts))]))
-    c(min(diff, na.rm = TRUE), max(diff, na.rm = TRUE))
+    rng <- c(min(diff, na.rm = TRUE), max(diff, na.rm = TRUE))
+    return(rng)
   })
   names(xlims) <- params
   postPlots <- lapply(unique(fitData[[group]]), function(groupVal) {
@@ -236,9 +240,10 @@ distributionPlot <- function(fits, form, df, priors = NULL,
       }
       prior_df <- do.call(cbind, lapply(names(priors), function(nm) {
         nmp <- priors[[nm]]
-        setNames(data.frame(do.call(cbind, lapply(names(nmp), function(nmpn) {
-          nmp[[nmpn]]
+        nm_res <- setNames(data.frame(do.call(cbind, lapply(names(nmp), function(nmpn) {
+          return(nmp[[nmpn]])
         }))), paste0(names(nmp), "_", nm))
+        return(nm_res)
       }))
       prior_df[[x]] <- 0
     } else {

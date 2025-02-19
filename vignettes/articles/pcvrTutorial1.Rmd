@@ -394,28 +394,22 @@ beta_dist_plot
 
 values <- c(
   unlist(lapply(1:100, function(i) {
-    set.seed(i)
-    rbinom(10, 100, prob = rbeta(1, 2, 2))
+    return(rbinom(10, 100, prob = rbeta(1, 2, 2)))
   })),
   unlist(lapply(1:100, function(i) {
-    set.seed(i)
-    rbinom(10, 100, prob = rbeta(1, 20, 20))
+    return(rbinom(10, 100, prob = rbeta(1, 20, 20)))
   })),
   unlist(lapply(1:100, function(i) {
-    set.seed(i)
-    rbinom(10, 100, prob = rbeta(1, 40, 10))
+    return(rbinom(10, 100, prob = rbeta(1, 40, 10)))
   })),
   unlist(lapply(1:100, function(i) {
-    set.seed(i)
-    rbinom(10, 100, prob = rbeta(1, 20, 80))
+    return(rbinom(10, 100, prob = rbeta(1, 20, 80)))
   })),
   unlist(lapply(1:100, function(i) {
-    set.seed(i)
-    rbinom(10, 100, prob = rbeta(1, 2, 8))
+    return(rbinom(10, 100, prob = rbeta(1, 2, 8)))
   })),
   unlist(lapply(1:100, function(i) {
-    set.seed(i)
-    rbinom(10, 100, prob = rbeta(1, 100, 10))
+    return(rbinom(10, 100, prob = rbeta(1, 100, 10)))
   }))
 )
 betas <- factor(

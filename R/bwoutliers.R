@@ -155,10 +155,10 @@ bw.outliers <- function(df = NULL,
   )
 
   df <- do.call(rbind, lapply(resList, function(res) {
-    res[["data"]]
+    return(res[["data"]])
   }))
   pctRm <- do.call(rbind, lapply(seq_along(resList), function(i) {
-    data.frame(i = i, pctRm = resList[[i]][["pctRm"]])
+    return(data.frame(i = i, pctRm = resList[[i]][["pctRm"]]))
   }))
 
   out <- df[which(!df$outlier), -which(grepl("outlier", colnames(df)))]
@@ -462,10 +462,11 @@ bw.outliers <- function(df = NULL,
   outlierMatrix <- do.call(cbind, lapply(seq_len(ncol(cooksd)), function(i) {
     cooks_vec <- cooksd[, i] # this is causing a problem
     cooks_vec[is.na(cooks_vec)] <- outlierCutoffs[i] - 0.1
-    setNames(data.frame(cooks_vec > outlierCutoffs[i]), paste0("outlier_", i))
+    col_out <- setNames(data.frame(cooks_vec > outlierCutoffs[i]), paste0("outlier_", i))
+    return(col_out)
   }))
   outlierMatrix$outlier <- unlist(lapply(seq_len(nrow(outlierMatrix)), function(i) {
-    any(outlierMatrix[i, ]) # could be a more nuanced rule
+    return(any(outlierMatrix[i, ])) # could be a more nuanced rule
   }))
 
   df <- cbind(df, outlierMatrix)
@@ -532,7 +533,7 @@ bw.outliers <- function(df = NULL,
   df_out <- do.call(rbind, lapply(group_inter, function(grp) {
     subMeta <- df[interaction(df[, group]) == grp, ]
     subMeta$outlier <- ifelse(subMeta$mahal > cutoff * mean(subMeta$mahal, na.rm = TRUE), TRUE, FALSE)
-    subMeta
+    return(subMeta)
   }))
 
   pctRm <- 100 * (round(nrow(df_out[df_out$outlier, ]) / nrow(df_out), 5))
