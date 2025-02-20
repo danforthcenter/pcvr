@@ -56,6 +56,10 @@
 #'     fine down to about 0.1. A summary and the total values are returned, with the summary being
 #'     useful if several models are included in a list for fit argument
 #'
+#'     \item \bold{mcmcTrace}: A plot of each model's MCMC traces. Ideally these should be very mixed
+#'     and stationary. For more options for visualizing MCMC diagnostics see
+#'     \code{bayesplot::mcmc_trace}.
+#'
 #'     \item \bold{priorPredictive}: A plot of data simulated from the prior using \link{plotPrior}.
 #'     This should generate data that is biologically plausible for your situation, but it will
 #'     probably be much more variable than your data. That is the effect of the mildly informative thick
@@ -74,7 +78,7 @@
 #'
 #'
 #' @keywords Bayesian brms prior
-#' @return A named list containing Rhat, ESS, NEFF, and Prior/Posterior Predictive plots.
+#' @return A named list containing Rhat, ESS, NEFF, and Trace/Prior/Posterior Predictive plots.
 #' See details for interpretation.
 #' @importFrom rlang is_installed
 #' @seealso \link{plotPrior} for visual prior predictive checks.
@@ -132,17 +136,17 @@ barg <- function(fit, ss = NULL) {
   }))
   out[["General"]] <- general
   #* `Rhat summary`
-  rhats <- do.call(rbind, lapply(fitList, function(fitobj) {
+  rhats <- as.data.frame(do.call(rbind, lapply(fitList, function(fitobj) {
     return(brms::rhat(fitobj))
-  }))
+  })))
   rhat_metrics <- apply(rhats, MARGIN = 2, summary)
   rhats$model <- seq_along(fitList)
   out[["Rhat"]][["summary"]] <- rhat_metrics
   out[["Rhat"]][["complete"]] <- rhats
   #* `NEFF summary`
-  neff <- do.call(rbind, lapply(fitList, function(fitobj) {
+  neff <- as.data.frame(do.call(rbind, lapply(fitList, function(fitobj) {
     return(brms::neff_ratio(fitobj))
-  }))
+  })))
   neff_metrics <- apply(neff, MARGIN = 2, summary)
   neff$model <- seq_along(fitList)
   out[["NEFF"]][["summary"]] <- neff_metrics
@@ -168,6 +172,12 @@ barg <- function(fit, ss = NULL) {
   ess_metrics <- rbind(tag_b_ess, tag_t_ess)
   out[["ESS"]][["summary"]] <- ess_metrics
   out[["ESS"]][["complete"]] <- ess
+  #* `MCMC Diagnostic Plot`
+  tracePlots <- lapply(fitList, function(fit) {
+    p <- suppressMessages(brms::mcmc_plot(fit, type = "trace"))
+    return(p)
+  })
+  out[["mcmcTrace"]] <- tracePlots
   #* `Prior Predictive Check`
   if (methods::is(eval(ssList[[1]]$call$start), "list")) {
     pri_preds <- lapply(seq_along(ssList), function(i) {
