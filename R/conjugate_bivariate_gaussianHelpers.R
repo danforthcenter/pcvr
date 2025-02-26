@@ -89,6 +89,7 @@
     "mu" = mu_prime, "sd" = sigma_prime,
     "a" = alpha_prime, "b" = beta_prime
   )
+  out$prior <- priors
   #* `save s1 data for plotting`
   if (plot) {
     out$plot_df <- data.frame(

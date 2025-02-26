@@ -42,6 +42,7 @@
   #* `Store summary`
   out$summary <- data.frame(HDE_1 = hde1, HDI_1_low = hdi1[1], HDI_1_high = hdi1[2])
   out$posterior <- list("a" = a1_prime, "b" = b1_prime)
+  out$prior <- priors
   #* `save s1 data for plotting`
   if (plot) {
     out$plot_df <- data.frame(

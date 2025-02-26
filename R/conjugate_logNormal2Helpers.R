@@ -74,6 +74,7 @@
   out$posterior$a <- a_prime
   out$posterior$b <- b_prime
   out$posterior$lognormal_mu <- ln_mu_prime # returning this as a number, not a distribution
+  out$prior <- priors
   #* `Make Posterior Draws`
   out$posteriorDraws <- rgamma(10000, shape = a_prime, scale = b_prime)
   out$pdf <- pdf1
@@ -140,6 +141,7 @@
   out$posterior$a <- a_prime
   out$posterior$b <- b_prime
   out$posterior$lognormal_mu <- mu_s1 # returning this as a number, not a distribution
+  out$prior <- priors
   #* `Make Posterior Draws`
   out$posteriorDraws <- rgamma(10000, shape = a_prime, scale = b_prime)
   out$pdf <- pdf1

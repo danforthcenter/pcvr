@@ -45,6 +45,7 @@
     "shape" = shape_prime, "scale" = scale_prime,
     "known_shape" = priors$known_shape
   )
+  out$prior <- priors
   #* `save s1 data for plotting`
   if (plot) {
     out$plot_df <- data.frame(

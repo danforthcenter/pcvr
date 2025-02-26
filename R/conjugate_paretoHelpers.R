@@ -82,6 +82,7 @@
     "b" = b_prime,
     "known_location" = priors$known_location
   )
+  out$prior <- priors
   #* `save s1 data for plotting`
   if (plot) {
     out$plot_df <- data.frame(
@@ -141,6 +142,7 @@
     "b" = b_prime,
     "known_location" = priors$known_location
   )
+  out$prior <- priors
   #* `save s1 data for plotting`
   if (plot) {
     out$plot_df <- data.frame(

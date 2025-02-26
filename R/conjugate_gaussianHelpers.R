@@ -51,6 +51,7 @@
   out$posterior$mu <- m1_n
   out$posterior$n <- n1_n
   out$posterior$s2 <- s2_1_n # return variance
+  out$prior <- priors
   #* `Make Posterior Draws`
   out$posteriorDraws <- extraDistr::rlst(10000, v1_n, m1_n, sigma_1)
   out$pdf <- pdf1
@@ -118,6 +119,7 @@
   out$posterior$mu <- m1_n
   out$posterior$n <- n1_n
   out$posterior$s2 <- s2_1_n
+  out$prior <- priors
   #* `Make Posterior Draws`
   out$posteriorDraws <- extraDistr::rlst(10000, v1_n, m1_n, sigma_1)
   out$pdf <- pdf1

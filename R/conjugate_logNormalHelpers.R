@@ -88,6 +88,7 @@
   out$posterior$mu <- mu_ls_prime
   out$posterior$sd <- sigma_ls_prime
   out$posterior$lognormal_sigma <- ln_sigma_prime
+  out$prior <- priors
   #* `Make Posterior Draws`
   out$posteriorDraws <- stats::rnorm(10000, mu_ls_prime, sigma_ls_prime)
   out$pdf <- pdf1
@@ -157,6 +158,7 @@
   out$posterior$mu <- mu_prime
   out$posterior$sd <- sd_prime
   out$posterior$lognormal_sigma <- sigma_s1 # returning this as a number, not a distribution
+  out$prior <- priors
   #* `Make Posterior Draws`
   out$posteriorDraws <- rnorm(10000, mu_prime, sd_prime)
   out$pdf <- pdf1

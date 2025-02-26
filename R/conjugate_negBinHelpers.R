@@ -70,6 +70,7 @@
   out$posterior$r <- priors$r[1]
   out$posterior$a <- a1_prime
   out$posterior$b <- b1_prime
+  out$prior <- priors
   #* `Make Posterior Draws`
   out$posteriorDraws <- rbeta(10000, a1_prime, b1_prime)
   out$pdf <- pdf1

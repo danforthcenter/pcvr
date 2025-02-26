@@ -45,6 +45,7 @@
     "a" = a_prime,
     "b" = b_prime
   )
+  out$prior <- priors
   #* `save s1 data for plotting`
   if (plot) {
     out$plot_df <- data.frame(

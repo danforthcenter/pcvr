@@ -116,6 +116,7 @@
   out$posterior$known_kappa <- priors$known_kappa
   out$posterior$n <- priors$n + nrow(s1)
   out$posterior$boundary <- priors$boundary
+  out$prior <- priors
   #* `Store Posterior Draws`
   out$posteriorDraws <- draws_boundary
   out$pdf <- pdf1
@@ -241,6 +242,7 @@
   out$posterior$known_kappa <- priors$known_kappa
   out$posterior$n <- priors$n + length(s1)
   out$posterior$boundary <- priors$boundary
+  out$prior <- priors
   #* `Store Posterior Draws`
   out$posteriorDraws <- draws_boundary
   out$pdf <- pdf1
