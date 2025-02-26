@@ -98,6 +98,7 @@ A list with named elements:
    of the posterior probability.}
    \item{\strong{posterior}: A list of updated parameters in the same format as the prior
     for the given method. If desired this does allow for Bayesian updating.}
+   \item{\strong{prior}: The prior in a list with the same format as the posterior.}
    \item{\strong{plot_df}: A data frame of probabilities along the support for each sample.
     This is used for making the ggplot.}
    \item{\strong{rope_df}: A data frame of draws from the ROPE posterior.}
