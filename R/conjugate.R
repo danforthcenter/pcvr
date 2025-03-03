@@ -672,10 +672,13 @@ conjugate <- function(s1 = NULL, s2 = NULL,
 #' @noRd
 .conj_general_plot <- function(sample_results, rope_res = NULL, res,
                                rope_range, rope_ci, dirSymbol = NULL, support) {
-  s1_plot_df <- sample_results[[1]]$plot_df
+  s1_plot_df <- data.frame(range = sample_results[[1]]$plot_list$range)
 
-  p <- ggplot2::ggplot(s1_plot_df, ggplot2::aes(x = .data$range, y = .data$prob)) +
-    ggplot2::geom_area(data = s1_plot_df, alpha = 0.5, ggplot2::aes(fill = "s1")) +
+  p <- ggplot2::ggplot(s1_plot_df, ggplot2::aes(x = .data$range)) +
+    ggplot2::stat_function(geom="polygon",
+                           fun = eval(parse(text = sample_results[[1]]$plot_list$ddist_fun)),
+                           args = sample_results[[1]]$plot_list$parameters,
+                           ggplot2::aes(fill = "s1"), alpha = 0.5) +
     ggplot2::geom_vline(ggplot2::aes(xintercept = res$summary$HDI_1_low),
       color = "red",
       linewidth = 1.1
@@ -705,7 +708,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
     pcv_theme()
 
   if (length(sample_results) == 2) {
-    s2_plot_df <- sample_results[[2]]$plot_df
+    s2_plot_df <- data.frame(range = sample_results[[2]]$plot_list$range)
 
     if (res$summary$post.prob < 1e-5) {
       post.prob.text <- "<1e-5"
@@ -719,7 +722,10 @@ conjugate <- function(s1 = NULL, s2 = NULL,
 
     p$scales$scales[[fill_scale]] <- NULL
     p <- p +
-      ggplot2::geom_area(data = s2_plot_df, ggplot2::aes(fill = "s2"), alpha = 0.5) +
+      ggplot2::stat_function(geom="polygon",
+                             fun = eval(parse(text = sample_results[[2]]$plot_list$ddist_fun)),
+                             args = sample_results[[2]]$plot_list$parameters,
+                             ggplot2::aes(fill = "s2"), alpha = 0.5) +
       ggplot2::geom_vline(ggplot2::aes(xintercept = res$summary$HDI_2_low),
         color = "blue",
         linewidth = 1.1
