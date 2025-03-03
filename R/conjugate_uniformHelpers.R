@@ -66,10 +66,11 @@
   out$prior <- priors
   #* `save s1 data for plotting`
   if (plot) {
-    out$plot_df <- data.frame(
+    out$plot_list <- list(
       "range" = support,
-      "prob" = pdf1,
-      "sample" = rep("Sample 1", length(support))
+      "ddist_fun" = "extraDistr::dpareto",
+      "parameters" = list("a" = scale_prime,
+                          "b" = location_prime)
     )
   }
   return(out)
@@ -124,10 +125,11 @@
   out$prior <- priors
   #* `save s1 data for plotting`
   if (plot) {
-    out$plot_df <- data.frame(
+    out$plot_list <- list(
       "range" = support,
-      "prob" = pdf1,
-      "sample" = rep("Sample 1", length(support))
+      "ddist_fun" = "extraDistr::dpareto",
+      "parameters" = list("a" = scale_prime,
+                          "b" = location_prime)
     )
   }
   return(out)

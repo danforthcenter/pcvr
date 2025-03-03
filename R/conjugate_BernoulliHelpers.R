@@ -45,10 +45,11 @@
   out$prior <- priors
   #* `save s1 data for plotting`
   if (plot) {
-    out$plot_df <- data.frame(
+    out$plot_list <- list(
       "range" = support,
-      "prob" = pdf1,
-      "sample" = rep("Sample 1", length(support))
+      "ddist_fun" = "stats::dbeta",
+      "parameters" = list("shape1" = a1_prime,
+                          "shape2" = b1_prime)
     )
   }
   return(out)

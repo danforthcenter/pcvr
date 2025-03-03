@@ -75,9 +75,11 @@
   out$pdf <- pdf1
   #* `keep data for plotting`
   if (plot) {
-    out$plot_df <- data.frame(
-      "range" = support, "prob" = pdf1,
-      "sample" = rep("Sample 1", length(support))
+    out$plot_list <- list(
+      "range" = support,
+      "ddist_fun" = "stats::dbeta",
+      "parameters" = list("shape1" = a1_prime,
+                          "shape2" = b1_prime)
     )
   }
 
@@ -148,9 +150,11 @@
   out$pdf <- pdf1
   #* `keep data for plotting`
   if (plot) {
-    out$plot_df <- data.frame(
-      "range" = support, "prob" = pdf1,
-      "sample" = rep("Sample 1", length(support))
+    out$plot_list <- list(
+      "range" = support,
+      "ddist_fun" = "stats::dbeta",
+      "parameters" = list("shape1" = a1_prime,
+                          "shape2" = b1_prime)
     )
   }
   return(out)

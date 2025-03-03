@@ -63,9 +63,11 @@
   out$pdf <- pdf1
   #* `keep data for plotting`
   if (plot) {
-    out$plot_df <- data.frame(
-      "range" = support, "prob" = pdf1,
-      "sample" = rep("Sample 1", length(support))
+    out$plot_list <- list(
+      "range" = support,
+      "ddist_fun" = "stats::dgamma",
+      "parameters" = list("shape" = a1_prime,
+                          "rate" = b1_prime)
     )
   }
   return(out)

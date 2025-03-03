@@ -80,10 +80,11 @@
   out$pdf <- pdf1
   #* `save s1 data for plotting`
   if (plot) {
-    out$plot_df <- data.frame(
+    out$plot_list <- list(
       "range" = support,
-      "prob" = pdf1,
-      "sample" = rep("Sample 1", length(support))
+      "ddist_fun" = "stats::dgamma",
+      "parameters" = list("shape" = a_prime,
+                          "scale" = b_prime)
     )
   }
   return(out)
@@ -147,10 +148,11 @@
   out$pdf <- pdf1
   #* `save s1 data for plotting`
   if (plot) {
-    out$plot_df <- data.frame(
+    out$plot_list <- list(
       "range" = support,
-      "prob" = pdf1,
-      "sample" = rep("Sample 1", length(support))
+      "ddist_fun" = "stats::dgamma",
+      "parameters" = list("shape" = a_prime,
+                          "scale" = b_prime)
     )
   }
   return(out)
