@@ -116,9 +116,11 @@
   out$pdf <- pdf1
   #* `keep data for plotting`
   if (plot) {
-    out$plot_df <- data.frame(
-      "range" = support_boundary, "prob" = pdf1,
-      "sample" = rep("Sample 1", length(support_boundary))
+    out$plot_list <- list(
+      "range" = support,
+      "ddist_fun" = "brms::dvon_mises",
+      "parameters" = list("mu" = mu_prime,
+                          "kappa" = kappa_prime)
     )
   } # tests on this seem to work fine
   return(out)
@@ -242,9 +244,11 @@
   out$pdf <- pdf1
   #* `keep data for plotting`
   if (plot) {
-    out$plot_df <- data.frame(
-      "range" = support_boundary, "prob" = pdf1,
-      "sample" = rep("Sample 1", length(support_boundary))
+    out$plot_list <- list(
+      "range" = support,
+      "ddist_fun" = "brms::dvon_mises",
+      "parameters" = list("mu" = mu_prime,
+                          "kappa" = kappa_prime)
     )
   }
   return(out)
