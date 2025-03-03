@@ -19,7 +19,7 @@ test_that("conjugate multi value T works", {
   )
   expect_equal(out$summary$post.prob, 0.02475074, tolerance = 1e-6)
   expect_true(out$summary$rope_prob < 1e-5)
-  expect_equal(names(out), c("summary", "posterior", "plot"))
+  expect_equal(names(out), c("summary", "posterior", "prior", "plot"))
 })
 
 test_that("conjugate multi value gaussian works", {
@@ -39,7 +39,7 @@ test_that("conjugate multi value gaussian works", {
     cred.int.level = 0.89, hypothesis = "equal", support = NULL
   )
 
-  expect_equal(names(out), c("summary", "posterior", "plot"))
+  expect_equal(names(out), c("summary", "posterior", "prior", "plot"))
 })
 
 test_that("conjugate multi value beta works", {
@@ -61,7 +61,7 @@ test_that("conjugate multi value beta works", {
 
   expect_equal(out$summary$post.prob, 0.1575291, tolerance = 1e-6)
   expect_equal(out$summary$rope_prob, 0.4059094, tolerance = 0.0001)
-  expect_equal(names(out), c("summary", "posterior", "plot"))
+  expect_equal(names(out), c("summary", "posterior", "prior", "plot"))
   colnames(mv_beta)[ncol(mv_beta)] <- "sim_500"
   expect_error(conjugate(s1 = mv_beta[1:10, -1], s2 = mv_beta[11:20, -1], method = "beta"))
 })
@@ -83,7 +83,7 @@ test_that("conjugate multi value lognormal works", {
   )
   expect_equal(out$summary$post.prob, 0.09558071, tolerance = 1e-6)
   expect_equal(out$summary$rope_prob, 1, tolerance = 0.0001)
-  expect_equal(names(out), c("summary", "posterior", "plot"))
+  expect_equal(names(out), c("summary", "posterior", "prior", "plot"))
 })
 
 test_that("conjugate multi value lognormal2 works", {
@@ -103,7 +103,7 @@ test_that("conjugate multi value lognormal2 works", {
   )
   expect_equal(out$summary$post.prob, 0.3054448, tolerance = 1e-6)
   expect_equal(out$summary$rope_prob, 0.007976632, tolerance = 0.0001)
-  expect_equal(names(out), c("summary", "posterior", "plot"))
+  expect_equal(names(out), c("summary", "posterior", "prior", "plot"))
 })
 
 test_that("conjugate multi value pareto works", {
@@ -124,7 +124,7 @@ test_that("conjugate multi value pareto works", {
   )
   expect_equal(out$summary$post.prob, 0.9978403, tolerance = 1e-6)
   expect_equal(out$summary$rope_prob, 0.001348163, tolerance = 1e-6)
-  expect_equal(names(out), c("summary", "posterior", "plot"))
+  expect_equal(names(out), c("summary", "posterior", "prior", "plot"))
 })
 
 test_that("conjugate multi value uniform works", {
@@ -144,7 +144,7 @@ test_that("conjugate multi value uniform works", {
   )
   expect_equal(out$summary$post.prob, 0.03885159, tolerance = 1e-6)
   expect_equal(out$summary$rope_prob, 0, tolerance = 1e-6)
-  expect_equal(names(out), c("summary", "posterior", "plot"))
+  expect_equal(names(out), c("summary", "posterior", "prior", "plot"))
 })
 
 test_that("conjugate multi value von mises (1) works", {
@@ -164,7 +164,7 @@ test_that("conjugate multi value von mises (1) works", {
   )
   expect_equal(out$summary$post.prob, 0.562518, tolerance = 1e-6)
   expect_equal(out$summary$rope_prob, 0.0217953, tolerance = 1e-6)
-  expect_equal(names(out), c("summary", "posterior", "plot"))
+  expect_equal(names(out), c("summary", "posterior", "prior", "plot"))
   expect_error(conjugate(
     s1 = mv[1:30, -1], s2 = mv[31:60, -1], method = "vonmises",
     priors = NULL,
@@ -190,7 +190,7 @@ test_that("conjugate multi value von mises (2) works", {
   )
   expect_equal(out$summary$post.prob, 0.5684183, tolerance = 1e-6)
   expect_equal(out$summary$rope_prob, 0.02471632, tolerance = 1e-6)
-  expect_equal(names(out), c("summary", "posterior", "plot"))
+  expect_equal(names(out), c("summary", "posterior", "prior", "plot"))
   expect_error(conjugate(
     s1 = mv[1:30, -1], s2 = mv[31:60, -1], method = "vonmises2",
     priors = NULL,
@@ -253,7 +253,7 @@ test_that("bivariate conjugate multi value uniform works", {
   expect_equal(nrow(out$summary), 2)
   expect_equal(length(out$posterior), 2)
   expect_equal(names(out$posterior[[1]]), c("scale", "location_l", "location_u"))
-  expect_equal(names(out), c("summary", "posterior", "plot"))
+  expect_equal(names(out), c("summary", "posterior", "prior", "plot"))
 
   set.seed(123)
   mv <- mvSim(
@@ -278,5 +278,5 @@ test_that("bivariate conjugate multi value uniform works", {
   expect_equal(nrow(out2$summary), 2)
   expect_equal(length(out2$posterior), 2)
   expect_equal(names(out2$posterior[[1]]), c("scale", "location_l", "location_u"))
-  expect_equal(names(out2), c("summary", "posterior", "plot"))
+  expect_equal(names(out2), c("summary", "posterior", "prior", "plot"))
 })

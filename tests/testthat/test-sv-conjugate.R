@@ -20,7 +20,7 @@ test_that("conjugate single value T works", {
   )
   expect_equal(out$summary$post.prob, 0.4135897, tolerance = 1e-6)
   expect_equal(out$summary$rope_prob, 0.7396922, tolerance = 1e-6)
-  expect_equal(names(out), c("summary", "posterior", "plot"))
+  expect_equal(names(out), c("summary", "posterior", "prior", "plot"))
   df <- data.frame(value = c(s1, s2), group = rep(c("a", "b"), each = 10))
   out2 <- conjugate(
     value ~ group, df,
@@ -51,7 +51,7 @@ test_that("conjugate single value gaussian works", {
     plot = TRUE, rope_range = c(-10, 10), rope_ci = 0.89,
     cred.int.level = 0.89, hypothesis = "equal", support = NULL
   )
-  expect_equal(names(out), c("summary", "posterior", "plot"))
+  expect_equal(names(out), c("summary", "posterior", "prior", "plot"))
 })
 
 test_that("conjugate single value beta works", {
@@ -79,7 +79,7 @@ test_that("conjugate single value beta works", {
 
   expect_equal(out$summary$post.prob, 0.02229246, tolerance = 1e-6)
   expect_equal(out$summary$rope_prob, 0.1351534, tolerance = 1e-6)
-  expect_equal(names(out), c("summary", "posterior", "plot"))
+  expect_equal(names(out), c("summary", "posterior", "prior", "plot"))
   expect_error(conjugate(s1 = c(s1, -0.1), s2 = c(s2, 1.1), method = "beta"))
 })
 
@@ -95,7 +95,7 @@ test_that("conjugate single value lognormal works", {
   )
   expect_equal(out$summary$post.prob, 0.5527433, tolerance = 1e-6)
   expect_equal(out$summary$rope_prob, 0.7356477, tolerance = 1e-6)
-  expect_equal(names(out), c("summary", "posterior", "plot"))
+  expect_equal(names(out), c("summary", "posterior", "prior", "plot"))
 })
 
 test_that("conjugate single value lognormal2 works", {
@@ -110,7 +110,7 @@ test_that("conjugate single value lognormal2 works", {
   )
   expect_equal(out$summary$post.prob, 1.069935e-09, tolerance = 1e-6)
   expect_equal(out$summary$rope_prob, 0, tolerance = 1e-6)
-  expect_equal(names(out), c("summary", "posterior", "plot"))
+  expect_equal(names(out), c("summary", "posterior", "prior", "plot"))
 })
 
 test_that("conjugate single value poisson works", {
@@ -125,7 +125,7 @@ test_that("conjugate single value poisson works", {
   )
   expect_equal(out$summary$post.prob, 0.09622298, tolerance = 1e-6)
   expect_equal(out$summary$rope_prob, 0.05594877, tolerance = 1e-6)
-  expect_equal(names(out), c("summary", "posterior", "plot"))
+  expect_equal(names(out), c("summary", "posterior", "prior", "plot"))
   expect_error(
     conjugate(
       s1 = c(s1, 1.5), s2 = s2, method = "poisson",
@@ -150,7 +150,7 @@ test_that("conjugate single value negative binomial works", {
   )
   expect_equal(out$summary$post.prob, 6.569111e-09, tolerance = 1e-6)
   expect_equal(out$summary$rope_prob, 1, tolerance = 1e-6)
-  expect_equal(names(out), c("summary", "posterior", "plot"))
+  expect_equal(names(out), c("summary", "posterior", "prior", "plot"))
   expect_error(
     conjugate(
       c(0.5, 0.1, 1, 1.1),
@@ -171,7 +171,7 @@ test_that("conjugate single value binomial works", {
   )
   expect_equal(out$summary$post.prob, 0.08529131, tolerance = 1e-6)
   expect_equal(out$summary$rope_prob, 1, tolerance = 1e-6)
-  expect_equal(names(out), c("summary", "posterior", "plot"))
+  expect_equal(names(out), c("summary", "posterior", "prior", "plot"))
   expect_error(
     .conj_binomial_formatter(c(1, -1))
   )
@@ -201,7 +201,7 @@ test_that("conjugate single value bernoulli works", {
   )
   expect_equal(out$summary$post.prob, 0.3412209, tolerance = 1e-6)
   expect_equal(out$summary$rope_prob, 0.914504, tolerance = 1e-6)
-  expect_equal(names(out), c("summary", "posterior", "plot"))
+  expect_equal(names(out), c("summary", "posterior", "prior", "plot"))
   expect_error(
     conjugate(c(1, 2, 3), method = "bernoulli")
   )
@@ -219,7 +219,7 @@ test_that("conjugate single value pareto works", {
   )
   expect_equal(out$summary$post.prob, 0.8643824, tolerance = 1e-6)
   expect_equal(out$summary$rope_prob, 0.01584092, tolerance = 1e-6)
-  expect_equal(names(out), c("summary", "posterior", "plot"))
+  expect_equal(names(out), c("summary", "posterior", "prior", "plot"))
 })
 
 test_that("conjugate single value uniform works", {
@@ -234,7 +234,7 @@ test_that("conjugate single value uniform works", {
   )
   expect_equal(out$summary$post.prob, 0.05305783, tolerance = 1e-6)
   expect_equal(out$summary$rope_prob, 0, tolerance = 1e-6)
-  expect_equal(names(out), c("summary", "posterior", "plot"))
+  expect_equal(names(out), c("summary", "posterior", "prior", "plot"))
 })
 
 test_that("conjugate single value von mises (1) works", {
@@ -249,7 +249,7 @@ test_that("conjugate single value von mises (1) works", {
   )
   expect_equal(out$summary$post.prob, 0.4736915, tolerance = 1e-6)
   expect_equal(out$summary$rope_prob, 0.255814, tolerance = 1e-6)
-  expect_equal(names(out), c("summary", "posterior", "plot"))
+  expect_equal(names(out), c("summary", "posterior", "prior", "plot"))
   out2 <- conjugate(
     s1 = s1, s2 = s2, method = "vonmises",
     priors = list(mu = 0),
@@ -276,7 +276,7 @@ test_that("conjugate single value von mises (2) works", {
   )
   expect_equal(out$summary$post.prob, 0.4529312, tolerance = 1e-6)
   expect_equal(out$summary$rope_prob, 0.01999775, tolerance = 1e-3)
-  expect_equal(names(out), c("summary", "posterior", "plot"))
+  expect_equal(names(out), c("summary", "posterior", "prior", "plot"))
   expect_error(conjugate(
     s1 = s1, s2 = s2, method = "vonmises2",
     priors = NULL,
@@ -297,7 +297,7 @@ test_that("conjugate single value gamma works", {
   )
   expect_equal(out$summary$post.prob, 0.1474759, tolerance = 1e-6)
   expect_equal(out$summary$rope_prob, 0.2627795, tolerance = 1e-6)
-  expect_equal(names(out), c("summary", "posterior", "plot"))
+  expect_equal(names(out), c("summary", "posterior", "prior", "plot"))
 })
 
 test_that("conjugate single value exponential works", {
@@ -312,7 +312,7 @@ test_that("conjugate single value exponential works", {
   )
   expect_equal(out$summary$post.prob, 0.3536306, tolerance = 1e-6)
   expect_equal(out$summary$rope_prob, 0.3370408, tolerance = 1e-6)
-  expect_equal(names(out), c("summary", "posterior", "plot"))
+  expect_equal(names(out), c("summary", "posterior", "prior", "plot"))
 })
 
 test_that("conjugate single value lognormal vs gaussian", {
@@ -354,14 +354,14 @@ test_that("single value bivariate conjugate uniform works", {
   expect_equal(nrow(out$summary), 2)
   expect_equal(length(out$posterior), 2)
   expect_equal(names(out$posterior[[1]]), c("scale", "location_l", "location_u"))
-  expect_equal(names(out), c("summary", "posterior", "plot"))
+  expect_equal(names(out), c("summary", "posterior", "prior", "plot"))
   out2 <- conjugate(
     s1 = s1,
     method = "bivariate_uniform", priors = NULL,
     plot = TRUE, rope_range = c(-1, 1), rope_ci = 0.89, cred.int.level = 0.89,
     hypothesis = "equal", support = NULL
   )
-  expect_equal(names(out2), c("summary", "posterior", "plot"))
+  expect_equal(names(out2), c("summary", "posterior", "prior", "plot"))
   set.seed(123)
   s1 <- runif(10, -15, -7)
   s2 <- runif(10, -10, -5)
@@ -375,7 +375,7 @@ test_that("single value bivariate conjugate uniform works", {
   expect_equal(nrow(out$summary), 2)
   expect_equal(length(out$posterior), 2)
   expect_equal(names(out$posterior[[1]]), c("scale", "location_l", "location_u"))
-  expect_equal(names(out), c("summary", "posterior", "plot"))
+  expect_equal(names(out), c("summary", "posterior", "prior", "plot"))
 })
 
 test_that("bivariate conjugate gaussian works", {
@@ -392,7 +392,7 @@ test_that("bivariate conjugate gaussian works", {
   expect_equal(nrow(out$summary), 2)
   expect_equal(length(out$posterior), 2)
   expect_equal(names(out$posterior[[1]]), c("mu", "sd", "a", "b"))
-  expect_equal(names(out), c("summary", "posterior", "plot"))
+  expect_equal(names(out), c("summary", "posterior", "prior", "plot"))
 })
 
 test_that("bivariate conjugate lognormal works", {
@@ -409,5 +409,5 @@ test_that("bivariate conjugate lognormal works", {
   expect_equal(nrow(out$summary), 2)
   expect_equal(length(out$posterior), 2)
   expect_equal(names(out$posterior[[1]]), c("mu", "sd", "a", "b"))
-  expect_equal(names(out), c("summary", "posterior", "plot"))
+  expect_equal(names(out), c("summary", "posterior", "prior", "plot"))
 })
