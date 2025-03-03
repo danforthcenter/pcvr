@@ -55,11 +55,7 @@
 #' @param hypothesis Direction of a hypothesis if two samples are provided.
 #'  Options are "unequal", "equal", "greater", and "lesser",
 #'   read as "sample1 greater than sample2".
-#' @param support Optional support vector to include all possible values the random variable
-#'  (samples) might take. This defaults to NULL in which case each method will use default
-#'  behavior to attempt to calculate a dense support, but it is a good idea to supply this
-#'  with some suitable vector. For example, the Beta method uses \code{seq(0.0001, 0.9999, 0.0001)}
-#'  for support.
+#' @param support Deprecated
 #'
 #' @import bayestestR
 #' @import ggplot2
@@ -340,9 +336,10 @@ conjugate <- function(s1 = NULL, s2 = NULL,
     samplesList[[2]] <- s2
   }
 
-  if (is.null(support)) {
-    support <- .getSupport(samplesList, method, priors) # calculate shared support
+  if (!missing("support")) {
+    warning("support argument is deprecated")
   }
+  support <- .getSupport(samplesList, method, priors) # calculate shared support
 
   sample_results <- lapply(seq_along(samplesList), function(i) {
     sample <- samplesList[[i]]

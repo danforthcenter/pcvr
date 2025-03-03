@@ -80,11 +80,7 @@ in computing HDI for samples, defaults to 0.89.}
 Options are "unequal", "equal", "greater", and "lesser",
  read as "sample1 greater than sample2".}
 
-\item{support}{Optional support vector to include all possible values the random variable
-(samples) might take. This defaults to NULL in which case each method will use default
-behavior to attempt to calculate a dense support, but it is a good idea to supply this
-with some suitable vector. For example, the Beta method uses \code{seq(0.0001, 0.9999, 0.0001)}
-for support.}
+\item{support}{Deprecated}
 }
 \value{
 A list with named elements:
