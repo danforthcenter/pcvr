@@ -65,14 +65,12 @@
   out$posterior <- list("scale" = scale_prime, "location" = location_prime)
   out$prior <- priors
   #* `save s1 data for plotting`
-  if (plot) {
-    out$plot_list <- list(
-      "range" = support,
-      "ddist_fun" = "extraDistr::dpareto",
-      "parameters" = list("a" = scale_prime,
-                          "b" = location_prime)
-    )
-  }
+  out$plot_list <- list(
+    "range" = support,
+    "ddist_fun" = "extraDistr::dpareto",
+    "parameters" = list("a" = scale_prime,
+                        "b" = location_prime)
+  )
   return(out)
 }
 
@@ -124,13 +122,11 @@
   out$posterior <- list("scale" = scale_prime, "location" = location_prime)
   out$prior <- priors
   #* `save s1 data for plotting`
-  if (plot) {
-    out$plot_list <- list(
-      "range" = support,
-      "ddist_fun" = "extraDistr::dpareto",
-      "parameters" = list("a" = scale_prime,
-                          "b" = location_prime)
-    )
-  }
+  out$plot_list <- list(
+    "range" = support,
+    "ddist_fun" = "extraDistr::dpareto",
+    "parameters" = list("a" = scale_prime,
+                        "b" = location_prime)
+  )
   return(out)
 }

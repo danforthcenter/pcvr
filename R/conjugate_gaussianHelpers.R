@@ -56,14 +56,12 @@
   out$posteriorDraws <- extraDistr::rlst(10000, v1_n, m1_n, sigma_1)
   out$pdf <- pdf1
   #* `Save data for plotting`
-  if (plot) {
-    out$plot_list <- list(
-      "range" = support,
-      "ddist_fun" = "stats::dnorm",
-      "parameters" = list("mean" = m1_n,
-                          "sd" = sigma_1)
-    )
-  }
+  out$plot_list <- list(
+    "range" = support,
+    "ddist_fun" = "stats::dnorm",
+    "parameters" = list("mean" = m1_n,
+                        "sd" = sigma_1)
+  )
   return(out)
 }
 
@@ -125,13 +123,11 @@
   out$posteriorDraws <- extraDistr::rlst(10000, v1_n, m1_n, sigma_1)
   out$pdf <- pdf1
   #* `Save data for plotting`
-  if (plot) {
-    out$plot_list <- list(
-      "range" = support,
-      "ddist_fun" = "stats::dnorm",
-      "parameters" = list("mean" = m1_n,
-                          "sd" = sigma_1)
-    )
-  }
+  out$plot_list <- list(
+    "range" = support,
+    "ddist_fun" = "stats::dnorm",
+    "parameters" = list("mean" = m1_n,
+                        "sd" = sigma_1)
+  )
   return(out)
 }

@@ -79,14 +79,12 @@
   out$posteriorDraws <- rgamma(10000, shape = a_prime, scale = b_prime)
   out$pdf <- pdf1
   #* `save s1 data for plotting`
-  if (plot) {
-    out$plot_list <- list(
-      "range" = support,
-      "ddist_fun" = "stats::dgamma",
-      "parameters" = list("shape" = a_prime,
-                          "scale" = b_prime)
-    )
-  }
+  out$plot_list <- list(
+    "range" = support,
+    "ddist_fun" = "stats::dgamma",
+    "parameters" = list("shape" = a_prime,
+                        "scale" = b_prime)
+  )
   return(out)
 }
 
@@ -147,13 +145,11 @@
   out$posteriorDraws <- rgamma(10000, shape = a_prime, scale = b_prime)
   out$pdf <- pdf1
   #* `save s1 data for plotting`
-  if (plot) {
-    out$plot_list <- list(
-      "range" = support,
-      "ddist_fun" = "stats::dgamma",
-      "parameters" = list("shape" = a_prime,
-                          "scale" = b_prime)
-    )
-  }
+  out$plot_list <- list(
+    "range" = support,
+    "ddist_fun" = "stats::dgamma",
+    "parameters" = list("shape" = a_prime,
+                        "scale" = b_prime)
+  )
   return(out)
 }

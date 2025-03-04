@@ -84,14 +84,12 @@
   )
   out$prior <- priors
   #* `save s1 data for plotting`
-  if (plot) {
-    out$plot_list <- list(
-      "range" = support,
-      "ddist_fun" = "stats::dgamma",
-      "parameters" = list("shape" = a_prime,
-                          "rate" = b_prime)
-    )
-  }
+  out$plot_list <- list(
+    "range" = support,
+    "ddist_fun" = "stats::dgamma",
+    "parameters" = list("shape" = a_prime,
+                        "rate" = b_prime)
+  )
   return(out)
 }
 
@@ -145,13 +143,11 @@
   )
   out$prior <- priors
   #* `save s1 data for plotting`
-  if (plot) {
-    out$plot_list <- list(
-      "range" = support,
-      "ddist_fun" = "stats::dgamma",
-      "parameters" = list("shape" = a_prime,
-                          "rate" = b_prime)
-    )
-  }
+  out$plot_list <- list(
+    "range" = support,
+    "ddist_fun" = "stats::dgamma",
+    "parameters" = list("shape" = a_prime,
+                        "rate" = b_prime)
+  )
   return(out)
 }

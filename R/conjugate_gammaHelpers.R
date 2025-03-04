@@ -47,14 +47,12 @@
   )
   out$prior <- priors
   #* `save s1 data for plotting`
-  if (plot) {
-    out$plot_list <- list(
-      "range" = support,
-      "ddist_fun" = "stats::dgamma",
-      "parameters" = list("shape" = shape_prime,
-                          "scale" = scale_prime)
-    )
-  }
+  out$plot_list <- list(
+    "range" = support,
+    "ddist_fun" = "stats::dgamma",
+    "parameters" = list("shape" = shape_prime,
+                        "scale" = scale_prime)
+  )
   return(out)
 }
 

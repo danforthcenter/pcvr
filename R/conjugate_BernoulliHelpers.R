@@ -44,13 +44,11 @@
   out$posterior <- list("a" = a1_prime, "b" = b1_prime)
   out$prior <- priors
   #* `save s1 data for plotting`
-  if (plot) {
-    out$plot_list <- list(
-      "range" = support,
-      "ddist_fun" = "stats::dbeta",
-      "parameters" = list("shape1" = a1_prime,
-                          "shape2" = b1_prime)
-    )
-  }
+  out$plot_list <- list(
+    "range" = support,
+    "ddist_fun" = "stats::dbeta",
+    "parameters" = list("shape1" = a1_prime,
+                        "shape2" = b1_prime)
+  )
   return(out)
 }

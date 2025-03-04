@@ -115,14 +115,12 @@
   out$posteriorDraws <- draws_boundary
   out$pdf <- pdf1
   #* `keep data for plotting`
-  if (plot) {
-    out$plot_list <- list(
-      "range" = support,
-      "ddist_fun" = "brms::dvon_mises",
-      "parameters" = list("mu" = mu_prime,
-                          "kappa" = kappa_prime)
-    )
-  } # tests on this seem to work fine
+  out$plot_list <- list(
+    "range" = support,
+    "ddist_fun" = "brms::dvon_mises",
+    "parameters" = list("mu" = mu_prime,
+                        "kappa" = kappa_prime)
+  )
   return(out)
 }
 
@@ -243,14 +241,12 @@
   out$posteriorDraws <- draws_boundary
   out$pdf <- pdf1
   #* `keep data for plotting`
-  if (plot) {
-    out$plot_list <- list(
-      "range" = support,
-      "ddist_fun" = "brms::dvon_mises",
-      "parameters" = list("mu" = mu_prime,
-                          "kappa" = kappa_prime)
-    )
-  }
+  out$plot_list <- list(
+    "range" = support,
+    "ddist_fun" = "brms::dvon_mises",
+    "parameters" = list("mu" = mu_prime,
+                        "kappa" = kappa_prime)
+  )
   return(out)
 }
 
