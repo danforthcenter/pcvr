@@ -55,6 +55,10 @@
 #' @param hypothesis Direction of a hypothesis if two samples are provided.
 #'  Options are "unequal", "equal", "greater", and "lesser",
 #'   read as "sample1 greater than sample2".
+#' @param bayes_factor Optional point or interval to evaluate bayes factors on. Note that this
+#' generally only makes sense to use if you have informative priors where the change in odds between
+#' prior and posterior is meaningful about the data. If this is non-NULL then columns of bayes factors
+#' are added to the summary output. Note these are only implemented for univariate distributions.
 #' @param support Deprecated
 #'
 #' @import bayestestR
@@ -214,7 +218,8 @@
 #'   s1 = mv_beta[1:30, -1], s2 = mv_beta[31:50, -1], method = "beta",
 #'   priors = list(a = 0.5, b = 0.5),
 #'   plot = FALSE, rope_range = c(-0.1, 0.1), rope_ci = 0.89,
-#'   cred.int.level = 0.89, hypothesis = "equal"
+#'   cred.int.level = 0.89, hypothesis = "equal",
+#'   bayes_factor = 0.5 # note this may not be reasonable with these priors
 #' )
 #'
 #' # beta sv example
@@ -223,7 +228,8 @@
 #'   s1 = rbeta(20, 5, 5), s2 = rbeta(20, 8, 5), method = "beta",
 #'   priors = list(a = 0.5, b = 0.5),
 #'   plot = FALSE, rope_range = c(-0.1, 0.1), rope_ci = 0.89,
-#'   cred.int.level = 0.89, hypothesis = "equal"
+#'   cred.int.level = 0.89, hypothesis = "equal",
+#'   bayes_factor = c(0.5, 0.75) # note this may not be reasonable with these priors
 #' )
 #'
 #' # binomial sv example
@@ -296,12 +302,10 @@
 #'    Estimate" of the posterior, that is the tallest part of the probability density function. The
 #'    HDI is the Highest Density Interval, which is an interval that contains X\% of the posterior
 #'    distribution, so \code{cred.int.level = 0.8} corresponds to an HDI that includes 80 percent
-#'    of the posterior probability.}
+#'    of the posterior probability. Bayes factors are calculated as posterior/prior for each sample.}
 #'    \item{\strong{posterior}: A list of updated parameters in the same format as the prior
 #'     for the given method. If desired this does allow for Bayesian updating.}
 #'    \item{\strong{prior}: The prior in a list with the same format as the posterior.}
-#'    \item{\strong{plot_df}: A data frame of probabilities along the support for each sample.
-#'     This is used for making the ggplot.}
 #'    \item{\strong{rope_df}: A data frame of draws from the ROPE posterior.}
 #'    \item{\strong{plot}: A ggplot showing the distribution of samples and optionally the
 #'    distribution of differences/ROPE}
@@ -319,7 +323,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
                       ),
                       priors = NULL, plot = FALSE, rope_range = NULL,
                       rope_ci = 0.89, cred.int.level = 0.89, hypothesis = "equal",
-                      support = NULL) {
+                      bayes_factor = NULL, support = NULL) {
   #* `Handle formula option in s1`
   samples <- .formatSamples(s1, s2)
   s1 <- samples$s1
@@ -366,6 +370,10 @@ conjugate <- function(s1 = NULL, s2 = NULL,
   out <- list()
   out$summary <- do.call(cbind, lapply(seq_along(sample_results), function(i) {
     s <- sample_results[[i]]$summary
+    if (!is.null(bayes_factor)) { #* `Calculate Bayes Factors`
+      bf <- .conj_bayes_factor(bayes_factor, sample_results[[i]])
+      s$bf_1 <- bf
+    }
     if (i == 2) {
       s <- s[, !grepl("param", colnames(s))]
       colnames(s) <- gsub("1", "2", colnames(s))
@@ -391,7 +399,6 @@ conjugate <- function(s1 = NULL, s2 = NULL,
   }
   out$posterior <- lapply(sample_results, function(s) s$posterior)
   out$prior <- lapply(sample_results, function(s) s$prior)
-
   #* `Make plot`
   if (plot) {
     out$plot <- .conj_plot(sample_results, rope_res,
@@ -672,7 +679,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
   s1_plot_df <- data.frame(range = sample_results[[1]]$plot_list$range)
 
   p <- ggplot2::ggplot(s1_plot_df, ggplot2::aes(x = .data$range)) +
-    ggplot2::stat_function(geom="polygon",
+    ggplot2::stat_function(geom = "polygon",
                            fun = eval(parse(text = sample_results[[1]]$plot_list$ddist_fun)),
                            args = sample_results[[1]]$plot_list$parameters,
                            ggplot2::aes(fill = "s1"), alpha = 0.5) +
@@ -705,7 +712,6 @@ conjugate <- function(s1 = NULL, s2 = NULL,
     pcv_theme()
 
   if (length(sample_results) == 2) {
-    s2_plot_df <- data.frame(range = sample_results[[2]]$plot_list$range)
 
     if (res$summary$post.prob < 1e-5) {
       post.prob.text <- "<1e-5"
@@ -719,7 +725,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
 
     p$scales$scales[[fill_scale]] <- NULL
     p <- p +
-      ggplot2::stat_function(geom="polygon",
+      ggplot2::stat_function(geom = "polygon",
                              fun = eval(parse(text = sample_results[[2]]$plot_list$ddist_fun)),
                              args = sample_results[[2]]$plot_list$parameters,
                              ggplot2::aes(fill = "s2"), alpha = 0.5) +
