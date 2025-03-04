@@ -16,6 +16,7 @@ conjugate(
   rope_ci = 0.89,
   cred.int.level = 0.89,
   hypothesis = "equal",
+  bayes_factor = NULL,
   support = NULL
 )
 }
@@ -80,6 +81,11 @@ in computing HDI for samples, defaults to 0.89.}
 Options are "unequal", "equal", "greater", and "lesser",
  read as "sample1 greater than sample2".}
 
+\item{bayes_factor}{Optional point or interval to evaluate bayes factors on. Note that this
+generally only makes sense to use if you have informative priors where the change in odds between
+prior and posterior is meaningful about the data. If this is non-NULL then columns of bayes factors
+are added to the summary output. Note these are only implemented for univariate distributions.}
+
 \item{support}{Deprecated}
 }
 \value{
@@ -91,12 +97,10 @@ A list with named elements:
    Estimate" of the posterior, that is the tallest part of the probability density function. The
    HDI is the Highest Density Interval, which is an interval that contains X\% of the posterior
    distribution, so \code{cred.int.level = 0.8} corresponds to an HDI that includes 80 percent
-   of the posterior probability.}
+   of the posterior probability. Bayes factors are calculated as posterior/prior for each sample.}
    \item{\strong{posterior}: A list of updated parameters in the same format as the prior
     for the given method. If desired this does allow for Bayesian updating.}
    \item{\strong{prior}: The prior in a list with the same format as the posterior.}
-   \item{\strong{plot_df}: A data frame of probabilities along the support for each sample.
-    This is used for making the ggplot.}
    \item{\strong{rope_df}: A data frame of draws from the ROPE posterior.}
    \item{\strong{plot}: A ggplot showing the distribution of samples and optionally the
    distribution of differences/ROPE}
@@ -255,7 +259,8 @@ beta_mv_ex <- conjugate(
   s1 = mv_beta[1:30, -1], s2 = mv_beta[31:50, -1], method = "beta",
   priors = list(a = 0.5, b = 0.5),
   plot = FALSE, rope_range = c(-0.1, 0.1), rope_ci = 0.89,
-  cred.int.level = 0.89, hypothesis = "equal"
+  cred.int.level = 0.89, hypothesis = "equal",
+  bayes_factor = 0.5 # note this may not be reasonable with these priors
 )
 
 # beta sv example
@@ -264,7 +269,8 @@ beta_sv_ex <- conjugate(
   s1 = rbeta(20, 5, 5), s2 = rbeta(20, 8, 5), method = "beta",
   priors = list(a = 0.5, b = 0.5),
   plot = FALSE, rope_range = c(-0.1, 0.1), rope_ci = 0.89,
-  cred.int.level = 0.89, hypothesis = "equal"
+  cred.int.level = 0.89, hypothesis = "equal",
+  bayes_factor = c(0.5, 0.75) # note this may not be reasonable with these priors
 )
 
 # binomial sv example
