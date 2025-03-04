@@ -15,7 +15,7 @@ test_that("conjugate multi value T works", {
     method = "t",
     priors = NULL,
     plot = TRUE, rope_range = c(-5, 5), rope_ci = 0.89,
-    cred.int.level = 0.89, hypothesis = "equal", support = NULL
+    cred.int.level = 0.89, hypothesis = "equal"
   )
   expect_equal(out$summary$post.prob, 0.02475074, tolerance = 1e-6)
   expect_true(out$summary$rope_prob < 1e-5)
@@ -36,7 +36,7 @@ test_that("conjugate multi value gaussian works", {
     s1 = mv_gauss[1:30, -1], s2 = mv_gauss[31:70, -1], method = "gaussian",
     priors = NULL,
     plot = TRUE, rope_range = c(-5, 5), rope_ci = 0.89,
-    cred.int.level = 0.89, hypothesis = "equal", support = NULL
+    cred.int.level = 0.89, hypothesis = "equal"
   )
 
   expect_equal(names(out), c("summary", "posterior", "prior", "plot"))
@@ -79,7 +79,7 @@ test_that("conjugate multi value lognormal works", {
     s1 = mv_ln[1:30, -1], s2 = mv_ln[31:60, -1], method = "lognormal",
     priors = NULL,
     plot = TRUE, rope_range = c(-1, 1), rope_ci = 0.89,
-    cred.int.level = 0.89, hypothesis = "equal", support = NULL
+    cred.int.level = 0.89, hypothesis = "equal"
   )
   expect_equal(out$summary$post.prob, 0.09558071, tolerance = 1e-6)
   expect_equal(out$summary$rope_prob, 1, tolerance = 0.0001)
@@ -99,7 +99,7 @@ test_that("conjugate multi value lognormal2 works", {
     s1 = mv_ln[1:30, -1], s2 = mv_ln[31:60, -1], method = "lognormal2",
     priors = NULL,
     plot = TRUE, rope_range = c(-1, 1), rope_ci = 0.89,
-    cred.int.level = 0.89, hypothesis = "equal", support = NULL
+    cred.int.level = 0.89, hypothesis = "equal"
   )
   expect_equal(out$summary$post.prob, 0.3054448, tolerance = 1e-6)
   expect_equal(out$summary$rope_prob, 0.007976632, tolerance = 0.0001)
@@ -215,7 +215,7 @@ test_that("conjugate multi value lognormal vs gaussian", {
       list(mu = 5, n = 1, s2 = 4)
     ),
     plot = FALSE, rope_range = c(-0.5, 0.5), rope_ci = 0.89,
-    cred.int.level = 0.89, hypothesis = "equal", support = NULL
+    cred.int.level = 0.89, hypothesis = "equal"
   )
 
   expect_equal(out$summary$post.prob, 0.167973, tolerance = 1e-6)
@@ -226,7 +226,7 @@ test_that("conjugate multi value lognormal vs gaussian", {
     return(names(p))
   })), c("mu", "sd", "lognormal_sigma", "mu", "n", "s2"))
 
-  expect_equal(names(out), c("summary", "posterior"))
+  expect_equal(names(out), c("summary", "posterior", "prior"))
 })
 
 test_that("bivariate conjugate multi value uniform works", {
@@ -247,7 +247,7 @@ test_that("bivariate conjugate multi value uniform works", {
     s2 = mv[11:20, -1],
     method = "bivariate_uniform", priors = NULL,
     plot = TRUE, rope_range = c(-1, 1), rope_ci = 0.89, cred.int.level = 0.89,
-    hypothesis = "equal", support = NULL
+    hypothesis = "equal"
   )
   expect_s3_class(out$plot, "ggplot")
   expect_equal(nrow(out$summary), 2)
@@ -272,7 +272,7 @@ test_that("bivariate conjugate multi value uniform works", {
     s2 = mv[11:20, -1],
     method = "bivariate_uniform", priors = list(location_l = -50, location_u = -45, scale = 1),
     plot = TRUE, rope_range = c(-1, 1), rope_ci = 0.89, cred.int.level = 0.89,
-    hypothesis = "equal", support = NULL
+    hypothesis = "equal"
   )
   expect_s3_class(out2$plot, "ggplot")
   expect_equal(nrow(out2$summary), 2)

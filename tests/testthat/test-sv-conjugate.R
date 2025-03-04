@@ -16,9 +16,9 @@ test_that("conjugate single value T works", {
     s1 = s1, s2 = s2, method = "t",
     priors = list(mu = 40, n = 1, s2 = 100),
     plot = TRUE, rope_range = c(-8, 8), rope_ci = 0.89,
-    cred.int.level = 0.89, hypothesis = "unequal", support = seq(20, 100, length.out = 10000)
+    cred.int.level = 0.89, hypothesis = "unequal"
   )
-  expect_equal(out$summary$post.prob, 0.4135897, tolerance = 1e-6)
+  expect_equal(out$summary$post.prob, 0.413570, tolerance = 1e-6)
   expect_equal(out$summary$rope_prob, 0.7396922, tolerance = 1e-6)
   expect_equal(names(out), c("summary", "posterior", "prior", "plot"))
   df <- data.frame(value = c(s1, s2), group = rep(c("a", "b"), each = 10))
@@ -49,7 +49,7 @@ test_that("conjugate single value gaussian works", {
     s1 = s1, s2 = s2, method = "gaussian",
     priors = NULL,
     plot = TRUE, rope_range = c(-10, 10), rope_ci = 0.89,
-    cred.int.level = 0.89, hypothesis = "equal", support = NULL
+    cred.int.level = 0.89, hypothesis = "equal"
   )
   expect_equal(names(out), c("summary", "posterior", "prior", "plot"))
 })
@@ -91,7 +91,7 @@ test_that("conjugate single value lognormal works", {
     s1 = s1, s2 = s2,
     method = "lognormal", priors = NULL,
     plot = TRUE, rope_range = c(-1, 1), rope_ci = 0.89, cred.int.level = 0.89,
-    hypothesis = "equal", support = NULL
+    hypothesis = "equal"
   )
   expect_equal(out$summary$post.prob, 0.5527433, tolerance = 1e-6)
   expect_equal(out$summary$rope_prob, 0.7356477, tolerance = 1e-6)
@@ -106,7 +106,7 @@ test_that("conjugate single value lognormal2 works", {
     s1 = s1, s2 = s2,
     method = "lognormal2", priors = NULL,
     plot = TRUE, rope_range = c(-1, 1), rope_ci = 0.89, cred.int.level = 0.89,
-    hypothesis = "equal", support = NULL
+    hypothesis = "equal"
   )
   expect_equal(out$summary$post.prob, 1.069935e-09, tolerance = 1e-6)
   expect_equal(out$summary$rope_prob, 0, tolerance = 1e-6)
@@ -326,7 +326,7 @@ test_that("conjugate single value lognormal vs gaussian", {
       list(mu = 5, n = 1, s2 = 2)
     ),
     plot = FALSE, rope_range = c(-1, 1), rope_ci = 0.89, cred.int.level = 0.89,
-    hypothesis = "equal", support = NULL
+    hypothesis = "equal"
   )
 
   expect_equal(out$summary$post.prob, 0.6857498, tolerance = 1e-3)
@@ -337,7 +337,7 @@ test_that("conjugate single value lognormal vs gaussian", {
     return(names(p))
   })), c("mu", "sd", "lognormal_sigma", "mu", "n", "s2"))
 
-  expect_equal(names(out), c("summary", "posterior"))
+  expect_equal(names(out), c("summary", "posterior", "prior"))
 })
 
 test_that("single value bivariate conjugate uniform works", {
@@ -348,7 +348,7 @@ test_that("single value bivariate conjugate uniform works", {
     s1 = s1, s2 = s2,
     method = "bivariate_uniform", priors = NULL,
     plot = TRUE, rope_range = c(-1, 1), rope_ci = 0.89, cred.int.level = 0.89,
-    hypothesis = "equal", support = NULL
+    hypothesis = "equal"
   )
   expect_s3_class(out$plot, "ggplot")
   expect_equal(nrow(out$summary), 2)
@@ -359,7 +359,7 @@ test_that("single value bivariate conjugate uniform works", {
     s1 = s1,
     method = "bivariate_uniform", priors = NULL,
     plot = TRUE, rope_range = c(-1, 1), rope_ci = 0.89, cred.int.level = 0.89,
-    hypothesis = "equal", support = NULL
+    hypothesis = "equal"
   )
   expect_equal(names(out2), c("summary", "posterior", "prior", "plot"))
   set.seed(123)
@@ -369,7 +369,7 @@ test_that("single value bivariate conjugate uniform works", {
     s1 = s1, s2 = s2,
     method = "bivariate_uniform", priors = list(location_l = -10, location_u = -8, scale = 1),
     plot = TRUE, rope_range = c(-1, 1), rope_ci = 0.89, cred.int.level = 0.89,
-    hypothesis = "equal", support = NULL
+    hypothesis = "equal"
   )
   expect_s3_class(out$plot, "ggplot")
   expect_equal(nrow(out$summary), 2)
@@ -386,7 +386,7 @@ test_that("bivariate conjugate gaussian works", {
     s1 = s1, s2 = s2,
     method = "bivariate_gaussian", priors = NULL,
     plot = TRUE, rope_range = c(-1, 1), rope_ci = 0.89, cred.int.level = 0.89,
-    hypothesis = "equal", support = NULL
+    hypothesis = "equal"
   )
   expect_s3_class(out$plot, "ggplot")
   expect_equal(nrow(out$summary), 2)
@@ -403,7 +403,7 @@ test_that("bivariate conjugate lognormal works", {
     s1 = s1, s2 = s2,
     method = "bivariate_lognormal", priors = NULL,
     plot = TRUE, rope_range = c(-1, 1), rope_ci = 0.89, cred.int.level = 0.89,
-    hypothesis = "equal", support = NULL
+    hypothesis = "equal"
   )
   expect_s3_class(out$plot, "ggplot")
   expect_equal(nrow(out$summary), 2)
