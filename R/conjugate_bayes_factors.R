@@ -10,7 +10,7 @@
 #' one sample at a time passed to this function.
 #' @examples
 #' sample_results <- list(
-#' # other things that we don't need to use for this function... , 
+#' # other things that we don't need to use for this function... ,
 #' "plot_list" = list(
 #'   "ddist_fun" = "stats::dbeta",
 #'   "priors" = list("shape1" = 1, "shape2" = 1)

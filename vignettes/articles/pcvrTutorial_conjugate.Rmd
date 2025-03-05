@@ -757,11 +757,11 @@ p1 <- ggplot(mapping = aes(x_vals, d_vals, fill = in_null, group = label)) +
   annotate("text", x = 0.8, y = 2, label = paste0("Prior Odds = ", round(prior_odds, 3),
                                                   "\n= (", round(lower_tail, 3), " + ",
                                                   round(upper_tail, 3), ") / ",
-                                                  round(null_region, 3)) ) +
+                                                  round(null_region, 3))) +
   labs(x = "Percentage", y = "Density", title = "Prior") +
   scale_x_continuous(labels = scales::percent_format()) +
   coord_cartesian(ylim = c(0, 4)) +
-  pcv_theme()+
+  pcv_theme() +
   theme(legend.position.inside = c(0.2, 0.8), legend.title = element_blank(),
         legend.position = "inside")
 p1
@@ -793,11 +793,11 @@ p2 <- ggplot(mapping = aes(x_vals, post_dvals, fill = in_null, group = label)) +
   annotate("text", x = 0.2, y = 3, label = paste0("Posterior Odds = ", round(post_odds, 3),
                                                   "\n= (", round(lower_post, 3), " + ",
                                                   round(upper_post, 3), ") / ",
-                                                  round(null_post, 3)) ) +
+                                                  round(null_post, 3))) +
   labs(x = "Percentage", y = "Density", title = "Posterior") +
   scale_x_continuous(labels = scales::percent_format()) +
   coord_cartesian(ylim = c(0, 4)) +
-  pcv_theme()+
+  pcv_theme() +
   theme(legend.position = "none")
 p2
 ```
@@ -805,7 +805,7 @@ p2
 Our Bayes Factor is the ratio between the posterior and prior odds:
 
 ```{r}
-(b_factor <- post_odds/prior_odds)
+(b_factor <- post_odds / prior_odds)
 ```
 
 Here the Bayes factor shows that the interval [0.4, 0.6] is 2.2 times less likely after updating our prior with this new data.
@@ -842,7 +842,7 @@ p1 <- ggplot(mapping = aes(x_vals, d_vals, fill = "Alternative")) +
   labs(x = "Percentage", y = "Density", title = "Prior") +
   scale_x_continuous(labels = scales::percent_format()) +
   coord_cartesian(ylim = c(0, 4)) +
-  pcv_theme()+
+  pcv_theme() +
   theme(legend.position.inside = c(0.2, 0.8), legend.title = element_blank(),
         legend.position = "inside")
 p1
@@ -852,7 +852,7 @@ prior_null_analytic <- dbeta(0.5, shape1 = 2, shape2 = 2)
 d_vals2 <- dbeta(x_vals, 2 + successes, 2 + failures)
 d_vals2_null <- d_vals2[which.min(abs(x_vals - null))]
 
- # posterior density at null
+# posterior density at null
 post_null_analytic <- dbeta(0.5, 2 + successes, 2 + failures)
 
 p2 <- ggplot(mapping = aes(x_vals, d_vals2, fill = "Alternative")) +
@@ -868,18 +868,17 @@ p2 <- ggplot(mapping = aes(x_vals, d_vals2, fill = "Alternative")) +
   labs(x = "Percentage", y = "Density", title = "Updated Posterior") +
   scale_x_continuous(labels = scales::percent_format()) +
   coord_cartesian(ylim = c(0, 4)) +
-  pcv_theme()+
+  pcv_theme() +
   theme(legend.position = "none") +
   annotate("text", x = 0.4, y = d_null, label = round(prior_null_analytic, 3)) +
   annotate("text", x = 0.4, y = d_vals2_null, label = round(post_null_analytic, 3)) +
-  annotate("text", x = 0.4, y = 2.5, label = paste0("BF = ",
-                                                    round(post_null_analytic / prior_null_analytic, 3))
-           )
+  annotate("text", x = 0.4, y = 2.5,
+           label = paste0("BF = ", round(post_null_analytic / prior_null_analytic, 3)))
 p2
 ```
 
 ```{r}
-(b_factor_point <- post_null_analytic/prior_null_analytic)
+(b_factor_point <- post_null_analytic / prior_null_analytic)
 ```
 
 Identically in `conjugate`:
