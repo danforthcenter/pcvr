@@ -16,7 +16,8 @@ test_that("conjugate single value T works", {
     s1 = s1, s2 = s2, method = "t",
     priors = list(mu = 40, n = 1, s2 = 100),
     plot = TRUE, rope_range = c(-8, 8), rope_ci = 0.89,
-    cred.int.level = 0.89, hypothesis = "unequal"
+    cred.int.level = 0.89, hypothesis = "unequal",
+    bayes_factor = c(50, 55)
   )
   expect_equal(out$summary$post.prob, 0.413570, tolerance = 1e-6)
   expect_equal(out$summary$rope_prob, 0.7396922, tolerance = 1e-6)
@@ -49,7 +50,8 @@ test_that("conjugate single value gaussian works", {
     s1 = s1, s2 = s2, method = "gaussian",
     priors = NULL,
     plot = TRUE, rope_range = c(-10, 10), rope_ci = 0.89,
-    cred.int.level = 0.89, hypothesis = "equal"
+    cred.int.level = 0.89, hypothesis = "equal",
+    bayes_factor = c(50, 55)
   )
   expect_equal(names(out), c("summary", "posterior", "prior", "plot"))
 })
@@ -74,7 +76,8 @@ test_that("conjugate single value beta works", {
     s1 = s1, s2 = s2, method = "beta",
     priors = NULL,
     plot = TRUE, rope_range = c(-0.1, 0.1), rope_ci = 0.89,
-    cred.int.level = 0.89, hypothesis = "equal"
+    cred.int.level = 0.89, hypothesis = "equal",
+    bayes_factor = c(0.5)
   )
 
   expect_equal(out$summary$post.prob, 0.02229246, tolerance = 1e-6)
@@ -91,7 +94,7 @@ test_that("conjugate single value lognormal works", {
     s1 = s1, s2 = s2,
     method = "lognormal", priors = NULL,
     plot = TRUE, rope_range = c(-1, 1), rope_ci = 0.89, cred.int.level = 0.89,
-    hypothesis = "equal"
+    hypothesis = "equal", bayes_factor = 125
   )
   expect_equal(out$summary$post.prob, 0.5527433, tolerance = 1e-6)
   expect_equal(out$summary$rope_prob, 0.7356477, tolerance = 1e-6)
@@ -106,7 +109,7 @@ test_that("conjugate single value lognormal2 works", {
     s1 = s1, s2 = s2,
     method = "lognormal2", priors = NULL,
     plot = TRUE, rope_range = c(-1, 1), rope_ci = 0.89, cred.int.level = 0.89,
-    hypothesis = "equal"
+    hypothesis = "equal", bayes_factor = 125
   )
   expect_equal(out$summary$post.prob, 1.069935e-09, tolerance = 1e-6)
   expect_equal(out$summary$rope_prob, 0, tolerance = 1e-6)
@@ -121,7 +124,8 @@ test_that("conjugate single value poisson works", {
     s1 = s1, s2 = s2, method = "poisson",
     priors = NULL,
     plot = TRUE, rope_range = c(-1, 1), rope_ci = 0.89,
-    cred.int.level = 0.89, hypothesis = "equal"
+    cred.int.level = 0.89, hypothesis = "equal",
+    bayes_factor = 9
   )
   expect_equal(out$summary$post.prob, 0.09622298, tolerance = 1e-6)
   expect_equal(out$summary$rope_prob, 0.05594877, tolerance = 1e-6)
@@ -145,7 +149,8 @@ test_that("conjugate single value negative binomial works", {
       s1 = s1, s2 = s2, method = "negbin",
       priors = NULL,
       plot = TRUE, rope_range = c(-0.5, 0.5), rope_ci = 0.89,
-      cred.int.level = 0.89, hypothesis = "equal"
+      cred.int.level = 0.89, hypothesis = "equal",
+      bayes_factor = 10
     )
   )
   expect_equal(out$summary$post.prob, 6.569111e-09, tolerance = 1e-6)
@@ -167,7 +172,8 @@ test_that("conjugate single value binomial works", {
     s1 = s1, s2 = s2, method = "binomial",
     priors = NULL,
     plot = TRUE, rope_range = c(-0.5, 0.5), rope_ci = 0.89,
-    cred.int.level = 0.89, hypothesis = "equal"
+    cred.int.level = 0.89, hypothesis = "equal",
+    bayes_factor = 0.5
   )
   expect_equal(out$summary$post.prob, 0.08529131, tolerance = 1e-6)
   expect_equal(out$summary$rope_prob, 1, tolerance = 1e-6)
@@ -197,7 +203,8 @@ test_that("conjugate single value bernoulli works", {
     s1 = s1, s2 = s2, method = "bernoulli",
     priors = NULL,
     plot = TRUE, rope_range = c(-0.5, 0.5), rope_ci = 0.89,
-    cred.int.level = 0.89, hypothesis = "equal"
+    cred.int.level = 0.89, hypothesis = "equal",
+    bayes_factor = 0.75
   )
   expect_equal(out$summary$post.prob, 0.3412209, tolerance = 1e-6)
   expect_equal(out$summary$rope_prob, 0.914504, tolerance = 1e-6)
@@ -215,7 +222,8 @@ test_that("conjugate single value pareto works", {
     s1 = s1, s2 = s2, method = "pareto",
     priors = NULL,
     plot = TRUE, rope_range = c(-0.5, 0.5), rope_ci = 0.89,
-    cred.int.level = 0.89, hypothesis = "equal"
+    cred.int.level = 0.89, hypothesis = "equal",
+    bayes_factor = 3
   )
   expect_equal(out$summary$post.prob, 0.8643824, tolerance = 1e-6)
   expect_equal(out$summary$rope_prob, 0.01584092, tolerance = 1e-6)
@@ -230,7 +238,8 @@ test_that("conjugate single value uniform works", {
     s1 = s1, s2 = s2, method = "uniform",
     priors = NULL,
     plot = TRUE, rope_range = c(-0.5, 0.5), rope_ci = 0.89,
-    cred.int.level = 0.89, hypothesis = "equal"
+    cred.int.level = 0.89, hypothesis = "equal",
+    bayes_factor = c(2, 3)
   )
   expect_equal(out$summary$post.prob, 0.05305783, tolerance = 1e-6)
   expect_equal(out$summary$rope_prob, 0, tolerance = 1e-6)
@@ -245,7 +254,8 @@ test_that("conjugate single value von mises (1) works", {
     s1 = s1, s2 = s2, method = "vonmises",
     priors = list(mu = 0, kappa = 0.5, boundary = c(-pi, pi)),
     plot = TRUE, rope_range = c(-0.5, 0.5), rope_ci = 0.89,
-    cred.int.level = 0.89, hypothesis = "equal"
+    cred.int.level = 0.89, hypothesis = "equal",
+    bayes_factor = 1
   )
   expect_equal(out$summary$post.prob, 0.4736915, tolerance = 1e-6)
   expect_equal(out$summary$rope_prob, 0.255814, tolerance = 1e-6)
@@ -254,7 +264,8 @@ test_that("conjugate single value von mises (1) works", {
     s1 = s1, s2 = s2, method = "vonmises",
     priors = list(mu = 0),
     plot = TRUE, rope_range = c(-0.5, 0.5), rope_ci = 0.89,
-    cred.int.level = 0.89, hypothesis = "equal"
+    cred.int.level = 0.89, hypothesis = "equal",
+    bayes_factor = c(1, 2)
   )
   expect_error(conjugate(
     s1 = rnorm(10, 10, 1), s2 = rnorm(10, 10, 1), method = "vonmises",
@@ -272,7 +283,8 @@ test_that("conjugate single value von mises (2) works", {
     s1 = s1, s2 = s2, method = "vonmises2",
     priors = list(mu = 0, boundary = c(0, 110)),
     plot = TRUE, rope_range = c(-0.5, 0.5), rope_ci = 0.89,
-    cred.int.level = 0.89, hypothesis = "equal"
+    cred.int.level = 0.89, hypothesis = "equal",
+    bayes_factor = 55
   )
   expect_equal(out$summary$post.prob, 0.4529312, tolerance = 1e-6)
   expect_equal(out$summary$rope_prob, 0.01999775, tolerance = 1e-3)
@@ -293,7 +305,8 @@ test_that("conjugate single value gamma works", {
     s1 = s1, s2 = s2, method = "gamma",
     priors = NULL,
     plot = TRUE, rope_range = c(-0.5, 0.5), rope_ci = 0.89,
-    cred.int.level = 0.89, hypothesis = "equal"
+    cred.int.level = 0.89, hypothesis = "equal",
+    bayes_factor = 2
   )
   expect_equal(out$summary$post.prob, 0.1474759, tolerance = 1e-6)
   expect_equal(out$summary$rope_prob, 0.2627795, tolerance = 1e-6)
@@ -308,7 +321,8 @@ test_that("conjugate single value exponential works", {
     s1 = s1, s2 = s2, method = "exponential",
     priors = NULL,
     plot = TRUE, rope_range = c(-0.5, 0.5), rope_ci = 0.89,
-    cred.int.level = 0.89, hypothesis = "equal"
+    cred.int.level = 0.89, hypothesis = "equal",
+    bayes_factor = c(1, 1.5)
   )
   expect_equal(out$summary$post.prob, 0.3536306, tolerance = 1e-6)
   expect_equal(out$summary$rope_prob, 0.3370408, tolerance = 1e-6)
