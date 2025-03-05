@@ -28,9 +28,7 @@
 #' @noRd
 
 .conj_bayes_factor <- function(bayes_factor, s_res) {
-  if (is.null(bayes_factor)) {
-    return(NULL)
-  } else if (length(bayes_factor) == 1) {
+  if (length(bayes_factor) == 1) {
     # point hypothesis
     post_args <- append(bayes_factor, s_res$plot_list$parameters)
     names(post_args)[1] <- "x"
@@ -72,8 +70,6 @@
     post_odds <- sum(post_tail_probs) / post_null_prob
     # calculate bayes factor
     bayes_factors <- post_odds / prior_odds
-  } else {
-    stop("bayes_factor must be a point hypothesis or an interval")
   }
   return(bayes_factors)
 }
