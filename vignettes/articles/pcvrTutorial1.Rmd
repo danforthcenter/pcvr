@@ -53,7 +53,8 @@ if (!"pcvr" %in% installed.packages()) {
 
 ```{r}
 #| echo: true
-library(pcvr)
+#library(pcvr)
+devtools::load_all("~/pcvr")
 library(data.table) # for fread
 library(ggplot2) # to change pcvr output plots some
 library(patchwork) # to combine ggplots
@@ -549,21 +550,8 @@ library(patchwork)
 Here is an example of using the `conjugate` function from `pcvr` to do a Bayesian analog to a T test and a region of practical equivalence (*ROPE*) comparison.
 
 ```{r}
-#| eval: false
+#| eval: true
 #| echo: true
-s1 <- sv_ag[sv_ag$fertilizer == "100" & sv_ag$DAS == 19 & sv_ag$genotype == "W605S", "area_cm2"]
-s2 <- sv_ag[sv_ag$fertilizer == "50" & sv_ag$DAS == 19 & sv_ag$genotype == "W605S", "area_cm2"]
-conj <- conjugate(s1, s2,
-  method = "t", plot = TRUE,
-  priors = list(mu = c(20, 20), n = c(1, 1), s2 = c(20, 20)),
-  rope_range = c(-10, 10)
-)
-```
-
-## Bayesian comparison with `conjugate` {.smaller}
-
-```{r}
-#| echo: false
 s1 <- sv_ag[sv_ag$fertilizer == "100" & sv_ag$DAS == 19 & sv_ag$genotype == "W605S", "area_cm2"]
 s2 <- sv_ag[sv_ag$fertilizer == "50" & sv_ag$DAS == 19 & sv_ag$genotype == "W605S", "area_cm2"]
 conj <- conjugate(s1, s2,
@@ -579,7 +567,7 @@ conj <- conjugate(s1, s2,
 
 ```{r}
 #| echo: true
-lapply(conj, class) # [1:length(conj)]
+lapply(conj, class)
 ```
 
 ## Bayesian comparison with `conjugate` (2) {.smaller}
@@ -613,7 +601,6 @@ conj <- conjugate(s1, s2,
   priors = list(mu = c(20, 20), n = c(1, 1), s2 = c(20, 20)),
   rope_range = c(-10, 10)
 )
-# 1-conj$summary$rope_prob: 0.318
 ```
 
 ## Longitudinal Analysis {.smaller}
