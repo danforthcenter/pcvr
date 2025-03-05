@@ -556,8 +556,7 @@ s2 <- sv_ag[sv_ag$fertilizer == "50" & sv_ag$DAS == 19 & sv_ag$genotype == "W605
 conj <- conjugate(s1, s2,
   method = "t", plot = TRUE,
   priors = list(mu = c(20, 20), n = c(1, 1), s2 = c(20, 20)),
-  rope_range = c(-10, 10),
-  support = seq(0, 125, 0.1)
+  rope_range = c(-10, 10)
 )
 ```
 
@@ -612,7 +611,7 @@ s2 <- sv_ag[sv_ag$fertilizer == "0" & sv_ag$DAS == 19 &
 conj <- conjugate(s1, s2,
   method = "gaussian", plot = TRUE,
   priors = list(mu = c(20, 20), n = c(1, 1), s2 = c(20, 20)),
-  support = seq(0, 60, 0.1), rope_range = c(-10, 10)
+  rope_range = c(-10, 10)
 )
 # 1-conj$summary$rope_prob: 0.318
 ```
