@@ -570,7 +570,7 @@ s2 <- sv_ag[sv_ag$fertilizer == "50" & sv_ag$DAS == 19 & sv_ag$genotype == "W605
 conj <- conjugate(s1, s2,
   method = "t", plot = TRUE,
   priors = list(mu = c(20, 20), n = c(1, 1), s2 = c(20, 20)),
-  rope_range = c(-10, 10), support = seq(0, 125, 0.1)
+  rope_range = c(-10, 10)
 )
 ```
 
