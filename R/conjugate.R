@@ -498,12 +498,12 @@ conjugate <- function(s1 = NULL, s2 = NULL,
     support <- lapply(pars, function(param) {
       qnts <- range(unlist(lapply(support_quantiles, function(sq) {
         return(sq[[param]])
-      })))
+      })), na.rm = TRUE)
       return(seq(qnts[1], qnts[2], length.out = 10000))
     })
     names(support) <- pars
   } else {
-    qnts <- range(unlist(support_quantiles))
+    qnts <- range(unlist(support_quantiles), na.rm = TRUE)
     support <- seq(qnts[1], qnts[2], length.out = 10000)
   }
   return(support)
