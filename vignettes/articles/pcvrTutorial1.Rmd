@@ -286,10 +286,6 @@ t.test(area_cm2 ~ genotype, ex)
 
 ## Interpreting P-values {.smaller}
 
-```{r}
-print(box)
-```
-
 Based on an $\alpha$ of 0.05 we would say that B73 and Mo17 have statistically significant differences in size 19 days after planting.
 
 . . .
@@ -548,14 +544,13 @@ library(patchwork)
 
 Here is an example of using the `conjugate` function from `pcvr` to do a Bayesian analog to a T test and a region of practical equivalence (*ROPE*) comparison.
 
-```{r}
+```{r, run-conjugate}
 #| eval: true
 #| echo: true
 s1 <- sv_ag[sv_ag$fertilizer == "100" & sv_ag$DAS == 19 & sv_ag$genotype == "W605S", "area_cm2"]
 s2 <- sv_ag[sv_ag$fertilizer == "50" & sv_ag$DAS == 19 & sv_ag$genotype == "W605S", "area_cm2"]
 conj <- conjugate(s1, s2,
   method = "t", plot = TRUE,
-  priors = list(mu = c(20, 20), n = c(1, 1), s2 = c(20, 20)),
   rope_range = c(-10, 10)
 )
 ```
