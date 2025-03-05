@@ -403,7 +403,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
   if (plot) {
     out$plot <- .conj_plot(sample_results, rope_res,
       res = out,
-      rope_range, rope_ci, dirSymbol, support, method
+      rope_range, rope_ci, dirSymbol, support, method, bayes_factor
     )
   }
   return(out)
@@ -658,11 +658,12 @@ conjugate <- function(s1 = NULL, s2 = NULL,
 #' @noRd
 
 .conj_plot <- function(sample_results, rope_res = NULL, res,
-                       rope_range, rope_ci, dirSymbol = NULL, support, method) {
+                       rope_range, rope_ci, dirSymbol = NULL, support, method, bayes_factor) {
   if (any(grepl("bivariate", method))) {
     p <- .conj_bivariate_plot(sample_results, rope_res, res, rope_range, rope_ci, dirSymbol)
   } else {
-    p <- .conj_general_plot(sample_results, rope_res, res, rope_range, rope_ci, dirSymbol, support)
+    p <- .conj_general_plot(sample_results, rope_res, res,
+                            rope_range, rope_ci, dirSymbol, support, bayes_factor)
   }
   return(p)
 }
@@ -675,8 +676,15 @@ conjugate <- function(s1 = NULL, s2 = NULL,
 #' @keywords internal
 #' @noRd
 .conj_general_plot <- function(sample_results, rope_res = NULL, res,
-                               rope_range, rope_ci, dirSymbol = NULL, support) {
+                               rope_range, rope_ci, dirSymbol = NULL, support, bayes_factor) {
   s1_plot_df <- data.frame(range = sample_results[[1]]$plot_list$range)
+  s1_bf_title <- NULL
+  s2_bf_title <- NULL
+  if (!is.null(bayes_factor)) {
+    s1_bf_title <- paste0(", BF: (",
+                          paste(bayes_factor, collapse = ", "),
+                          ") ", round(res$summary$bf_1, 2))
+  }
 
   p <- ggplot2::ggplot(s1_plot_df, ggplot2::aes(x = .data$range)) +
     ggplot2::stat_function(geom = "polygon",
@@ -700,7 +708,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
       subtitle = paste0(
         "HDE: ", round(res$summary$HDE_1, 2),
         "\nHDI: [", round(res$summary$HDI_1_low, 2), ", ",
-        round(res$summary$HDI_1_high, 2), "]"
+        round(res$summary$HDI_1_high, 2), "]", s1_bf_title
       )
     ) +
     ggplot2::guides(fill = ggplot2::guide_legend(override.aes = list(alpha = 0.5))) +
@@ -712,6 +720,11 @@ conjugate <- function(s1 = NULL, s2 = NULL,
     pcv_theme()
 
   if (length(sample_results) == 2) {
+    if (!is.null(bayes_factor)) {
+      s2_bf_title <- paste0(", BF: (",
+                            paste(bayes_factor, collapse = ", "),
+                            ") ", round(res$summary$bf_2, 2))
+    }
 
     if (res$summary$post.prob < 1e-5) {
       post.prob.text <- "<1e-5"
@@ -750,9 +763,9 @@ conjugate <- function(s1 = NULL, s2 = NULL,
       ) +
       ggplot2::labs(subtitle = paste0(
         "Sample 1:  ", round(res$summary$HDE_1, 2), " [", round(res$summary$HDI_1_low, 2), ", ",
-        round(res$summary$HDI_1_high, 2), "]\n",
+        round(res$summary$HDI_1_high, 2), "]", s1_bf_title, "\n",
         "Sample 2:  ", round(res$summary$HDE_2, 2), " [", round(res$summary$HDI_2_low, 2), ", ",
-        round(res$summary$HDI_2_high, 2), "]\n",
+        round(res$summary$HDI_2_high, 2), "]", s2_bf_title, "\n",
         "P[p1", dirSymbol, "p2] = ", post.prob.text
       ))
   }
