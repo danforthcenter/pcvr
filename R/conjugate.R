@@ -788,7 +788,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
           "Median Difference of ", round(res$summary$HDE_rope, 2), "\n",
           100 * rope_ci, "% CI [", round(res$summary$HDI_rope_low, 2), ", ",
           round(res$summary$HDI_rope_high, 2), "]\n",
-          rope_ci, "% HDI in [", rope_range[1], ", ", rope_range[2], "]: ",
+          100 * rope_ci, "% HDI in [", rope_range[1], ", ", rope_range[2], "]: ",
           round(res$summary$rope_prob, 2)
         )
       ) +
