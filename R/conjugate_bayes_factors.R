@@ -4,14 +4,16 @@
 #' Function to calcualte Bayes Factors using single or multi value traits with
 #' several distributions in the conjugate function.
 #' @param bayes_factor bayes factor range/point hypothesis passed from conjugate
-#' @param s_res results from conjugate function thus far, currently the prior
-#' and plot_list (for the distribution function name) elements are used. Internally this object is
-#' called `sample_results` in conjugate and only has one sample at a time passed to this function.
+#' @param s_res results from conjugate function thus far, currently the plot_list
+#' (for the distribution function name and values) element is all that is used.
+#' Internally this object is called `sample_results` in conjugate and only has
+#' one sample at a time passed to this function.
 #' @examples
 #' sample_results <- list(
-#' "prior" = list("a" = 1, "b" = 1),
+#' # other things that we don't need to use for this function... , 
 #' "plot_list" = list(
 #'   "ddist_fun" = "stats::dbeta",
+#'   "priors" = list("shape1" = 1, "shape2" = 1)
 #'   "parameters" = list("shape1" = 144, "shape2" = 96)
 #' )
 #' )
@@ -32,7 +34,7 @@
     # point hypothesis
     post_args <- append(bayes_factor, s_res$plot_list$parameters)
     names(post_args)[1] <- "x"
-    prior_args <- append(bayes_factor, s_res$prior)
+    prior_args <- append(bayes_factor, s_res$plot_list$priors)
     names(prior_args) <- names(post_args)
     ddist <- s_res$plot_list$ddist_fun
     fn_split <- strsplit(ddist, "::")[[1]]
@@ -47,7 +49,7 @@
       lower_tail <- ifelse(i == 1, TRUE, FALSE)
       post_args <- append(c(q, lower_tail), s_res$plot_list$parameters)
       names(post_args)[1:2] <- c("q", "lower.tail")
-      prior_args <- append(c(q, lower_tail), s_res$prior)
+      prior_args <- append(c(q, lower_tail), s_res$plot_list$priors)
       names(prior_args) <- names(post_args)
       # identify functions
       ddist <- s_res$plot_list$ddist_fun
