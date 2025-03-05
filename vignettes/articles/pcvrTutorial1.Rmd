@@ -53,8 +53,7 @@ if (!"pcvr" %in% installed.packages()) {
 
 ```{r}
 #| echo: true
-#library(pcvr)
-devtools::load_all("~/pcvr")
+library(pcvr)
 library(data.table) # for fread
 library(ggplot2) # to change pcvr output plots some
 library(patchwork) # to combine ggplots
