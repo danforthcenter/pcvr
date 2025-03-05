@@ -68,6 +68,7 @@
   out$plot_list <- list(
     "range" = support,
     "ddist_fun" = "extraDistr::dpareto",
+    "priors" = list("a" = priors$scale[1], "b" = priors$location[1]), 
     "parameters" = list("a" = scale_prime,
                         "b" = location_prime)
   )
@@ -125,6 +126,7 @@
   out$plot_list <- list(
     "range" = support,
     "ddist_fun" = "extraDistr::dpareto",
+    "priors" = list("a" = priors$scale[1], "b" = priors$location[1]), 
     "parameters" = list("a" = scale_prime,
                         "b" = location_prime)
   )

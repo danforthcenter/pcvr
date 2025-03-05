@@ -96,6 +96,7 @@
   out$plot_list <- list(
     "range" = support,
     "ddist_fun" = "stats::dnorm",
+    "priors" = list("mean" = priors$mu[1],  "sd" = priors$sd[1]),
     "parameters" = list("mean" = mu_ls_prime,
                         "sd" = sigma_ls_prime)
   )
@@ -165,6 +166,7 @@
   out$plot_list <- list(
     "range" = support,
     "ddist_fun" = "stats::dnorm",
+    "priors" = list("mean" = priors$mu[1],  "sd" = priors$sd[1]),
     "parameters" = list("mean" = mu_prime,
                         "sd" = sd_prime)
   )

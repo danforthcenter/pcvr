@@ -54,6 +54,9 @@
   out$plot_list <- list(
     "range" = support,
     "ddist_fun" = "extraDistr::dlst",
+    "priors" = list("df" = max(c(2, priors$n[1])),
+                    "mu" = priors$mu[1],
+                    "sigma" = sqrt(priors$s2[1] / priors$n[1])),
     "parameters" = list("df" = v1_n,
                         "mu" = m1_n,
                         "sigma" = se1)
@@ -138,6 +141,9 @@
   out$plot_list <- list(
     "range" = support,
     "ddist_fun" = "extraDistr::dlst",
+    "priors" = list("df" = max(c(2, priors$n[1])),
+                    "mu" = priors$mu[1],
+                    "sigma" = sqrt(priors$s2[1] / priors$n[1])),
     "parameters" = list("df" = v1_n,
                         "mu" = m1_n,
                         "sigma" = se1)

@@ -65,6 +65,7 @@
   out$plot_list <- list(
     "range" = support,
     "ddist_fun" = "stats::dgamma",
+    "priors" = list("shape" = priors$a[1],  "rate" = priors$b[1]),
     "parameters" = list("shape" = a1_prime,
                         "rate" = b1_prime)
   )

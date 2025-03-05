@@ -82,6 +82,7 @@
   out$plot_list <- list(
     "range" = support,
     "ddist_fun" = "stats::dgamma",
+    "priors" = list("shape" = priors$a[1],  "scale" = priors$b[1]),
     "parameters" = list("shape" = a_prime,
                         "scale" = b_prime)
   )
@@ -148,6 +149,7 @@
   out$plot_list <- list(
     "range" = support,
     "ddist_fun" = "stats::dgamma",
+    "priors" = list("shape" = priors$a[1],  "scale" = priors$b[1]),
     "parameters" = list("shape" = a_prime,
                         "scale" = b_prime)
   )
