@@ -17,7 +17,7 @@ the output."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">pcvr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.1.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -102,7 +102,7 @@ not be made.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A named list containing Rhat, ESS, NEFF, and Prior/Posterior Predictive plots.
+    <p>A named list containing Rhat, ESS, NEFF, and Trace/Prior/Posterior Predictive plots.
 See details for interpretation.</p>
     </div>
     <div class="section level2">
@@ -138,6 +138,9 @@ See details for interpretation.</p>
     Values greater than 0.5 are generally considered good, but there is a consensus that lower can be
     fine down to about 0.1. A summary and the total values are returned, with the summary being
     useful if several models are included in a list for fit argument</p></li>
+<li><p><b>mcmcTrace</b>: A plot of each model's MCMC traces. Ideally these should be very mixed
+    and stationary. For more options for visualizing MCMC diagnostics see
+    <code><a href="https://mc-stan.org/bayesplot/reference/MCMC-traces.html" class="external-link">bayesplot::mcmc_trace</a></code>.</p></li>
 <li><p><b>priorPredictive</b>: A plot of data simulated from the prior using <a href="plotPrior.html">plotPrior</a>.
     This should generate data that is biologically plausible for your situation, but it will
     probably be much more variable than your data. That is the effect of the mildly informative thick

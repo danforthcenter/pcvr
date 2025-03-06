@@ -9,7 +9,7 @@ several distributions."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">pcvr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.1.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -78,6 +78,7 @@ several distributions.</p>
 <span>  rope_ci <span class="op">=</span> <span class="fl">0.89</span>,</span>
 <span>  cred.int.level <span class="op">=</span> <span class="fl">0.89</span>,</span>
 <span>  hypothesis <span class="op">=</span> <span class="st">"equal"</span>,</span>
+<span>  bayes_factor <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  support <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -166,12 +167,15 @@ Options are "unequal", "equal", "greater", and "lesser",
  read as "sample1 greater than sample2".</p></dd>
 
 
+<dt id="arg-bayes-factor">bayes_factor<a class="anchor" aria-label="anchor" href="#arg-bayes-factor"></a></dt>
+<dd><p>Optional point or interval to evaluate bayes factors on. Note that this
+generally only makes sense to use if you have informative priors where the change in odds between
+prior and posterior is meaningful about the data. If this is non-NULL then columns of bayes factors
+are added to the summary output. Note these are only implemented for univariate distributions.</p></dd>
+
+
 <dt id="arg-support">support<a class="anchor" aria-label="anchor" href="#arg-support"></a></dt>
-<dd><p>Optional support vector to include all possible values the random variable
-(samples) might take. This defaults to NULL in which case each method will use default
-behavior to attempt to calculate a dense support, but it is a good idea to supply this
-with some suitable vector. For example, the Beta method uses <code>seq(0.0001, 0.9999, 0.0001)</code>
-for support.</p></dd>
+<dd><p>Deprecated</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -182,11 +186,10 @@ for support.</p></dd>
    Estimate" of the posterior, that is the tallest part of the probability density function. The
    HDI is the Highest Density Interval, which is an interval that contains X% of the posterior
    distribution, so <code>cred.int.level = 0.8</code> corresponds to an HDI that includes 80 percent
-   of the posterior probability.</p></li>
+   of the posterior probability. Bayes factors are calculated as posterior/prior for each sample.</p></li>
 <li><p><strong>posterior</strong>: A list of updated parameters in the same format as the prior
     for the given method. If desired this does allow for Bayesian updating.</p></li>
-<li><p><strong>plot_df</strong>: A data frame of probabilities along the support for each sample.
-    This is used for making the ggplot.</p></li>
+<li><p><strong>prior</strong>: The prior in a list with the same format as the posterior.</p></li>
 <li><p><strong>rope_df</strong>: A data frame of draws from the ROPE posterior.</p></li>
 <li><p><strong>plot</strong>: A ggplot showing the distribution of samples and optionally the
    distribution of differences/ROPE</p></li>
@@ -281,6 +284,7 @@ for support.</p></dd>
 <span class="r-in"><span>  plot <span class="op">=</span> <span class="cn">FALSE</span>, rope_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">40</span>, <span class="fl">40</span><span class="op">)</span>, rope_ci <span class="op">=</span> <span class="fl">0.89</span>,</span></span>
 <span class="r-in"><span>  cred.int.level <span class="op">=</span> <span class="fl">0.89</span>, hypothesis <span class="op">=</span> <span class="st">"equal"</span>, support <span class="op">=</span> <span class="cn">NULL</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>support argument is deprecated</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># lognormal sv</span></span></span>
 <span class="r-in"><span><span class="va">ln_sv_ex</span> <span class="op">&lt;-</span> <span class="fu">conjugate</span><span class="op">(</span></span></span>
@@ -290,6 +294,7 @@ for support.</p></dd>
 <span class="r-in"><span>  plot <span class="op">=</span> <span class="cn">FALSE</span>, rope_range <span class="op">=</span> <span class="cn">NULL</span>, rope_ci <span class="op">=</span> <span class="fl">0.89</span>,</span></span>
 <span class="r-in"><span>  cred.int.level <span class="op">=</span> <span class="fl">0.89</span>, hypothesis <span class="op">=</span> <span class="st">"equal"</span>, support <span class="op">=</span> <span class="cn">NULL</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>support argument is deprecated</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Z test mv example</span></span></span>
 <span class="r-in"><span></span></span>
@@ -307,6 +312,7 @@ for support.</p></dd>
 <span class="r-in"><span>  plot <span class="op">=</span> <span class="cn">FALSE</span>, rope_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">25</span>, <span class="fl">25</span><span class="op">)</span>, rope_ci <span class="op">=</span> <span class="fl">0.89</span>,</span></span>
 <span class="r-in"><span>  cred.int.level <span class="op">=</span> <span class="fl">0.89</span>, hypothesis <span class="op">=</span> <span class="st">"equal"</span>, support <span class="op">=</span> <span class="cn">NULL</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>support argument is deprecated</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># T test sv example</span></span></span>
 <span class="r-in"><span></span></span>
@@ -316,6 +322,7 @@ for support.</p></dd>
 <span class="r-in"><span>  plot <span class="op">=</span> <span class="cn">FALSE</span>, rope_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">5</span>, <span class="fl">8</span><span class="op">)</span>, rope_ci <span class="op">=</span> <span class="fl">0.89</span>,</span></span>
 <span class="r-in"><span>  cred.int.level <span class="op">=</span> <span class="fl">0.89</span>, hypothesis <span class="op">=</span> <span class="st">"equal"</span>, support <span class="op">=</span> <span class="cn">NULL</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>support argument is deprecated</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># beta mv example</span></span></span>
 <span class="r-in"><span></span></span>
@@ -332,7 +339,8 @@ for support.</p></dd>
 <span class="r-in"><span>  s1 <span class="op">=</span> <span class="va">mv_beta</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">30</span>, <span class="op">-</span><span class="fl">1</span><span class="op">]</span>, s2 <span class="op">=</span> <span class="va">mv_beta</span><span class="op">[</span><span class="fl">31</span><span class="op">:</span><span class="fl">50</span>, <span class="op">-</span><span class="fl">1</span><span class="op">]</span>, method <span class="op">=</span> <span class="st">"beta"</span>,</span></span>
 <span class="r-in"><span>  priors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>a <span class="op">=</span> <span class="fl">0.5</span>, b <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  plot <span class="op">=</span> <span class="cn">FALSE</span>, rope_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">0.1</span>, <span class="fl">0.1</span><span class="op">)</span>, rope_ci <span class="op">=</span> <span class="fl">0.89</span>,</span></span>
-<span class="r-in"><span>  cred.int.level <span class="op">=</span> <span class="fl">0.89</span>, hypothesis <span class="op">=</span> <span class="st">"equal"</span></span></span>
+<span class="r-in"><span>  cred.int.level <span class="op">=</span> <span class="fl">0.89</span>, hypothesis <span class="op">=</span> <span class="st">"equal"</span>,</span></span>
+<span class="r-in"><span>  bayes_factor <span class="op">=</span> <span class="fl">0.5</span> <span class="co"># note this may not be reasonable with these priors</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># beta sv example</span></span></span>
@@ -341,7 +349,8 @@ for support.</p></dd>
 <span class="r-in"><span>  s1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Beta.html" class="external-link">rbeta</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">5</span>, <span class="fl">5</span><span class="op">)</span>, s2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Beta.html" class="external-link">rbeta</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">8</span>, <span class="fl">5</span><span class="op">)</span>, method <span class="op">=</span> <span class="st">"beta"</span>,</span></span>
 <span class="r-in"><span>  priors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>a <span class="op">=</span> <span class="fl">0.5</span>, b <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  plot <span class="op">=</span> <span class="cn">FALSE</span>, rope_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">0.1</span>, <span class="fl">0.1</span><span class="op">)</span>, rope_ci <span class="op">=</span> <span class="fl">0.89</span>,</span></span>
-<span class="r-in"><span>  cred.int.level <span class="op">=</span> <span class="fl">0.89</span>, hypothesis <span class="op">=</span> <span class="st">"equal"</span></span></span>
+<span class="r-in"><span>  cred.int.level <span class="op">=</span> <span class="fl">0.89</span>, hypothesis <span class="op">=</span> <span class="st">"equal"</span>,</span></span>
+<span class="r-in"><span>  bayes_factor <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">0.75</span><span class="op">)</span> <span class="co"># note this may not be reasonable with these priors</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># binomial sv example</span></span></span>

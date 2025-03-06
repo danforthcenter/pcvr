@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">pcvr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.1.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -159,7 +159,7 @@ features are:</p>
 data on read in.</li>
 <li>
 <code>reader</code> allows for use of
-<code><a href="https://rdrr.io/pkg/data.table/man/fread.html" class="external-link">data.table::fread</a></code>, <code>vroom::vroom</code>, or other
+<code><a href="https://rdatatable.gitlab.io/data.table/reference/fread.html" class="external-link">data.table::fread</a></code>, <code>vroom::vroom</code>, or other
 functions to improve speed with large data. This defaults to NULL where
 <code><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">utils::read.csv</a></code> is used.</li>
 <li>
@@ -395,16 +395,6 @@ before getting into those we’ll rescale our area phenotype to
 <div class="section level2 smaller">
 <h2 class="smaller" id="interpreting-p-values">Interpreting P-values<a class="anchor" aria-label="anchor" href="#interpreting-p-values"></a>
 </h2>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">box</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## function (which = "plot", lty = "solid", ...) </span></span>
-<span><span class="co">## {</span></span>
-<span><span class="co">##     which &lt;- pmatch(which[1L], c("plot", "figure", "inner", "outer"))</span></span>
-<span><span class="co">##     .External.graphics(C_box, which = which, lty = lty, ...)</span></span>
-<span><span class="co">##     invisible()</span></span>
-<span><span class="co">## }</span></span>
-<span><span class="co">## &lt;bytecode: 0x558db73fb898&gt;</span></span>
-<span><span class="co">## &lt;environment: namespace:graphics&gt;</span></span></code></pre>
 <p>Based on an
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>α</mi><annotation encoding="application/x-tex">\alpha</annotation></semantics></math>
 of 0.05 we would say that B73 and Mo17 have statistically significant
@@ -499,12 +489,12 @@ quick to answer.</p>
 <div class="section level2 smaller">
 <h2 class="smaller" id="conjugacy-example">Conjugacy Example<a class="anchor" aria-label="anchor" href="#conjugacy-example"></a>
 </h2>
-<p><img src="pcvrTutorial1_files/figure-html/unnamed-chunk-18-1.png" width="700"></p>
+<p><img src="pcvrTutorial1_files/figure-html/unnamed-chunk-17-1.png" width="700"></p>
 </div>
 <div class="section level2 smaller">
 <h2 class="smaller" id="conjugacy-example-1">Conjugacy Example<a class="anchor" aria-label="anchor" href="#conjugacy-example-1"></a>
 </h2>
-<p><img src="pcvrTutorial1_files/figure-html/unnamed-chunk-19-1.png" width="700"></p>
+<p><img src="pcvrTutorial1_files/figure-html/unnamed-chunk-18-1.png" width="700"></p>
 </div>
 <div class="section level2 smaller">
 <h2 class="smaller" id="conjugate-function">
@@ -537,7 +527,7 @@ data (given “r”)</li>
 <h2 class="smaller" id="conjugate-function-3">
 <code>conjugate</code> function (3)<a class="anchor" aria-label="anchor" href="#conjugate-function-3"></a>
 </h2>
-<p><img src="pcvrTutorial1_files/figure-html/unnamed-chunk-20-1.png" width="700"></p>
+<p><img src="pcvrTutorial1_files/figure-html/unnamed-chunk-19-1.png" width="700"></p>
 </div>
 <div class="section level2 smaller">
 <h2 class="smaller" id="bayesian-comparison-with-conjugate">Bayesian comparison with <code>conjugate</code><a class="anchor" aria-label="anchor" href="#bayesian-comparison-with-conjugate"></a>
@@ -545,19 +535,13 @@ data (given “r”)</li>
 <p>Here is an example of using the <code>conjugate</code> function from
 <code>pcvr</code> to do a Bayesian analog to a T test and a region of
 practical equivalence (<em>ROPE</em>) comparison.</p>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">s1</span> <span class="op">&lt;-</span> <span class="va">sv_ag</span><span class="op">[</span><span class="va">sv_ag</span><span class="op">$</span><span class="va">fertilizer</span> <span class="op">==</span> <span class="st">"100"</span> <span class="op">&amp;</span> <span class="va">sv_ag</span><span class="op">$</span><span class="va">DAS</span> <span class="op">==</span> <span class="fl">19</span> <span class="op">&amp;</span> <span class="va">sv_ag</span><span class="op">$</span><span class="va">genotype</span> <span class="op">==</span> <span class="st">"W605S"</span>, <span class="st">"area_cm2"</span><span class="op">]</span></span>
 <span><span class="va">s2</span> <span class="op">&lt;-</span> <span class="va">sv_ag</span><span class="op">[</span><span class="va">sv_ag</span><span class="op">$</span><span class="va">fertilizer</span> <span class="op">==</span> <span class="st">"50"</span> <span class="op">&amp;</span> <span class="va">sv_ag</span><span class="op">$</span><span class="va">DAS</span> <span class="op">==</span> <span class="fl">19</span> <span class="op">&amp;</span> <span class="va">sv_ag</span><span class="op">$</span><span class="va">genotype</span> <span class="op">==</span> <span class="st">"W605S"</span>, <span class="st">"area_cm2"</span><span class="op">]</span></span>
 <span><span class="va">conj</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/conjugate.html">conjugate</a></span><span class="op">(</span><span class="va">s1</span>, <span class="va">s2</span>,</span>
 <span>  method <span class="op">=</span> <span class="st">"t"</span>, plot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  priors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>mu <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">20</span><span class="op">)</span>, n <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>, s2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">20</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>  rope_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">10</span>, <span class="fl">10</span><span class="op">)</span>,</span>
-<span>  support <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">125</span>, <span class="fl">0.1</span><span class="op">)</span></span>
+<span>  rope_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">10</span>, <span class="fl">10</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level2 smaller">
-<h2 class="smaller" id="bayesian-comparison-with-conjugate-1">Bayesian comparison with <code>conjugate</code><a class="anchor" aria-label="anchor" href="#bayesian-comparison-with-conjugate-1"></a>
-</h2>
 <pre><code><span><span class="co">## Warning in cpp_rlst(n, df, mu, sigma): NAs produced</span></span></code></pre>
 <pre><code><span><span class="co">## `ci` is too small or x does not contain enough data points, returning</span></span>
 <span><span class="co">##   NAs.</span></span>
@@ -570,12 +554,15 @@ practical equivalence (<em>ROPE</em>) comparison.</p>
 </h2>
 <p><code>conjugate</code> returns a list with several useful
 components.</p>
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">conj</span>, <span class="va">class</span><span class="op">)</span> <span class="co"># [1:length(conj)]</span></span></code></pre></div>
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">conj</span>, <span class="va">class</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## $summary</span></span>
 <span><span class="co">## [1] "data.frame"</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## $posterior</span></span>
+<span><span class="co">## [1] "list"</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## $prior</span></span>
 <span><span class="co">## [1] "list"</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## $plot</span></span>
@@ -587,10 +574,10 @@ components.</p>
 </h2>
 <p>The summary item contains HDE and HDI estimates for samples and their
 difference (if two samples are provided).</p>
-<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">conj</span><span class="op">$</span><span class="va">summary</span></span></code></pre></div>
 <pre><code><span><span class="co">##      HDE_1 HDI_1_low HDI_1_high    HDE_2 HDI_2_low HDI_2_high   hyp post.prob</span></span>
-<span><span class="co">## 1 85.51087  67.52282   103.4989 31.24997        NA         NA equal         0</span></span>
+<span><span class="co">## 1 83.01087  60.62468    105.397 21.24997        NA         NA equal         0</span></span>
 <span><span class="co">##   HDE_rope HDI_rope_low HDI_rope_high rope_prob</span></span>
 <span><span class="co">## 1       NA           NA            NA        NA</span></span></code></pre>
 <p>The posterior item is an updated set of priors. It can be recycled as
@@ -614,7 +601,7 @@ fertilizer is larger than
 <span style="color:#FF007B;">conjugate
 (solution)</span><a class="anchor" aria-label="anchor" href="#conjugate-solution"></a>
 </h2>
-<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">s1</span> <span class="op">&lt;-</span> <span class="va">sv_ag</span><span class="op">[</span><span class="va">sv_ag</span><span class="op">$</span><span class="va">fertilizer</span> <span class="op">==</span> <span class="st">"50"</span> <span class="op">&amp;</span> <span class="va">sv_ag</span><span class="op">$</span><span class="va">DAS</span> <span class="op">==</span> <span class="fl">19</span> <span class="op">&amp;</span></span>
 <span>              <span class="va">sv_ag</span><span class="op">$</span><span class="va">genotype</span> <span class="op">==</span> <span class="st">"B73"</span>, <span class="st">"height_pixels"</span><span class="op">]</span> <span class="op">/</span> <span class="fl">42.5</span></span>
 <span><span class="va">s2</span> <span class="op">&lt;-</span> <span class="va">sv_ag</span><span class="op">[</span><span class="va">sv_ag</span><span class="op">$</span><span class="va">fertilizer</span> <span class="op">==</span> <span class="st">"0"</span> <span class="op">&amp;</span> <span class="va">sv_ag</span><span class="op">$</span><span class="va">DAS</span> <span class="op">==</span> <span class="fl">19</span> <span class="op">&amp;</span></span>
@@ -623,9 +610,8 @@ fertilizer is larger than
 <span><span class="va">conj</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/conjugate.html">conjugate</a></span><span class="op">(</span><span class="va">s1</span>, <span class="va">s2</span>,</span>
 <span>  method <span class="op">=</span> <span class="st">"gaussian"</span>, plot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  priors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>mu <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">20</span><span class="op">)</span>, n <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>, s2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">20</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>  support <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">60</span>, <span class="fl">0.1</span><span class="op">)</span>, rope_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">10</span>, <span class="fl">10</span><span class="op">)</span></span>
-<span><span class="op">)</span></span>
-<span><span class="co"># 1-conj$summary$rope_prob: 0.318</span></span></code></pre></div>
+<span>  rope_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">10</span>, <span class="fl">10</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2 smaller">
 <h2 class="smaller" id="longitudinal-analysis">Longitudinal Analysis<a class="anchor" aria-label="anchor" href="#longitudinal-analysis"></a>
@@ -658,7 +644,7 @@ methods (<code>nls</code>, <code>nlrq</code>, <code>nlme</code>, and
 </h2>
 <pre><code><span><span class="co">## Warning: Removed 1 row containing missing values or values outside the scale range</span></span>
 <span><span class="co">## (`geom_line()`).</span></span></code></pre>
-<p><img src="pcvrTutorial1_files/figure-html/unnamed-chunk-26-1.png" width="700"></p>
+<p><img src="pcvrTutorial1_files/figure-html/unnamed-chunk-23-1.png" width="700"></p>
 </div>
 <div class="section level2 smaller">
 <h2 class="smaller" id="data-preparation">Data preparation<a class="anchor" aria-label="anchor" href="#data-preparation"></a>
@@ -666,17 +652,17 @@ methods (<code>nls</code>, <code>nlrq</code>, <code>nlme</code>, and
 <p>For this example we subset the data, but we could also model the
 entire dataset by making a new <code>group</code> column that has
 fertilizer and genotype information.</p>
-<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sub</span> <span class="op">&lt;-</span> <span class="va">sv_ag</span><span class="op">[</span><span class="va">sv_ag</span><span class="op">$</span><span class="va">genotype</span> <span class="op">==</span> <span class="st">"W605S"</span>, <span class="op">]</span></span>
 <span><span class="va">sub</span><span class="op">$</span><span class="va">fertilizer</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">sub</span><span class="op">$</span><span class="va">fertilizer</span><span class="op">)</span></span></code></pre></div>
 <p>To set up our model it generally helps to plot the data and make sure
 we can use an appropriate model and can identify our groups and
 individuals.</p>
-<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">sub</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">DAS</span>, y <span class="op">=</span> <span class="va">area_cm2</span>, group <span class="op">=</span> <span class="va">barcode</span>, color <span class="op">=</span> <span class="va">fertilizer</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="pcvrTutorial1_files/figure-html/unnamed-chunk-28-1.png" width="700"></p>
+<p><img src="pcvrTutorial1_files/figure-html/unnamed-chunk-25-1.png" width="700"></p>
 </div>
 <div class="section level2 smaller">
 <h2 class="smaller" id="initializing-with-growthss">Initializing with <code>growthSS</code><a class="anchor" aria-label="anchor" href="#initializing-with-growthss"></a>
@@ -684,7 +670,7 @@ individuals.</p>
 <p>The <code>growthSS</code> function serves as a “self starter” for 8
 common growth models (logistic, gompertz, monomolecular, linear,
 exponential, and power law).</p>
-<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ss</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/growthSS.html">growthSS</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="st">"gompertz"</span>,</span>
 <span>  form <span class="op">=</span> <span class="va">area_cm2</span> <span class="op">~</span> <span class="va">DAS</span> <span class="op">|</span> <span class="va">barcode</span> <span class="op">/</span> <span class="va">fertilizer</span>,</span>
@@ -702,13 +688,13 @@ details.</p>
 <p>If you are using one of the 6 common growth models supported by
 <code>growthSS</code> then you can use <code>fitGrowth</code> to fit the
 model using Stan.</p>
-<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fit_test</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fitGrowth.html">fitGrowth</a></span><span class="op">(</span><span class="va">ss</span>,</span>
 <span>  iter <span class="op">=</span> <span class="fl">1000</span>,</span>
 <span>  cores <span class="op">=</span> <span class="fl">2</span>, chains <span class="op">=</span> <span class="fl">2</span>, backend <span class="op">=</span> <span class="st">"cmdstanr"</span>,</span>
 <span>  control <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>adapt_delta <span class="op">=</span> <span class="fl">0.999</span>, max_treedepth <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">fit_test</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2 smaller">
@@ -732,7 +718,7 @@ intermediate growth modeling tutorial.</p>
 <p>For a more complete workflow using a small bellwether dataset see the
 <code>bellwether</code> vignette and <a href="https://github.com/danforthcenter/pcvr/tree/main/tutorials" class="external-link">tutorials</a>
 on github.</p>
-<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/browseVignettes.html" class="external-link">browseVignettes</a></span><span class="op">(</span><span class="st">"pcvr"</span><span class="op">)</span> <span class="co"># requires you to have build vignettes on installation</span></span>
 <span><span class="co"># see installation document</span></span></code></pre></div>
 <p>The <code>help-datascience</code> DDPSC slack channel and

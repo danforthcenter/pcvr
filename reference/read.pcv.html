@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">pcvr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.1.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -112,7 +112,7 @@ This should generally not need to be changed from the default.</p></dd>
 
 <dt id="arg-reader">reader<a class="anchor" aria-label="anchor" href="#arg-reader"></a></dt>
 <dd><p>The function to use to read in data,
-defaults to NULL in which case <code><a href="https://rdrr.io/pkg/data.table/man/fread.html" class="external-link">data.table::fread</a></code> is used if filters are in place
+defaults to NULL in which case <code><a href="https://rdatatable.gitlab.io/data.table/reference/fread.html" class="external-link">data.table::fread</a></code> is used if filters are in place
 and <code>read.csv</code> is used otherwise.
 Note that if you use <code>read.csv</code> with filters in place then you will need to specify
 <code>header=FALSE</code> so that the piped output from awk is read correctly.

@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">pcvr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.1.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -135,7 +135,7 @@ shown if you need to filter data outside of R or if you want to use your
 data in a different format than it is stored in (wide going to long and
 vice versa).</p>
 <p>The single value traits can be read in with <code>read.pcv</code>,
-here using <code><a href="https://rdrr.io/pkg/data.table/man/fread.html" class="external-link">data.table::fread</a></code> for speed.</p>
+here using <code><a href="https://rdatatable.gitlab.io/data.table/reference/fread.html" class="external-link">data.table::fread</a></code> for speed.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">base_url</span> <span class="op">&lt;-</span> <span class="st">"https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/"</span></span>
 <span><span class="va">base_url2</span> <span class="op">&lt;-</span> <span class="st">"https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/"</span></span>
@@ -263,7 +263,7 @@ been considered with a few datasets. With the older plantCV output the
 data is already in a wider format so here the default mode is “long”.
 Note that while <code>read.pcv</code> works fine with this older data
 and still has some added benefits the reasons to use it in place of
-<code><a href="https://rdrr.io/pkg/data.table/man/fread.html" class="external-link">data.table::fread</a></code> or <code>base::read.csv</code> are less
+<code><a href="https://rdatatable.gitlab.io/data.table/reference/fread.html" class="external-link">data.table::fread</a></code> or <code>base::read.csv</code> are less
 compelling.</p>
 <p>Here we have examples of reading in various amounts of plantCV 3
 bellwether data. In the final example we also list a conversion to take
