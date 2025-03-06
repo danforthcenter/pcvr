@@ -63,14 +63,15 @@
   #* `Store summary`
   out$summary <- data.frame(HDE_1 = hde1, HDI_1_low = hdi1[1], HDI_1_high = hdi1[2])
   out$posterior <- list("scale" = scale_prime, "location" = location_prime)
+  out$prior <- priors
   #* `save s1 data for plotting`
-  if (plot) {
-    out$plot_df <- data.frame(
-      "range" = support,
-      "prob" = pdf1,
-      "sample" = rep("Sample 1", length(support))
-    )
-  }
+  out$plot_list <- list(
+    "range" = support,
+    "ddist_fun" = "extraDistr::dpareto",
+    "priors" = list("a" = priors$scale[1], "b" = priors$location[1]),
+    "parameters" = list("a" = scale_prime,
+                        "b" = location_prime)
+  )
   return(out)
 }
 
@@ -120,13 +121,14 @@
   #* `Store summary`
   out$summary <- data.frame(HDE_1 = hde1, HDI_1_low = hdi1[1], HDI_1_high = hdi1[2])
   out$posterior <- list("scale" = scale_prime, "location" = location_prime)
+  out$prior <- priors
   #* `save s1 data for plotting`
-  if (plot) {
-    out$plot_df <- data.frame(
-      "range" = support,
-      "prob" = pdf1,
-      "sample" = rep("Sample 1", length(support))
-    )
-  }
+  out$plot_list <- list(
+    "range" = support,
+    "ddist_fun" = "extraDistr::dpareto",
+    "priors" = list("a" = priors$scale[1], "b" = priors$location[1]),
+    "parameters" = list("a" = scale_prime,
+                        "b" = location_prime)
+  )
   return(out)
 }

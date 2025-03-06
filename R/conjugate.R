@@ -55,11 +55,11 @@
 #' @param hypothesis Direction of a hypothesis if two samples are provided.
 #'  Options are "unequal", "equal", "greater", and "lesser",
 #'   read as "sample1 greater than sample2".
-#' @param support Optional support vector to include all possible values the random variable
-#'  (samples) might take. This defaults to NULL in which case each method will use default
-#'  behavior to attempt to calculate a dense support, but it is a good idea to supply this
-#'  with some suitable vector. For example, the Beta method uses \code{seq(0.0001, 0.9999, 0.0001)}
-#'  for support.
+#' @param bayes_factor Optional point or interval to evaluate bayes factors on. Note that this
+#' generally only makes sense to use if you have informative priors where the change in odds between
+#' prior and posterior is meaningful about the data. If this is non-NULL then columns of bayes factors
+#' are added to the summary output. Note these are only implemented for univariate distributions.
+#' @param support Deprecated
 #'
 #' @import bayestestR
 #' @import ggplot2
@@ -218,7 +218,8 @@
 #'   s1 = mv_beta[1:30, -1], s2 = mv_beta[31:50, -1], method = "beta",
 #'   priors = list(a = 0.5, b = 0.5),
 #'   plot = FALSE, rope_range = c(-0.1, 0.1), rope_ci = 0.89,
-#'   cred.int.level = 0.89, hypothesis = "equal"
+#'   cred.int.level = 0.89, hypothesis = "equal",
+#'   bayes_factor = 0.5 # note this may not be reasonable with these priors
 #' )
 #'
 #' # beta sv example
@@ -227,7 +228,8 @@
 #'   s1 = rbeta(20, 5, 5), s2 = rbeta(20, 8, 5), method = "beta",
 #'   priors = list(a = 0.5, b = 0.5),
 #'   plot = FALSE, rope_range = c(-0.1, 0.1), rope_ci = 0.89,
-#'   cred.int.level = 0.89, hypothesis = "equal"
+#'   cred.int.level = 0.89, hypothesis = "equal",
+#'   bayes_factor = c(0.5, 0.75) # note this may not be reasonable with these priors
 #' )
 #'
 #' # binomial sv example
@@ -300,11 +302,10 @@
 #'    Estimate" of the posterior, that is the tallest part of the probability density function. The
 #'    HDI is the Highest Density Interval, which is an interval that contains X\% of the posterior
 #'    distribution, so \code{cred.int.level = 0.8} corresponds to an HDI that includes 80 percent
-#'    of the posterior probability.}
+#'    of the posterior probability. Bayes factors are calculated as posterior/prior for each sample.}
 #'    \item{\strong{posterior}: A list of updated parameters in the same format as the prior
 #'     for the given method. If desired this does allow for Bayesian updating.}
-#'    \item{\strong{plot_df}: A data frame of probabilities along the support for each sample.
-#'     This is used for making the ggplot.}
+#'    \item{\strong{prior}: The prior in a list with the same format as the posterior.}
 #'    \item{\strong{rope_df}: A data frame of draws from the ROPE posterior.}
 #'    \item{\strong{plot}: A ggplot showing the distribution of samples and optionally the
 #'    distribution of differences/ROPE}
@@ -322,7 +323,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
                       ),
                       priors = NULL, plot = FALSE, rope_range = NULL,
                       rope_ci = 0.89, cred.int.level = 0.89, hypothesis = "equal",
-                      support = NULL) {
+                      bayes_factor = NULL, support = NULL) {
   #* `Handle formula option in s1`
   samples <- .formatSamples(s1, s2)
   s1 <- samples$s1
@@ -339,9 +340,10 @@ conjugate <- function(s1 = NULL, s2 = NULL,
     samplesList[[2]] <- s2
   }
 
-  if (is.null(support)) {
-    support <- .getSupport(samplesList, method, priors) # calculate shared support
+  if (!missing("support")) {
+    warning("support argument is deprecated")
   }
+  support <- .getSupport(samplesList, method, priors) # calculate shared support
 
   sample_results <- lapply(seq_along(samplesList), function(i) {
     sample <- samplesList[[i]]
@@ -368,6 +370,10 @@ conjugate <- function(s1 = NULL, s2 = NULL,
   out <- list()
   out$summary <- do.call(cbind, lapply(seq_along(sample_results), function(i) {
     s <- sample_results[[i]]$summary
+    if (!is.null(bayes_factor)) { #* `Calculate Bayes Factors`
+      bf <- .conj_bayes_factor(bayes_factor, sample_results[[i]])
+      s$bf_1 <- bf
+    }
     if (i == 2) {
       s <- s[, !grepl("param", colnames(s))]
       colnames(s) <- gsub("1", "2", colnames(s))
@@ -392,12 +398,12 @@ conjugate <- function(s1 = NULL, s2 = NULL,
     rope_res <- NULL
   }
   out$posterior <- lapply(sample_results, function(s) s$posterior)
-
+  out$prior <- lapply(sample_results, function(s) s$prior)
   #* `Make plot`
   if (plot) {
     out$plot <- .conj_plot(sample_results, rope_res,
       res = out,
-      rope_range, rope_ci, dirSymbol, support, method
+      rope_range, rope_ci, dirSymbol, support, method, bayes_factor
     )
   }
   return(out)
@@ -492,12 +498,12 @@ conjugate <- function(s1 = NULL, s2 = NULL,
     support <- lapply(pars, function(param) {
       qnts <- range(unlist(lapply(support_quantiles, function(sq) {
         return(sq[[param]])
-      })))
+      })), na.rm = TRUE)
       return(seq(qnts[1], qnts[2], length.out = 10000))
     })
     names(support) <- pars
   } else {
-    qnts <- range(unlist(support_quantiles))
+    qnts <- range(unlist(support_quantiles), na.rm = TRUE)
     support <- seq(qnts[1], qnts[2], length.out = 10000)
   }
   return(support)
@@ -652,11 +658,12 @@ conjugate <- function(s1 = NULL, s2 = NULL,
 #' @noRd
 
 .conj_plot <- function(sample_results, rope_res = NULL, res,
-                       rope_range, rope_ci, dirSymbol = NULL, support, method) {
+                       rope_range, rope_ci, dirSymbol = NULL, support, method, bayes_factor) {
   if (any(grepl("bivariate", method))) {
     p <- .conj_bivariate_plot(sample_results, rope_res, res, rope_range, rope_ci, dirSymbol)
   } else {
-    p <- .conj_general_plot(sample_results, rope_res, res, rope_range, rope_ci, dirSymbol, support)
+    p <- .conj_general_plot(sample_results, rope_res, res,
+                            rope_range, rope_ci, dirSymbol, support, bayes_factor)
   }
   return(p)
 }
@@ -669,11 +676,21 @@ conjugate <- function(s1 = NULL, s2 = NULL,
 #' @keywords internal
 #' @noRd
 .conj_general_plot <- function(sample_results, rope_res = NULL, res,
-                               rope_range, rope_ci, dirSymbol = NULL, support) {
-  s1_plot_df <- sample_results[[1]]$plot_df
+                               rope_range, rope_ci, dirSymbol = NULL, support, bayes_factor) {
+  s1_plot_df <- data.frame(range = sample_results[[1]]$plot_list$range)
+  s1_bf_title <- NULL
+  s2_bf_title <- NULL
+  if (!is.null(bayes_factor)) {
+    s1_bf_title <- paste0(", BF: (",
+                          paste(bayes_factor, collapse = ", "),
+                          ") ", round(res$summary$bf_1, 2))
+  }
 
-  p <- ggplot2::ggplot(s1_plot_df, ggplot2::aes(x = .data$range, y = .data$prob)) +
-    ggplot2::geom_area(data = s1_plot_df, alpha = 0.5, ggplot2::aes(fill = "s1")) +
+  p <- ggplot2::ggplot(s1_plot_df, ggplot2::aes(x = .data$range)) +
+    ggplot2::stat_function(geom = "polygon",
+                           fun = eval(parse(text = sample_results[[1]]$plot_list$ddist_fun)),
+                           args = sample_results[[1]]$plot_list$parameters,
+                           ggplot2::aes(fill = "s1"), alpha = 0.5) +
     ggplot2::geom_vline(ggplot2::aes(xintercept = res$summary$HDI_1_low),
       color = "red",
       linewidth = 1.1
@@ -691,7 +708,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
       subtitle = paste0(
         "HDE: ", round(res$summary$HDE_1, 2),
         "\nHDI: [", round(res$summary$HDI_1_low, 2), ", ",
-        round(res$summary$HDI_1_high, 2), "]"
+        round(res$summary$HDI_1_high, 2), "]", s1_bf_title
       )
     ) +
     ggplot2::guides(fill = ggplot2::guide_legend(override.aes = list(alpha = 0.5))) +
@@ -703,7 +720,11 @@ conjugate <- function(s1 = NULL, s2 = NULL,
     pcv_theme()
 
   if (length(sample_results) == 2) {
-    s2_plot_df <- sample_results[[2]]$plot_df
+    if (!is.null(bayes_factor)) {
+      s2_bf_title <- paste0(", BF: (",
+                            paste(bayes_factor, collapse = ", "),
+                            ") ", round(res$summary$bf_2, 2))
+    }
 
     if (res$summary$post.prob < 1e-5) {
       post.prob.text <- "<1e-5"
@@ -717,7 +738,10 @@ conjugate <- function(s1 = NULL, s2 = NULL,
 
     p$scales$scales[[fill_scale]] <- NULL
     p <- p +
-      ggplot2::geom_area(data = s2_plot_df, ggplot2::aes(fill = "s2"), alpha = 0.5) +
+      ggplot2::stat_function(geom = "polygon",
+                             fun = eval(parse(text = sample_results[[2]]$plot_list$ddist_fun)),
+                             args = sample_results[[2]]$plot_list$parameters,
+                             ggplot2::aes(fill = "s2"), alpha = 0.5) +
       ggplot2::geom_vline(ggplot2::aes(xintercept = res$summary$HDI_2_low),
         color = "blue",
         linewidth = 1.1
@@ -739,9 +763,9 @@ conjugate <- function(s1 = NULL, s2 = NULL,
       ) +
       ggplot2::labs(subtitle = paste0(
         "Sample 1:  ", round(res$summary$HDE_1, 2), " [", round(res$summary$HDI_1_low, 2), ", ",
-        round(res$summary$HDI_1_high, 2), "]\n",
+        round(res$summary$HDI_1_high, 2), "]", s1_bf_title, "\n",
         "Sample 2:  ", round(res$summary$HDE_2, 2), " [", round(res$summary$HDI_2_low, 2), ", ",
-        round(res$summary$HDI_2_high, 2), "]\n",
+        round(res$summary$HDI_2_high, 2), "]", s2_bf_title, "\n",
         "P[p1", dirSymbol, "p2] = ", post.prob.text
       ))
   }
@@ -777,7 +801,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
           "Median Difference of ", round(res$summary$HDE_rope, 2), "\n",
           100 * rope_ci, "% CI [", round(res$summary$HDI_rope_low, 2), ", ",
           round(res$summary$HDI_rope_high, 2), "]\n",
-          rope_ci, "% HDI in [", rope_range[1], ", ", rope_range[2], "]: ",
+          100 * rope_ci, "% HDI in [", rope_range[1], ", ", rope_range[2], "]: ",
           round(res$summary$rope_prob, 2)
         )
       ) +

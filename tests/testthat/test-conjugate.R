@@ -63,8 +63,8 @@ test_that("generic conjugate plotting works", {
     s1 = s1, s2 = s2, method = "t",
     priors = list(mu = c(0, 0), n = c(1, 1), s2 = c(20, 20)),
     plot = TRUE, rope_range = c(-8, 8), rope_ci = 0.89,
-    cred.int.level = 0.89, hypothesis = "equal", support = NULL
+    cred.int.level = 0.89, hypothesis = "equal"
   )
-  expect_equal(names(out), c("summary", "posterior", "plot"))
+  expect_equal(names(out), c("summary", "posterior", "prior", "plot"))
   expect_s3_class(out$plot, "ggplot")
 })

@@ -19,7 +19,7 @@ can also be left NULL (the default) and posterior predictive plots and prior pre
 not be made.}
 }
 \value{
-A named list containing Rhat, ESS, NEFF, and Prior/Posterior Predictive plots.
+A named list containing Rhat, ESS, NEFF, and Trace/Prior/Posterior Predictive plots.
 See details for interpretation.
 }
 \description{
@@ -65,6 +65,10 @@ the output.
     Values greater than 0.5 are generally considered good, but there is a consensus that lower can be
     fine down to about 0.1. A summary and the total values are returned, with the summary being
     useful if several models are included in a list for fit argument
+
+    \item \bold{mcmcTrace}: A plot of each model's MCMC traces. Ideally these should be very mixed
+    and stationary. For more options for visualizing MCMC diagnostics see
+    \code{bayesplot::mcmc_trace}.
 
     \item \bold{priorPredictive}: A plot of data simulated from the prior using \link{plotPrior}.
     This should generate data that is biologically plausible for your situation, but it will

@@ -51,17 +51,18 @@
   out$posterior$mu <- m1_n
   out$posterior$n <- n1_n
   out$posterior$s2 <- s2_1_n # return variance
+  out$prior <- priors
   #* `Make Posterior Draws`
   out$posteriorDraws <- extraDistr::rlst(10000, v1_n, m1_n, sigma_1)
   out$pdf <- pdf1
   #* `Save data for plotting`
-  if (plot) {
-    out$plot_df <- data.frame(
-      "range" = support,
-      "prob" = pdf1,
-      "sample" = rep("Sample 1", length(support))
-    )
-  }
+  out$plot_list <- list(
+    "range" = support,
+    "ddist_fun" = "stats::dnorm",
+    "priors" = list("mean" = priors$mu[1],  "sd" = sqrt(priors$s2[1])),
+    "parameters" = list("mean" = m1_n,
+                        "sd" = sigma_1)
+  )
   return(out)
 }
 
@@ -118,16 +119,17 @@
   out$posterior$mu <- m1_n
   out$posterior$n <- n1_n
   out$posterior$s2 <- s2_1_n
+  out$prior <- priors
   #* `Make Posterior Draws`
   out$posteriorDraws <- extraDistr::rlst(10000, v1_n, m1_n, sigma_1)
   out$pdf <- pdf1
   #* `Save data for plotting`
-  if (plot) {
-    out$plot_df <- data.frame(
-      "range" = support,
-      "prob" = pdf1,
-      "sample" = rep("Sample 1", length(support))
-    )
-  }
+  out$plot_list <- list(
+    "range" = support,
+    "ddist_fun" = "stats::dnorm",
+    "priors" = list("mean" = priors$mu[1],  "sd" = sqrt(priors$s2[1])),
+    "parameters" = list("mean" = m1_n,
+                        "sd" = sigma_1)
+  )
   return(out)
 }

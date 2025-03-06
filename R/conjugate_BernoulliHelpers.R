@@ -42,13 +42,14 @@
   #* `Store summary`
   out$summary <- data.frame(HDE_1 = hde1, HDI_1_low = hdi1[1], HDI_1_high = hdi1[2])
   out$posterior <- list("a" = a1_prime, "b" = b1_prime)
+  out$prior <- priors
   #* `save s1 data for plotting`
-  if (plot) {
-    out$plot_df <- data.frame(
-      "range" = support,
-      "prob" = pdf1,
-      "sample" = rep("Sample 1", length(support))
-    )
-  }
+  out$plot_list <- list(
+    "range" = support,
+    "ddist_fun" = "stats::dbeta",
+    "priors" = list("shape1" = priors$a[1],  "shape2" = priors$b[1]),
+    "parameters" = list("shape1" = a1_prime,
+                        "shape2" = b1_prime)
+  )
   return(out)
 }

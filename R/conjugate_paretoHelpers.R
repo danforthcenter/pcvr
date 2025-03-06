@@ -82,14 +82,15 @@
     "b" = b_prime,
     "known_location" = priors$known_location
   )
+  out$prior <- priors
   #* `save s1 data for plotting`
-  if (plot) {
-    out$plot_df <- data.frame(
-      "range" = support,
-      "prob" = pdf1,
-      "sample" = rep("Sample 1", length(support))
-    )
-  }
+  out$plot_list <- list(
+    "range" = support,
+    "ddist_fun" = "stats::dgamma",
+    "priors" = list("shape" = priors$a[1],  "rate" = priors$b[1]),
+    "parameters" = list("shape" = a_prime,
+                        "rate" = b_prime)
+  )
   return(out)
 }
 
@@ -141,13 +142,14 @@
     "b" = b_prime,
     "known_location" = priors$known_location
   )
+  out$prior <- priors
   #* `save s1 data for plotting`
-  if (plot) {
-    out$plot_df <- data.frame(
-      "range" = support,
-      "prob" = pdf1,
-      "sample" = rep("Sample 1", length(support))
-    )
-  }
+  out$plot_list <- list(
+    "range" = support,
+    "ddist_fun" = "stats::dgamma",
+    "priors" = list("shape" = priors$a[1],  "rate" = priors$b[1]),
+    "parameters" = list("shape" = a_prime,
+                        "rate" = b_prime)
+  )
   return(out)
 }

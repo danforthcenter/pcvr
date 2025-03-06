@@ -45,14 +45,15 @@
     "shape" = shape_prime, "scale" = scale_prime,
     "known_shape" = priors$known_shape
   )
+  out$prior <- priors
   #* `save s1 data for plotting`
-  if (plot) {
-    out$plot_df <- data.frame(
-      "range" = support,
-      "prob" = pdf1,
-      "sample" = rep("Sample 1", length(support))
-    )
-  }
+  out$plot_list <- list(
+    "range" = support,
+    "ddist_fun" = "stats::dgamma",
+    "priors" = list("shape" = priors$shape[1],  "scale" = priors$scale[1]),
+    "parameters" = list("shape" = shape_prime,
+                        "scale" = scale_prime)
+  )
   return(out)
 }
 

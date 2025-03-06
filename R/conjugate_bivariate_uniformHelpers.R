@@ -116,6 +116,7 @@
     "scale" = scale_prime, "location_l" = location_l_prime,
     "location_u" = location_u_prime
   )
+  out$prior <- priors
   #* `save s1 data for plotting`
   if (plot) {
     out$plot_df <- data.frame(
@@ -284,6 +285,7 @@
     "scale" = scale_prime, "location_l" = location_l_prime,
     "location_u" = location_u_prime
   )
+  out$prior <- priors
   #* `save s1 data for plotting`
   if (plot) {
     out$plot_df <- data.frame(

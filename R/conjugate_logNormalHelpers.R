@@ -88,17 +88,18 @@
   out$posterior$mu <- mu_ls_prime
   out$posterior$sd <- sigma_ls_prime
   out$posterior$lognormal_sigma <- ln_sigma_prime
+  out$prior <- priors
   #* `Make Posterior Draws`
   out$posteriorDraws <- stats::rnorm(10000, mu_ls_prime, sigma_ls_prime)
   out$pdf <- pdf1
   #* `save s1 data for plotting`
-  if (plot) {
-    out$plot_df <- data.frame(
-      "range" = support,
-      "prob" = pdf1,
-      "sample" = rep("Sample 1", length(support))
-    )
-  }
+  out$plot_list <- list(
+    "range" = support,
+    "ddist_fun" = "stats::dnorm",
+    "priors" = list("mean" = priors$mu[1],  "sd" = priors$sd[1]),
+    "parameters" = list("mean" = mu_ls_prime,
+                        "sd" = sigma_ls_prime)
+  )
   return(out)
 }
 
@@ -157,16 +158,17 @@
   out$posterior$mu <- mu_prime
   out$posterior$sd <- sd_prime
   out$posterior$lognormal_sigma <- sigma_s1 # returning this as a number, not a distribution
+  out$prior <- priors
   #* `Make Posterior Draws`
   out$posteriorDraws <- rnorm(10000, mu_prime, sd_prime)
   out$pdf <- pdf1
   #* `save s1 data for plotting`
-  if (plot) {
-    out$plot_df <- data.frame(
-      "range" = support,
-      "prob" = pdf1,
-      "sample" = rep("Sample 1", length(support))
-    )
-  }
+  out$plot_list <- list(
+    "range" = support,
+    "ddist_fun" = "stats::dnorm",
+    "priors" = list("mean" = priors$mu[1],  "sd" = priors$sd[1]),
+    "parameters" = list("mean" = mu_prime,
+                        "sd" = sd_prime)
+  )
   return(out)
 }
