@@ -149,8 +149,6 @@
 #'     }
 #' }
 #'
-#' See examples for plots of these prior distributions.
-#'
 #' @examples
 #' mv_ln <- mvSim(
 #'   dists = list(
