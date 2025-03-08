@@ -84,7 +84,7 @@
 #'    Note that these values are on the log scale.}
 #'    \item{\strong{"lognormal2": } \code{priors = list(a = 1, b = 1) },
 #'    where a and b are the shape and scale parameters of the gamma distribution of lognormal data's
-#'    precision parameter (using the alternative mu, precision paramterization).
+#'    precision parameter (using the alternative mu, precision parameterization).
 #'    }
 #'    \item{\strong{"gamma": } \code{priors = list(shape = 0.5, scale = 0.5, known_shape = 1)},
 #'     where shape and scale are the respective parameters of the gamma distributed rate
