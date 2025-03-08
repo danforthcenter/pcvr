@@ -113,7 +113,7 @@ several distributions.
 \details{
 Prior distributions default to be weakly informative and in some cases you may wish to change them.
 \itemize{
-   \item{\strong{"t" and "gaussian":} \code{priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ) },
+   \item{\strong{"t" and "gaussian":} \code{priors = list( mu=c(0,0),n=c(1,1),s2=c(100,100) ) },
     where mu is the mean, n is the number of prior observations, and s2 is variance}
    \item{\strong{"beta", "bernoulli", and "binomial":}
    \code{priors = list( a=c(0.5, 0.5), b=c(0.5, 0.5) )},
