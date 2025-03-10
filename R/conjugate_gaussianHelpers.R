@@ -1,5 +1,5 @@
 #' @description
-#' Internal function for Bayesian comparisosns of gaussian data represented by single value traits.
+#' Internal function for Bayesian comparisons of gaussian data represented by single value traits.
 #' This version uses the entire posterior distribution instead of the sampling distribution of the mean.
 #' In frequentist terms this is analogous to a Z test as opposed to a T test. Generally the T test is
 #' desired, but this is provided for completeness.
@@ -18,6 +18,7 @@
                               calculatingSupport = FALSE) {
   out <- list()
   #* `make default prior if none provided`
+  priors <- .convert_gaussian_priors(priors)
   if (is.null(priors)) {
     priors <- list(mu = 0, sd = 10)
   }
@@ -84,6 +85,7 @@
                               calculatingSupport = FALSE) {
   out <- list()
   #* `make default prior if none provided`
+  priors <- .convert_gaussian_priors(priors)
   if (is.null(priors)) {
     priors <- list(mu = 0, sd = 10)
   }
@@ -135,4 +137,24 @@
                         "sd" = sd_prime)
   )
   return(out)
+}
+
+#' @description
+#' Helper function to catch gaussian (and T/Lognormal) priors specified with other
+#' parameterizations besides standard deviation.
+#' @param priors Priors specified with mu and sd, var, or prec. Var or Prec are converted to sd.
+#' @keywords internal
+#' @noRd
+
+.convert_gaussian_priors <- function(priors) {
+  if (any(grepl("prec", names(priors)))) {
+    precs <- priors[[which(grepl("prec", names(priors)))]]
+    priors[[which(grepl("prec", names(priors)))]] <- sqrt(1 / precs)
+    names(priors)[which(grepl("prec", names(priors)))] <- "sd"
+  } else if (any(grepl("s2|var", names(priors)))) {
+    vars <- priors[[which(grepl("s2|var", names(priors)))]]
+    priors[[which(grepl("s2|var", names(priors)))]] <- sqrt(vars)
+    names(priors)[which(grepl("s2|var", names(priors)))] <- "sd"
+  }
+  return(priors)
 }
