@@ -5,7 +5,7 @@
 #' \donttest{
 #' .conj_t_sv(
 #'   s1 = rnorm(100, 50, 10), s2 = rnorm(100, 60, 12),
-#'   priors = list(mu = c(0, 0), n = c(1, 1), s2 = c(20, 20)),
+#'   priors = list(mu = c(0, 0), s2 = c(10, 10)),
 #'   plot = FALSE, rope_range = c(-0.1, 0.1), rope_ci = 0.89,
 #'   cred.int.level = 0.89, hypothesis = "equal", support = NULL
 #' )
