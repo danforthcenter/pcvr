@@ -28,6 +28,7 @@
                                calculatingSupport = FALSE) {
   out <- list()
   #* `make default prior if none provided`
+  priors <- .convert_gaussian_priors(priors)
   if (is.null(priors)) {
     priors <- list(mu = 0, sd = 10)
   }
@@ -126,6 +127,7 @@
                                calculatingSupport = FALSE) {
   out <- list()
   #* `make default prior if none provided`
+  priors <- .convert_gaussian_priors(priors)
   if (is.null(priors)) {
     priors <- list(mu = 0, sd = 10)
   }
