@@ -7,7 +7,7 @@
 #' @examples
 #' .conj_gaussian_sv(
 #'   s1 = rnorm(100, 50, 10),
-#'   priors = list(mu = c(0, 0), n = c(1, 1), s2 = c(100, 100)),
+#'   priors = list(mu = c(0, 0), sd = c(10, 10)),
 #'   plot = FALSE, support = NULL
 #' )
 #' @keywords internal
@@ -69,7 +69,6 @@
   )
   return(out)
 }
-
 
 #' @description
 #' Internal function for Bayesian comparisons of gaussian data represented by multi value traits.
