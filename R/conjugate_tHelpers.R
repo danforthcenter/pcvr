@@ -22,21 +22,18 @@
     priors <- list(mu = 0, sd = 10)
   }
   #* `Calculate Sufficient Statistics`
-  #* Using Mu and Variance Updating, see Equation 12 of
-  #* https://people.eecs.berkeley.edu/~jordan/courses/260-spring10/lectures/lecture5.pdf
-  #* alternatively equation 60 of compendium of conjugate priors shows the mu/precision
-  #* formula, which is simpler
-  var_data <- var(s1)
+  #* Using Mu and Precision Updating, see Equation 60 of compendium
+  prec_data <- 1 / var(s1)
   xbar <- mean(s1)
   n <- length(s1)
   #* `Get Prior Information`
-  var_null <- priors$sd[1] ^ 2
-  mu_null <- priors$mu[1]
-  #* `Update N(mu', var') of Mu in N(Mu, Var)`
-  mu_prime <- (var_null / ((var_data / n) + var_null)) * xbar +
-    (var_data / ((var_data / n) + var_null)) * mu_null
-  var_prime <- ((1 / var_null) + (n / var_data)) ^ -1
-  sd_prime <- sqrt(var_prime)
+  prec_prior <- 1 / (priors$sd[1] ^ 2)
+  mu_prior <- priors$mu[1]
+  #* `Update N(mu', prec') of Mu in N(Mu, Sd)`
+  pseudo_known_precision <- 1 / ((var(s1) * n + priors$sd[1] ^ 2) / (n + 1))
+  prec_prime <- prec_prior + pseudo_known_precision * n
+  mu_prime <- ((mu_prior * prec_prior) + n * pseudo_known_precision * xbar) / prec_prime
+  sd_prime <- sqrt(1 / prec_prime)
   #* `Define support if it is missing`
   if (is.null(support) && calculatingSupport) {
     quantiles <- qnorm(c(0.0001, 0.9999), mu_prime, sd_prime)
@@ -59,9 +56,9 @@
   out$plot_list <- list(
     "range" = support,
     "ddist_fun" = "stats::dnorm",
-    "priors" = list("mu" = priors$mu[1],
+    "priors" = list("mean" = priors$mu[1],
                     "sd" = priors$sd[1]),
-    "parameters" = list("mu" = mu_prime,
+    "parameters" = list("mean" = mu_prime,
                         "sd" = sd_prime)
   )
   return(out)
@@ -111,17 +108,17 @@
   X1 <- rep(histColsBin[bins_order], as.numeric(round(colSums(s1))))
   #* `Calculate Sufficient Statistics`
   #* See notes in SV version above
-  n <- nrow(s1)
+  prec_data <- 1 / var(X1)
   xbar <- mean(X1)
-  var_data <- var(X1)
+  n <- nrow(s1)
   #* `Get Prior Information`
-  var_null <- priors$sd[1] ^ 2
-  mu_null <- priors$mu[1]
-  #* `Update N(mu', var') of Mu in N(Mu, Var)`
-  mu_prime <- (var_null / ((var_data / n) + var_null)) * xbar +
-    (var_data / ((var_data / n) + var_null)) * mu_null
-  var_prime <- ((1 / var_null) + (n / var_data)) ^ -1
-  sd_prime <- sqrt(var_prime)
+  prec_prior <- 1 / (priors$sd[1] ^ 2)
+  mu_prior <- priors$mu[1]
+  #* `Update N(mu', prec') of Mu in N(Mu, Sd)`
+  pseudo_known_precision <- 1 / ((var(s1) * n + priors$sd[1] ^ 2) / (n + 1))
+  prec_prime <- prec_prior + pseudo_known_precision * n
+  mu_prime <- ((mu_prior * prec_prior) + n * pseudo_known_precision * xbar) / prec_prime
+  sd_prime <- sqrt(1 / prec_prime)
   #* `Define support if it is missing`
   if (is.null(support) && calculatingSupport) {
     quantiles <- qnorm(c(0.0001, 0.9999), mu_prime, sd_prime)
@@ -144,9 +141,9 @@
   out$plot_list <- list(
     "range" = support,
     "ddist_fun" = "stats::dnorm",
-    "priors" = list("mu" = priors$mu[1],
+    "priors" = list("mean" = priors$mu[1],
                     "sd" = priors$sd[1]),
-    "parameters" = list("mu" = mu_prime,
+    "parameters" = list("mean" = mu_prime,
                         "sd" = sd_prime)
   )
   return(out)
