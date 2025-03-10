@@ -115,7 +115,7 @@
   prec_prior <- 1 / (priors$sd[1] ^ 2)
   mu_prior <- priors$mu[1]
   #* `Update N(mu', prec') of Mu in N(Mu, Sd)`
-  pseudo_known_precision <- 1 / ((var(s1) * n + priors$sd[1] ^ 2) / (n + 1))
+  pseudo_known_precision <- 1 / ((var(X1) * n + priors$sd[1] ^ 2) / (n + 1))
   prec_prime <- prec_prior + pseudo_known_precision * n
   mu_prime <- ((mu_prior * prec_prior) + n * pseudo_known_precision * xbar) / prec_prime
   sd_prime <- sqrt(1 / prec_prime)
