@@ -46,7 +46,7 @@
     quantiles <- qnorm(c(0.0001, 0.9999), mu_prime, sd_prime)
     return(quantiles)
   }
-  dens <- qnorm(support, mu_prime, sd_prime)
+  dens <- dnorm(support, mu_prime, sd_prime)
   pdf1 <- dens / sum(dens)
   hde1_mean <- mu_prime
   hdi1_mean <- qnorm(c((1 - cred.int.level) / 2, (1 - ((1 - cred.int.level) / 2))),
@@ -114,7 +114,7 @@
     quantiles <- qnorm(c(0.0001, 0.9999), mu_prime, sd_prime)
     return(quantiles)
   }
-  dens <- qnorm(support, mu_prime, sd_prime)
+  dens <- dnorm(support, mu_prime, sd_prime)
   pdf1 <- dens / sum(dens)
   hde1_mean <- mu_prime
   hdi1_mean <- qnorm(c((1 - cred.int.level) / 2, (1 - ((1 - cred.int.level) / 2))),
