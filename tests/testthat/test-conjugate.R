@@ -9,6 +9,18 @@ test_that("conjugate HDE helpers work", {
   expect_equal(.gammaHDE(10, 10), 90)
 })
 
+test_that("gaussian priors are converted from variance or precision", {
+  prec_prior <- list("mu" = 0, "prec" = 0.01)
+  conv_prior <- .convert_gaussian_priors(prec_prior)
+  expect_equal(conv_prior$sd, 10)
+  var_prior <- list("mu" = 0, "var" = 100)
+  conv_prior <- .convert_gaussian_priors(var_prior)
+  expect_equal(conv_prior$sd, 10)
+  s2_prior <- list("mu" = 0, "s2" = 100)
+  conv_prior <- .convert_gaussian_priors(s2_prior)
+  expect_equal(conv_prior$sd, 10)
+})
+
 test_that("conjugate MV Sample formatting helper works", {
   mv1 <- matrix(1, 10, 10)
   expect_warning(out1 <- .mvSampleFormatting(mv1))
