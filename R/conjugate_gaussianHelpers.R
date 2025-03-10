@@ -114,7 +114,7 @@
                      mu_prime, sd_prime)
   #* `Make Summary and Posterior for output`
   out$summary <- data.frame(HDE_1 = hde1_mean, HDI_1_low = hdi1_mean[1], HDI_1_high = hdi1_mean[2])
-  out$posterior$mu <- m1_n
+  out$posterior$mu <- mu_prime
   out$posterior$sd <- sd_prime
   out$prior <- priors
   #* `Make Posterior Draws`
