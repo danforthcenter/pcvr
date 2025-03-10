@@ -57,7 +57,7 @@
   #* `Save data for plotting`
   out$plot_list <- list(
     "range" = support,
-    "ddist_fun" = "stats::rnorm",
+    "ddist_fun" = "stats::dnorm",
     "priors" = list("mu" = priors$mu[1],
                     "sd" = priors$sd[1]),
     "parameters" = list("mu" = mu_prime,
@@ -141,7 +141,7 @@
   #* `Save data for plotting`
   out$plot_list <- list(
     "range" = support,
-    "ddist_fun" = "stats::rnorm",
+    "ddist_fun" = "stats::dnorm",
     "priors" = list("mu" = priors$mu[1],
                     "sd" = priors$sd[1]),
     "parameters" = list("mu" = mu_prime,
