@@ -14,7 +14,7 @@ test_that("conjugate single value T works", {
   set.seed(123)
   out <- conjugate(
     s1 = s1, s2 = s2, method = "t",
-    priors = list(mu = 40, n = 1, s2 = 100),
+    priors = list(mu = 40, sd = 10),
     plot = TRUE, rope_range = c(-8, 8), rope_ci = 0.89,
     cred.int.level = 0.89, hypothesis = "unequal",
     bayes_factor = c(50, 55)
