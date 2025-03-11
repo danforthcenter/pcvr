@@ -9,7 +9,7 @@ several distributions."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">pcvr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.2.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -196,19 +196,17 @@ are added to the summary output. Note these are only implemented for univariate 
 </ul></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>Prior distributions default to be weakly informative and in some cases you may wish to change them.</p><ul><li><p><strong>"t" and "gaussian":</strong> <code>priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ) </code>,
-    where mu is the mean, n is the number of prior observations, and s2 is variance</p></li>
+    <p>Prior distributions default to be weakly informative and in some cases you may wish to change them.</p><ul><li><p><strong>"t", "gaussian", and "lognormal":</strong> <code>priors = list( mu=c(0,0), sd=c(10,10) ) </code>,
+    where mu is the mean and sd is standard deviation. For the lognormal method these describe
+    the normal distribution of the mean parameter for lognormal data and are on the log scale.</p></li>
 <li><p><strong>"beta", "bernoulli", and "binomial":</strong>
    <code>priors = list( a=c(0.5, 0.5), b=c(0.5, 0.5) )</code>,
     where a and b are shape parameters of the beta distribution. Note that for the binomial
     distribution this is used as the prior for success probability P,
     which is assumed to be beta distributed as in a beta-binomial distribution.</p></li>
-<li><p><strong>"lognormal": </strong> <code>priors = list(mu = 0, sd = 5) </code>,
-   where mu and sd describe the normal distribution of the mean parameter for lognormal data.
-   Note that these values are on the log scale.</p></li>
 <li><p><strong>"lognormal2": </strong> <code>priors = list(a = 1, b = 1) </code>,
    where a and b are the shape and scale parameters of the gamma distribution of lognormal data's
-   precision parameter (using the alternative mu, precision paramterization).</p></li>
+   precision parameter (using the alternative mu, precision parameterization).</p></li>
 <li><p><strong>"gamma": </strong> <code>priors = list(shape = 0.5, scale = 0.5, known_shape = 1)</code>,
     where shape and scale are the respective parameters of the gamma distributed rate
     (inverse of scale) parameter of gamma distributed data.</p></li>
@@ -264,8 +262,7 @@ are added to the summary output. Note these are only implemented for univariate 
     are the shape and scale of the gamma distribution on precision. Note that internally this uses
     the Mu and Precision parameterization of the normal distribution and those are the parameters
     shown in the plot and tested, but priors use Mu and SD for the normal distribution of the mean.</p></li>
-</ul><p>See examples for plots of these prior distributions.</p>
-    </div>
+</ul></div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
@@ -308,7 +305,7 @@ are added to the summary output. Note these are only implemented for univariate 
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">gauss_mv_ex</span> <span class="op">&lt;-</span> <span class="fu">conjugate</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  s1 <span class="op">=</span> <span class="va">mv_gauss</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">30</span>, <span class="op">-</span><span class="fl">1</span><span class="op">]</span>, s2 <span class="op">=</span> <span class="va">mv_gauss</span><span class="op">[</span><span class="fl">31</span><span class="op">:</span><span class="fl">60</span>, <span class="op">-</span><span class="fl">1</span><span class="op">]</span>, method <span class="op">=</span> <span class="st">"gaussian"</span>,</span></span>
-<span class="r-in"><span>  priors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>mu <span class="op">=</span> <span class="fl">30</span>, n <span class="op">=</span> <span class="fl">1</span>, s2 <span class="op">=</span> <span class="fl">100</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  priors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>mu <span class="op">=</span> <span class="fl">30</span>, sd <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  plot <span class="op">=</span> <span class="cn">FALSE</span>, rope_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">25</span>, <span class="fl">25</span><span class="op">)</span>, rope_ci <span class="op">=</span> <span class="fl">0.89</span>,</span></span>
 <span class="r-in"><span>  cred.int.level <span class="op">=</span> <span class="fl">0.89</span>, hypothesis <span class="op">=</span> <span class="st">"equal"</span>, support <span class="op">=</span> <span class="cn">NULL</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
@@ -318,7 +315,7 @@ are added to the summary output. Note these are only implemented for univariate 
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">gaussianMeans_sv_ex</span> <span class="op">&lt;-</span> <span class="fu">conjugate</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  s1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">50</span>, <span class="fl">10</span><span class="op">)</span>, s2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">60</span>, <span class="fl">12</span><span class="op">)</span>, method <span class="op">=</span> <span class="st">"t"</span>,</span></span>
-<span class="r-in"><span>  priors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>mu <span class="op">=</span> <span class="fl">30</span>, n <span class="op">=</span> <span class="fl">1</span>, s2 <span class="op">=</span> <span class="fl">100</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  priors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>mu <span class="op">=</span> <span class="fl">40</span>, sd <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  plot <span class="op">=</span> <span class="cn">FALSE</span>, rope_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">5</span>, <span class="fl">8</span><span class="op">)</span>, rope_ci <span class="op">=</span> <span class="fl">0.89</span>,</span></span>
 <span class="r-in"><span>  cred.int.level <span class="op">=</span> <span class="fl">0.89</span>, hypothesis <span class="op">=</span> <span class="st">"equal"</span>, support <span class="op">=</span> <span class="cn">NULL</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>

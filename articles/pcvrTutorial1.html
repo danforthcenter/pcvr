@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">pcvr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.2.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -542,7 +542,7 @@ practical equivalence (<em>ROPE</em>) comparison.</p>
 <span>  method <span class="op">=</span> <span class="st">"t"</span>, plot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  rope_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">10</span>, <span class="fl">10</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Warning in cpp_rlst(n, df, mu, sigma): NAs produced</span></span></code></pre>
+<pre><code><span><span class="co">## Warning in rnorm(10000, mu_prime, sd_prime): NAs produced</span></span></code></pre>
 <pre><code><span><span class="co">## `ci` is too small or x does not contain enough data points, returning</span></span>
 <span><span class="co">##   NAs.</span></span>
 <span><span class="co">## `ci` is too small or x does not contain enough data points, returning</span></span>
@@ -576,8 +576,8 @@ components.</p>
 difference (if two samples are provided).</p>
 <div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">conj</span><span class="op">$</span><span class="va">summary</span></span></code></pre></div>
-<pre><code><span><span class="co">##      HDE_1 HDI_1_low HDI_1_high    HDE_2 HDI_2_low HDI_2_high   hyp post.prob</span></span>
-<span><span class="co">## 1 83.01087  60.62468    105.397 21.24997        NA         NA equal         0</span></span>
+<pre><code><span><span class="co">##      HDE_1 HDI_1_low HDI_1_high HDE_2 HDI_2_low HDI_2_high   hyp post.prob</span></span>
+<span><span class="co">## 1 84.42773  79.12555   89.72991    NA        NA         NA equal         0</span></span>
 <span><span class="co">##   HDE_rope HDI_rope_low HDI_rope_high rope_prob</span></span>
 <span><span class="co">## 1       NA           NA            NA        NA</span></span></code></pre>
 <p>The posterior item is an updated set of priors. It can be recycled as
@@ -609,7 +609,7 @@ fertilizer is larger than
 <span></span>
 <span><span class="va">conj</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/conjugate.html">conjugate</a></span><span class="op">(</span><span class="va">s1</span>, <span class="va">s2</span>,</span>
 <span>  method <span class="op">=</span> <span class="st">"gaussian"</span>, plot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  priors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>mu <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">20</span><span class="op">)</span>, n <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>, s2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">20</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  priors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>mu <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">20</span><span class="op">)</span>, sd <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">5</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  rope_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">10</span>, <span class="fl">10</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -642,7 +642,7 @@ methods (<code>nls</code>, <code>nlrq</code>, <code>nlme</code>, and
 <div class="section level2 smaller">
 <h2 class="smaller" id="modeling-longitudinal-data-1">Modeling longitudinal data<a class="anchor" aria-label="anchor" href="#modeling-longitudinal-data-1"></a>
 </h2>
-<pre><code><span><span class="co">## Warning: Removed 1 row containing missing values or values outside the scale range</span></span>
+<pre><code><span><span class="co">## Warning: Removed 2 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">## (`geom_line()`).</span></span></code></pre>
 <p><img src="pcvrTutorial1_files/figure-html/unnamed-chunk-23-1.png" width="700"></p>
 </div>

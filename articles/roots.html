@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">pcvr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.2.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -458,14 +458,14 @@ the “T” distribution to run a Bayesian analog to a T-test.</p>
 <span><span class="va">conj_ex</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/conjugate.html">conjugate</a></span><span class="op">(</span></span>
 <span>  <span class="va">s1</span>, <span class="va">s2</span>, <span class="co"># specify data, here two samples</span></span>
 <span>  method <span class="op">=</span> <span class="st">"t"</span>, <span class="co"># use the "T" distribution</span></span>
-<span>  priors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>mu <span class="op">=</span> <span class="fl">3000</span>, n <span class="op">=</span> <span class="fl">1</span>, s2 <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span>, <span class="co"># prior distribution, here it is the same for both samples</span></span>
+<span>  priors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>mu <span class="op">=</span> <span class="fl">3000</span>, sd <span class="op">=</span> <span class="fl">50</span><span class="op">)</span>, <span class="co"># prior distribution, here it is the same for both samples</span></span>
 <span>  plot <span class="op">=</span> <span class="cn">TRUE</span>, <span class="co"># return a plot</span></span>
 <span>  rope_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">500</span>, <span class="fl">500</span><span class="op">)</span>, <span class="co"># differences of &lt;500 pixels deemed not meaningful</span></span>
 <span>  rope_ci <span class="op">=</span> <span class="fl">0.89</span>, cred.int.level <span class="op">=</span> <span class="fl">0.89</span>, <span class="co"># default credible interval lengths</span></span>
 <span>  hypothesis <span class="op">=</span> <span class="st">"equal"</span>, <span class="co"># hypothesis to test</span></span>
 <span>  support <span class="op">=</span> <span class="cn">NULL</span> <span class="co"># optionally you can provide support, this is generally unnecessary.</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Warning in conjugate(s1, s2, method = "t", priors = list(mu = 3000, n = 1, :</span></span>
+<pre><code><span><span class="co">## Warning in conjugate(s1, s2, method = "t", priors = list(mu = 3000, sd = 50), :</span></span>
 <span><span class="co">## support argument is deprecated</span></span></code></pre>
 <p>The <code>conjugate</code> output includes a summary, the posterior
 distributions in the same format as the priors were supplied, and
@@ -478,17 +478,17 @@ difference (if rope_range was specified), and the probability of the
 mean difference being within the rope_range.</p>
 <div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">conj_ex</span><span class="op">$</span><span class="va">summary</span></span></code></pre></div>
-<pre><code><span><span class="co">##      HDE_1 HDI_1_low HDI_1_high    HDE_2 HDI_2_low HDI_2_high   hyp  post.prob</span></span>
-<span><span class="co">## 1 3614.727   2927.25   4302.205 6153.182  5385.898   6920.466 equal 0.01202173</span></span>
+<pre><code><span><span class="co">##   HDE_1 HDI_1_low HDI_1_high    HDE_2 HDI_2_low HDI_2_high   hyp post.prob</span></span>
+<span><span class="co">## 1  3010  2930.683   3089.316 3082.806  3003.856   3161.756 equal 0.4622612</span></span>
 <span><span class="co">##    HDE_rope HDI_rope_low HDI_rope_high rope_prob</span></span>
-<span><span class="co">## 1 -2536.119    -3578.364     -1463.956         0</span></span></code></pre>
+<span><span class="co">## 1 -71.10135    -182.7525      40.26259         1</span></span></code></pre>
 <p>The posterior is returned as a list with the same elements as the
 prior. This allows for Bayesian updating if you wish to do so.</p>
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="va">conj_ex</span><span class="op">$</span><span class="va">posterior</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##      mu       n  s2     </span></span>
-<span><span class="co">## [1,] 3614.727 11 1690217</span></span>
-<span><span class="co">## [2,] 6153.182 11 2105416</span></span></code></pre>
+<pre><code><span><span class="co">##      mu       sd      </span></span>
+<span><span class="co">## [1,] 3010     49.62892</span></span>
+<span><span class="co">## [2,] 3082.806 49.39955</span></span></code></pre>
 <p>The plot includes information from the summary graphically as a
 patchwork of 2 ggplots if rope_range was specified or is a single ggplot
 otherwise.</p>
@@ -575,7 +575,7 @@ some cutoff for at least some duration.</p>
 <pre><code><span><span class="co">##     HDE_1 HDI_1_low HDI_1_high    HDE_2 HDI_2_low HDI_2_high   hyp post.prob</span></span>
 <span><span class="co">## 1 1.47619  1.006947   2.234277 2.904762  2.198332   3.900187 equal 0.1187409</span></span>
 <span><span class="co">##    HDE_rope HDI_rope_low HDI_rope_high rope_prob</span></span>
-<span><span class="co">## 1 -1.421496     -2.42047    -0.3689384 0.2331199</span></span></code></pre>
+<span><span class="co">## 1 -1.409191    -2.492106    -0.3709298 0.2389619</span></span></code></pre>
 <div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="va">conj_ex2</span><span class="op">$</span><span class="va">posterior</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##      a    b   </span></span>
