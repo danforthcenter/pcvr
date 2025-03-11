@@ -15,7 +15,7 @@
 #' )
 #' .conj_lognormal_mv(
 #'   s1 = mv_ln[1:30, -1],
-#'   priors = list(mu_log = c(log(10)), n = c(1), sigma_log = c(log(3))),
+#'   priors = list(mu_log = c(log(10)), sigma_log = c(log(3))),
 #'   plot = FALSE, cred.int.level = 0.9
 #' )
 #'
@@ -28,8 +28,9 @@
                                calculatingSupport = FALSE) {
   out <- list()
   #* `make default prior if none provided`
+  priors <- .convert_gaussian_priors(priors)
   if (is.null(priors)) {
-    priors <- list(mu = 0, sd = 5)
+    priors <- list(mu = 0, sd = 10)
   }
   #* `Reorder columns if they are not in the numeric order`
   histColsBin <- as.numeric(sub("[a-zA-Z_.]+", "", colnames(s1)))
@@ -126,8 +127,9 @@
                                calculatingSupport = FALSE) {
   out <- list()
   #* `make default prior if none provided`
+  priors <- .convert_gaussian_priors(priors)
   if (is.null(priors)) {
-    priors <- list(mu = 0, sd = 5)
+    priors <- list(mu = 0, sd = 10)
   }
   #* `Get mean of s1`
   x_bar <- mean(s1)

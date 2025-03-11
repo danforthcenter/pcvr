@@ -14,13 +14,13 @@ test_that("conjugate single value T works", {
   set.seed(123)
   out <- conjugate(
     s1 = s1, s2 = s2, method = "t",
-    priors = list(mu = 40, n = 1, s2 = 100),
+    priors = list(mu = 40, sd = 10),
     plot = TRUE, rope_range = c(-8, 8), rope_ci = 0.89,
     cred.int.level = 0.89, hypothesis = "unequal",
     bayes_factor = c(50, 55)
   )
-  expect_equal(out$summary$post.prob, 0.413570, tolerance = 1e-6)
-  expect_equal(out$summary$rope_prob, 0.7396922, tolerance = 1e-6)
+  expect_equal(out$summary$post.prob, 0.4099283, tolerance = 1e-6)
+  expect_equal(out$summary$rope_prob, 0.793057, tolerance = 1e-6)
   expect_equal(names(out), c("summary", "posterior", "prior", "plot"))
   df <- data.frame(value = c(s1, s2), group = rep(c("a", "b"), each = 10))
   out2 <- conjugate(
@@ -30,7 +30,7 @@ test_that("conjugate single value T works", {
     plot = FALSE, rope_range = c(-8, 8), rope_ci = 0.89,
     cred.int.level = 0.89, hypothesis = "lesser"
   )
-  expect_equal(out2$summary$post.prob, 0.3278761, tolerance = 1e-6)
+  expect_equal(out2$summary$post.prob, 0.3017588, tolerance = 1e-6)
 })
 
 test_that("conjugate single value gaussian works", {
@@ -94,10 +94,10 @@ test_that("conjugate single value lognormal works", {
     s1 = s1, s2 = s2,
     method = "lognormal", priors = NULL,
     plot = TRUE, rope_range = c(-1, 1), rope_ci = 0.89, cred.int.level = 0.89,
-    hypothesis = "equal", bayes_factor = 125
+    hypothesis = "equal", bayes_factor = 5
   )
-  expect_equal(out$summary$post.prob, 0.5527433, tolerance = 1e-6)
-  expect_equal(out$summary$rope_prob, 0.7356477, tolerance = 1e-6)
+  expect_equal(out$summary$post.prob, 0.7666339, tolerance = 1e-6)
+  expect_equal(out$summary$rope_prob, 0.5409505, tolerance = 1e-6)
   expect_equal(names(out), c("summary", "posterior", "prior", "plot"))
 })
 
@@ -343,13 +343,13 @@ test_that("conjugate single value lognormal vs gaussian", {
     hypothesis = "equal"
   )
 
-  expect_equal(out$summary$post.prob, 0.6857498, tolerance = 1e-3)
+  expect_equal(out$summary$post.prob, 0.342371, tolerance = 1e-3)
 
-  expect_equal(out$summary$rope_prob, 0.7193574, tolerance = 1e-3)
+  expect_equal(out$summary$rope_prob, 1, tolerance = 1e-3)
 
   expect_equal(unlist(lapply(out$posterior, function(p) {
     return(names(p))
-  })), c("mu", "sd", "lognormal_sigma", "mu", "n", "s2"))
+  })), c("mu", "sd", "lognormal_sigma", "mu", "sd"))
 
   expect_equal(names(out), c("summary", "posterior", "prior"))
 })

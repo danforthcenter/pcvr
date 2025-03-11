@@ -9,6 +9,18 @@ test_that("conjugate HDE helpers work", {
   expect_equal(.gammaHDE(10, 10), 90)
 })
 
+test_that("gaussian priors are converted from variance or precision", {
+  prec_prior <- list("mu" = 0, "prec" = 0.01)
+  conv_prior <- .convert_gaussian_priors(prec_prior)
+  expect_equal(conv_prior$sd, 10)
+  var_prior <- list("mu" = 0, "var" = 100)
+  conv_prior <- .convert_gaussian_priors(var_prior)
+  expect_equal(conv_prior$sd, 10)
+  s2_prior <- list("mu" = 0, "s2" = 100)
+  conv_prior <- .convert_gaussian_priors(s2_prior)
+  expect_equal(conv_prior$sd, 10)
+})
+
 test_that("conjugate MV Sample formatting helper works", {
   mv1 <- matrix(1, 10, 10)
   expect_warning(out1 <- .mvSampleFormatting(mv1))
@@ -22,9 +34,9 @@ test_that("conjugate raises expected errors", {
     s1 = s1, method = "t",
     priors = NULL,
     plot = TRUE,
-    cred.int.level = 0.89, hypothesis = "bad", rope_range = c(-1, 1)
+    cred.int.level = 0.89, hypothesis = "equal", rope_range = c(-1, 1)
   )
-  expect_equal(res1$summary$HDE_1, 9.158751, tolerance = 1e-6)
+  expect_equal(res1$summary$HDE_1, 9.975688, tolerance = 1e-6)
   s2 <- rnorm(10, 15, 2)
   expect_error(conjugate(
     s1 = s1, s2 = s2, method = "t",
@@ -61,7 +73,7 @@ test_that("generic conjugate plotting works", {
   )
   out <- conjugate(
     s1 = s1, s2 = s2, method = "t",
-    priors = list(mu = c(0, 0), n = c(1, 1), s2 = c(20, 20)),
+    priors = list(mu = c(0, 0), sd = c(10, 10)),
     plot = TRUE, rope_range = c(-8, 8), rope_ci = 0.89,
     cred.int.level = 0.89, hypothesis = "equal"
   )

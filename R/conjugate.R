@@ -72,19 +72,17 @@
 #'
 #' Prior distributions default to be weakly informative and in some cases you may wish to change them.
 #' \itemize{
-#'    \item{\strong{"t" and "gaussian":} \code{priors = list( mu=c(0,0),n=c(1,1),s2=c(20,20) ) },
-#'     where mu is the mean, n is the number of prior observations, and s2 is variance}
+#'    \item{\strong{"t", "gaussian", and "lognormal":} \code{priors = list( mu=c(0,0), sd=c(10,10) ) },
+#'     where mu is the mean and sd is standard deviation. For the lognormal method these describe
+#'     the normal distribution of the mean parameter for lognormal data and are on the log scale.}
 #'    \item{\strong{"beta", "bernoulli", and "binomial":}
 #'    \code{priors = list( a=c(0.5, 0.5), b=c(0.5, 0.5) )},
 #'     where a and b are shape parameters of the beta distribution. Note that for the binomial
 #'     distribution this is used as the prior for success probability P,
 #'     which is assumed to be beta distributed as in a beta-binomial distribution.}
-#'    \item{\strong{"lognormal": } \code{priors = list(mu = 0, sd = 5) },
-#'    where mu and sd describe the normal distribution of the mean parameter for lognormal data.
-#'    Note that these values are on the log scale.}
 #'    \item{\strong{"lognormal2": } \code{priors = list(a = 1, b = 1) },
 #'    where a and b are the shape and scale parameters of the gamma distribution of lognormal data's
-#'    precision parameter (using the alternative mu, precision paramterization).
+#'    precision parameter (using the alternative mu, precision parameterization).
 #'    }
 #'    \item{\strong{"gamma": } \code{priors = list(shape = 0.5, scale = 0.5, known_shape = 1)},
 #'     where shape and scale are the respective parameters of the gamma distributed rate
@@ -149,8 +147,6 @@
 #'     }
 #' }
 #'
-#' See examples for plots of these prior distributions.
-#'
 #' @examples
 #' mv_ln <- mvSim(
 #'   dists = list(
@@ -189,7 +185,7 @@
 #'
 #' gauss_mv_ex <- conjugate(
 #'   s1 = mv_gauss[1:30, -1], s2 = mv_gauss[31:60, -1], method = "gaussian",
-#'   priors = list(mu = 30, n = 1, s2 = 100),
+#'   priors = list(mu = 30, sd = 10),
 #'   plot = FALSE, rope_range = c(-25, 25), rope_ci = 0.89,
 #'   cred.int.level = 0.89, hypothesis = "equal", support = NULL
 #' )
@@ -198,7 +194,7 @@
 #'
 #' gaussianMeans_sv_ex <- conjugate(
 #'   s1 = rnorm(10, 50, 10), s2 = rnorm(10, 60, 12), method = "t",
-#'   priors = list(mu = 30, n = 1, s2 = 100),
+#'   priors = list(mu = 40, sd = 10),
 #'   plot = FALSE, rope_range = c(-5, 8), rope_ci = 0.89,
 #'   cred.int.level = 0.89, hypothesis = "equal", support = NULL
 #' )

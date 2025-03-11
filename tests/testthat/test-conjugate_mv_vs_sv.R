@@ -91,8 +91,8 @@ test_that("conjugate T method is consistent for SV and MV", {
     0,
     tolerance = 0.1
   )
-  v1 <- as.numeric(out$posteriors[c(1, 3), "s2"])
-  v2 <- as.numeric(out$posteriors[c(2, 4), "s2"])
+  v1 <- as.numeric(out$posteriors[c(1, 3), "sd"])
+  v2 <- as.numeric(out$posteriors[c(2, 4), "sd"])
   expect_equal(
     abs(diff(v1) / mean(v1)),
     0, # diff should be 0, scaled or not
@@ -127,8 +127,8 @@ test_that("conjugate Gaussian method is consistent for SV and MV", {
     0,
     tolerance = 0.1
   )
-  v1 <- as.numeric(out$posteriors[c(1, 3), "s2"])
-  v2 <- as.numeric(out$posteriors[c(2, 4), "s2"])
+  v1 <- as.numeric(out$posteriors[c(1, 3), "sd"])
+  v2 <- as.numeric(out$posteriors[c(2, 4), "sd"])
   expect_equal(
     abs(diff(v1) / mean(v1)),
     0, # diff should be 0, scaled or not

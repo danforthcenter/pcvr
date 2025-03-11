@@ -592,7 +592,7 @@ s2 <- sv_ag[sv_ag$fertilizer == "0" & sv_ag$DAS == 19 &
 
 conj <- conjugate(s1, s2,
   method = "gaussian", plot = TRUE,
-  priors = list(mu = c(20, 20), n = c(1, 1), s2 = c(20, 20)),
+  priors = list(mu = c(20, 20), sd = c(5, 5)),
   rope_range = c(-10, 10)
 )
 ```
