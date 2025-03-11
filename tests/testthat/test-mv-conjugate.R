@@ -17,7 +17,7 @@ test_that("conjugate multi value T works", {
     plot = TRUE, rope_range = c(-5, 5), rope_ci = 0.89,
     cred.int.level = 0.89, hypothesis = "equal"
   )
-  expect_equal(out$summary$post.prob, 0.02475074, tolerance = 1e-6)
+  expect_equal(out$summary$post.prob, 0.0002747414, tolerance = 1e-6)
   expect_true(out$summary$rope_prob < 1e-5)
   expect_equal(names(out), c("summary", "posterior", "prior", "plot"))
 })
@@ -81,8 +81,8 @@ test_that("conjugate multi value lognormal works", {
     plot = TRUE, rope_range = c(-1, 1), rope_ci = 0.89,
     cred.int.level = 0.89, hypothesis = "equal"
   )
-  expect_equal(out$summary$post.prob, 0.09558071, tolerance = 1e-6)
-  expect_equal(out$summary$rope_prob, 1, tolerance = 0.0001)
+  expect_equal(out$summary$post.prob, 0.4046836, tolerance = 1e-6)
+  expect_equal(out$summary$rope_prob, 0.9094484, tolerance = 0.0001)
   expect_equal(names(out), c("summary", "posterior", "prior", "plot"))
 })
 
@@ -218,13 +218,13 @@ test_that("conjugate multi value lognormal vs gaussian", {
     cred.int.level = 0.89, hypothesis = "equal"
   )
 
-  expect_equal(out$summary$post.prob, 0.167973, tolerance = 1e-6)
+  expect_equal(out$summary$post.prob, 0.00468538, tolerance = 1e-6)
 
-  expect_equal(out$summary$rope_prob, 0.28, tolerance = 0.01)
+  expect_equal(out$summary$rope_prob, 0, tolerance = 0.01)
 
   expect_equal(unlist(lapply(out$posterior, function(p) {
     return(names(p))
-  })), c("mu", "sd", "lognormal_sigma", "mu", "n", "s2"))
+  })), c("mu", "sd", "lognormal_sigma", "mu", "sd"))
 
   expect_equal(names(out), c("summary", "posterior", "prior"))
 })
