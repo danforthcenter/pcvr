@@ -713,7 +713,7 @@ set.seed(123)
 s1 <- rnorm(20, 10, 2)
 out <- conjugate(
   s1 = s1, method = "t",
-  priors = list(mu = 12, n = 1, s2 = 9),
+  priors = list(mu = 12, sd = 3),
   plot = TRUE, rope_range = c(11, 13),
   hypothesis = "unequal"
 )
@@ -972,7 +972,7 @@ res <- conjugate(
   method = "t",
   plot = TRUE,
   rope_range = c(-2, 2),
-  priors = list(mu = 10, n = 1, s2 = 3),
+  priors = list(mu = 10, sd = 2),
   hypothesis = "unequal"
 )
 ```

@@ -365,7 +365,7 @@ s2 <- ex[ex$geno == "b" & ex$time == max(ex$time), "area"]
 conj_ex <- conjugate(
   s1, s2, # specify data, here two samples
   method = "t", # use the "T" distribution
-  priors = list(mu = 3000, n = 1, s2 = 1000), # prior distribution, here it is the same for both samples
+  priors = list(mu = 3000, sd = 50), # prior distribution, here it is the same for both samples
   plot = TRUE, # return a plot
   rope_range = c(-500, 500), # differences of <500 pixels deemed not meaningful
   rope_ci = 0.89, cred.int.level = 0.89, # default credible interval lengths
