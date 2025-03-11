@@ -185,7 +185,7 @@
 #'
 #' gauss_mv_ex <- conjugate(
 #'   s1 = mv_gauss[1:30, -1], s2 = mv_gauss[31:60, -1], method = "gaussian",
-#'   priors = list(mu = 30, n = 1, s2 = 100),
+#'   priors = list(mu = 30, sd = 10),
 #'   plot = FALSE, rope_range = c(-25, 25), rope_ci = 0.89,
 #'   cred.int.level = 0.89, hypothesis = "equal", support = NULL
 #' )
@@ -194,7 +194,7 @@
 #'
 #' gaussianMeans_sv_ex <- conjugate(
 #'   s1 = rnorm(10, 50, 10), s2 = rnorm(10, 60, 12), method = "t",
-#'   priors = list(mu = 30, n = 1, s2 = 100),
+#'   priors = list(mu = 40, sd = 10),
 #'   plot = FALSE, rope_range = c(-5, 8), rope_ci = 0.89,
 #'   cred.int.level = 0.89, hypothesis = "equal", support = NULL
 #' )
