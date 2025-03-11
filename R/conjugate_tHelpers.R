@@ -23,7 +23,6 @@
   }
   #* `Calculate Sufficient Statistics`
   #* Using Mu and Precision Updating, see Equation 60 of compendium
-  prec_data <- 1 / var(s1)
   xbar <- mean(s1)
   n <- length(s1)
   #* `Get Prior Information`
@@ -108,7 +107,6 @@
   X1 <- rep(histColsBin[bins_order], as.numeric(round(colSums(s1))))
   #* `Calculate Sufficient Statistics`
   #* See notes in SV version above
-  prec_data <- 1 / var(X1)
   xbar <- mean(X1)
   n <- nrow(s1)
   #* `Get Prior Information`
