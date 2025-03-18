@@ -210,15 +210,15 @@ brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
   predictions <- cbind(newData, predict(fit, newData, probs = probs))
 
   if (!is.null(groups)) {
-    keep_index <- Reduce(intersect, lapply(seq_along(groups), function(i) {
+    keep_index <- Reduce(union, lapply(seq_along(groups), function(i) {
       grp <- groups[i]
-      return(which(predictions[[group[i]]] %in% grp))
+      return(which(predictions[[group]] %in% grp))
     }))
     predictions <- predictions[keep_index, ]
     if (!is.null(df)) {
-      keep_index_df <- Reduce(intersect, lapply(seq_along(groups), function(i) {
+      keep_index_df <- Reduce(union, lapply(seq_along(groups), function(i) {
         grp <- groups[i]
-        return(which(df[[group[i]]] %in% grp))
+        return(which(df[[group]] %in% grp))
       }))
       df <- df[keep_index_df, ]
     }
