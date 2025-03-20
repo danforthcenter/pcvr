@@ -1075,10 +1075,3 @@ distributionPlot(fits = from3to25, form = y ~ time | id / group, params = c("A",
 ## Other Resources
 
 The supported models in `pcvr` are meant to lower the barrier to entry for complex models using `brms` and `Stan`. While there are lots of options using these growth models there are many many more options using `brms` directly and still more is possible programming directly in `Stan`. If you take an interest in developing more and more nuanced models then please see the [`brms` documentation](https://github.com/paul-buerkner/brms), [`Stan` documentation](https://mc-stan.org/users/documentation/), or [stan forums](https://discourse.mc-stan.org/). For models that you think may have broader appeal for high throughput plant phenotyping please raise an issue on [github](https://github.com/danforthcenter/pcvr) and help the DDPSC data science team understand what the desired model is/where existing options fall short for your needs.
-
-
-
-
-
-
-
