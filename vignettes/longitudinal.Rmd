@@ -26,8 +26,6 @@ library(patchwork) # for easy ggplot manipulation/combination
 library(brms)
 ```
 
-
-
 ## Why Longitudinal Modeling?
 
 Longitudinal modeling allows users to take full advantage of accurate and non-destructive data collection possible through high throughput image based phenotyping. Using longitudinal data accurately requires some understanding of the statistical challenges associated with it. Statistical complications including changes in variance (heteroskedasticity), non-linearity, and autocorrelation (plant's day to day self similarity) present potential problems in analyses. To address this kind of data several functions are provided to make fitting appropriate growth models more straightforward.
@@ -150,6 +148,9 @@ In general these are less useful since they do not give directly interpretable p
 Data from any parameterized model can be simulated using `growthSim`. Through this vignette we will use data created in this way to show modeling options.
 
 ```{r}
+#| fig.alt: >
+#|   Showing 3 examples of asymptotic and 3 examples of non-asymptotic growth curves that are
+#|   supported by pcvr.
 simdf <- growthSim("logistic", n = 20, t = 25, params = list(
   "A" = c(200, 160),
   "B" = c(13, 11),
@@ -268,6 +269,8 @@ In `brms` models this can be specified in the same way as the general growth mod
 At a high level we can think about any of these models as fitting a curve to these lines.
 
 ```{r}
+#| fig.alt: >
+#|   Example of how much variance may change over an experiment
 set.seed(345)
 gomp <- growthSim("gompertz", n = 20, t = 35, params = list(
   "A" = c(200, 180, 160),
@@ -288,6 +291,9 @@ Several options are shown here, ignoring grouping here since the data is already
 
 
 ```{r, message = FALSE}
+#| fig.alt: >
+#|   Example of the homoskedastic assumption of constant variance over time
+#|   being unrealistic and of several other sub models that may be more useful
 draw_gomp_sigma <- function(x) {
   return(23 * exp(-21 * exp(-0.22 * x)))
 }
@@ -325,6 +331,8 @@ ss
 ```
 
 ```{r, eval=FALSE}
+#| fig.alt: >
+#|   Posterior predictive plot of a non linear growth model assuming homoskedasticity
 fit_h <- fitGrowth(ss, iter = 1000, cores = 4, chains = 4, silent = 0)
 
 brmPlot(fit_h, form = ss$pcvrForm, df = ss$df)
@@ -342,6 +350,8 @@ ss
 ```
 
 ```{r, eval=FALSE}
+#| fig.alt: >
+#|   Example of an inappropriate sub model for variance, in this case linearly increasing over time.
 fit_l <- fitGrowth(ss,
   iter = 1000, cores = 4, chains = 4, silent = 0,
   control = list(adapt_delta = 0.999, max_treedepth = 20)
@@ -369,6 +379,9 @@ ss
 ```
 
 ```{r, eval=FALSE}
+#| fig.alt: >
+#|   Example of using splines to measure variance over time, which gives a good fit to the
+#|   data but makes hypothesis testing about the variance very difficult
 fit_s <- fitGrowth(ss,
   iter = 2000, cores = 4, chains = 4, silent = 0,
   control = list(adapt_delta = 0.999, max_treedepth = 20)
@@ -395,6 +408,9 @@ ss
 ```
 
 ```{r, eval=FALSE}
+#| fig.alt: >
+#|   Example of using another sigmoid model as the variance sub model, which here balances
+#|   the good fit of the splines with the easy interpretation of the other sub models.
 fit_g <- fitGrowth(ss,
   iter = 2000, cores = 4, chains = 4, silent = 0,
   control = list(adapt_delta = 0.999, max_treedepth = 20)
@@ -407,6 +423,9 @@ brmPlot(fit_g, form = ss$pcvrForm, df = ss$df)
 A few other options are shown here as further examples. There are as many ways to model variance as there are to model growth using the `brms` backend, but other options are more limited.
 
 ```{r, message = FALSE}
+#| fig.alt: >
+#|   Various possible sub models compared to the trend we get from our data. There are
+#|   near infinite combinations but simplicity is beneficial.
 draw_gomp_sigma <- function(x) {
   return(23 * exp(-21 * exp(-0.22 * x)))
 }
@@ -445,6 +464,9 @@ ggplot(sigma_df, aes(x = time, y = y)) +
 When considering several sub models (or growth models) we can compare `brms` models using Leave-One-Out Information Criterion (LOO IC). For frequentist models a more familiar metric like BIC or AIC might be used.
 
 ```{r, eval = FALSE}
+#| fig.alt: >
+#|   Comparing LOO Information Criterion as one option for picking the best model parameterization.
+#|   Here splines and the gompertz sub model are most appropriate.
 loo_spline <- add_criterion(fit_s, "loo")
 loo_homo <- add_criterion(fit_h, "loo")
 loo_linear <- add_criterion(fit_l, "loo")
@@ -485,6 +507,8 @@ In a broad sense, priors can be "strong" or "weak".
 A strong prior is generally thought of as a prior with low variance. Almost all of the probability is in a tight space and the observed data will have a very hard time shifting the distribution meaningfully. Here is an example of a strong prior hurting a model. This example is clearly dramatic, but less absurd strong priors will still impact your results.
 
 ```{r, eval = FALSE}
+#| fig.alt: >
+#|   Example of using very strong priors and how that can impact your model.
 set.seed(345)
 ln <- growthSim("linear", n = 5, t = 10, params = list("A" = c(2, 3, 10)))
 
@@ -515,6 +539,9 @@ Above all, remember to focus on evidence instead of hopes and beliefs. By defaul
 Generally we aim for "weak" or "mildly informative" priors. The goal with these is to constrict our sampler to possible values so that it moves faster and to introduce evidence driven domain expertise. 
 
 ```{r, eval = FALSE}
+#| fig.alt: >
+#|   Example of using mildly informative priors, per the pcvr defaults and how that impacts your
+#|   model fit.
 weakPrior <- prior(student_t(3, 0, 5), dpar = "sigma", class = "b") +
   prior(gamma(2, 0.1), class = "nu", lb = 0.001) +
   prior(lognormal(log(10), 0.25), nlpar = "A", lb = 0)
@@ -540,6 +567,8 @@ In `growthSS` priors can be specified as a `brmsprior` object (in which case it 
 We can check the priors made by `growthSS` with the `plotPrior` function.
 
 ```{r}
+#| fig.alt: >
+#|   Example of the default prior distributions as PDFs.
 priors <- list("A" = 130, "B" = 10, "C" = 0.2)
 priorPlots <- plotPrior(priors)
 priorPlots[[1]] / priorPlots[[2]] / priorPlots[[3]]
@@ -548,6 +577,8 @@ priorPlots[[1]] / priorPlots[[2]] / priorPlots[[3]]
 Looking at the prior distributions this way is useful, but the parameter values can be a degree removed from what we are really wanting to check. To help with picking reasonable priors based on the growth curves they'd represent the `plotPrior` function can also simulate growth curves by making draws from the specified prior distributions. Here is an example of using `plotPrior` in this way to pick between possible sets of prior distributions for a gompertz model. For asymptotic distributions the prior on "A" is added to the y margin. For distributions with an inflection point the prior on "B" is shown in the x margin. Arbitrary numbers of priors can be compared in this manner, but more than two or three can be cluttered so an iterative process is recommended if you are learning about your growth model.
 
 ```{r}
+#| fig.alt: >
+#|   Example of the default prior distributions as PDFs with the growth data they imply shown.
 twoPriors <- list("A" = c(100, 130), "B" = c(6, 12), "C" = c(0.5, 0.25))
 plotPrior(twoPriors, "gompertz", n = 100)[[1]]
 ```
@@ -665,6 +696,9 @@ Now we have all the essential model components in the `..._ss` objects. Since we
 Before trying to fit the model it is generally a good idea to check one last plot of the data and make sure you have everything defined correctly.
 
 ```{r}
+#| fig.alt: >
+#|   Checking the grouping of our model formulas with a line plot. Looking to make sure that
+#|   each line is only identifying a single plant, which it is here.
 ggplot(simdf, aes(time, y, group = interaction(group, id))) +
   geom_line(aes(color = group))
 ```
@@ -693,6 +727,8 @@ brms_fit <- fitGrowth(brms_ss,
 We can check the model fits using `growthPlot`.
 
 ```{r, warning=FALSE, message=FALSE}
+#| fig.alt: >
+#|   Examples of growth plots generated from growthPlot for each model backend besides brms.
 growthPlot(nls_fit, form = nls_ss$pcvrForm, df = nls_ss$df)
 growthPlot(nlrq_fit, form = nlrq_ss$pcvrForm, df = nlrq_ss$df)
 growthPlot(nlme_fit, form = nlme_ss$pcvrForm, df = nlme_ss$df)
@@ -700,11 +736,13 @@ growthPlot(mgcv_fit, form = mgcv_ss$pcvrForm, df = mgcv_ss$df)
 ```
 
 ```{r, eval=FALSE}
+#| fig.alt: >
+#|   Example of growth plots generated from growthPlot for brms models.
 growthPlot(brms_fit, form = brms_ss$pcvrForm, df = brms_ss$df)
 ```
 
 
-![](brmPlot1.png)
+![Example of growth plots generated from growthPlot for brms models.](brmPlot1.png)
 
 ### Hypothesis testing
 
@@ -1021,6 +1059,8 @@ All the information required to fully explain a Bayesian model is returned by `S
 As a final note on `brms` models, there is a possiblity of making interesting early stopping rules in a Bayesian framework. If you have models fit to subsets of your data then the `distPlot` function will show changes in the posterior distribution for some or all of your parameters over time or over another subset variable. Here the growth trend plots are also a legend for the time of each posterior distribution.
 
 ```{r, eval=FALSE}
+#| fig.alt: >
+#|   Plots of posterior prediction and posterior distributions over time for several models.
 print(load(url("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/brmsFits.rdata")))
 from3to25 <- list(
   fit_3, fit_5, fit_7, fit_9, fit_11, fit_13,
@@ -1030,7 +1070,7 @@ from3to25 <- list(
 distributionPlot(fits = from3to25, form = y ~ time | id / group, params = c("A", "B", "C"), d = simdf)
 ```
 
-![](distPlot_vigPlot.png)
+![Plots of posterior prediction and posterior distributions over time for several models.](distPlot_vigPlot.png)
 
 ## Other Resources
 

@@ -61,13 +61,9 @@ library(patchwork) # to arrange ggplots
 
 ## Why Longitudinal Modeling?
 
-`plantCV` allows for user friendly high throughput image based phenotyping
-
-. . .
+`plantCV` allows for user friendly high throughput image based phenotyping.
 
 Resulting data follows individuals over time, which changes our statistical needs.
-
-## Why Longitudinal Modeling? 2
 
 Longitudinal Data is:
 
@@ -75,11 +71,12 @@ Longitudinal Data is:
 -   Often non-linear
 -   Heteroskedastic
 
-## Why Longitudinal Modeling? 3
 
 ```{r}
 #| echo: false
 #| eval: true
+#| fig.alt: >
+#|   Highlighting autocorrelation as a feature of longitudinal data
 
 set.seed(123)
 simdf <- growthSim("logistic",
@@ -106,11 +103,12 @@ ggplot(simdf, aes(time, y, group = interaction(group, id))) +
 #* aka add rise/run segments to some line from the data from a day to the next day
 ```
 
-## Why Longitudinal Modeling? 4
 
 ```{r}
 #| echo: false
 #| eval: true
+#| fig.alt: >
+#|   Highlighting non-linearyity as a common feature of longitudinal data
 simdf2 <- simdf
 
 nlPlot <- ggplot(simdf2, aes(time, y, group = interaction(group, id))) +
@@ -137,9 +135,10 @@ nlPatch <- nlPlot / residPlot + plot_layout(design = design)
 nlPatch
 ```
 
-## Why Longitudinal Modeling? 5
 
 ```{r}
+#| fig.alt: >
+#|   Highlighting heteroskedasticity as a nearly ubiquitous feature of longitudinal data
 r1 <- range(simdf[simdf$time == 1, "y"])
 r2 <- range(simdf[simdf$time == 5, "y"])
 r3 <- range(simdf[simdf$time == 10, "y"])
@@ -176,11 +175,7 @@ hetPatch
 
 Bayesian modeling allows us to account for all these problems via a more flexible interface than frequentist methods.
 
-. . .
-
 Bayesian modeling also allows for non-linear, probability driven hypothesis testing.
-
-## Why Bayesian Modeling? 2
 
 In a Bayesian context we flip "random" and "fixed" elements.
 
@@ -188,8 +183,6 @@ In a Bayesian context we flip "random" and "fixed" elements.
 |-----------------|-----------------|-----------------|----------------------|
 | Frequentist | [True Effect]{style="color:goldenrod;"} | [Data]{style="color:purple;"}           | If the [True Effect is 0]{style="color:goldenrod;"} then there is an $\alpha\cdot100$% chance of [estimating an effect]{style="color:purple;"} of this size or more.       |
 | Bayesian    | [Data]{style="color:purple;"}           | [True Effect]{style="color:goldenrod;"} | Given the [estimated effect from our data]{style="color:purple;"} there is a P probability of the [True Effect]{style="color:goldenrod;"} being a difference of at least X |
-
-## Why Bayesian Modeling? 3
 
 Before moving on we should note that each group in your data will have parameters fit to it. If you have many groups then fitting models to only a few groups at a time is likely to make your life easier. Larger models will fit, but they can take a very long time.
 
@@ -201,12 +194,13 @@ There are 13 main growth models supported in `pcvr`.
 
 Several are shown next, including asymptotic and non-asymptotic options.
 
-## Supported Growth Models
 
 ```{r}
 #| echo: false
 #| eval: true
-
+#| fig.alt: >
+#|   Showing 3 examples of asymptotic and 3 examples of non-asymptotic growth curves that are
+#|   supported by pcvr.
 simdf <- growthSim("logistic",
   n = 20, t = 25,
   params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
@@ -286,25 +280,25 @@ patch6 <- (l + g + m) / (e + ln + pl)
 patch6
 ```
 
-## Supported Growth Models
 
 There are an additional 3 sigmoidal models based on the Extreme Value Distribution. Those are Weibull, Frechet, and Gumbel. The authors generally prefer Gompertz to these options but for your data it is possible that these could be a better fit.
 
 ```{r}
 #| echo: false
 #| eval: true
+#| fig.alt: >
+#|   Showing variations of the Extreme Value Distribution sigmoid curves that are supported.
 patch3 <- (w + f + gb)
 patch3
 ```
-
-## Supported Growth Models 2
 
 There are also two double sigmoid curves intended for use with recovery experiments.
 
 ```{r}
 #| echo: false
 #| eval: true
-
+#| fig.alt: >
+#|   Two examples of multi-part models that can be parameterized without changepoints.
 simdf <- growthSim("double logistic",
   n = 20, t = 70,
   params = list(
@@ -342,7 +336,6 @@ patchD <- dl + dg + plot_layout(guides = "collect") & theme(legend.position = "b
 patchD
 ```
 
-## Supported Growth Models 3
 
 Generalized Additive Models ([GAMs](https://en.wikipedia.org/wiki/Generalized_additive_model)) are supported but discouraged due to poor interpretability.
 
@@ -359,6 +352,9 @@ wiggles <- data.frame(x = c(x, x2), y = c(y, y2))
 ```{r}
 #| echo: false
 #| eval: true
+#| fig.alt: >
+#|   Example of the effect of changing the number of knots in a spline, with more knots
+#|   being more prone to overfitting and fewer knots being less accurate for the observed data.
 ggplot(wiggles, aes(x, y)) +
   geom_point() +
   geom_smooth(
@@ -385,11 +381,12 @@ ggplot(wiggles, aes(x, y)) +
   pcv_theme()
 ```
 
-## Supported Growth Models 4
 
 Intercept only models are supported, although they are only intended for use in segmented models or to represent homoskedasticity as a sub-model.
 
 ```{r}
+#| fig.alt: >
+#|   Example of the homoskedastic assumption of constant variance over time
 set.seed(123)
 ggplot(
   data.frame(
@@ -404,19 +401,14 @@ ggplot(
   labs(y = "y", x = "x")
 ```
 
-## Supported Growth Models 5
 
 Segmented growth models are also supported using "model1 + model2" syntax in both `growthSim` and `growthSS`.
 
-. . .
 
 For now we will focus on single models but there will be examples of segmented models later on.
 
-## Supported Growth Models 6
 
 The "decay" keyword can be used to specify a decay model instead. For now we will focus on growth models as these constitute the large majority of models used in plant phenotyping.
-
-## Supported Growth Models 7
 
 Hierarchical models can be specified by adding covariates to the model formula and specifying models for those covariates in the `hierarchy` argument.
 
@@ -436,7 +428,7 @@ bragg, lorentz, and beta Maxima/Minima models are available in `growthSS`, but s
 
 Any of the aforementioned models can be specified easily using `growthSS`.
 
-## `growthSS` - form
+### `growthSS` - form
 
 With a model specified a rough formula is required to parse your data to fit the model.
 
@@ -444,7 +436,7 @@ The layout of that formula is:
 
 `outcome ~ time|individual/group`
 
-## `growthSS` - form 2
+### `growthSS` - form 2
 
 Here we would use `y~time|id/group`
 
@@ -462,7 +454,7 @@ simdf <- growthSim("gompertz",
 head(simdf)
 ```
 
-## `growthSS` - form 3
+### `growthSS` - form 3
 
 Generally it makes sense to visually check that your formula covers your experimental design.
 
@@ -470,6 +462,9 @@ Note that it is fine for id to be duplicated between groups, but not within grou
 
 ```{r}
 #| code-line-numbers: "2,4"
+#| fig.alt: >
+#|   Checking the grouping of data using a ggplot before making a model. We are looking to see that
+#|   lines follow individual plants over time, here they do.
 ggplot(simdf, aes(time, y,
   group = paste(group, id)
 )) + # group on id
@@ -478,12 +473,15 @@ ggplot(simdf, aes(time, y,
   theme_minimal()
 ```
 
-## `growthSS` - sigma
+### `growthSS` - sigma
 
 Recall the heteroskedasticity problem, shown again with our simulated data:
 
 ```{r}
-# \ echo: false
+#| echo: false
+#| fig.alt: >
+#|   Example of the homoskedastic assumption failing as standard deviation of the outcome
+#|   has a non-linear trend.
 sigma_df <- aggregate(y ~ group + time, data = simdf, FUN = sd)
 
 ggplot(sigma_df, aes(x = time, y = y, group = group)) +
@@ -493,13 +491,16 @@ ggplot(sigma_df, aes(x = time, y = y, group = group)) +
   theme(plot.title = element_blank())
 ```
 
-## `growthSS` - sigma
+### `growthSS` - sigma
 
 There are lots of ways to model a trend like that we see for sigma.
 
 `pcvr` allows any of the model options in `growthSS` to also be applied to model variance.
 
 ```{r}
+#| fig.alt: >
+#|   Showing a variety of possible trends for sigma and other distribution parameters
+#|   to emphasize why any model can be used for any parameter in growthSS
 draw_gomp_sigma <- function(x) {
   return(23 * exp(-21 * exp(-0.22 * x)))
 }
@@ -524,13 +525,16 @@ ggplot(sigma_df, aes(x = time, y = y)) +
   labs(y = "SD of y", title = "Several sigma options", color = "")
 ```
 
-## `growthSS` - Intercept sigma
+### `growthSS` - Intercept sigma
 
 | Pros                 | Cons                                          |
 |----------------------|-----------------------------------------------|
 | Faster model fitting | Very inaccurate intervals at early timepoints |
 
 ```{r}
+#| fig.alt: >
+#|   Comparing several parameterizations of sigma against the trend we see in our data.
+#|   Homoskedastic is a poor fit.
 ggplot(sigma_df, aes(x = time, y = y, group = group)) +
   geom_hline(aes(yintercept = 13.8, color = "Homoskedastic"), linetype = 5, key_glyph = draw_key_path) +
   geom_line(aes(color = group)) +
@@ -540,7 +544,7 @@ ggplot(sigma_df, aes(x = time, y = y, group = group)) +
   theme(plot.title = element_blank(), legend.position = "bottom")
 ```
 
-## `growthSS` - Linear sigma
+### `growthSS` - Linear sigma
 
 | Pros                           | Cons                                    |
 |--------------------------------|-----------------------------------------|
@@ -560,13 +564,16 @@ p <- ggplot(sigma_df, aes(x = time, y = y, group = group)) +
   theme(plot.title = element_blank(), legend.position = "bottom")
 ```
 
-## `growthSS` - Linear sigma
+### `growthSS` - Linear sigma
 
 ```{r}
+#| fig.alt: >
+#|   Comparing several parameterizations of sigma against the trend we see in our data.
+#|   Linear is a poor fit.
 p
 ```
 
-## `growthSS` - Gompertz sigma
+### `growthSS` - Gompertz sigma
 
 | Pros                                | Cons                                   |
 |-----------------------------------|-------------------------------------|
@@ -590,13 +597,16 @@ p <- ggplot(sigma_df, aes(x = time, y = y, group = group)) +
   theme(plot.title = element_blank(), legend.position = "bottom")
 ```
 
-## `growthSS` - Gompertz sigma
+### `growthSS` - Gompertz sigma
 
 ```{r}
+#| fig.alt: >
+#|   Comparing several parameterizations of sigma against the trend we see in our data.
+#|   Gompertz is a good fit.
 p
 ```
 
-## `growthSS` - Spline sigma
+### `growthSS` - Spline sigma
 
 | Pros | Cons |
 |-------------------------------------|-----------------------------------|
@@ -616,17 +626,24 @@ p <- ggplot(sigma_df, aes(x = time, y = y, group = group)) +
   theme(plot.title = element_blank(), legend.position = "bottom")
 ```
 
-## `growthSS` - Spline sigma
+### `growthSS` - Spline sigma
 
 ```{r}
+#| fig.alt: >
+#|   Comparing several parameterizations of sigma against the trend we see in our data.
+#|   Splines are a good fit.
 p
 ```
 
-## `growthSS` - other sigma models
+### `growthSS` - other sigma models
 
 You can always add a new sigma formula if something else fits your needs better.
 
 ```{r}
+#| fig.alt: >
+#|   Comparing several parameterizations of sigma against the trend we see in our data.
+#|   There are essentially infinite options but generally a relatively simple one will
+#|   work well enough for your data.
 #| message: false
 #| echo: false
 draw_gomp_sigma <- function(x) {
@@ -667,45 +684,43 @@ ggplot(sigma_df, aes(x = time, y = y)) +
   labs(y = "SD of y", title = "Gompertz Sigma", color = "")
 ```
 
-## `growthSS` - Distributional Models
+### `growthSS` - Distributional Models
 
 Here we have limited the examples to talk about sigma, a parameter of the Student T distribution that our model belongs to. Written another way we might say all the previous methods are modeling:
 
 Y \~ T(mu \~ main growth formula, [sigma \~ sigma formula]{style="color:#FF007B;"}, [nu \~ 1]{style="color:#FFD900;"})
 
-## `growthSS` - Distributional Models 2
+### `growthSS` - Distributional Models 2
 
 In `pcvr` the Student T family is the default for these models, but other distributions are supported through `"distribution: model"` syntax.
 
 In general this is only for special cases where the Gaussian/T does not capture some important quality of the data. An obvious example could be leaf counts, which might be modeled as `"poisson: monomolecular"`, for instance.
 
-## `growthSS` - Distributional Models 3
+### `growthSS` - Distributional Models 3
 
 You can specify sigma as a list of formulas to model different distributional parameters separately. Most of the time this is overkill and adds unnecessary complexity, but the option exists for certain cases such as ZINB where modeling mean, shape, and zero inflation per group may make sense.
 
 For details on supported families and their parameterization try running `growthSS(..., sigma=NULL,...)` and examining the priors, or checking `?brmfamily`.
 
-## `growthSS` - priors
+### `growthSS` - priors
 
 Bayesian statistics combine prior distributions and collected data to form a posterior distribution.
 
-. . .
-
 Luckily, in the growth model context it is pretty easy to set "good priors".
 
-## `growthSS` - priors
+### `growthSS` - priors
 
 "Good priors" are generally mildly informative, but not very strong.
 
 They provide some well vetted evidence, but do not overpower the data.
 
-## `growthSS` - priors
+### `growthSS` - priors
 
 For our setting we know growth is positive and we should have basic impressions of what sizes are possible.
 
 At the "weakest" side of these priors we at least know growth is positive and the camera only can measure some finite space.
 
-## `growthSS` - priors 2
+### `growthSS` - priors 2
 
 Default priors in `growthSS` are log-normal
 
@@ -713,30 +728,35 @@ $\text{log}~N(\mu, 0.25)$
 
 This has the benefit of giving a long right tail and strictly positive values while only requiring us to provide $\mu$.
 
-## `growthSS` - priors 3
+### `growthSS` - priors 3
 
 We can see what those log-normal distributions look like with `plotPrior`.
 
 ```{r}
 #| output-location: slide
 #| echo: true
+#| fig.alt: >
+#|   Plots showing default lognormal prior distributions from growthSS
 priors <- list("A" = 130, "B" = 10, "C" = 0.2)
 priorPlots <- plotPrior(priors)
 priorPlots[[1]] / priorPlots[[2]] / priorPlots[[3]]
 ```
 
-## `growthSS` - priors 4
+### `growthSS` - priors 4
 
 Those distributions can still be somewhat abstract, so we can simulate draws from the priors and see what those values yield in our growth model.
 
 ```{r}
 #| output-location: slide
 #| echo: true
+#| fig.alt: >
+#|   Plots showing default lognormal prior distributions from growthSS along with
+#|   growth data simulated from each set of priors
 twoPriors <- list("A" = c(100, 130), "B" = c(6, 12), "C" = c(0.5, 0.25))
 plotPrior(twoPriors, "gompertz", n = 100)[[1]]
 ```
 
-## `growthSS` - priors 5
+### `growthSS` - priors 5
 
 Our final call to `growthSS` will look like this for our sample data.
 
@@ -756,11 +776,9 @@ ss <- growthSS(
 
 Now that we have the components for our model from `growthSS` we can fit the model with `fitGrowth`.
 
-## `fitGrowth` 2
 
 This will call `Stan` outside of R to run Markov Chain Monte Carlo (MCMC) to get draws from the posterior distributions. We can control how `Stan` runs with additional arguments to `fitGrowth`, although the only required argument is the output from `growthSS`.
 
-## `fitGrowth` 2
 
 Here we specify our `ss` argument to be the output from `growthSS` and tell the model to use 4 cores so that the chains run entirely in parallel, but the rest of this model is using defaults.
 
@@ -774,15 +792,11 @@ fit <- fitGrowth(
 )
 ```
 
-## `fitGrowth` 2
 
 Note that there are lots of arguments that can be passed to `brms::brm` via `fitGrowth`.
 
-. . .
-
 One that can be very helpful for fitting complex models is the `control` argument, where we can control the sampler's behavior.
 
-## `fitGrowth` 2
 
 `adapt_delta` and `tree_depth` are both used to reduce the number of "divergent transitions" which are times that the sampler has some departure from the True path and which can compromise the results.
 
@@ -797,11 +811,7 @@ fit <- fitGrowth(ss,
 )
 ```
 
-## `fitGrowth` 3
-
 `fitGrowth` returns a `brmsfit` object, see `?brmsfit` and `methods(class="brmsfit")` for general information.
-
-. . .
 
 Within `pcvr` there are several functions for visualizing these objects.
 
@@ -833,10 +843,10 @@ load("agm_sim_fit.rdata")
 ```{r}
 #| echo: true
 #| eval: false
+#| fig.alt: >
+#|   Posterior Distribution of our growth model, shown with credible intervals ranging from 98% to 1%.
 growthPlot(fit, form = ss$pcvrForm, df = ss$df)
 ```
-
-## Model Visualization 2
 
 These plots can show one of the benefits of an asymptotic sub model well.
 
@@ -845,20 +855,22 @@ Here we check our model predictions to 35 days.
 ```{r}
 #| echo: true
 #| eval: false
+#| fig.alt: >
+#|   Posterior distribution of our growth model, forecasting time that was not part of
+#|   the observed data.
 growthPlot(fit, form = ss$pcvrForm, df = ss$df, timeRange = 1:35)
 ```
-
-## Model Visualization 2
 
 And now we check those predictions from a spline model, where the basis functions are not suited for data past day 25.
 
 ```{r}
 #| echo: true
 #| eval: false
+#| fig.alt: >
+#|   Posterior distribution of a spline growth model, forecasting time that was not part of
+#|   the observed data. In this case the splines start to fail dramatically.
 growthPlot(fit_spline, form = ss_spline$pcvrForm, df = ss_spline$df, timeRange = 1:35)
 ```
-
-## Model Visualization 3
 
 We can also plot the posterior distributions and test hypotheses with `brmViolin`.
 
@@ -866,6 +878,8 @@ Here hypotheses are tested with `brms::hypothesis`.
 
 ```{r}
 #| echo: true
+#| fig.alt: >
+#|   Posterior distributions of a hypothesis test of a 5% effect size.
 brmViolin(fit, ss, hypothesis = ".../A_groupa > 1.05")
 ```
 
@@ -884,20 +898,18 @@ brms::hypothesis(fit, "A_groupa > 1.2 * A_groupb")$hyp
 
 Segmented Models are specified using "model1 + model2" syntax, with "+" representing a change point.
 
-. . .
-
 Currently only two phases (one changepoint) are recommended. More will work but they will slow down the MCMC and may require more fine tuning.
-
-. . .
 
 These segmented models can also be used to specify sub-models of distributional parameters.
 
-## linear + linear
+### linear + linear
 
 ```{r}
 #| eval: false
 #| echo: true
 #| code-line-numbers: "5,6,7"
+#| fig.alt: >
+#|   Example changepoint model
 simdf <- growthSim(
   model = "linear + linear",
   n = 20, t = 25,
@@ -914,16 +926,16 @@ fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1)
 growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
 ```
 
-## linear + linear
+![Example changepoint model](linearPlusLinear_fitGrowth.png)
 
-![](linearPlusLinear_fitGrowth.png)
-
-## linear + logistic
+### linear + logistic
 
 ```{r}
 #| eval: false
 #| echo: true
 #| code-line-numbers: "6,7,8,9"
+#| fig.alt: >
+#|   Example changepoint model 
 simdf <- growthSim("linear + logistic",
   n = 20, t = 25,
   params = list(
@@ -946,16 +958,16 @@ fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1)
 growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
 ```
 
-## linear + logistic
+![Example changepoint model](linearPlusLogistic_fitGrowth.png)
 
-![](linearPlusLogistic_fitGrowth.png)
-
-## linear + gam
+### linear + gam
 
 ```{r}
 #| eval: false
 #| echo: true
 #| code-line-numbers: "1,2,3"
+#| fig.alt: >
+#|   Example changepoint model 
 ss <- growthSS(
   model = "linear + gam", form = y ~ time | id / group, sigma = "int",
   list("linear1A" = 10, "changePoint1" = 5),
@@ -966,16 +978,17 @@ fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1)
 growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
 ```
 
-## linear + gam
 
-![](linearPlusGAM_fitGrowth.png)
+![Example changepoint model](linearPlusGAM_fitGrowth.png)
 
-## linear + linear + linear
+### linear + linear + linear
 
 ```{r}
 #| echo: true
 #| eval: false
 #| code-line-numbers: "5,6,7,8"
+#| fig.alt: >
+#|   Example changepoint model 
 simdf <- growthSim("linear + linear + linear",
   n = 25, t = 50,
   params = list(
@@ -998,16 +1011,16 @@ fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1)
 plot <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
 ```
 
-## linear + linear + linear
+![Example changepoint model](linearPlusLinearPlusLinear_fitGrowth.png)
 
-![](linearPlusLinearPlusLinear_fitGrowth.png)
-
-## int + int with segmented sigma
+### int + int with segmented sigma
 
 ```{r}
 #| eval: false
 #| echo: false
 #| code-line-numbers: "1,2,3,4"
+#| fig.alt: >
+#|   Example changepoint model 
 set.seed(123)
 noise <- do.call(rbind, lapply(1:30, function(i) {
   chngpt <- rnorm(2, 18, 2)
@@ -1045,6 +1058,8 @@ simdf <- rbind(noise, noise2)
 #| eval: false
 #| echo: true
 #| code-line-numbers: "1,2,3,4"
+#| fig.alt: >
+#|   Example changepoint model 
 ss <- growthSS(
   model = "int + int", form = y ~ time | id / group, sigma = "int + int",
   list(
@@ -1059,15 +1074,15 @@ fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1)
 plot <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
 ```
 
-## int + int with segmented sigma
+![Example changepoint model](intPlusInt_heteroskedastic_fitGrowth.png)
 
-![](intPlusInt_heteroskedastic_fitGrowth.png)
-
-## int + linear model and submodel
+### int + linear model and submodel
 
 ```{r}
 #| eval: false
 #| echo: false
+#| fig.alt: >
+#|   Example changepoint model 
 set.seed(123)
 noise <- do.call(rbind, lapply(1:30, function(i) {
   chngpt <- rnorm(2, 18, 2)
@@ -1102,6 +1117,8 @@ simdf <- rbind(noise, signal)
 #| eval: false
 #| echo: true
 #| code-line-numbers: "1,2,3,4"
+#| fig.alt: >
+#|   Example changepoint model 
 ss <- growthSS(
   model = "int + linear", form = y ~ time | id / group, sigma = "int + linear",
   list(
@@ -1114,15 +1131,15 @@ fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1)
 plot <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df, timeRange = 1:40)
 ```
 
-## int + linear model and submodel
+![Example changepoint model](intPlusLinear_heteroskedasticIntPlusLinear_fitGrowth.png)
 
-![](intPlusLinear_heteroskedasticIntPlusLinear_fitGrowth.png)
-
-## int+logistic with int+gam sub model
+### int+logistic with int+gam sub model
 
 ```{r}
 #| eval: false
 #| echo: false
+#| fig.alt: >
+#|   Example changepoint model 
 set.seed(123)
 noise <- do.call(rbind, lapply(1:30, function(i) {
   chngpt <- rnorm(2, 18, 2)
@@ -1158,6 +1175,8 @@ simdf <- simdf[simdf$time < 45, ]
 #| eval: false
 #| echo: true
 #| code-line-numbers: "1,2,3,4,5"
+#| fig.alt: >
+#|   Example changepoint model 
 ss <- growthSS(
   model = "int+logistic", form = y ~ time | id / group, sigma = "int + spline",
   list(
@@ -1171,9 +1190,7 @@ fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1)
 plot <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
 ```
 
-## int+logistic with int+gam sub model
-
-![](intPluslogistic_intPlusGAMSubModel.png)
+![Example changepoint model](intPluslogistic_intPlusGAMSubModel.png)
 
 ## Example survival model
 
@@ -1181,6 +1198,8 @@ plot <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
 #| eval: false
 #| echo: true
 #| code-line-numbers: "4"
+#| fig.alt: >
+#|   Example survival analysis
 df <- growthSim("logistic",
   n = 20, t = 25,
   params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
@@ -1196,9 +1215,7 @@ plot <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
 
 Here the input data is standard phenotype data with a cutoff to represent the event (germination for instance) on the left hand side of the formula.
 
-## Example survival model
-
-![](exSurvivalModel.png)
+![Example survival model](exSurvivalModel.png)
 
 ## Example count model
 
@@ -1206,6 +1223,8 @@ Here the input data is standard phenotype data with a cutoff to represent the ev
 #| eval: false
 #| echo: true
 #| code-line-numbers: "3,5"
+#| fig.alt: >
+#|   Example growth model of a count phenotype. 
 df <- growthSim("count: logistic",
   n = 20, t = 25,
   params = list("A" = c(10, 12), "B" = c(13, 11), "C" = c(3, 3.5))
@@ -1229,10 +1248,7 @@ ggsave("~/pcvr/tutorials/pcvrTutorial_advancedGrowthModeling/exCountModel.png",
 )
 ```
 
-
-## Example count model
-
-![](exCountModel.png)
+![Example count model](exCountModel.png)
 
 ## Example hierarchical model
 
@@ -1240,6 +1256,8 @@ ggsave("~/pcvr/tutorials/pcvrTutorial_advancedGrowthModeling/exCountModel.png",
 #| eval: false
 #| echo: true
 #| code-line-numbers: "5, 8, 11, 15"
+#| fig.alt: >
+#|   Example hierarchical growth model 
 simdf <- growthSim(
   "logistic",
   n = 20, t = 25,
@@ -1271,11 +1289,9 @@ ggsave("~/pcvr/tutorials/pcvrTutorial_advancedGrowthModeling/exHierarchyModel.pn
 )
 ```
 
-## Example hierarchical model
-
 Note for plotting hierarchical models a `hierarchy_value` can be specified and defaults to the mean of the `covar` in this case.
 
-![](exHierarchyModel.png)
+![Example hierarchical model](exHierarchyModel.png)
 
 ## Evaluating your models
 

@@ -58,6 +58,8 @@ Just to check that `pcvr` is installed and that your R session knows where to fi
 
 ```{r}
 #| echo: true
+#| fig.alt: >
+#|   Example plot of default prior distributions to test that the package is working.
 library(pcvr)
 priors <- list("A" = c(100, 130), "B" = c(10, 8), "C" = c(0.2, 0.1))
 plotPrior(priors, "gompertz")[[1]]

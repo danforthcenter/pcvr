@@ -453,7 +453,7 @@ growthPlot(fit, form = area_cm2 ~ DAS | barcode / group, df = ss$df) +
   labs(y = expression("Area" ~ "(cm"^2 ~ ")"))
 ```
 
-![](brmPlot1.png)
+![Posterior predictive intervals as visualized by growthPlot, showing differences in conditions](brmPlot1.png)
 
 #### Test Hypotheses
 
@@ -711,7 +711,7 @@ net.plot(net, fill = "DAS", shape = "fertilizer", size = 2)
 
 Our example network shows some clustering but real data's patterns are likely to be more complex:
 
-![](network.png)
+![Network showing plants clustering by fertilizer amount and Days after Start due to Hue](network.png)
 
 This is a much more complicated network! Parsing biological meaning out of this would require more work than the first example with 5 very different distributions, but there is a pretty strong cluster in the upper right corner of plants with low fertilizer at the end of the experiment. In general if you pick to use EMD with or without networks start small and consider what each step should mean conceptually for your experiment.
 
