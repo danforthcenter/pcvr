@@ -935,7 +935,7 @@ growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
 #| echo: true
 #| code-line-numbers: "6,7,8,9"
 #| fig.alt: >
-#|   Example changepoint model 
+#|   Example changepoint model
 simdf <- growthSim("linear + logistic",
   n = 20, t = 25,
   params = list(
@@ -967,7 +967,7 @@ growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
 #| echo: true
 #| code-line-numbers: "1,2,3"
 #| fig.alt: >
-#|   Example changepoint model 
+#|   Example changepoint model
 ss <- growthSS(
   model = "linear + gam", form = y ~ time | id / group, sigma = "int",
   list("linear1A" = 10, "changePoint1" = 5),
@@ -988,7 +988,7 @@ growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
 #| eval: false
 #| code-line-numbers: "5,6,7,8"
 #| fig.alt: >
-#|   Example changepoint model 
+#|   Example changepoint model
 simdf <- growthSim("linear + linear + linear",
   n = 25, t = 50,
   params = list(
@@ -1020,7 +1020,7 @@ plot <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
 #| echo: false
 #| code-line-numbers: "1,2,3,4"
 #| fig.alt: >
-#|   Example changepoint model 
+#|   Example changepoint model
 set.seed(123)
 noise <- do.call(rbind, lapply(1:30, function(i) {
   chngpt <- rnorm(2, 18, 2)
@@ -1059,7 +1059,7 @@ simdf <- rbind(noise, noise2)
 #| echo: true
 #| code-line-numbers: "1,2,3,4"
 #| fig.alt: >
-#|   Example changepoint model 
+#|   Example changepoint model
 ss <- growthSS(
   model = "int + int", form = y ~ time | id / group, sigma = "int + int",
   list(
@@ -1082,7 +1082,7 @@ plot <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
 #| eval: false
 #| echo: false
 #| fig.alt: >
-#|   Example changepoint model 
+#|   Example changepoint model
 set.seed(123)
 noise <- do.call(rbind, lapply(1:30, function(i) {
   chngpt <- rnorm(2, 18, 2)
@@ -1118,7 +1118,7 @@ simdf <- rbind(noise, signal)
 #| echo: true
 #| code-line-numbers: "1,2,3,4"
 #| fig.alt: >
-#|   Example changepoint model 
+#|   Example changepoint model
 ss <- growthSS(
   model = "int + linear", form = y ~ time | id / group, sigma = "int + linear",
   list(
@@ -1139,7 +1139,7 @@ plot <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df, timeRange = 1:40)
 #| eval: false
 #| echo: false
 #| fig.alt: >
-#|   Example changepoint model 
+#|   Example changepoint model
 set.seed(123)
 noise <- do.call(rbind, lapply(1:30, function(i) {
   chngpt <- rnorm(2, 18, 2)
@@ -1176,7 +1176,7 @@ simdf <- simdf[simdf$time < 45, ]
 #| echo: true
 #| code-line-numbers: "1,2,3,4,5"
 #| fig.alt: >
-#|   Example changepoint model 
+#|   Example changepoint model
 ss <- growthSS(
   model = "int+logistic", form = y ~ time | id / group, sigma = "int + spline",
   list(
@@ -1224,7 +1224,7 @@ Here the input data is standard phenotype data with a cutoff to represent the ev
 #| echo: true
 #| code-line-numbers: "3,5"
 #| fig.alt: >
-#|   Example growth model of a count phenotype. 
+#|   Example growth model of a count phenotype.
 df <- growthSim("count: logistic",
   n = 20, t = 25,
   params = list("A" = c(10, 12), "B" = c(13, 11), "C" = c(3, 3.5))
@@ -1257,7 +1257,7 @@ ggsave("~/pcvr/tutorials/pcvrTutorial_advancedGrowthModeling/exCountModel.png",
 #| echo: true
 #| code-line-numbers: "5, 8, 11, 15"
 #| fig.alt: >
-#|   Example hierarchical growth model 
+#|   Example hierarchical growth model
 simdf <- growthSim(
   "logistic",
   n = 20, t = 25,

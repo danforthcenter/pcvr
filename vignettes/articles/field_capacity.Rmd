@@ -930,7 +930,8 @@ ggplot(
 
 ```{r}
 #| fig.alt: >
-#|   Plots of all six phenotype conditions pseudo water use efficiency under continuously increasing watering.
+#|   Plots of all six phenotype conditions pseudo water use efficiency
+#|   under continuously increasing watering.
 
 rbic <- rb[rb$wc == "increasing cont", ]
 ggplot(rbic, aes(x = time, y = pWUE, group = id)) +

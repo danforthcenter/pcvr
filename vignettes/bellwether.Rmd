@@ -379,7 +379,8 @@ Looking at the prior distributions this way is useful, but for those still famil
 
 ```{r}
 #| fig.alt: >
-#|   Default pcvr lognormal prior distributions on growth model parameters and random plants simulated from the prior distributions.
+#|   Default pcvr lognormal prior distributions on growth model parameters and
+#|   random plants simulated from the prior distributions.
 twoPriors <- list("A" = c(100, 130), "B" = c(6, 12), "C" = c(0.5, 0.25))
 plotPrior(twoPriors, "gompertz", n = 100)[[1]]
 ```
@@ -448,7 +449,7 @@ We can visualize credible intervals from a `brms` model and compare that to our 
 
 ```{r, eval=FALSE}
 #| fig.alt: >
-#|   Posterior predictive intervals as visualized by growthPlot, showing differences in conditions. 
+#|   Posterior predictive intervals as visualized by growthPlot, showing differences in conditions.
 growthPlot(fit, form = area_cm2 ~ DAS | barcode / group, df = ss$df) +
   labs(y = expression("Area" ~ "(cm"^2 ~ ")"))
 ```
