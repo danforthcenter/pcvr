@@ -91,15 +91,16 @@ This may all still seem abstract, so we'll try to clear it up with two examples.
 
 If we take a foundational verb like "To Be" then we can conjugate it depending on the context.
 
-<img src="tobe.png" width="325" height="200" />
+![Example of conjugation in language with 'to be' verb](tobe.png)
 
 Now we add more information and the meaning gets more specific to describe that information.
 
-<img src="tobe2.png" width="600" height="500" />
+![Adding context to the 'to be' verb changes it's meaning](tobe2.png)
+
 
 We can do the same thing easily with some probability distributions. Similar to language we get more and more specific as the context is better described (as we add more data).
 
-<img src="tobe3.png" width="700" height="600" />
+![We can get more specific language with more data in the form of context](tobe3.png)
 
 ## Bayesian Beta-Binomial Conjugacy
 
