@@ -104,6 +104,10 @@ Assumptions:
 In the following plot we look at a simulated plant's watering data. This plant has been weighed for 5 days, with water added in the middle of the night. Plants were weighed shortly before and after watering. The weight before watering will be used to calculate the current water content and current field capacity. The target field capacity will be used to determine how much water to add. The difference in weight between the "after watering" weight and the following day's "before watering" weight are what we will use to calculate transpiration and *water use efficiency* (WUE).
 
 ```{r, eval = TRUE, echo = FALSE}
+#| fig.alt: >
+#|   Simulated watering data where water use is measured by weighing plants
+#|   before and after watering. Water lost during the day and water added at
+#|   night are marked.
 set.seed(123)
 days <- 5
 n_plants <- 1
@@ -194,6 +198,8 @@ Transpiration is calculated as the difference in weight between two timepoints. 
 **Note:** the values below are positive because we are framing the question as "the amount of water transpired", so despite the slope of the line (showing mass in the pot) going down we have positive numbers.
 
 ```{r, eval = TRUE, echo = FALSE}
+#| fig.alt: >
+#|   Labelling the previous plot with the amount of water transpired each day.
 exw <- ex
 exw$DAS <- rep(seq(1, days, 1), times = 2) - 0.2
 exw <- reshape2::dcast(exw, DAS + id ~ variable, value.var = "value")
@@ -233,6 +239,8 @@ The absolute amount of water transpired is interesting, but it is important to n
 To normalize transpiration, we need to know the total plant biomass, or a proxy of this measurement. Below is an example where we know the plant biomass each day, and will divide the daily transpiration by the plant biomass that day to get *Normalized Transpiration*. 
 
 ```{r, eval = TRUE, echo = FALSE}
+#| fig.alt: >
+#|   Showing plant biomass along with water transpired each day.
 set.seed(345)
 exw$biomass <- sort(runif(days, 5, 15))
 
@@ -415,6 +423,9 @@ The simulated data has 6 phenotype trends. Here we're using simulated leaf area 
 - `death`: Slow asymptotic growth with a low asymptote.
 
 ```{r}
+#| fig.alt: >
+#|   Six simulated growth trends that will be talked about for water use
+#|   phenotypes.
 ggplot(ex[ex$wc == "constant", ], aes(time, area, group = id)) +
   facet_wrap(~pc) +
   geom_line() +
@@ -437,6 +448,9 @@ There are also 6 watering data options in the simulated data.
 - `decreasing step`: Pre-watering weight increases with the phenotype (area), and a constant amount of water is added to that pre-watered weight every day, but half way through the experiment that amount of water decreases from 75g to 20g. Field capacity is not considered and target weight is not used. 
 
 ```{r}
+#| fig.alt: >
+#|   Six different watering schemes and how they appear if using weight before
+#|   and weight after watering to represent transpiration.
 l <- reshape2::melt(ex[ex$pc == "sigmoid", ],
   id.vars = c("id", "group", "time", "wc"),
   measure.vars = c("weight_before", "weight_after")
@@ -459,6 +473,9 @@ ggplot(
 Here we've taken a roundabout way to simulate the amount of water used by simulated pre-watering weight and post-watering weight since that is how you'll get plant weight data most of the time. For water use the important thing about the above plot is not where the red or blue points are, only the length of the line between them is important since that represents the amount of water used. With that in mind we'll look at this plot a different way, focusing on the length of the black lines.
 
 ```{r}
+#| fig.alt: >
+#|   Looking at the previous watering trends as weight change instead of pre/post
+#|   weights.
 ggplot(ex[ex$id == "id_1", ], aes(x = time, y = weight_after - weight_before, group = id)) +
   facet_wrap(~wc) +
   geom_line() +
@@ -481,6 +498,9 @@ ex <- ex[ex$wc %in% c("constant", "increasing cont", "decreasing cont"), ]
 Combining everything from those sets of conditions we can look at the pre vs post watering weights for all 36 of our options. Phenotype (here, leaf area, but plant biomass could be used) shown in light gray, pot weight after watering shown in blue.
 
 ```{r}
+#| fig.alt: >
+#|   Showing combinations of conditions that will be used in talking about
+#|   water use phenotypes.
 ggplot(ex, aes(time, area, group = id)) +
   facet_grid(wc ~ pc) +
   geom_line(color = "gray70", linewidth = 0.1) +
@@ -507,6 +527,10 @@ Here we're checking that:
 - that the weight before watering is lower than the previous post-watering weight (indicating that transpiration happened). The length of the black lines between weights here shows the water added. 
 
 ```{r, echo = FALSE}
+#| fig.alt: >
+#|   Example of a sanity check plot when working with water use data to make
+#|   sure that the data matches your experimental design and that you understand
+#|   the structure.
 ggplot(
   l[l$id %in% paste0("id_", 1:3), ],
   aes(
@@ -562,6 +586,8 @@ Remember that the rate-based pWUE formula we are using is $\frac{\Delta(\text{Bi
 With that in mind we can start thinking about what we'd expect to see. As an example, the `death` group is always going to have small values for pWUE compared to other groups since the change in size between any two measurements is always very small. If we zoom in then there should be a downward trend driven by the phenotype increasing by smaller and smaller amounts towards an asymptotic limit. `death` shows slow monomolecular growth with a low asymptote when compared to our other groups. Similarly, the `sigmoid` group should start to look like a bell curve, since the derivative of a sigmoid is bell shaped (the CDF of a normal distribution is a logistic curve, etc).
 
 ```{r}
+#| fig.alt: >
+#|   Pseudo water use efficiency for each of 6 phenotypes under constant watering
 rbc <- rb[rb$wc == "constant", ]
 ggplot(rbc, aes(x = time, y = pWUE, group = id)) +
   facet_wrap(~pc, scales = "free_y") +
@@ -577,6 +603,10 @@ This follow the general trends we'd expect, but some things look strange and it 
 As mentioned above, we expect a roughly bell shaped plot of rate pWUE over time for our data with constant watering and logistic growth.
 
 ```{r}
+#| fig.alt: >
+#|   Showing only the Logistic phenotype's pseudo water use efficiency trend,
+#|   which approximates a gaussian distribution since the denominator is
+#|   constant.
 ggplot(
   rbc[rbc$pc == "sigmoid", ],
   aes(x = time, y = pWUE, group = id)
@@ -592,6 +622,10 @@ ggplot(
 The overall trend makes sense, but why is the data so spikey? We can sometimes get an easier grasp of pWUE if we plot the component parts, which are both returned from `pwue`.
 
 ```{r}
+#| fig.alt: >
+#|   Separating pseudo water use efficiency into the component parts of
+#|   difference in phenotype and difference in water use to show how the
+#|   phenotype trend drives this water use trait.
 ggplot(
   rbc[rbc$pc == "sigmoid", ],
   aes(x = time, group = id)
@@ -615,6 +649,9 @@ Now we can see that the "spikey-ness" is a product of the water data having a lo
 The typical sigmoid data was pretty simple, but what happens if we have a different kind of sigmoid shape? First looks at the pWUE for our "abrupt" logistic growth are way less friendly.
 
 ```{r}
+#| fig.alt: >
+#|   Showing only the abrupt sigmoid phenotype's pseudo water use efficiency
+#|   trend,  which has one sharp spike and otherwise appears flat.
 ggplot(
   rbc[rbc$pc == "abrupt", ],
   aes(x = time, y = pWUE, group = id)
@@ -630,6 +667,9 @@ ggplot(
 We're going to have to zoom in to understand the general trend, then we can look at each replicate to see what is going on with that large spike.
 
 ```{r}
+#| fig.alt: >
+#|   Zooming in on the abrupt sigmoid's pseudo water use efficiency to show
+#|   that each rep has a sharp spike.
 ggplot(
   rbc[rbc$pc == "abrupt", ],
   aes(x = time, y = pWUE, group = id)
@@ -656,6 +696,10 @@ rbcp <- rbcp[which(rbcp$total_water > 0), ]
 Now that we've removed the negative values we can think about the components of rate pWUE a little more clearly.
 
 ```{r}
+#| fig.alt: >
+#|   Separating pseudo water use efficiency into the component parts of
+#|   difference in phenotype and difference in water use to show how the
+#|   phenotype trend drives this water use trait.
 ggplot(
   rbcp,
   aes(x = time, group = id)
@@ -677,6 +721,9 @@ The peaks in measurement-to-measurement phenotype change have to happen with suc
 The troughs in amount of water used may be seen on a system where the weight of a pot changes noticeably with the measured phenotype (the plant is a non-negligible amount of the total weight of whatever pot/cart is being weighed), but that will depend on your equipment. This trend is very dramatic, it is likely that in your experiments the soil and pot would out weigh the plant by several orders of magnitude which would make for less steep pWUE curves.
 
 ```{r}
+#| fig.alt: >
+#|   Pseudo water use efficiency per rep shows that the trend is the same just at
+#|   different scales.
 ggplot(
   rbcp,
   aes(x = time, y = pWUE, group = id)
@@ -695,6 +742,9 @@ ggplot(
 The previous two phenotype options were asymptotic. What happens with non-asymptotic growth?
 
 ```{r}
+#| fig.alt: >
+#|   Showing only the exponential phenotype's pseudo water use efficiency
+#|   trend,  which increases exponentially with some outliers
 ggplot(
   rbc[rbc$pc == "exponential", ],
   aes(x = time, y = pWUE, group = id)
@@ -710,6 +760,9 @@ ggplot(
 As before we'll remove the negative values for `total_water`. Here they come from the same place since the phenotype is changing so quickly.
 
 ```{r}
+#| fig.alt: >
+#|   Showing only the exponential phenotype's pseudo water use efficiency
+#|   trend,  which increases exponentially with outliers removed
 rbce <- rbc[which(rbc$pc == "exponential" & rbc$total_water > 0), ]
 
 ggplot(
@@ -727,6 +780,8 @@ ggplot(
 With the negative values removed the trend here looks a lot like the raw phenotype data.
 
 ```{r}
+#| fig.alt: >
+#|   Showing only the exponential phenotype
 ggplot(
   ex[ex$pc == "exponential" & ex$wc == "constant", ],
   aes(time, area, group = id)
@@ -749,6 +804,10 @@ ggplot(
 This is a feature of exponential growth, since the measurement-to-measurement difference increases exponentially when we have roughly constant water use the pWUE trend will look exponential.
 
 ```{r}
+#| fig.alt: >
+#|   Separating pseudo water use efficiency into the component parts of
+#|   difference in phenotype and difference in water use to show how the
+#|   phenotype trend drives this water use trait.
 ggplot(
   rbce,
   aes(x = time, group = id)
@@ -770,6 +829,9 @@ ggplot(
 For non-asymptotic growth that is slowing down (exponent below 1) we should expect to see decreasing pWUE given constant watering.
 
 ```{r}
+#| fig.alt: >
+#|   Showing only the slowing phenotype's pseudo water use efficiency
+#|   trend,  which decreases towards 0 as growth slows down.
 ggplot(
   rbc[rbc$pc == "slowing", ],
   aes(x = time, y = pWUE, group = id)
@@ -789,6 +851,9 @@ While the growth is non-asymptotic pWUE is asymptotic since the numerator is mon
 The measurement-to-measurement change in linear data is the same between any two subsequent times. Since the water data is roughly constant (at least it has a 0 slope) we expect to see flat but noisy pWUE here.
 
 ```{r}
+#| fig.alt: >
+#|   Showing only the linear phenotype's pseudo water use efficiency
+#|   trend,  which is roughly constant.
 ggplot(
   rbc[rbc$pc == "linear", ],
   aes(x = time, y = pWUE, group = id)
@@ -807,6 +872,10 @@ ggplot(
 Now we can look at the `death` group, which taken separately looks like a totally normal growth curve.
 
 ```{r}
+#| fig.alt: >
+#|   Showing the 'dying' group of plants. On their own the trend looks
+#|   normal enough, but the magnitude of changes day over day is very small
+#|   which will effect water use metrics.
 ggplot(
   rbc[rbc$pc == "death", ],
   aes(time, area, group = interaction(group, id))
@@ -826,6 +895,9 @@ ggplot(
 The measurement-to-measurement change for any asymptotic phenotype approaches 0 at the same rate as the phenotype approaches the asymptote. This measurement-to-measurement change is returned from `pwue` as the `pheno_diff` column, plotted below.
 
 ```{r}
+#| fig.alt: >
+#|   Showing the 'dying' group of plants with day to day changes labelled.
+
 pheno_diff_ag <- aggregate(cbind(area, pheno_diff) ~ time + group,
   rbc[rbc$time %% 2 == 0 & rbc$pc == "death", ],
   mean,
@@ -857,6 +929,10 @@ ggplot(
 - `increasing cont.`: Pre-watering weight increases with the phenotype (area), and every day a larger amount of water is added to that pre-watered weight.
 
 ```{r}
+#| fig.alt: >
+#|   Plots of all six phenotype conditions pseudo water use efficiency
+#|   under continuously increasing watering.
+
 rbic <- rb[rb$wc == "increasing cont", ]
 ggplot(rbic, aes(x = time, y = pWUE, group = id)) +
   facet_wrap(~pc, scales = "free_y") +
@@ -872,6 +948,10 @@ Luckily, compared to the constant watering we can see that there aren't any craz
 If we were only looking at the numerator we would expect a bell curve. Since the denominator now increases over time (more water being added to reach the target weight since the plant transpires more each day as it grows larger), we should see bell curves that starts high, have a center "lump", then end low.
 
 ```{r}
+#| fig.alt: >
+#|   Showing only the abrupt sigmoid phenotype's pseudo water use efficiency
+#|   trend under increasing watering, which looks like a left truncated gaussian.
+
 rbics <- rbic[rbic$pc == "sigmoid", ]
 ggplot(rbics, aes(x = time, y = pWUE, group = id)) +
   geom_line() +
@@ -882,6 +962,10 @@ ggplot(rbics, aes(x = time, y = pWUE, group = id)) +
 And that's exactly what we see. To make the reason more clear we can plot the numerator and the denominator separately.
 
 ```{r}
+#| fig.alt: >
+#|   Separating pseudo water use efficiency into the component parts of
+#|   difference in phenotype and difference in water use to show how the
+#|   phenotype trend drives this water use trait.
 ggplot(rbics,
        aes(x = time, group = id)) +
   geom_line(aes(y = total_water, color = "Water (denominator)")) +
@@ -900,6 +984,11 @@ There are lots of ways to increase watering over the course of an experiment, it
 Sharper logistic growth should yield a sharper bell curve and since the phenotype is not changing at the start then reaches asymptotic size quickly, pWUE should be 0 on either side of the "spike".
 
 ```{r}
+#| fig.alt: >
+#|   Showing only the abrupt sigmoid phenotype's pseudo water use efficiency
+#|   trend,  which has one sharp spike and otherwise appears flat otherwise.
+#|   Compared to the more normal sigmoid this makes a gaussian like shape
+#|   that is not truncated.
 rbica <- rbic[rbic$pc == "abrupt", ]
 ggplot(rbica, aes(x = time, y = pWUE, group = id)) +
   geom_line() +
@@ -908,6 +997,10 @@ ggplot(rbica, aes(x = time, y = pWUE, group = id)) +
 ```
 
 ```{r}
+#| fig.alt: >
+#|   Separating pseudo water use efficiency into the component parts of
+#|   difference in phenotype and difference in water use to show how the
+#|   phenotype trend drives this water use trait.
 ggplot(rbica,
        aes(x = time, group = id)) +
   geom_line(aes(y = total_water, color = "Water (denominator)")) +
@@ -924,6 +1017,9 @@ ggplot(rbica,
 Here our numerator increases exponentially while our denominator increases asymptotically. The result we should expect is exponential growth.
 
 ```{r}
+#| fig.alt: >
+#|   Showing only the exponential phenotype's pseudo water use efficiency
+#|   trend under increasing watering, which still appears exponential.
 rbice <- rbic[rbic$pc == "exponential", ]
 ggplot(rbice, aes(x = time, y = pWUE, group = id)) +
   geom_line() +
@@ -934,6 +1030,10 @@ ggplot(rbice, aes(x = time, y = pWUE, group = id)) +
 And that’s what we get. The increase in measurement-to-measurement phenotype outpaces the increase in transpiration.
 
 ```{r}
+#| fig.alt: >
+#|   Separating pseudo water use efficiency into the component parts of
+#|   difference in phenotype and difference in water use to show how the
+#|   phenotype trend drives this water use trait.
 ggplot(rbice,
        aes(x = time, group = id)) +
   geom_line(aes(y = total_water, color = "Water (denominator)")) +
@@ -950,6 +1050,9 @@ ggplot(rbice,
 The derivative of our non-asymptotic but slowing in growth rate phenotype is asymptotic at 0. With our numerator decreasing and the denominator increasing we should see pWUE start high and approach 0 very quickly.
 
 ```{r}
+#| fig.alt: >
+#|   Showing only the slowing phenotype's pseudo water use efficiency
+#|   trend, which quickly approaches an asymptote at 0.
 rbics <- rbic[rbic$pc == "slowing", ]
 ggplot(rbics, aes(x = time, y = pWUE, group = id)) +
   geom_line() +
@@ -960,6 +1063,10 @@ ggplot(rbics, aes(x = time, y = pWUE, group = id)) +
 And that's what we get. The increase in measurement-to-measurement phenotype outpaces the increase in transpiration.
 
 ```{r}
+#| fig.alt: >
+#|   Separating pseudo water use efficiency into the component parts of
+#|   difference in phenotype and difference in water use to show how the
+#|   phenotype trend drives this water use trait.
 ggplot(rbics,
        aes(x = time, group = id)) +
   geom_line(aes(y = total_water, color = "Water (denominator)")) +
@@ -976,6 +1083,9 @@ ggplot(rbics,
 Here our numerator is constant and the denominator (transpiration) is increasing, so we should see pWUE decrease over time, but never getting to 0.
 
 ```{r}
+#| fig.alt: >
+#|   Showing only the linear phenotype's pseudo water use efficiency
+#|   trend, which just mirrors the decreasing water use.
 rbicl <- rbic[rbic$pc == "linear", ]
 ggplot(rbicl, aes(x = time, y = pWUE, group = id)) +
   geom_line() +
@@ -986,6 +1096,10 @@ ggplot(rbicl, aes(x = time, y = pWUE, group = id)) +
 Again we look at the component pieces to check our intuition.
 
 ```{r}
+#| fig.alt: >
+#|   Separating pseudo water use efficiency into the component parts of
+#|   difference in phenotype and difference in water use to show how the
+#|   phenotype trend drives this water use trait.
 ggplot(rbicl,
        aes(x = time, group = id)) +
   geom_line(aes(y = total_water, color = "Water (denominator)")) +
@@ -1002,6 +1116,9 @@ ggplot(rbicl,
 Here we should see a very similar trend as we saw with non-asymptotic growth that is slowing down. Here our growth is asymptotic but the effect on the numerator should be the same.
 
 ```{r}
+#| fig.alt: >
+#|   Showing only the very slow phenotype's pseudo water use efficiency
+#|   trend, which just mirrors the decreasing water use.
 rbicd <- rbic[rbic$pc == "death", ]
 ggplot(rbicd, aes(x = time, y = pWUE, group = id)) +
   geom_line() +
@@ -1012,6 +1129,10 @@ ggplot(rbicd, aes(x = time, y = pWUE, group = id)) +
 Again we look at the component pieces to check our intuition.
 
 ```{r}
+#| fig.alt: >
+#|   Separating pseudo water use efficiency into the component parts of
+#|   difference in phenotype and difference in water use to show how the
+#|   phenotype trend drives this water use trait.
 ggplot(rbicl,
        aes(x = time, group = id)) +
   geom_line(aes(y = total_water, color = "Water (denominator)")) +
@@ -1029,6 +1150,8 @@ ggplot(rbicl,
 Now that we are inverting the trend of the denominator we should see some real differences.
 
 ```{r}
+#| fig.alt: >
+#|   Six phenotypes pseudo water use efficiency trends under decreasing watering.
 rbdc <- rb[rb$wc == "decreasing cont", ]
 ggplot(rbdc, aes(x = time, y = pWUE, group = id)) +
   facet_wrap(~pc, scales = "free_y") +
@@ -1042,6 +1165,9 @@ ggplot(rbdc, aes(x = time, y = pWUE, group = id)) +
 With the continuously decreasing watering scheme we see a roughly mirrored version of what we saw with the increasing watering. pWUE starts low, goes through the "bell" shape, then ends higher since the denominator is at it's smallest at the end of the experiment when measurement-to-measurement phenotype change is back to about the same as it was in the beginning.
 
 ```{r}
+#| fig.alt: >
+#|   Showing only the sigmoid phenotype's pseudo water use efficiency
+#|   trend, which looks like a right truncated gaussian.
 rbdcs <- rbdc[rbdc$pc == "sigmoid", ]
 ggplot(rbdcs, aes(x = time, y = pWUE, group = id)) +
   geom_line() +
@@ -1052,6 +1178,10 @@ ggplot(rbdcs, aes(x = time, y = pWUE, group = id)) +
 We do have one strong spike at the end which we can try to understand better by looking at each component of pWUE.
 
 ```{r}
+#| fig.alt: >
+#|   Separating pseudo water use efficiency into the component parts of
+#|   difference in phenotype and difference in water use to show how the
+#|   phenotype trend drives this water use trait.
 ggplot(
   rbdcs,
   aes(x = time, group = id)
@@ -1079,6 +1209,10 @@ The abrupt logistic phenotype looks essentially the same as it has for other wat
 Again here we remove negative values, which are caused normally by measurement error.
 
 ```{r}
+#| fig.alt: >
+#|   Showing only the exponential phenotype's pseudo water use efficiency
+#|   trend, which is still exponential since it takes a very dramatic water
+#|   intervention to overcome exponential growth.
 rbdce <- rbdc[which(rbdc$pc == "exponential" & rbdc$pWUE > 0), ]
 ggplot(rbdce, aes(x = time, y = pWUE, group = id)) +
   geom_line() +
@@ -1094,6 +1228,11 @@ Once we remove the negative values we see the same basic trend (stronger this ti
 The `slowing`, `linear`, and `death` groups all show similar trends to each other. Since the numerators here are constant or slightly decreasing (the change in slope) the denominator can push the pWUE trend dramatically.
 
 ```{r}
+#| fig.alt: >
+#|   Separating pseudo water use efficiency into the component parts of
+#|   difference in phenotype and difference in water use to show how the
+#|   phenotype trend drives this water use trait for any constant or slowing
+#|   decreasing slopes to the phenotype.
 ggplot(
   rbdc[rbdc$pc %in% c("slowing", "linear", "death"), ],
   aes(x = time, group = id)
@@ -1137,6 +1276,10 @@ colSums(table(a$group, ifelse(a$pWUE < 0, "negative", "positive")))
 This time we'll plot it with the scales freed on the Y-axis and with values below 0 already removed.
 
 ```{r}
+#| fig.alt: >
+#|   Absolute value based pseudo water use efficiency, where the numerator is
+#|   the same as it was previously but trends depend more on the phenotype's
+#|   magnitude than rate of change.
 apos <- a[which(a$pWUE > 0), ]
 ggplot(
   apos[apos$id %in% paste0("id_", 1:3), ],
@@ -1151,7 +1294,7 @@ ggplot(
   )
 ```
 
-Here our pWUE data look a lot like the original phenotype data, with the exception of which we'll get to. That general similarity is because the phenotype data are used as-is in the numerator, and for the most part we don't have drastic changes to the water transpiration (weight changes) over time.
+Here our pWUE data look a lot like the original phenotype data, with the exception of abrupt growth which we'll get to. That general similarity is because the phenotype data are used as-is in the numerator, and for the most part we don't have drastic changes to the water transpiration (weight changes) over time.
 
 Everything except for the `abrupt` logistic phenotype basically just looks like the phenotype it represents.
 
@@ -1160,6 +1303,9 @@ The `abrupt` group looks strange here though, what is going on there?
 #### Abrupt Logistic Growth
 
 ```{r}
+#| fig.alt: >
+#|   Highlighting the abrupt sigmoid phenotype's absolute value based pseudo water use
+#|   efficiency, where the trend does not look like the raw phenotype.
 ggplot(
   apos[apos$pc == "abrupt", ],
   aes(x = time, y = pWUE, group = id)
@@ -1179,6 +1325,10 @@ ggplot(
 
 
 ```{r}
+#| fig.alt: >
+#|   Separating pseudo water use efficiency into the component parts of
+#|   difference in phenotype and difference in water use to show how the
+#|   phenotype trend drives this water use trait.
 ggplot(
   apos[apos$pc == "abrupt", ],
   aes(x = time, group = id)
@@ -1197,6 +1347,9 @@ ggplot(
 What is happening here is that since our phenotype changes so quickly between measurements 10 and 14 (roughly) the "lag" where we look at the difference in weights becomes very important. Looking at the pre/post watering weights for the first 3 plants in each watering condition given `abrupt` logistic growth the problem is more obvious.
 
 ```{r}
+#| fig.alt: >
+#|   Sharp phenotype changes drive small denominators which often make pseudo water use
+#|   efficiency look strange.
 l2 <- reshape2::melt(ex[ex$pc == "abrupt", ],
   id.vars = c("id", "group", "time", "wc"),
   measure.vars = c("weight_before", "weight_after")
@@ -1228,6 +1381,9 @@ Between days 10 and 14 the line between those weights is much shorter. In this d
 If we zoom in on our pWUE trends we can tell that despite being very noisy in the middle of the experiment from the discrepancy between area and a proxy for biomass and true biomass (rapid artificial weight gain in excess of the watering amount) the overall trend does look like our phenotype.
 
 ```{r}
+#| fig.alt: >
+#|   Highlighting the abrupt sigmoid phenotype's absolute value based pseudo water use
+#|   efficiency, where the trend does not look like the raw phenotype.
 ggplot(
   apos[apos$pc == "abrupt", ],
   aes(x = time, y = pWUE, group = id)
@@ -1264,6 +1420,8 @@ ndt <- ndt[which(ndt$pWUE > 0), ]
 Once again the `abrupt` group misbehaves relative to the other options. Suffice to say, most of the time this looks like an obvious reciprocal of the previous pWUE implementation. In our simulated data we see that when plants are smaller but apparently using the same amount of water (see top row with constant watering) NDT is high. This is most obvious in the exponential phenotype. Remember that how well you will be able to use NDT (any any water use phenotype) will depend entirely on how accurately you can measure transpiration.
 
 ```{r}
+#| fig.alt: >
+#|   Normalized daily transpiration (NDT) in each watering condition and phenotype trend.
 ggplot(
   ndt[ndt$id %in% paste0("id_", 1:3) & ndt$pc != "abrupt", ],
   aes(x = time, y = normalized_daily_transpiration, group = id)
@@ -1280,6 +1438,10 @@ ggplot(
 The `abrupt` phenotype has much higher values for transpiration since we are dividing by close to 0 for a long time (in the beginning of the experiment these plants are barely detectable). This will be another caveat in real data, if there are some plants that fail to thrive then you can end up with dramatic outliers in water use phenotypes.
 
 ```{r}
+#| fig.alt: >
+#|   Highlighting the abrupt sigmoid phenotype's NDT, which starts high and quickly
+#|   approaches 0. This starts extremely high compared to other options since we are
+#|   almost dividing by 0 at the beginning.
 ggplot(
   ndt[ndt$id %in% paste0("id_", 1:3) & ndt$pc == "abrupt", ],
   aes(x = time, y = normalized_daily_transpiration, group = id)

@@ -56,21 +56,15 @@ library(patchwork)
 
 Sometimes a single value cannot describe a phenotype adequately.
 
-![](segImage2.png)
-
-## What are multi-value traits?
+![Image of a corn plant analyzed using plantcv](segImage2.png)
 
 Here our segmentation easily shows area, height, and other numeric phenotypes. To describe the color of this plant then we need a more complex phenotype.
-
-![](segImage2.png)
-
-## What are multi-value traits?
 
 There are many ways to describe color, many wavelengths to measure color in, and many indices that can be calculated from those wavelengths.
 
 Since each pixel has a color we describe the entire image using a histogram of those values
 
-![Wikipedia HSV Color Space](HSV_color_solid_cylinder_saturation_gray.png)
+![Wikipedia HSV Color Space Graphic](HSV_color_solid_cylinder_saturation_gray.png)
 
 ## Multi value trait format
 
@@ -99,9 +93,7 @@ structure(list(sample = c(
 )), row.names = 3641:3655, class = "data.frame")
 ```
 
-## Multi value trait format
-
-In `pcvr` you can choose to read multi value traits in wide format with `mode="wide"` in `read.pcv`.
+In `pcvr` you can choose to read multi value traits in wide format with `mode="wide"` in `read.pcv`. Note that for output from older versions of `PlantCV` this sort of functionality may be helpful, but any versions after `PlantCV` 4 should make this obsolescent.
 
 ```{r}
 structure(list(hue_frequencies.45 = c(
@@ -118,8 +110,6 @@ structure(list(hue_frequencies.45 = c(
   0.0657894736842105
 )), row.names = 100:104, class = "data.frame")
 ```
-
-. . .
 
 Either option will work for most `pcvr` functions.
 
@@ -177,6 +167,8 @@ sim_plot <- ggplot(sim_df_long, aes(x = bin, y = value, fill = group), alpha = 0
 Here we simulate wide data, then lengthen it for plotting.
 
 ```{r}
+#| fig.alt: >
+#|   Simulated Earth Mover's Distance based on several probability distributions.
 sim_plot
 ```
 
@@ -185,17 +177,17 @@ sim_plot
 We can make joyplots and using `pcv.joyplot`
 
 ```{r}
-#| echo: true
-#| warning: false
+#| fig.alt: >
+#|   Joyplot of simulated Earth Mover's Distance based on several probability distributions.
 (p <- pcv.joyplot(sim_df, index = "sim", group = c("group")))
 ```
-
-## `pcv.joyplot`
 
 The plot output is a `ggplot` object so we can change it to match our needs. Here we show these distributions as if they are hues.
 
 ```{r}
-#| echo: true
+#| fig.alt: >
+#|   Joyplot of simulated Earth Mover's Distance based on several probability distributions
+#|   colored by Hue.
 p + scale_fill_gradientn(colors = scales::hue_pal(l = 55)(360))
 ```
 
@@ -215,7 +207,8 @@ EMD then can be used to quantify the difference in color histograms.
 Here the EMD would be 0.01 since only 1 count has to move 1 space out of 100 total observations:
 
 ```{r}
-#* visual of emd
+#| fig.alt: >
+#|   Example of how Earth Mover's Distance calculates differences in histograms.
 set.seed(123)
 df <- data.frame(x = round(runif(101, 1, 10)), y = c(rep("original", 99), "old", "new"))
 df[100:101, "x"] <- c(5, 6)
@@ -250,8 +243,6 @@ p2 <- ggplot(df[df$y == "original", ], aes(x = x)) +
 p1 + p2
 ```
 
-## `pcv.emd`
-
 Here we use the wide data (although long can also be used).
 
 The "reorder" argument specifies groups to arrange together in the resulting plot if `plot=TRUE`.
@@ -273,6 +264,8 @@ sim_emd <- pcv.emd(
 Looking at the plot we can see that there are obvious differences between groups in our data.
 
 ```{r}
+#| fig.alt: >
+#|   Heatmap of simulated Earth Mover's Distance based on several probability distributions.
 sim_emd$plot
 ```
 
@@ -304,15 +297,14 @@ net1 <- net.plot(n, fill = "group") +
   ))
 ```
 
-## `net.plot`
 
 Our results show very clear clustering and highlight that the uniform distribution is most dissimilar to the others since it is excluded entirely. We can make another network to include it.
 
 ```{r}
+#| fig.alt: >
+#|   Network of simulated Earth Mover's Distance based on several probability distributions.
 net1
 ```
-
-## `pcv.net`
 
 Here we specify our filter as a character, which is interpreted as a quantile here keeping only edges that are above median strength.
 
@@ -328,11 +320,12 @@ net2 <- net.plot(n, fill = "group") +
   )
 ```
 
-## `pcv.net`
-
 Now we can see the full layout of our five distributions.
 
 ```{r}
+#| fig.alt: >
+#|   Network of simulated Earth Mover's Distance based on several probability distributions
+#|   with more edges kept.
 net2
 ```
 
@@ -357,17 +350,13 @@ s2 <- sim_df[sim_df$group == "lognormal", grepl("sim", colnames(sim_df))]
 Now we can run `conjugate` on our samples. Here we use assume a lognormal distribution.
 
 ```{r}
-#| output: false
-#| echo: true
 res <- conjugate(s1, s2,
   method = "lognormal",
   priors = list(mu = 10, sd = 5),
   plot = TRUE, rope_range = NULL, rope_ci = 0.89,
-  cred.int.level = 0.89, hypothesis = "equal", support = NULL
+  cred.int.level = 0.89, hypothesis = "equal"
 )
 ```
-
-## `conjugate`
 
 We can also perform region of practical equivalence tests by specifying a `rope_range`.
 
@@ -376,13 +365,13 @@ res <- conjugate(s1, s2,
   method = "lognormal",
   priors = list(mu = 10, sd = 5),
   plot = TRUE, rope_range = c(-10, 10), rope_ci = 0.89,
-  cred.int.level = 0.89, hypothesis = "equal", support = NULL
+  cred.int.level = 0.89, hypothesis = "equal"
 )
 ```
 
 ## `conjugate`
 
-The results are also returned as a summary dataframe
+The results are also returned as a summary data.frame.
 
 ```{r}
 res$summary[, -c(1:6)]

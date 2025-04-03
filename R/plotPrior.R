@@ -233,7 +233,7 @@ plotPrior <- function(priors, type = "density", n = 200, t = 25) {
     },
     error = function(err) {
       message(paste0(
-        "Error trying to sample from priors distributions.",
+        "Error trying to sample from prior distributions. ",
         "All priors must be proper (non-flat). Check prior specification in growthSS\n"
       ))
       message("The original Error message is:")

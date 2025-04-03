@@ -59,11 +59,8 @@ library(patchwork)
 
 `plantCV` allows for user friendly high throughput image based phenotyping
 
-. . .
 
 Resulting data follows individuals over time, which changes our statistical needs.
-
-## Why Longitudinal Modeling? 2
 
 Longitudinal Data is:
 
@@ -71,11 +68,11 @@ Longitudinal Data is:
 -   Often non-linear
 -   Heteroskedastic
 
-## Why Longitudinal Modeling? 3
-
 ```{r}
 #| echo: false
 #| eval: true
+#| fig.alt: >
+#|   Highlighting autocorrelation as a feature of longitudinal data
 
 set.seed(123)
 simdf <- growthSim("logistic",
@@ -95,18 +92,14 @@ ggplot(simdf, aes(time, y, group = interaction(group, id))) +
   annotate("segment", x = x1, y = y2, xend = x2, yend = y2, color = "red") +
   labs(title = "Autocorrelation") +
   pcv_theme()
-
-
-#* simulate data
-#* show autocorrelation in a plot
-#* aka add rise/run segments to some line from the data from a day to the next day
 ```
 
-## Why Longitudinal Modeling? 4
 
 ```{r}
 #| echo: false
 #| eval: true
+#| fig.alt: >
+#|   Highlighting non-linearyity as a common feature of longitudinal data
 simdf2 <- simdf
 
 nlPlot <- ggplot(simdf2, aes(time, y, group = interaction(group, id))) +
@@ -133,9 +126,10 @@ nlPatch <- nlPlot / residPlot + plot_layout(design = design)
 nlPatch
 ```
 
-## Why Longitudinal Modeling? 5
 
 ```{r}
+#| fig.alt: >
+#|   Highlighting heteroskedasticity as a nearly ubiquitous feature of longitudinal data
 r1 <- range(simdf[simdf$time == 1, "y"])
 r2 <- range(simdf[simdf$time == 5, "y"])
 r3 <- range(simdf[simdf$time == 10, "y"])
@@ -247,15 +241,16 @@ Bayesian hierarchical Models
 
 ## Supported Growth Models
 
-There are 6 main growth models supported in `pcvr`.
+There are 6 main growth models supported in `pcvr`, although there are several other options as well as changepoint models made of combinations between them.
 
-3 are asymptotic, 3 are non-asympototic.
-
-## Supported Growth Models
+Of the general 6 we are looking at, 3 are asymptotic, 3 are non-asympototic.
 
 ```{r}
 #| echo: false
 #| eval: true
+#| fig.alt: >
+#|   Showing 3 examples of asymptotic and 3 examples of non-asymptotic growth curves that are
+#|   supported by pcvr.
 
 simdf <- growthSim("logistic",
   n = 20, t = 25,
@@ -325,6 +320,8 @@ There are an additional 3 sigmoidal models based on the Extreme Value Distributi
 ```{r}
 #| echo: false
 #| eval: true
+#| fig.alt: >
+#|   Showing variations of the Extreme Value Distribution sigmoid curves that are supported.
 simdf <- growthSim("weibull",
   n = 20, t = 25,
   params = list("A" = c(100, 100), "B" = c(1, 0.75), "C" = c(2, 3))
@@ -363,6 +360,8 @@ There are also two double sigmoid curves intended for use with recovery experime
 ```{r}
 #| echo: false
 #| eval: true
+#| fig.alt: >
+#|   Two examples of multi-part models that can be parameterized without changepoints.
 
 simdf <- growthSim("double logistic",
   n = 20, t = 70,
@@ -418,6 +417,10 @@ wiggles <- data.frame(x = c(x, x2), y = c(y, y2))
 ```{r}
 #| echo: false
 #| eval: true
+#| fig.alt: >
+#|   Example of the effect of changing the number of knots in a spline, with more knots
+#|   being more prone to overfitting and fewer knots being less accurate for the
+#|   observed data.
 ggplot(wiggles, aes(x, y)) +
   geom_point() +
   geom_smooth(
@@ -482,7 +485,9 @@ out <- gam_diff(
 ## `gam_diff` predictions
 
 ```{r}
-out$plot$plot_preds +
+#| fig.alt: >
+#|   Example of means modeled by splines for two groups.
+out$plot[[1]] +
   geom_line(
     data = simdf,
     aes(
@@ -496,6 +501,8 @@ out$plot$plot_preds +
 ## `gam_diff` differences
 
 ```{r}
+#| fig.alt: >
+#|   Example of differences between distributions modelled by a spline.
 gam_diff(
   model = m, newdata = support, g1 = "a", g2 = "b",
   byVar = "group", smoothVar = "time", plot = TRUE
@@ -531,6 +538,10 @@ We can check that the grouping in our formula is correct with a plot.
 ```{r}
 #| echo: true
 #| code-line-numbers: "1,2"
+#| fig.alt: >
+#|   Checking the grouping of data using a ggplot before making a model.
+#|   We are looking to see that lines follow individual plants over time,
+#|   here they do.
 ggplot(simdf, aes(
   x = time, y = y,
   group = paste(group, id)
@@ -552,7 +563,10 @@ ggplot(simdf, aes(
 Recall the heteroskedasticity problem, shown again with our simulated data:
 
 ```{r}
-# \ echo: false
+#| echo: false
+#| fig.alt: >
+#|   Example of the homoskedastic assumption failing as standard deviation of the outcome
+#|   has a non-linear trend.
 sigma_df <- aggregate(y ~ group + time, data = simdf, FUN = sd)
 
 ggplot(sigma_df, aes(x = time, y = y, group = group)) +
@@ -569,6 +583,9 @@ There are lots of ways to model a trend like that we see for sigma.
 `pcvr` offers three options through `growthSS` for nlme models.
 
 ```{r}
+#| fig.alt: >
+#|   Showing a variety of possible trends for sigma and other distribution parameters
+#|   to emphasize why any model can be used for any parameter in growthSS
 draw_power_sigma <- function(x) {
   return(12 + (x * 0.75)^(2 * 0.26))
 } # difficult to recapitulate from nlme
@@ -596,6 +613,8 @@ ggplot(sigma_df, aes(x = time, y = y)) +
 Variance can be modeled as homoskedastic by group.
 
 ```{r}
+#| fig.alt: >
+#|   Showing the Homoskedastic assumption and how it can yield a poor fit.
 ggplot(sigma_df, aes(x = time, y = y, group = group)) +
   geom_hline(aes(yintercept = 13.8, color = "Homoskedastic"), linetype = 5, key_glyph = draw_key_path) +
   geom_line(aes(color = group)) +
@@ -610,6 +629,8 @@ ggplot(sigma_df, aes(x = time, y = y, group = group)) +
 Variance can be modeled using a power of the x term.
 
 ```{r}
+#| fig.alt: >
+#|   Showing the "power" option for sigma.
 ggplot(sigma_df, aes(x = time, y = y, group = group)) +
   geom_function(fun = draw_power_sigma, aes(color = "Power"), linetype = 5) +
   geom_line(aes(color = group)) +
@@ -624,6 +645,8 @@ ggplot(sigma_df, aes(x = time, y = y, group = group)) +
 Variance can be modeled using a exponent of the x term.
 
 ```{r}
+#| fig.alt: >
+#|   Showing the "exp" option for sigma.
 ggplot(sigma_df, aes(x = time, y = y, group = group)) +
   geom_function(fun = draw_exp_sigma, aes(color = "Exp"), linetype = 5) +
   geom_line(aes(color = group)) +
@@ -770,30 +793,40 @@ p_surv <- growthPlot(surv_fit, form = surv_ss$pcvrForm, df = surv_ss$df)
 ## `growthPlot` - nls
 
 ```{r}
+#| fig.alt: >
+#|   Showing default plotting for models fit with the nls function.
 p_nls
 ```
 
 ## `growthPlot` - nlrq
 
 ```{r}
+#| fig.alt: >
+#|   Showing default plotting for models fit with the nlrq function.
 p_nlrq
 ```
 
 ## `growthPlot` - nlme
 
 ```{r}
+#| fig.alt: >
+#|   Showing default plotting for models fit with the nlme function.
 p_nlme
 ```
 
 ## `growthPlot` - mgcv
 
 ```{r}
+#| fig.alt: >
+#|   Showing default plotting for models fit with the gam function.
 p_mgcv
 ```
 
 ## `growthPlot` - surv
 
 ```{r}
+#| fig.alt: >
+#|   Showing default plotting for models fit with the survreg function.
 p_surv
 ```
 

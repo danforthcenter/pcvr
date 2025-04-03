@@ -21,6 +21,7 @@ navbar:
   left:
     - icon: fa-home fa-lg
       href: index.html
+      aria-label: Home page
     - text: "Vignettes"
       menu:
         - text: "Bellwether"
@@ -68,8 +69,10 @@ navbar:
   right:
    - icon: fa-github
      href: https://github.com/danforthcenter/pcvr
+     aria-label: View on Github
    - icon: fa-leaf
      href: https://github.com/danforthcenter/PlantCV
+     aria-label: View PlantCV on Github
     
 reference:
   - title: "Bayesian Statistics"

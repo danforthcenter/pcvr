@@ -64,6 +64,8 @@ complicatedFunction("syntax") # do not run this style
 ```
 
 ```{r, class.source="simulated", eval=T}
+#| fig.alt: >
+#|   Example of simulated data styling in the vignette
 support <- seq(0, 1, 0.0001) # this style is simulated data
 plot(support, dbeta(support, 5, 5), type = "l", main = "simulated example")
 ```
@@ -131,6 +133,9 @@ sv_ag <- d
 Now that our data is read in and has undergone some basic quality control we want to know which phenotypes are best explained by our design variables. The `frem` function partitions variance using a fully random effects model (frem). Here we provide our dataframe, the design variables, the phenotypes, and the column representing time. By default `frem` will use the last timepoint, but this is controlled with the `time` argument. For this first example we mark the singular model fits (`markSingular=TRUE`) to indicate places where `lme4::lmer` had some convergence issues. Generally these issues are minor and do not cause problems for interpreting these models, but you can pass additional arguments to `lme4::lmer` through additional arguments if desired.
 
 ```{r, warning = FALSE, message = FALSE}
+#| fig.alt: >
+#|   Variance partitioning using the frem function looking at genotype and fertilizer
+#|   along with their interaction for 4 image based phenotypes
 frem(sv_ag,
   des = c("genotype", "fertilizer"),
   phenotypes = c("area_cm2", "height_cm", "width_cm", "hue_circular_mean_degrees"),
@@ -141,6 +146,8 @@ frem(sv_ag,
 Here we look at how much variance in each phenotype was explained over the course of the experiment. We could also specify a set of times (`time = c(10:14)` for example) if we are most interested in a particular timeframe.
 
 ```{r, warning = FALSE, message = FALSE}
+#| fig.alt: >
+#|   Example of longitudinal variance partitioning using frem
 frem(sv_ag,
   des = c("genotype", "fertilizer"),
   phenotypes = c("area_cm2", "height_cm", "width_cm"),
@@ -160,13 +167,15 @@ Most analysis focus on single value traits, that is phenotypes where one object 
 Trendlines help us decide what next steps make the most sense and give a general impression of which conditions yielded healthier plants.
 
 ```{r}
+#| fig.alt: >
+#|   Non-parametric Loess lines for plant area over time
 ggplot(sv_ag, aes(
   x = DAS, y = area_cm2, group = interaction(genotype, fertilizer, lex.order = TRUE),
   color = genotype
 )) +
   facet_wrap(~ factor(fertilizer, levels = c("0", "50", "100"))) +
-  geom_smooth(method = "loess", se = TRUE, fill = "gray90") +
-  geom_line(aes(group = barcode), linewidth = 0.15) +
+  geom_line(aes(group = interaction(barcode, genotype)), linewidth = 0.1) +
+  geom_smooth(method = "loess", se = TRUE, fill = "gray90", linewidth = 1, linetype = 5) +
   labs(
     y = expression("Area" ~ "(cm"^2 ~ ")"),
     color = "Genotype"
@@ -183,10 +192,14 @@ Non-longitudinal data (or single day data from larger longitudinal data) can be 
 `conjugate` uses conjugate priors to make simple Bayesian comparisons for several types of data. Optionally, region of practical equivalence (ROPE) testing is also supported. Most distirubtions supported by this function can be used with either wide or long single value data or wide multi-value data. See `?pcvr::conjugate` or the [conjugate tutorial](https://github.com/danforthcenter/pcvr/tree/main/tutorials/pcvrTutorial_conjugate) for details on usage and available options.
 
 ```{r}
+#| fig.alt: >
+#|   Posterior distributions of the Normally distributed mean of area in two genotypes at a
+#|   given single timepoint showing strong evidence that any difference is within [-5, 5]
 mo17_area <- sv_ag[sv_ag$genotype == "Mo17" & sv_ag$DAS > 18 & sv_ag$fertilizer == 100, "area_cm2"]
 b73_area <- sv_ag[sv_ag$genotype == "B73" & sv_ag$DAS > 18 & sv_ag$fertilizer == 100, "area_cm2"]
 
 area_res_t <- conjugate(s1 = mo17_area, s2 = b73_area, method = "t", plot = TRUE, rope_range = c(-5, 5))
+area_res_t$plot
 ```
 
 Here we can see a dramatic difference in our posterior distributions between genotypes and the distribution of differences between these samples is entirely outside of our ROPE range.
@@ -196,6 +209,8 @@ Here we can see a dramatic difference in our posterior distributions between gen
 Often bellwether experiments involve comparing stress tolerance between groups. For example in this dataset we might want to know which genotype shows the most resilience to reduced fertilizer. To easily check this we can change out data with `relativeTolerance`. Details on this function can be read with `?pcvr::relativeTolerance`. Note that if you are going to be making a longitudinal model anyway then it makes more sense to use the model to assess relative tolerance rather than transforming data into a different unit.
 
 ```{r}
+#| fig.alt: >
+#|   Bar plot of relative tolerance in the area phenotype with error propogated
 rt <- relativeTolerance(sv_ag,
   phenotypes = c("area_cm2", "height_cm"),
   grouping = c("fertilizer", "genotype", "DAS"), control = "fertilizer", controlGroup = "100"
@@ -216,6 +231,9 @@ ggplot(
 Looking at the entire data for the area phenotype is very busy so we might subset to look at something more specific, where we see some odd products of the plants germinating on the bellwether system.
 
 ```{r}
+#| fig.alt: >
+#|   Bar plot of relative tolerance in the area phenotype with error propogated showing only the
+#|   unfertilized data, where there is a more distinct genotype effect.
 pd <- rt[rt$phenotype == "area_cm2" & rt$DAS %in% c(5:19) & rt$fertilizer == "0", ]
 pd$upper_2se <- pd$mu_rel + 2 * pd$se_rel
 pd$lower_2se <- pd$mu_rel - 2 * pd$se_rel
@@ -233,17 +251,21 @@ ggplot(pd, aes(x = DAS, y = mu_rel, fill = genotype)) +
 
 ### Cumulative Phenotypes
 
-Sometimes we might want to use the cumulative difference over time
+Sometimes we might want to use the cumulative difference over time.
 
 ```{r}
-cp <- cumulativePheno(sv_ag, phenotypes = c("area_cm2", "height_cm"), group = "barcode", timeCol = "DAS")
+cp <- cumulativePheno(sv_ag, phenotypes = c("area_cm2", "height_cm"),
+                      group = c("genotype", "fertilizer", "barcode"), timeCol = "DAS")
 ```
 
 
-We can check that this worked correctly with trendlines:
+We can check that this worked correctly with trend lines:
 
 ```{r}
-ggplot(cp, aes(x = DAS, y = area_cm2_csum, color = genotype, group = barcode)) +
+#| fig.alt: >
+#|   Cumulative sum of area over time showing genotype differences.
+ggplot(cp, aes(x = DAS, y = area_cm2_csum, color = genotype,
+               group = interaction(genotype, barcode))) +
   facet_wrap(~ factor(fertilizer, levels = c("0", "50", "100"))) +
   geom_line() +
   pcv_theme() +
@@ -253,7 +275,7 @@ ggplot(cp, aes(x = DAS, y = area_cm2_csum, color = genotype, group = barcode)) +
   )
 ```
 
-
+Note that for wide data this is just a wrapper around `cumsum`, it is only a useful function if you are using PlantCV datasets in wide and long but want to keep your R code standard.
 
 ### Longitudinal Modeling
 
@@ -264,6 +286,8 @@ Longitudinal modeling is the most comprehensive way to use the single value trai
 Based on literature and observed trends there are 13 growth models that `pcvr` supports. The six most common of those are shown here using the `growthSim` function but the remaining options could be visualized in the same way.
 
 ```{r,  class.source="simulated", class.output="simulated"}
+#| fig.alt: >
+#|   Showing 6 parameterized growth models supported in pcvr.
 simdf <- growthSim("logistic",
   n = 20, t = 25,
   params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
@@ -344,6 +368,8 @@ In `growthSS` priors can be specified as a brmsprior object (in which case it is
 We can check the priors made by `growthSS` with the `plotPrior` function, which can take a list of priors or the `growthSS` output.
 
 ```{r}
+#| fig.alt: >
+#|   Default pcvr lognormal prior distributions on growth model parameters.
 priors <- list("A" = 130, "B" = 10, "C" = 0.2)
 priorPlots <- plotPrior(priors)
 priorPlots[[1]] / priorPlots[[2]] / priorPlots[[3]]
@@ -352,6 +378,9 @@ priorPlots[[1]] / priorPlots[[2]] / priorPlots[[3]]
 Looking at the prior distributions this way is useful, but for those still familiarizing with a given growth model the parameter values may not be very intuitive. To help with picking reasonable priors while familiarizing with the meaning of the model parameters the `plotPrior` function can also simulate growth curves by making draws from the specified prior distributions. Here is an example of using `plotPrior` in this way to pick between possible sets of prior distributions for a gompertz model. For asymptotic distributions the prior on "A" is added to the y margin. For distributions with an inflection point the prior on "B" is shown in the x margin. Arbitrary numbers of priors can be compared in this manner, but more than two or three can be cluttered so an iterative process is recommended if you are learning about your growth model.
 
 ```{r}
+#| fig.alt: >
+#|   Default pcvr lognormal prior distributions on growth model parameters and
+#|   random plants simulated from the prior distributions.
 twoPriors <- list("A" = c(100, 130), "B" = c(6, 12), "C" = c(0.5, 0.25))
 plotPrior(twoPriors, "gompertz", n = 100)[[1]]
 ```
@@ -387,7 +416,10 @@ Now we have most of our model components in the `ss` object. Since we specified 
 Before trying to fit the model it is generally a good idea to check one last plot of the data and make sure you have everything defined correctly.
 
 ```{r}
-ggplot(sv_ag, aes(x = DAS, y = area_cm2, group = barcode, color = group)) +
+#| fig.alt: >
+#|   Growth trendlines, drawn to check grouping in pcvr formula.
+ggplot(sv_ag, aes(x = DAS, y = area_cm2, group = interaction(group, barcode),
+                  color = group)) +
   geom_line() +
   theme_minimal() +
   labs(
@@ -413,20 +445,25 @@ fit <- fitGrowth(ss,
 
 #### Check Model Fit
 
-We can visualize credible intervals from a `brms` model and compare that to our growth trendlines to get an intuitive understanding of how well the model fit. Note that since this vignette does not load brms these are only a picture of the output from `brmPlot` and `brmViolin`. The code is present to run this locally if you have brms installed and choose to.
+We can visualize credible intervals from a `brms` model and compare that to our growth trendlines to get an intuitive understanding of how well the model fit. Note that since this vignette does not load brms these are only a picture of the output from `growthPlot`. The code is present to run this locally if you have brms installed and choose to.
 
 ```{r, eval=FALSE}
-brmPlot(fit, form = area_cm2 ~ DAS | barcode / group, df = ss$df) +
+#| fig.alt: >
+#|   Posterior predictive intervals as visualized by growthPlot, showing differences in conditions.
+growthPlot(fit, form = area_cm2 ~ DAS | barcode / group, df = ss$df) +
   labs(y = expression("Area" ~ "(cm"^2 ~ ")"))
 ```
 
-![](brmPlot1.png)
+![Posterior predictive intervals as visualized by growthPlot, showing differences in conditions](brmPlot1.png)
 
 #### Test Hypotheses
 
 Now we probably have some ideas about what we want to test in our data. The `brms::hypothesis` function offers incredible flexibility to test all kinds of hypotheses. For consistency with other backends the `testGrowth` function calls `brms::hypothesis` to evaluate hypotheses. For some comparisons `pcvr` has a helper function called `brmViolin` to visualize posterior distributions and the posterior probability of some hypotheses associated with them.
 
 ```{r, eval=FALSE}
+#| fig.alt: >
+#|   Violin plot showing posterior distributions of a given hypothesis colored by posterior
+#|   probability of that hypothesis.
 brmViolin(fit, ss, ".../A_group0.B73 > 1.05") +
   ggplot2::theme(axis.text.x.bottom = ggplot2::element_text(angle = 90))
 ```
@@ -441,6 +478,9 @@ There are a lot of options for how to use this function and even more ways to us
 Working with multi value traits leads to different statistical challenges than the single value traits. Generally reading the data in as wide format makes for a significantly smaller object in memory terms since there are not lots of duplicated metadata (identifiers for each row when every image has hundreds of rows potentially). Note that for many questions even about color it is not necessary to use the entire color histograms. Make sure that you have a good reason to use the complete color data before going down this particular path for too long. As an example, a very simple comparison of the circular mean of Hue here will show our treatment effect in this data. 
 
 ```{r}
+#| fig.alt: >
+#|   Boxplot of Hue circular mean as a single value trait for comparison
+#|   with multi value traits later on.
 ggplot(sv_ag[sv_ag$DAS == 18, ], aes(
   x = fertilizer, y = hue_circular_mean_degrees,
   fill = as.character(fertilizer)
@@ -487,6 +527,8 @@ hue_wide <- d
 Joyplots are a common way to look at lots of distributions. Here we check the hue histograms as joyplots using three days and add a new fill for the hue colorspace. Joyplots can be made with long or wide multi-value traits.
 
 ```{r, message=FALSE}
+#| fig.alt: >
+#|   Joyplot of Hue as a multi value trait colored by Hue along x axis.
 p <- pcv.joyplot(hue_wide[hue_wide$DAS %in% c(5, 10, 15), ],
   index = "hue_frequencies", group = c("fertilizer", "genotype"),
   y = "DAS", id = NULL
@@ -498,6 +540,9 @@ p + scale_fill_gradientn(colors = scales::hue_pal(l = 65)(360)) +
 As mentioned previously the `conjugate` function can be used with wide multi-value data. To use multi value data the samples should be data frames or matrices representing color histograms. Here we compare our color histograms assuming a lognormal distribution and find that they are very similar in this parameterization.
 
 ```{r}
+#| fig.alt: >
+#|   Example of conjugate with multi value traits which generates the same style of plot
+#|   showing posterior distributions and ROPE tests as with single value traits.
 mo17_sample <- hue_wide[
   hue_wide$genotype == "Mo17" & hue_wide$DAS > 18 & hue_wide$fertilizer == 100,
   grepl("hue_freq", colnames(hue_wide))
@@ -511,6 +556,7 @@ hue_res_ln <- conjugate(
   s1 = mo17_sample, s2 = b73_sample, method = "lognormal",
   plot = TRUE, rope_range = c(-10, 10), hypothesis = "equal"
 )
+hue_res_ln$plot
 ```
 
 
@@ -519,6 +565,8 @@ hue_res_ln <- conjugate(
 Ordinations are another common way to look at multi value traits. The `pcadf` function runs ordinations and optionally returns the PCs with metadata. Here our simulated data does has a very deterministic pattern due.
 
 ```{r}
+#| fig.alt: >
+#|   Plot of PC 1 and 2 from Hue as a multi value trait.
 pcadf(hue_wide, cols = "hue_frequencies", color = "genotype", returnData = FALSE) +
   facet_wrap(~ factor(fertilizer, levels = c("0", "50", "100")))
 ```
@@ -533,6 +581,8 @@ Here is a fast example of a place where EMD makes a lot of sense. In this simula
 
 
 ```{r,  class.source="simulated", class.output="simulated"}
+#| fig.alt: >
+#|   Example of simulated Earth Mover's Distance
 set.seed(123)
 
 simFreqs <- function(vec, group) {
@@ -578,6 +628,9 @@ ggplot(sim_df_long, aes(x = bin, y = value, fill = group), alpha = 0.25) +
 Our plots show very different distributions, so we get EMD between our images and see that we do have some trends shown in the resulting heatmap.
 
 ```{r,  class.source="simulated", class.output="simulated"}
+#| fig.alt: >
+#|   Heatmap of Earth Mover's Distance in simulated data, showing one group much more distinct
+#|   than others.
 sim_emd <- pcv.emd(
   df = sim_df, cols = "sim_", reorder = c("group"),
   mat = FALSE, plot = TRUE, parallel = 1, raiseError = TRUE
@@ -588,6 +641,10 @@ sim_emd$plot
 Now we can filter edge strength during our network building step for EMD > 0.5, and plot our network.
 
 ```{r,  class.source="simulated", class.output="simulated"}
+#| fig.alt: >
+#|   Earth Mover's Distances represented as a network, showing how distributions cluster together
+#|   with the Uniform distribution missing due to it being filtered out by the edge strength
+#|   requirement.
 n <- pcv.net(sim_emd$data, filter = 0.5)
 net.plot(n, fill = "group")
 ```
@@ -595,6 +652,9 @@ net.plot(n, fill = "group")
 The distributions separate very well from each other, but we don't actually see our uniform distribution here. That is because the uniform distribution does not have self-similar replicates and is also not very similar to the other distributions. If we change our filtering then we can even see which generating distributions are most similar to each other. Here we pass 0.5 as a string, which tells `pcv.net` to use the top 50 percent of EMD values instead of EMD values > 0.5.
 
 ```{r,  class.source="simulated", class.output="simulated"}
+#| fig.alt: >
+#|   Changing the network's edge strength requirement to show the Uniform distribution and how
+#|   much closer connected all the gaussian mixture like distributions are comparatively.
 n <- pcv.net(sim_emd$data, filter = "0.5")
 net.plot(n, fill = "group")
 ```
@@ -615,6 +675,8 @@ EMD <- pcv.emd(
 ```
 
 ```{r, eval=FALSE, include=FALSE}
+#| fig.alt: >
+#|   Heatmap of much more complex EMD data.
 head(EMD$data)
 EMD$plot
 ```
@@ -642,12 +704,15 @@ net <- pcv.net(EMD$data, meta = c("fertilizer", "genotype", "DAS"), filter = 0.5
 ```
 
 ```{r, eval=FALSE}
+#| fig.alt: >
+#|   Network showing plants clustering by fertilizer amount and Days after Start due to Hue
+#|   differences as measured by EMD.
 net.plot(net, fill = "DAS", shape = "fertilizer", size = 2)
 ```
 
 Our example network shows some clustering but real data's patterns are likely to be more complex:
 
-![](network.png)
+![Network showing plants clustering by fertilizer amount and Days after Start due to Hue](network.png)
 
 This is a much more complicated network! Parsing biological meaning out of this would require more work than the first example with 5 very different distributions, but there is a pretty strong cluster in the upper right corner of plants with low fertilizer at the end of the experiment. In general if you pick to use EMD with or without networks start small and consider what each step should mean conceptually for your experiment.
 

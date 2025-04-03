@@ -110,6 +110,8 @@ sv_from_mv <- function(df, theta) { # note this should also return mean/median/s
 The simulated data looks realistic based on limited test data available at time of writing.
 
 ```{r}
+#| fig.alt: >
+#|   Simulated mini rhyzotron style data which is more or less only noise.
 set.seed(123)
 ex <- do.call(rbind, lapply(1:20, function(rep) {
   n_total_pixels <- runif(1, 100, 3000)
@@ -227,11 +229,20 @@ If we assume that roots can only enter the minirhyzotron images then we would ex
 over time for total root area.
 
 ```{r}
+#| fig.alt: >
+#|   Plot of single value root traits from mini rhyzotron style data collection under
+#|   the assumption that roots can enter and exit the image.
 ggplot(sv, aes(x = time, y = area, group = rep)) +
   geom_point() +
   geom_line() +
   labs(x = "Sampling Time", y = "Area (px)", title = "Assuming roots can leave the image")
+```
 
+
+```{r}
+#| fig.alt: >
+#|   Plot of single value root traits from mini rhyzotron style data collection under
+#|   the assumption that roots can only enter the image then never leave it.
 ggplot(sv2, aes(x = time, y = area, group = rep)) +
   geom_point() +
   geom_line() +
@@ -242,11 +253,20 @@ It would also make sense that the mean of the distribution would move deeper ove
 time to grow. This is likely to be true regardless of whether roots can leave the image.
 
 ```{r}
+#| fig.alt: >
+#|   Mean depth over time assuming roots grow deeper over the experiment and
+#|   can enter and exit the image.
 ggplot(sv, aes(x = time, y = mean_x_frequencies, group = rep)) +
   geom_point() +
   geom_line() +
   labs(x = "Sampling Time", y = "Mean Depth", title = "Assuming roots can leave the image")
+```
 
+
+```{r}
+#| fig.alt: >
+#|   Mean depth over time assuming roots grow deeper over the experiment and
+#|   cannot leave the image once they enter.
 ggplot(sv2, aes(x = time, y = mean_x_frequencies, group = rep)) +
   geom_point() +
   geom_line() +
@@ -256,11 +276,20 @@ ggplot(sv2, aes(x = time, y = mean_x_frequencies, group = rep)) +
 The same should be true for the median, although being more robust to outliers it may move more slowly.
 
 ```{r}
+#| fig.alt: >
+#|   Median depth over time assuming roots grow deeper over the experiment and
+#|   can enter and exit the image.
 ggplot(sv, aes(x = time, y = median_x_frequencies, group = rep)) +
   geom_point() +
   geom_line() +
   labs(x = "Sampling Time", y = "Median Depth", title = "Assuming roots can leave the image")
+```
 
+
+```{r}
+#| fig.alt: >
+#|   Median depth over time assuming roots grow deeper over the experiment and
+#|   cannot leave the image once they enter.
 ggplot(sv2, aes(x = time, y = median_x_frequencies, group = rep)) +
   geom_point() +
   geom_line() +
@@ -271,11 +300,20 @@ Finally, depth (height as returned by `PlantCV`) should increase in both dataset
 be strictly monotone if roots can only enter the images.
 
 ```{r}
+#| fig.alt: >
+#|   Max depth over time assuming roots grow deeper over the experiment and
+#|   can enter and exit the image.
 ggplot(sv, aes(x = time, y = height, group = rep)) +
   geom_point() +
   geom_line() +
   labs(x = "Sampling Time", y = "Max Depth", title = "Assuming roots can leave the image")
+```
 
+
+```{r}
+#| fig.alt: >
+#|   Max depth over time assuming roots grow deeper over the experiment and
+#|   cannot leave the image once they enter.
 ggplot(sv2, aes(x = time, y = height, group = rep)) +
   geom_point() +
   geom_line() +
@@ -313,6 +351,8 @@ m1 <- fitGrowth(ss)
 Any models fit by `fitGrowth` can be visualized using `growthPlot`.
 
 ```{r}
+#| fig.alt: >
+#|   Linear model of root area.
 growthPlot(m1, form = ss$pcvrForm, df = ss$df)
 ```
 
@@ -397,6 +437,8 @@ The plot includes information from the summary graphically as a patchwork of 2 g
 was specified or is a single ggplot otherwise.
 
 ```{r}
+#| fig.alt: >
+#|   Example of conjugate plot for single or multi value traits.
 conj_ex$plot
 ```
 
@@ -412,6 +454,8 @@ can use MV traits by specifying matrices/data.frames for s1 and s2, but it will 
 minirhyzotron image's distribution will follow an easily parameterized pdf.
 
 ```{r}
+#| fig.alt: >
+#|   Joyplot of multi value traits which is similar to analyze distribution in plantcv
 pcv.joyplot(df, "x_frequencies", group = c("rep", "time"))
 ```
 
@@ -482,6 +526,10 @@ do.call(rbind, conj_ex2$posterior)
 ```
 
 ```{r}
+#| fig.alt: >
+#|   Another example of conjugate output. Choosing what you actually mean to measure
+#|   and understanding how it is related (and how strong that relationship is) to
+#|   actual plant traits that you care about is crucial here.
 conj_ex2$plot
 ```
 
@@ -497,6 +545,8 @@ Here is a fast example of EMD. In this simulated data we have five generating di
 Normal, Log Normal, Bimodal, Trimodal, and Uniform. We could use some gaussian mixtures to characterize the multi-modal histograms but that will get clunky for comparing to the unimodal or uniform distributions. The `conjugate` function would not work here since these distributions do not share a common parameterization. Instead, we can use EMD.
 
 ```{r}
+#| fig.alt: >
+#|   Simulated Earth Mover's Distance based on several probability distributions.
 set.seed(123)
 
 simFreqs <- function(vec, group) {
@@ -542,6 +592,8 @@ ggplot(sim_df_long, aes(x = bin, y = value, fill = group), alpha = 0.25) +
 Our plots show very different distributions, so we get EMD between our images and see that we do have some trends shown in the resulting heatmap.
 
 ```{r,  class.source="simulated", class.output="simulated"}
+#| fig.alt: >
+#|   Heatmap of Earth Mover's Distance between several probability distributions.
 sim_emd <- pcv.emd(
   df = sim_df, cols = "sim_", reorder = c("group"),
   mat = FALSE, plot = TRUE, parallel = 1, raiseError = TRUE
@@ -553,6 +605,8 @@ Arranging these distances into a network of dissimilarities shows the different 
 well.
 
 ```{r,  class.source="simulated", class.output="simulated"}
+#| fig.alt: >
+#|   Simulated Earth Mover's Distance show as a network
 n <- pcv.net(sim_emd$data, filter = "0.5")
 net.plot(n, fill = "group")
 ```
@@ -563,6 +617,9 @@ both simulated datasets (roots leaving the image and roots being stuck in the im
 First we check our distributions via joyplot.
 
 ```{r}
+#| fig.alt: >
+#|   Using a joyplot to check our simulated mini rhyzotron data before using Earth
+#|   Mover's Distance.
 pcv.joyplot(df, "x_frequencies", group = c("rep", "time"))
 ```
 
@@ -581,6 +638,9 @@ And we arrange the distances as a network of dissimilarities. Here we are filter
 edges that are above the 75th percentile in strength and we see a pretty clear temporal clustering.
 
 ```{r,  class.source="simulated", class.output="simulated"}
+#| fig.alt: >
+#|   Plotting a network of our simulated mini rhyzotron data's Earth Mover's Distances.
+#|   We can see some evidence of a change over time.
 n <- pcv.net(df1_emd$data, filter = "0.75")
 net.plot(n, fill = "time")
 ```
@@ -588,8 +648,18 @@ net.plot(n, fill = "time")
 With our dataset that assumes roots cannot leave the image once observed we get similar results.
 
 ```{r}
+#| fig.alt: >
+#|   Using a joyplot to check our simulated mini rhyzotron data before using Earth
+#|   Mover's Distance with the assumption that roots cannot leave the image.
 pcv.joyplot(df2, "x_frequencies", group = c("rep", "time"))
+```
 
+
+```{r}
+#| fig.alt: >
+#|   Plotting a network of our simulated mini rhyzotron data's Earth Mover's Distances.
+#|   We can see some evidence of a change over time with the assumption
+#|   that roots cannot leave the image.
 df2_emd <- pcv.emd(
   df = df2, cols = "x_frequencies", reorder = c("rep", "time"),
   id = c("rep", "time"),

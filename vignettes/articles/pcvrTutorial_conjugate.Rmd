@@ -91,15 +91,16 @@ This may all still seem abstract, so we'll try to clear it up with two examples.
 
 If we take a foundational verb like "To Be" then we can conjugate it depending on the context.
 
-<img src="tobe.png" width="325" height="200" />
+![Example of conjugation in language with 'to be' verb](tobe.png)
 
 Now we add more information and the meaning gets more specific to describe that information.
 
-<img src="tobe2.png" width="600" height="500" />
+![Adding context to the 'to be' verb changes it's meaning](tobe2.png)
+
 
 We can do the same thing easily with some probability distributions. Similar to language we get more and more specific as the context is better described (as we add more data).
 
-<img src="tobe3.png" width="700" height="600" />
+![We can get more specific language with more data in the form of context](tobe3.png)
 
 ## Bayesian Beta-Binomial Conjugacy
 
@@ -121,6 +122,8 @@ Beta(\alpha', \beta' |(x_1, \ldots, x_n)) = Beta(\alpha, \beta) \cdot L(\alpha, 
 ```{r}
 #| echo: false
 #| eval: true
+#| fig.alt: >
+#|   Beta Distributions with different percentages of success and different precision.
 bdf <- data.frame(
   value = c(
     rbeta(5000, 2, 2), rbeta(5000, 20, 20), rbeta(5000, 40, 10),
@@ -231,6 +234,8 @@ Very simplistically we can think of conjugacy as when we know the distribution o
 ```{r}
 #| echo: false
 #| eval: true
+#| fig.alt: >
+#|   Beta Binomial conjugacy shown with different percentages of success and different precision.
 conjugacy_ex_beta_binom
 ```
 
@@ -266,6 +271,8 @@ We'll go over those distributions, what they tend to represent, how they are upd
 
 ```{r}
 #| echo: false
+#| fig.alt: >
+#|   A collection of conjugate prior distributions available in pcvr.
 methods <- c(
   "gaussian", "t", "lognormal",
   "beta", "binomial", "poisson",
@@ -493,6 +500,8 @@ The `bayes_factor` argument optionally lets you calculate Bayes factors within e
 
 ```{r}
 #| echo: false
+#| fig.alt: >
+#|   Default priors for several conjugate distributions.
 methods <- c(
   "gaussian", "t", "lognormal",
   "beta", "binomial", "poisson",
@@ -692,6 +701,8 @@ For the first case we pass 2 samples to conjugate and evaluate the difference in
 Here we use two sets of random exponential data and check if the difference is within 0.5 of 0.
 
 ```{r}
+#| fig.alt: >
+#|   Output of the conjugate function highlighting the ROPE testing.
 set.seed(123)
 s1 <- rexp(10, 1.2)
 s2 <- rexp(10, 1)
@@ -709,6 +720,8 @@ We get a probability of 0.34 that the highest density interval of the difference
 For the second case we might want to compare the mean of some data against an accepted interval for the mean:
 
 ```{r}
+#| fig.alt: >
+#|   Another example of output of the conjugate function highlighting the ROPE testing.
 set.seed(123)
 s1 <- rnorm(20, 10, 2)
 out <- conjugate(
@@ -735,6 +748,8 @@ Within `conjugate` $H_1$ and $H_2$ are either a point or a range in the support 
 We can work a simple example then compare to output from `conjugate`.
 
 ```{r}
+#| fig.alt: >
+#|   Prior odds of a range hypothesis shown on a Beta 2, 2 prior
 null <- c(0.4, 0.6)
 x_vals <- seq(0, 1, length.out = 500)
 d_vals <- dbeta(x_vals, shape1 = 2, shape2 = 2) # density from the prior Beta(2, 2)
@@ -770,6 +785,8 @@ p1
 Now we update our prior with some data: 
 
 ```{r}
+#| fig.alt: >
+#|   Posterior odds of a range hypothesis shown on a Beta 10, 4 posterior
 successes <- 8
 failures <- 2
 
@@ -813,6 +830,8 @@ Here the Bayes factor shows that the interval [0.4, 0.6] is 2.2 times less likel
 To do the same thing in conjugate we pass the bayes_factor argument as a range and check the `bf_1` column of the summary for the results from sample 1. If we were interested in a point hypothesis then we would only enter one value, say 0.5.
 
 ```{r}
+#| fig.alt: >
+#|   Doing the previous bayes factor comparison in the conjugate function.
 conj <- conjugate(s1 = list("successes" = 8, "trials" = 10),
                   method = "binomial", plot = TRUE,
                   priors = list(a = 2, b = 2),
@@ -827,6 +846,8 @@ Note that many distributions in `conjugate` will default to very uninformative p
 Using a point hypothesis we do the same thing, but now the "odds" are the density at a single point of the PDF instead of the sum of a region.
 
 ```{r}
+#| fig.alt: >
+#|   Prior odds of a point hypothesis shown on a Beta 2, 2 prior
 null <- 0.5
 xrange <- c(0, 1)
 x_vals <- seq(0, 1, length.out = 500)
@@ -846,6 +867,12 @@ p1 <- ggplot(mapping = aes(x_vals, d_vals, fill = "Alternative")) +
   theme(legend.position.inside = c(0.2, 0.8), legend.title = element_blank(),
         legend.position = "inside")
 p1
+```
+
+
+```{r}
+#| fig.alt: >
+#|   Posterior odds of a point hypothesis shown on a Beta 10, 4 posterior
 # prior density at null
 prior_null_analytic <- dbeta(0.5, shape1 = 2, shape2 = 2)
 
@@ -884,6 +911,8 @@ p2
 Identically in `conjugate`:
 
 ```{r}
+#| fig.alt: >
+#|   Point hypothesis bayes factor shown in conjugate
 conj <- conjugate(s1 = list("successes" = 8, "trials" = 10),
                   method = "binomial", plot = TRUE,
                   priors = list(a = 2, b = 2),
@@ -907,6 +936,8 @@ Germination Rates (or other binary outocmes like flowering or death) can make go
 ```{r}
 #| echo: false
 #| eval: true
+#| fig.alt: >
+#|   Example germination count data between two treatment groups
 set.seed(345)
 df <- data.frame(
   y = c(rbinom(10, 10, 0.5), rbinom(10, 10, 0.7)),
@@ -933,15 +964,12 @@ res <- conjugate(
 
 ```{r}
 #| echo: false
+#| fig.alt: >
+#|   Beta-Binomial conjugacy plot of the germination data, showing probability of equal rate.
 res$plot
 ```
 
 Here we'd simply conclude that there is about a 19\% chance that the germination rate is the same between these two genotypes after 1 week. We could do more with ROPE testing, but we'll do that in the next example.
-
-```{r}
-#| echo: false
-res$plot
-```
 
 ## Area
 
@@ -950,6 +978,8 @@ Lots of phenotypes are gaussian and `conjugate` can be used similarly to a T-tes
 ```{r}
 #| echo: false
 #| eval: true
+#| fig.alt: >
+#|   Example plant biomass (area) data between two treatment groups
 set.seed(345)
 df <- data.frame(
   y = c(rnorm(10, 15, 2.5), rnorm(10, 12, 3.7)),
@@ -979,6 +1009,8 @@ res <- conjugate(
 
 ```{r}
 #| echo: false
+#| fig.alt: >
+#|   Conjugate output comparing the mean of the two groups sizes.
 res$plot
 ```
 
@@ -1014,6 +1046,8 @@ There are also several phenotypes that are counts. Numbers of vertices, leaves, 
 ```{r}
 #| echo: false
 #| eval: true
+#| fig.alt: >
+#|   Example leaf count data between two treatment groups
 set.seed(345)
 df <- data.frame(
   y = c(rpois(10, 7), rpois(10, 10)),
@@ -1043,6 +1077,8 @@ res <- conjugate(
 
 ```{r}
 #| echo: false
+#| fig.alt: >
+#|   Conjugate comparison of the Gamma distributed lambda parameter for Poisson distributed leaf counts.
 res$plot
 ```
 
@@ -1060,6 +1096,8 @@ To use Von-Mises with data on other intervals there is a `boundary` element in t
 ```{r}
 #| echo: false
 #| eval: true
+#| fig.alt: >
+#|   Example circular data between two treatment groups
 set.seed(345)
 df <- data.frame(
   y = c(brms::rvon_mises(10, 3, 3), brms::rvon_mises(10, -3, 2)),
@@ -1079,6 +1117,9 @@ Note this is a very exaggerated example for the plant phenotyping setting since 
 If you do have wrapped circular data then looking at it in a non-circular space like this would be a problem. For values we normally get from plants other continuous methods can generally be useful.
 
 ```{r}
+#| fig.alt: >
+#|   Example circular data between two treatment groups treated as though it were not circular looks
+#|   bimodal.
 ggplot(df, aes(x = geno, y = y, fill = geno)) +
   geom_boxplot(outlier.shape = NA) +
   geom_jitter(height = 0, width = 0.05) +
@@ -1100,6 +1141,8 @@ res <- conjugate(
 ```
 
 ```{r}
+#| fig.alt: >
+#|   Conjugate comparison of the direction of Von Mises distributed circular data.
 res$plot
 ```
 
