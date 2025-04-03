@@ -29,7 +29,7 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="nav-item"><a class="nav-link" href="../index.html"><span class="fa fa-home fa-lg"></span></a></li>
+<li class="nav-item"><a class="nav-link" href="../index.html" aria-label="Home page"><span class="fa fa-home fa-lg"></span></a></li>
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-vignettes" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Vignettes</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-vignettes">
@@ -62,8 +62,8 @@
 <li class="nav-item"><a class="external-link nav-link" href="https://plantcv.org/">PlantCV</a></li>
       </ul>
 <ul class="navbar-nav">
-<li class="nav-item"><a class="external-link nav-link" href="https://github.com/danforthcenter/pcvr"><span class="fa fa-github"></span></a></li>
-<li class="nav-item"><a class="external-link nav-link" href="https://github.com/danforthcenter/PlantCV"><span class="fa fa-leaf"></span></a></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/danforthcenter/pcvr" aria-label="View on Github"><span class="fa fa-github"></span></a></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/danforthcenter/PlantCV" aria-label="View PlantCV on Github"><span class="fa fa-leaf"></span></a></li>
       </ul>
 </div>
 
@@ -147,34 +147,17 @@ dependencies.</p>
 <h2 id="why-longitudinal-modeling">Why Longitudinal Modeling?<a class="anchor" aria-label="anchor" href="#why-longitudinal-modeling"></a>
 </h2>
 <p><code>plantCV</code> allows for user friendly high throughput image
-based phenotyping</p>
-<p>. . .</p>
+based phenotyping.</p>
 <p>Resulting data follows individuals over time, which changes our
 statistical needs.</p>
-</div>
-<div class="section level2">
-<h2 id="why-longitudinal-modeling-2">Why Longitudinal Modeling? 2<a class="anchor" aria-label="anchor" href="#why-longitudinal-modeling-2"></a>
-</h2>
 <p>Longitudinal Data is:</p>
 <ul>
 <li>Autocorrelated</li>
 <li>Often non-linear</li>
 <li>Heteroskedastic</li>
 </ul>
-</div>
-<div class="section level2">
-<h2 id="why-longitudinal-modeling-3">Why Longitudinal Modeling? 3<a class="anchor" aria-label="anchor" href="#why-longitudinal-modeling-3"></a>
-</h2>
-<p><img src="pcvrTutorial_agm_files/figure-html/unnamed-chunk-3-1.png" width="700"></p>
-</div>
-<div class="section level2">
-<h2 id="why-longitudinal-modeling-4">Why Longitudinal Modeling? 4<a class="anchor" aria-label="anchor" href="#why-longitudinal-modeling-4"></a>
-</h2>
-<p><img src="pcvrTutorial_agm_files/figure-html/unnamed-chunk-4-1.png" width="700"></p>
-</div>
-<div class="section level2">
-<h2 id="why-longitudinal-modeling-5">Why Longitudinal Modeling? 5<a class="anchor" aria-label="anchor" href="#why-longitudinal-modeling-5"></a>
-</h2>
+<p><img src="pcvrTutorial_agm_files/figure-html/unnamed-chunk-3-1.png" alt="Highlighting autocorrelation as a feature of longitudinal data" width="700"></p>
+<p><img src="pcvrTutorial_agm_files/figure-html/unnamed-chunk-4-1.png" alt="Highlighting non-linearyity as a common feature of longitudinal data" width="700"></p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">r1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">simdf</span><span class="op">[</span><span class="va">simdf</span><span class="op">$</span><span class="va">time</span> <span class="op">==</span> <span class="fl">1</span>, <span class="st">"y"</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="va">r2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">simdf</span><span class="op">[</span><span class="va">simdf</span><span class="op">$</span><span class="va">time</span> <span class="op">==</span> <span class="fl">5</span>, <span class="st">"y"</span><span class="op">]</span><span class="op">)</span></span>
@@ -206,20 +189,15 @@ statistical needs.</p>
 <span><span class="op">)</span></span>
 <span><span class="va">hetPatch</span> <span class="op">&lt;-</span> <span class="va">main</span> <span class="op">/</span> <span class="va">sigmaPlot</span> <span class="op">+</span> <span class="fu"><a href="https://patchwork.data-imaginist.com/reference/plot_layout.html" class="external-link">plot_layout</a></span><span class="op">(</span>design <span class="op">=</span> <span class="va">design</span><span class="op">)</span></span>
 <span><span class="va">hetPatch</span></span></code></pre></div>
-<p><img src="pcvrTutorial_agm_files/figure-html/unnamed-chunk-5-1.png" width="700"></p>
+<p><img src="pcvrTutorial_agm_files/figure-html/unnamed-chunk-5-1.png" alt="Highlighting heteroskedasticity as a nearly ubiquitous feature of longitudinal data" width="700"></p>
 </div>
 <div class="section level2">
 <h2 id="why-bayesian-modeling">Why Bayesian Modeling?<a class="anchor" aria-label="anchor" href="#why-bayesian-modeling"></a>
 </h2>
 <p>Bayesian modeling allows us to account for all these problems via a
 more flexible interface than frequentist methods.</p>
-<p>. . .</p>
 <p>Bayesian modeling also allows for non-linear, probability driven
 hypothesis testing.</p>
-</div>
-<div class="section level2">
-<h2 id="why-bayesian-modeling-2">Why Bayesian Modeling? 2<a class="anchor" aria-label="anchor" href="#why-bayesian-modeling-2"></a>
-</h2>
 <p>In a Bayesian context we flip “random” and “fixed” elements.</p>
 <table style="width:100%;" class="table">
 <colgroup>
@@ -255,10 +233,6 @@ least X</td>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section level2">
-<h2 id="why-bayesian-modeling-3">Why Bayesian Modeling? 3<a class="anchor" aria-label="anchor" href="#why-bayesian-modeling-3"></a>
-</h2>
 <p>Before moving on we should note that each group in your data will
 have parameters fit to it. If you have many groups then fitting models
 to only a few groups at a time is likely to make your life easier.
@@ -273,40 +247,20 @@ groups in it.</p>
 <p>There are 13 main growth models supported in <code>pcvr</code>.</p>
 <p>Several are shown next, including asymptotic and non-asymptotic
 options.</p>
-</div>
-<div class="section level2">
-<h2 id="supported-growth-models-1">Supported Growth Models<a class="anchor" aria-label="anchor" href="#supported-growth-models-1"></a>
-</h2>
-<p><img src="pcvrTutorial_agm_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
-</div>
-<div class="section level2">
-<h2 id="supported-growth-models-2">Supported Growth Models<a class="anchor" aria-label="anchor" href="#supported-growth-models-2"></a>
-</h2>
+<p><img src="pcvrTutorial_agm_files/figure-html/unnamed-chunk-6-1.png" alt="Showing 3 examples of asymptotic and 3 examples of non-asymptotic growth curves that are supported by pcvr." width="700"></p>
 <p>There are an additional 3 sigmoidal models based on the Extreme Value
 Distribution. Those are Weibull, Frechet, and Gumbel. The authors
 generally prefer Gompertz to these options but for your data it is
 possible that these could be a better fit.</p>
-<p><img src="pcvrTutorial_agm_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
-</div>
-<div class="section level2">
-<h2 id="supported-growth-models-2-1">Supported Growth Models 2<a class="anchor" aria-label="anchor" href="#supported-growth-models-2-1"></a>
-</h2>
+<p><img src="pcvrTutorial_agm_files/figure-html/unnamed-chunk-7-1.png" alt="Showing variations of the Extreme Value Distribution sigmoid curves that are supported." width="700"></p>
 <p>There are also two double sigmoid curves intended for use with
 recovery experiments.</p>
 <pre><code><span><span class="co">## Warning: Removed 1 row containing missing values or values outside the scale range</span></span>
 <span><span class="co">## (`geom_line()`).</span></span></code></pre>
-<p><img src="pcvrTutorial_agm_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
-</div>
-<div class="section level2">
-<h2 id="supported-growth-models-3">Supported Growth Models 3<a class="anchor" aria-label="anchor" href="#supported-growth-models-3"></a>
-</h2>
+<p><img src="pcvrTutorial_agm_files/figure-html/unnamed-chunk-8-1.png" alt="Two examples of multi-part models that can be parameterized without changepoints." width="700"></p>
 <p>Generalized Additive Models (<a href="https://en.wikipedia.org/wiki/Generalized_additive_model" class="external-link">GAMs</a>)
 are supported but discouraged due to poor interpretability.</p>
-<p><img src="pcvrTutorial_agm_files/figure-html/unnamed-chunk-10-1.png" width="700"></p>
-</div>
-<div class="section level2">
-<h2 id="supported-growth-models-4">Supported Growth Models 4<a class="anchor" aria-label="anchor" href="#supported-growth-models-4"></a>
-</h2>
+<p><img src="pcvrTutorial_agm_files/figure-html/unnamed-chunk-10-1.png" alt="Example of the effect of changing the number of knots in a spline, with more knots being more prone to overfitting and fewer knots being less accurate for the observed data." width="700"></p>
 <p>Intercept only models are supported, although they are only intended
 for use in segmented models or to represent homoskedasticity as a
 sub-model.</p>
@@ -323,27 +277,14 @@ sub-model.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous</a></span><span class="op">(</span>limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">20</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/pcv_theme.html">pcv_theme</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>y <span class="op">=</span> <span class="st">"y"</span>, x <span class="op">=</span> <span class="st">"x"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="pcvrTutorial_agm_files/figure-html/unnamed-chunk-11-1.png" width="700"></p>
-</div>
-<div class="section level2">
-<h2 id="supported-growth-models-5">Supported Growth Models 5<a class="anchor" aria-label="anchor" href="#supported-growth-models-5"></a>
-</h2>
+<p><img src="pcvrTutorial_agm_files/figure-html/unnamed-chunk-11-1.png" alt="Example of the homoskedastic assumption of constant variance over time" width="700"></p>
 <p>Segmented growth models are also supported using “model1 + model2”
 syntax in both <code>growthSim</code> and <code>growthSS</code>.</p>
-<p>. . .</p>
 <p>For now we will focus on single models but there will be examples of
 segmented models later on.</p>
-</div>
-<div class="section level2">
-<h2 id="supported-growth-models-6">Supported Growth Models 6<a class="anchor" aria-label="anchor" href="#supported-growth-models-6"></a>
-</h2>
 <p>The “decay” keyword can be used to specify a decay model instead. For
 now we will focus on growth models as these constitute the large
 majority of models used in plant phenotyping.</p>
-</div>
-<div class="section level2">
-<h2 id="supported-growth-models-7">Supported Growth Models 7<a class="anchor" aria-label="anchor" href="#supported-growth-models-7"></a>
-</h2>
 <p>Hierarchical models can be specified by adding covariates to the
 model formula and specifying models for those covariates in the
 <code>hierarchy</code> argument.</p>
@@ -377,20 +318,19 @@ these.</p>
 </h2>
 <p>Any of the aforementioned models can be specified easily using
 <code>growthSS</code>.</p>
-</div>
-<div class="section level2">
-<h2 id="growthss---form">
+<div class="section level3">
+<h3 id="growthss---form">
 <code>growthSS</code> - form<a class="anchor" aria-label="anchor" href="#growthss---form"></a>
-</h2>
+</h3>
 <p>With a model specified a rough formula is required to parse your data
 to fit the model.</p>
 <p>The layout of that formula is:</p>
 <p><code>outcome ~ time|individual/group</code></p>
 </div>
-<div class="section level2">
-<h2 id="growthss---form-2">
+<div class="section level3">
+<h3 id="growthss---form-2">
 <code>growthSS</code> - form 2<a class="anchor" aria-label="anchor" href="#growthss---form-2"></a>
-</h2>
+</h3>
 <p>Here we would use <code>y~time|id/group</code></p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">simdf</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/growthSim.html">growthSim</a></span><span class="op">(</span><span class="st">"gompertz"</span>,</span>
@@ -410,10 +350,10 @@ to fit the model.</p>
 <span><span class="co">## 5 id_1     a    5 0.839871042</span></span>
 <span><span class="co">## 6 id_1     a    6 1.969862435</span></span></code></pre>
 </div>
-<div class="section level2">
-<h2 id="growthss---form-3">
+<div class="section level3">
+<h3 id="growthss---form-3">
 <code>growthSS</code> - form 3<a class="anchor" aria-label="anchor" href="#growthss---form-3"></a>
-</h2>
+</h3>
 <p>Generally it makes sense to visually check that your formula covers
 your experimental design.</p>
 <p>Note that it is fine for id to be duplicated between groups, but not
@@ -425,34 +365,25 @@ within groups</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>color <span class="op">=</span> <span class="va">group</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="co"># color by group</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Testing Formula"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="pcvrTutorial_agm_files/figure-html/unnamed-chunk-13-1.png" width="700"></p>
+<p><img src="pcvrTutorial_agm_files/figure-html/unnamed-chunk-13-1.png" alt="Checking the grouping of data using a ggplot before making a model. We are looking to see that lines follow individual plants over time, here they do." width="700"></p>
 </div>
-<div class="section level2">
-<h2 id="growthss---sigma">
+<div class="section level3">
+<h3 id="growthss---sigma">
 <code>growthSS</code> - sigma<a class="anchor" aria-label="anchor" href="#growthss---sigma"></a>
-</h2>
+</h3>
 <p>Recall the heteroskedasticity problem, shown again with our simulated
 data:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># \ echo: false</span></span>
-<span><span class="va">sigma_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/aggregate.html" class="external-link">aggregate</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="va">group</span> <span class="op">+</span> <span class="va">time</span>, data <span class="op">=</span> <span class="va">simdf</span>, FUN <span class="op">=</span> <span class="va">sd</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">sigma_df</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">time</span>, y <span class="op">=</span> <span class="va">y</span>, group <span class="op">=</span> <span class="va">group</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>color <span class="op">=</span> <span class="va">group</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/pcv_theme.html">pcv_theme</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>y <span class="op">=</span> <span class="st">"SD of y"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="pcvrTutorial_agm_files/figure-html/unnamed-chunk-14-1.png" width="700"></p>
+<p><img src="pcvrTutorial_agm_files/figure-html/unnamed-chunk-14-1.png" alt="Example of the homoskedastic assumption failing as standard deviation of the outcome has a non-linear trend." width="700"></p>
 </div>
-<div class="section level2">
-<h2 id="growthss---sigma-1">
+<div class="section level3">
+<h3 id="growthss---sigma-1">
 <code>growthSS</code> - sigma<a class="anchor" aria-label="anchor" href="#growthss---sigma-1"></a>
-</h2>
+</h3>
 <p>There are lots of ways to model a trend like that we see for
 sigma.</p>
 <p><code>pcvr</code> allows any of the model options in
 <code>growthSS</code> to also be applied to model variance.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">draw_gomp_sigma</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="fl">23</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="op">-</span><span class="fl">21</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="op">-</span><span class="fl">0.22</span> <span class="op">*</span> <span class="va">x</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
@@ -476,12 +407,12 @@ sigma.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>y <span class="op">=</span> <span class="st">"SD of y"</span>, title <span class="op">=</span> <span class="st">"Several sigma options"</span>, color <span class="op">=</span> <span class="st">""</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## `geom_smooth()` using formula = 'y ~ s(x, bs = "cs")'</span></span></code></pre>
-<p><img src="pcvrTutorial_agm_files/figure-html/unnamed-chunk-15-1.png" width="700"></p>
+<p><img src="pcvrTutorial_agm_files/figure-html/unnamed-chunk-15-1.png" alt="Showing a variety of possible trends for sigma and other distribution parameters to emphasize why any model can be used for any parameter in growthSS" width="700"></p>
 </div>
-<div class="section level2">
-<h2 id="growthss---intercept-sigma">
+<div class="section level3">
+<h3 id="growthss---intercept-sigma">
 <code>growthSS</code> - Intercept sigma<a class="anchor" aria-label="anchor" href="#growthss---intercept-sigma"></a>
-</h2>
+</h3>
 <table class="table">
 <thead><tr class="header">
 <th>Pros</th>
@@ -492,7 +423,7 @@ sigma.</p>
 <td>Very inaccurate intervals at early timepoints</td>
 </tr></tbody>
 </table>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">sigma_df</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">time</span>, y <span class="op">=</span> <span class="va">y</span>, group <span class="op">=</span> <span class="va">group</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_hline</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="fl">13.8</span>, color <span class="op">=</span> <span class="st">"Homoskedastic"</span><span class="op">)</span>, linetype <span class="op">=</span> <span class="fl">5</span>, key_glyph <span class="op">=</span> <span class="va">draw_key_path</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>color <span class="op">=</span> <span class="va">group</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
@@ -500,12 +431,12 @@ sigma.</p>
 <span>  <span class="fu"><a href="../reference/pcv_theme.html">pcv_theme</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>y <span class="op">=</span> <span class="st">"SD of y"</span>, color <span class="op">=</span> <span class="st">"Sigma"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span>, legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="pcvrTutorial_agm_files/figure-html/unnamed-chunk-16-1.png" width="700"></p>
+<p><img src="pcvrTutorial_agm_files/figure-html/unnamed-chunk-16-1.png" alt="Comparing several parameterizations of sigma against the trend we see in our data. Homoskedastic is a poor fit." width="700"></p>
 </div>
-<div class="section level2">
-<h2 id="growthss---linear-sigma">
+<div class="section level3">
+<h3 id="growthss---linear-sigma">
 <code>growthSS</code> - Linear sigma<a class="anchor" aria-label="anchor" href="#growthss---linear-sigma"></a>
-</h2>
+</h3>
 <table class="table">
 <colgroup>
 <col width="43%">
@@ -526,7 +457,7 @@ sigma.</p>
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">sigma_df</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">time</span>, y <span class="op">=</span> <span class="va">y</span>, group <span class="op">=</span> <span class="va">group</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_smooth.html" class="external-link">geom_smooth</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>group <span class="op">=</span> <span class="st">"linear"</span>, color <span class="op">=</span> <span class="st">"Linear"</span><span class="op">)</span>,</span>
 <span>    linetype <span class="op">=</span> <span class="fl">5</span>,</span>
@@ -538,18 +469,18 @@ sigma.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>y <span class="op">=</span> <span class="st">"SD of y"</span>, color <span class="op">=</span> <span class="st">"Sigma"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span>, legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
 </div>
-<div class="section level2">
-<h2 id="growthss---linear-sigma-1">
+<div class="section level3">
+<h3 id="growthss---linear-sigma-1">
 <code>growthSS</code> - Linear sigma<a class="anchor" aria-label="anchor" href="#growthss---linear-sigma-1"></a>
-</h2>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+</h3>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">p</span></span></code></pre></div>
-<p><img src="pcvrTutorial_agm_files/figure-html/unnamed-chunk-18-1.png" width="700"></p>
+<p><img src="pcvrTutorial_agm_files/figure-html/unnamed-chunk-18-1.png" alt="Comparing several parameterizations of sigma against the trend we see in our data. Linear is a poor fit." width="700"></p>
 </div>
-<div class="section level2">
-<h2 id="growthss---gompertz-sigma">
+<div class="section level3">
+<h3 id="growthss---gompertz-sigma">
 <code>growthSS</code> - Gompertz sigma<a class="anchor" aria-label="anchor" href="#growthss---gompertz-sigma"></a>
-</h2>
+</h3>
 <table class="table">
 <colgroup>
 <col width="48%">
@@ -576,7 +507,7 @@ sigma.</p>
 </table>
 <p>Note that these traits are broadly true of logistic and monomolecular
 sub models as well.</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">draw_gomp_sigma</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="fl">22</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="op">-</span><span class="fl">9</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="op">-</span><span class="fl">0.27</span> <span class="op">*</span> <span class="va">x</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span> <span class="co"># guesses at parameters</span></span>
@@ -589,18 +520,18 @@ sub models as well.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>y <span class="op">=</span> <span class="st">"SD of y"</span>, color <span class="op">=</span> <span class="st">"Sigma"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span>, legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
 </div>
-<div class="section level2">
-<h2 id="growthss---gompertz-sigma-1">
+<div class="section level3">
+<h3 id="growthss---gompertz-sigma-1">
 <code>growthSS</code> - Gompertz sigma<a class="anchor" aria-label="anchor" href="#growthss---gompertz-sigma-1"></a>
-</h2>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+</h3>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">p</span></span></code></pre></div>
-<p><img src="pcvrTutorial_agm_files/figure-html/unnamed-chunk-20-1.png" width="700"></p>
+<p><img src="pcvrTutorial_agm_files/figure-html/unnamed-chunk-20-1.png" alt="Comparing several parameterizations of sigma against the trend we see in our data. Gompertz is a good fit." width="700"></p>
 </div>
-<div class="section level2">
-<h2 id="growthss---spline-sigma">
+<div class="section level3">
+<h3 id="growthss---spline-sigma">
 <code>growthSS</code> - Spline sigma<a class="anchor" aria-label="anchor" href="#growthss---spline-sigma"></a>
-</h2>
+</h3>
 <table class="table">
 <colgroup>
 <col width="51%">
@@ -625,7 +556,7 @@ slower than other options</td>
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">sigma_df</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">time</span>, y <span class="op">=</span> <span class="va">y</span>, group <span class="op">=</span> <span class="va">group</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_smooth.html" class="external-link">geom_smooth</a></span><span class="op">(</span></span>
 <span>    method <span class="op">=</span> <span class="st">"gam"</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>group <span class="op">=</span> <span class="st">"Spline"</span>, color <span class="op">=</span> <span class="st">"Spline"</span><span class="op">)</span>,</span>
@@ -637,36 +568,37 @@ slower than other options</td>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>y <span class="op">=</span> <span class="st">"SD of y"</span>, color <span class="op">=</span> <span class="st">"Sigma"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span>, legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
 </div>
-<div class="section level2">
-<h2 id="growthss---spline-sigma-1">
+<div class="section level3">
+<h3 id="growthss---spline-sigma-1">
 <code>growthSS</code> - Spline sigma<a class="anchor" aria-label="anchor" href="#growthss---spline-sigma-1"></a>
-</h2>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+</h3>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">p</span></span></code></pre></div>
-<p><img src="pcvrTutorial_agm_files/figure-html/unnamed-chunk-22-1.png" width="700"></p>
+<p><img src="pcvrTutorial_agm_files/figure-html/unnamed-chunk-22-1.png" alt="Comparing several parameterizations of sigma against the trend we see in our data. Splines are a good fit." width="700"></p>
 </div>
-<div class="section level2">
-<h2 id="growthss---other-sigma-models">
+<div class="section level3">
+<h3 id="growthss---other-sigma-models">
 <code>growthSS</code> - other sigma models<a class="anchor" aria-label="anchor" href="#growthss---other-sigma-models"></a>
-</h2>
+</h3>
 <p>You can always add a new sigma formula if something else fits your
 needs better.</p>
-<p><img src="pcvrTutorial_agm_files/figure-html/unnamed-chunk-23-1.png" width="700"></p>
+<p><img src="pcvrTutorial_agm_files/figure-html/unnamed-chunk-23-1.png" alt="Comparing several parameterizations of sigma against the trend we see in our data. There are essentially infinite options but generally a relatively simple one will work well enough for your data.
+" width="700"></p>
 </div>
-<div class="section level2">
-<h2 id="growthss---distributional-models">
+<div class="section level3">
+<h3 id="growthss---distributional-models">
 <code>growthSS</code> - Distributional Models<a class="anchor" aria-label="anchor" href="#growthss---distributional-models"></a>
-</h2>
+</h3>
 <p>Here we have limited the examples to talk about sigma, a parameter of
 the Student T distribution that our model belongs to. Written another
 way we might say all the previous methods are modeling:</p>
 <p>Y ~ T(mu ~ main growth formula, <span style="color:#FF007B;">sigma ~
 sigma formula</span>, <span style="color:#FFD900;">nu ~ 1</span>)</p>
 </div>
-<div class="section level2">
-<h2 id="growthss---distributional-models-2">
+<div class="section level3">
+<h3 id="growthss---distributional-models-2">
 <code>growthSS</code> - Distributional Models 2<a class="anchor" aria-label="anchor" href="#growthss---distributional-models-2"></a>
-</h2>
+</h3>
 <p>In <code>pcvr</code> the Student T family is the default for these
 models, but other distributions are supported through
 <code>"distribution: model"</code> syntax.</p>
@@ -675,10 +607,10 @@ not capture some important quality of the data. An obvious example could
 be leaf counts, which might be modeled as
 <code>"poisson: monomolecular"</code>, for instance.</p>
 </div>
-<div class="section level2">
-<h2 id="growthss---distributional-models-3">
+<div class="section level3">
+<h3 id="growthss---distributional-models-3">
 <code>growthSS</code> - Distributional Models 3<a class="anchor" aria-label="anchor" href="#growthss---distributional-models-3"></a>
-</h2>
+</h3>
 <p>You can specify sigma as a list of formulas to model different
 distributional parameters separately. Most of the time this is overkill
 and adds unnecessary complexity, but the option exists for certain cases
@@ -688,75 +620,74 @@ may make sense.</p>
 running <code>growthSS(..., sigma=NULL,...)</code> and examining the
 priors, or checking <code>?brmfamily</code>.</p>
 </div>
-<div class="section level2">
-<h2 id="growthss---priors">
+<div class="section level3">
+<h3 id="growthss---priors">
 <code>growthSS</code> - priors<a class="anchor" aria-label="anchor" href="#growthss---priors"></a>
-</h2>
+</h3>
 <p>Bayesian statistics combine prior distributions and collected data to
 form a posterior distribution.</p>
-<p>. . .</p>
 <p>Luckily, in the growth model context it is pretty easy to set “good
 priors”.</p>
 </div>
-<div class="section level2">
-<h2 id="growthss---priors-1">
+<div class="section level3">
+<h3 id="growthss---priors-1">
 <code>growthSS</code> - priors<a class="anchor" aria-label="anchor" href="#growthss---priors-1"></a>
-</h2>
+</h3>
 <p>“Good priors” are generally mildly informative, but not very
 strong.</p>
 <p>They provide some well vetted evidence, but do not overpower the
 data.</p>
 </div>
-<div class="section level2">
-<h2 id="growthss---priors-2">
+<div class="section level3">
+<h3 id="growthss---priors-2">
 <code>growthSS</code> - priors<a class="anchor" aria-label="anchor" href="#growthss---priors-2"></a>
-</h2>
+</h3>
 <p>For our setting we know growth is positive and we should have basic
 impressions of what sizes are possible.</p>
 <p>At the “weakest” side of these priors we at least know growth is
 positive and the camera only can measure some finite space.</p>
 </div>
-<div class="section level2">
-<h2 id="growthss---priors-2-1">
+<div class="section level3">
+<h3 id="growthss---priors-2-1">
 <code>growthSS</code> - priors 2<a class="anchor" aria-label="anchor" href="#growthss---priors-2-1"></a>
-</h2>
+</h3>
 <p>Default priors in <code>growthSS</code> are log-normal</p>
 <p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">log</mtext><mspace width="0.222em"></mspace><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>μ</mi><mo>,</mo><mn>0.25</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\text{log}~N(\mu, 0.25)</annotation></semantics></math></p>
 <p>This has the benefit of giving a long right tail and strictly
 positive values while only requiring us to provide
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>μ</mi><annotation encoding="application/x-tex">\mu</annotation></semantics></math>.</p>
 </div>
-<div class="section level2">
-<h2 id="growthss---priors-3">
+<div class="section level3">
+<h3 id="growthss---priors-3">
 <code>growthSS</code> - priors 3<a class="anchor" aria-label="anchor" href="#growthss---priors-3"></a>
-</h2>
+</h3>
 <p>We can see what those log-normal distributions look like with
 <code>plotPrior</code>.</p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">priors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"A"</span> <span class="op">=</span> <span class="fl">130</span>, <span class="st">"B"</span> <span class="op">=</span> <span class="fl">10</span>, <span class="st">"C"</span> <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span></span>
 <span><span class="va">priorPlots</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plotPrior.html">plotPrior</a></span><span class="op">(</span><span class="va">priors</span><span class="op">)</span></span>
 <span><span class="va">priorPlots</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span> <span class="op">/</span> <span class="va">priorPlots</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span> <span class="op">/</span> <span class="va">priorPlots</span><span class="op">[[</span><span class="fl">3</span><span class="op">]</span><span class="op">]</span></span></code></pre></div>
-<p><img src="pcvrTutorial_agm_files/figure-html/unnamed-chunk-24-1.png" width="700"></p>
+<p><img src="pcvrTutorial_agm_files/figure-html/unnamed-chunk-24-1.png" alt="Plots showing default lognormal prior distributions from growthSS" width="700"></p>
 </div>
-<div class="section level2">
-<h2 id="growthss---priors-4">
+<div class="section level3">
+<h3 id="growthss---priors-4">
 <code>growthSS</code> - priors 4<a class="anchor" aria-label="anchor" href="#growthss---priors-4"></a>
-</h2>
+</h3>
 <p>Those distributions can still be somewhat abstract, so we can
 simulate draws from the priors and see what those values yield in our
 growth model.</p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">twoPriors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"A"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fl">130</span><span class="op">)</span>, <span class="st">"B"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">6</span>, <span class="fl">12</span><span class="op">)</span>, <span class="st">"C"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">0.25</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/plotPrior.html">plotPrior</a></span><span class="op">(</span><span class="va">twoPriors</span>, <span class="st">"gompertz"</span>, n <span class="op">=</span> <span class="fl">100</span><span class="op">)</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span></code></pre></div>
-<p><img src="pcvrTutorial_agm_files/figure-html/unnamed-chunk-25-1.png" width="700"></p>
+<p><img src="pcvrTutorial_agm_files/figure-html/unnamed-chunk-25-1.png" alt="Plots showing default lognormal prior distributions from growthSS along with growth data simulated from each set of priors" width="700"></p>
 </div>
-<div class="section level2">
-<h2 id="growthss---priors-5">
+<div class="section level3">
+<h3 id="growthss---priors-5">
 <code>growthSS</code> - priors 5<a class="anchor" aria-label="anchor" href="#growthss---priors-5"></a>
-</h2>
+</h3>
 <p>Our final call to <code>growthSS</code> will look like this for our
 sample data.</p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ss</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/growthSS.html">growthSS</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="st">"gompertz"</span>, form <span class="op">=</span> <span class="va">y</span> <span class="op">~</span> <span class="va">time</span> <span class="op">|</span> <span class="va">id</span> <span class="op">/</span> <span class="va">group</span>,</span>
 <span>  sigma <span class="op">=</span> <span class="st">"gompertz"</span>, df <span class="op">=</span> <span class="va">simdf</span>,</span>
@@ -766,6 +697,7 @@ sample data.</p>
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
+</div>
 <div class="section level2">
 <h2 id="fitgrowth">
 <code>fitGrowth</code><a class="anchor" aria-label="anchor" href="#fitgrowth"></a>
@@ -773,65 +705,38 @@ sample data.</p>
 <p>Now that we have the components for our model from
 <code>growthSS</code> we can fit the model with
 <code>fitGrowth</code>.</p>
-</div>
-<div class="section level2">
-<h2 id="fitgrowth-2">
-<code>fitGrowth</code> 2<a class="anchor" aria-label="anchor" href="#fitgrowth-2"></a>
-</h2>
 <p>This will call <code>Stan</code> outside of R to run Markov Chain
 Monte Carlo (MCMC) to get draws from the posterior distributions. We can
 control how <code>Stan</code> runs with additional arguments to
 <code>fitGrowth</code>, although the only required argument is the
 output from <code>growthSS</code>.</p>
-</div>
-<div class="section level2">
-<h2 id="fitgrowth-2-1">
-<code>fitGrowth</code> 2<a class="anchor" aria-label="anchor" href="#fitgrowth-2-1"></a>
-</h2>
 <p>Here we specify our <code>ss</code> argument to be the output from
 <code>growthSS</code> and tell the model to use 4 cores so that the
 chains run entirely in parallel, but the rest of this model is using
 defaults.</p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fitGrowth.html">fitGrowth</a></span><span class="op">(</span></span>
 <span>  ss <span class="op">=</span> <span class="va">ss</span>, cores <span class="op">=</span> <span class="fl">4</span>,</span>
 <span>  iter <span class="op">=</span> <span class="fl">2000</span>, chains <span class="op">=</span> <span class="fl">4</span>, backend <span class="op">=</span> <span class="st">"cmdstanr"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="fitgrowth-2-2">
-<code>fitGrowth</code> 2<a class="anchor" aria-label="anchor" href="#fitgrowth-2-2"></a>
-</h2>
 <p>Note that there are lots of arguments that can be passed to
 <code><a href="https://paulbuerkner.com/brms/reference/brm.html" class="external-link">brms::brm</a></code> via <code>fitGrowth</code>.</p>
-<p>. . .</p>
 <p>One that can be very helpful for fitting complex models is the
 <code>control</code> argument, where we can control the sampler’s
 behavior.</p>
-</div>
-<div class="section level2">
-<h2 id="fitgrowth-2-3">
-<code>fitGrowth</code> 2<a class="anchor" aria-label="anchor" href="#fitgrowth-2-3"></a>
-</h2>
 <p><code>adapt_delta</code> and <code>tree_depth</code> are both used to
 reduce the number of “divergent transitions” which are times that the
 sampler has some departure from the True path and which can compromise
 the results.</p>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fitGrowth.html">fitGrowth</a></span><span class="op">(</span><span class="va">ss</span>,</span>
 <span>  cores <span class="op">=</span> <span class="fl">4</span>,</span>
 <span>  iter <span class="op">=</span> <span class="fl">2000</span>, chains <span class="op">=</span> <span class="fl">4</span>, backend <span class="op">=</span> <span class="st">"cmdstanr"</span>,</span>
 <span>  control <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>adapt_delta <span class="op">=</span> <span class="fl">0.999</span>, max_treedepth <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="fitgrowth-3">
-<code>fitGrowth</code> 3<a class="anchor" aria-label="anchor" href="#fitgrowth-3"></a>
-</h2>
 <p><code>fitGrowth</code> returns a <code>brmsfit</code> object, see
 <code><a href="https://paulbuerkner.com/brms/reference/brmsfit-class.html" class="external-link">?brmsfit</a></code> and <code>methods(class="brmsfit")</code> for
 general information.</p>
-<p>. . .</p>
 <p>Within <code>pcvr</code> there are several functions for visualizing
 these objects.</p>
 </div>
@@ -841,33 +746,21 @@ these objects.</p>
 </h2>
 <p><code>growthPlot</code> can be used to plot credible intervals of
 your model.</p>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/growthPlot.html">growthPlot</a></span><span class="op">(</span><span class="va">fit</span>, form <span class="op">=</span> <span class="va">ss</span><span class="op">$</span><span class="va">pcvrForm</span>, df <span class="op">=</span> <span class="va">ss</span><span class="op">$</span><span class="va">df</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="model-visualization-2">Model Visualization 2<a class="anchor" aria-label="anchor" href="#model-visualization-2"></a>
-</h2>
 <p>These plots can show one of the benefits of an asymptotic sub model
 well.</p>
 <p>Here we check our model predictions to 35 days.</p>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/growthPlot.html">growthPlot</a></span><span class="op">(</span><span class="va">fit</span>, form <span class="op">=</span> <span class="va">ss</span><span class="op">$</span><span class="va">pcvrForm</span>, df <span class="op">=</span> <span class="va">ss</span><span class="op">$</span><span class="va">df</span>, timeRange <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">35</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="model-visualization-2-1">Model Visualization 2<a class="anchor" aria-label="anchor" href="#model-visualization-2-1"></a>
-</h2>
 <p>And now we check those predictions from a spline model, where the
 basis functions are not suited for data past day 25.</p>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/growthPlot.html">growthPlot</a></span><span class="op">(</span><span class="va">fit_spline</span>, form <span class="op">=</span> <span class="va">ss_spline</span><span class="op">$</span><span class="va">pcvrForm</span>, df <span class="op">=</span> <span class="va">ss_spline</span><span class="op">$</span><span class="va">df</span>, timeRange <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">35</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="model-visualization-3">Model Visualization 3<a class="anchor" aria-label="anchor" href="#model-visualization-3"></a>
-</h2>
 <p>We can also plot the posterior distributions and test hypotheses with
 <code>brmViolin</code>.</p>
 <p>Here hypotheses are tested with <code><a href="https://paulbuerkner.com/brms/reference/hypothesis.brmsfit.html" class="external-link">brms::hypothesis</a></code>.</p>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/brmViolin.html">brmViolin</a></span><span class="op">(</span><span class="va">fit</span>, <span class="va">ss</span>, hypothesis <span class="op">=</span> <span class="st">".../A_groupa &gt; 1.05"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Loading required package: rstan</span></span></code></pre>
 <pre><code><span><span class="co">## Loading required package: StanHeaders</span></span></code></pre>
@@ -880,7 +773,7 @@ basis functions are not suited for data past day 25.</p>
 <span><span class="co">## For within-chain threading using `reduce_sum()` or `map_rect()` Stan functions,</span></span>
 <span><span class="co">## change `threads_per_chain` option:</span></span>
 <span><span class="co">## rstan_options(threads_per_chain = 1)</span></span></code></pre>
-<p><img src="pcvrTutorial_agm_files/figure-html/unnamed-chunk-34-1.png" width="700"></p>
+<p><img src="pcvrTutorial_agm_files/figure-html/unnamed-chunk-34-1.png" alt="Posterior distributions of a hypothesis test of a 5% effect size." width="700"></p>
 </div>
 <div class="section level2">
 <h2 id="hypothesis-testing">Hypothesis Testing<a class="anchor" aria-label="anchor" href="#hypothesis-testing"></a>
@@ -889,7 +782,7 @@ basis functions are not suited for data past day 25.</p>
 hypothesis testing.</p>
 <p>Here we test for an asymptote for group A at least 20% larger than
 that of group B.</p>
-<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">brms</span><span class="fu">::</span><span class="fu"><a href="https://paulbuerkner.com/brms/reference/hypothesis.brmsfit.html" class="external-link">hypothesis</a></span><span class="op">(</span><span class="va">fit</span>, <span class="st">"A_groupa &gt; 1.2 * A_groupb"</span><span class="op">)</span><span class="op">$</span><span class="va">hyp</span></span></code></pre></div>
 <pre><code><span><span class="co">##                      Hypothesis Estimate Est.Error CI.Lower CI.Upper Evid.Ratio</span></span>
 <span><span class="co">## 1 (A_groupa)-(1.2*A_groupb) &gt; 0 6.290106  4.925797 -1.74309 14.41414    8.90099</span></span>
@@ -901,18 +794,15 @@ that of group B.</p>
 </h2>
 <p>Segmented Models are specified using “model1 + model2” syntax, with
 “+” representing a change point.</p>
-<p>. . .</p>
 <p>Currently only two phases (one changepoint) are recommended. More
 will work but they will slow down the MCMC and may require more fine
 tuning.</p>
-<p>. . .</p>
 <p>These segmented models can also be used to specify sub-models of
 distributional parameters.</p>
-</div>
-<div class="section level2">
-<h2 id="linear-linear">linear + linear<a class="anchor" aria-label="anchor" href="#linear-linear"></a>
-</h2>
-<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
+<div class="section level3">
+<h3 id="linear-linear">linear + linear<a class="anchor" aria-label="anchor" href="#linear-linear"></a>
+</h3>
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">simdf</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/growthSim.html">growthSim</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="st">"linear + linear"</span>,</span>
 <span>  n <span class="op">=</span> <span class="fl">20</span>, t <span class="op">=</span> <span class="fl">25</span>,</span>
@@ -927,16 +817,14 @@ distributional parameters.</p>
 <span></span>
 <span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fitGrowth.html">fitGrowth</a></span><span class="op">(</span><span class="va">ss</span>, backend <span class="op">=</span> <span class="st">"cmdstanr"</span>, iter <span class="op">=</span> <span class="fl">500</span>, chains <span class="op">=</span> <span class="fl">1</span>, cores <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/growthPlot.html">growthPlot</a></span><span class="op">(</span>fit <span class="op">=</span> <span class="va">fit</span>, form <span class="op">=</span> <span class="va">ss</span><span class="op">$</span><span class="va">pcvrForm</span>, df <span class="op">=</span> <span class="va">ss</span><span class="op">$</span><span class="va">df</span><span class="op">)</span></span></code></pre></div>
+<div class="float">
+<img src="linearPlusLinear_fitGrowth.png" alt="Example changepoint model"><div class="figcaption">Example changepoint model</div>
 </div>
-<div class="section level2">
-<h2 id="linear-linear-1">linear + linear<a class="anchor" aria-label="anchor" href="#linear-linear-1"></a>
-</h2>
-<p><img src="linearPlusLinear_fitGrowth.png"></p>
 </div>
-<div class="section level2">
-<h2 id="linear-logistic">linear + logistic<a class="anchor" aria-label="anchor" href="#linear-logistic"></a>
-</h2>
-<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
+<div class="section level3">
+<h3 id="linear-logistic">linear + logistic<a class="anchor" aria-label="anchor" href="#linear-logistic"></a>
+</h3>
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">simdf</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/growthSim.html">growthSim</a></span><span class="op">(</span><span class="st">"linear + logistic"</span>,</span>
 <span>  n <span class="op">=</span> <span class="fl">20</span>, t <span class="op">=</span> <span class="fl">25</span>,</span>
 <span>  params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
@@ -957,16 +845,14 @@ distributional parameters.</p>
 <span></span>
 <span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fitGrowth.html">fitGrowth</a></span><span class="op">(</span><span class="va">ss</span>, backend <span class="op">=</span> <span class="st">"cmdstanr"</span>, iter <span class="op">=</span> <span class="fl">500</span>, chains <span class="op">=</span> <span class="fl">1</span>, cores <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/growthPlot.html">growthPlot</a></span><span class="op">(</span>fit <span class="op">=</span> <span class="va">fit</span>, form <span class="op">=</span> <span class="va">ss</span><span class="op">$</span><span class="va">pcvrForm</span>, df <span class="op">=</span> <span class="va">ss</span><span class="op">$</span><span class="va">df</span><span class="op">)</span></span></code></pre></div>
+<div class="float">
+<img src="linearPlusLogistic_fitGrowth.png" alt="Example changepoint model"><div class="figcaption">Example changepoint model</div>
 </div>
-<div class="section level2">
-<h2 id="linear-logistic-1">linear + logistic<a class="anchor" aria-label="anchor" href="#linear-logistic-1"></a>
-</h2>
-<p><img src="linearPlusLogistic_fitGrowth.png"></p>
 </div>
-<div class="section level2">
-<h2 id="linear-gam">linear + gam<a class="anchor" aria-label="anchor" href="#linear-gam"></a>
-</h2>
-<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
+<div class="section level3">
+<h3 id="linear-gam">linear + gam<a class="anchor" aria-label="anchor" href="#linear-gam"></a>
+</h3>
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ss</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/growthSS.html">growthSS</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="st">"linear + gam"</span>, form <span class="op">=</span> <span class="va">y</span> <span class="op">~</span> <span class="va">time</span> <span class="op">|</span> <span class="va">id</span> <span class="op">/</span> <span class="va">group</span>, sigma <span class="op">=</span> <span class="st">"int"</span>,</span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"linear1A"</span> <span class="op">=</span> <span class="fl">10</span>, <span class="st">"changePoint1"</span> <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>,</span>
@@ -975,16 +861,14 @@ distributional parameters.</p>
 <span></span>
 <span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fitGrowth.html">fitGrowth</a></span><span class="op">(</span><span class="va">ss</span>, backend <span class="op">=</span> <span class="st">"cmdstanr"</span>, iter <span class="op">=</span> <span class="fl">500</span>, chains <span class="op">=</span> <span class="fl">1</span>, cores <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/growthPlot.html">growthPlot</a></span><span class="op">(</span>fit <span class="op">=</span> <span class="va">fit</span>, form <span class="op">=</span> <span class="va">ss</span><span class="op">$</span><span class="va">pcvrForm</span>, df <span class="op">=</span> <span class="va">ss</span><span class="op">$</span><span class="va">df</span><span class="op">)</span></span></code></pre></div>
+<div class="float">
+<img src="linearPlusGAM_fitGrowth.png" alt="Example changepoint model"><div class="figcaption">Example changepoint model</div>
 </div>
-<div class="section level2">
-<h2 id="linear-gam-1">linear + gam<a class="anchor" aria-label="anchor" href="#linear-gam-1"></a>
-</h2>
-<p><img src="linearPlusGAM_fitGrowth.png"></p>
 </div>
-<div class="section level2">
-<h2 id="linear-linear-linear">linear + linear + linear<a class="anchor" aria-label="anchor" href="#linear-linear-linear"></a>
-</h2>
-<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
+<div class="section level3">
+<h3 id="linear-linear-linear">linear + linear + linear<a class="anchor" aria-label="anchor" href="#linear-linear-linear"></a>
+</h3>
+<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">simdf</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/growthSim.html">growthSim</a></span><span class="op">(</span><span class="st">"linear + linear + linear"</span>,</span>
 <span>  n <span class="op">=</span> <span class="fl">25</span>, t <span class="op">=</span> <span class="fl">50</span>,</span>
 <span>  params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
@@ -1005,16 +889,14 @@ distributional parameters.</p>
 <span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fitGrowth.html">fitGrowth</a></span><span class="op">(</span><span class="va">ss</span>, backend <span class="op">=</span> <span class="st">"cmdstanr"</span>, iter <span class="op">=</span> <span class="fl">500</span>, chains <span class="op">=</span> <span class="fl">1</span>, cores <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/growthPlot.html">growthPlot</a></span><span class="op">(</span>fit <span class="op">=</span> <span class="va">fit</span>, form <span class="op">=</span> <span class="va">ss</span><span class="op">$</span><span class="va">pcvrForm</span>, df <span class="op">=</span> <span class="va">ss</span><span class="op">$</span><span class="va">df</span><span class="op">)</span></span></code></pre></div>
+<div class="float">
+<img src="linearPlusLinearPlusLinear_fitGrowth.png" alt="Example changepoint model"><div class="figcaption">Example changepoint model</div>
 </div>
-<div class="section level2">
-<h2 id="linear-linear-linear-1">linear + linear + linear<a class="anchor" aria-label="anchor" href="#linear-linear-linear-1"></a>
-</h2>
-<p><img src="linearPlusLinearPlusLinear_fitGrowth.png"></p>
 </div>
-<div class="section level2">
-<h2 id="int-int-with-segmented-sigma">int + int with segmented sigma<a class="anchor" aria-label="anchor" href="#int-int-with-segmented-sigma"></a>
-</h2>
-<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
+<div class="section level3">
+<h3 id="int-int-with-segmented-sigma">int + int with segmented sigma<a class="anchor" aria-label="anchor" href="#int-int-with-segmented-sigma"></a>
+</h3>
+<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ss</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/growthSS.html">growthSS</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="st">"int + int"</span>, form <span class="op">=</span> <span class="va">y</span> <span class="op">~</span> <span class="va">time</span> <span class="op">|</span> <span class="va">id</span> <span class="op">/</span> <span class="va">group</span>, sigma <span class="op">=</span> <span class="st">"int + int"</span>,</span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
@@ -1027,16 +909,14 @@ distributional parameters.</p>
 <span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fitGrowth.html">fitGrowth</a></span><span class="op">(</span><span class="va">ss</span>, backend <span class="op">=</span> <span class="st">"cmdstanr"</span>, iter <span class="op">=</span> <span class="fl">500</span>, chains <span class="op">=</span> <span class="fl">1</span>, cores <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/growthPlot.html">growthPlot</a></span><span class="op">(</span>fit <span class="op">=</span> <span class="va">fit</span>, form <span class="op">=</span> <span class="va">ss</span><span class="op">$</span><span class="va">pcvrForm</span>, df <span class="op">=</span> <span class="va">ss</span><span class="op">$</span><span class="va">df</span><span class="op">)</span></span></code></pre></div>
+<div class="float">
+<img src="intPlusInt_heteroskedastic_fitGrowth.png" alt="Example changepoint model"><div class="figcaption">Example changepoint model</div>
 </div>
-<div class="section level2">
-<h2 id="int-int-with-segmented-sigma-1">int + int with segmented sigma<a class="anchor" aria-label="anchor" href="#int-int-with-segmented-sigma-1"></a>
-</h2>
-<p><img src="intPlusInt_heteroskedastic_fitGrowth.png"></p>
 </div>
-<div class="section level2">
-<h2 id="int-linear-model-and-submodel">int + linear model and submodel<a class="anchor" aria-label="anchor" href="#int-linear-model-and-submodel"></a>
-</h2>
-<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
+<div class="section level3">
+<h3 id="int-linear-model-and-submodel">int + linear model and submodel<a class="anchor" aria-label="anchor" href="#int-linear-model-and-submodel"></a>
+</h3>
+<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ss</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/growthSS.html">growthSS</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="st">"int + linear"</span>, form <span class="op">=</span> <span class="va">y</span> <span class="op">~</span> <span class="va">time</span> <span class="op">|</span> <span class="va">id</span> <span class="op">/</span> <span class="va">group</span>, sigma <span class="op">=</span> <span class="st">"int + linear"</span>,</span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
@@ -1047,16 +927,14 @@ distributional parameters.</p>
 <span><span class="op">)</span></span>
 <span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fitGrowth.html">fitGrowth</a></span><span class="op">(</span><span class="va">ss</span>, backend <span class="op">=</span> <span class="st">"cmdstanr"</span>, iter <span class="op">=</span> <span class="fl">500</span>, chains <span class="op">=</span> <span class="fl">1</span>, cores <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="va">plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/growthPlot.html">growthPlot</a></span><span class="op">(</span>fit <span class="op">=</span> <span class="va">fit</span>, form <span class="op">=</span> <span class="va">ss</span><span class="op">$</span><span class="va">pcvrForm</span>, df <span class="op">=</span> <span class="va">ss</span><span class="op">$</span><span class="va">df</span>, timeRange <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">40</span><span class="op">)</span></span></code></pre></div>
+<div class="float">
+<img src="intPlusLinear_heteroskedasticIntPlusLinear_fitGrowth.png" alt="Example changepoint model"><div class="figcaption">Example changepoint model</div>
 </div>
-<div class="section level2">
-<h2 id="int-linear-model-and-submodel-1">int + linear model and submodel<a class="anchor" aria-label="anchor" href="#int-linear-model-and-submodel-1"></a>
-</h2>
-<p><img src="intPlusLinear_heteroskedasticIntPlusLinear_fitGrowth.png"></p>
 </div>
-<div class="section level2">
-<h2 id="intlogistic-with-intgam-sub-model">int+logistic with int+gam sub model<a class="anchor" aria-label="anchor" href="#intlogistic-with-intgam-sub-model"></a>
-</h2>
-<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
+<div class="section level3">
+<h3 id="intlogistic-with-intgam-sub-model">int+logistic with int+gam sub model<a class="anchor" aria-label="anchor" href="#intlogistic-with-intgam-sub-model"></a>
+</h3>
+<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ss</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/growthSS.html">growthSS</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="st">"int+logistic"</span>, form <span class="op">=</span> <span class="va">y</span> <span class="op">~</span> <span class="va">time</span> <span class="op">|</span> <span class="va">id</span> <span class="op">/</span> <span class="va">group</span>, sigma <span class="op">=</span> <span class="st">"int + spline"</span>,</span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
@@ -1068,16 +946,15 @@ distributional parameters.</p>
 <span><span class="op">)</span></span>
 <span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fitGrowth.html">fitGrowth</a></span><span class="op">(</span><span class="va">ss</span>, backend <span class="op">=</span> <span class="st">"cmdstanr"</span>, iter <span class="op">=</span> <span class="fl">500</span>, chains <span class="op">=</span> <span class="fl">1</span>, cores <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="va">plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/growthPlot.html">growthPlot</a></span><span class="op">(</span>fit <span class="op">=</span> <span class="va">fit</span>, form <span class="op">=</span> <span class="va">ss</span><span class="op">$</span><span class="va">pcvrForm</span>, df <span class="op">=</span> <span class="va">ss</span><span class="op">$</span><span class="va">df</span><span class="op">)</span></span></code></pre></div>
+<div class="float">
+<img src="intPluslogistic_intPlusGAMSubModel.png" alt="Example changepoint model"><div class="figcaption">Example changepoint model</div>
 </div>
-<div class="section level2">
-<h2 id="intlogistic-with-intgam-sub-model-1">int+logistic with int+gam sub model<a class="anchor" aria-label="anchor" href="#intlogistic-with-intgam-sub-model-1"></a>
-</h2>
-<p><img src="intPluslogistic_intPlusGAMSubModel.png"></p>
+</div>
 </div>
 <div class="section level2">
 <h2 id="example-survival-model">Example survival model<a class="anchor" aria-label="anchor" href="#example-survival-model"></a>
 </h2>
-<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/growthSim.html">growthSim</a></span><span class="op">(</span><span class="st">"logistic"</span>,</span>
 <span>  n <span class="op">=</span> <span class="fl">20</span>, t <span class="op">=</span> <span class="fl">25</span>,</span>
 <span>  params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"A"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">200</span>, <span class="fl">160</span><span class="op">)</span>, <span class="st">"B"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">13</span>, <span class="fl">11</span><span class="op">)</span>, <span class="st">"C"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">3.5</span><span class="op">)</span><span class="op">)</span></span>
@@ -1092,16 +969,14 @@ distributional parameters.</p>
 <p>Here the input data is standard phenotype data with a cutoff to
 represent the event (germination for instance) on the left hand side of
 the formula.</p>
+<div class="float">
+<img src="exSurvivalModel.png" alt="Example survival model"><div class="figcaption">Example survival model</div>
 </div>
-<div class="section level2">
-<h2 id="example-survival-model-1">Example survival model<a class="anchor" aria-label="anchor" href="#example-survival-model-1"></a>
-</h2>
-<p><img src="exSurvivalModel.png"></p>
 </div>
 <div class="section level2">
 <h2 id="example-count-model">Example count model<a class="anchor" aria-label="anchor" href="#example-count-model"></a>
 </h2>
-<div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/growthSim.html">growthSim</a></span><span class="op">(</span><span class="st">"count: logistic"</span>,</span>
 <span>  n <span class="op">=</span> <span class="fl">20</span>, t <span class="op">=</span> <span class="fl">25</span>,</span>
 <span>  params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"A"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">12</span><span class="op">)</span>, <span class="st">"B"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">13</span>, <span class="fl">11</span><span class="op">)</span>, <span class="st">"C"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">3.5</span><span class="op">)</span><span class="op">)</span></span>
@@ -1114,16 +989,14 @@ the formula.</p>
 <span><span class="op">)</span></span>
 <span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fitGrowth.html">fitGrowth</a></span><span class="op">(</span><span class="va">ss</span>, iter <span class="op">=</span> <span class="fl">2000</span>, cores <span class="op">=</span> <span class="fl">4</span>, chains <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span>
 <span><span class="va">plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/growthPlot.html">growthPlot</a></span><span class="op">(</span>fit <span class="op">=</span> <span class="va">fit</span>, form <span class="op">=</span> <span class="va">ss</span><span class="op">$</span><span class="va">pcvrForm</span>, df <span class="op">=</span> <span class="va">ss</span><span class="op">$</span><span class="va">df</span><span class="op">)</span></span></code></pre></div>
+<div class="float">
+<img src="exCountModel.png" alt="Example count model"><div class="figcaption">Example count model</div>
 </div>
-<div class="section level2">
-<h2 id="example-count-model-1">Example count model<a class="anchor" aria-label="anchor" href="#example-count-model-1"></a>
-</h2>
-<p><img src="exCountModel.png"></p>
 </div>
 <div class="section level2">
 <h2 id="example-hierarchical-model">Example hierarchical model<a class="anchor" aria-label="anchor" href="#example-hierarchical-model"></a>
 </h2>
-<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">simdf</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/growthSim.html">growthSim</a></span><span class="op">(</span></span>
 <span>  <span class="st">"logistic"</span>,</span>
 <span>  n <span class="op">=</span> <span class="fl">20</span>, t <span class="op">=</span> <span class="fl">25</span>,</span>
@@ -1144,14 +1017,12 @@ the formula.</p>
 <span><span class="op">)</span></span>
 <span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fitGrowth.html">fitGrowth</a></span><span class="op">(</span><span class="va">ss</span>, iter <span class="op">=</span> <span class="fl">1000</span>, cores <span class="op">=</span> <span class="fl">4</span>, chains <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span>
 <span><span class="va">plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/growthPlot.html">growthPlot</a></span><span class="op">(</span>fit <span class="op">=</span> <span class="va">fit</span>, form <span class="op">=</span> <span class="va">ss</span><span class="op">$</span><span class="va">pcvrForm</span>, df <span class="op">=</span> <span class="va">ss</span><span class="op">$</span><span class="va">df</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="example-hierarchical-model-1">Example hierarchical model<a class="anchor" aria-label="anchor" href="#example-hierarchical-model-1"></a>
-</h2>
 <p>Note for plotting hierarchical models a <code>hierarchy_value</code>
 can be specified and defaults to the mean of the <code>covar</code> in
 this case.</p>
-<p><img src="exHierarchyModel.png"></p>
+<div class="float">
+<img src="exHierarchyModel.png" alt="Example hierarchical model"><div class="figcaption">Example hierarchical model</div>
+</div>
 </div>
 <div class="section level2">
 <h2 id="evaluating-your-models">Evaluating your models<a class="anchor" aria-label="anchor" href="#evaluating-your-models"></a>
@@ -1185,7 +1056,7 @@ possible with <code>brms</code>, which itself is more limited than
 <h2 id="using-brms-directly-1">Using <code>brms</code> directly<a class="anchor" aria-label="anchor" href="#using-brms-directly-1"></a>
 </h2>
 <p>Our gompertz sigma model looks like this in <code>brms</code>:</p>
-<div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">prior1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://paulbuerkner.com/brms/reference/set_prior.html" class="external-link">prior</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Special.html" class="external-link">gamma</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">0.1</span><span class="op">)</span>, class <span class="op">=</span> <span class="st">"nu"</span>, lb <span class="op">=</span> <span class="fl">0.001</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://paulbuerkner.com/brms/reference/set_prior.html" class="external-link">prior</a></span><span class="op">(</span><span class="fu"><a href="https://paulbuerkner.com/brms/reference/brmsfamily.html" class="external-link">lognormal</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">130</span><span class="op">)</span>, <span class="fl">.25</span><span class="op">)</span>, nlpar <span class="op">=</span> <span class="st">"A"</span>, lb <span class="op">=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://paulbuerkner.com/brms/reference/set_prior.html" class="external-link">prior</a></span><span class="op">(</span><span class="fu"><a href="https://paulbuerkner.com/brms/reference/brmsfamily.html" class="external-link">lognormal</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">12</span><span class="op">)</span>, <span class="fl">.25</span><span class="op">)</span>, nlpar <span class="op">=</span> <span class="st">"B"</span>, lb <span class="op">=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">+</span></span>

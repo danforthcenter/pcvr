@@ -29,7 +29,7 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="nav-item"><a class="nav-link" href="../index.html"><span class="fa fa-home fa-lg"></span></a></li>
+<li class="nav-item"><a class="nav-link" href="../index.html" aria-label="Home page"><span class="fa fa-home fa-lg"></span></a></li>
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-vignettes" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Vignettes</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-vignettes">
@@ -62,8 +62,8 @@
 <li class="nav-item"><a class="external-link nav-link" href="https://plantcv.org/">PlantCV</a></li>
       </ul>
 <ul class="navbar-nav">
-<li class="nav-item"><a class="external-link nav-link" href="https://github.com/danforthcenter/pcvr"><span class="fa fa-github"></span></a></li>
-<li class="nav-item"><a class="external-link nav-link" href="https://github.com/danforthcenter/PlantCV"><span class="fa fa-leaf"></span></a></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/danforthcenter/pcvr" aria-label="View on Github"><span class="fa fa-github"></span></a></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/danforthcenter/PlantCV" aria-label="View PlantCV on Github"><span class="fa fa-leaf"></span></a></li>
       </ul>
 </div>
 
@@ -196,14 +196,23 @@ via MCMC or similar methods, see advanced growth modeling tutorial)</li>
 two examples.</p>
 <p>If we take a foundational verb like “To Be” then we can conjugate it
 depending on the context.</p>
-<p><img src="tobe.png" width="325" height="200"></p>
+<div class="float">
+<img src="tobe.png" alt="Example of conjugation in language with ‘to be’ verb"><div class="figcaption">Example of conjugation in language with ‘to be’
+verb</div>
+</div>
 <p>Now we add more information and the meaning gets more specific to
 describe that information.</p>
-<p><img src="tobe2.png" width="600" height="500"></p>
+<div class="float">
+<img src="tobe2.png" alt="Adding context to the ‘to be’ verb changes it’s meaning"><div class="figcaption">Adding context to the ‘to be’ verb changes it’s
+meaning</div>
+</div>
 <p>We can do the same thing easily with some probability distributions.
 Similar to language we get more and more specific as the context is
 better described (as we add more data).</p>
-<p><img src="tobe3.png" width="700" height="600"></p>
+<div class="float">
+<img src="tobe3.png" alt="We can get more specific language with more data in the form of context"><div class="figcaption">We can get more specific language with more data
+in the form of context</div>
+</div>
 </div>
 <div class="section level2">
 <h2 id="bayesian-beta-binomial-conjugacy">Bayesian Beta-Binomial Conjugacy<a class="anchor" aria-label="anchor" href="#bayesian-beta-binomial-conjugacy"></a>
@@ -221,10 +230,10 @@ L(\alpha, \beta|(x_1, \ldots, x_n)) \\
 \alpha` = \alpha + \Sigma(\text{Successes} \in x) \\
 \beta` = \beta + \Sigma(\text{Failures} \in x)
 \end{equation}$$</span></p>
-<p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-3-1.png" width="700"></p>
+<p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-3-1.png" alt="Beta Distributions with different percentages of success and different precision." width="700"></p>
 <p>Very simplistically we can think of conjugacy as when we know the
 distribution of a parameter in another distribution.</p>
-<p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-4-1.png" width="700"></p>
+<p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-4-1.png" alt="Beta Binomial conjugacy shown with different percentages of success and different precision." width="700"></p>
 </div>
 <div class="section level2">
 <h2 id="pcvrconjugate">
@@ -356,7 +365,7 @@ that kind of data.</p>
 </table>
 <pre><code><span><span class="co">## Warning: Removed 2 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">## (`geom_bar()`).</span></span></code></pre>
-<p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-5-1.png" width="700"></p>
+<p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-5-1.png" alt="A collection of conjugate prior distributions available in pcvr." width="700"></p>
 </div>
 <div class="section level2">
 <h2 id="pcvrconjugate-arguments">
@@ -389,7 +398,7 @@ odds.</p>
 </h3>
 <pre><code><span><span class="co">## Warning: Removed 2 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">## (`geom_bar()`).</span></span></code></pre>
-<p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
+<p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-6-1.png" alt="Default priors for several conjugate distributions." width="700"></p>
 </div>
 <div class="section level3">
 <h3 id="using-rope-tests">Using ROPE tests<a class="anchor" aria-label="anchor" href="#using-rope-tests"></a>
@@ -414,7 +423,7 @@ difference is within 0.5 of 0.</p>
 <span>  cred.int.level <span class="op">=</span> <span class="fl">0.89</span>, hypothesis <span class="op">=</span> <span class="st">"equal"</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">out</span><span class="op">$</span><span class="va">plot</span></span></code></pre></div>
-<p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
+<p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-7-1.png" alt="Output of the conjugate function highlighting the ROPE testing." width="700"></p>
 <p>We get a probability of 0.34 that the highest density interval of the
 difference falls in the interval [-0.5, 0.5], with a median difference
 of 0.75.</p>
@@ -430,7 +439,7 @@ against an accepted interval for the mean:</p>
 <span>  hypothesis <span class="op">=</span> <span class="st">"unequal"</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">out</span><span class="op">$</span><span class="va">plot</span></span></code></pre></div>
-<p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
+<p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-8-1.png" alt="Another example of output of the conjugate function highlighting the ROPE testing." width="700"></p>
 <p>Here we see about a 1 percent chance that the mean of our data is in
 the [11, 13] interval that we listed as a range similar to an
 alternative hypothesis in a T-test.</p>
@@ -485,7 +494,7 @@ parameter.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position.inside <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.2</span>, <span class="fl">0.8</span><span class="op">)</span>, legend.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>        legend.position <span class="op">=</span> <span class="st">"inside"</span><span class="op">)</span></span>
 <span><span class="va">p1</span></span></code></pre></div>
-<p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-9-1.png" width="700"></p>
+<p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-9-1.png" alt="Prior odds of a range hypothesis shown on a Beta 2, 2 prior" width="700"></p>
 <p>Now we update our prior with some data:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">successes</span> <span class="op">&lt;-</span> <span class="fl">8</span></span>
@@ -518,7 +527,7 @@ parameter.</p>
 <span>  <span class="fu"><a href="../reference/pcv_theme.html">pcv_theme</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span></span>
 <span><span class="va">p2</span></span></code></pre></div>
-<p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-10-1.png" width="700"></p>
+<p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-10-1.png" alt="Posterior odds of a range hypothesis shown on a Beta 10, 4 posterior" width="700"></p>
 <p>Our Bayes Factor is the ratio between the posterior and prior
 odds:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
@@ -570,7 +579,7 @@ region.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position.inside <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.2</span>, <span class="fl">0.8</span><span class="op">)</span>, legend.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>        legend.position <span class="op">=</span> <span class="st">"inside"</span><span class="op">)</span></span>
 <span><span class="va">p1</span></span></code></pre></div>
-<p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-13-1.png" width="700"></p>
+<p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-13-1.png" alt="Prior odds of a point hypothesis shown on a Beta 2, 2 prior" width="700"></p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># prior density at null</span></span>
 <span><span class="va">prior_null_analytic</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Beta.html" class="external-link">dbeta</a></span><span class="op">(</span><span class="fl">0.5</span>, shape1 <span class="op">=</span> <span class="fl">2</span>, shape2 <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
@@ -601,7 +610,7 @@ region.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/annotate.html" class="external-link">annotate</a></span><span class="op">(</span><span class="st">"text"</span>, x <span class="op">=</span> <span class="fl">0.4</span>, y <span class="op">=</span> <span class="fl">2.5</span>,</span>
 <span>           label <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"BF = "</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">post_null_analytic</span> <span class="op">/</span> <span class="va">prior_null_analytic</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">p2</span></span></code></pre></div>
-<p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-13-2.png" width="700"></p>
+<p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-14-1.png" alt="Posterior odds of a point hypothesis shown on a Beta 10, 4 posterior" width="700"></p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="op">(</span><span class="va">b_factor_point</span> <span class="op">&lt;-</span> <span class="va">post_null_analytic</span> <span class="op">/</span> <span class="va">prior_null_analytic</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] 0.4654948</span></span></code></pre>
@@ -634,7 +643,7 @@ output in the plant phenotyping context.</p>
 </h2>
 <p>Germination Rates (or other binary outocmes like flowering or death)
 can make good sense as Beta-Binomial data.</p>
-<p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-16-1.png" width="700"></p>
+<p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-17-1.png" alt="Example germination count data between two treatment groups" width="700"></p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/conjugate.html">conjugate</a></span><span class="op">(</span></span>
 <span>  s1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>successes <span class="op">=</span> <span class="va">df</span><span class="op">[</span><span class="va">df</span><span class="op">$</span><span class="va">geno</span> <span class="op">==</span> <span class="st">"A"</span>, <span class="st">"y"</span><span class="op">]</span>, trials <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>,</span>
@@ -642,12 +651,11 @@ can make good sense as Beta-Binomial data.</p>
 <span>  method <span class="op">=</span> <span class="st">"binomial"</span>,</span>
 <span>  plot <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-18-1.png" width="700"></p>
+<p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-19-1.png" alt="Beta-Binomial conjugacy plot of the germination data, showing probability of equal rate." width="700"></p>
 <p>Here we’d simply conclude that there is about a 19% chance that the
 germination rate is the same between these two genotypes after 1 week.
 We could do more with ROPE testing, but we’ll do that in the next
 example.</p>
-<p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-19-1.png" width="700"></p>
 </div>
 <div class="section level2">
 <h2 id="area">Area<a class="anchor" aria-label="anchor" href="#area"></a>
@@ -655,7 +663,7 @@ example.</p>
 <p>Lots of phenotypes are gaussian and <code>conjugate</code> can be
 used similarly to a T-test with the “t” method. Consider area data that
 looks like this example.</p>
-<p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-20-1.png" width="700"></p>
+<p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-20-1.png" alt="Example plant biomass (area) data between two treatment groups" width="700"></p>
 <p>Here we include a ROPE test corresponding to our belief that any
 difference in Area of
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>±</mo><mn>2</mn><mi>c</mi><msup><mi>m</mi><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">\pm2 cm^2</annotation></semantics></math>
@@ -671,7 +679,7 @@ which can’t happen with area).</p>
 <span>  priors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>mu <span class="op">=</span> <span class="fl">10</span>, sd <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>,</span>
 <span>  hypothesis <span class="op">=</span> <span class="st">"unequal"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-22-1.png" width="700"></p>
+<p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-22-1.png" alt="Conjugate output comparing the mean of the two groups sizes." width="700"></p>
 <p>Our plot shows about a 83% chance that these distributions are
 unequal and a 24% chance that the difference in means is within
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>±</mo><mn>2</mn><mi>c</mi><msup><mi>m</mi><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">\pm2 cm^2</annotation></semantics></math>.</p>
@@ -715,7 +723,7 @@ data piecemeal makes sense. The prior is in the same format.</p>
 vertices, leaves, flowers, etc could all be used with one of the count
 distributions. Here we consider Poisson distributed leaf counts between
 two genotypes.</p>
-<p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-26-1.png" width="700"></p>
+<p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-26-1.png" alt="Example leaf count data between two treatment groups" width="700"></p>
 <p>Here we model <span class="math inline">$X \sim Poisson(\lambda)\\
 \lambda \sim \Gamma(A, B)$</span></p>
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
@@ -727,7 +735,7 @@ two genotypes.</p>
 <span>  priors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>a <span class="op">=</span> <span class="fl">1</span>, b <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>,</span>
 <span>  hypothesis <span class="op">=</span> <span class="st">"unequal"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-28-1.png" width="700"></p>
+<p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-28-1.png" alt="Conjugate comparison of the Gamma distributed lambda parameter for Poisson distributed leaf counts." width="700"></p>
 <p>We can comfortably say that the difference in the posteriors is not
 in [-1, 1] and there is a 91% chance that the Gamma distributions for
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>λ</mi><annotation encoding="application/x-tex">\lambda</annotation></semantics></math>
@@ -748,7 +756,7 @@ to radians for the updating before rescaling back to the parameter
 space. See <code><a href="../reference/conjugate.html">?conjugate</a></code> for more examples of the
 <code>boundary</code>.</p>
 <pre><code><span><span class="co">## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</span></span></code></pre>
-<p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-29-1.png" width="700"></p>
+<p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-29-1.png" alt="Example circular data between two treatment groups" width="700"></p>
 <p>Note this is a very exaggerated example for the plant phenotyping
 setting since green happens to be in the middle of the hue circle, which
 wraps in the red colors.</p>
@@ -763,7 +771,7 @@ get from plants other continuous methods can generally be useful.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>y <span class="op">=</span> <span class="st">"Hue (radians)"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous</a></span><span class="op">(</span>limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="va">pi</span>, <span class="va">pi</span><span class="op">)</span>, breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="va">pi</span>, <span class="op">-</span><span class="va">pi</span> <span class="op">/</span> <span class="fl">2</span>, <span class="fl">0</span>, <span class="va">pi</span> <span class="op">/</span> <span class="fl">2</span>, <span class="va">pi</span><span class="op">)</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-30-1.png" width="700"></p>
+<p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-30-1.png" alt="Example circular data between two treatment groups treated as though it were not circular looks bimodal." width="700"></p>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/conjugate.html">conjugate</a></span><span class="op">(</span></span>
 <span>  s1 <span class="op">=</span> <span class="va">y</span> <span class="op">~</span> <span class="va">geno</span>, s2 <span class="op">=</span> <span class="va">df</span>,</span>
@@ -773,7 +781,7 @@ get from plants other continuous methods can generally be useful.</p>
 <span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">res</span><span class="op">$</span><span class="va">plot</span></span></code></pre></div>
-<p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-32-1.png" width="700"></p>
+<p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-32-1.png" alt="Conjugate comparison of the direction of Von Mises distributed circular data." width="700"></p>
 <p>Here our distributions are very similar and there is about a 79%
 chance that their parameters are the same given this data and our (very
 wide) priors.</p>
