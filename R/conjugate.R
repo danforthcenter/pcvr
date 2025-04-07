@@ -402,6 +402,8 @@ conjugate <- function(s1 = NULL, s2 = NULL,
       rope_range, rope_ci, dirSymbol, support, method, bayes_factor
     )
   }
+  out$call <- match.call()
+  out <- as.conjugate(out)
   return(out)
 }
 
