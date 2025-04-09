@@ -24,6 +24,8 @@ See \code{methods(class = "conjugate")} for an overview of available methods.
 
 \item{\code{plot}}{Optionally a plot of the distributions and their differences}
 
+\item{\code{data}}{The data from s1 and s2 arguments to \link{conjugate}.}
+
 \item{\code{call}}{Matched call to \link{conjugate}.}
 }}
 

@@ -15,6 +15,7 @@
 #' @slot posterior Posterior distribution as a list of named lists
 #' @slot prior Prior distribution as a list of named lists
 #' @slot plot Optionally a plot of the distributions and their differences
+#' @slot data The data from s1 and s2 arguments to \link{conjugate}.
 #' @slot call Matched call to \link{conjugate}.
 #'
 #' @seealso
@@ -72,55 +73,57 @@ summary.conjugate <- function(object, ...) {
 print.conjugatesummary <- function(x, ...) {
   call_list <- as.list(x$call)
   method <- call_list$method
-  #* `Method`
-  method_list <- switch(method,
-                        t = list("Normal", "Mu", "T"),
-                        gaussian = list("Normal", "Mu", "Normal"),
-                        beta = list("Beta", "Mean", "Beta"),
-                        binomial = list("Beta", "Rate", "Binomial"),
-                        lognormal = list("Normal", "Mu", "Lognormal"),
-                        lognormal2 = list("Gamma", "Precision", "Lognormal"),
-                        poisson = list("Gamma", "Lambda", "Poisson"),
-                        negbin = list("Beta", "Rate", "Negative Binomial"),
-                        vonmises = list("Von Mises", "Direction", "Von Mises"),
-                        vonmises2 = list("Von Mises", "Direction", "Von Mises"),
-                        uniform = list("Pareto", "Upper Boundary", "Uniform"),
-                        pareto = list("Gamma", "Scale", "Pareto"),
-                        gamma = list("Gamma", "Rate", "Gamma"),
-                        bernoulli = list("Beta", "Rate", "Bernoulli"),
-                        exponential = list("Gamma", "Rate", "Exponential"),
-                        bivariate_uniform = list("Bivariate Pareto", "Boundaries", "Uniform"),
-                        bivariate_gaussian = list("Normal/Gamma", "Mu/Sd", "Normal"),
-                        bivariate_lognormal = list("Normal/Gamma", "Mu/Sd", "Lognormal")
-                        )
-  method_statement <- paste0(
-    method_list[[1]], # conjugate distribution
-    " distributed ",
-    method_list[[2]], # conjugate parameter
-    " parameter of ",
-    method_list[[3]], # data distribution
-    " distributed data."
-  )
-  cat(method_statement)
-  cat("\n\n")
-  #* `Parameters`
-  dist_statements <- lapply(seq_along(x$posterior), function(i) {
-    prior <- x$prior[[i]]
-    post <- x$posterior[[i]]
-    prior_statement <- paste0("Sample ", i,  " Prior DISTRIBUTION(",
-           paste(
-             paste(names(prior), round(unlist(prior), 3), sep = " = "),
-             collapse = ", "),
-           ")\n")
-    posterior_statement <- paste0("\tPosterior DISTRIBUTION(",
-           paste(
-             paste(names(post), round(unlist(post), 3), sep = " = "),
-             collapse = ", "),
-           ")\n")
-    cat(prior_statement)
-    cat(posterior_statement)
-    return(list(prior_statement, posterior_statement))
-  })
+  if (length(method) == 1) {
+    #* `Method`
+    method_list <- switch(method,
+                          t = list("Normal", "Mu", "T"),
+                          gaussian = list("Normal", "Mu", "Normal"),
+                          beta = list("Beta", "Mean", "Beta"),
+                          binomial = list("Beta", "Rate", "Binomial"),
+                          lognormal = list("Normal", "Mu", "Lognormal"),
+                          lognormal2 = list("Gamma", "Precision", "Lognormal"),
+                          poisson = list("Gamma", "Lambda", "Poisson"),
+                          negbin = list("Beta", "Rate", "Negative Binomial"),
+                          vonmises = list("Von Mises", "Direction", "Von Mises"),
+                          vonmises2 = list("Von Mises", "Direction", "Von Mises"),
+                          uniform = list("Pareto", "Upper Boundary", "Uniform"),
+                          pareto = list("Gamma", "Scale", "Pareto"),
+                          gamma = list("Gamma", "Rate", "Gamma"),
+                          bernoulli = list("Beta", "Rate", "Bernoulli"),
+                          exponential = list("Gamma", "Rate", "Exponential"),
+                          bivariate_uniform = list("Bivariate Pareto", "Boundaries", "Uniform"),
+                          bivariate_gaussian = list("Normal/Gamma", "Mu/Sd", "Normal"),
+                          bivariate_lognormal = list("Normal/Gamma", "Mu/Sd", "Lognormal")
+                          )
+    method_statement <- paste0(
+      method_list[[1]], # conjugate distribution
+      " distributed ",
+      method_list[[2]], # conjugate parameter
+      " parameter of ",
+      method_list[[3]], # data distribution
+      " distributed data."
+    )
+    cat(method_statement)
+    cat("\n\n")
+    #* `Parameters`
+    dist_statements <- lapply(seq_along(x$posterior), function(i) {
+      prior <- x$prior[[i]]
+      post <- x$posterior[[i]]
+      prior_statement <- paste0("Sample ", i,  " Prior ", method_list[[1]], "(",
+             paste(
+               paste(names(prior), round(unlist(prior), 3), sep = " = "),
+               collapse = ", "),
+             ")\n")
+      posterior_statement <- paste0("\tPosterior ", method_list[[1]], "(",
+             paste(
+               paste(names(post), round(unlist(post), 3), sep = " = "),
+               collapse = ", "),
+             ")\n")
+      cat(prior_statement)
+      cat(posterior_statement)
+      return(list(prior_statement, posterior_statement))
+    })
+  }
   #* `Hypothesis`
   if ("post.prob" %in% colnames(x$summary)) {
     cat("\n")

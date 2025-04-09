@@ -44,9 +44,7 @@ The "t" and "gaussian" methods both use a T distribution with "t" testing for a 
 of means and "gaussian" testing for a difference in the distributions (similar to a Z test).
 Both Von Mises options are for use with circular data (for instance hue values when the circular
 quality of the data is relevant). Note that non-circular distributions can be compared to each other.
-This should only be done with caution. Make sure you understand the interpretation of any
-comparison you are doing if you specify two methods (c("gaussian", "lognormal") as an arbitrary
-example).
+This should only be done with caution and may not be supported in all downstream functions.
 There are also 3 bivariate conjugate priors that are supported for use with single value data.
 Those are "bivariate_uniform", "bivariate_gaussian" and "bivariate_lognormal".}
 
