@@ -53,7 +53,7 @@
   out$pdf <- pdf1
   #* `Save data for plotting`
   out$plot_list <- list(
-    "range" = support,
+    "range" = range(support),
     "ddist_fun" = "stats::dnorm",
     "priors" = list("mean" = priors$mu[1],
                     "sd" = priors$sd[1]),
