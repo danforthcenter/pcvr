@@ -922,6 +922,8 @@ conj$summary
 
 ## Reading `conjugate` output
 
+Note that the `conjugate` function outputs a `conjugate` class object. If you just print that object it will show the main results in a easily human-readable format.
+
 Lastly we'll show a few interpretations of `conjugate` output in the plant phenotyping context.
 
 - Germination Rates
@@ -971,6 +973,13 @@ res$plot
 
 Here we'd simply conclude that there is about a 19\% chance that the germination rate is the same between these two genotypes after 1 week. We could do more with ROPE testing, but we'll do that in the next example.
 
+We can also look at the printed output which shows human-readable interpretations of hypothesis tests, ROPE tests, and Bayes Factors when applicable.
+
+```{r}
+res
+```
+
+
 ## Area
 
 Lots of phenotypes are gaussian and `conjugate` can be used similarly to a T-test with the "t" method. Consider area data that looks like this example.
@@ -1016,14 +1025,13 @@ res$plot
 
 Our plot shows about a 83\% chance that these distributions are unequal and a 24\% chance that the difference in means is within $\pm2 cm^2$.
 
-The other aspects of the output are a summary and the prior/posterior parameters.
+The other aspects of the output are a summary and the prior/posterior parameters as well as several things only used internally.
 
 ```{r}
 #| echo: true
 lapply(res, class)
 ```
 
-. . .
 
 The summary is a data.frame with a summary of the information in the plot.
 
@@ -1073,6 +1081,7 @@ res <- conjugate(
   priors = list(a = 1, b = 1),
   hypothesis = "unequal"
 )
+res
 ```
 
 ```{r}
@@ -1138,6 +1147,7 @@ res <- conjugate(
   priors = list(mu = 0, kappa = 0.5, boundary = c(-pi, pi), n = 1),
   plot = TRUE
 )
+res
 ```
 
 ```{r}
