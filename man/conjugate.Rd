@@ -87,7 +87,7 @@ are added to the summary output. Note these are only implemented for univariate 
 \item{support}{Deprecated}
 }
 \value{
-A list with named elements:
+A \link{conjugate-class} object with several slots:
 \itemize{
    \item{\strong{summary}: A data frame containing HDI/HDE values for each sample and
    the ROPE as well as posterior probability of the hypothesis and ROPE test (if specified).
@@ -99,9 +99,10 @@ A list with named elements:
    \item{\strong{posterior}: A list of updated parameters in the same format as the prior
     for the given method. If desired this does allow for Bayesian updating.}
    \item{\strong{prior}: The prior in a list with the same format as the posterior.}
-   \item{\strong{rope_df}: A data frame of draws from the ROPE posterior.}
    \item{\strong{plot}: A ggplot showing the distribution of samples and optionally the
-   distribution of differences/ROPE}
+   distribution of differences/ROPE}.
+   \item{\strong{data}}: Data from s1 and s2 arguments.
+   \item{\strong{call}}: The function call.
 }
 }
 \description{
@@ -111,11 +112,11 @@ several distributions.
 \details{
 Prior distributions default to be weakly informative and in some cases you may wish to change them.
 \itemize{
-   \item{\strong{"t", "gaussian", and "lognormal":} \code{priors = list( mu=c(0,0), sd=c(10,10) ) },
+   \item{\strong{"t", "gaussian", and "lognormal":} \code{priors = list(mu = 0, sd = 10)},
     where mu is the mean and sd is standard deviation. For the lognormal method these describe
     the normal distribution of the mean parameter for lognormal data and are on the log scale.}
    \item{\strong{"beta", "bernoulli", and "binomial":}
-   \code{priors = list( a=c(0.5, 0.5), b=c(0.5, 0.5) )},
+   \code{priors = list(a = 0.5, b = 0.5)},
     where a and b are shape parameters of the beta distribution. Note that for the binomial
     distribution this is used as the prior for success probability P,
     which is assumed to be beta distributed as in a beta-binomial distribution.}
@@ -126,9 +127,9 @@ Prior distributions default to be weakly informative and in some cases you may w
    \item{\strong{"gamma": } \code{priors = list(shape = 0.5, scale = 0.5, known_shape = 1)},
     where shape and scale are the respective parameters of the gamma distributed rate
     (inverse of scale) parameter of gamma distributed data.}
-   \item{\strong{"poisson" and "exponential": } \code{priors = list(a=c(0.5,0.5),b=c(0.5,0.5))},
+   \item{\strong{"poisson" and "exponential": } \code{priors = list(a = 0.5,b = 0.5)},
     where a and b are shape parameters of the gamma distribution.}
-   \item{\strong{"negbin": } \code{priors = list(r=c(10,10), a=c(0.5,0.5),b=c(0.5,0.5))},
+   \item{\strong{"negbin": } \code{priors = list(r = 10, a = 0.5, b = 0.5)},
     where r is the r parameter of the negative binomial distribution
     (representing the number of successes required)
      and where a and b are shape parameters of the beta distribution.
@@ -229,11 +230,11 @@ gauss_mv_ex <- conjugate(
   cred.int.level = 0.89, hypothesis = "equal", support = NULL
 )
 
-# T test sv example
+# T test sv example with two different priors
 
 gaussianMeans_sv_ex <- conjugate(
   s1 = rnorm(10, 50, 10), s2 = rnorm(10, 60, 12), method = "t",
-  priors = list(mu = 40, sd = 10),
+  priors = list(list(mu = 40, sd = 10), list(mu = 45, sd = 8)),
   plot = FALSE, rope_range = c(-5, 8), rope_ci = 0.89,
   cred.int.level = 0.89, hypothesis = "equal", support = NULL
 )
