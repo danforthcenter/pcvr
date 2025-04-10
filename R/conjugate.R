@@ -302,6 +302,8 @@
 #'    \item{\strong{prior}: The prior in a list with the same format as the posterior.}
 #'    \item{\strong{plot}: A ggplot showing the distribution of samples and optionally the
 #'    distribution of differences/ROPE}.
+#'    \item{\strong{plot_parameters}}: Parameters used in making a plot of the data.
+#'    Contains support range and posterior recoded to use a density function.
 #'    \item{\strong{data}}: Data from s1 and s2 arguments.
 #'    \item{\strong{call}}: The function call.
 #' }
@@ -394,6 +396,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
   }
   out$posterior <- lapply(sample_results, function(s) s$posterior)
   out$prior <- lapply(sample_results, function(s) s$prior)
+  out$plot_parameters <- lapply(sample_results, function(s) s$plot_list)
   #* `Make plot`
   if (plot) {
     out$plot <- .conj_plot(sample_results, rope_res,
