@@ -122,7 +122,7 @@
   out$pdf <- pdf1
   #* `keep data for plotting`
   out$plot_list <- list(
-    "range" = support,
+    "range" = range(support),
     "ddist_fun" = "brms::dvon_mises",
     "priors" = list("mu" = priors$mu[1], "kappa" = priors$kappa[1]),
     "parameters" = list("mu" = mu_prime,
@@ -249,7 +249,7 @@
   out$pdf <- pdf1
   #* `keep data for plotting`
   out$plot_list <- list(
-    "range" = support,
+    "range" = range(support),
     "ddist_fun" = "brms::dvon_mises",
     "priors" = list("mu" = priors$mu[1], "kappa" = priors$kappa[1]),
     "parameters" = list("mu" = mu_prime,

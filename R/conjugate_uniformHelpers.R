@@ -66,7 +66,7 @@
   out$prior <- priors
   #* `save s1 data for plotting`
   out$plot_list <- list(
-    "range" = support,
+    "range" = range(support),
     "ddist_fun" = "extraDistr::dpareto",
     "priors" = list("a" = priors$scale[1], "b" = priors$location[1]),
     "parameters" = list("a" = scale_prime,
@@ -124,7 +124,7 @@
   out$prior <- priors
   #* `save s1 data for plotting`
   out$plot_list <- list(
-    "range" = support,
+    "range" = range(support),
     "ddist_fun" = "extraDistr::dpareto",
     "priors" = list("a" = priors$scale[1], "b" = priors$location[1]),
     "parameters" = list("a" = scale_prime,
