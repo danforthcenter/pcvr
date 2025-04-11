@@ -58,7 +58,8 @@
     "priors" = list("mean" = priors$mu[1],
                     "sd" = priors$sd[1]),
     "parameters" = list("mean" = mu_prime,
-                        "sd" = sd_prime)
+                        "sd" = sd_prime),
+    "given" = list("sd" = sqrt(1 / pseudo_known_precision))
   )
   return(out)
 }
@@ -142,7 +143,8 @@
     "priors" = list("mean" = priors$mu[1],
                     "sd" = priors$sd[1]),
     "parameters" = list("mean" = mu_prime,
-                        "sd" = sd_prime)
+                        "sd" = sd_prime),
+    "given" = list("sd" = sqrt(1 / pseudo_known_precision))
   )
   return(out)
 }

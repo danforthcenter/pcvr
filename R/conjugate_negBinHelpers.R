@@ -80,7 +80,8 @@
     "ddist_fun" = "stats::dbeta",
     "priors" = list("shape1" = priors$a[1],  "shape2" = priors$b[1]),
     "parameters" = list("shape1" = a1_prime,
-                        "shape2" = b1_prime)
+                        "shape2" = b1_prime),
+    "given" = list("size" = priors$r[1])
   )
   return(out)
 }

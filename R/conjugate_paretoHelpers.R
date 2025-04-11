@@ -53,12 +53,12 @@
     return(scale_mle)
   }))
   scale_estimate <- mean(row_scales)
-  sv_draws <- extraDistr::rpareto(n_obs, scale_estimate, priors$known_location)
+  sv_draws <- extraDistr::rpareto(n_obs, scale_estimate, priors$known_location[1])
   #* `Update gamma prior with sufficient statistics`
   n <- length(sv_draws)
   m <- prod(sv_draws)
-  a_prime <- priors$a + n
-  b_prime <- 1 / (1 / priors$b + log(m) - n * log(priors$known_location))
+  a_prime <- priors$a[1] + n
+  b_prime <- 1 / (1 / priors$b[1] + log(m) - n * log(priors$known_location[1]))
   #* `Define support if it is missing`
   if (is.null(support) && calculatingSupport) {
     quantiles <- qgamma(c(0.0001, 0.9999), a_prime, b_prime)
@@ -80,7 +80,7 @@
   out$posterior <- list(
     "a" = a_prime,
     "b" = b_prime,
-    "known_location" = priors$known_location
+    "known_location" = priors$known_location[1]
   )
   out$prior <- priors
   #* `save s1 data for plotting`
@@ -89,7 +89,8 @@
     "ddist_fun" = "stats::dgamma",
     "priors" = list("shape" = priors$a[1],  "rate" = priors$b[1]),
     "parameters" = list("shape" = a_prime,
-                        "rate" = b_prime)
+                        "rate" = b_prime),
+    "given" = list("location" = priors$known_location[1])
   )
   return(out)
 }
@@ -117,8 +118,8 @@
   #* `Update gamma prior with sufficient statistics`
   n <- length(s1)
   m <- prod(s1)
-  a_prime <- priors$a + n
-  b_prime <- 1 / (1 / priors$b + log(m) - n * log(priors$known_location))
+  a_prime <- priors$a[1] + n
+  b_prime <- 1 / (1 / priors$b[1] + log(m) - n * log(priors$known_location[1]))
   #* `Define support if it is missing`
   if (is.null(support) && calculatingSupport) {
     quantiles <- qgamma(c(0.0001, 0.9999), a_prime, b_prime)
@@ -140,7 +141,7 @@
   out$posterior <- list(
     "a" = a_prime,
     "b" = b_prime,
-    "known_location" = priors$known_location
+    "known_location" = priors$known_location[1]
   )
   out$prior <- priors
   #* `save s1 data for plotting`
@@ -149,7 +150,8 @@
     "ddist_fun" = "stats::dgamma",
     "priors" = list("shape" = priors$a[1],  "rate" = priors$b[1]),
     "parameters" = list("shape" = a_prime,
-                        "rate" = b_prime)
+                        "rate" = b_prime),
+    "given" = list("b" = priors$known_location[1])
   )
   return(out)
 }

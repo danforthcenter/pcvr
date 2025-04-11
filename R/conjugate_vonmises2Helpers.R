@@ -42,7 +42,7 @@
   #* `rescale data to [-pi, pi] according to boundary`
   s1 <- .boundary.to.radians(x = s1, boundary = priors$boundary)
   #* `rescale prior on mu to [-pi, pi] according to boundary`
-  mu_radians <- .boundary.to.radians(x = priors$mu, boundary = priors$boundary)
+  mu_radians <- .boundary.to.radians(x = priors$mu[1], boundary = priors$boundary)
   #* `Raise error if the boundary is wrong and data is not on [-pi, pi]`
   if (any(abs(s1) > pi)) {
     stop(paste0(
@@ -63,10 +63,10 @@
   #* ***** `Updating Kappa`
   n1 <- length(s1)
   obs_kappa <- .unbiased.kappa(s1, n1)
-  kappa_prime <- ((obs_kappa * n1) + (priors$kappa * priors$n)) / (n1 + priors$n)
+  kappa_prime <- ((obs_kappa * n1) + (priors$kappa[1] * priors$n[1])) / (n1 + priors$n[1])
   #* ***** `Updating vMF for mu using kappa prime`
   #* `Get weighted mean of data and prior for half tangent adjustment`
-  cm <- .circular.mean(c(s1, mu_radians), w = c(rep(1, length(s1)), priors$n))
+  cm <- .circular.mean(c(s1, mu_radians), w = c(rep(1, length(s1)), priors$n[1]))
   unitCircleAdj <- ifelse(abs(cm) <= pi / 2, 0, pi)
   unitCircleAdj <- ifelse(cm > 0, 1, -1) * unitCircleAdj
   #* `Update prior parameters`
@@ -108,7 +108,7 @@
   )
   out$posterior$mu <- hde_boundary # rescaled mu_prime
   out$posterior$kappa <- kappa_prime
-  out$posterior$n <- priors$n + length(s1)
+  out$posterior$n <- priors$n[1] + length(s1)
   out$posterior$boundary <- priors$boundary
   out$prior <- priors
   #* `Store Posterior Draws`

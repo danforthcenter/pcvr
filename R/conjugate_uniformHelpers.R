@@ -70,7 +70,8 @@
     "ddist_fun" = "extraDistr::dpareto",
     "priors" = list("a" = priors$scale[1], "b" = priors$location[1]),
     "parameters" = list("a" = scale_prime,
-                        "b" = location_prime)
+                        "b" = location_prime),
+    "given" = list("min" = 0)
   )
   return(out)
 }
@@ -128,7 +129,8 @@
     "ddist_fun" = "extraDistr::dpareto",
     "priors" = list("a" = priors$scale[1], "b" = priors$location[1]),
     "parameters" = list("a" = scale_prime,
-                        "b" = location_prime)
+                        "b" = location_prime),
+    "given" = list("min" = 0)
   )
   return(out)
 }
