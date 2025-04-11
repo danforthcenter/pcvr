@@ -52,7 +52,8 @@
     "ddist_fun" = "stats::dgamma",
     "priors" = list("shape" = priors$shape[1],  "scale" = priors$scale[1]),
     "parameters" = list("shape" = shape_prime,
-                        "scale" = scale_prime)
+                        "scale" = scale_prime),
+    "given" = priors$known_shape
   )
   return(out)
 }
