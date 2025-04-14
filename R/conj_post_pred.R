@@ -6,7 +6,7 @@
 #' @param n Optionally return n draws from each posterior predictive distribution. If this is specified
 #' then draws from the posterior predictive distribution are returned instead of a plot.
 #'
-#' @details
+#' @details Posterior predictive distribution plotting or sampling for conjugate class.
 #'
 #' @keywords internal
 #' @return A patchwork of ggplots showing hypothesis test results
@@ -33,7 +33,7 @@
 #' .post_pred_conj(x)
 #' .post_pred_conj(x, 10)
 #' @importFrom viridis scale_fill_viridis
-#' @importFrom reshape2 dcast
+#' @importFrom data.table dcast
 #' @importFrom stats quantile setNames
 #' @import ggplot2
 #' @noRd
@@ -141,10 +141,11 @@
     }
     probs <- seq(0.01, 0.99, 0.02)
     qs <- stats::quantile(pp_draws, probs)
-    df <- data.frame(p = probs, q = qs, sample = paste0("Sample ", i), numericSample = i)
+    df <- data.table::data.table(p = probs, q = qs, sample = paste0("Sample ", i), numericSample = i)
     df$ci <- c(seq(1, 49, 2), seq(49, 1, -2))
     df$limit <- rep(c("min", "max"), each = 25)
-    df <- reshape2::dcast(df, sample + numericSample + ci ~ limit, value.var = "q")
+    df <- data.table::dcast(df, sample + numericSample + ci ~ limit, value.var = "q")
+    df <- as.data.frame(df)
     return(df)
   })
   if (as.logical(n)) {
