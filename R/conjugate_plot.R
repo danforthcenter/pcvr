@@ -68,7 +68,7 @@ plot.conjugate <- function(x) {
 #' @noRd
 .conj_general_plot <- function(res, rope_df = NULL,
                                rope_range, rope_ci, dirSymbol = NULL, support, bayes_factor) {
-  s1_plot_df <- data.frame(range = res[[1]]$plot_list$range)
+  s1_plot_df <- data.frame(range = res$plot_parameters[[1]]$range)
   s1_bf_title <- NULL
   s2_bf_title <- NULL
   if (!is.null(bayes_factor)) {
@@ -79,8 +79,8 @@ plot.conjugate <- function(x) {
   
   p <- ggplot2::ggplot(s1_plot_df, ggplot2::aes(x = .data$range)) +
     ggplot2::stat_function(geom = "polygon",
-                           fun = eval(parse(text = res[[1]]$plot_list$ddist_fun)),
-                           args = res[[1]]$plot_list$parameters,
+                           fun = eval(parse(text = res$plot_parameters[[1]]$ddist_fun)),
+                           args = res$plot_parameters[[1]]$parameters,
                            ggplot2::aes(fill = "s1"), alpha = 0.5) +
     ggplot2::geom_vline(ggplot2::aes(xintercept = res$summary$HDI_1_low),
                         color = "red",
@@ -110,7 +110,7 @@ plot.conjugate <- function(x) {
     ) +
     pcv_theme()
   
-  if (length(res) == 2) {
+  if (length(res$data) == 2) {
     if (!is.null(bayes_factor)) {
       s2_bf_title <- paste0(", BF: (",
                             paste(bayes_factor, collapse = ", "),
@@ -130,8 +130,8 @@ plot.conjugate <- function(x) {
     p$scales$scales[[fill_scale]] <- NULL
     p <- p +
       ggplot2::stat_function(geom = "polygon",
-                             fun = eval(parse(text = res[[2]]$plot_list$ddist_fun)),
-                             args = res[[2]]$plot_list$parameters,
+                             fun = eval(parse(text = res$plot_parameters[[2]]$ddist_fun)),
+                             args = res$plot_parameters[[2]]$parameters,
                              ggplot2::aes(fill = "s2"), alpha = 0.5) +
       ggplot2::geom_vline(ggplot2::aes(xintercept = res$summary$HDI_2_low),
                           color = "blue",
@@ -215,11 +215,11 @@ plot.conjugate <- function(x) {
 
 .conj_bivariate_plot <- function(res, rope_df = NULL, rope_range, rope_ci, dirSymbol = NULL, support) {
   TITLE <- "Joint Posterior Distribution"
-  if (length(res) == 1) {
-    margin_plot_df <- res[[1]]$plot_df
+  if (length(res$data) == 1) {
+    margin_plot_df <- res$plot_df[[1]]
     params <- unique(margin_plot_df$param)
     #* `Make joint distribution plot`
-    joint_dist_s1 <- res[[1]]$posteriorDraws
+    joint_dist_s1 <- res$posteriorDraws[[1]]
     limits <- lapply(params, function(p) {
       sub <- margin_plot_df[margin_plot_df$param == p, ]
       return(range(sub$range))
@@ -299,16 +299,16 @@ plot.conjugate <- function(x) {
     })
     #* `Write title if there is only 1 sample`
     SUBTITLE <- NULL
-  } else if (length(res) == 2) {
+  } else if (length(res$data) == 2) {
     #* `Make plots for sample 2 if it exists`
     margin_plot_df <- do.call(rbind, lapply(1:2, function(i) {
-      md <- res[[i]]$plot_df
+      md <- res$plot_df[[i]]
       md$sample <- paste0("Sample ", i)
       return(md)
     }))
     params <- unique(margin_plot_df$param)
     joint_dist <- do.call(rbind, lapply(1:2, function(i) {
-      pd <- res[[i]]$posteriorDraws
+      pd <- res$posteriorDraws[[i]]
       pd$sample <- paste0("Sample ", i)
       return(pd)
     }))
