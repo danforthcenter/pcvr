@@ -202,7 +202,7 @@ mv_ln <- mvSim(
 ln_mv_ex <- conjugate(
   s1 = mv_ln[1:30, -1], s2 = mv_ln[31:60, -1], method = "lognormal",
   priors = list(mu = 5, sd = 2),
-  plot = FALSE, rope_range = c(-40, 40), rope_ci = 0.89,
+  rope_range = c(-40, 40), rope_ci = 0.89,
   cred.int.level = 0.89, hypothesis = "equal", support = NULL
 )
 
@@ -211,7 +211,7 @@ ln_sv_ex <- conjugate(
   s1 = rlnorm(100, log(130), log(1.3)), s2 = rlnorm(100, log(100), log(1.6)),
   method = "lognormal",
   priors = list(mu = 5, sd = 2),
-  plot = FALSE, rope_range = NULL, rope_ci = 0.89,
+  rope_range = NULL, rope_ci = 0.89,
   cred.int.level = 0.89, hypothesis = "equal", support = NULL
 )
 
@@ -228,7 +228,7 @@ mv_gauss <- mvSim(
 gauss_mv_ex <- conjugate(
   s1 = mv_gauss[1:30, -1], s2 = mv_gauss[31:60, -1], method = "gaussian",
   priors = list(mu = 30, sd = 10),
-  plot = FALSE, rope_range = c(-25, 25), rope_ci = 0.89,
+  rope_range = c(-25, 25), rope_ci = 0.89,
   cred.int.level = 0.89, hypothesis = "equal", support = NULL
 )
 
@@ -237,7 +237,7 @@ gauss_mv_ex <- conjugate(
 gaussianMeans_sv_ex <- conjugate(
   s1 = rnorm(10, 50, 10), s2 = rnorm(10, 60, 12), method = "t",
   priors = list(list(mu = 40, sd = 10), list(mu = 45, sd = 8)),
-  plot = FALSE, rope_range = c(-5, 8), rope_ci = 0.89,
+  rope_range = c(-5, 8), rope_ci = 0.89,
   cred.int.level = 0.89, hypothesis = "equal", support = NULL
 )
 
@@ -255,7 +255,7 @@ mv_beta <- mvSim(
 beta_mv_ex <- conjugate(
   s1 = mv_beta[1:30, -1], s2 = mv_beta[31:50, -1], method = "beta",
   priors = list(a = 0.5, b = 0.5),
-  plot = FALSE, rope_range = c(-0.1, 0.1), rope_ci = 0.89,
+  rope_range = c(-0.1, 0.1), rope_ci = 0.89,
   cred.int.level = 0.89, hypothesis = "equal",
   bayes_factor = 0.5 # note this may not be reasonable with these priors
 )
@@ -265,7 +265,7 @@ beta_mv_ex <- conjugate(
 beta_sv_ex <- conjugate(
   s1 = rbeta(20, 5, 5), s2 = rbeta(20, 8, 5), method = "beta",
   priors = list(a = 0.5, b = 0.5),
-  plot = FALSE, rope_range = c(-0.1, 0.1), rope_ci = 0.89,
+  rope_range = c(-0.1, 0.1), rope_ci = 0.89,
   cred.int.level = 0.89, hypothesis = "equal",
   bayes_factor = c(0.5, 0.75) # note this may not be reasonable with these priors
 )
@@ -278,7 +278,7 @@ binomial_sv_ex <- conjugate(
   s1 = list(successes = c(15, 14, 16, 11), trials = c(20, 20, 20, 20)),
   s2 = list(successes = c(7, 8, 10, 5), trials = c(20, 20, 20, 20)), method = "binomial",
   priors = list(a = 0.5, b = 0.5),
-  plot = FALSE, rope_range = c(-0.1, 0.1), rope_ci = 0.89,
+  rope_range = c(-0.1, 0.1), rope_ci = 0.89,
   cred.int.level = 0.89, hypothesis = "equal"
 )
 
@@ -287,7 +287,7 @@ binomial_sv_ex <- conjugate(
 poisson_sv_ex <- conjugate(
   s1 = rpois(20, 10), s2 = rpois(20, 8), method = "poisson",
   priors = list(a = 0.5, b = 0.5),
-  plot = FALSE, rope_range = c(-1, 1), rope_ci = 0.89,
+  rope_range = c(-1, 1), rope_ci = 0.89,
   cred.int.level = 0.89, hypothesis = "equal"
 )
 
@@ -298,7 +298,7 @@ poisson_sv_ex <- conjugate(
 negbin_sv_ex <- conjugate(
   s1 = rnbinom(20, 10, 0.5), s2 = rnbinom(20, 10, 0.25), method = "negbin",
   priors = list(r = 10, a = 0.5, b = 0.5),
-  plot = FALSE, rope_range = c(-1, 1), rope_ci = 0.89,
+  rope_range = c(-1, 1), rope_ci = 0.89,
   cred.int.level = 0.89, hypothesis = "equal"
 )
 
@@ -316,7 +316,7 @@ vm1_ex <- conjugate(
   s2 = mv_gauss[31:70, -1],
   method = "vonmises",
   priors = list(mu = 45, kappa = 1, boundary = c(0, 180), known_kappa = 1, n = 1),
-  plot = FALSE, rope_range = c(-1, 1), rope_ci = 0.89,
+  rope_range = c(-1, 1), rope_ci = 0.89,
   cred.int.level = 0.89, hypothesis = "equal"
 )
 
@@ -326,8 +326,7 @@ vm2_ex <- conjugate(
   s2 = brms::rvon_mises(15, 3, 3),
   method = "vonmises2",
   priors = list(mu = 0, kappa = 0.5, boundary = c(-pi, pi), n = 1),
-  cred.int.level = 0.95,
-  plot = FALSE
+  cred.int.level = 0.95
 )
 
 }
