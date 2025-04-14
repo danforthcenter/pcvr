@@ -11,7 +11,7 @@ conjugate(
     "negbin", "vonmises", "vonmises2", "uniform", "pareto", "gamma", "bernoulli",
     "exponential", "bivariate_uniform", "bivariate_gaussian", "bivariate_lognormal"),
   priors = NULL,
-  plot = FALSE,
+  plot = NULL,
   rope_range = NULL,
   rope_ci = 0.89,
   cred.int.level = 0.89,
@@ -101,6 +101,8 @@ A \link{conjugate-class} object with several slots:
    \item{\strong{prior}: The prior in a list with the same format as the posterior.}
    \item{\strong{plot}: A ggplot showing the distribution of samples and optionally the
    distribution of differences/ROPE}.
+   \item{\strong{plot_parameters}}: Parameters used in making a plot of the data.
+   Contains support range and posterior recoded to use a density function.
    \item{\strong{data}}: Data from s1 and s2 arguments.
    \item{\strong{call}}: The function call.
 }

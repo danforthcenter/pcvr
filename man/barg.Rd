@@ -4,7 +4,7 @@
 \alias{barg}
 \title{Function to help fulfill elements of the Bayesian Analysis Reporting Guidelines.}
 \usage{
-barg(fit, ss = NULL)
+barg(fit, ss = NULL, priors = NULL)
 }
 \arguments{
 \item{fit}{The brmsfit object or a list of brmsfit objects in the case that you split models to run
@@ -105,6 +105,16 @@ barg(fit_test, ss)
 fit_2 <- fit_test
 fit_list <- list(fit_test, fit_2)
 x <- barg(fit_list, list(ss, ss))
+
+x <- conjugate(
+  s1 = rnorm(10, 10, 1), s2 = rnorm(10, 13, 1.5), method = "t",
+  priors = list(list(mu = 10, sd = 2),
+                list(mu = 10, sd = 2)),
+  plot = FALSE, rope_range = c(-8, 8), rope_ci = 0.89,
+  cred.int.level = 0.89, hypothesis = "unequal",
+  bayes_factor = c(50, 55)
+)
+b <- barg(x, priors = list("rnorm" = list("mean" = c(5, 20), "sd" = c(5, 10))))
 }
 
 }
