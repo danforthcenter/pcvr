@@ -361,7 +361,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
       "bivariate_uniform", "bivariate_gaussian", "bivariate_lognormal"
     ))
     matched_fun <- get(paste0(".conj_", matched_arg, "_", vec_suffix))
-    res <- matched_fun(sample, prior, plot, support, cred.int.level)
+    res <- matched_fun(sample, prior, support, cred.int.level)
     return(res)
   })
   #* `combine results into an object to return`
@@ -517,7 +517,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
 #' @keywords internal
 #' @noRd
 .conj_rope <- function(sample_results, rope_range = c(-0.1, 0.1),
-                       rope_ci = 0.89, plot, method) {
+                       rope_ci = 0.89, method) {
   #* `if bivariate then call the bivariate option`
   #* note this will return to .conj_rope but with a non-bivariate method
   if (any(grepl("bivariate", method))) {
@@ -554,9 +554,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
         HDI_rope_high = hdi_diff[2], rope_prob = rope_prob
       )
       rope_res$summary <- rope_test
-      if (plot) {
-        rope_res$rope_df <- data.frame("X" = posterior)
-      }
+      rope_res$rope_df <- data.frame("X" = posterior)
     } else {
       stop("rope must be a vector of length 2")
     }
@@ -572,7 +570,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
 #' @keywords internal
 #' @noRd
 .conj_bivariate_rope <- function(sample_results, rope_range = c(-0.1, 0.1),
-                                 rope_ci = 0.89, plot, method) {
+                                 rope_ci = 0.89, method) {
   #* `Format rope_range`
   rope_res <- list()
   if (!is.list(rope_range)) {
@@ -593,7 +591,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
     })
     nm_res <- .conj_rope(sample_results_param,
       rope_range = iter_rope_range,
-      rope_ci = rope_ci, plot, method = "NONE"
+      rope_ci = rope_ci, method = "NONE"
     )
     return(nm_res)
   })
