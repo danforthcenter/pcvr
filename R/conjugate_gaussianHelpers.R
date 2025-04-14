@@ -14,7 +14,7 @@
 #' @noRd
 
 .conj_gaussian_sv <- function(s1 = NULL, priors = NULL,
-                              plot = FALSE, support = NULL, cred.int.level = NULL,
+                              support = NULL, cred.int.level = NULL,
                               calculatingSupport = FALSE) {
   out <- list()
   #* `make default prior if none provided`
@@ -75,7 +75,7 @@
 #' @noRd
 
 .conj_gaussian_mv <- function(s1 = NULL, priors = NULL,
-                              plot = FALSE, support = NULL, cred.int.level = NULL,
+                              support = NULL, cred.int.level = NULL,
                               calculatingSupport = FALSE) {
   out <- list()
   #* `make default prior if none provided`

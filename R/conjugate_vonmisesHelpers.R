@@ -19,7 +19,7 @@
 #' @noRd
 
 .conj_vonmises_mv <- function(s1 = NULL, priors = NULL,
-                              plot = FALSE, support = NULL, cred.int.level = NULL,
+                              support = NULL, cred.int.level = NULL,
                               calculatingSupport = FALSE) {
   #* `Turn off support for consistent rescaling between boundaries and to avoid default length of 10000`
   support <- NULL
@@ -153,7 +153,7 @@
 #' @noRd
 
 .conj_vonmises_sv <- function(s1 = NULL, priors = NULL,
-                              plot = FALSE, support = NULL, cred.int.level = NULL,
+                              support = NULL, cred.int.level = NULL,
                               calculatingSupport = FALSE) {
   #* `to avoid default support length of 10000 which may not span boundary well`
   support <- NULL

@@ -18,7 +18,7 @@
 #' @keywords internal
 #' @noRd
 .conj_uniform_mv <- function(s1 = NULL, priors = NULL,
-                             plot = FALSE, support = NULL, cred.int.level = NULL,
+                             support = NULL, cred.int.level = NULL,
                              calculatingSupport = FALSE) {
   out <- list()
   #* `make default prior if none provided`
@@ -89,7 +89,7 @@
 #' @keywords internal
 #' @noRd
 .conj_uniform_sv <- function(s1 = NULL, priors = NULL,
-                             plot = FALSE, support = NULL, cred.int.level = NULL,
+                             support = NULL, cred.int.level = NULL,
                              calculatingSupport = FALSE) {
   out <- list()
   #* `make default prior if none provided`

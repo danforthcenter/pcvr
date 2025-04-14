@@ -12,8 +12,7 @@
 #' @keywords internal
 #' @noRd
 
-.conj_binomial_sv <- function(s1 = NULL, priors = NULL,
-                              plot = FALSE, support = NULL, cred.int.level = NULL,
+.conj_binomial_sv <- function(s1 = NULL, priors = NULL, support = NULL, cred.int.level = NULL,
                               calculatingSupport = FALSE) {
   #* `check stopping conditions`
   s1 <- .conj_binomial_formatter(s1)

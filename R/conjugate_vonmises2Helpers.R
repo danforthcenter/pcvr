@@ -18,7 +18,7 @@
 #' @noRd
 
 .conj_vonmises2_sv <- function(s1 = NULL, priors = NULL,
-                               plot = FALSE, support = NULL, cred.int.level = NULL,
+                               support = NULL, cred.int.level = NULL,
                                calculatingSupport = FALSE) {
   #* `set support to NULL to avoid default length of 10000`
   support <- NULL
@@ -145,7 +145,7 @@
 #' @noRd
 
 .conj_vonmises2_mv <- function(s1 = NULL, priors = NULL,
-                               plot = FALSE, support = NULL, cred.int.level = NULL,
+                               support = NULL, cred.int.level = NULL,
                                calculatingSupport = FALSE) {
   #* `set support to NULL to avoid default length of 10000`
   support <- NULL

@@ -24,7 +24,7 @@
 #' @noRd
 
 .conj_lognormal_mv <- function(s1 = NULL, priors = NULL,
-                               plot = FALSE, support = NULL, cred.int.level = NULL,
+                               support = NULL, cred.int.level = NULL,
                                calculatingSupport = FALSE) {
   out <- list()
   #* `make default prior if none provided`
@@ -128,7 +128,7 @@
 #' @noRd
 
 .conj_lognormal_sv <- function(s1 = NULL, priors = NULL,
-                               plot = FALSE, support = NULL, cred.int.level = NULL,
+                               support = NULL, cred.int.level = NULL,
                                calculatingSupport = FALSE) {
   out <- list()
   #* `make default prior if none provided`

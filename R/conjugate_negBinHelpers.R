@@ -30,7 +30,7 @@
 #' @noRd
 
 .conj_negbin_sv <- function(s1 = NULL, priors = NULL,
-                            plot = FALSE, support = NULL, cred.int.level = NULL,
+                            support = NULL, cred.int.level = NULL,
                             calculatingSupport = FALSE) {
   #* `Check samples`
   if (any(abs(s1 - round(s1)) > .Machine$double.eps^0.5) || any(s1 < 0)) {

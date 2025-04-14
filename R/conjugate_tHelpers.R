@@ -13,7 +13,7 @@
 #' @keywords internal
 #' @noRd
 .conj_t_sv <- function(s1 = NULL, priors = NULL,
-                       plot = FALSE, support = NULL, cred.int.level = NULL,
+                       support = NULL, cred.int.level = NULL,
                        calculatingSupport = FALSE) {
   out <- list()
   #* `make default prior if none provided`
@@ -92,7 +92,7 @@
 #' @noRd
 
 .conj_t_mv <- function(s1 = NULL, priors = NULL,
-                       plot = FALSE, support = NULL, cred.int.level = NULL,
+                       support = NULL, cred.int.level = NULL,
                        calculatingSupport = FALSE) {
   out <- list()
   #* `make default prior if none provided`
