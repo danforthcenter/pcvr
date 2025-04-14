@@ -14,37 +14,46 @@
 #' set.seed(123)
 #' x <- conjugate(
 #'   s1 = rnorm(10, 10, 1), s2 = rnorm(10, 13, 1.5), method = "t",
-#'   priors = list(list(mu = 175, sd = 2), # purposefully poor strong priors
-#'                 list(mu = 50, sd = 2)),
+#'   priors = list(list(mu = 10, sd = 2),
+#'                 list(mu = 10, sd = 2)),
 #'   plot = FALSE, rope_range = c(-8, 8), rope_ci = 0.89,
 #'   cred.int.level = 0.89, hypothesis = "unequal",
 #'   bayes_factor = c(50, 55)
 #' )
-#' conj_post_pred(x)
-#' conj_post_pred(x, 10)
+#' .post_pred_conj(x)
+#' .post_pred_conj(x, 10)
 #'
+#' x <- conjugate(
+#'   s1 = rbeta(10, 5, 5), s2 = rbeta(10, 13, 3), method = "beta",
+#'   priors = list(a = 2, b = 2),
+#'   plot = FALSE, rope_range = c(-0.5, 0.5), rope_ci = 0.89,
+#'   cred.int.level = 0.89, hypothesis = "unequal",
+#'   bayes_factor = c(0.45, 0.55)
+#' )
+#' .post_pred_conj(x)
+#' .post_pred_conj(x, 10)
+#' @importFrom viridis scale_fill_viridis
+#' @importFrom reshape2 dcast
+#' @importFrom stats quantile setNames
+#' @import ggplot2
 #' @noRd
 
-conj_post_pred <- function(x, n = 0) {
+.post_pred_conj <- function(x, n = 0) {
   args <- as.list(x$call)
   #* find variable space RNG function
   method <- eval(args$method)[1]
   pp_dist <- switch(method,
                     t = list("rfun" = "stats::rnorm",
                              "modelled_param" = "mean",
-                             "given" = "sd"), # not sure how I want this
-                    # to work yet. Any other parameters will need to be given to make the posterior
-                    # predictive, but they aren't as obviously retrieved in the current framework.
-                    # maybe something like "look for the known_ prefix on priors/posteriors" and here
-                    # I could link the name of the known parameter to the name of the argument?
+                             "given" = "sd"),
                     gaussian = list("rfun" = "stats::rnorm",
                                     "modelled_param" = "mean",
                                     "given" = "sd"),
-                    beta = qbeta, # this will be a trickier one? modelled_param is a list?
+                    beta = list("rfun" = "stats::rbeta",
+                                "modelled_param" = list("shape1", "shape2")),
                     binomial = list("rfun" = "stats::rbinom",
                                     "modelled_param" = "prob",
-                                    "given" = "size"), # here size isn't "known" but I do need it..?
-                    # i guess it's from the trials number.
+                                    "given" = "size"), # here size isn't "known" but is needed for PPD
                     lognormal = list("rfun" = "stats::rlnorm",
                                      "modelled_param" = "meanlog",
                                      "given" = "sdlog"),
@@ -59,7 +68,8 @@ conj_post_pred <- function(x, n = 0) {
                     vonmises = list("rfun" = "brms::rvon_mises",
                                     "modelled_param" = "mu",
                                     "given" = "kappa"),
-                    vonmises2 = circular::qvonmises, # this will all be a trickier one? modelled_param is a list?
+                    vonmises2 = list("rfun" = "brms::rvon_mises",
+                                     "modelled_param" = list("mu", "kappa")),
                     uniform = list("rfun" = "stats::runif",
                                    "modelled_param" = "max",
                                    "given" = "min"),
@@ -71,23 +81,17 @@ conj_post_pred <- function(x, n = 0) {
                                  "given" = "shape"),
                     bernoulli = list("rfun" = "stats::rbinom",
                                      "modelled_param" = "prob",
-                                     "given" = "size"), # need to give size of 1 here
+                                     "given" = "size"),
                     exponential = list("rfun" = "stats::rexp",
                                        "modelled_param" = "rate"),
-                    # these will all be a trickier one? modelled_param is a list?
-                    bivariate_uniform = qunif,
-                    bivariate_gaussian = qnorm,
-                    bivariate_lognormal = qlnorm
+                    bivariate_uniform = list("rfun" = "stats::runif",
+                                             "modelled_param" = list("min", "max")),
+                    bivariate_gaussian = list("rfun" = "stats::rnorm",
+                                              "modelled_param" = list("mean", "sd")),
+                    bivariate_lognormal = list("rfun" = "stats::rlnorm",
+                                               "modelled_param" = list("meanlog", "sdlog"))
   )
-  #* actually simpler way to do this now that I have a print method anyway is to grab the
-  #* plot_list (called plot_parameters when output) and take from there.'
-  #* NEVERMIND, this is parameter space. If I want the variable space then I need to do the
-  #* "switch method" above. Still this should be helpful?
-  #* Raises issue about the variable space, I have a distribution for a parameter value,
-  #* I could draw randomly from that distribution (or by quantiles), get the density of
-  #* those parameter's resultant curve in the variable space, then get a posterior predictive
-  #* by summarizing those?
-  #* It should be possible to do this analytically?
+  #* Get data space hyperparameters (posterior parameters for modeled parameter)
   parameter_space <- lapply(x$plot_parameters, function(l) {
     dfun <- l$ddist_fun
     dfun_split <- strsplit(dfun, "::")[[1]]
@@ -114,6 +118,11 @@ conj_post_pred <- function(x, n = 0) {
             parameter_space[[i]]$parameters
           )
         )
+        # if the modelled param is >1L then it's one of the "special case" distributions
+        # where we're modeling the base generating distribution rather than it's parameters.
+        if (length(pp_dist$modelled_param) > 1) {
+          return(param)
+        }
         pp_draw <- do.call(
           eval(parse(text = pp_dist$rfun)),
           args = Reduce(
