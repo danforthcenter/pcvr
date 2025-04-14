@@ -1,6 +1,5 @@
 #' @description
-#' Internal function for calculating the pareto distribution of the upper boundary of a uniform
-#' distribution represented by single value traits.
+#' Internal function for calculating the joint distribution of mean and precision of a gaussian.
 #' @param s1 A vector of numerics drawn from a uniform distribution.
 #' @examples
 #'
@@ -90,6 +89,15 @@
     "a" = alpha_prime, "b" = beta_prime
   )
   out$prior <- priors
+  #* `save modified parameter list for downstream functions`
+  out$plot_list <- list(
+    "range" = list(range(support_mu), range(support_prec)),
+    "ddist_fun" = list("stats::dnorm", "stats::dgamma"),
+    "parameters" = list(
+      list("mean" = mu_prime, "sd" = sigma_prime),
+      list("shape" = alpha_prime, "scale" = beta_prime)
+    )
+  )
   #* `save s1 data for plotting`
   if (plot) {
     out$plot_df <- data.frame(
