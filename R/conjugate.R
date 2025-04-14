@@ -387,7 +387,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
   }
   #* `parse output and do ROPE`
   if (!is.null(rope_range)) {
-    rope_res <- .conj_rope(sample_results, rope_range, rope_ci, plot, method)
+    rope_res <- .conj_rope(sample_results, rope_range, rope_ci, method)
     out$summary <- cbind(out$summary, rope_res$summary)
     out$rope_df <- rope_res$rope_df
   }
@@ -523,7 +523,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
   if (any(grepl("bivariate", method))) {
     rope_res <- .conj_bivariate_rope(
       sample_results, rope_range,
-      rope_ci, plot, method
+      rope_ci, method
     )
     return(rope_res)
   }
