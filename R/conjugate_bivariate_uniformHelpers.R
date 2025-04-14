@@ -117,6 +117,15 @@
     "location_u" = location_u_prime
   )
   out$prior <- priors
+  #* `save modified parameter list for downstream functions`
+  out$plot_list <- list(
+    "range" = list(range(support_l), range(support_u)),
+    "ddist_fun" = list("extraDistr::dpareto", "extraDistr::dpareto"),
+    "parameters" = list(
+      list("a" = scale_prime, "b" = location_l_prime),
+      list("a" = scale_prime, "b" = location_u_prime)
+    )
+  )
   #* `save s1 data for plotting`
   if (plot) {
     out$plot_df <- data.frame(
