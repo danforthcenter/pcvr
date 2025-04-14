@@ -7,8 +7,8 @@
 #' made by \link{growthSS} and \link{fitGrowth}. See details for explanations of those metrics and
 #' the output.
 #'
-#' @param fit The brmsfit object or a list of brmsfit objects in the case that you split models to run
-#' on subsets of the data for computational simplicity.
+#' @param fit A conjugate object, brmsfit object, or a list of brmsfit objects in the case that you
+#' split models to run on subsets of the data for computational simplicity.
 #' @param ss The growthSS output used to specify the model. If fit is a list then this can either be one
 #' growthSS list in which case the priors are assumed to be the same for each model or it can be a list
 #' of the same length as fit. Note that the only parts of this which are used are the \code{call$start}
@@ -16,7 +16,8 @@
 #' so if you have a list of brmsfit objects and no ss object you can specify a stand-in list. This
 #' can also be left NULL (the default) and posterior predictive plots and prior predictive plots will
 #' not be made.
-#'
+#' @param priors A list of priors similar to how they are specified in conjugate but named for the
+#' distribution you plan to use, see details and examples.
 #'
 #' @details
 #'
@@ -74,7 +75,12 @@
 #'     model should be reconsidered.
 #'     }
 #'
-#'
+#' Priors here are specified using a named list. For instance, for normal priors with means between
+#' 5 and 20 and standard deviations between 5 and 10 the prior argument would be
+#' \code{list("rnorm" = list("mean" = c(5, 20), "sd" = c(5, 10))))}.
+#' The priors that are used in sensitivity analysis are drawn randomly from within the ranges specified
+#' by the provided list. If you are unsure what random-generation function to use then check the
+#' \link{conjugate} docs where the distributions are listed for each method in the details section.
 #'
 #'
 #' @keywords Bayesian brms prior
