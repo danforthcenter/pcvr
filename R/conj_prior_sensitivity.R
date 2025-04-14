@@ -35,12 +35,14 @@
 #'   bayes_factor = c(50, 55)
 #' )
 #' x$summary$post.prob # result of terrible priors
-#' .prior_pred_conj(x, priors = list("rnorm" = list("mean" = c(5, 20), "sd" = c(5, 10))), n = 100)
-#'
+#' .prior_sens_conj(x, priors = list("rnorm" = list("mean" = c(5, 20), "sd" = c(5, 10))), n = 100)
+#' @importFrom stats setNames
+#' @import patchwork
+#' @import ggplot2
 #' @noRd
 
 
-.prior_pred_conj <- function(x, priors, n = 100) {
+.prior_sens_conj <- function(x, priors, n = 100) {
   args <- as.list(x$call)
   pri_df <- do.call(cbind, lapply(seq_along(priors[[1]]), function(i) {
     x <- seq(priors[[1]][[i]][1], priors[[1]][[i]][2], length.out = 1000)
@@ -52,7 +54,7 @@
     post <- conjugate(
       s1 = x$data[[1]], # will need to be recovered from conjugate somehow
       s2 = x$data[[2]], # will need to be recovered from conjugate somehow
-      priors = setNames(pri_df[i, ], names(x$prior[[1]])),
+      priors = stats::setNames(pri_df[i, ], names(x$prior[[1]])),
       hypothesis = args$hypothesis
     )$summary$post.prob
     return(post)
