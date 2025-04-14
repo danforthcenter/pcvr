@@ -103,18 +103,56 @@
 #' fit_2 <- fit_test
 #' fit_list <- list(fit_test, fit_2)
 #' x <- barg(fit_list, list(ss, ss))
+#'
+#' x <- conjugate(
+#'   s1 = rnorm(10, 10, 1), s2 = rnorm(10, 13, 1.5), method = "t",
+#'   priors = list(list(mu = 10, sd = 2),
+#'                 list(mu = 10, sd = 2)),
+#'   plot = FALSE, rope_range = c(-8, 8), rope_ci = 0.89,
+#'   cred.int.level = 0.89, hypothesis = "unequal",
+#'   bayes_factor = c(50, 55)
+#' )
+#' b <- barg(x, priors = list("rnorm" = list("mean" = c(5, 20), "sd" = c(5, 10))))
 #' }
 #'
 #' @export
 
-barg <- function(fit, ss = NULL) {
-  out <- list()
-  #* `format everything into lists`
-  if (methods::is(fit, "brmsfit")) {
+barg <- function(fit, ss = NULL, priors = NULL) {
+  #* `format fit and apply helper`
+  if (methods::is(fit, "conjugate")) {
+    out <- .barg.conjugate(fit, priors)
+  } else if (methods::is(fit, "brmsfit")) {
     fitList <- list(fit)
+    out <- .barg.brmsfit(fitList, ss)
   } else {
     fitList <- fit
+    out <- .barg.brmsfit(fitList, ss)
   }
+  return(out)
+}
+
+#' @keywords internal
+#' @noRd
+
+.barg.conjugate <- function(x, priors) {
+  out <- list()
+  #* `Prior Sensitivity if priors were given`
+  if (!is.null(priors)) {
+    out[["priorSensitivity"]] <- .prior_sens_conj(x, priors, n = 100)
+  }
+  #* `Posterior Predictive`
+  out[["posteriorPredictive"]] <- .post_pred_conj(x, n = 0)
+  #* `Summary object`
+  out[["Summary"]] <- summary(x) # really not that important to do since you can just print x?
+  #* `return output`
+  return(out)
+}
+
+#' @keywords internal
+#' @noRd
+
+.barg.brmsfit <- function(fitList, ss) {
+  out <- list()
   if (!is.null(names(ss)) && names(ss)[1] == "formula") {
     ssList <- lapply(seq_along(fitList), function(i) {
       return(ss)
@@ -198,3 +236,4 @@ barg <- function(fit, ss = NULL) {
   }
   return(out)
 }
+
