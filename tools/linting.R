@@ -19,8 +19,7 @@ if (FALSE) {
 }
 
 
-
-x <- lintr::lint(filename = "~/pcvr/R/brmPlot.R",
+x <- lintr::lint(filename = "~/pcvr/R/conjugate_plot",
                          linters = linters_with_defaults(line_length_linter(length = 105L),
                                                          object_name_linter(styles = c("snake_case", "symbols",
                                                                                        "camelCase", "dotted.case",
@@ -35,7 +34,11 @@ styler::style_dir(path = "~/pcvr/tutorials", scope = "tokens")
 
 
 if(FALSE){
-  file = "~/pcvr/vignettes/articles/field_capacity.Rmd" # nlsPlot.R 
+  dput(unique(names(x)))
+  c("R/barg.R", "R/conj_post_pred.R", "R/conj_prior_sensitivity.R", 
+    "R/conjugate_class.R", "R/conjugate_plot.R"
+  )
+  file = "~/pcvr/R/barg.R"
   styler::style_file(file, scope = "line_breaks")
   lintr::lint(file, linters = lintr::linters_with_defaults(lintr::line_length_linter(length = 105L),
                                                            lintr::object_name_linter(styles = c("snake_case", "symbols",
