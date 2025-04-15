@@ -119,8 +119,10 @@ brmViolin <- function(fit, ss, hypothesis) {
       )
     )
   })
-  hyps_df <- do.call(rbind, lapply(hyps_res, \(l) {l$hyp_df}))
-  transformed_draws <- as.data.frame(do.call(cbind, lapply(hyps_res, \(l) {l$transformed_posterior})))
+  hyps_df <- do.call(rbind, lapply(hyps_res, function(l) {return(l$hyp_df)}))
+  transformed_draws <- as.data.frame(do.call(cbind, lapply(hyps_res, function(l) {
+    return(l$transformed_posterior)
+  })))
   colnames(transformed_draws) <- paste0(groupings)
   hyps_df$discrete_post_prob <- factor(
     ifelse(hyps_df$Post.Prob >= 0.99, "A",

@@ -212,14 +212,18 @@ brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
   if (!is.null(groups)) {
     keep_index <- Reduce(union, lapply(seq_along(groups), function(i) {
       grp <- groups[i]
-      keep <- Reduce(union, lapply(group, \(iter_group) {which(predictions[[iter_group]] %in% grp)}))
+      keep <- Reduce(union, lapply(group, function(iter_group) {
+        return(which(predictions[[iter_group]] %in% grp))
+      }))
       return(keep)
     }))
     predictions <- predictions[keep_index, ]
     if (!is.null(df)) {
       keep_index_df <- Reduce(union, lapply(seq_along(groups), function(i) {
         grp <- groups[i]
-        keep <- Reduce(union, lapply(group, \(iter_group) {which(df[[iter_group]] %in% grp)}))
+        keep <- Reduce(union, lapply(group, function(iter_group) {
+          return(which(df[[iter_group]] %in% grp))
+        }))
         return(keep)
       }))
       df <- df[keep_index_df, ]
