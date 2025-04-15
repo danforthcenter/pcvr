@@ -33,7 +33,6 @@ test_that("conjugate raises expected errors", {
   res1 <- conjugate(
     s1 = s1, method = "t",
     priors = NULL,
-    plot = TRUE,
     cred.int.level = 0.89, hypothesis = "equal", rope_range = c(-1, 1)
   )
   expect_equal(res1$summary$HDE_1, 9.975688, tolerance = 1e-6)
@@ -41,13 +40,11 @@ test_that("conjugate raises expected errors", {
   expect_error(conjugate(
     s1 = s1, s2 = s2, method = "t",
     priors = NULL,
-    plot = TRUE,
     cred.int.level = 0.89, hypothesis = "bad", rope_range = c(-1, 1)
   ))
   expect_error(conjugate(
     s1 = s1, s2 = s2, method = "t",
     priors = NULL,
-    plot = TRUE,
     cred.int.level = 0.89, hypothesis = "lesser", rope_range = 1
   ))
   df <- data.frame(value = c(s1, s2), group = rep(c("a", "b"), each = 10))
@@ -55,12 +52,11 @@ test_that("conjugate raises expected errors", {
     value ~ group, s2,
     method = "t",
     priors = NULL,
-    plot = TRUE,
     cred.int.level = 0.89, hypothesis = "lesser", rope_range = 1
   ))
 })
 
-test_that("generic conjugate plotting works", {
+test_that("conjugate plot method works", {
   s1 <- c(
     43.8008289810423, 44.6084228775479, 68.9524219823026, 77.442231894233,
     45.2302703709121, 53.8005757403944, 33.8292993277826, 59.7018653972819,
@@ -74,9 +70,9 @@ test_that("generic conjugate plotting works", {
   out <- conjugate(
     s1 = s1, s2 = s2, method = "t",
     priors = list(mu = c(0, 0), sd = c(10, 10)),
-    plot = TRUE, rope_range = c(-8, 8), rope_ci = 0.89,
+    rope_range = c(-8, 8), rope_ci = 0.89,
     cred.int.level = 0.89, hypothesis = "equal"
   )
-  expect_equal(names(out), c("summary", "posterior", "prior", "plot"))
-  expect_s3_class(out$plot, "ggplot")
+  plot <- plot(out)
+  expect_s3_class(plot, "ggplot")
 })
