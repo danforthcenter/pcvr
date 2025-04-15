@@ -72,29 +72,29 @@ summary.conjugate <- function(object, ...) {
 
 print.conjugatesummary <- function(x, ...) {
   call_list <- as.list(x$call)
-  method <- call_list$method
+  method <- eval(call_list$method)
   if (length(method) == 1) {
     #* `Method`
-    method_list <- switch(method,
-                          t = list("Normal", "Mu", "T"),
-                          gaussian = list("Normal", "Mu", "Normal"),
-                          beta = list("Beta", "Mean", "Beta"),
-                          binomial = list("Beta", "Rate", "Binomial"),
-                          lognormal = list("Normal", "Mu", "Lognormal"),
-                          lognormal2 = list("Gamma", "Precision", "Lognormal"),
-                          poisson = list("Gamma", "Lambda", "Poisson"),
-                          negbin = list("Beta", "Rate", "Negative Binomial"),
-                          vonmises = list("Von Mises", "Direction", "Von Mises"),
-                          vonmises2 = list("Von Mises", "Direction", "Von Mises"),
-                          uniform = list("Pareto", "Upper Boundary", "Uniform"),
-                          pareto = list("Gamma", "Scale", "Pareto"),
-                          gamma = list("Gamma", "Rate", "Gamma"),
-                          bernoulli = list("Beta", "Rate", "Bernoulli"),
-                          exponential = list("Gamma", "Rate", "Exponential"),
-                          bivariate_uniform = list("Bivariate Pareto", "Boundaries", "Uniform"),
-                          bivariate_gaussian = list("Normal/Gamma", "Mu/Sd", "Normal"),
-                          bivariate_lognormal = list("Normal/Gamma", "Mu/Sd", "Lognormal")
-                          )
+    method_list <- switch(method[1],
+      t = list("Normal", "Mu", "T"),
+      gaussian = list("Normal", "Mu", "Normal"),
+      beta = list("Beta", "Mean", "Beta"),
+      binomial = list("Beta", "Rate", "Binomial"),
+      lognormal = list("Normal", "Mu", "Lognormal"),
+      lognormal2 = list("Gamma", "Precision", "Lognormal"),
+      poisson = list("Gamma", "Lambda", "Poisson"),
+      negbin = list("Beta", "Rate", "Negative Binomial"),
+      vonmises = list("Von Mises", "Direction", "Von Mises"),
+      vonmises2 = list("Von Mises", "Direction", "Von Mises"),
+      uniform = list("Pareto", "Upper Boundary", "Uniform"),
+      pareto = list("Gamma", "Scale", "Pareto"),
+      gamma = list("Gamma", "Rate", "Gamma"),
+      bernoulli = list("Beta", "Rate", "Bernoulli"),
+      exponential = list("Gamma", "Rate", "Exponential"),
+      bivariate_uniform = list("Bivariate Pareto", "Boundaries", "Uniform"),
+      bivariate_gaussian = list("Normal/Gamma", "Mu/Sd", "Normal"),
+      bivariate_lognormal = list("Normal/Gamma", "Mu/Sd", "Lognormal")
+    )
     method_statement <- paste0(
       method_list[[1]], # conjugate distribution
       " distributed ",
@@ -106,22 +106,28 @@ print.conjugatesummary <- function(x, ...) {
     cat(method_statement)
     cat("\n\n")
     #* `Parameters`
-    dist_statements <- lapply(seq_along(x$posterior), function(i) {
+    lapply(seq_along(x$posterior), function(i) {
       prior <- x$prior[[i]]
       post <- x$posterior[[i]]
-      prior_statement <- paste0("Sample ", i,  " Prior ", method_list[[1]], "(",
-             paste(
-               paste(names(prior), round(unlist(prior), 3), sep = " = "),
-               collapse = ", "),
-             ")\n")
-      posterior_statement <- paste0("\tPosterior ", method_list[[1]], "(",
-             paste(
-               paste(names(post), round(unlist(post), 3), sep = " = "),
-               collapse = ", "),
-             ")\n")
+      prior_statement <- paste0(
+        "Sample ", i, " Prior ", method_list[[1]], "(",
+        paste(
+          paste(names(prior), round(unlist(prior), 3), sep = " = "),
+          collapse = ", "
+        ),
+        ")\n"
+      )
+      posterior_statement <- paste0(
+        "\tPosterior ", method_list[[1]], "(",
+        paste(
+          paste(names(post), round(unlist(post), 3), sep = " = "),
+          collapse = ", "
+        ),
+        ")\n"
+      )
       cat(prior_statement)
       cat(posterior_statement)
-      return(list(prior_statement, posterior_statement))
+      return(invisible(list(prior_statement, posterior_statement)))
     })
   }
   #* `Hypothesis`
@@ -129,11 +135,12 @@ print.conjugatesummary <- function(x, ...) {
     cat("\n")
     hyp_statement <- paste0(
       "Posterior probability that S1",
-      switch(x$summary$hyp,
-             unequal = " is not equal to ",
-             equal = " is equal to ",
-             lesser = " is less than ",
-             greater = " is greater than "),
+      switch(x$summary$hyp[1],
+        unequal = " is not equal to ",
+        equal = " is equal to ",
+        lesser = " is less than ",
+        greater = " is greater than "
+      ),
       "S2 = ",
       100 * round(x$summary$post.prob, 5), "%"
     )
@@ -152,21 +159,23 @@ print.conjugatesummary <- function(x, ...) {
       paste(rope_range, collapse = ":"),
       "] using a ",
       100 * rope_ci, "% Credible Interval is ",
-      100 * round(x$summary$rope_prob, 5),
+      100 * round(x$summary$rope_prob[1], 5),
       "% with an average difference of ",
-      round(x$summary$HDE_rope, 3))
+      round(x$summary$HDE_rope, 3)
+    )
     cat(rope_message)
     cat("\n\n")
   }
   #* `Bayes Factors`
   if ("bf_1" %in% colnames(x$summary)) {
     bayes_factor <- eval(call_list$bayes_factor)
-    bf_statements <- lapply(seq_along(x$posterior), function(i) {
-      bf_statement <- paste0("Sample ", i, " Bayes Factor ",
-             ifelse(length(bayes_factor) == 1, "at ", "in "),
-             paste(bayes_factor, collapse = " to "),
-             " = ", round(x$summary[[paste0("bf_", i)]], 3), "\n"
-             )
+    lapply(seq_along(x$posterior), function(i) {
+      bf_statement <- paste0(
+        "Sample ", i, " Bayes Factor ",
+        ifelse(length(bayes_factor) == 1, "at ", "in "),
+        paste(bayes_factor, collapse = " to "),
+        " = ", round(x$summary[[paste0("bf_", i)]][1], 3), "\n"
+      )
       cat(bf_statement)
       return(invisible(bf_statement))
     })
