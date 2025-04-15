@@ -37,7 +37,7 @@
 #'  By default this is NULL and weak priors (generally jeffrey's priors) are used.
 #'  The \code{posterior} part of output can also be recycled as a new prior if Bayesian
 #'  updating is appropriate for your use.
-#' @param plot Logical, should a ggplot be made and returned.
+#' @param plot deprecated, use \code{plot} method instead.
 #' @param rope_range Optional vector specifying a region of practical equivalence.
 #' This interval is considered practically equivalent to no effect.
 #' Kruschke (2018) suggests c(-0.1, 0.1) as a broadly reasonable ROPE for standardized parameters.
@@ -285,7 +285,7 @@
 #'
 #' @return
 #'
-#' A \link{conjugate-class} object with several slots:
+#' A \link{conjugate-class} object with slots including:
 #' \itemize{
 #'    \item{\strong{summary}: A data frame containing HDI/HDE values for each sample and
 #'    the ROPE as well as posterior probability of the hypothesis and ROPE test (if specified).
@@ -304,7 +304,7 @@
 #'    \item{\strong{data}}: Data from s1 and s2 arguments.
 #'    \item{\strong{call}}: The function call.
 #' }
-#'
+#' @seealso [barg() for additional reporting]
 #' @keywords bayesian conjugate priors ROPE
 #' @export
 
@@ -396,7 +396,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
   #* `Special bivariate distribution things`
   if (any(grepl("bivariate", method))) {
     out$plot_df <- lapply(sample_results, function(s) s$plot_df)
-    out$posterior_draws <- lapply(sample_results, function(s) s$posterior_draws)
+    out$posterior_draws <- lapply(sample_results, function(s) s$posteriorDraws)
   }
   #* `Save Data and Call`
   out$data <- list(s1, s2)
