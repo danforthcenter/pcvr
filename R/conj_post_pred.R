@@ -18,7 +18,7 @@
 #'     list(mu = 10, sd = 2),
 #'     list(mu = 10, sd = 2)
 #'   ),
-#'   plot = FALSE, rope_range = c(-8, 8), rope_ci = 0.89,
+#'   rope_range = c(-8, 8), rope_ci = 0.89,
 #'   cred.int.level = 0.89, hypothesis = "unequal",
 #'   bayes_factor = c(50, 55)
 #' )
@@ -28,7 +28,7 @@
 #' x <- conjugate(
 #'   s1 = rbeta(10, 5, 5), s2 = rbeta(10, 13, 3), method = "beta",
 #'   priors = list(a = 2, b = 2),
-#'   plot = FALSE, rope_range = c(-0.5, 0.5), rope_ci = 0.89,
+#'   rope_range = c(-0.5, 0.5), rope_ci = 0.89,
 #'   cred.int.level = 0.89, hypothesis = "unequal",
 #'   bayes_factor = c(0.45, 0.55)
 #' )

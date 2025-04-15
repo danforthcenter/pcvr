@@ -23,6 +23,8 @@ test_that("conjugate single value T works", {
   expect_equal(out$summary$rope_prob, 0.793057, tolerance = 1e-6)
   expect_s3_class(out, "conjugate")
   b <- barg(out, priors = list("rnorm" = list("mean" = c(5, 20), "sd" = c(5, 10))))
+  p <- plot(out)
+  expect_s3_class(p, "ggplot")
   expect_equal(names(b), c("priorSensitivity", "posteriorPredictive", "Summary"))
   df <- data.frame(value = c(s1, s2), group = rep(c("a", "b"), each = 10))
   out2 <- conjugate(
@@ -81,7 +83,8 @@ test_that("conjugate single value beta works", {
     cred.int.level = 0.89, hypothesis = "equal",
     bayes_factor = c(0.5)
   )
-
+  b <- barg(out)
+  expect_equal(names(b), c("posteriorPredictive", "Summary"))
   expect_equal(out$summary$post.prob, 0.02229246, tolerance = 1e-6)
   expect_equal(out$summary$rope_prob, 0.1351534, tolerance = 1e-6)
   expect_s3_class(out, "conjugate")
@@ -92,11 +95,13 @@ test_that("conjugate single value lognormal works", {
   set.seed(123)
   s1 <- rlnorm(100, log(130), log(1.3))
   s2 <- rlnorm(100, log(100), log(2))
-  out <- conjugate(
-    s1 = s1, s2 = s2,
-    method = "lognormal", priors = NULL,
-    rope_range = c(-1, 1), rope_ci = 0.89, cred.int.level = 0.89,
-    hypothesis = "equal", bayes_factor = 5
+  expect_warning(
+    out <- conjugate(
+      s1 = s1, s2 = s2,
+      method = "lognormal", priors = NULL, plot = TRUE,
+      rope_range = c(-1, 1), rope_ci = 0.89, cred.int.level = 0.89,
+      hypothesis = "equal", bayes_factor = 5
+    )
   )
   expect_equal(out$summary$post.prob, 0.5980101, tolerance = 1e-6)
   expect_equal(out$summary$rope_prob, 0.1113358, tolerance = 1e-6)
@@ -113,6 +118,8 @@ test_that("conjugate single value lognormal2 works", {
     rope_range = c(-1, 1), rope_ci = 0.89, cred.int.level = 0.89,
     hypothesis = "equal", bayes_factor = 125
   )
+  p <- plot(out)
+  expect_s3_class(p, "ggplot")
   expect_equal(out$summary$post.prob, 1.069935e-09, tolerance = 1e-6)
   expect_equal(out$summary$rope_prob, 0, tolerance = 1e-6)
   expect_s3_class(out, "conjugate")
@@ -426,4 +433,11 @@ test_that("bivariate conjugate lognormal works", {
   expect_equal(length(out$posterior), 2)
   expect_equal(names(out$posterior[[1]]), c("mu", "sd", "a", "b"))
   expect_s3_class(out, "conjugate")
+  out2 <- conjugate(
+    s1 = s1,
+    method = "bivariate_lognormal", priors = NULL,
+    rope_range = c(-1, 1), rope_ci = 0.89, cred.int.level = 0.89
+  )
+  p <- plot(out2)
+  expect_s3_class(p, "ggplot")
 })

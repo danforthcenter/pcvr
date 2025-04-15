@@ -61,9 +61,15 @@ test_that("conjugate class works", {
     s1 = rnorm(10, 1), s2 = rnorm(10), method = "t",
     priors = list(mu = c(0, 0), sd = c(3, 3)),
     rope_range = c(-1, 1), rope_ci = 0.89,
-    cred.int.level = 0.89, hypothesis = "equal"
+    cred.int.level = 0.89, hypothesis = "equal",
+    bayes_factor = 0.1
   )
-  expect_s3_class(invisible(summary(out)), "conjugatesummary")
+  x <- invisible(summary(out))
+  expect_s3_class(x, "conjugatesummary")
+  sink(tempfile())
+  print(x)
+  print(out)
+  sink()
 })
 
 test_that("Posterior Predictive works", {
