@@ -6,8 +6,7 @@
 #' set.seed(123)
 #' s1 = stats::runif(10, -1, 10)
 #' out <- .conj_bivariate_uniform_sv(
-#'   s1 = s1, cred.int.level = 0.95,
-#'   plot = TRUE
+#'   s1 = s1, cred.int.level = 0.95
 #' )
 #' lapply(out, head)
 #'
@@ -127,14 +126,12 @@
     )
   )
   #* `save s1 data for plotting`
-  if (plot) {
-    out$plot_df <- data.frame(
-      "range" = c(support_l, support_u),
-      "prob" = c(pdf_l, pdf_u),
-      "param" = rep(c("A", "B"), each = length(support_u)),
-      "sample" = rep("Sample 1", 2 * length(support_u))
-    )
-  }
+  out$plot_df <- data.frame(
+    "range" = c(support_l, support_u),
+    "prob" = c(pdf_l, pdf_u),
+    "param" = rep(c("A", "B"), each = length(support_u)),
+    "sample" = rep("Sample 1", 2 * length(support_u))
+  )
   return(out)
 }
 
@@ -172,8 +169,7 @@
 #' )
 #' out <- .conj_bivariate_uniform_mv(
 #'   s1 = s1[, -1], cred.int.level = 0.95,
-#'   priors = list(location_l = 50, location_u = 100, scale = 1),
-#'   plot = FALSE
+#'   priors = list(location_l = 50, location_u = 100, scale = 1)
 #' )
 #' lapply(out, head)
 #' @keywords internal
@@ -296,13 +292,11 @@
   )
   out$prior <- priors
   #* `save s1 data for plotting`
-  if (plot) {
-    out$plot_df <- data.frame(
-      "range" = c(support_l, support_u),
-      "prob" = c(pdf_l, pdf_u),
-      "param" = rep(c("A", "B"), each = length(support_u)),
-      "sample" = rep("Sample 1", 2 * length(support_u))
-    )
-  }
+  out$plot_df <- data.frame(
+    "range" = c(support_l, support_u),
+    "prob" = c(pdf_l, pdf_u),
+    "param" = rep(c("A", "B"), each = length(support_u)),
+    "sample" = rep("Sample 1", 2 * length(support_u))
+  )
   return(out)
 }

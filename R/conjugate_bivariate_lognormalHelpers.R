@@ -3,8 +3,7 @@
 #' @param s1 A vector of numerics drawn from a uniform distribution.
 #' @examples
 #' out <- .conj_bivariate_lognormal_sv(
-#'   s1 = rlnorm(10, log(20), 1), cred.int.level = 0.95,
-#'   plot = FALSE
+#'   s1 = rlnorm(10, log(20), 1), cred.int.level = 0.95
 #' )
 #' lapply(out, head)
 #'
@@ -98,13 +97,11 @@
     )
   )
   #* `save s1 data for plotting`
-  if (plot) {
-    out$plot_df <- data.frame(
-      "range" = c(support_mu, support_prec),
-      "prob" = c(pdf_mu, pdf_prec),
-      "param" = rep(c("Mu", "Prec"), each = length(support_mu)),
-      "sample" = rep("Sample 1", 2 * length(support_mu))
-    )
-  }
+  out$plot_df <- data.frame(
+    "range" = c(support_mu, support_prec),
+    "prob" = c(pdf_mu, pdf_prec),
+    "param" = rep(c("Mu", "Prec"), each = length(support_mu)),
+    "sample" = rep("Sample 1", 2 * length(support_mu))
+  )
   return(out)
 }
