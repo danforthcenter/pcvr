@@ -34,6 +34,10 @@ made by \link{growthSS} and \link{fitGrowth}. See details for explanations of th
 the output.
 }
 \details{
+The majority of the Bayesian Analysis and Reporting Guidelines are geared towards statistical
+methods that use MCMC or other numeric approximations. For those cases (here meaning brms models
+fit by \code{fitGrowth} and \code{growthSS}) the output will contain:
+
 \itemize{
     \item \bold{General}: This includes chain number, length, and total divergent transitions per
     model. Divergent transitions are a marker that the MCMC had something go wrong.
@@ -87,6 +91,16 @@ the output.
     model should be reconsidered.
     }
 
+For analytic solutions (ie, the \code{conjugate} class) there are fewer elements.
+\itemize{
+    \item \bold{priorSensitivity}: Patchwork of prior sensitivity plots showing the distribution
+    of posterior probabilities, any interpretation changes from those tests, and the random priors
+    that were used. This is only returned if the \code{priors} argument is specified (see below).
+    \item \bold{posteriorPredictive}: Plot of posterior predictive distributions similar to that
+    from a non-longitudinal \code{fitGrowth} model fit with brms.
+    \item \bold{Summary}: The summary of the \code{conjugate} object.
+}
+
 Priors here are specified using a named list. For instance, for normal priors with means between
 5 and 20 and standard deviations between 5 and 10 the prior argument would be
 \code{list("rnorm" = list("mean" = c(5, 20), "sd" = c(5, 10))))}.
@@ -118,8 +132,10 @@ x <- barg(fit_list, list(ss, ss))
 
 x <- conjugate(
   s1 = rnorm(10, 10, 1), s2 = rnorm(10, 13, 1.5), method = "t",
-  priors = list(list(mu = 10, sd = 2),
-                list(mu = 10, sd = 2)),
+  priors = list(
+    list(mu = 10, sd = 2),
+    list(mu = 10, sd = 2)
+  ),
   plot = FALSE, rope_range = c(-8, 8), rope_ci = 0.89,
   cred.int.level = 0.89, hypothesis = "unequal",
   bayes_factor = c(50, 55)

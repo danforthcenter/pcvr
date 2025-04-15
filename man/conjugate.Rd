@@ -58,7 +58,7 @@ These names vary by method (see details).
  The \code{posterior} part of output can also be recycled as a new prior if Bayesian
  updating is appropriate for your use.}
 
-\item{plot}{Logical, should a ggplot be made and returned.}
+\item{plot}{deprecated, use \code{plot} method instead.}
 
 \item{rope_range}{Optional vector specifying a region of practical equivalence.
 This interval is considered practically equivalent to no effect.
@@ -87,7 +87,7 @@ are added to the summary output. Note these are only implemented for univariate 
 \item{support}{Deprecated}
 }
 \value{
-A \link{conjugate-class} object with several slots:
+A \link{conjugate-class} object with slots including:
 \itemize{
    \item{\strong{summary}: A data frame containing HDI/HDE values for each sample and
    the ROPE as well as posterior probability of the hypothesis and ROPE test (if specified).
@@ -329,6 +329,9 @@ vm2_ex <- conjugate(
   cred.int.level = 0.95
 )
 
+}
+\seealso{
+[barg() for additional reporting]
 }
 \keyword{ROPE}
 \keyword{bayesian}
