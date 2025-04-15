@@ -399,7 +399,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
     out$posterior_draws <- lapply(sample_results, function(s) s$posteriorDraws)
   }
   #* `Save Data and Call`
-  out$data <- list(s1, s2)
+  out$data <- list(s1, s2)[!unlist(lapply(list(s1, s2), is.null))]
   out$call <- match.call()
   #* `Change class to conjugate`
   out <- as.conjugate(out)
