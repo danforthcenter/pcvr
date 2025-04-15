@@ -101,9 +101,9 @@ For analytic solutions (ie, the \code{conjugate} class) there are fewer elements
     \item \bold{Summary}: The summary of the \code{conjugate} object.
 }
 
-Priors here are specified using a named list. For instance, for normal priors with means between
-5 and 20 and standard deviations between 5 and 10 the prior argument would be
-\code{list("rnorm" = list("mean" = c(5, 20), "sd" = c(5, 10))))}.
+Priors here are specified using a named list. For instance, to use 100 normal priors with means
+between 5 and 20 and standard deviations between 5 and 10 the prior argument would be
+\code{list("rnorm" = list("mean" = c(5, 20), "sd" = c(5, 10), "n" = 100)))}.
 The priors that are used in sensitivity analysis are drawn randomly from within the ranges specified
 by the provided list. If you are unsure what random-generation function to use then check the
 \link{conjugate} docs where the distributions are listed for each method in the details section.
@@ -140,7 +140,7 @@ x <- conjugate(
   cred.int.level = 0.89, hypothesis = "unequal",
   bayes_factor = c(50, 55)
 )
-b <- barg(x, priors = list("rnorm" = list("mean" = c(5, 20), "sd" = c(5, 10))))
+b <- barg(x, priors = list("rnorm" = list("n" = 10, "mean" = c(5, 20), "sd" = c(5, 10))))
 }
 
 }

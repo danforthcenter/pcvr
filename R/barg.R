@@ -88,9 +88,9 @@
 #'     \item \bold{Summary}: The summary of the \code{conjugate} object.
 #' }
 #'
-#' Priors here are specified using a named list. For instance, for normal priors with means between
-#' 5 and 20 and standard deviations between 5 and 10 the prior argument would be
-#' \code{list("rnorm" = list("mean" = c(5, 20), "sd" = c(5, 10))))}.
+#' Priors here are specified using a named list. For instance, to use 100 normal priors with means
+#' between 5 and 20 and standard deviations between 5 and 10 the prior argument would be
+#' \code{list("rnorm" = list("mean" = c(5, 20), "sd" = c(5, 10), "n" = 100)))}.
 #' The priors that are used in sensitivity analysis are drawn randomly from within the ranges specified
 #' by the provided list. If you are unsure what random-generation function to use then check the
 #' \link{conjugate} docs where the distributions are listed for each method in the details section.
@@ -133,7 +133,7 @@
 #'   cred.int.level = 0.89, hypothesis = "unequal",
 #'   bayes_factor = c(50, 55)
 #' )
-#' b <- barg(x, priors = list("rnorm" = list("mean" = c(5, 20), "sd" = c(5, 10))))
+#' b <- barg(x, priors = list("rnorm" = list("n" = 10, "mean" = c(5, 20), "sd" = c(5, 10))))
 #' }
 #'
 #' @export
@@ -159,12 +159,17 @@ barg <- function(fit, ss = NULL, priors = NULL) {
   out <- list()
   #* `Prior Sensitivity if priors were given`
   if (!is.null(priors)) {
-    out[["priorSensitivity"]] <- .prior_sens_conj(x, priors, n = 100)
+    n <- priors[[1]]$n
+    if (is.null(n)) {
+      n <- 100
+    }
+    priors[[1]] <- priors[[1]][which(names(priors[[1]]) != "n")]
+    out[["priorSensitivity"]] <- .prior_sens_conj(x, priors, n = n)
   }
   #* `Posterior Predictive`
   out[["posteriorPredictive"]] <- .post_pred_conj(x, n = 0)
   #* `Summary object`
-  out[["Summary"]] <- summary(x) # really not that important to do since you can just print x?
+  out[["Summary"]] <- summary(x)
   #* `return output`
   return(out)
 }
