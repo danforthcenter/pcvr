@@ -33,7 +33,7 @@ although prediction using splines outside of the observed range is not necessari
 \item{facetGroups}{logical, should groups be separated in facets? Defaults to TRUE.}
 
 \item{hierarchy_value}{If a hierarchical model is being plotted, what value should the
-hiearchical predictor be? If left NULL (the default) the mean value is used. If this is >1L
+hierarchical predictor be? If left NULL (the default) the mean value is used. If this is >1L
 then the x axis will use the hierarchical variable from the model at the mean of the timeRange
 (mean of x values in the model if timeRange is not specified).}
 
