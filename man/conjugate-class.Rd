@@ -3,7 +3,6 @@
 \docType{class}
 \name{conjugate-class}
 \alias{conjugate-class}
-\alias{conjugate}
 \title{Class \code{conjugate} for output from the \code{pcvr::conjugate} function.}
 \description{
 Comparisons made by the \code{conjugate} function return objects of this class

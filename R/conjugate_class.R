@@ -5,7 +5,6 @@
 #' ROPE tests, Bayes Factors, and plots of the posterior.
 #'
 #' @name conjugate-class
-#' @aliases conjugate
 #' @docType class
 #'
 #' @details

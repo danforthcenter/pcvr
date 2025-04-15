@@ -2,7 +2,7 @@
 #'
 #' @aliases plot.conjugate
 #'
-#' @param object An object of class \code{conjugate}.
+#' @param x An object of class \code{conjugate}.
 #' @param ... further arguments, ignored.
 #' @import ggplot2
 #' @import patchwork
@@ -18,7 +18,7 @@
 #' @method plot conjugate
 #' @export
 
-plot.conjugate <- function(x) {
+plot.conjugate <- function(x, ...) {
   dirSymbol <- NULL
   if ("hyp" %in% colnames(x$summary)) {
     dirSymbol <- switch(x$summary$hyp[1],

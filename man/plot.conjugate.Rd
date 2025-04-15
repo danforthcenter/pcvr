@@ -4,10 +4,10 @@
 \alias{plot.conjugate}
 \title{Plot a \code{conjugate} object.}
 \usage{
-\method{plot}{conjugate}(x)
+\method{plot}{conjugate}(x, ...)
 }
 \arguments{
-\item{object}{An object of class \code{conjugate}.}
+\item{x}{An object of class \code{conjugate}.}
 
 \item{...}{further arguments, ignored.}
 }
