@@ -935,7 +935,7 @@ The `barg` function can also use the `conjugate` class and will run a prior sens
 
 ## Germination Rates
 
-Germination Rates (or other binary outocmes like flowering or death) can make good sense as Beta-Binomial data.
+Germination Rates (or other binary outcomes like flowering or death) can make good sense as Beta-Binomial data.
 
 ```{r}
 #| echo: false

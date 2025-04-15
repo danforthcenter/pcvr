@@ -69,14 +69,14 @@ The simplest way to use the Von-Mises distribution in `pcvr` is through the `con
 "vonmises" and "vonmises2" are valid methods. As with other conjugate methods these are implemented for
 single or multi value traits, but unlike other methods these are only necessarily supported in comparing
 to other samples from the same distribution. If more distributions become tenable to add as circular
-or wrapped functions then this may be revisted.
+or wrapped functions then this may be revisited.
 
 ## "vonmises" method
 
 The "vonmises" method uses the fact that the conjugate prior for the direction parameter ($\mu$) is
 itself a Von-Mises distribution. Utilizing this conjugacy requires that we assume a known $\kappa$ for
 the complete distribution so that updating the $\mu$ parameter is straightforward. Conceptually it may
-be helpful to consider this similarly to the "T" method for comparing the means of guassians.
+be helpful to consider this similarly to the "T" method for comparing the means of gaussians.
 
 Priors for this method should specify a list containing "mu", "kappa", "boundary", "known_kappa",
 and "n" elements. In that prior "mu" is the direction of the circular distribution,

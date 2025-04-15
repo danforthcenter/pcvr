@@ -16,7 +16,7 @@
 #' @param df A dataframe to use in plotting observed growth curves on top of the model and for making
 #' predictions.
 #' @param timeRange An optional range of times to use. This can be used to view predictions for
-#' future data if the avaiable data has not reached some point (such as asymptotic size).
+#' future data if the available data has not reached some point (such as asymptotic size).
 #' @param facetGroups logical, should groups be separated in facets? Defaults to TRUE.
 #' @param groupFill logical, should groups have different colors? Defaults to the opposite of
 #' facetGroups. If TRUE then
@@ -26,7 +26,7 @@
 #' Note that for brms models this is ignored except if used to specify a different viridis color map
 #' to use.
 #' @param hierarchy_value If a hierarchical model is being plotted, what value should the
-#' hiearchical predictor be? If left NULL (the default) the mean value is used. If this is >1L
+#' hierarchical predictor be? If left NULL (the default) the mean value is used. If this is >1L
 #' then the x axis will use the hierarchical variable from the model at the mean of the timeRange
 #' (mean of x values in the model if timeRange is not specified).
 #' @keywords growth-curve

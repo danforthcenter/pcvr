@@ -14,7 +14,7 @@
 #' @param groups An optional set of groups to keep in the plot.
 #' Defaults to NULL in which case all groups in the model are plotted.
 #' @param timeRange An optional range of times to use. This can be used to view predictions for
-#' future data if the avaiable data has not reached some point (such as asymptotic size).
+#' future data if the available data has not reached some point (such as asymptotic size).
 #' @param facetGroups logical, should groups be separated in facets? Defaults to TRUE.
 #' @param groupFill logical, should groups have different colors? Defaults to FALSE.
 #' If TRUE then viridis colormaps are used in the order of virMaps

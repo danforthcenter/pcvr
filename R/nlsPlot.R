@@ -14,7 +14,7 @@
 #' @param df A dataframe to use in plotting observed growth curves on top of the model.
 #' This must be supplied for nls models.
 #' @param timeRange An optional range of times to use. This can be used to view predictions for
-#' future data if the avaiable data has not reached some point (such as asymptotic size).
+#' future data if the available data has not reached some point (such as asymptotic size).
 #' @param facetGroups logical, should groups be separated in facets? Defaults to TRUE.
 #' @param groupFill logical, should groups have different colors? Defaults to FALSE.
 #' If TRUE then viridis colormaps are used in the order of virMaps
