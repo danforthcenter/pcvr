@@ -227,7 +227,7 @@ plot.conjugate <- function(x, ...) {
     margin_plot_df <- res$plot_df[[1]]
     params <- unique(margin_plot_df$param)
     #* `Make joint distribution plot`
-    joint_dist_s1 <- res$posteriorDraws[[1]]
+    joint_dist_s1 <- res$posterior_draws[[1]]
     limits <- lapply(params, function(p) {
       sub <- margin_plot_df[margin_plot_df$param == p, ]
       return(range(sub$range))
