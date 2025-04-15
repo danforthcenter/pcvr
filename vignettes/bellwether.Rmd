@@ -192,9 +192,6 @@ Non-longitudinal data (or single day data from larger longitudinal data) can be 
 `conjugate` uses conjugate priors to make simple Bayesian comparisons for several types of data. Optionally, region of practical equivalence (ROPE) testing is also supported. Most distributions supported by this function can be used with either wide or long single value data or wide multi-value data. See `?pcvr::conjugate` or the [conjugate tutorial](https://github.com/danforthcenter/pcvr/tree/main/tutorials/pcvrTutorial_conjugate) for details on usage and available options.
 
 ```{r}
-#| fig.alt: >
-#|   Posterior distributions of the Normally distributed mean of area in two genotypes at a
-#|   given single timepoint showing strong evidence that any difference is within [-5, 5]
 mo17_area <- sv_ag[sv_ag$genotype == "Mo17" & sv_ag$DAS > 18 & sv_ag$fertilizer == 100, "area_cm2"]
 b73_area <- sv_ag[sv_ag$genotype == "B73" & sv_ag$DAS > 18 & sv_ag$fertilizer == 100, "area_cm2"]
 
@@ -203,6 +200,9 @@ area_res_t
 ```
 
 ```{r}
+#| fig.alt: >
+#|   Posterior distributions of the Normally distributed mean of area in two genotypes at a
+#|   given single timepoint showing strong evidence that any difference is within [-5, 5]
 plot(area_res_t)
 ```
 
