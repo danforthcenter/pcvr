@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">pcvr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.2.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -762,17 +762,7 @@ basis functions are not suited for data past day 25.</p>
 <p>Here hypotheses are tested with <code><a href="https://paulbuerkner.com/brms/reference/hypothesis.brmsfit.html" class="external-link">brms::hypothesis</a></code>.</p>
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/brmViolin.html">brmViolin</a></span><span class="op">(</span><span class="va">fit</span>, <span class="va">ss</span>, hypothesis <span class="op">=</span> <span class="st">".../A_groupa &gt; 1.05"</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Loading required package: rstan</span></span></code></pre>
-<pre><code><span><span class="co">## Loading required package: StanHeaders</span></span></code></pre>
-<pre><code><span><span class="co">## </span></span>
-<span><span class="co">## rstan version 2.32.7 (Stan version 2.32.2)</span></span></code></pre>
-<pre><code><span><span class="co">## For execution on a local, multicore CPU with excess RAM we recommend calling</span></span>
-<span><span class="co">## options(mc.cores = parallel::detectCores()).</span></span>
-<span><span class="co">## To avoid recompilation of unchanged Stan programs, we recommend calling</span></span>
-<span><span class="co">## rstan_options(auto_write = TRUE)</span></span>
-<span><span class="co">## For within-chain threading using `reduce_sum()` or `map_rect()` Stan functions,</span></span>
-<span><span class="co">## change `threads_per_chain` option:</span></span>
-<span><span class="co">## rstan_options(threads_per_chain = 1)</span></span></code></pre>
+<pre><code><span><span class="co">## Loading required namespace: rstan</span></span></code></pre>
 <p><img src="pcvrTutorial_agm_files/figure-html/unnamed-chunk-34-1.png" alt="Posterior distributions of a hypothesis test of a 5% effect size." width="700"></p>
 </div>
 <div class="section level2">
@@ -782,7 +772,7 @@ basis functions are not suited for data past day 25.</p>
 hypothesis testing.</p>
 <p>Here we test for an asymptote for group A at least 20% larger than
 that of group B.</p>
-<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">brms</span><span class="fu">::</span><span class="fu"><a href="https://paulbuerkner.com/brms/reference/hypothesis.brmsfit.html" class="external-link">hypothesis</a></span><span class="op">(</span><span class="va">fit</span>, <span class="st">"A_groupa &gt; 1.2 * A_groupb"</span><span class="op">)</span><span class="op">$</span><span class="va">hyp</span></span></code></pre></div>
 <pre><code><span><span class="co">##                      Hypothesis Estimate Est.Error CI.Lower CI.Upper Evid.Ratio</span></span>
 <span><span class="co">## 1 (A_groupa)-(1.2*A_groupb) &gt; 0 6.290106  4.925797 -1.74309 14.41414    8.90099</span></span>
@@ -802,7 +792,7 @@ distributional parameters.</p>
 <div class="section level3">
 <h3 id="linear-linear">linear + linear<a class="anchor" aria-label="anchor" href="#linear-linear"></a>
 </h3>
-<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">simdf</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/growthSim.html">growthSim</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="st">"linear + linear"</span>,</span>
 <span>  n <span class="op">=</span> <span class="fl">20</span>, t <span class="op">=</span> <span class="fl">25</span>,</span>
@@ -824,7 +814,7 @@ distributional parameters.</p>
 <div class="section level3">
 <h3 id="linear-logistic">linear + logistic<a class="anchor" aria-label="anchor" href="#linear-logistic"></a>
 </h3>
-<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">simdf</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/growthSim.html">growthSim</a></span><span class="op">(</span><span class="st">"linear + logistic"</span>,</span>
 <span>  n <span class="op">=</span> <span class="fl">20</span>, t <span class="op">=</span> <span class="fl">25</span>,</span>
 <span>  params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
@@ -852,7 +842,7 @@ distributional parameters.</p>
 <div class="section level3">
 <h3 id="linear-gam">linear + gam<a class="anchor" aria-label="anchor" href="#linear-gam"></a>
 </h3>
-<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ss</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/growthSS.html">growthSS</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="st">"linear + gam"</span>, form <span class="op">=</span> <span class="va">y</span> <span class="op">~</span> <span class="va">time</span> <span class="op">|</span> <span class="va">id</span> <span class="op">/</span> <span class="va">group</span>, sigma <span class="op">=</span> <span class="st">"int"</span>,</span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"linear1A"</span> <span class="op">=</span> <span class="fl">10</span>, <span class="st">"changePoint1"</span> <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>,</span>
@@ -868,7 +858,7 @@ distributional parameters.</p>
 <div class="section level3">
 <h3 id="linear-linear-linear">linear + linear + linear<a class="anchor" aria-label="anchor" href="#linear-linear-linear"></a>
 </h3>
-<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">simdf</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/growthSim.html">growthSim</a></span><span class="op">(</span><span class="st">"linear + linear + linear"</span>,</span>
 <span>  n <span class="op">=</span> <span class="fl">25</span>, t <span class="op">=</span> <span class="fl">50</span>,</span>
 <span>  params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
@@ -896,7 +886,7 @@ distributional parameters.</p>
 <div class="section level3">
 <h3 id="int-int-with-segmented-sigma">int + int with segmented sigma<a class="anchor" aria-label="anchor" href="#int-int-with-segmented-sigma"></a>
 </h3>
-<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ss</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/growthSS.html">growthSS</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="st">"int + int"</span>, form <span class="op">=</span> <span class="va">y</span> <span class="op">~</span> <span class="va">time</span> <span class="op">|</span> <span class="va">id</span> <span class="op">/</span> <span class="va">group</span>, sigma <span class="op">=</span> <span class="st">"int + int"</span>,</span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
@@ -916,7 +906,7 @@ distributional parameters.</p>
 <div class="section level3">
 <h3 id="int-linear-model-and-submodel">int + linear model and submodel<a class="anchor" aria-label="anchor" href="#int-linear-model-and-submodel"></a>
 </h3>
-<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ss</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/growthSS.html">growthSS</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="st">"int + linear"</span>, form <span class="op">=</span> <span class="va">y</span> <span class="op">~</span> <span class="va">time</span> <span class="op">|</span> <span class="va">id</span> <span class="op">/</span> <span class="va">group</span>, sigma <span class="op">=</span> <span class="st">"int + linear"</span>,</span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
@@ -934,7 +924,7 @@ distributional parameters.</p>
 <div class="section level3">
 <h3 id="intlogistic-with-intgam-sub-model">int+logistic with int+gam sub model<a class="anchor" aria-label="anchor" href="#intlogistic-with-intgam-sub-model"></a>
 </h3>
-<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ss</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/growthSS.html">growthSS</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="st">"int+logistic"</span>, form <span class="op">=</span> <span class="va">y</span> <span class="op">~</span> <span class="va">time</span> <span class="op">|</span> <span class="va">id</span> <span class="op">/</span> <span class="va">group</span>, sigma <span class="op">=</span> <span class="st">"int + spline"</span>,</span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
@@ -954,7 +944,7 @@ distributional parameters.</p>
 <div class="section level2">
 <h2 id="example-survival-model">Example survival model<a class="anchor" aria-label="anchor" href="#example-survival-model"></a>
 </h2>
-<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/growthSim.html">growthSim</a></span><span class="op">(</span><span class="st">"logistic"</span>,</span>
 <span>  n <span class="op">=</span> <span class="fl">20</span>, t <span class="op">=</span> <span class="fl">25</span>,</span>
 <span>  params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"A"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">200</span>, <span class="fl">160</span><span class="op">)</span>, <span class="st">"B"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">13</span>, <span class="fl">11</span><span class="op">)</span>, <span class="st">"C"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">3.5</span><span class="op">)</span><span class="op">)</span></span>
@@ -976,7 +966,7 @@ the formula.</p>
 <div class="section level2">
 <h2 id="example-count-model">Example count model<a class="anchor" aria-label="anchor" href="#example-count-model"></a>
 </h2>
-<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/growthSim.html">growthSim</a></span><span class="op">(</span><span class="st">"count: logistic"</span>,</span>
 <span>  n <span class="op">=</span> <span class="fl">20</span>, t <span class="op">=</span> <span class="fl">25</span>,</span>
 <span>  params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"A"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">12</span><span class="op">)</span>, <span class="st">"B"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">13</span>, <span class="fl">11</span><span class="op">)</span>, <span class="st">"C"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">3.5</span><span class="op">)</span><span class="op">)</span></span>
@@ -996,7 +986,7 @@ the formula.</p>
 <div class="section level2">
 <h2 id="example-hierarchical-model">Example hierarchical model<a class="anchor" aria-label="anchor" href="#example-hierarchical-model"></a>
 </h2>
-<div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">simdf</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/growthSim.html">growthSim</a></span><span class="op">(</span></span>
 <span>  <span class="st">"logistic"</span>,</span>
 <span>  n <span class="op">=</span> <span class="fl">20</span>, t <span class="op">=</span> <span class="fl">25</span>,</span>
@@ -1056,7 +1046,7 @@ possible with <code>brms</code>, which itself is more limited than
 <h2 id="using-brms-directly-1">Using <code>brms</code> directly<a class="anchor" aria-label="anchor" href="#using-brms-directly-1"></a>
 </h2>
 <p>Our gompertz sigma model looks like this in <code>brms</code>:</p>
-<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">prior1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://paulbuerkner.com/brms/reference/set_prior.html" class="external-link">prior</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Special.html" class="external-link">gamma</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">0.1</span><span class="op">)</span>, class <span class="op">=</span> <span class="st">"nu"</span>, lb <span class="op">=</span> <span class="fl">0.001</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://paulbuerkner.com/brms/reference/set_prior.html" class="external-link">prior</a></span><span class="op">(</span><span class="fu"><a href="https://paulbuerkner.com/brms/reference/brmsfamily.html" class="external-link">lognormal</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">130</span><span class="op">)</span>, <span class="fl">.25</span><span class="op">)</span>, nlpar <span class="op">=</span> <span class="st">"A"</span>, lb <span class="op">=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://paulbuerkner.com/brms/reference/set_prior.html" class="external-link">prior</a></span><span class="op">(</span><span class="fu"><a href="https://paulbuerkner.com/brms/reference/brmsfamily.html" class="external-link">lognormal</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">12</span><span class="op">)</span>, <span class="fl">.25</span><span class="op">)</span>, nlpar <span class="op">=</span> <span class="st">"B"</span>, lb <span class="op">=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">+</span></span>

@@ -17,7 +17,7 @@ the output."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">pcvr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.2.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -78,7 +78,7 @@ the output.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">barg</span><span class="op">(</span><span class="va">fit</span>, ss <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">barg</span><span class="op">(</span><span class="va">fit</span>, ss <span class="op">=</span> <span class="cn">NULL</span>, priors <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -86,8 +86,8 @@ the output.</p>
 
 
 <dl><dt id="arg-fit">fit<a class="anchor" aria-label="anchor" href="#arg-fit"></a></dt>
-<dd><p>The brmsfit object or a list of brmsfit objects in the case that you split models to run
-on subsets of the data for computational simplicity.</p></dd>
+<dd><p>A conjugate object, brmsfit object, or a list of brmsfit objects in the case that you
+split models to run on subsets of the data for computational simplicity.</p></dd>
 
 
 <dt id="arg-ss">ss<a class="anchor" aria-label="anchor" href="#arg-ss"></a></dt>
@@ -99,6 +99,11 @@ so if you have a list of brmsfit objects and no ss object you can specify a stan
 can also be left NULL (the default) and posterior predictive plots and prior predictive plots will
 not be made.</p></dd>
 
+
+<dt id="arg-priors">priors<a class="anchor" aria-label="anchor" href="#arg-priors"></a></dt>
+<dd><p>A list of priors similar to how they are specified in conjugate but named for the
+distribution you plan to use, see details and examples.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -107,7 +112,9 @@ See details for interpretation.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-
+    <p>The majority of the Bayesian Analysis and Reporting Guidelines are geared towards statistical
+methods that use MCMC or other numeric approximations. For those cases (here meaning brms models
+fit by <code>fitGrowth</code> and <code>growthSS</code>) the output will contain:</p>
 <ul><li><p><b>General</b>: This includes chain number, length, and total divergent transitions per
     model. Divergent transitions are a marker that the MCMC had something go wrong.
     Conceptually it may be helpful to think about rolling a marble over a 3D curve then having the
@@ -152,7 +159,19 @@ See details for interpretation.</p>
     and ideally match the variance pattern that you see in your data. If parts of the predicted
     interval are biologically impossible (area below 0, percentage about 100<!-- %, etc) then your chosen -->
     model should be reconsidered.</p></li>
-</ul></div>
+</ul><p>For analytic solutions (ie, the <code>conjugate</code> class) there are fewer elements.</p><ul><li><p><b>priorSensitivity</b>: Patchwork of prior sensitivity plots showing the distribution
+    of posterior probabilities, any interpretation changes from those tests, and the random priors
+    that were used. This is only returned if the <code>priors</code> argument is specified (see below).</p></li>
+<li><p><b>posteriorPredictive</b>: Plot of posterior predictive distributions similar to that
+    from a non-longitudinal <code>fitGrowth</code> model fit with brms.</p></li>
+<li><p><b>Summary</b>: The summary of the <code>conjugate</code> object.</p></li>
+</ul><p>Priors here are specified using a named list. For instance, to use 100 normal priors with means
+between 5 and 20 and standard deviations between 5 and 10 the prior argument would be
+<code>list("rnorm" = list("mean" = c(5, 20), "sd" = c(5, 10), "n" = 100)))</code>.
+The priors that are used in sensitivity analysis are drawn randomly from within the ranges specified
+by the provided list. If you are unsure what random-generation function to use then check the
+<a href="conjugate.html">conjugate</a> docs where the distributions are listed for each method in the details section.</p>
+    </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p><a href="plotPrior.html">plotPrior</a> for visual prior predictive checks.</p></div>
@@ -193,17 +212,7 @@ See details for interpretation.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 500 / 600 [ 83%]  (Sampling) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 600 / 600 [100%]  (Sampling) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 finished in 0.0 seconds.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading required package: rstan</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading required package: StanHeaders</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> rstan version 2.32.7 (Stan version 2.32.2)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> For execution on a local, multicore CPU with excess RAM we recommend calling</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> options(mc.cores = parallel::detectCores()).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> To avoid recompilation of unchanged Stan programs, we recommend calling</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> rstan_options(auto_write = TRUE)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> For within-chain threading using `reduce_sum()` or `map_rect()` Stan functions,</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> change `threads_per_chain` option:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> rstan_options(threads_per_chain = 1)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading required namespace: rstan</span>
 <span class="r-in"><span><span class="fu">barg</span><span class="op">(</span><span class="va">fit_test</span>, <span class="va">ss</span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The ESS has been capped to avoid unstable estimates.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The ESS has been capped to avoid unstable estimates.</span>
@@ -375,6 +384,19 @@ See details for interpretation.</p>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The ESS has been capped to avoid unstable estimates.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The ESS has been capped to avoid unstable estimates.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The ESS has been capped to avoid unstable estimates.</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="conjugate.html">conjugate</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  s1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">10</span>, <span class="fl">1</span><span class="op">)</span>, s2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">13</span>, <span class="fl">1.5</span><span class="op">)</span>, method <span class="op">=</span> <span class="st">"t"</span>,</span></span>
+<span class="r-in"><span>  priors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>mu <span class="op">=</span> <span class="fl">10</span>, sd <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>mu <span class="op">=</span> <span class="fl">10</span>, sd <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span>,</span></span>
+<span class="r-in"><span>  plot <span class="op">=</span> <span class="cn">FALSE</span>, rope_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">8</span>, <span class="fl">8</span><span class="op">)</span>, rope_ci <span class="op">=</span> <span class="fl">0.89</span>,</span></span>
+<span class="r-in"><span>  cred.int.level <span class="op">=</span> <span class="fl">0.89</span>, hypothesis <span class="op">=</span> <span class="st">"unequal"</span>,</span></span>
+<span class="r-in"><span>  bayes_factor <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">50</span>, <span class="fl">55</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>plot argument is deprecated, use plot.conjugate instead.</span>
+<span class="r-in"><span><span class="va">b</span> <span class="op">&lt;-</span> <span class="fu">barg</span><span class="op">(</span><span class="va">x</span>, priors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"rnorm"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"n"</span> <span class="op">=</span> <span class="fl">10</span>, <span class="st">"mean"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">20</span><span class="op">)</span>, <span class="st">"sd"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>

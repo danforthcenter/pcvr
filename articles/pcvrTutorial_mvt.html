@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">pcvr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.2.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -452,28 +452,63 @@ assume a lognormal distribution.</p>
 <code class="sourceCode R"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/conjugate.html">conjugate</a></span><span class="op">(</span><span class="va">s1</span>, <span class="va">s2</span>,</span>
 <span>  method <span class="op">=</span> <span class="st">"lognormal"</span>,</span>
 <span>  priors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>mu <span class="op">=</span> <span class="fl">10</span>, sd <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>,</span>
-<span>  plot <span class="op">=</span> <span class="cn">TRUE</span>, rope_range <span class="op">=</span> <span class="cn">NULL</span>, rope_ci <span class="op">=</span> <span class="fl">0.89</span>,</span>
+<span>  rope_range <span class="op">=</span> <span class="cn">NULL</span>, rope_ci <span class="op">=</span> <span class="fl">0.89</span>,</span>
 <span>  cred.int.level <span class="op">=</span> <span class="fl">0.89</span>, hypothesis <span class="op">=</span> <span class="st">"equal"</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<span><span class="op">)</span></span>
+<span><span class="va">res</span></span></code></pre></div>
+<pre><code><span><span class="co">## Normal distributed Mu parameter of Lognormal distributed data.</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Sample 1 Prior Normal(mu = 10, sd = 5)</span></span>
+<span><span class="co">##  Posterior Normal(mu = 4.141, sd = 0.701, lognormal_sigma = 0.143)</span></span>
+<span><span class="co">## Sample 2 Prior Normal(mu = 10, sd = 5)</span></span>
+<span><span class="co">##  Posterior Normal(mu = 3.168, sd = 0.778, lognormal_sigma = 0.346)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Posterior probability that S1 is equal to S2 = 50.909%</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##      HDE_1 HDI_1_low HDI_1_high   HDE_2 HDI_2_low HDI_2_high   hyp post.prob</span></span>
+<span><span class="co">## 1 4.140941  3.021195   5.260687 3.16762  1.924214   4.411025 equal 0.5090941</span></span></code></pre>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span></span></code></pre></div>
+<p><img src="pcvrTutorial_mvt_files/figure-html/unnamed-chunk-18-1.png" width="700"></p>
 <p>We can also perform region of practical equivalence tests by
 specifying a <code>rope_range</code>.</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/conjugate.html">conjugate</a></span><span class="op">(</span><span class="va">s1</span>, <span class="va">s2</span>,</span>
 <span>  method <span class="op">=</span> <span class="st">"lognormal"</span>,</span>
 <span>  priors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>mu <span class="op">=</span> <span class="fl">10</span>, sd <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>,</span>
-<span>  plot <span class="op">=</span> <span class="cn">TRUE</span>, rope_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">10</span>, <span class="fl">10</span><span class="op">)</span>, rope_ci <span class="op">=</span> <span class="fl">0.89</span>,</span>
+<span>  rope_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">10</span>, <span class="fl">10</span><span class="op">)</span>, rope_ci <span class="op">=</span> <span class="fl">0.89</span>,</span>
 <span>  cred.int.level <span class="op">=</span> <span class="fl">0.89</span>, hypothesis <span class="op">=</span> <span class="st">"equal"</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<span><span class="op">)</span></span>
+<span><span class="va">res</span></span></code></pre></div>
+<pre><code><span><span class="co">## Normal distributed Mu parameter of Lognormal distributed data.</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Sample 1 Prior Normal(mu = 10, sd = 5)</span></span>
+<span><span class="co">##  Posterior Normal(mu = 4.141, sd = 0.701, lognormal_sigma = 0.143)</span></span>
+<span><span class="co">## Sample 2 Prior Normal(mu = 10, sd = 5)</span></span>
+<span><span class="co">##  Posterior Normal(mu = 3.168, sd = 0.778, lognormal_sigma = 0.346)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Posterior probability that S1 is equal to S2 = 50.909%</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Probability of the difference between Mu parameters being within [-10:10] using a 89% Credible Interval is 100% with an average difference of 0.974</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##      HDE_1 HDI_1_low HDI_1_high   HDE_2 HDI_2_low HDI_2_high   hyp post.prob</span></span>
+<span><span class="co">## 1 4.140941  3.021195   5.260687 3.16762  1.924214   4.411025 equal 0.5090941</span></span>
+<span><span class="co">##    HDE_rope HDI_rope_low HDI_rope_high rope_prob</span></span>
+<span><span class="co">## 1 0.9738328   -0.6765613      2.694569         1</span></span></code></pre>
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span></span></code></pre></div>
+<p><img src="pcvrTutorial_mvt_files/figure-html/unnamed-chunk-19-1.png" width="700"></p>
 </div>
 <div class="section level2">
 <h2 id="conjugate-3">
 <code>conjugate</code><a class="anchor" aria-label="anchor" href="#conjugate-3"></a>
 </h2>
 <p>The results are also returned as a summary data.frame.</p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">res</span><span class="op">$</span><span class="va">summary</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">6</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
 <pre><code><span><span class="co">##     hyp post.prob  HDE_rope HDI_rope_low HDI_rope_high rope_prob</span></span>
-<span><span class="co">## 1 equal 0.1676276 0.9725031    0.2023803      1.807437         1</span></span></code></pre>
+<span><span class="co">## 1 equal 0.5090941 0.9738328   -0.6765613      2.694569         1</span></span></code></pre>
 </div>
 <div class="section level2">
 <h2 id="resources">Resources<a class="anchor" aria-label="anchor" href="#resources"></a>

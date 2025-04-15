@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">pcvr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.2.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -459,32 +459,41 @@ the “T” distribution to run a Bayesian analog to a T-test.</p>
 <span>  <span class="va">s1</span>, <span class="va">s2</span>, <span class="co"># specify data, here two samples</span></span>
 <span>  method <span class="op">=</span> <span class="st">"t"</span>, <span class="co"># use the "T" distribution</span></span>
 <span>  priors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>mu <span class="op">=</span> <span class="fl">3000</span>, sd <span class="op">=</span> <span class="fl">50</span><span class="op">)</span>, <span class="co"># prior distribution, here it is the same for both samples</span></span>
-<span>  plot <span class="op">=</span> <span class="cn">TRUE</span>, <span class="co"># return a plot</span></span>
 <span>  rope_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">500</span>, <span class="fl">500</span><span class="op">)</span>, <span class="co"># differences of &lt;500 pixels deemed not meaningful</span></span>
 <span>  rope_ci <span class="op">=</span> <span class="fl">0.89</span>, cred.int.level <span class="op">=</span> <span class="fl">0.89</span>, <span class="co"># default credible interval lengths</span></span>
-<span>  hypothesis <span class="op">=</span> <span class="st">"equal"</span>, <span class="co"># hypothesis to test</span></span>
-<span>  support <span class="op">=</span> <span class="cn">NULL</span> <span class="co"># optionally you can provide support, this is generally unnecessary.</span></span>
+<span>  hypothesis <span class="op">=</span> <span class="st">"equal"</span> <span class="co"># hypothesis to test</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Warning in conjugate(s1, s2, method = "t", priors = list(mu = 3000, sd = 50), :</span></span>
-<span><span class="co">## support argument is deprecated</span></span></code></pre>
 <p>The <code>conjugate</code> output includes a summary, the posterior
 distributions in the same format as the priors were supplied, and
 optionally a plot.</p>
-<p>The summary contains the HDE (highest density estimate) of each
-group’s posterior distribution, the HDI (highest density interval) of
-each group’s posterior distribution, the hypothesis that was tested, the
-posterior probability of that hypothesis, the HDE/HDI for the mean
-difference (if rope_range was specified), and the probability of the
-mean difference being within the rope_range.</p>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">conj_ex</span><span class="op">$</span><span class="va">summary</span></span></code></pre></div>
-<pre><code><span><span class="co">##   HDE_1 HDI_1_low HDI_1_high    HDE_2 HDI_2_low HDI_2_high   hyp post.prob</span></span>
+<p>Print the object to view a summary which contains the HDE (highest
+density estimate) of each group’s posterior distribution, the HDI
+(highest density interval) of each group’s posterior distribution, the
+hypothesis that was tested, the posterior probability of that
+hypothesis, the HDE/HDI for the mean difference (if rope_range was
+specified), and the probability of the mean difference being within the
+rope_range.</p>
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">conj_ex</span></span></code></pre></div>
+<pre><code><span><span class="co">## Normal distributed Mu parameter of T distributed data.</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Sample 1 Prior Normal(mu = 3000, sd = 50)</span></span>
+<span><span class="co">##  Posterior Normal(mu = 3010, sd = 49.629)</span></span>
+<span><span class="co">## Sample 2 Prior Normal(mu = 3000, sd = 50)</span></span>
+<span><span class="co">##  Posterior Normal(mu = 3082.806, sd = 49.4)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Posterior probability that S1 is equal to S2 = 46.226%</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Probability of the difference between Mu parameters being within [-500:500] using a 89% Credible Interval is 100% with an average difference of -71.101</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##   HDE_1 HDI_1_low HDI_1_high    HDE_2 HDI_2_low HDI_2_high   hyp post.prob</span></span>
 <span><span class="co">## 1  3010  2930.683   3089.316 3082.806  3003.856   3161.756 equal 0.4622612</span></span>
 <span><span class="co">##    HDE_rope HDI_rope_low HDI_rope_high rope_prob</span></span>
 <span><span class="co">## 1 -71.10135    -182.7525      40.26259         1</span></span></code></pre>
 <p>The posterior is returned as a list with the same elements as the
 prior. This allows for Bayesian updating if you wish to do so.</p>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="va">conj_ex</span><span class="op">$</span><span class="va">posterior</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##      mu       sd      </span></span>
 <span><span class="co">## [1,] 3010     49.62892</span></span>
@@ -492,8 +501,8 @@ prior. This allows for Bayesian updating if you wish to do so.</p>
 <p>The plot includes information from the summary graphically as a
 patchwork of 2 ggplots if rope_range was specified or is a single ggplot
 otherwise.</p>
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">conj_ex</span><span class="op">$</span><span class="va">plot</span></span></code></pre></div>
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">conj_ex</span><span class="op">)</span></span></code></pre></div>
 <p><img src="roots_files/figure-html/unnamed-chunk-22-1.png" alt="Example of conjugate plot for single or multi value traits." width="700"></p>
 <p>Here we would conclude that the distributions are different since the
 probability that they are the same is roughly 1% and that the mean
@@ -512,7 +521,7 @@ that describe spectral wavelengths or indices. The
 matrices/data.frames for s1 and s2, but it will be very rare that a
 minirhyzotron image’s distribution will follow an easily parameterized
 pdf.</p>
-<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/pcv.joyplot.html">pcv.joyplot</a></span><span class="op">(</span><span class="va">df</span>, <span class="st">"x_frequencies"</span>, group <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"rep"</span>, <span class="st">"time"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="roots_files/figure-html/unnamed-chunk-23-1.png" alt="Joyplot of multi value traits which is similar to analyze distribution in plantcv" width="700"></p>
 <p>Theoretically we could consider this as a mixture of uniform and
@@ -533,7 +542,7 @@ in the data and an example of using EMD.</p>
 <p>To compare the number of peaks we need a way to identify a peak. Here
 we do this with a quick function that finds intervals of counts above
 some cutoff for at least some duration.</p>
-<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">getPeaks</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">d</span> <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">intensity</span> <span class="op">=</span> <span class="fl">20</span>, <span class="va">duration</span> <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">binwidth</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/diff.html" class="external-link">diff</a></span><span class="op">(</span><span class="va">d</span><span class="op">$</span><span class="va">label</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span>  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">binwidth</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">1</span><span class="op">)</span> <span class="op">{</span></span>
@@ -544,7 +553,7 @@ some cutoff for at least some duration.</p>
 <span>  <span class="va">peaks</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">r</span><span class="op">$</span><span class="va">lengths</span><span class="op">[</span><span class="va">r</span><span class="op">$</span><span class="va">values</span> <span class="op">==</span> <span class="va">binwidth</span><span class="op">]</span> <span class="op">&gt;=</span> <span class="va">duration</span><span class="op">)</span></span>
 <span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">peaks</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
-<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/split.html" class="external-link">split</a></span><span class="op">(</span><span class="va">df</span>, <span class="fu"><a href="https://rdrr.io/r/base/interaction.html" class="external-link">interaction</a></span><span class="op">(</span><span class="va">df</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"rep"</span>, <span class="st">"time"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">peak_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>peaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">d</span>, <span class="va">getPeaks</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">peak_df</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="cn">NULL</span></span>
@@ -554,7 +563,7 @@ some cutoff for at least some duration.</p>
 <span><span class="va">peak_df</span><span class="op">$</span><span class="va">time</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">nm</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/strsplit.html" class="external-link">strsplit</a></span><span class="op">(</span><span class="va">nm</span>, <span class="st">"[.]"</span><span class="op">)</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="op">}</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">s1</span> <span class="op">&lt;-</span> <span class="va">peak_df</span><span class="op">[</span><span class="va">peak_df</span><span class="op">$</span><span class="va">time</span> <span class="op">==</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">peak_df</span><span class="op">$</span><span class="va">time</span><span class="op">)</span>, <span class="st">"peaks"</span><span class="op">]</span></span>
 <span><span class="va">s2</span> <span class="op">&lt;-</span> <span class="va">peak_df</span><span class="op">[</span><span class="va">peak_df</span><span class="op">$</span><span class="va">time</span> <span class="op">==</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">peak_df</span><span class="op">$</span><span class="va">time</span><span class="op">)</span>, <span class="st">"peaks"</span><span class="op">]</span></span>
 <span></span>
@@ -562,27 +571,35 @@ some cutoff for at least some duration.</p>
 <span>  <span class="va">s1</span>, <span class="va">s2</span>, <span class="co"># specify data, here two samples</span></span>
 <span>  method <span class="op">=</span> <span class="st">"poisson"</span>, <span class="co"># use the Poisson distribution</span></span>
 <span>  priors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>a <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">0.5</span><span class="op">)</span>, b <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span>, <span class="co"># prior distributions for gamma on lambda</span></span>
-<span>  plot <span class="op">=</span> <span class="cn">TRUE</span>, <span class="co"># return a plot</span></span>
 <span>  rope_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>, <span class="co"># differences of &lt;500 pixels deemed not meaningful</span></span>
 <span>  rope_ci <span class="op">=</span> <span class="fl">0.89</span>, cred.int.level <span class="op">=</span> <span class="fl">0.89</span>, <span class="co"># default credible interval lengths</span></span>
-<span>  hypothesis <span class="op">=</span> <span class="st">"equal"</span>, <span class="co"># hypothesis to test</span></span>
-<span>  support <span class="op">=</span> <span class="cn">NULL</span> <span class="co"># optionally you can provide support, this is generally unnecessary.</span></span>
+<span>  hypothesis <span class="op">=</span> <span class="st">"equal"</span> <span class="co"># hypothesis to test</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Warning in conjugate(s1, s2, method = "poisson", priors = list(a = c(0.5, :</span></span>
-<span><span class="co">## support argument is deprecated</span></span></code></pre>
-<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">conj_ex2</span><span class="op">$</span><span class="va">summary</span></span></code></pre></div>
-<pre><code><span><span class="co">##     HDE_1 HDI_1_low HDI_1_high    HDE_2 HDI_2_low HDI_2_high   hyp post.prob</span></span>
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">conj_ex2</span></span></code></pre></div>
+<pre><code><span><span class="co">## Gamma distributed Lambda parameter of Poisson distributed data.</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Sample 1 Prior Gamma(a = 0.5, b = 0.5, a = 0.5, b = 0.5)</span></span>
+<span><span class="co">##  Posterior Gamma(a = 16.5, b = 10.5)</span></span>
+<span><span class="co">## Sample 2 Prior Gamma(a = 0.5, b = 0.5, a = 0.5, b = 0.5)</span></span>
+<span><span class="co">##  Posterior Gamma(a = 31.5, b = 10.5)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Posterior probability that S1 is equal to S2 = 11.874%</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Probability of the difference between Lambda parameters being within [-1:1] using a 89% Credible Interval is 23.896% with an average difference of -1.409</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##     HDE_1 HDI_1_low HDI_1_high    HDE_2 HDI_2_low HDI_2_high   hyp post.prob</span></span>
 <span><span class="co">## 1 1.47619  1.006947   2.234277 2.904762  2.198332   3.900187 equal 0.1187409</span></span>
 <span><span class="co">##    HDE_rope HDI_rope_low HDI_rope_high rope_prob</span></span>
 <span><span class="co">## 1 -1.409191    -2.492106    -0.3709298 0.2389619</span></span></code></pre>
-<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="va">conj_ex2</span><span class="op">$</span><span class="va">posterior</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##      a    b   </span></span>
 <span><span class="co">## [1,] 16.5 10.5</span></span>
 <span><span class="co">## [2,] 31.5 10.5</span></span></code></pre>
-<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">conj_ex2</span><span class="op">$</span><span class="va">plot</span></span></code></pre></div>
+<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">conj_ex2</span><span class="op">)</span></span></code></pre></div>
 <p><img src="roots_files/figure-html/unnamed-chunk-29-1.png" alt="Another example of conjugate output. Choosing what you actually mean to measure and understanding how it is related (and how strong that relationship is) to actual plant traits that you care about is crucial here." width="700"></p>
 </div>
 <div class="section level3">
@@ -607,7 +624,7 @@ multi-modal histograms but that will get clunky for comparing to the
 unimodal or uniform distributions. The <code>conjugate</code> function
 would not work here since these distributions do not share a common
 parameterization. Instead, we can use EMD.</p>
-<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">simFreqs</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">vec</span>, <span class="va">group</span><span class="op">)</span> <span class="op">{</span></span>
@@ -652,18 +669,18 @@ parameterization. Instead, we can use EMD.</p>
 <p>Our plots show very different distributions, so we get EMD between
 our images and see that we do have some trends shown in the resulting
 heatmap.</p>
-<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sim_emd</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pcv.emd.html">pcv.emd</a></span><span class="op">(</span></span>
 <span>  df <span class="op">=</span> <span class="va">sim_df</span>, cols <span class="op">=</span> <span class="st">"sim_"</span>, reorder <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"group"</span><span class="op">)</span>,</span>
 <span>  mat <span class="op">=</span> <span class="cn">FALSE</span>, plot <span class="op">=</span> <span class="cn">TRUE</span>, parallel <span class="op">=</span> <span class="fl">1</span>, raiseError <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Estimated time of calculation is roughly 3.1 seconds using 1 cores in parallel.</span></span></code></pre>
-<div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sim_emd</span><span class="op">$</span><span class="va">plot</span></span></code></pre></div>
 <p><img src="roots_files/figure-html/unnamed-chunk-31-1.png" alt="Heatmap of Earth Mover's Distance between several probability distributions." width="700"></p>
 <p>Arranging these distances into a network of dissimilarities shows the
 different distributions clustering well.</p>
-<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">n</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pcv.net.html">pcv.net</a></span><span class="op">(</span><span class="va">sim_emd</span><span class="op">$</span><span class="va">data</span>, filter <span class="op">=</span> <span class="st">"0.5"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/net.plot.html">net.plot</a></span><span class="op">(</span><span class="va">n</span>, fill <span class="op">=</span> <span class="st">"group"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="roots_files/figure-html/unnamed-chunk-32-1.png" alt="Simulated Earth Mover's Distance show as a network" width="700"></p>
@@ -671,12 +688,12 @@ different distributions clustering well.</p>
 steps. Here we will show this with both simulated datasets (roots
 leaving the image and roots being stuck in the image once observed).</p>
 <p>First we check our distributions via joyplot.</p>
-<div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/pcv.joyplot.html">pcv.joyplot</a></span><span class="op">(</span><span class="va">df</span>, <span class="st">"x_frequencies"</span>, group <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"rep"</span>, <span class="st">"time"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="roots_files/figure-html/unnamed-chunk-33-1.png" alt="Using a joyplot to check our simulated mini rhyzotron data before using Earth Mover's Distance." width="700"></p>
 <p>We calculate EMD between our observations. Note here we have long
 input data as opposed to wide in the previous example.</p>
-<div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">df1_emd</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pcv.emd.html">pcv.emd</a></span><span class="op">(</span></span>
 <span>  df <span class="op">=</span> <span class="va">df</span>, cols <span class="op">=</span> <span class="st">"x_frequencies"</span>, reorder <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"rep"</span>, <span class="st">"time"</span><span class="op">)</span>,</span>
 <span>  id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"rep"</span>, <span class="st">"time"</span><span class="op">)</span>,</span>
@@ -685,16 +702,16 @@ input data as opposed to wide in the previous example.</p>
 <p>And we arrange the distances as a network of dissimilarities. Here we
 are filtering for only those edges that are above the 75th percentile in
 strength and we see a pretty clear temporal clustering.</p>
-<div class="sourceCode" id="cb50"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">n</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pcv.net.html">pcv.net</a></span><span class="op">(</span><span class="va">df1_emd</span><span class="op">$</span><span class="va">data</span>, filter <span class="op">=</span> <span class="st">"0.75"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/net.plot.html">net.plot</a></span><span class="op">(</span><span class="va">n</span>, fill <span class="op">=</span> <span class="st">"time"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="roots_files/figure-html/unnamed-chunk-35-1.png" alt="Plotting a network of our simulated mini rhyzotron data's Earth Mover's Distances. We can see some evidence of a change over time." width="700"></p>
 <p>With our dataset that assumes roots cannot leave the image once
 observed we get similar results.</p>
-<div class="sourceCode" id="cb51"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/pcv.joyplot.html">pcv.joyplot</a></span><span class="op">(</span><span class="va">df2</span>, <span class="st">"x_frequencies"</span>, group <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"rep"</span>, <span class="st">"time"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="roots_files/figure-html/unnamed-chunk-36-1.png" alt="Using a joyplot to check our simulated mini rhyzotron data before using Earth Mover's Distance with the assumption that roots cannot leave the image." width="700"></p>
-<div class="sourceCode" id="cb52"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb50"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">df2_emd</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pcv.emd.html">pcv.emd</a></span><span class="op">(</span></span>
 <span>  df <span class="op">=</span> <span class="va">df2</span>, cols <span class="op">=</span> <span class="st">"x_frequencies"</span>, reorder <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"rep"</span>, <span class="st">"time"</span><span class="op">)</span>,</span>
 <span>  id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"rep"</span>, <span class="st">"time"</span><span class="op">)</span>,</span>

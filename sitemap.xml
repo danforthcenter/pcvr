@@ -25,6 +25,7 @@
 <url><loc>https://danforthcenter.github.io/pcvr/reference/bw.water.html</loc></url>
 <url><loc>https://danforthcenter.github.io/pcvr/reference/checkGroups.html</loc></url>
 <url><loc>https://danforthcenter.github.io/pcvr/reference/combineDraws.html</loc></url>
+<url><loc>https://danforthcenter.github.io/pcvr/reference/conjugate-class.html</loc></url>
 <url><loc>https://danforthcenter.github.io/pcvr/reference/conjugate.html</loc></url>
 <url><loc>https://danforthcenter.github.io/pcvr/reference/cumulativePheno.html</loc></url>
 <url><loc>https://danforthcenter.github.io/pcvr/reference/distributionPlot.html</loc></url>
@@ -62,8 +63,11 @@
 <url><loc>https://danforthcenter.github.io/pcvr/reference/pcv.plsr.html</loc></url>
 <url><loc>https://danforthcenter.github.io/pcvr/reference/pcv_theme.html</loc></url>
 <url><loc>https://danforthcenter.github.io/pcvr/reference/pcvrss-class.html</loc></url>
+<url><loc>https://danforthcenter.github.io/pcvr/reference/plot.conjugate.html</loc></url>
 <url><loc>https://danforthcenter.github.io/pcvr/reference/plotPrior.html</loc></url>
 <url><loc>https://danforthcenter.github.io/pcvr/reference/plotVIP.html</loc></url>
+<url><loc>https://danforthcenter.github.io/pcvr/reference/print.conjugate.html</loc></url>
+<url><loc>https://danforthcenter.github.io/pcvr/reference/print.conjugatesummary.html</loc></url>
 <url><loc>https://danforthcenter.github.io/pcvr/reference/print.pcvrss.html</loc></url>
 <url><loc>https://danforthcenter.github.io/pcvr/reference/print.pcvrsssummary.html</loc></url>
 <url><loc>https://danforthcenter.github.io/pcvr/reference/pwue.html</loc></url>
@@ -71,6 +75,7 @@
 <url><loc>https://danforthcenter.github.io/pcvr/reference/read.pcv.html</loc></url>
 <url><loc>https://danforthcenter.github.io/pcvr/reference/relativeTolerance.html</loc></url>
 <url><loc>https://danforthcenter.github.io/pcvr/reference/rqPlot.html</loc></url>
+<url><loc>https://danforthcenter.github.io/pcvr/reference/summary.conjugate.html</loc></url>
 <url><loc>https://danforthcenter.github.io/pcvr/reference/summary.pcvrss.html</loc></url>
 <url><loc>https://danforthcenter.github.io/pcvr/reference/survregPlot.html</loc></url>
 <url><loc>https://danforthcenter.github.io/pcvr/reference/testGrowth.html</loc></url>
