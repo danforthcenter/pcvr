@@ -21,8 +21,7 @@
 plot.conjugate <- function(x) {
   dirSymbol <- NULL
   if ("hyp" %in% colnames(x$summary)) {
-    dirSymbol <- switch(
-      x$summary$hyp,
+    dirSymbol <- switch(x$summary$hyp[1],
       "unequal" = "!=",
       "equal" = "=",
       "greater" = ">",
@@ -30,14 +29,15 @@ plot.conjugate <- function(x) {
     )
   }
   args <- as.list(x$call)
-  plot <- .conj_plot(res = x,
-                     rope_df = x$rope_df,
-                     rope_range = eval(args$rope_range),
-                     rope_ci = eval(args$rope_ci),
-                     dirSymbol = dirSymbol,
-                     support = x$plot_parameters[[1]]$range,
-                     method = eval(args$method),
-                     bayes_factor = eval(args$bayes_factor)
+  plot <- .conj_plot(
+    res = x,
+    rope_df = x$rope_df,
+    rope_range = eval(args$rope_range),
+    rope_ci = eval(args$rope_ci),
+    dirSymbol = dirSymbol,
+    support = x$plot_parameters[[1]]$range,
+    method = eval(args$method),
+    bayes_factor = eval(args$bayes_factor)
   )
   return(plot)
 }
@@ -72,26 +72,30 @@ plot.conjugate <- function(x) {
   s1_bf_title <- NULL
   s2_bf_title <- NULL
   if (!is.null(bayes_factor)) {
-    s1_bf_title <- paste0(", BF: (",
-                          paste(bayes_factor, collapse = ", "),
-                          ") ", round(res$summary$bf_1, 2))
+    s1_bf_title <- paste0(
+      ", BF: (",
+      paste(bayes_factor, collapse = ", "),
+      ") ", round(res$summary$bf_1, 2)
+    )
   }
-  
+
   p <- ggplot2::ggplot(s1_plot_df, ggplot2::aes(x = .data$range)) +
-    ggplot2::stat_function(geom = "polygon",
-                           fun = eval(parse(text = res$plot_parameters[[1]]$ddist_fun)),
-                           args = res$plot_parameters[[1]]$parameters,
-                           ggplot2::aes(fill = "s1"), alpha = 0.5) +
+    ggplot2::stat_function(
+      geom = "polygon",
+      fun = eval(parse(text = res$plot_parameters[[1]]$ddist_fun)),
+      args = res$plot_parameters[[1]]$parameters,
+      ggplot2::aes(fill = "s1"), alpha = 0.5
+    ) +
     ggplot2::geom_vline(ggplot2::aes(xintercept = res$summary$HDI_1_low),
-                        color = "red",
-                        linewidth = 1.1
+      color = "red",
+      linewidth = 1.1
     ) +
     ggplot2::geom_vline(ggplot2::aes(xintercept = res$summary$HDE_1),
-                        color = "red", linetype = "dashed", linewidth = 1.1
+      color = "red", linetype = "dashed", linewidth = 1.1
     ) +
     ggplot2::geom_vline(ggplot2::aes(xintercept = res$summary$HDI_1_high),
-                        color = "red",
-                        linewidth = 1.1
+      color = "red",
+      linewidth = 1.1
     ) +
     ggplot2::scale_fill_manual(values = "red") +
     ggplot2::labs(
@@ -109,41 +113,45 @@ plot.conjugate <- function(x) {
       legend.position.inside = c(0.9, 0.9)
     ) +
     pcv_theme()
-  
+
   if (length(res$data) == 2) {
     if (!is.null(bayes_factor)) {
-      s2_bf_title <- paste0(", BF: (",
-                            paste(bayes_factor, collapse = ", "),
-                            ") ", round(res$summary$bf_2, 2))
+      s2_bf_title <- paste0(
+        ", BF: (",
+        paste(bayes_factor, collapse = ", "),
+        ") ", round(res$summary$bf_2, 2)
+      )
     }
-    
+
     if (res$summary$post.prob < 1e-5) {
       post.prob.text <- "<1e-5"
     } else {
       post.prob.text <- round(res$summary$post.prob, 5)
     }
-    
+
     fill_scale <- which(sapply(p$scales$scales, function(x) {
       return("fill" %in% x$aesthetics) # avoid "replacing scale" non-messages
     }))
-    
+
     p$scales$scales[[fill_scale]] <- NULL
     p <- p +
-      ggplot2::stat_function(geom = "polygon",
-                             fun = eval(parse(text = res$plot_parameters[[2]]$ddist_fun)),
-                             args = res$plot_parameters[[2]]$parameters,
-                             ggplot2::aes(fill = "s2"), alpha = 0.5) +
+      ggplot2::stat_function(
+        geom = "polygon",
+        fun = eval(parse(text = res$plot_parameters[[2]]$ddist_fun)),
+        args = res$plot_parameters[[2]]$parameters,
+        ggplot2::aes(fill = "s2"), alpha = 0.5
+      ) +
       ggplot2::geom_vline(ggplot2::aes(xintercept = res$summary$HDI_2_low),
-                          color = "blue",
-                          linewidth = 1.1
+        color = "blue",
+        linewidth = 1.1
       ) +
       ggplot2::geom_vline(ggplot2::aes(xintercept = res$summary$HDE_2),
-                          color = "blue",
-                          linetype = "dashed", linewidth = 1.1
+        color = "blue",
+        linetype = "dashed", linewidth = 1.1
       ) +
       ggplot2::geom_vline(ggplot2::aes(xintercept = res$summary$HDI_2_high),
-                          color = "blue",
-                          linewidth = 1.1
+        color = "blue",
+        linewidth = 1.1
       ) +
       ggplot2::scale_fill_manual(values = c("red", "blue"), breaks = c("s1", "s2")) +
       ggplot2::guides(fill = ggplot2::guide_legend(override.aes = list(alpha = 0.5))) +
@@ -160,7 +168,7 @@ plot.conjugate <- function(x) {
         "P[p1", dirSymbol, "p2] = ", post.prob.text
       ))
   }
-  
+
   if (!is.null(rope_df)) {
     p <- p + ggplot2::ggplot(rope_df, ggplot2::aes(x = .data$X)) +
       ggplot2::geom_histogram(bins = 100, fill = "purple", color = "purple", alpha = 0.7) +
@@ -176,13 +184,13 @@ plot.conjugate <- function(x) {
         bins = 100, fill = "gray30", color = "gray30"
       ) +
       ggplot2::annotate("segment",
-                        x = rope_range[1], xend = rope_range[2], y = 0, yend = 0,
-                        linewidth = 2, color = "gray70"
+        x = rope_range[1], xend = rope_range[2], y = 0, yend = 0,
+        linewidth = 2, color = "gray70"
       ) +
       ggplot2::geom_vline(ggplot2::aes(xintercept = res$summary$HDI_rope_low), linewidth = 0.7) +
       ggplot2::geom_vline(ggplot2::aes(xintercept = res$summary$HDE_rope),
-                          linetype = "dashed",
-                          linewidth = 0.7
+        linetype = "dashed",
+        linewidth = 0.7
       ) +
       ggplot2::geom_vline(ggplot2::aes(xintercept = res$summary$HDI_rope_high), linewidth = 0.7) +
       ggplot2::labs(
@@ -229,7 +237,7 @@ plot.conjugate <- function(x) {
     y_lim <- limits[[2]]
     v_lines <- res$summary[res$summary$param == params[1], ]
     h_lines <- res$summary[res$summary$param == params[2], ]
-    
+
     joint_p <- ggplot2::ggplot(
       joint_dist_s1,
       ggplot2::aes(
@@ -308,7 +316,7 @@ plot.conjugate <- function(x) {
     }))
     params <- unique(margin_plot_df$param)
     joint_dist <- do.call(rbind, lapply(1:2, function(i) {
-      pd <- res$posteriorDraws[[i]]
+      pd <- res$posterior_draws[[i]]
       pd$sample <- paste0("Sample ", i)
       return(pd)
     }))
@@ -323,7 +331,7 @@ plot.conjugate <- function(x) {
     #* `Make joint distribution plot`
     v_lines <- res$summary[res$summary$param == params[1], ]
     h_lines <- res$summary[res$summary$param == params[2], ]
-    
+
     joint_p <- ggplot2::ggplot(
       joint_dist,
       ggplot2::aes(
@@ -369,7 +377,7 @@ plot.conjugate <- function(x) {
       ggplot2::ylim(y_lim) +
       pcv_theme() +
       ggplot2::theme(legend.position = "none")
-    
+
     #* `Make marginal distribution plot of each parameter (x, y)`
     margin_plots <- lapply(params, function(par) {
       hdf <- res$summary
@@ -437,7 +445,7 @@ plot.conjugate <- function(x) {
         )
       return(par_plot)
     })
-    
+
     post.probs <- lapply(params, function(par) {
       hdf <- res$summary
       hdf <- hdf[hdf$param == par, ]
@@ -449,7 +457,7 @@ plot.conjugate <- function(x) {
       return(post.prob.text)
     })
     names(post.probs) <- params
-    
+
     #* `Write title if there are 2 samples`
     SUBTITLE <- paste(lapply(params, function(par) {
       par_string <- paste0(par, ": P[s1", dirSymbol[[1]], "s2] = ", post.probs[[par]])
@@ -465,7 +473,7 @@ plot.conjugate <- function(x) {
   margin_plots[[2]] <- margin_plots[[2]] +
     ggplot2::coord_flip() +
     ggplot2::theme(legend.position = "none")
-  
+
   p <- joint_p + margin_plots[[1]] + margin_plots[[2]] +
     patchwork::plot_layout(design = layout) &
     patchwork::plot_annotation(title = TITLE, subtitle = SUBTITLE)
