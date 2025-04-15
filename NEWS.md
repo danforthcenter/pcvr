@@ -1,3 +1,9 @@
+# pcvr 1.2.0
+
+Added `conjugate` S3 method for outputs from conjugate class.
+Changed internals for several conjugate distributions.
+Added Bayes factors to conjugate.
+
 # pcvr 1.1.1.0
 
 Fixing inelegant failure on `cran` when building the bellwether vignette without wifi and resubmitting to `cran`.
