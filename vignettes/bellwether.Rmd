@@ -189,7 +189,7 @@ ggplot(sv_ag, aes(
 ### Single day comparisons
 
 Non-longitudinal data (or single day data from larger longitudinal data) can be compared using the `conjugate` function.
-`conjugate` uses conjugate priors to make simple Bayesian comparisons for several types of data. Optionally, region of practical equivalence (ROPE) testing is also supported. Most distirubtions supported by this function can be used with either wide or long single value data or wide multi-value data. See `?pcvr::conjugate` or the [conjugate tutorial](https://github.com/danforthcenter/pcvr/tree/main/tutorials/pcvrTutorial_conjugate) for details on usage and available options.
+`conjugate` uses conjugate priors to make simple Bayesian comparisons for several types of data. Optionally, region of practical equivalence (ROPE) testing is also supported. Most distributions supported by this function can be used with either wide or long single value data or wide multi-value data. See `?pcvr::conjugate` or the [conjugate tutorial](https://github.com/danforthcenter/pcvr/tree/main/tutorials/pcvrTutorial_conjugate) for details on usage and available options.
 
 ```{r}
 #| fig.alt: >
@@ -198,9 +198,14 @@ Non-longitudinal data (or single day data from larger longitudinal data) can be 
 mo17_area <- sv_ag[sv_ag$genotype == "Mo17" & sv_ag$DAS > 18 & sv_ag$fertilizer == 100, "area_cm2"]
 b73_area <- sv_ag[sv_ag$genotype == "B73" & sv_ag$DAS > 18 & sv_ag$fertilizer == 100, "area_cm2"]
 
-area_res_t <- conjugate(s1 = mo17_area, s2 = b73_area, method = "t", plot = TRUE, rope_range = c(-5, 5))
-area_res_t$plot
+area_res_t <- conjugate(s1 = mo17_area, s2 = b73_area, method = "t", rope_range = c(-5, 5))
+area_res_t
 ```
+
+```{r}
+plot(area_res_t)
+```
+
 
 Here we can see a dramatic difference in our posterior distributions between genotypes and the distribution of differences between these samples is entirely outside of our ROPE range.
 
@@ -554,9 +559,10 @@ b73_sample <- hue_wide[
 
 hue_res_ln <- conjugate(
   s1 = mo17_sample, s2 = b73_sample, method = "lognormal",
-  plot = TRUE, rope_range = c(-10, 10), hypothesis = "equal"
+  rope_range = c(-10, 10), hypothesis = "equal"
 )
-hue_res_ln$plot
+hue_res_ln
+plot(hue_res_ln)
 ```
 
 

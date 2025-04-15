@@ -406,24 +406,23 @@ conj_ex <- conjugate(
   s1, s2, # specify data, here two samples
   method = "t", # use the "T" distribution
   priors = list(mu = 3000, sd = 50), # prior distribution, here it is the same for both samples
-  plot = TRUE, # return a plot
   rope_range = c(-500, 500), # differences of <500 pixels deemed not meaningful
   rope_ci = 0.89, cred.int.level = 0.89, # default credible interval lengths
-  hypothesis = "equal", # hypothesis to test
-  support = NULL # optionally you can provide support, this is generally unnecessary.
+  hypothesis = "equal" # hypothesis to test
 )
 ```
 
 The `conjugate` output includes a summary, the posterior distributions in the same format as the priors
 were supplied, and optionally a plot.
 
-The summary contains the HDE (highest density estimate) of each group's posterior distribution,
+Print the object to view a summary which
+contains the HDE (highest density estimate) of each group's posterior distribution,
 the HDI (highest density interval) of each group's posterior distribution, the hypothesis that was
 tested, the posterior probability of that hypothesis, the HDE/HDI for the mean difference (if rope_range
 was specified), and the probability of the mean difference being within the rope_range.
 
 ```{r}
-conj_ex$summary
+conj_ex
 ```
 
 The posterior is returned as a list with the same elements as the prior. This allows for Bayesian
@@ -439,7 +438,7 @@ was specified or is a single ggplot otherwise.
 ```{r}
 #| fig.alt: >
 #|   Example of conjugate plot for single or multi value traits.
-conj_ex$plot
+plot(conj_ex)
 ```
 
 Here we would conclude that the distributions are different since the probability that they are the same
@@ -509,16 +508,14 @@ conj_ex2 <- conjugate(
   s1, s2, # specify data, here two samples
   method = "poisson", # use the Poisson distribution
   priors = list(a = c(0.5, 0.5), b = c(0.5, 0.5)), # prior distributions for gamma on lambda
-  plot = TRUE, # return a plot
   rope_range = c(-1, 1), # differences of <500 pixels deemed not meaningful
   rope_ci = 0.89, cred.int.level = 0.89, # default credible interval lengths
-  hypothesis = "equal", # hypothesis to test
-  support = NULL # optionally you can provide support, this is generally unnecessary.
+  hypothesis = "equal" # hypothesis to test
 )
 ```
 
 ```{r}
-conj_ex2$summary
+conj_ex2
 ```
 
 ```{r}
@@ -530,7 +527,7 @@ do.call(rbind, conj_ex2$posterior)
 #|   Another example of conjugate output. Choosing what you actually mean to measure
 #|   and understanding how it is related (and how strong that relationship is) to
 #|   actual plant traits that you care about is crucial here.
-conj_ex2$plot
+plot(conj_ex2)
 ```
 
 ### EMD

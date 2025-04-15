@@ -709,10 +709,10 @@ s2 <- rexp(10, 1)
 out <- conjugate(
   s1 = s1, s2 = s2, method = "exponential",
   priors = NULL,
-  plot = TRUE, rope_range = c(-0.5, 0.5), rope_ci = 0.89,
+  rope_range = c(-0.5, 0.5), rope_ci = 0.89,
   cred.int.level = 0.89, hypothesis = "equal"
 )
-out$plot
+plot(out)
 ```
 
 We get a probability of 0.34 that the highest density interval of the difference falls in the interval [-0.5, 0.5], with a median difference of 0.75.
@@ -727,10 +727,10 @@ s1 <- rnorm(20, 10, 2)
 out <- conjugate(
   s1 = s1, method = "t",
   priors = list(mu = 12, sd = 3),
-  plot = TRUE, rope_range = c(11, 13),
+  rope_range = c(11, 13),
   hypothesis = "unequal"
 )
-out$plot
+plot(out)
 ```
 
 Here we see about a 1 percent chance that the mean of our data is in the [11, 13] interval that we listed as a range similar to an alternative hypothesis in a T-test.
@@ -833,10 +833,10 @@ To do the same thing in conjugate we pass the bayes_factor argument as a range a
 #| fig.alt: >
 #|   Doing the previous bayes factor comparison in the conjugate function.
 conj <- conjugate(s1 = list("successes" = 8, "trials" = 10),
-                  method = "binomial", plot = TRUE,
+                  method = "binomial",
                   priors = list(a = 2, b = 2),
                   bayes_factor = c(0.4, 0.6))
-conj$summary
+conj
 ```
 
 Note that many distributions in `conjugate` will default to very uninformative priors if you do not specify your own prior distribution. It is very likely that a Bayes factor is essentially meaningless in those cases. Put another way, for the factor relating posterior vs prior odds to be meaningful there has to be some information in the prior odds.
@@ -914,15 +914,15 @@ Identically in `conjugate`:
 #| fig.alt: >
 #|   Point hypothesis bayes factor shown in conjugate
 conj <- conjugate(s1 = list("successes" = 8, "trials" = 10),
-                  method = "binomial", plot = TRUE,
+                  method = "binomial",
                   priors = list(a = 2, b = 2),
                   bayes_factor = 0.5)
-conj$summary
+conj
 ```
 
 ## Reading `conjugate` output
 
-Note that the `conjugate` function outputs a `conjugate` class object. If you just print that object it will show the main results in a easily human-readable format.
+The `conjugate` function outputs a `conjugate` class object. If you just print that object it will show the main results in a easily human-readable format.
 
 Lastly we'll show a few interpretations of `conjugate` output in the plant phenotyping context.
 
@@ -930,6 +930,8 @@ Lastly we'll show a few interpretations of `conjugate` output in the plant pheno
 - Area
 - Leaf Counts
 - Hue
+
+The `barg` function can also use the `conjugate` class and will run a prior sensitivity analysis and show the posterior predictive distribution.
 
 ## Germination Rates
 
@@ -959,8 +961,7 @@ ggplot(df, aes(x = y, fill = geno)) +
 res <- conjugate(
   s1 = list(successes = df[df$geno == "A", "y"], trials = 10),
   s2 = list(successes = df[df$geno == "B", "y"], trials = 10),
-  method = "binomial",
-  plot = TRUE
+  method = "binomial"
 )
 ```
 
@@ -968,7 +969,7 @@ res <- conjugate(
 #| echo: false
 #| fig.alt: >
 #|   Beta-Binomial conjugacy plot of the germination data, showing probability of equal rate.
-res$plot
+plot(res)
 ```
 
 Here we'd simply conclude that there is about a 19\% chance that the germination rate is the same between these two genotypes after 1 week. We could do more with ROPE testing, but we'll do that in the next example.
@@ -1009,7 +1010,6 @@ Here we include a ROPE test corresponding to our belief that any difference in A
 res <- conjugate(
   s1 = y ~ geno, s2 = df,
   method = "t",
-  plot = TRUE,
   rope_range = c(-2, 2),
   priors = list(mu = 10, sd = 2),
   hypothesis = "unequal"
@@ -1020,7 +1020,7 @@ res <- conjugate(
 #| echo: false
 #| fig.alt: >
 #|   Conjugate output comparing the mean of the two groups sizes.
-res$plot
+plot(res)
 ```
 
 Our plot shows about a 83\% chance that these distributions are unequal and a 24\% chance that the difference in means is within $\pm2 cm^2$.
@@ -1033,11 +1033,11 @@ lapply(res, class)
 ```
 
 
-The summary is a data.frame with a summary of the information in the plot.
+The summary is a data.frame with a summary of the information in the plot. It is printed at the end of the object.
 
 ```{r}
 #| echo: true
-res$summary
+res
 ```
 
 The posterior is the prior list updated with the given data, this allows for Bayesian updating should you have a situation where supplying data piecemeal makes sense. The prior is in the same format.
@@ -1076,7 +1076,6 @@ Here we model $X \sim Poisson(\lambda)\\ \lambda \sim \Gamma(A, B)$
 res <- conjugate(
   s1 = y ~ geno, s2 = df,
   method = "poisson",
-  plot = TRUE,
   rope_range = c(-1, 1),
   priors = list(a = 1, b = 1),
   hypothesis = "unequal"
@@ -1088,7 +1087,7 @@ res
 #| echo: false
 #| fig.alt: >
 #|   Conjugate comparison of the Gamma distributed lambda parameter for Poisson distributed leaf counts.
-res$plot
+plot(res)
 ```
 
 We can comfortably say that the difference in the posteriors is not in [-1, 1] and there is a 91\% chance that the Gamma distributions for $\lambda$ are different.
@@ -1144,8 +1143,7 @@ ggplot(df, aes(x = geno, y = y, fill = geno)) +
 res <- conjugate(
   s1 = y ~ geno, s2 = df,
   method = "vonmises2",
-  priors = list(mu = 0, kappa = 0.5, boundary = c(-pi, pi), n = 1),
-  plot = TRUE
+  priors = list(mu = 0, kappa = 0.5, boundary = c(-pi, pi), n = 1)
 )
 res
 ```
@@ -1153,7 +1151,7 @@ res
 ```{r}
 #| fig.alt: >
 #|   Conjugate comparison of the direction of Von Mises distributed circular data.
-res$plot
+plot(res)
 ```
 
 Here our distributions are very similar and there is about a 79\% chance that their parameters are the same given this data and our (very wide) priors.
