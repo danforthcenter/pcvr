@@ -14,12 +14,12 @@ test_that("conjugate multi value T works", {
     2:181 ~ group, mv_gauss,
     method = "t",
     priors = NULL,
-    plot = TRUE, rope_range = c(-5, 5), rope_ci = 0.89,
+    rope_range = c(-5, 5), rope_ci = 0.89,
     cred.int.level = 0.89, hypothesis = "equal"
   )
   expect_equal(out$summary$post.prob, 0.0002747414, tolerance = 1e-6)
   expect_true(out$summary$rope_prob < 1e-5)
-  expect_equal(names(out), c("summary", "posterior", "prior", "plot"))
+  expect_s3_class(out, "conjugate")
 })
 
 test_that("conjugate multi value gaussian works", {
@@ -31,15 +31,13 @@ test_that("conjugate multi value gaussian works", {
     ),
     n_samples = c(30, 40)
   )
-
   out <- conjugate(
     s1 = mv_gauss[1:30, -1], s2 = mv_gauss[31:70, -1], method = "gaussian",
     priors = NULL,
-    plot = TRUE, rope_range = c(-5, 5), rope_ci = 0.89,
+    rope_range = c(-5, 5), rope_ci = 0.89,
     cred.int.level = 0.89, hypothesis = "equal"
   )
-
-  expect_equal(names(out), c("summary", "posterior", "prior", "plot"))
+  expect_s3_class(out, "conjugate")
 })
 
 test_that("conjugate multi value beta works", {
@@ -55,13 +53,13 @@ test_that("conjugate multi value beta works", {
   out <- conjugate(
     s1 = mv_beta[1:10, -1], s2 = mv_beta[11:20, -1], method = "beta",
     priors = NULL,
-    plot = TRUE, rope_range = c(-0.1, 0.1), rope_ci = 0.89,
+    rope_range = c(-0.1, 0.1), rope_ci = 0.89,
     cred.int.level = 0.89, hypothesis = "equal"
   )
 
   expect_equal(out$summary$post.prob, 0.1575291, tolerance = 1e-6)
   expect_equal(out$summary$rope_prob, 0.4059094, tolerance = 0.0001)
-  expect_equal(names(out), c("summary", "posterior", "prior", "plot"))
+  expect_s3_class(out, "conjugate")
   colnames(mv_beta)[ncol(mv_beta)] <- "sim_500"
   expect_error(conjugate(s1 = mv_beta[1:10, -1], s2 = mv_beta[11:20, -1], method = "beta"))
 })
@@ -78,12 +76,12 @@ test_that("conjugate multi value lognormal works", {
   out <- conjugate(
     s1 = mv_ln[1:30, -1], s2 = mv_ln[31:60, -1], method = "lognormal",
     priors = NULL,
-    plot = TRUE, rope_range = c(-1, 1), rope_ci = 0.89,
+    rope_range = c(-1, 1), rope_ci = 0.89,
     cred.int.level = 0.89, hypothesis = "equal"
   )
-  expect_equal(out$summary$post.prob, 0.4046836, tolerance = 1e-6)
-  expect_equal(out$summary$rope_prob, 0.9094484, tolerance = 0.0001)
-  expect_equal(names(out), c("summary", "posterior", "prior", "plot"))
+  expect_equal(out$summary$post.prob, 0.7890359, tolerance = 1e-6)
+  expect_equal(out$summary$rope_prob, 0.5602741, tolerance = 0.0001)
+  expect_s3_class(out, "conjugate")
 })
 
 test_that("conjugate multi value lognormal2 works", {
@@ -98,12 +96,12 @@ test_that("conjugate multi value lognormal2 works", {
   out <- conjugate(
     s1 = mv_ln[1:30, -1], s2 = mv_ln[31:60, -1], method = "lognormal2",
     priors = NULL,
-    plot = TRUE, rope_range = c(-1, 1), rope_ci = 0.89,
+    rope_range = c(-1, 1), rope_ci = 0.89,
     cred.int.level = 0.89, hypothesis = "equal"
   )
   expect_equal(out$summary$post.prob, 0.3054448, tolerance = 1e-6)
   expect_equal(out$summary$rope_prob, 0.007976632, tolerance = 0.0001)
-  expect_equal(names(out), c("summary", "posterior", "prior", "plot"))
+  expect_s3_class(out, "conjugate")
 })
 
 test_that("conjugate multi value pareto works", {
@@ -119,12 +117,12 @@ test_that("conjugate multi value pareto works", {
   out <- conjugate(
     s1 = mv[1:30, -1], s2 = mv[31:60, -1], method = "pareto",
     priors = NULL,
-    plot = TRUE, rope_range = c(-0.5, 0.5), rope_ci = 0.89,
+    rope_range = c(-0.5, 0.5), rope_ci = 0.89,
     cred.int.level = 0.89, hypothesis = "equal"
   )
   expect_equal(out$summary$post.prob, 0.9978403, tolerance = 1e-6)
   expect_equal(out$summary$rope_prob, 0.001348163, tolerance = 1e-6)
-  expect_equal(names(out), c("summary", "posterior", "prior", "plot"))
+  expect_s3_class(out, "conjugate")
 })
 
 test_that("conjugate multi value uniform works", {
@@ -139,12 +137,12 @@ test_that("conjugate multi value uniform works", {
   out <- conjugate(
     s1 = mvu[1:30, -1], s2 = mvu[31:60, -1], method = "uniform",
     priors = NULL,
-    plot = TRUE, rope_range = c(-0.5, 0.5), rope_ci = 0.89,
+    rope_range = c(-0.5, 0.5), rope_ci = 0.89,
     cred.int.level = 0.89, hypothesis = "equal"
   )
   expect_equal(out$summary$post.prob, 0.03885159, tolerance = 1e-6)
   expect_equal(out$summary$rope_prob, 0, tolerance = 1e-6)
-  expect_equal(names(out), c("summary", "posterior", "prior", "plot"))
+  expect_s3_class(out, "conjugate")
 })
 
 test_that("conjugate multi value von mises (1) works", {
@@ -159,16 +157,16 @@ test_that("conjugate multi value von mises (1) works", {
   out <- conjugate(
     s1 = mv[1:30, -1], s2 = mv[31:60, -1], method = "vonmises",
     priors = list(boundary = c(0, 100)),
-    plot = TRUE, rope_range = c(-0.5, 0.5), rope_ci = 0.89,
+    rope_range = c(-0.5, 0.5), rope_ci = 0.89,
     cred.int.level = 0.89, hypothesis = "equal"
   )
   expect_equal(out$summary$post.prob, 0.562518, tolerance = 1e-6)
   expect_equal(out$summary$rope_prob, 0.0217953, tolerance = 1e-6)
-  expect_equal(names(out), c("summary", "posterior", "prior", "plot"))
+  expect_s3_class(out, "conjugate")
   expect_error(conjugate(
     s1 = mv[1:30, -1], s2 = mv[31:60, -1], method = "vonmises",
     priors = NULL,
-    plot = FALSE, rope_range = c(-0.5, 0.5), rope_ci = 0.89,
+    rope_range = c(-0.5, 0.5), rope_ci = 0.89,
     cred.int.level = 0.89, hypothesis = "equal"
   ))
 })
@@ -185,16 +183,16 @@ test_that("conjugate multi value von mises (2) works", {
   out <- conjugate(
     s1 = mv[1:30, -1], s2 = mv[31:60, -1], method = "vonmises2",
     priors = list(boundary = c(0, 100)),
-    plot = TRUE, rope_range = c(-0.5, 0.5), rope_ci = 0.89,
+    rope_range = c(-0.5, 0.5), rope_ci = 0.89,
     cred.int.level = 0.89, hypothesis = "equal"
   )
   expect_equal(out$summary$post.prob, 0.5684183, tolerance = 1e-6)
   expect_equal(out$summary$rope_prob, 0.02471632, tolerance = 1e-6)
-  expect_equal(names(out), c("summary", "posterior", "prior", "plot"))
+  expect_s3_class(out, "conjugate")
   expect_error(conjugate(
     s1 = mv[1:30, -1], s2 = mv[31:60, -1], method = "vonmises2",
     priors = NULL,
-    plot = FALSE, rope_range = c(-0.5, 0.5), rope_ci = 0.89,
+    rope_range = c(-0.5, 0.5), rope_ci = 0.89,
     cred.int.level = 0.89, hypothesis = "equal"
   ))
 })
@@ -214,19 +212,19 @@ test_that("conjugate multi value lognormal vs gaussian", {
       list(mu = 5, sd = 4),
       list(mu = 5, n = 1, s2 = 4)
     ),
-    plot = FALSE, rope_range = c(-0.5, 0.5), rope_ci = 0.89,
+    rope_range = c(-0.5, 0.5), rope_ci = 0.89,
     cred.int.level = 0.89, hypothesis = "equal"
   )
 
-  expect_equal(out$summary$post.prob, 0.00468538, tolerance = 1e-6)
+  expect_equal(out$summary$post.prob, 0.2501415, tolerance = 1e-6)
 
-  expect_equal(out$summary$rope_prob, 0, tolerance = 0.01)
+  expect_equal(out$summary$rope_prob, 0.2968206, tolerance = 0.01)
 
   expect_equal(unlist(lapply(out$posterior, function(p) {
     return(names(p))
   })), c("mu", "sd", "lognormal_sigma", "mu", "sd"))
 
-  expect_equal(names(out), c("summary", "posterior", "prior"))
+  expect_s3_class(out, "conjugate")
 })
 
 test_that("bivariate conjugate multi value uniform works", {
@@ -246,14 +244,14 @@ test_that("bivariate conjugate multi value uniform works", {
     s1 = mv[1:10, -1],
     s2 = mv[11:20, -1],
     method = "bivariate_uniform", priors = NULL,
-    plot = TRUE, rope_range = c(-1, 1), rope_ci = 0.89, cred.int.level = 0.89,
+    rope_range = c(-1, 1), rope_ci = 0.89, cred.int.level = 0.89,
     hypothesis = "equal"
   )
-  expect_s3_class(out$plot, "ggplot")
+  expect_s3_class(plot(out), "ggplot")
   expect_equal(nrow(out$summary), 2)
   expect_equal(length(out$posterior), 2)
   expect_equal(names(out$posterior[[1]]), c("scale", "location_l", "location_u"))
-  expect_equal(names(out), c("summary", "posterior", "prior", "plot"))
+  expect_s3_class(out, "conjugate")
 
   set.seed(123)
   mv <- mvSim(
@@ -271,12 +269,12 @@ test_that("bivariate conjugate multi value uniform works", {
     s1 = mv[1:10, -1],
     s2 = mv[11:20, -1],
     method = "bivariate_uniform", priors = list(location_l = -50, location_u = -45, scale = 1),
-    plot = TRUE, rope_range = c(-1, 1), rope_ci = 0.89, cred.int.level = 0.89,
+    rope_range = c(-1, 1), rope_ci = 0.89, cred.int.level = 0.89,
     hypothesis = "equal"
   )
-  expect_s3_class(out2$plot, "ggplot")
+  expect_s3_class(plot(out2), "ggplot")
   expect_equal(nrow(out2$summary), 2)
   expect_equal(length(out2$posterior), 2)
   expect_equal(names(out2$posterior[[1]]), c("scale", "location_l", "location_u"))
-  expect_equal(names(out2), c("summary", "posterior", "prior", "plot"))
+  expect_s3_class(out, "conjugate")
 })

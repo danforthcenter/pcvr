@@ -7,8 +7,8 @@
 #' made by \link{growthSS} and \link{fitGrowth}. See details for explanations of those metrics and
 #' the output.
 #'
-#' @param fit The brmsfit object or a list of brmsfit objects in the case that you split models to run
-#' on subsets of the data for computational simplicity.
+#' @param fit A conjugate object, brmsfit object, or a list of brmsfit objects in the case that you
+#' split models to run on subsets of the data for computational simplicity.
 #' @param ss The growthSS output used to specify the model. If fit is a list then this can either be one
 #' growthSS list in which case the priors are assumed to be the same for each model or it can be a list
 #' of the same length as fit. Note that the only parts of this which are used are the \code{call$start}
@@ -16,10 +16,14 @@
 #' so if you have a list of brmsfit objects and no ss object you can specify a stand-in list. This
 #' can also be left NULL (the default) and posterior predictive plots and prior predictive plots will
 #' not be made.
-#'
+#' @param priors A list of priors similar to how they are specified in conjugate but named for the
+#' distribution you plan to use, see details and examples.
 #'
 #' @details
 #'
+#' The majority of the Bayesian Analysis and Reporting Guidelines are geared towards statistical
+#' methods that use MCMC or other numeric approximations. For those cases (here meaning brms models
+#' fit by \code{fitGrowth} and \code{growthSS}) the output will contain:
 #'
 #' \itemize{
 #'     \item \bold{General}: This includes chain number, length, and total divergent transitions per
@@ -74,7 +78,22 @@
 #'     model should be reconsidered.
 #'     }
 #'
+#' For analytic solutions (ie, the \code{conjugate} class) there are fewer elements.
+#' \itemize{
+#'     \item \bold{priorSensitivity}: Patchwork of prior sensitivity plots showing the distribution
+#'     of posterior probabilities, any interpretation changes from those tests, and the random priors
+#'     that were used. This is only returned if the \code{priors} argument is specified (see below).
+#'     \item \bold{posteriorPredictive}: Plot of posterior predictive distributions similar to that
+#'     from a non-longitudinal \code{fitGrowth} model fit with brms.
+#'     \item \bold{Summary}: The summary of the \code{conjugate} object.
+#' }
 #'
+#' Priors here are specified using a named list. For instance, to use 100 normal priors with means
+#' between 5 and 20 and standard deviations between 5 and 10 the prior argument would be
+#' \code{list("rnorm" = list("mean" = c(5, 20), "sd" = c(5, 10), "n" = 100)))}.
+#' The priors that are used in sensitivity analysis are drawn randomly from within the ranges specified
+#' by the provided list. If you are unsure what random-generation function to use then check the
+#' \link{conjugate} docs where the distributions are listed for each method in the details section.
 #'
 #'
 #' @keywords Bayesian brms prior
@@ -103,18 +122,63 @@
 #' fit_2 <- fit_test
 #' fit_list <- list(fit_test, fit_2)
 #' x <- barg(fit_list, list(ss, ss))
+#'
+#' x <- conjugate(
+#'   s1 = rnorm(10, 10, 1), s2 = rnorm(10, 13, 1.5), method = "t",
+#'   priors = list(
+#'     list(mu = 10, sd = 2),
+#'     list(mu = 10, sd = 2)
+#'   ),
+#'   plot = FALSE, rope_range = c(-8, 8), rope_ci = 0.89,
+#'   cred.int.level = 0.89, hypothesis = "unequal",
+#'   bayes_factor = c(50, 55)
+#' )
+#' b <- barg(x, priors = list("rnorm" = list("n" = 10, "mean" = c(5, 20), "sd" = c(5, 10))))
 #' }
 #'
 #' @export
 
-barg <- function(fit, ss = NULL) {
-  out <- list()
-  #* `format everything into lists`
-  if (methods::is(fit, "brmsfit")) {
+barg <- function(fit, ss = NULL, priors = NULL) {
+  #* `format fit and apply helper`
+  if (methods::is(fit, "conjugate")) {
+    out <- .barg.conjugate(fit, priors)
+  } else if (methods::is(fit, "brmsfit")) {
     fitList <- list(fit)
+    out <- .barg.brmsfit(fitList, ss)
   } else {
     fitList <- fit
+    out <- .barg.brmsfit(fitList, ss)
   }
+  return(out)
+}
+
+#' @keywords internal
+#' @noRd
+
+.barg.conjugate <- function(x, priors) {
+  out <- list()
+  #* `Prior Sensitivity if priors were given`
+  if (!is.null(priors)) {
+    n <- priors[[1]]$n
+    if (is.null(n)) {
+      n <- 100
+    }
+    priors[[1]] <- priors[[1]][which(names(priors[[1]]) != "n")]
+    out[["priorSensitivity"]] <- .prior_sens_conj(x, priors, n = n)
+  }
+  #* `Posterior Predictive`
+  out[["posteriorPredictive"]] <- .post_pred_conj(x, n = 0)
+  #* `Summary object`
+  out[["Summary"]] <- summary(x)
+  #* `return output`
+  return(out)
+}
+
+#' @keywords internal
+#' @noRd
+
+.barg.brmsfit <- function(fitList, ss) {
+  out <- list()
   if (!is.null(names(ss)) && names(ss)[1] == "formula") {
     ssList <- lapply(seq_along(fitList), function(i) {
       return(ss)

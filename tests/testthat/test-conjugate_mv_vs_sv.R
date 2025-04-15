@@ -225,7 +225,7 @@ test_that("conjugate lognormal method is consistent for SV and MV", {
 #* evaluation of any bias that exists between the mv and sv methods
 #* Sometimes the apparent bias is more related to how mvSim works
 #* than the actual updating though.
-if (FALSE) {
+if (Sys.getenv("ALL_PCVR_TESTS") == "run") {
   library(brms)
   library(ggplot2)
   res_main <- do.call(rbind, lapply(c(10, 25, 50), function(n) {

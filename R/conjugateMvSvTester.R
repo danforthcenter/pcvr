@@ -24,8 +24,8 @@
   dists2 <- stats::setNames(list(generating[[2]][-1]), generating[[2]][[1]])
   m2 <- mvSim(dists2, n_samples = generating[[2]]$n)[, -1]
 
-  ps <- conjugate(s1, s2, method = method, priors = prior, plot = FALSE, cred.int.level = 0.95)
-  pm <- conjugate(m1, m2, method = method, priors = prior, plot = FALSE, cred.int.level = 0.95)
+  ps <- conjugate(s1, s2, method = method, priors = prior, cred.int.level = 0.95)
+  pm <- conjugate(m1, m2, method = method, priors = prior, cred.int.level = 0.95)
   ps$posterior[[1]]$datatype <- "sv"
   ps$posterior[[2]]$datatype <- "sv"
   pm$posterior[[1]]$datatype <- "mv"

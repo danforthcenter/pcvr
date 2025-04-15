@@ -14,7 +14,7 @@
 #' @noRd
 
 .conj_gaussian_sv <- function(s1 = NULL, priors = NULL,
-                              plot = FALSE, support = NULL, cred.int.level = NULL,
+                              support = NULL, cred.int.level = NULL,
                               calculatingSupport = FALSE) {
   out <- list()
   #* `make default prior if none provided`
@@ -54,12 +54,13 @@
   out$pdf <- pdf1
   #* `Save data for plotting`
   out$plot_list <- list(
-    "range" = support,
+    "range" = range(support),
     "ddist_fun" = "stats::dnorm",
     "priors" = list("mean" = priors$mu[1],
                     "sd" = priors$sd[1]),
     "parameters" = list("mean" = mu_prime,
-                        "sd" = sd_prime)
+                        "sd" = sd_prime),
+    "given" = list("sd" = sqrt(1 / pseudo_known_precision))
   )
   return(out)
 }
@@ -74,7 +75,7 @@
 #' @noRd
 
 .conj_gaussian_mv <- function(s1 = NULL, priors = NULL,
-                              plot = FALSE, support = NULL, cred.int.level = NULL,
+                              support = NULL, cred.int.level = NULL,
                               calculatingSupport = FALSE) {
   out <- list()
   #* `make default prior if none provided`
@@ -120,12 +121,13 @@
   out$pdf <- pdf1
   #* `Save data for plotting`
   out$plot_list <- list(
-    "range" = support,
+    "range" = range(support),
     "ddist_fun" = "stats::dnorm",
     "priors" = list("mean" = priors$mu[1],
                     "sd" = priors$sd[1]),
     "parameters" = list("mean" = mu_prime,
-                        "sd" = sd_prime)
+                        "sd" = sd_prime),
+    "given" = list("sd" = sqrt(1 / pseudo_known_precision))
   )
   return(out)
 }

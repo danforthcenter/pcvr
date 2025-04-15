@@ -169,3 +169,8 @@ reference:
       - print.pcvrss
       - pcvrss-class
       - print.pcvrsssummary
+      - print.conjugate
+      - print.conjugatesummary
+      - summary.conjugate
+      - plot.conjugate
+      - conjugate-class

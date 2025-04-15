@@ -12,8 +12,7 @@
 #' @keywords internal
 #' @noRd
 
-.conj_binomial_sv <- function(s1 = NULL, priors = NULL,
-                              plot = FALSE, support = NULL, cred.int.level = NULL,
+.conj_binomial_sv <- function(s1 = NULL, priors = NULL, support = NULL, cred.int.level = NULL,
                               calculatingSupport = FALSE) {
   #* `check stopping conditions`
   s1 <- .conj_binomial_formatter(s1)
@@ -59,11 +58,12 @@
   out$pdf <- pdf1
   #* `keep data for plotting`
   out$plot_list <- list(
-    "range" = support,
+    "range" = range(support),
     "ddist_fun" = "stats::dbeta",
     "priors" = list("shape1" = priors$a[1],  "shape2" = priors$b[1]),
     "parameters" = list("shape1" = a1_prime,
-                        "shape2" = b1_prime)
+                        "shape2" = b1_prime),
+    "given" = list("size" = round(mean(s1_trials)))
   )
   return(out)
 }

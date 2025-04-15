@@ -353,9 +353,11 @@ Now we can run `conjugate` on our samples. Here we use assume a lognormal distri
 res <- conjugate(s1, s2,
   method = "lognormal",
   priors = list(mu = 10, sd = 5),
-  plot = TRUE, rope_range = NULL, rope_ci = 0.89,
+  rope_range = NULL, rope_ci = 0.89,
   cred.int.level = 0.89, hypothesis = "equal"
 )
+res
+plot(res)
 ```
 
 We can also perform region of practical equivalence tests by specifying a `rope_range`.
@@ -364,9 +366,11 @@ We can also perform region of practical equivalence tests by specifying a `rope_
 res <- conjugate(s1, s2,
   method = "lognormal",
   priors = list(mu = 10, sd = 5),
-  plot = TRUE, rope_range = c(-10, 10), rope_ci = 0.89,
+  rope_range = c(-10, 10), rope_ci = 0.89,
   cred.int.level = 0.89, hypothesis = "equal"
 )
+res
+plot(res)
 ```
 
 ## `conjugate`

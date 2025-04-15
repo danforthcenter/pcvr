@@ -12,7 +12,7 @@
 #' @keywords internal
 #' @noRd
 .conj_bernoulli_sv <- function(s1 = NULL, priors = NULL,
-                               plot = FALSE, support = NULL, cred.int.level = NULL,
+                               support = NULL, cred.int.level = NULL,
                                calculatingSupport = FALSE) {
   #* `make default prior if none provided`
   if (is.null(priors)) {
@@ -45,11 +45,12 @@
   out$prior <- priors
   #* `save s1 data for plotting`
   out$plot_list <- list(
-    "range" = support,
+    "range" = range(support),
     "ddist_fun" = "stats::dbeta",
     "priors" = list("shape1" = priors$a[1],  "shape2" = priors$b[1]),
     "parameters" = list("shape1" = a1_prime,
-                        "shape2" = b1_prime)
+                        "shape2" = b1_prime),
+    "given" = list("size" = 1)
   )
   return(out)
 }

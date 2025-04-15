@@ -30,7 +30,7 @@
 #' @noRd
 
 .conj_negbin_sv <- function(s1 = NULL, priors = NULL,
-                            plot = FALSE, support = NULL, cred.int.level = NULL,
+                            support = NULL, cred.int.level = NULL,
                             calculatingSupport = FALSE) {
   #* `Check samples`
   if (any(abs(s1 - round(s1)) > .Machine$double.eps^0.5) || any(s1 < 0)) {
@@ -76,11 +76,12 @@
   out$pdf <- pdf1
   #* `keep data for plotting`
   out$plot_list <- list(
-    "range" = support,
+    "range" = range(support),
     "ddist_fun" = "stats::dbeta",
     "priors" = list("shape1" = priors$a[1],  "shape2" = priors$b[1]),
     "parameters" = list("shape1" = a1_prime,
-                        "shape2" = b1_prime)
+                        "shape2" = b1_prime),
+    "given" = list("size" = priors$r[1])
   )
   return(out)
 }

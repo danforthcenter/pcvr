@@ -1,11 +1,9 @@
 #' @description
-#' Internal function for calculating the pareto distribution of the upper boundary of a uniform
-#' distribution represented by single value traits.
+#' Internal function for calculating the joint distribution of mean and precision of a lognormal
 #' @param s1 A vector of numerics drawn from a uniform distribution.
 #' @examples
 #' out <- .conj_bivariate_lognormal_sv(
-#'   s1 = rlnorm(10, log(20), 1), cred.int.level = 0.95,
-#'   plot = FALSE
+#'   s1 = rlnorm(10, log(20), 1), cred.int.level = 0.95
 #' )
 #' lapply(out, head)
 #'
@@ -13,7 +11,7 @@
 #' @noRd
 
 .conj_bivariate_lognormal_sv <- function(s1 = NULL, priors = NULL,
-                                         plot = FALSE, support = NULL, cred.int.level = NULL,
+                                         support = NULL, cred.int.level = NULL,
                                          calculatingSupport = FALSE) {
   out <- list()
   #* `make default prior if none provided`
@@ -89,14 +87,21 @@
     "a" = alpha_prime, "b" = beta_prime
   )
   out$prior <- priors
-  #* `save s1 data for plotting`
-  if (plot) {
-    out$plot_df <- data.frame(
-      "range" = c(support_mu, support_prec),
-      "prob" = c(pdf_mu, pdf_prec),
-      "param" = rep(c("Mu", "Prec"), each = length(support_mu)),
-      "sample" = rep("Sample 1", 2 * length(support_mu))
+  #* `save modified parameter list for downstream functions`
+  out$plot_list <- list(
+    "range" = list(range(support_mu), range(support_prec)),
+    "ddist_fun" = list("stats::dnorm", "stats::dgamma"),
+    "parameters" = list(
+      list("mean" = mu_prime, "sd" = sigma_prime),
+      list("shape" = alpha_prime, "scale" = beta_prime)
     )
-  }
+  )
+  #* `save s1 data for plotting`
+  out$plot_df <- data.frame(
+    "range" = c(support_mu, support_prec),
+    "prob" = c(pdf_mu, pdf_prec),
+    "param" = rep(c("Mu", "Prec"), each = length(support_mu)),
+    "sample" = rep("Sample 1", 2 * length(support_mu))
+  )
   return(out)
 }

@@ -25,9 +25,7 @@
 #' of means and "gaussian" testing for a difference in the distributions (similar to a Z test).
 #' Both Von Mises options are for use with circular data (for instance hue values when the circular
 #' quality of the data is relevant). Note that non-circular distributions can be compared to each other.
-#' This should only be done with caution. Make sure you understand the interpretation of any
-#' comparison you are doing if you specify two methods (c("gaussian", "lognormal") as an arbitrary
-#' example).
+#' This should only be done with caution and may not be supported in all downstream functions.
 #' There are also 3 bivariate conjugate priors that are supported for use with single value data.
 #' Those are "bivariate_uniform", "bivariate_gaussian" and "bivariate_lognormal".
 #' @param priors Prior distributions described as a list of lists.
@@ -39,7 +37,7 @@
 #'  By default this is NULL and weak priors (generally jeffrey's priors) are used.
 #'  The \code{posterior} part of output can also be recycled as a new prior if Bayesian
 #'  updating is appropriate for your use.
-#' @param plot Logical, should a ggplot be made and returned.
+#' @param plot deprecated, use \code{plot} method instead.
 #' @param rope_range Optional vector specifying a region of practical equivalence.
 #' This interval is considered practically equivalent to no effect.
 #' Kruschke (2018) suggests c(-0.1, 0.1) as a broadly reasonable ROPE for standardized parameters.
@@ -62,8 +60,6 @@
 #' @param support Deprecated
 #'
 #' @import bayestestR
-#' @import ggplot2
-#' @import patchwork
 #' @import extraDistr
 #' @importFrom stats var median rnorm dnorm qbeta rbeta dbeta qbeta rlnorm
 #' dlnorm qlnorm qt rgamma qgamma dgamma rpois runif
@@ -72,11 +68,11 @@
 #'
 #' Prior distributions default to be weakly informative and in some cases you may wish to change them.
 #' \itemize{
-#'    \item{\strong{"t", "gaussian", and "lognormal":} \code{priors = list( mu=c(0,0), sd=c(10,10) ) },
+#'    \item{\strong{"t", "gaussian", and "lognormal":} \code{priors = list(mu = 0, sd = 10)},
 #'     where mu is the mean and sd is standard deviation. For the lognormal method these describe
 #'     the normal distribution of the mean parameter for lognormal data and are on the log scale.}
 #'    \item{\strong{"beta", "bernoulli", and "binomial":}
-#'    \code{priors = list( a=c(0.5, 0.5), b=c(0.5, 0.5) )},
+#'    \code{priors = list(a = 0.5, b = 0.5)},
 #'     where a and b are shape parameters of the beta distribution. Note that for the binomial
 #'     distribution this is used as the prior for success probability P,
 #'     which is assumed to be beta distributed as in a beta-binomial distribution.}
@@ -87,9 +83,9 @@
 #'    \item{\strong{"gamma": } \code{priors = list(shape = 0.5, scale = 0.5, known_shape = 1)},
 #'     where shape and scale are the respective parameters of the gamma distributed rate
 #'     (inverse of scale) parameter of gamma distributed data.}
-#'    \item{\strong{"poisson" and "exponential": } \code{priors = list(a=c(0.5,0.5),b=c(0.5,0.5))},
+#'    \item{\strong{"poisson" and "exponential": } \code{priors = list(a = 0.5,b = 0.5)},
 #'     where a and b are shape parameters of the gamma distribution.}
-#'    \item{\strong{"negbin": } \code{priors = list(r=c(10,10), a=c(0.5,0.5),b=c(0.5,0.5))},
+#'    \item{\strong{"negbin": } \code{priors = list(r = 10, a = 0.5, b = 0.5)},
 #'     where r is the r parameter of the negative binomial distribution
 #'     (representing the number of successes required)
 #'      and where a and b are shape parameters of the beta distribution.
@@ -160,7 +156,7 @@
 #' ln_mv_ex <- conjugate(
 #'   s1 = mv_ln[1:30, -1], s2 = mv_ln[31:60, -1], method = "lognormal",
 #'   priors = list(mu = 5, sd = 2),
-#'   plot = FALSE, rope_range = c(-40, 40), rope_ci = 0.89,
+#'   rope_range = c(-40, 40), rope_ci = 0.89,
 #'   cred.int.level = 0.89, hypothesis = "equal", support = NULL
 #' )
 #'
@@ -169,7 +165,7 @@
 #'   s1 = rlnorm(100, log(130), log(1.3)), s2 = rlnorm(100, log(100), log(1.6)),
 #'   method = "lognormal",
 #'   priors = list(mu = 5, sd = 2),
-#'   plot = FALSE, rope_range = NULL, rope_ci = 0.89,
+#'   rope_range = NULL, rope_ci = 0.89,
 #'   cred.int.level = 0.89, hypothesis = "equal", support = NULL
 #' )
 #'
@@ -186,16 +182,16 @@
 #' gauss_mv_ex <- conjugate(
 #'   s1 = mv_gauss[1:30, -1], s2 = mv_gauss[31:60, -1], method = "gaussian",
 #'   priors = list(mu = 30, sd = 10),
-#'   plot = FALSE, rope_range = c(-25, 25), rope_ci = 0.89,
+#'   rope_range = c(-25, 25), rope_ci = 0.89,
 #'   cred.int.level = 0.89, hypothesis = "equal", support = NULL
 #' )
 #'
-#' # T test sv example
+#' # T test sv example with two different priors
 #'
 #' gaussianMeans_sv_ex <- conjugate(
 #'   s1 = rnorm(10, 50, 10), s2 = rnorm(10, 60, 12), method = "t",
-#'   priors = list(mu = 40, sd = 10),
-#'   plot = FALSE, rope_range = c(-5, 8), rope_ci = 0.89,
+#'   priors = list(list(mu = 40, sd = 10), list(mu = 45, sd = 8)),
+#'   rope_range = c(-5, 8), rope_ci = 0.89,
 #'   cred.int.level = 0.89, hypothesis = "equal", support = NULL
 #' )
 #'
@@ -213,7 +209,7 @@
 #' beta_mv_ex <- conjugate(
 #'   s1 = mv_beta[1:30, -1], s2 = mv_beta[31:50, -1], method = "beta",
 #'   priors = list(a = 0.5, b = 0.5),
-#'   plot = FALSE, rope_range = c(-0.1, 0.1), rope_ci = 0.89,
+#'   rope_range = c(-0.1, 0.1), rope_ci = 0.89,
 #'   cred.int.level = 0.89, hypothesis = "equal",
 #'   bayes_factor = 0.5 # note this may not be reasonable with these priors
 #' )
@@ -223,7 +219,7 @@
 #' beta_sv_ex <- conjugate(
 #'   s1 = rbeta(20, 5, 5), s2 = rbeta(20, 8, 5), method = "beta",
 #'   priors = list(a = 0.5, b = 0.5),
-#'   plot = FALSE, rope_range = c(-0.1, 0.1), rope_ci = 0.89,
+#'   rope_range = c(-0.1, 0.1), rope_ci = 0.89,
 #'   cred.int.level = 0.89, hypothesis = "equal",
 #'   bayes_factor = c(0.5, 0.75) # note this may not be reasonable with these priors
 #' )
@@ -236,7 +232,7 @@
 #'   s1 = list(successes = c(15, 14, 16, 11), trials = c(20, 20, 20, 20)),
 #'   s2 = list(successes = c(7, 8, 10, 5), trials = c(20, 20, 20, 20)), method = "binomial",
 #'   priors = list(a = 0.5, b = 0.5),
-#'   plot = FALSE, rope_range = c(-0.1, 0.1), rope_ci = 0.89,
+#'   rope_range = c(-0.1, 0.1), rope_ci = 0.89,
 #'   cred.int.level = 0.89, hypothesis = "equal"
 #' )
 #'
@@ -245,7 +241,7 @@
 #' poisson_sv_ex <- conjugate(
 #'   s1 = rpois(20, 10), s2 = rpois(20, 8), method = "poisson",
 #'   priors = list(a = 0.5, b = 0.5),
-#'   plot = FALSE, rope_range = c(-1, 1), rope_ci = 0.89,
+#'   rope_range = c(-1, 1), rope_ci = 0.89,
 #'   cred.int.level = 0.89, hypothesis = "equal"
 #' )
 #'
@@ -256,7 +252,7 @@
 #' negbin_sv_ex <- conjugate(
 #'   s1 = rnbinom(20, 10, 0.5), s2 = rnbinom(20, 10, 0.25), method = "negbin",
 #'   priors = list(r = 10, a = 0.5, b = 0.5),
-#'   plot = FALSE, rope_range = c(-1, 1), rope_ci = 0.89,
+#'   rope_range = c(-1, 1), rope_ci = 0.89,
 #'   cred.int.level = 0.89, hypothesis = "equal"
 #' )
 #'
@@ -274,7 +270,7 @@
 #'   s2 = mv_gauss[31:70, -1],
 #'   method = "vonmises",
 #'   priors = list(mu = 45, kappa = 1, boundary = c(0, 180), known_kappa = 1, n = 1),
-#'   plot = FALSE, rope_range = c(-1, 1), rope_ci = 0.89,
+#'   rope_range = c(-1, 1), rope_ci = 0.89,
 #'   cred.int.level = 0.89, hypothesis = "equal"
 #' )
 #'
@@ -284,13 +280,12 @@
 #'   s2 = brms::rvon_mises(15, 3, 3),
 #'   method = "vonmises2",
 #'   priors = list(mu = 0, kappa = 0.5, boundary = c(-pi, pi), n = 1),
-#'   cred.int.level = 0.95,
-#'   plot = FALSE
+#'   cred.int.level = 0.95
 #' )
 #'
 #' @return
 #'
-#' A list with named elements:
+#' A \link{conjugate-class} object with slots including:
 #' \itemize{
 #'    \item{\strong{summary}: A data frame containing HDI/HDE values for each sample and
 #'    the ROPE as well as posterior probability of the hypothesis and ROPE test (if specified).
@@ -302,11 +297,14 @@
 #'    \item{\strong{posterior}: A list of updated parameters in the same format as the prior
 #'     for the given method. If desired this does allow for Bayesian updating.}
 #'    \item{\strong{prior}: The prior in a list with the same format as the posterior.}
-#'    \item{\strong{rope_df}: A data frame of draws from the ROPE posterior.}
 #'    \item{\strong{plot}: A ggplot showing the distribution of samples and optionally the
-#'    distribution of differences/ROPE}
+#'    distribution of differences/ROPE}.
+#'    \item{\strong{plot_parameters}}: Parameters used in making a plot of the data.
+#'    Contains support range and posterior recoded to use a density function.
+#'    \item{\strong{data}}: Data from s1 and s2 arguments.
+#'    \item{\strong{call}}: The function call.
 #' }
-#'
+#' @seealso [barg() for additional reporting]
 #' @keywords bayesian conjugate priors ROPE
 #' @export
 
@@ -317,7 +315,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
                         "uniform", "pareto", "gamma", "bernoulli", "exponential", "bivariate_uniform",
                         "bivariate_gaussian", "bivariate_lognormal"
                       ),
-                      priors = NULL, plot = FALSE, rope_range = NULL,
+                      priors = NULL, plot = NULL, rope_range = NULL,
                       rope_ci = 0.89, cred.int.level = 0.89, hypothesis = "equal",
                       bayes_factor = NULL, support = NULL) {
   #* `Handle formula option in s1`
@@ -337,7 +335,10 @@ conjugate <- function(s1 = NULL, s2 = NULL,
   }
 
   if (!missing("support")) {
-    warning("support argument is deprecated")
+    warning("support argument is deprecated.")
+  }
+  if (!missing("plot")) {
+    warning("plot argument is deprecated, use plot.conjugate instead.")
   }
   support <- .getSupport(samplesList, method, priors) # calculate shared support
 
@@ -359,7 +360,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
       "bivariate_uniform", "bivariate_gaussian", "bivariate_lognormal"
     ))
     matched_fun <- get(paste0(".conj_", matched_arg, "_", vec_suffix))
-    res <- matched_fun(sample, prior, plot, support, cred.int.level)
+    res <- matched_fun(sample, prior, support, cred.int.level)
     return(res)
   })
   #* `combine results into an object to return`
@@ -382,26 +383,26 @@ conjugate <- function(s1 = NULL, s2 = NULL,
       out$summary,
       data.frame("hyp" = hypothesis, "post.prob" = as.numeric(postProbRes$post.prob))
     )
-    dirSymbol <- postProbRes$direction
-  } else {
-    dirSymbol <- NULL
   }
   #* `parse output and do ROPE`
   if (!is.null(rope_range)) {
-    rope_res <- .conj_rope(sample_results, rope_range, rope_ci, plot, method)
+    rope_res <- .conj_rope(sample_results, rope_range, rope_ci, method)
     out$summary <- cbind(out$summary, rope_res$summary)
-  } else {
-    rope_res <- NULL
+    out$rope_df <- rope_res$rope_df
   }
-  out$posterior <- lapply(sample_results, function(s) s$posterior)
-  out$prior <- lapply(sample_results, function(s) s$prior)
-  #* `Make plot`
-  if (plot) {
-    out$plot <- .conj_plot(sample_results, rope_res,
-      res = out,
-      rope_range, rope_ci, dirSymbol, support, method, bayes_factor
-    )
+  out$posterior <- lapply(sample_results, function(s) {return(s$posterior)})
+  out$prior <- lapply(sample_results, function(s) {return(s$prior)})
+  out$plot_parameters <- lapply(sample_results, function(s) {return(s$plot_list)})
+  #* `Special bivariate distribution things`
+  if (any(grepl("bivariate", method))) {
+    out$plot_df <- lapply(sample_results, function(s) s$plot_df)
+    out$posterior_draws <- lapply(sample_results, function(s) s$posteriorDraws)
   }
+  #* `Save Data and Call`
+  out$data <- list(s1, s2)[!unlist(lapply(list(s1, s2), is.null))]
+  out$call <- match.call()
+  #* `Change class to conjugate`
+  out <- as.conjugate(out)
   return(out)
 }
 
@@ -515,13 +516,13 @@ conjugate <- function(s1 = NULL, s2 = NULL,
 #' @keywords internal
 #' @noRd
 .conj_rope <- function(sample_results, rope_range = c(-0.1, 0.1),
-                       rope_ci = 0.89, plot, method) {
+                       rope_ci = 0.89, method) {
   #* `if bivariate then call the bivariate option`
   #* note this will return to .conj_rope but with a non-bivariate method
   if (any(grepl("bivariate", method))) {
     rope_res <- .conj_bivariate_rope(
       sample_results, rope_range,
-      rope_ci, plot, method
+      rope_ci, method
     )
     return(rope_res)
   }
@@ -552,9 +553,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
         HDI_rope_high = hdi_diff[2], rope_prob = rope_prob
       )
       rope_res$summary <- rope_test
-      if (plot) {
-        rope_res$rope_df <- data.frame("X" = posterior)
-      }
+      rope_res$rope_df <- data.frame("X" = posterior)
     } else {
       stop("rope must be a vector of length 2")
     }
@@ -570,7 +569,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
 #' @keywords internal
 #' @noRd
 .conj_bivariate_rope <- function(sample_results, rope_range = c(-0.1, 0.1),
-                                 rope_ci = 0.89, plot, method) {
+                                 rope_ci = 0.89, method) {
   #* `Format rope_range`
   rope_res <- list()
   if (!is.list(rope_range)) {
@@ -591,7 +590,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
     })
     nm_res <- .conj_rope(sample_results_param,
       rope_range = iter_rope_range,
-      rope_ci = rope_ci, plot, method = "NONE"
+      rope_ci = rope_ci, method = "NONE"
     )
     return(nm_res)
   })
@@ -628,453 +627,16 @@ conjugate <- function(s1 = NULL, s2 = NULL,
 .post.prob.from.pdfs <- function(pdf1, pdf2, hypothesis) {
   if (hypothesis == "unequal") {
     post.prob <- 1 - sum(apply(cbind(pdf1, pdf2), MARGIN = 1, function(i) min(i)), na.rm = TRUE)
-    dirSymbol <- "!="
   } else if (hypothesis == "equal") {
     post.prob <- sum(apply(cbind(pdf1, pdf2), MARGIN = 1, function(i) min(i)), na.rm = TRUE)
-    dirSymbol <- "="
   } else if (hypothesis == "lesser") { # note one sided testing is less tested generally
     direction <- pdf1 <= pdf2
     post.prob <- sum(pdf1 * direction, na.rm = TRUE)
-    dirSymbol <- "<"
   } else if (hypothesis == "greater") {
     direction <- pdf1 >= pdf2
     post.prob <- sum(pdf1 * direction, na.rm = TRUE)
-    dirSymbol <- ">"
   } else {
     stop("hypothesis must be either unequal, equal, lesser, or greater")
   }
-  return(list("post.prob" = post.prob, "direction" = dirSymbol))
-}
-
-#' ***********************************************************************************************
-#' *************** `General Plotting Function` ***********************************
-#' ***********************************************************************************************
-#' Used to pick which kind of plotting function to use.
-#' @keywords internal
-#' @noRd
-
-.conj_plot <- function(sample_results, rope_res = NULL, res,
-                       rope_range, rope_ci, dirSymbol = NULL, support, method, bayes_factor) {
-  if (any(grepl("bivariate", method))) {
-    p <- .conj_bivariate_plot(sample_results, rope_res, res, rope_range, rope_ci, dirSymbol)
-  } else {
-    p <- .conj_general_plot(sample_results, rope_res, res,
-                            rope_range, rope_ci, dirSymbol, support, bayes_factor)
-  }
-  return(p)
-}
-
-#' ***********************************************************************************************
-#' *************** `General Plotting Function` ***********************************
-#' ***********************************************************************************************
-
-
-#' @keywords internal
-#' @noRd
-.conj_general_plot <- function(sample_results, rope_res = NULL, res,
-                               rope_range, rope_ci, dirSymbol = NULL, support, bayes_factor) {
-  s1_plot_df <- data.frame(range = sample_results[[1]]$plot_list$range)
-  s1_bf_title <- NULL
-  s2_bf_title <- NULL
-  if (!is.null(bayes_factor)) {
-    s1_bf_title <- paste0(", BF: (",
-                          paste(bayes_factor, collapse = ", "),
-                          ") ", round(res$summary$bf_1, 2))
-  }
-
-  p <- ggplot2::ggplot(s1_plot_df, ggplot2::aes(x = .data$range)) +
-    ggplot2::stat_function(geom = "polygon",
-                           fun = eval(parse(text = sample_results[[1]]$plot_list$ddist_fun)),
-                           args = sample_results[[1]]$plot_list$parameters,
-                           ggplot2::aes(fill = "s1"), alpha = 0.5) +
-    ggplot2::geom_vline(ggplot2::aes(xintercept = res$summary$HDI_1_low),
-      color = "red",
-      linewidth = 1.1
-    ) +
-    ggplot2::geom_vline(ggplot2::aes(xintercept = res$summary$HDE_1),
-      color = "red", linetype = "dashed", linewidth = 1.1
-    ) +
-    ggplot2::geom_vline(ggplot2::aes(xintercept = res$summary$HDI_1_high),
-      color = "red",
-      linewidth = 1.1
-    ) +
-    ggplot2::scale_fill_manual(values = "red") +
-    ggplot2::labs(
-      x = "Posterior Distribution of Random Variable", y = "Density", title = "Distribution of Samples",
-      subtitle = paste0(
-        "HDE: ", round(res$summary$HDE_1, 2),
-        "\nHDI: [", round(res$summary$HDI_1_low, 2), ", ",
-        round(res$summary$HDI_1_high, 2), "]", s1_bf_title
-      )
-    ) +
-    ggplot2::guides(fill = ggplot2::guide_legend(override.aes = list(alpha = 0.5))) +
-    ggplot2::theme(
-      legend.title = ggplot2::element_blank(),
-      legend.position = "inside",
-      legend.position.inside = c(0.9, 0.9)
-    ) +
-    pcv_theme()
-
-  if (length(sample_results) == 2) {
-    if (!is.null(bayes_factor)) {
-      s2_bf_title <- paste0(", BF: (",
-                            paste(bayes_factor, collapse = ", "),
-                            ") ", round(res$summary$bf_2, 2))
-    }
-
-    if (res$summary$post.prob < 1e-5) {
-      post.prob.text <- "<1e-5"
-    } else {
-      post.prob.text <- round(res$summary$post.prob, 5)
-    }
-
-    fill_scale <- which(sapply(p$scales$scales, function(x) {
-      return("fill" %in% x$aesthetics) # avoid "replacing scale" non-messages
-    }))
-
-    p$scales$scales[[fill_scale]] <- NULL
-    p <- p +
-      ggplot2::stat_function(geom = "polygon",
-                             fun = eval(parse(text = sample_results[[2]]$plot_list$ddist_fun)),
-                             args = sample_results[[2]]$plot_list$parameters,
-                             ggplot2::aes(fill = "s2"), alpha = 0.5) +
-      ggplot2::geom_vline(ggplot2::aes(xintercept = res$summary$HDI_2_low),
-        color = "blue",
-        linewidth = 1.1
-      ) +
-      ggplot2::geom_vline(ggplot2::aes(xintercept = res$summary$HDE_2),
-        color = "blue",
-        linetype = "dashed", linewidth = 1.1
-      ) +
-      ggplot2::geom_vline(ggplot2::aes(xintercept = res$summary$HDI_2_high),
-        color = "blue",
-        linewidth = 1.1
-      ) +
-      ggplot2::scale_fill_manual(values = c("red", "blue"), breaks = c("s1", "s2")) +
-      ggplot2::guides(fill = ggplot2::guide_legend(override.aes = list(alpha = 0.5))) +
-      ggplot2::theme(
-        legend.title = ggplot2::element_blank(),
-        legend.position = "inside",
-        legend.position.inside = c(0.9, 0.9)
-      ) +
-      ggplot2::labs(subtitle = paste0(
-        "Sample 1:  ", round(res$summary$HDE_1, 2), " [", round(res$summary$HDI_1_low, 2), ", ",
-        round(res$summary$HDI_1_high, 2), "]", s1_bf_title, "\n",
-        "Sample 2:  ", round(res$summary$HDE_2, 2), " [", round(res$summary$HDI_2_low, 2), ", ",
-        round(res$summary$HDI_2_high, 2), "]", s2_bf_title, "\n",
-        "P[p1", dirSymbol, "p2] = ", post.prob.text
-      ))
-  }
-
-  if (!is.null(rope_res)) {
-    rdf <- rope_res$rope_df
-    p <- p + ggplot2::ggplot(rdf, ggplot2::aes(x = .data$X)) +
-      ggplot2::geom_histogram(bins = 100, fill = "purple", color = "purple", alpha = 0.7) +
-      ggplot2::geom_histogram(
-        data = data.frame(
-          "X" = rdf[
-            rdf$X > rope_range[1] &
-              rdf$X < rope_range[2] &
-              rdf$X > res$summary$HDI_rope_low &
-              rdf$X < res$summary$HDI_rope_high,
-          ]
-        ),
-        bins = 100, fill = "gray30", color = "gray30"
-      ) +
-      ggplot2::annotate("segment",
-        x = rope_range[1], xend = rope_range[2], y = 0, yend = 0,
-        linewidth = 2, color = "gray70"
-      ) +
-      ggplot2::geom_vline(ggplot2::aes(xintercept = res$summary$HDI_rope_low), linewidth = 0.7) +
-      ggplot2::geom_vline(ggplot2::aes(xintercept = res$summary$HDE_rope),
-        linetype = "dashed",
-        linewidth = 0.7
-      ) +
-      ggplot2::geom_vline(ggplot2::aes(xintercept = res$summary$HDI_rope_high), linewidth = 0.7) +
-      ggplot2::labs(
-        x = "Posterior of Difference", y = "Frequency", title = "Distribution of Difference",
-        subtitle = paste0(
-          "Median Difference of ", round(res$summary$HDE_rope, 2), "\n",
-          100 * rope_ci, "% CI [", round(res$summary$HDI_rope_low, 2), ", ",
-          round(res$summary$HDI_rope_high, 2), "]\n",
-          100 * rope_ci, "% HDI in [", rope_range[1], ", ", rope_range[2], "]: ",
-          round(res$summary$rope_prob, 2)
-        )
-      ) +
-      pcv_theme() +
-      ggplot2::theme(
-        axis.title.y.left = ggplot2::element_blank(),
-        axis.text.y.left = ggplot2::element_blank()
-      ) +
-      patchwork::plot_layout(widths = c(2, 1))
-  }
-  return(p)
-}
-
-
-#' ***********************************************************************************************
-#' *************** `Bivariate Plotting Function` ***********************************
-#' ***********************************************************************************************
-#'
-#' @keywords internal
-#' @noRd
-
-.conj_bivariate_plot <- function(sample_results, rope_res = NULL, res,
-                                 rope_range, rope_ci, dirSymbol = NULL, support) {
-  TITLE <- "Joint Posterior Distribution"
-  if (length(sample_results) == 1) {
-    margin_plot_df <- sample_results[[1]]$plot_df
-    params <- unique(margin_plot_df$param)
-    #* `Make joint distribution plot`
-    joint_dist_s1 <- sample_results[[1]]$posteriorDraws
-    limits <- lapply(params, function(p) {
-      sub <- margin_plot_df[margin_plot_df$param == p, ]
-      return(range(sub$range))
-    })
-    names(limits) <- params
-    x_lim <- limits[[1]]
-    y_lim <- limits[[2]]
-    v_lines <- res$summary[res$summary$param == params[1], ]
-    h_lines <- res$summary[res$summary$param == params[2], ]
-
-    joint_p <- ggplot2::ggplot(
-      joint_dist_s1,
-      ggplot2::aes(
-        x = .data[[params[1]]], y = .data[[params[2]]],
-        group = .data[["sample"]]
-      )
-    ) +
-      ggplot2::geom_hline(
-        yintercept = h_lines$HDI_1_low, color = "gray80", linetype = 5,
-        linewidth = 0.25
-      ) +
-      ggplot2::geom_hline(
-        yintercept = h_lines$HDI_1_high, color = "gray80", linetype = 5,
-        linewidth = 0.25
-      ) +
-      ggplot2::geom_vline(
-        xintercept = v_lines$HDI_1_low, color = "gray80", linetype = 5,
-        linewidth = 0.25
-      ) +
-      ggplot2::geom_vline(
-        xintercept = v_lines$HDI_1_high, color = "gray80", linetype = 5,
-        linewidth = 0.25
-      ) +
-      geom_density_2d_filled(breaks = ~ pretty(., n = 51)[-1], alpha = 0.9) +
-      ggplot2::scale_fill_viridis_d(option = "plasma") +
-      ggplot2::xlim(x_lim) +
-      ggplot2::ylim(y_lim) +
-      pcv_theme() +
-      ggplot2::theme(legend.position = "none")
-    #* `Make marginal distribution plot of each parameter (x, y)`
-    margin_plots <- lapply(params, function(par) {
-      par_plot <- ggplot2::ggplot(
-        margin_plot_df[margin_plot_df$param == par, ],
-        ggplot2::aes(x = .data$range, y = .data$prob)
-      ) +
-        ggplot2::geom_area(
-          data = margin_plot_df[margin_plot_df$param == par, ],
-          alpha = 0.5, ggplot2::aes(fill = "s1")
-        ) +
-        ggplot2::geom_vline(
-          data = data.frame(),
-          ggplot2::aes(
-            xintercept = res$summary[res$summary$param == par, "HDI_1_low"]
-          ),
-          color = "red",
-          linewidth = 0.5
-        ) +
-        ggplot2::geom_vline(
-          data = data.frame(),
-          ggplot2::aes(
-            xintercept = res$summary[res$summary$param == par, "HDE_1"]
-          ),
-          color = "red", linetype = "dashed", linewidth = 0.5
-        ) +
-        ggplot2::geom_vline(
-          data = data.frame(),
-          ggplot2::aes(
-            xintercept = res$summary[res$summary$param == par, "HDI_1_high"]
-          ),
-          color = "red", linetype = "dashed", linewidth = 0.5
-        ) +
-        ggplot2::scale_fill_manual(values = "red") +
-        ggplot2::xlim(limits[[par]]) +
-        ggplot2::theme_void() +
-        ggplot2::theme(legend.title = ggplot2::element_blank())
-      return(par_plot)
-    })
-    #* `Write title if there is only 1 sample`
-    SUBTITLE <- NULL
-  } else if (length(sample_results) == 2) {
-    #* `Make plots for sample 2 if it exists`
-    margin_plot_df <- do.call(rbind, lapply(1:2, function(i) {
-      md <- sample_results[[i]]$plot_df
-      md$sample <- paste0("Sample ", i)
-      return(md)
-    }))
-    params <- unique(margin_plot_df$param)
-    joint_dist <- do.call(rbind, lapply(1:2, function(i) {
-      pd <- sample_results[[i]]$posteriorDraws
-      pd$sample <- paste0("Sample ", i)
-      return(pd)
-    }))
-    #* `Define Limits`
-    limits <- lapply(params, function(p) {
-      sub <- margin_plot_df[margin_plot_df$param == p, ]
-      return(range(sub$range))
-    })
-    names(limits) <- params
-    x_lim <- limits[[1]]
-    y_lim <- limits[[2]]
-    #* `Make joint distribution plot`
-    v_lines <- res$summary[res$summary$param == params[1], ]
-    h_lines <- res$summary[res$summary$param == params[2], ]
-
-    joint_p <- ggplot2::ggplot(
-      joint_dist,
-      ggplot2::aes(
-        x = .data[[params[1]]], y = .data[[params[2]]],
-        group = .data[["sample"]]
-      )
-    ) +
-      ggplot2::geom_hline(
-        yintercept = h_lines$HDI_1_low, color = "gray80", linetype = 5,
-        linewidth = 0.25
-      ) +
-      ggplot2::geom_hline(
-        yintercept = h_lines$HDI_1_high, color = "gray80", linetype = 5,
-        linewidth = 0.25
-      ) +
-      ggplot2::geom_hline(
-        yintercept = h_lines$HDI_2_low, color = "gray80", linetype = 5,
-        linewidth = 0.25
-      ) +
-      ggplot2::geom_hline(
-        yintercept = h_lines$HDI_2_high, color = "gray80", linetype = 5,
-        linewidth = 0.25
-      ) +
-      ggplot2::geom_vline(
-        xintercept = v_lines$HDI_1_low, color = "gray80", linetype = 5,
-        linewidth = 0.25
-      ) +
-      ggplot2::geom_vline(
-        xintercept = v_lines$HDI_1_high, color = "gray80", linetype = 5,
-        linewidth = 0.25
-      ) +
-      ggplot2::geom_vline(
-        xintercept = v_lines$HDI_2_low, color = "gray80", linetype = 5,
-        linewidth = 0.25
-      ) +
-      ggplot2::geom_vline(
-        xintercept = v_lines$HDI_2_high, color = "gray80", linetype = 5,
-        linewidth = 0.25
-      ) +
-      geom_density_2d_filled(breaks = ~ pretty(., n = 51)[-1], alpha = 0.9) +
-      ggplot2::scale_fill_viridis_d(option = "plasma") +
-      ggplot2::xlim(x_lim) +
-      ggplot2::ylim(y_lim) +
-      pcv_theme() +
-      ggplot2::theme(legend.position = "none")
-
-    #* `Make marginal distribution plot of each parameter (x, y)`
-    margin_plots <- lapply(params, function(par) {
-      hdf <- res$summary
-      hdf <- hdf[hdf$param == par, ]
-      par_plot <- ggplot2::ggplot() +
-        ggplot2::geom_area(
-          data = margin_plot_df[margin_plot_df$param == par, ],
-          alpha = 0.5, ggplot2::aes(
-            x = .data$range, y = .data$prob,
-            fill = .data$sample
-          ),
-          position = "identity"
-        ) +
-        ggplot2::geom_vline(
-          data = data.frame(),
-          ggplot2::aes(
-            xintercept = hdf[, "HDI_1_low"]
-          ),
-          color = "red", linetype = "dashed",
-          linewidth = 0.5
-        ) +
-        ggplot2::geom_vline(
-          data = data.frame(),
-          ggplot2::aes(
-            xintercept = hdf[, "HDE_1"]
-          ),
-          color = "red", linewidth = 0.5
-        ) +
-        ggplot2::geom_vline(
-          data = data.frame(),
-          ggplot2::aes(
-            xintercept = hdf[, "HDI_1_high"]
-          ),
-          color = "red", linetype = "dashed", linewidth = 0.5
-        ) +
-        ggplot2::geom_vline(
-          data = data.frame(),
-          ggplot2::aes(
-            xintercept = hdf[, "HDI_2_low"]
-          ),
-          color = "blue", linetype = "dashed",
-          linewidth = 0.5
-        ) +
-        ggplot2::geom_vline(
-          data = data.frame(),
-          ggplot2::aes(
-            xintercept = hdf[, "HDE_2"]
-          ),
-          color = "blue", linewidth = 0.5
-        ) +
-        ggplot2::geom_vline(
-          data = data.frame(),
-          ggplot2::aes(
-            xintercept = hdf[, "HDI_2_high"]
-          ),
-          color = "blue", linetype = "dashed", linewidth = 0.5
-        ) +
-        ggplot2::scale_fill_manual(values = c("red", "blue")) +
-        ggplot2::xlim(limits[[par]]) +
-        ggplot2::theme_void() +
-        ggplot2::theme(
-          legend.position = "inside",
-          legend.position.inside = c(0.1, 0.5),
-          legend.title = ggplot2::element_blank()
-        )
-      return(par_plot)
-    })
-
-    post.probs <- lapply(params, function(par) {
-      hdf <- res$summary
-      hdf <- hdf[hdf$param == par, ]
-      if (hdf$post.prob < 1e-5) {
-        post.prob.text <- "<1e-5"
-      } else {
-        post.prob.text <- round(hdf$post.prob, 5)
-      }
-      return(post.prob.text)
-    })
-    names(post.probs) <- params
-
-    #* `Write title if there are 2 samples`
-    SUBTITLE <- paste(lapply(params, function(par) {
-      par_string <- paste0(par, ": P[s1", dirSymbol[[1]], "s2] = ", post.probs[[par]])
-      return(par_string)
-    }), collapse = "\n")
-  }
-  #* `Assemble Patchwork`
-  layout <- c(
-    patchwork::area(2, 1, 3, 2),
-    patchwork::area(1, 1, 1, 2),
-    patchwork::area(2, 3, 3, 3)
-  )
-  margin_plots[[2]] <- margin_plots[[2]] +
-    ggplot2::coord_flip() +
-    ggplot2::theme(legend.position = "none")
-
-  p <- joint_p + margin_plots[[1]] + margin_plots[[2]] +
-    patchwork::plot_layout(design = layout) &
-    patchwork::plot_annotation(title = TITLE, subtitle = SUBTITLE)
-  return(p)
+  return(list("post.prob" = post.prob))
 }

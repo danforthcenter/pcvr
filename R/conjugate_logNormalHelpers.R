@@ -24,7 +24,7 @@
 #' @noRd
 
 .conj_lognormal_mv <- function(s1 = NULL, priors = NULL,
-                               plot = FALSE, support = NULL, cred.int.level = NULL,
+                               support = NULL, cred.int.level = NULL,
                                calculatingSupport = FALSE) {
   out <- list()
   #* `make default prior if none provided`
@@ -50,12 +50,13 @@
     #* sufficient stats: n, mean of log data | precision
     n <- length(X1)
     m <- priors$mu[1]
-    p <- 1 / (priors$sd[1]^2) # precision
+    prior_prec <- 1 / (priors$sd[1]^2) # precision from priors
+    p <- 1 / (var(X1)) # precision from data
     mu_prime <- ((m * p) + (n * p * mu_x1)) / (p + (n * p))
-    precision_prime <- (p + (n * p))
+    precision_prime <- (prior_prec + (n * p))
     var_prime <- 1 / precision_prime
     sd_prime <- sqrt(var_prime)
-    return(list("mu" = mu_prime, "sd" = sd_prime, "ln_sd" = sigma_x1))
+    return(list("mu" = mu_prime, "sd" = sd_prime, "ln_sd" = sigma_x1, "obs_prec" = p))
   })
   #* `Unlist parameters`
   mu_ls_prime <- mean(unlist(lapply(rep_distributions, function(i) {
@@ -66,6 +67,9 @@
   })))
   ln_sigma_prime <- mean(unlist(lapply(rep_distributions, function(i) {
     return(i$ln_sd)
+  })))
+  obs_sd <- mean(unlist(lapply(rep_distributions, function(i) {
+    return(1 / ((i$obs_prec) ^ 2))
   })))
 
   #* `Define support if it is missing`
@@ -95,11 +99,12 @@
   out$pdf <- pdf1
   #* `save s1 data for plotting`
   out$plot_list <- list(
-    "range" = support,
+    "range" = range(support),
     "ddist_fun" = "stats::dnorm",
     "priors" = list("mean" = priors$mu[1],  "sd" = priors$sd[1]),
     "parameters" = list("mean" = mu_ls_prime,
-                        "sd" = sigma_ls_prime)
+                        "sd" = sigma_ls_prime),
+    "given" = list("sdlog" = log(obs_sd))
   )
   return(out)
 }
@@ -123,7 +128,7 @@
 #' @noRd
 
 .conj_lognormal_sv <- function(s1 = NULL, priors = NULL,
-                               plot = FALSE, support = NULL, cred.int.level = NULL,
+                               support = NULL, cred.int.level = NULL,
                                calculatingSupport = FALSE) {
   out <- list()
   #* `make default prior if none provided`
@@ -140,9 +145,11 @@
   #* sufficient stats: n, mean of log data | precision
   n <- length(s1)
   m <- priors$mu[1]
-  p <- 1 / (priors$sd[1]^2) # precision
+  prior_prec <- 1 / (priors$sd[1]^2) # precision from priors
+  p <- 1 / (var(s1)) # precision from data
+  obs_sd <- sd(s1)
   mu_prime <- ((m * p) + (n * p * mu_s1)) / (p + (n * p))
-  precision_prime <- (p + (n * p))
+  precision_prime <- (prior_prec + (n * p))
   var_prime <- 1 / precision_prime
   sd_prime <- sqrt(var_prime)
   #* `Define support if it is missing`
@@ -166,11 +173,12 @@
   out$pdf <- pdf1
   #* `save s1 data for plotting`
   out$plot_list <- list(
-    "range" = support,
+    "range" = range(support),
     "ddist_fun" = "stats::dnorm",
     "priors" = list("mean" = priors$mu[1],  "sd" = priors$sd[1]),
     "parameters" = list("mean" = mu_prime,
-                        "sd" = sd_prime)
+                        "sd" = sd_prime),
+    "given" = list("sdlog" = log(obs_sd))
   )
   return(out)
 }

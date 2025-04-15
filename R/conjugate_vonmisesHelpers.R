@@ -19,7 +19,7 @@
 #' @noRd
 
 .conj_vonmises_mv <- function(s1 = NULL, priors = NULL,
-                              plot = FALSE, support = NULL, cred.int.level = NULL,
+                              support = NULL, cred.int.level = NULL,
                               calculatingSupport = FALSE) {
   #* `Turn off support for consistent rescaling between boundaries and to avoid default length of 10000`
   support <- NULL
@@ -72,9 +72,9 @@
   unitCircleAdj <- ifelse(abs(cm) <= pi / 2, 0, pi)
   unitCircleAdj <- ifelse(cm > 0, 1, -1) * unitCircleAdj
   #* `Update prior parameters`
-  a <- priors$kappa
+  a <- priors$kappa[1]
   b <- mu_radians
-  kappa_known <- priors$known_kappa
+  kappa_known <- priors$known_kappa[1]
   kappa_prime <- kappa_known * .unbiased.kappa(X1)
   #* workaround for samples where kappa becomes negative if using the updating from the compendium
   #* where kappa prime is kappa_known x (A x sin B) + sum of sin data
@@ -113,8 +113,8 @@
   )
   out$posterior$mu <- hde_boundary # rescaled mu_prime
   out$posterior$kappa <- kappa_prime
-  out$posterior$known_kappa <- priors$known_kappa
-  out$posterior$n <- priors$n + nrow(s1)
+  out$posterior$known_kappa <- priors$known_kappa[1]
+  out$posterior$n <- priors$n[1] + nrow(s1)
   out$posterior$boundary <- priors$boundary
   out$prior <- priors
   #* `Store Posterior Draws`
@@ -122,11 +122,12 @@
   out$pdf <- pdf1
   #* `keep data for plotting`
   out$plot_list <- list(
-    "range" = support,
+    "range" = range(support),
     "ddist_fun" = "brms::dvon_mises",
     "priors" = list("mu" = priors$mu[1], "kappa" = priors$kappa[1]),
     "parameters" = list("mu" = mu_prime,
-                        "kappa" = kappa_prime)
+                        "kappa" = kappa_prime),
+    "given" = list("kappa" = priors$known_kappa[1])
   )
   return(out)
 }
@@ -152,7 +153,7 @@
 #' @noRd
 
 .conj_vonmises_sv <- function(s1 = NULL, priors = NULL,
-                              plot = FALSE, support = NULL, cred.int.level = NULL,
+                              support = NULL, cred.int.level = NULL,
                               calculatingSupport = FALSE) {
   #* `to avoid default support length of 10000 which may not span boundary well`
   support <- NULL
@@ -240,8 +241,8 @@
   )
   out$posterior$mu <- hde_boundary # rescaled mu_prime
   out$posterior$kappa <- kappa_prime
-  out$posterior$known_kappa <- priors$known_kappa
-  out$posterior$n <- priors$n + length(s1)
+  out$posterior$known_kappa <- priors$known_kappa[1]
+  out$posterior$n <- priors$n[1] + length(s1)
   out$posterior$boundary <- priors$boundary
   out$prior <- priors
   #* `Store Posterior Draws`
@@ -249,11 +250,12 @@
   out$pdf <- pdf1
   #* `keep data for plotting`
   out$plot_list <- list(
-    "range" = support,
+    "range" = range(support),
     "ddist_fun" = "brms::dvon_mises",
     "priors" = list("mu" = priors$mu[1], "kappa" = priors$kappa[1]),
     "parameters" = list("mu" = mu_prime,
-                        "kappa" = kappa_prime)
+                        "kappa" = kappa_prime),
+    "given" = list("kappa" = priors$known_kappa[1])
   )
   return(out)
 }

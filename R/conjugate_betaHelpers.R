@@ -20,7 +20,7 @@
 #' @keywords internal
 #' @noRd
 .conj_beta_mv <- function(s1 = NULL, priors = NULL,
-                          plot = FALSE, support = NULL, cred.int.level = NULL,
+                          support = NULL, cred.int.level = NULL,
                           calculatingSupport = FALSE) {
   #* `make default prior if none provided`
   if (is.null(priors)) {
@@ -75,7 +75,7 @@
   out$pdf <- pdf1
   #* `keep data for plotting`
   out$plot_list <- list(
-    "range" = support,
+    "range" = range(support),
     "ddist_fun" = "stats::dbeta",
     "priors" = list("shape1" = priors$a[1],  "shape2" = priors$b[1]),
     "parameters" = list("shape1" = a1_prime,
@@ -101,7 +101,7 @@
 #' @keywords internal
 #' @noRd
 .conj_beta_sv <- function(s1 = NULL, priors = NULL,
-                          plot = FALSE, support = NULL, cred.int.level = NULL,
+                          support = NULL, cred.int.level = NULL,
                           calculatingSupport = FALSE) {
   if (any(c(s1) > 1) || any(c(s1) < 0)) {
     stop("Beta Distribution is only defined on [0,1]")
@@ -149,7 +149,7 @@
   out$pdf <- pdf1
   #* `keep data for plotting`
   out$plot_list <- list(
-    "range" = support,
+    "range" = range(support),
     "ddist_fun" = "stats::dbeta",
     "priors" = list("shape1" = priors$a[1],  "shape2" = priors$b[1]),
     "parameters" = list("shape1" = a1_prime,

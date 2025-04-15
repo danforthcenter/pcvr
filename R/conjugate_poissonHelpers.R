@@ -22,7 +22,7 @@
 #' @noRd
 
 .conj_poisson_sv <- function(s1 = NULL, priors = NULL,
-                             plot = FALSE, support = NULL, cred.int.level = NULL,
+                             support = NULL, cred.int.level = NULL,
                              calculatingSupport = FALSE) {
   #* `Check samples`
   if (any(abs(s1 - round(s1)) > .Machine$double.eps^0.5) || any(s1 < 0)) {
@@ -63,7 +63,7 @@
   out$pdf <- pdf1
   #* `keep data for plotting`
   out$plot_list <- list(
-    "range" = support,
+    "range" = range(support),
     "ddist_fun" = "stats::dgamma",
     "priors" = list("shape" = priors$a[1],  "rate" = priors$b[1]),
     "parameters" = list("shape" = a1_prime,

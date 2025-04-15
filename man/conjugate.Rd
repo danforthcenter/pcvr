@@ -11,7 +11,7 @@ conjugate(
     "negbin", "vonmises", "vonmises2", "uniform", "pareto", "gamma", "bernoulli",
     "exponential", "bivariate_uniform", "bivariate_gaussian", "bivariate_lognormal"),
   priors = NULL,
-  plot = FALSE,
+  plot = NULL,
   rope_range = NULL,
   rope_ci = 0.89,
   cred.int.level = 0.89,
@@ -44,9 +44,7 @@ The "t" and "gaussian" methods both use a T distribution with "t" testing for a 
 of means and "gaussian" testing for a difference in the distributions (similar to a Z test).
 Both Von Mises options are for use with circular data (for instance hue values when the circular
 quality of the data is relevant). Note that non-circular distributions can be compared to each other.
-This should only be done with caution. Make sure you understand the interpretation of any
-comparison you are doing if you specify two methods (c("gaussian", "lognormal") as an arbitrary
-example).
+This should only be done with caution and may not be supported in all downstream functions.
 There are also 3 bivariate conjugate priors that are supported for use with single value data.
 Those are "bivariate_uniform", "bivariate_gaussian" and "bivariate_lognormal".}
 
@@ -60,7 +58,7 @@ These names vary by method (see details).
  The \code{posterior} part of output can also be recycled as a new prior if Bayesian
  updating is appropriate for your use.}
 
-\item{plot}{Logical, should a ggplot be made and returned.}
+\item{plot}{deprecated, use \code{plot} method instead.}
 
 \item{rope_range}{Optional vector specifying a region of practical equivalence.
 This interval is considered practically equivalent to no effect.
@@ -89,7 +87,7 @@ are added to the summary output. Note these are only implemented for univariate 
 \item{support}{Deprecated}
 }
 \value{
-A list with named elements:
+A \link{conjugate-class} object with slots including:
 \itemize{
    \item{\strong{summary}: A data frame containing HDI/HDE values for each sample and
    the ROPE as well as posterior probability of the hypothesis and ROPE test (if specified).
@@ -101,9 +99,12 @@ A list with named elements:
    \item{\strong{posterior}: A list of updated parameters in the same format as the prior
     for the given method. If desired this does allow for Bayesian updating.}
    \item{\strong{prior}: The prior in a list with the same format as the posterior.}
-   \item{\strong{rope_df}: A data frame of draws from the ROPE posterior.}
    \item{\strong{plot}: A ggplot showing the distribution of samples and optionally the
-   distribution of differences/ROPE}
+   distribution of differences/ROPE}.
+   \item{\strong{plot_parameters}}: Parameters used in making a plot of the data.
+   Contains support range and posterior recoded to use a density function.
+   \item{\strong{data}}: Data from s1 and s2 arguments.
+   \item{\strong{call}}: The function call.
 }
 }
 \description{
@@ -113,11 +114,11 @@ several distributions.
 \details{
 Prior distributions default to be weakly informative and in some cases you may wish to change them.
 \itemize{
-   \item{\strong{"t", "gaussian", and "lognormal":} \code{priors = list( mu=c(0,0), sd=c(10,10) ) },
+   \item{\strong{"t", "gaussian", and "lognormal":} \code{priors = list(mu = 0, sd = 10)},
     where mu is the mean and sd is standard deviation. For the lognormal method these describe
     the normal distribution of the mean parameter for lognormal data and are on the log scale.}
    \item{\strong{"beta", "bernoulli", and "binomial":}
-   \code{priors = list( a=c(0.5, 0.5), b=c(0.5, 0.5) )},
+   \code{priors = list(a = 0.5, b = 0.5)},
     where a and b are shape parameters of the beta distribution. Note that for the binomial
     distribution this is used as the prior for success probability P,
     which is assumed to be beta distributed as in a beta-binomial distribution.}
@@ -128,9 +129,9 @@ Prior distributions default to be weakly informative and in some cases you may w
    \item{\strong{"gamma": } \code{priors = list(shape = 0.5, scale = 0.5, known_shape = 1)},
     where shape and scale are the respective parameters of the gamma distributed rate
     (inverse of scale) parameter of gamma distributed data.}
-   \item{\strong{"poisson" and "exponential": } \code{priors = list(a=c(0.5,0.5),b=c(0.5,0.5))},
+   \item{\strong{"poisson" and "exponential": } \code{priors = list(a = 0.5,b = 0.5)},
     where a and b are shape parameters of the gamma distribution.}
-   \item{\strong{"negbin": } \code{priors = list(r=c(10,10), a=c(0.5,0.5),b=c(0.5,0.5))},
+   \item{\strong{"negbin": } \code{priors = list(r = 10, a = 0.5, b = 0.5)},
     where r is the r parameter of the negative binomial distribution
     (representing the number of successes required)
      and where a and b are shape parameters of the beta distribution.
@@ -201,7 +202,7 @@ mv_ln <- mvSim(
 ln_mv_ex <- conjugate(
   s1 = mv_ln[1:30, -1], s2 = mv_ln[31:60, -1], method = "lognormal",
   priors = list(mu = 5, sd = 2),
-  plot = FALSE, rope_range = c(-40, 40), rope_ci = 0.89,
+  rope_range = c(-40, 40), rope_ci = 0.89,
   cred.int.level = 0.89, hypothesis = "equal", support = NULL
 )
 
@@ -210,7 +211,7 @@ ln_sv_ex <- conjugate(
   s1 = rlnorm(100, log(130), log(1.3)), s2 = rlnorm(100, log(100), log(1.6)),
   method = "lognormal",
   priors = list(mu = 5, sd = 2),
-  plot = FALSE, rope_range = NULL, rope_ci = 0.89,
+  rope_range = NULL, rope_ci = 0.89,
   cred.int.level = 0.89, hypothesis = "equal", support = NULL
 )
 
@@ -227,16 +228,16 @@ mv_gauss <- mvSim(
 gauss_mv_ex <- conjugate(
   s1 = mv_gauss[1:30, -1], s2 = mv_gauss[31:60, -1], method = "gaussian",
   priors = list(mu = 30, sd = 10),
-  plot = FALSE, rope_range = c(-25, 25), rope_ci = 0.89,
+  rope_range = c(-25, 25), rope_ci = 0.89,
   cred.int.level = 0.89, hypothesis = "equal", support = NULL
 )
 
-# T test sv example
+# T test sv example with two different priors
 
 gaussianMeans_sv_ex <- conjugate(
   s1 = rnorm(10, 50, 10), s2 = rnorm(10, 60, 12), method = "t",
-  priors = list(mu = 40, sd = 10),
-  plot = FALSE, rope_range = c(-5, 8), rope_ci = 0.89,
+  priors = list(list(mu = 40, sd = 10), list(mu = 45, sd = 8)),
+  rope_range = c(-5, 8), rope_ci = 0.89,
   cred.int.level = 0.89, hypothesis = "equal", support = NULL
 )
 
@@ -254,7 +255,7 @@ mv_beta <- mvSim(
 beta_mv_ex <- conjugate(
   s1 = mv_beta[1:30, -1], s2 = mv_beta[31:50, -1], method = "beta",
   priors = list(a = 0.5, b = 0.5),
-  plot = FALSE, rope_range = c(-0.1, 0.1), rope_ci = 0.89,
+  rope_range = c(-0.1, 0.1), rope_ci = 0.89,
   cred.int.level = 0.89, hypothesis = "equal",
   bayes_factor = 0.5 # note this may not be reasonable with these priors
 )
@@ -264,7 +265,7 @@ beta_mv_ex <- conjugate(
 beta_sv_ex <- conjugate(
   s1 = rbeta(20, 5, 5), s2 = rbeta(20, 8, 5), method = "beta",
   priors = list(a = 0.5, b = 0.5),
-  plot = FALSE, rope_range = c(-0.1, 0.1), rope_ci = 0.89,
+  rope_range = c(-0.1, 0.1), rope_ci = 0.89,
   cred.int.level = 0.89, hypothesis = "equal",
   bayes_factor = c(0.5, 0.75) # note this may not be reasonable with these priors
 )
@@ -277,7 +278,7 @@ binomial_sv_ex <- conjugate(
   s1 = list(successes = c(15, 14, 16, 11), trials = c(20, 20, 20, 20)),
   s2 = list(successes = c(7, 8, 10, 5), trials = c(20, 20, 20, 20)), method = "binomial",
   priors = list(a = 0.5, b = 0.5),
-  plot = FALSE, rope_range = c(-0.1, 0.1), rope_ci = 0.89,
+  rope_range = c(-0.1, 0.1), rope_ci = 0.89,
   cred.int.level = 0.89, hypothesis = "equal"
 )
 
@@ -286,7 +287,7 @@ binomial_sv_ex <- conjugate(
 poisson_sv_ex <- conjugate(
   s1 = rpois(20, 10), s2 = rpois(20, 8), method = "poisson",
   priors = list(a = 0.5, b = 0.5),
-  plot = FALSE, rope_range = c(-1, 1), rope_ci = 0.89,
+  rope_range = c(-1, 1), rope_ci = 0.89,
   cred.int.level = 0.89, hypothesis = "equal"
 )
 
@@ -297,7 +298,7 @@ poisson_sv_ex <- conjugate(
 negbin_sv_ex <- conjugate(
   s1 = rnbinom(20, 10, 0.5), s2 = rnbinom(20, 10, 0.25), method = "negbin",
   priors = list(r = 10, a = 0.5, b = 0.5),
-  plot = FALSE, rope_range = c(-1, 1), rope_ci = 0.89,
+  rope_range = c(-1, 1), rope_ci = 0.89,
   cred.int.level = 0.89, hypothesis = "equal"
 )
 
@@ -315,7 +316,7 @@ vm1_ex <- conjugate(
   s2 = mv_gauss[31:70, -1],
   method = "vonmises",
   priors = list(mu = 45, kappa = 1, boundary = c(0, 180), known_kappa = 1, n = 1),
-  plot = FALSE, rope_range = c(-1, 1), rope_ci = 0.89,
+  rope_range = c(-1, 1), rope_ci = 0.89,
   cred.int.level = 0.89, hypothesis = "equal"
 )
 
@@ -325,10 +326,12 @@ vm2_ex <- conjugate(
   s2 = brms::rvon_mises(15, 3, 3),
   method = "vonmises2",
   priors = list(mu = 0, kappa = 0.5, boundary = c(-pi, pi), n = 1),
-  cred.int.level = 0.95,
-  plot = FALSE
+  cred.int.level = 0.95
 )
 
+}
+\seealso{
+[barg() for additional reporting]
 }
 \keyword{ROPE}
 \keyword{bayesian}

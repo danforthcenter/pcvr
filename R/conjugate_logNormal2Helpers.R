@@ -22,7 +22,7 @@
 #' @noRd
 
 .conj_lognormal2_mv <- function(s1 = NULL, priors = NULL,
-                                plot = FALSE, support = NULL, cred.int.level = NULL,
+                                support = NULL, cred.int.level = NULL,
                                 calculatingSupport = FALSE) {
   out <- list()
   #* `make default prior if none provided`
@@ -80,11 +80,12 @@
   out$pdf <- pdf1
   #* `save s1 data for plotting`
   out$plot_list <- list(
-    "range" = support,
+    "range" = range(support),
     "ddist_fun" = "stats::dgamma",
     "priors" = list("shape" = priors$a[1],  "scale" = priors$b[1]),
     "parameters" = list("shape" = a_prime,
-                        "scale" = b_prime)
+                        "scale" = b_prime),
+    "given" = list("meanlog" = ln_mu_prime)
   )
   return(out)
 }
@@ -108,7 +109,7 @@
 #' @noRd
 
 .conj_lognormal2_sv <- function(s1 = NULL, priors = NULL,
-                                plot = FALSE, support = NULL, cred.int.level = NULL,
+                                support = NULL, cred.int.level = NULL,
                                 calculatingSupport = FALSE) {
   out <- list()
   #* `make default prior if none provided`
@@ -147,11 +148,12 @@
   out$pdf <- pdf1
   #* `save s1 data for plotting`
   out$plot_list <- list(
-    "range" = support,
+    "range" = range(support),
     "ddist_fun" = "stats::dgamma",
     "priors" = list("shape" = priors$a[1],  "scale" = priors$b[1]),
     "parameters" = list("shape" = a_prime,
-                        "scale" = b_prime)
+                        "scale" = b_prime),
+    "given" = list("meanlog" = mu_s1)
   )
   return(out)
 }
