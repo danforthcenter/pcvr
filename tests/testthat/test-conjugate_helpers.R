@@ -56,6 +56,31 @@ test_that("conjugate raises expected errors", {
   ))
 })
 
+test_that("conjugate class works", {
+  out <- conjugate(
+    s1 = rnorm(10, 1), s2 = rnorm(10), method = "t",
+    priors = list(mu = c(0, 0), sd = c(3, 3)),
+    rope_range = c(-1, 1), rope_ci = 0.89,
+    cred.int.level = 0.89, hypothesis = "equal"
+  )
+  expect_s3_class(invisible(summary(out)), "conjugatesummary")
+})
+
+test_that("Posterior Predictive works", {
+  x <- conjugate(
+    s1 = rnorm(10, 10, 1), s2 = rnorm(10, 13, 1.5), method = "t",
+    priors = list(list(mu = 10, sd = 2),
+                  list(mu = 10, sd = 2)),
+    rope_range = c(-8, 8), rope_ci = 0.89,
+    cred.int.level = 0.89, hypothesis = "unequal",
+    bayes_factor = c(50, 55)
+  )
+  p <- .post_pred_conj(x)
+  s <- .post_pred_conj(x, 10)
+  expect_s3_class(p, "ggplot")
+  expect_true(is.numeric(unlist(s)))
+})
+
 test_that("conjugate plot method works", {
   s1 <- c(
     43.8008289810423, 44.6084228775479, 68.9524219823026, 77.442231894233,
