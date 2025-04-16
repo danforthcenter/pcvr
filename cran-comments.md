@@ -1,4 +1,4 @@
-# pcvr 1.1.1.0
+# pcvr 1.2.0
 
 ## R CMD check results
 
@@ -22,7 +22,7 @@ Package suggested but not available for checking: ‘cmdstanr’
 
 ## Notes
 
-Resubmitting to fix a vignette that was reading data from online and failed un-gracefully without an internet connection. The vignette now uses simulated data and R CMD Check passes without an internet connection.
+Resubmitting due to large changes in the development version.
 
 No notes seem critical.
 Names (PlantCV, Kruschke) and words (phenotyping) in DESCRIPTION are not misspelled.
@@ -38,8 +38,6 @@ The R CMD check on MacOs via github actions yields a NOTE about installed packag
 ```
 
 Additionally there are some examples wrapped in `\donttest` that may take several minutes to run.
-
-* This is a new release.
 
 ## Test environments
 

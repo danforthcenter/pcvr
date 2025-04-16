@@ -26,7 +26,7 @@ does not need to be provided.}
 
 \item{counts}{Number of counts per histogram, defaults to 1000.}
 
-\item{min_bin}{The minumum bin number. This can be thought of as the minimum value that will
+\item{min_bin}{The minimum bin number. This can be thought of as the minimum value that will
 be accepted in the distribution functions, with lower numbers being raised to this value.
 Note that bin arguments are both ignored in the case of "rbeta" and treated as 0,1.}
 

@@ -31,7 +31,7 @@ This must be supplied for rq models.}
 Defaults to NULL in which case all groups in the model are plotted.}
 
 \item{timeRange}{An optional range of times to use. This can be used to view predictions for
-future data if the avaiable data has not reached some point (such as asymptotic size).}
+future data if the available data has not reached some point (such as asymptotic size).}
 
 \item{facetGroups}{logical, should groups be separated in facets? Defaults to TRUE.}
 

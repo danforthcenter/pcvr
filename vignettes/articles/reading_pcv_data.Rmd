@@ -286,4 +286,4 @@ hue_wide <- aggregate(form, data = hue_wide, mean, na.rm = TRUE)
 
 ## Conclusion
 
-These data can be used in the same way as the simulated data in the Bellwether vignette. The Bellwether vignette originally used these data, but for combatibility with `CRAN` standards now uses lighter simulated data rather than data hosted online. See that or other vignettes/articles for notes about analysis.
+These data can be used in the same way as the simulated data in the Bellwether vignette. The Bellwether vignette originally used these data, but for compatibility with `CRAN` standards now uses lighter simulated data rather than data hosted online. See that or other vignettes/articles for notes about analysis.

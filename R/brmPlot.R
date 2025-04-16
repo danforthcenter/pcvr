@@ -15,7 +15,7 @@
 #' although prediction using splines outside of the observed range is not necessarily reliable.
 #' @param facetGroups logical, should groups be separated in facets? Defaults to TRUE.
 #' @param hierarchy_value If a hierarchical model is being plotted, what value should the
-#' hiearchical predictor be? If left NULL (the default) the mean value is used. If this is >1L
+#' hierarchical predictor be? If left NULL (the default) the mean value is used. If this is >1L
 #' then the x axis will use the hierarchical variable from the model at the mean of the timeRange
 #' (mean of x values in the model if timeRange is not specified).
 #' @param vir_option Viridis color scale to use for plotting credible intervals. Defaults to "plasma".
@@ -212,14 +212,18 @@ brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
   if (!is.null(groups)) {
     keep_index <- Reduce(union, lapply(seq_along(groups), function(i) {
       grp <- groups[i]
-      keep <- Reduce(union, lapply(group, \(iter_group) {which(predictions[[iter_group]] %in% grp)}))
+      keep <- Reduce(union, lapply(group, function(iter_group) {
+        return(which(predictions[[iter_group]] %in% grp))
+      }))
       return(keep)
     }))
     predictions <- predictions[keep_index, ]
     if (!is.null(df)) {
       keep_index_df <- Reduce(union, lapply(seq_along(groups), function(i) {
         grp <- groups[i]
-        keep <- Reduce(union, lapply(group, \(iter_group) {which(df[[iter_group]] %in% grp)}))
+        keep <- Reduce(union, lapply(group, function(iter_group) {
+          return(which(df[[iter_group]] %in% grp))
+        }))
         return(keep)
       }))
       df <- df[keep_index_df, ]

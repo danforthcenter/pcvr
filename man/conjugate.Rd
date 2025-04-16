@@ -143,7 +143,7 @@ Prior distributions default to be weakly informative and in some cases you may w
     of the pareto distributed upper boundary. Note that different sources will use different
     terminology for these parameters. These names were chosen for consistency with the
     \code{extraDistr} implementation of the pareto distribution. On Wikipedia the parameters are
-    called shape and scale, corresponding to extraDistr's scale and location respecitvely, which
+    called shape and scale, corresponding to extraDistr's scale and location respectively, which
     can be confusing. Note that the lower boundary of the uniform is assumed to be 0.
     }
     \item{\strong{"pareto": } \code{list(a = 1, b = 1, known_location = min(data))}, where
