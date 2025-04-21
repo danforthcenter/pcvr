@@ -44,7 +44,7 @@ library(devtools)
 
 The `devtools` package makes developing your own R packages more straightforward and lets you easily install packages from places other than CRAN.
 
-With `devtools` installed we can use `install_github` to install a more frequently updated version of `pcvr` from the Danforth center github account. By default this will install package dependencies and will not build the bellwether vignette. See the \textbf{Optional Extras} and \textbf{Bellwether Vignette} sections in this document for examples of different installation options.
+With `devtools` installed we can use `install_github` to install a more frequently updated version of `pcvr` from the Danforth center github account. By default this will install package dependencies and will not build the vignettes. See the \textbf{Optional Extras} section in this document for examples of different installation options or the [pkgdown site](https://danforthcenter.github.io/pcvr/ 'pkgdown site') for online docs.
 
 ```{r, eval=F}
 #| echo: true
@@ -136,9 +136,9 @@ fit_test <- fitGrowth(ss,
 )
 ```
 
-## Bellwether Vignette
+## `pcvr` Vignette
 
-The Bellwether Vignette shows an example workflow to analyze single and multi value traits from plantCV output. The example data comes from a longitudinal experiment, but most of what is shown would be applicable to other designs as well. The vignette is not automatically built, but can be built on installation:
+The `pcvr` Vignette shows an example workflow to analyze single and multi value traits from plantCV output. The example data comes from a longitudinal experiment, but most of what is shown would be applicable to other designs as well. The vignette is not automatically built, but can be built on installation:
 
 ```{r}
 #| eval: false
