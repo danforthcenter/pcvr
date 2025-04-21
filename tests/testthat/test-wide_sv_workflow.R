@@ -23,8 +23,8 @@ test_that("reading sv github data as wide works", {
     "width_pixels"
   ))
 
-  #* check bw.time
-  sv <- bw.time(sv,
+  #* check pcv.time
+  sv <- pcv.time(sv,
     plantingDelay = 7, phenotype = "area_pixels", cutoff = 10, timeCol = "timestamp",
     group = c("barcode", "rotation"), plot = TRUE
   )$data
@@ -33,7 +33,7 @@ test_that("reading sv github data as wide works", {
   expect_equal(head(sv$DAP), 11:16)
   expect_equal(head(sv$DAE), 0:5)
 
-  #* check bw.outliers
+  #* check pcv.outliers
   sv$genotype <- substr(sv$barcode, 3, 5)
   sv$genotype <- ifelse(sv$genotype == "002", "B73",
     ifelse(sv$genotype == "003", "W605S",
@@ -46,7 +46,7 @@ test_that("reading sv github data as wide works", {
   )
 
   #* see notes from 9/6/2023 on why this is done differently, also see test-long_sv_workflow.R
-  svNoOutliers <- suppressWarnings(bw.outliers(
+  svNoOutliers <- suppressWarnings(pcv.outliers(
     df = sv, phenotype = "area_pixels", group = c("DAS", "genotype", "fertilizer"),
     cutoff = 3, plot = TRUE
   ))

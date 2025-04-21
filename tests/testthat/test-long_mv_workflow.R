@@ -25,14 +25,14 @@ test_that("reading mv github data as long works", {
   mv$fertilizer <- ifelse(mv$fertilizer == "A", "100",
     ifelse(mv$fertilizer == "B", "50", "0")
   )
-  # test bw.time
-  mv <- bw.time(mv, timeCol = "timestamp", group = "barcode", plot = FALSE)
+  # test pcv.time
+  mv <- pcv.time(mv, timeCol = "timestamp", group = "barcode", plot = FALSE)
   expect_equal(dim(mv), c(513720, 24))
   expect_equal(colnames(mv)[24], "DAS")
 
-  # test bw.outliers
+  # test pcv.outliers
 
-  mvNoOutliers <- suppressWarnings(bw.outliers(
+  mvNoOutliers <- suppressWarnings(pcv.outliers(
     df = mv, phenotype = "hue_frequencies", naTo0 = FALSE, plot = TRUE,
     group = c("DAS", "genotype", "fertilizer"), cutoff = 3, plotgroup = c("barcode", "rotation")
   ))
@@ -41,7 +41,7 @@ test_that("reading mv github data as long works", {
   expect_equal(pct_removed, 0.93, tolerance = 0.015)
   expect_s3_class(mvNoOutliers$plot, "ggplot")
 
-  mvNoOutliers <- suppressWarnings(bw.outliers(
+  mvNoOutliers <- suppressWarnings(pcv.outliers(
     df = mv, phenotype = "hue_frequencies", naTo0 = FALSE, plot = FALSE, outlierMethod = "mahalanobis",
     group = c("DAS", "genotype", "fertilizer"), cutoff = 3, plotgroup = c("barcode", "rotation")
   ))

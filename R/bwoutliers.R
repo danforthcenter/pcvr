@@ -48,7 +48,7 @@
 #'   params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
 #' )
 #' sv[130, ]$y <- 500
-#' sv_res <- bw.outliers(
+#' sv_res <- pcv.outliers(
 #'   df = sv, phenotype = "y", naTo0 = FALSE, cutoff = 15,
 #'   group = c("time", "group"), outlierMethod = "cooks",
 #'   plotgroup = "id", plot = TRUE
@@ -72,11 +72,11 @@
 #'     mvw$fertilizer <- ifelse(mvw$fertilizer == "A", "100",
 #'       ifelse(mvw$fertilizer == "B", "50", "0")
 #'     )
-#'     mvw <- bw.time(mvw, timeCol = "timestamp", group = "barcode", plot = FALSE)
+#'     mvw <- pcv.time(mvw, timeCol = "timestamp", group = "barcode", plot = FALSE)
 #'
 #'     phenotypes <- which(grepl("hue_freq", colnames(mvw)))
 #'
-#'     mvw2 <- bw.outliers(
+#'     mvw2 <- pcv.outliers(
 #'       df = mvw, phenotype = phenotypes, naTo0 = FALSE, outlierMethod = "cooks",
 #'       group = c("DAS", "genotype", "fertilizer"), cutoff = 3, plotgroup = c("barcode", "rotation")
 #'     )
@@ -96,9 +96,9 @@
 #'     mvl$fertilizer <- ifelse(mvl$fertilizer == "A", "100",
 #'       ifelse(mvl$fertilizer == "B", "50", "0")
 #'     )
-#'     mvl <- bw.time(mvl, timeCol = "timestamp", group = "barcode", plot = FALSE)
+#'     mvl <- pcv.time(mvl, timeCol = "timestamp", group = "barcode", plot = FALSE)
 #'
-#'     mvl2 <- bw.outliers(
+#'     mvl2 <- pcv.outliers(
 #'       df = mvl, phenotype = "hue_frequencies", naTo0 = FALSE, outlierMethod = "cooks",
 #'       group = c("DAS", "genotype", "fertilizer"), cutoff = 3, plotgroup = c("barcode", "rotation")
 #'     )
@@ -114,7 +114,7 @@
 #' @export
 
 
-bw.outliers <- function(df = NULL,
+pcv.outliers <- function(df = NULL,
                         phenotype,
                         naTo0 = FALSE,
                         group = c(),

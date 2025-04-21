@@ -14,8 +14,8 @@ test_that("reading sv github data as long works", {
     "value"
   ))
 
-  #* check bw.time
-  sv <- bw.time(sv,
+  #* check pcv.time
+  sv <- pcv.time(sv,
     plantingDelay = 7, phenotype = "area_pixels", cutoff = 10, timeCol = "timestamp",
     group = c("barcode", "rotation"), plot = TRUE
   )$data
@@ -27,7 +27,7 @@ test_that("reading sv github data as long works", {
   expect_true(all(sapply(sv, function(c) sum(is.na(c))) == 0))
 
 
-  #* check bw.outliers
+  #* check pcv.outliers
   sv$genotype <- substr(sv$barcode, 3, 5)
   sv$genotype <- ifelse(sv$genotype == "002", "B73",
     ifelse(sv$genotype == "003", "W605S",
@@ -39,7 +39,7 @@ test_that("reading sv github data as long works", {
     ifelse(sv$fertilizer == "B", "50", "0")
   )
 
-  svNoOutliers <- suppressWarnings(bw.outliers(
+  svNoOutliers <- suppressWarnings(pcv.outliers(
     df = sv, phenotype = "area_pixels", group = c("DAS", "genotype", "fertilizer"),
     cutoff = 3, plot = TRUE
   ))

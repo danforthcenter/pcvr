@@ -24,7 +24,7 @@
 #' @param valueCol Column with phenotype values, defaults to "value".
 #' This should generally not need to be changed from the default.
 #' @param index Optionally a time to use as the beginning of the experiment. This
-#' may be useful if you have multiple datasets or you are adding data from bw.water
+#' may be useful if you have multiple datasets or you are adding data from pcv.water
 #' and plants were watered before being imaged or if you want to index days off of
 #' midnight. This defaults to NULL but will take any value coercible to POSIXct by
 #' \code{as.POSIXct(... , tz="UTC")} such as "2020-01-01 18:30:00"
@@ -54,7 +54,7 @@
 #'     sv$fertilizer = ifelse(sv$fertilizer == "A", "100",
 #'       ifelse(sv$fertilizer == "B", "50", "0")
 #'     )
-#'     sv <- bw.time(sv,
+#'     sv <- pcv.time(sv,
 #'       plantingDelay = 0, phenotype = "area_pixels", cutoff = 10,
 #'       timeCol = "timestamp", group = c("barcode", "rotation"), plot = FALSE
 #'     )
@@ -73,7 +73,7 @@
 #'     svl$fertilizer = ifelse(svl$fertilizer == "A", "100",
 #'       ifelse(svl$fertilizer == "B", "50", "0")
 #'     )
-#'     svl <- bw.time(svl,
+#'     svl <- pcv.time(svl,
 #'       plantingDelay = 0, phenotype = "area_pixels", cutoff = 10, timeCol = "timestamp",
 #'       group = c("barcode", "rotation"), plot = FALSE
 #'     )
@@ -84,7 +84,7 @@
 #' )
 #' }
 #'
-bw.time <- function(df = NULL, mode = c("DAS", "DAP", "DAE"), plantingDelay = NULL,
+pcv.time <- function(df = NULL, mode = c("DAS", "DAP", "DAE"), plantingDelay = NULL,
                     phenotype = NULL, cutoff = 1, timeCol = "timestamp",
                     group = "Barcodes", plot = TRUE, format = "%Y-%m-%d %H:%M:%S",
                     traitCol = "trait", valueCol = "value", index = NULL, digits = 0) {
