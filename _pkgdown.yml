@@ -24,8 +24,8 @@ navbar:
       aria-label: Home page
     - text: "Vignettes"
       menu:
-        - text: "Bellwether"
-          href: articles/bellwether.html
+        - text: "pcvr"
+          href: articles/pcvr.html
         - text: "Longitudinal Modeling"
           href: articles/longitudinal.html
         - text: "Root Phenotyping"

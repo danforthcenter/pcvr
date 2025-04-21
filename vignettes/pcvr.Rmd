@@ -1,5 +1,5 @@
 ---
-title: "Bellwether"
+title: "pcvr"
 author: "Josh Sumner, DDPSC Data Science Core Facility"
 output: 
   html_vignette:
@@ -8,7 +8,7 @@ output:
     code_folding: show
 date: "2023-10-16"
 vignette: >
-  %\VignetteIndexEntry{Bellwether}
+  %\VignetteIndexEntry{pcvr}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
