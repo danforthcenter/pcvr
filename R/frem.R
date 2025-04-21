@@ -1,6 +1,7 @@
 #' Variance partitioning using Full Random Effects Models
 #'
-#' Variance partitioning for phenotypes (over time) using fully random effects models
+#' Variance partitioning for phenotypes (over time) using full random effects models
+#' (also called Variance Components models).
 #'
 #' @param df Dataframe containing phenotypes and design variables, optionally over time.
 #' @param des Design variables to partition variance for as a character vector.
