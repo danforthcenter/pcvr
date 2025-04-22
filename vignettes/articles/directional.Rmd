@@ -7,7 +7,7 @@ output:
     toc: true
     number_sections: false
     code_folding: show
-date: "2024-04-22"
+date: "`r Sys.Date()`"
 vignette: >
   %\VignetteIndexEntry{Directional Statistics in PCVR}
   %\VignetteEngine{knitr::rmarkdown}
