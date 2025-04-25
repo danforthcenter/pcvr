@@ -207,7 +207,6 @@ frem <- function(df, des, phenotypes, timeCol = NULL, cor = TRUE, returnData = F
       ggplot2::theme_minimal() +
       ggplot2::theme(
         axis.text.y = ggplot2::element_text(size = 10),
-        axis.title.y = ggplot2::element_blank(),
         legend.position = "bottom"
       )
     if (markSingular) {
