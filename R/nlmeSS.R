@@ -45,12 +45,7 @@
   #* `general steps`
   #* ***** `Define choices and make empty output list`
   out <- list()
-  models <- c(
-    "logistic", "gompertz", "monomolecular",
-    "exponential", "linear", "power law",
-    "double logistic", "double gompertz", "gam",
-    "frechet", "weibull", "gumbel", "logarithmic", "bragg", "lorentz", "beta"
-  )
+  models <- .available_models()
   sigmas <- c("none", "int", "power", "exp")
   #* check if sigma is class "varFunc", if it is then return it as is?
 
@@ -218,6 +213,92 @@
     paste(group, collapse = "*")
   )))
 
+  formulas <- list(
+    "model" = model_form, "random" = random_form,
+    "fixed" = fixed_form, "groups" = groups_form,
+    "weights" = weights_form, "cor_form" = correlation_form, "pars" = pars
+  )
+  return(formulas)
+}
+
+.nlme_form_logistic4 <- function(x, y, group, individual, matched_sigma, pars, int) {
+  #* `Define parameters and main growth formula`
+  if (int) {
+    total_pars <- c("I", "A", "B", "C", "D")
+    model_form <- as.formula(paste0(y, " ~ I + D + (A - D)/(1+exp((B-", x, ")/C))"))
+  } else {
+    total_pars <- c("A", "B", "C", "D")
+    model_form <- as.formula(paste0(y, " ~ D + (A - D)/(1+exp((B-", x, ")/C))"))
+  }
+  #* `random effects formula`
+  random_form <- as.formula(paste0(paste0(total_pars, collapse = " + "), "~ 1"))
+  #* `fixed effects formula`
+  if (is.null(pars)) {
+    pars <- total_pars
+  }
+  if (is.null(group) || all(group == "dummyGroup")) {
+    pars <- ""
+  }
+  fixed_form <- lapply(total_pars, function(par) {
+    if (par %in% pars) {
+      return(stats::as.formula(paste0(par, " ~ 0 + ", paste(group, collapse = "*"))))
+    } else {
+      return(stats::as.formula(paste0(par, " ~ 1")))
+    }
+  })
+  #* `groups formula`
+  groups_form <- stats::as.formula(paste0("~", paste(group, collapse = "*")))
+  #* `variance formula`
+  weights_form <- .nlme_sigma_form(matched_sigma, x, group)
+  #* `correlation formula`
+  correlation_form <- nlme::corAR1(0.8, form = as.formula(paste0(
+    "~ 1 |",
+    paste(group, collapse = "*")
+  )))
+  
+  formulas <- list(
+    "model" = model_form, "random" = random_form,
+    "fixed" = fixed_form, "groups" = groups_form,
+    "weights" = weights_form, "cor_form" = correlation_form, "pars" = pars
+  )
+  return(formulas)
+}
+
+.nlme_form_logistic5 <- function(x, y, group, individual, matched_sigma, pars, int) {
+  #* `Define parameters and main growth formula`
+  if (int) {
+    total_pars <- c("I", "A", "B", "C", "D", "E")
+    model_form <- as.formula(paste0(y, " ~ I + D + ((A - D)/(1+exp((B-", x, ")/C)) ^ E)"))
+  } else {
+    total_pars <- c("A", "B", "C", "D", "E")
+    model_form <- as.formula(paste0(y, " ~ D + ((A - D)/(1+exp((B-", x, ")/C)) ^ E)"))
+  }
+  #* `random effects formula`
+  random_form <- as.formula(paste0(paste0(total_pars, collapse = " + "), "~ 1"))
+  #* `fixed effects formula`
+  if (is.null(pars)) {
+    pars <- total_pars
+  }
+  if (is.null(group) || all(group == "dummyGroup")) {
+    pars <- ""
+  }
+  fixed_form <- lapply(total_pars, function(par) {
+    if (par %in% pars) {
+      return(stats::as.formula(paste0(par, " ~ 0 + ", paste(group, collapse = "*"))))
+    } else {
+      return(stats::as.formula(paste0(par, " ~ 1")))
+    }
+  })
+  #* `groups formula`
+  groups_form <- stats::as.formula(paste0("~", paste(group, collapse = "*")))
+  #* `variance formula`
+  weights_form <- .nlme_sigma_form(matched_sigma, x, group)
+  #* `correlation formula`
+  correlation_form <- nlme::corAR1(0.8, form = as.formula(paste0(
+    "~ 1 |",
+    paste(group, collapse = "*")
+  )))
+  
   formulas <- list(
     "model" = model_form, "random" = random_form,
     "fixed" = fixed_form, "groups" = groups_form,

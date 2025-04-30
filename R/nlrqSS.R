@@ -31,11 +31,7 @@
 .nlrqSS <- function(model, form, tau = 0.5, df, pars = NULL, start = NULL, type = "nlrq", int = FALSE) {
   #* ***** `Define choices and make empty output list`
   out <- list()
-  models <- c(
-    "logistic", "gompertz", "monomolecular", "exponential", "linear", "power law",
-    "double logistic", "double gompertz", "gam", "frechet", "weibull", "gumbel", "logarithmic",
-    "bragg", "lorentz", "beta"
-  )
+  models <- .available_models()
   #* ***** `Make nlrq formula` *****
   #* `parse form argument`
   parsed_form <- .parsePcvrForm(form, df)
@@ -497,6 +493,64 @@
     str_nf <- paste0(y, " ~I[] + (A[]/(1+exp((B[]-", x, ")/C[])))")
   } else {
     str_nf <- paste0(y, " ~ A[]/(1+exp((B[]-", x, ")/C[]))")
+  }
+  if (USEGROUP) {
+    for (par in total_pars) {
+      if (par %in% pars) {
+        str_nf <- gsub(paste0(par, "\\[\\]"), paste0(par, "[", group, "]"), str_nf)
+      } else {
+        str_nf <- gsub(paste0(par, "\\[\\]"), par, str_nf)
+      }
+    }
+    nf <- as.formula(str_nf)
+  } else {
+    nf <- as.formula(gsub("\\[|\\]", "", str_nf))
+  }
+  return(list("formula" = nf, "pars" = pars))
+}
+
+.nlrq_form_logistic4 <- function(x, y, USEGROUP, group, pars, int = FALSE) {
+  if (int) {
+    total_pars <- c("I", "A", "B", "C", "D")
+  } else {
+    total_pars <- c("A", "B", "C", "D")
+  }
+  if (is.null(pars)) {
+    pars <- total_pars
+  }
+  if (int) {
+    str_nf <- paste0(y, " ~ I[] + D[] + (A[] - D[])/(1+exp((B[]-", x, ")/C[]))")
+  } else {
+    str_nf <- paste0(y, " ~ D[] + (A[] - D[])/(1+exp((B[]-", x, ")/C[]))")
+  }
+  if (USEGROUP) {
+    for (par in total_pars) {
+      if (par %in% pars) {
+        str_nf <- gsub(paste0(par, "\\[\\]"), paste0(par, "[", group, "]"), str_nf)
+      } else {
+        str_nf <- gsub(paste0(par, "\\[\\]"), par, str_nf)
+      }
+    }
+    nf <- as.formula(str_nf)
+  } else {
+    nf <- as.formula(gsub("\\[|\\]", "", str_nf))
+  }
+  return(list("formula" = nf, "pars" = pars))
+}
+
+.nlrq_form_logistic5 <- function(x, y, USEGROUP, group, pars, int = FALSE) {
+  if (int) {
+    total_pars <- c("I", "A", "B", "C", "D", "E")
+  } else {
+    total_pars <- c("A", "B", "C", "D", "E")
+  }
+  if (is.null(pars)) {
+    pars <- total_pars
+  }
+  if (int) {
+    str_nf <- paste0(y, " ~ I[] + D[] + ((A[] - D[])/(1+exp((B[]-", x, ")/C[])) ^ E[])")
+  } else {
+    str_nf <- paste0(y, " ~ D[] + ((A[] - D[])/(1+exp((B[]-", x, ")/C[])) ^ E[])")
   }
   if (USEGROUP) {
     for (par in total_pars) {
