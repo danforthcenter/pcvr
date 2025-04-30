@@ -210,7 +210,7 @@
 #'     Where A is the asymptote (maximum), B is the inflection point, C is the growth rate,
 #'     and D is the lower asymptote (minimum, if this is 0 then the model converges to 3 parameter
 #'     logistic).
-#'     \item \bold{Logistic5}: `D + ((A - D) / (1 + exp(B * (C - x))) ^ E)`
+#'     \item \bold{Logistic5}: `D + ((A - D) / (1 + exp((B - x) / C)) ^ E)`
 #'     Where A is the asymptote (maximum), B is the inflection point, C is the growth rate,
 #'     and D is the lower asymptote (minimum), and E is the asymmetry factor (1 is symmetric
 #'     and converges to 4 parameter logistic).
@@ -440,11 +440,7 @@ growthSim <- function(
 #' @noRd
 
 .singleGrowthSim <- function(model, n = 20, t = 25, params = list(), noise = NULL, D, int) {
-  models <- c(
-    "logistic", "logistic4", "logistic5", "gompertz", "double logistic", "double gompertz",
-    "monomolecular", "exponential", "linear", "power law", "frechet", "weibull", "gumbel",
-    "logarithmic", "bragg", "lorentz", "beta"
-  )
+  models <- .available_models()
 
   if (grepl("decay", model)) {
     decay <- TRUE
@@ -508,7 +504,7 @@ gsi_logistic5 <- function(x, pars, noise) {
   c_r <- pars[["C"]] + rnorm(1, mean = 0, sd = noise[["C"]])
   d_r <- pars[["D"]] + rnorm(1, mean = 0, sd = noise[["D"]])
   e_r <- pars[["E"]] + rnorm(1, mean = 0, sd = noise[["E"]])
-  return(d_r + ((a_r - d_r) / (1 + exp(c_r * (b_r - x))) ^ e_r))
+  return(d_r + ((a_r - d_r) / (1 + exp((b_r - x) / c_r)) ^ e_r))
 }
 gsi_gompertz <- function(x, pars, noise) {
   a_r <- pars[["A"]] + rnorm(1, mean = 0, sd = noise[["A"]])

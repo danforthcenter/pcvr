@@ -57,7 +57,7 @@ The \code{params} argument requires some understanding of how each growth model 
     Where A is the asymptote (maximum), B is the inflection point, C is the growth rate,
     and D is the lower asymptote (minimum, if this is 0 then the model converges to 3 parameter
     logistic).
-    \item \bold{Logistic5}: `D + ((A - D) / (1 + exp(B * (C - x))) ^ E)`
+    \item \bold{Logistic5}: `D + ((A - D) / (1 + exp((B - x) / C)) ^ E)`
     Where A is the asymptote (maximum), B is the inflection point, C is the growth rate,
     and D is the lower asymptote (minimum), and E is the asymmetry factor (1 is symmetric
     and converges to 4 parameter logistic).
