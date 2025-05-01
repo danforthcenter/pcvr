@@ -22,8 +22,10 @@ test_that("Logistic brms model pipeline", {
   )
   expect_equal(ss$prior$nlpar, c("", "", "A", "B", "C"))
 
-  fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1,
-                   refresh = 0, silent = 2)
+  fit <- fitGrowth(ss,
+    backend = "cmdstanr", iter = 500, chains = 1, cores = 1,
+    refresh = 0, silent = 2
+  )
   expect_s3_class(fit, "brmsfit")
 
   plot <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
@@ -41,8 +43,10 @@ test_that("Logistic brms model pipeline", {
     list("A" = 130, "B" = 10, "C" = 1, "sigmaA" = 20, "sigmaB" = 10, "sigmaC" = 2),
     df = simdf, type = "brms"
   )
-  fit2 <- fitGrowth(ss2, backend = "cmdstanr", iter = 500, chains = 1, cores = 1, sample_prior = "only",
-                    refresh = 0, silent = 2)
+  fit2 <- fitGrowth(ss2,
+    backend = "cmdstanr", iter = 500, chains = 1, cores = 1, sample_prior = "only",
+    refresh = 0, silent = 2
+  )
   expect_message(
     cd <- combineDraws(fit, fit2)
   )
@@ -57,8 +61,10 @@ test_that("Logistic brms model pipeline", {
     cd <- combineDraws(fit, fit_df[1:100, ])
   )
   expect_equal(dim(cd), c(250, 16))
-  fit3 <- fitGrowth(ss2, backend = "cmdstanr", iter = 400, chains = 1, cores = 1, sample_prior = "only",
-                    refresh = 0, silent = 2)
+  fit3 <- fitGrowth(ss2,
+    backend = "cmdstanr", iter = 400, chains = 1, cores = 1, sample_prior = "only",
+    refresh = 0, silent = 2
+  )
   expect_message(
     cd <- combineDraws(fit, fit3)
   )
@@ -411,12 +417,79 @@ if (file.exists("/home/josh/Desktop/")) {
     )
     expect_equal(ss$prior$nlpar, c("", "A", "B", "C"))
 
-    fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1,
-                     refresh = 0, silent = 2)
+    fit <- fitGrowth(ss,
+      backend = "cmdstanr", iter = 500, chains = 1, cores = 1,
+      refresh = 0, silent = 2
+    )
     expect_s3_class(fit, "brmsfit")
 
     plot <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
     ggsave("~/scripts/fahlgren_lab/labMeetings/gompertz_fitGrowth.png", plot,
+      width = 10, height = 6, dpi = 300, bg = "#ffffff"
+    )
+    expect_s3_class(plot, "ggplot")
+  })
+
+  test_that("4 Parameter Logistic brms model pipeline", {
+    set.seed(123)
+    simdf <- growthSim("logistic4",
+      n = 20, t = 25,
+      params = list(
+        "A" = c(200, 160),
+        "B" = c(13, 11),
+        "C" = c(3, 2.5),
+        "D" = c(5, 20)
+      )
+    )
+
+    ss <- growthSS(
+      model = "logistic4", form = y ~ time | id / group, sigma = "int",
+      list("A" = 130, "B" = 10, "C" = 1, "D" = 2),
+      df = simdf, type = "brms"
+    )
+    expect_equal(ss$prior$nlpar, c("", "A", "B", "C", "D"))
+
+    fit <- fitGrowth(ss,
+      backend = "cmdstanr", iter = 500, chains = 1, cores = 1,
+      refresh = 0, silent = 2
+    )
+    expect_s3_class(fit, "brmsfit")
+
+    plot <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
+    ggsave("~/scripts/fahlgren_lab/labMeetings/4PLogistic_fitGrowth.png", plot,
+      width = 10, height = 6, dpi = 300, bg = "#ffffff"
+    )
+    expect_s3_class(plot, "ggplot")
+  })
+
+  test_that("5 Parameter Logistic brms model pipeline", {
+    set.seed(123)
+    simdf <- growthSim("logistic5",
+      n = 20, t = 25,
+      params = list(
+        "A" = c(200, 160),
+        "B" = c(13, 11),
+        "C" = c(2.75, 3.25),
+        "D" = c(5, 20),
+        "E" = c(1, 1.5)
+      )
+    )
+
+    ss <- growthSS(
+      model = "logistic5", form = y ~ time | id / group, sigma = "int",
+      list("A" = 130, "B" = 10, "C" = 1, "D" = 2, "E" = 0.75),
+      df = simdf, type = "brms"
+    )
+    expect_equal(ss$prior$nlpar, c("", "A", "B", "C", "D", "E"))
+
+    fit <- fitGrowth(ss,
+      backend = "cmdstanr", iter = 500, chains = 1, cores = 1,
+      refresh = 0, silent = 2
+    )
+    expect_s3_class(fit, "brmsfit")
+
+    plot <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
+    ggsave("~/scripts/fahlgren_lab/labMeetings/5PLogistic_fitGrowth.png", plot,
       width = 10, height = 6, dpi = 300, bg = "#ffffff"
     )
     expect_s3_class(plot, "ggplot")
@@ -436,8 +509,10 @@ if (file.exists("/home/josh/Desktop/")) {
     )
     expect_equal(ss$prior$nlpar, c("", "A", "B"))
 
-    fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1,
-                     refresh = 0, silent = 2)
+    fit <- fitGrowth(ss,
+      backend = "cmdstanr", iter = 500, chains = 1, cores = 1,
+      refresh = 0, silent = 2
+    )
     expect_s3_class(fit, "brmsfit")
 
     plot <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
@@ -461,8 +536,10 @@ if (file.exists("/home/josh/Desktop/")) {
     )
     expect_equal(ss$prior$nlpar, c("", "A", "B"))
 
-    fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1,
-                     refresh = 0, silent = 2)
+    fit <- fitGrowth(ss,
+      backend = "cmdstanr", iter = 500, chains = 1, cores = 1,
+      refresh = 0, silent = 2
+    )
     expect_s3_class(fit, "brmsfit")
 
     plot <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
@@ -487,8 +564,10 @@ if (file.exists("/home/josh/Desktop/")) {
     )
     expect_equal(ss$prior$nlpar, c("", "A", "B"))
 
-    fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1,
-                     refresh = 0, silent = 2)
+    fit <- fitGrowth(ss,
+      backend = "cmdstanr", iter = 500, chains = 1, cores = 1,
+      refresh = 0, silent = 2
+    )
     expect_s3_class(fit, "brmsfit")
 
     plot <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
@@ -513,8 +592,10 @@ if (file.exists("/home/josh/Desktop/")) {
     )
     expect_equal(ss$prior$nlpar, c("", "A"))
 
-    fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1,
-                     refresh = 0, silent = 2)
+    fit <- fitGrowth(ss,
+      backend = "cmdstanr", iter = 500, chains = 1, cores = 1,
+      refresh = 0, silent = 2
+    )
     expect_s3_class(fit, "brmsfit")
 
     plot <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
@@ -539,8 +620,10 @@ if (file.exists("/home/josh/Desktop/")) {
     )
     expect_equal(ss$prior$nlpar, c("", "A"))
 
-    fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1,
-                     refresh = 0, silent = 2)
+    fit <- fitGrowth(ss,
+      backend = "cmdstanr", iter = 500, chains = 1, cores = 1,
+      refresh = 0, silent = 2
+    )
     expect_s3_class(fit, "brmsfit")
 
     plot <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
@@ -572,8 +655,10 @@ if (file.exists("/home/josh/Desktop/")) {
     )
     expect_equal(ss$prior$nlpar, c("", "A", "sigmaA"))
 
-    fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1,
-                     refresh = 0, silent = 2)
+    fit <- fitGrowth(ss,
+      backend = "cmdstanr", iter = 500, chains = 1, cores = 1,
+      refresh = 0, silent = 2
+    )
     expect_s3_class(fit, "brmsfit")
 
     plot <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
@@ -596,8 +681,10 @@ if (file.exists("/home/josh/Desktop/")) {
       df = simdf, type = "brms"
     )
 
-    fit <- suppressWarnings(fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1,
-                                      refresh = 0, silent = 2))
+    fit <- suppressWarnings(fitGrowth(ss,
+      backend = "cmdstanr", iter = 500, chains = 1, cores = 1,
+      refresh = 0, silent = 2
+    ))
     expect_s3_class(fit, "brmsfit")
 
     plot <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
@@ -624,8 +711,10 @@ if (file.exists("/home/josh/Desktop/")) {
     )
     expect_equal(ss$prior$nlpar, c("", "", "linear1A", "changePoint1", "linear2A"))
 
-    fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1,
-                     refresh = 0, silent = 2)
+    fit <- fitGrowth(ss,
+      backend = "cmdstanr", iter = 500, chains = 1, cores = 1,
+      refresh = 0, silent = 2
+    )
     expect_s3_class(fit, "brmsfit")
 
     plot <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
@@ -659,8 +748,10 @@ if (file.exists("/home/josh/Desktop/")) {
       "logistic2A", "logistic2B", "logistic2C"
     ))
 
-    fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1,
-                     refresh = 0, silent = 2)
+    fit <- fitGrowth(ss,
+      backend = "cmdstanr", iter = 500, chains = 1, cores = 1,
+      refresh = 0, silent = 2
+    )
     expect_s3_class(fit, "brmsfit")
 
     plot <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
@@ -689,8 +780,10 @@ if (file.exists("/home/josh/Desktop/")) {
 
     expect_equal(ss$prior$nlpar, c("", "linear1A", "changePoint1"))
 
-    fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1,
-                     refresh = 0, silent = 2)
+    fit <- fitGrowth(ss,
+      backend = "cmdstanr", iter = 500, chains = 1, cores = 1,
+      refresh = 0, silent = 2
+    )
     expect_s3_class(fit, "brmsfit")
 
     plot <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
@@ -721,8 +814,10 @@ if (file.exists("/home/josh/Desktop/")) {
       "linear2A", "changePoint2", "linear3A"
     ))
 
-    fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1,
-                     refresh = 0, silent = 2)
+    fit <- fitGrowth(ss,
+      backend = "cmdstanr", iter = 500, chains = 1, cores = 1,
+      refresh = 0, silent = 2
+    )
     expect_s3_class(fit, "brmsfit")
 
     plot <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
@@ -747,8 +842,10 @@ if (file.exists("/home/josh/Desktop/")) {
     )
     expect_equal(ss$prior$nlpar, c("", "A", "B", "C", "sigmaA", "sigmaB", "sigmaC"))
 
-    fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1,
-                     refresh = 0, silent = 2) # that's fast
+    fit <- fitGrowth(ss,
+      backend = "cmdstanr", iter = 500, chains = 1, cores = 1,
+      refresh = 0, silent = 2
+    ) # that's fast
     expect_s3_class(fit, "brmsfit")
 
     plot <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
@@ -772,8 +869,10 @@ if (file.exists("/home/josh/Desktop/")) {
     )
     expect_equal(ss$prior$nlpar, c("", "A", "B", "C", "sigmaA", "sigmaB", "sigmaC"))
 
-    fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1,
-                     refresh = 0, silent = 2)
+    fit <- fitGrowth(ss,
+      backend = "cmdstanr", iter = 500, chains = 1, cores = 1,
+      refresh = 0, silent = 2
+    )
     expect_s3_class(fit, "brmsfit")
 
     plot <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
@@ -797,8 +896,10 @@ if (file.exists("/home/josh/Desktop/")) {
     )
     expect_equal(ss$prior$nlpar, c("", "A", "B", "C", "sigmaA", "sigmaB"))
 
-    fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1,
-                     refresh = 0, silent = 2)
+    fit <- fitGrowth(ss,
+      backend = "cmdstanr", iter = 500, chains = 1, cores = 1,
+      refresh = 0, silent = 2
+    )
     expect_s3_class(fit, "brmsfit")
 
     plot <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
@@ -851,8 +952,10 @@ if (file.exists("/home/josh/Desktop/")) {
     )
     expect_equal(ss$prior$nlpar, c("", "int1", "changePoint1", "int2"))
 
-    fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1,
-                     refresh = 0, silent = 2)
+    fit <- fitGrowth(ss,
+      backend = "cmdstanr", iter = 500, chains = 1, cores = 1,
+      refresh = 0, silent = 2
+    )
     expect_s3_class(fit, "brmsfit")
 
     plot <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
@@ -904,8 +1007,10 @@ if (file.exists("/home/josh/Desktop/")) {
     )
     expect_equal(ss$prior$nlpar, c("", "int1", "int2"))
 
-    fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1,
-                     refresh = 0, silent = 2)
+    fit <- fitGrowth(ss,
+      backend = "cmdstanr", iter = 500, chains = 1, cores = 1,
+      refresh = 0, silent = 2
+    )
     expect_s3_class(fit, "brmsfit")
 
     plot <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
@@ -966,8 +1071,10 @@ if (file.exists("/home/josh/Desktop/")) {
       "sigmachangePoint1", "sigmaint2"
     ))
 
-    fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1,
-                     refresh = 0, silent = 2)
+    fit <- fitGrowth(ss,
+      backend = "cmdstanr", iter = 500, chains = 1, cores = 1,
+      refresh = 0, silent = 2
+    )
     expect_s3_class(fit, "brmsfit")
 
     plot <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
@@ -1023,8 +1130,10 @@ if (file.exists("/home/josh/Desktop/")) {
       "sigmachangePoint1", "sigmalinear2A"
     ))
 
-    fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1,
-                     refresh = 0, silent = 2)
+    fit <- fitGrowth(ss,
+      backend = "cmdstanr", iter = 500, chains = 1, cores = 1,
+      refresh = 0, silent = 2
+    )
     expect_s3_class(fit, "brmsfit")
 
     plot <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df, timeRange = 1:40)
@@ -1082,8 +1191,10 @@ if (file.exists("/home/josh/Desktop/")) {
       "sigmaint1", "sigmachangePoint1"
     ))
 
-    fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1,
-                     refresh = 0, silent = 2)
+    fit <- fitGrowth(ss,
+      backend = "cmdstanr", iter = 500, chains = 1, cores = 1,
+      refresh = 0, silent = 2
+    )
     expect_s3_class(fit, "brmsfit")
 
     plot <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
@@ -1133,8 +1244,10 @@ if (file.exists("/home/josh/Desktop/")) {
       "sigmalinear2A"
     ))
 
-    fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1,
-                     refresh = 0, silent = 2)
+    fit <- fitGrowth(ss,
+      backend = "cmdstanr", iter = 500, chains = 1, cores = 1,
+      refresh = 0, silent = 2
+    )
     expect_s3_class(fit, "brmsfit")
 
     plot <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
@@ -1162,8 +1275,10 @@ if (file.exists("/home/josh/Desktop/")) {
       ),
       df = simdf, type = "brms"
     )
-    fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1,
-                     refresh = 0, silent = 2)
+    fit <- fitGrowth(ss,
+      backend = "cmdstanr", iter = 500, chains = 1, cores = 1,
+      refresh = 0, silent = 2
+    )
     plot <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
     ggsave("~/scripts/fahlgren_lab/labMeetings/logistic_plus_logisticDecay.png", plot,
       width = 10, height = 6, dpi = 300, bg = "#ffffff"
@@ -1198,8 +1313,10 @@ if (file.exists("/home/josh/Desktop/")) {
       df = df, start = list("A" = 8, "B" = 10, "C" = 3)
     )
     lapply(ss, head)
-    fit <- fitGrowth(ss, iter = 600, cores = 1, chains = 1, backend = "cmdstanr",
-                     refresh = 0, silent = 2)
+    fit <- fitGrowth(ss,
+      iter = 600, cores = 1, chains = 1, backend = "cmdstanr",
+      refresh = 0, silent = 2
+    )
     expect_s3_class(fit, "brmsfit")
     p <- growthPlot(fit, ss$pcvrForm, df = ss$df)
     expect_s3_class(p, "ggplot")
@@ -1225,12 +1342,17 @@ if (file.exists("/home/josh/Desktop/")) {
       df = df, start = list("A" = 10, "B" = 1, "C" = 15, "D" = 3, "E" = 25)
     )
     expect_s3_class(ss, "pcvrss")
-    tryCatch({
-      fit <- fitGrowth(ss, iter = 600, cores = 1, chains = 1, backend = "cmdstanr",
-                       refresh = 0, silent = 2)
-      expect_s3_class(fit, "brmsfit")
-      p <- growthPlot(fit, ss$pcvrForm, df = ss$df)
-      expect_s3_class(p, "ggplot")
-    }, error = function(err) {})
+    tryCatch(
+      {
+        fit <- fitGrowth(ss,
+          iter = 600, cores = 1, chains = 1, backend = "cmdstanr",
+          refresh = 0, silent = 2
+        )
+        expect_s3_class(fit, "brmsfit")
+        p <- growthPlot(fit, ss$pcvrForm, df = ss$df)
+        expect_s3_class(p, "ggplot")
+      },
+      error = function(err) {}
+    )
   })
 }

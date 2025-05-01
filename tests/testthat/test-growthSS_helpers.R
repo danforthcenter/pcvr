@@ -102,6 +102,68 @@ test_that("GrowthSS Helpers for Logistic Data work", {
   expect_type(ss, "list")
 })
 
+test_that("GrowthSS Helpers for 4 Parameter Logistic Data work", {
+  set.seed(123)
+  df <- growthSim("logistic4",
+    n = 20, t = 25,
+    params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5), "D" = c(5, 20))
+  )
+  ss <- suppressMessages(growthSS(
+    model = "logistic4", form = y ~ time | id / group,
+    df = df, type = "nls"
+  ))
+  expect_type(ss, "list")
+  ss <- suppressMessages(growthSS(
+    model = "logistic4", form = y ~ time | id / group,
+    df = df, type = "nlrq", tau = c(0.45, 0.55)
+  ))
+  expect_type(ss, "list")
+  ss <- suppressMessages(growthSS(
+    model = "logistic4", form = y ~ time | id / group,
+    df = df, type = "nlme"
+  ))
+  expect_type(ss, "list")
+  ss <- suppressMessages(growthSS(
+    model = "logistic4", form = y ~ time | id / group,
+    start = list("A" = 100, "B" = 10, "C" = 3, "D" = 5),
+    df = df, type = "brms"
+  ))
+  expect_type(ss, "list")
+})
+
+test_that("GrowthSS Helpers for 5 Parameter Logistic Data work", {
+  set.seed(123)
+  df <- growthSim("logistic5",
+    n = 20, t = 25,
+    params = list(
+      "A" = c(200, 160), "B" = c(13, 11),
+      "C" = c(3, 3.5), "D" = c(5, 20),
+      "E" = c(1, 1.5)
+    )
+  )
+  ss <- suppressMessages(growthSS(
+    model = "logistic5", form = y ~ time | id / group,
+    df = df, type = "nls"
+  ))
+  expect_type(ss, "list")
+  ss <- suppressMessages(growthSS(
+    model = "logistic5", form = y ~ time | id / group,
+    df = df, type = "nlrq", tau = c(0.45, 0.55)
+  ))
+  expect_type(ss, "list")
+  ss <- suppressMessages(growthSS(
+    model = "logistic5", form = y ~ time | id / group,
+    df = df, type = "nlme"
+  ))
+  expect_type(ss, "list")
+  ss <- suppressMessages(growthSS(
+    model = "logistic5", form = y ~ time | id / group,
+    start = list("A" = 100, "B" = 10, "C" = 3, "D" = 5, "E" = 1),
+    df = df, type = "brms"
+  ))
+  expect_type(ss, "list")
+})
+
 test_that("GrowthSS Helpers for Gompertz Data work", {
   set.seed(123)
   df <- growthSim("gompertz",
