@@ -115,14 +115,14 @@
 
 
 pcv.outliers <- function(df = NULL,
-                        phenotype,
-                        naTo0 = FALSE,
-                        group = c(),
-                        cutoff = 3,
-                        outlierMethod = "cooks",
-                        plotgroup = c("barcode", "rotation"),
-                        plot = TRUE, x = NULL, traitCol = "trait", valueCol = "value",
-                        labelCol = "label", idCol = NULL, ncp = NULL, separate = NULL) {
+                         phenotype,
+                         naTo0 = FALSE,
+                         group = c(),
+                         cutoff = 3,
+                         outlierMethod = "cooks",
+                         plotgroup = c("barcode", "rotation"),
+                         plot = TRUE, x = NULL, traitCol = "trait", valueCol = "value",
+                         labelCol = "label", idCol = NULL, ncp = NULL, separate = NULL) {
   wide <- .detectWideData(df, traitCol, valueCol)
   if (is.null(phenotype)) {
     stop("A phenotype must be provided")

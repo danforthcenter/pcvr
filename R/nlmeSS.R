@@ -255,7 +255,7 @@
     "~ 1 |",
     paste(group, collapse = "*")
   )))
-  
+
   formulas <- list(
     "model" = model_form, "random" = random_form,
     "fixed" = fixed_form, "groups" = groups_form,
@@ -298,7 +298,7 @@
     "~ 1 |",
     paste(group, collapse = "*")
   )))
-  
+
   formulas <- list(
     "model" = model_form, "random" = random_form,
     "fixed" = fixed_form, "groups" = groups_form,

@@ -160,6 +160,50 @@
 }
 
 
+#' `4 parameter logistic self starter`
+#' @examples
+#' simdf <- growthSim("logistic4",
+#'   n = 20, t = 25,
+#'   params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5), "D" = c(5, 20))
+#' )
+#' .initlogistic4(simdf, "time", "y")
+#'
+#' @keywords internal
+#' @noRd
+
+.initlogistic4 <- function(df, x, y, int = FALSE) {
+  obs_min <- min(df[[y]], na.rm = TRUE)
+  if (int) {
+    df[[y]] <- df[[y]] - obs_min
+  }
+  start <- .initlogistic(df, x, y, int = FALSE)
+  start <- stats::setNames(append(start, obs_min), c(names(start), "D"))
+  return(start)
+}
+
+#' `5 parameter logistic self starter`
+#' @examples
+#' simdf <- growthSim("logistic5",
+#'   n = 20, t = 25,
+#'   params = list("A" = c(200, 160), "B" = c(13, 11),
+#'   "C" = c(3, 3.5), "D" = c(5, 20), "E" = c(1, 1.5))
+#' )
+#' .initlogistic5(simdf, "time", "y")
+#'
+#' @keywords internal
+#' @noRd
+
+.initlogistic5 <- function(df, x, y, int = FALSE) {
+  obs_min <- min(df[[y]], na.rm = TRUE)
+  if (int) {
+    df[[y]] <- df[[y]] - obs_min
+  }
+  start <- .initlogistic(df, x, y, int = FALSE)
+  start <- stats::setNames(append(start, c(obs_min, 1)), c(names(start), "D", "E"))
+  return(start)
+}
+
+
 #' `Goempertz self starter`
 #'
 #' .initgompertz(simdf, "time", "y")

@@ -389,9 +389,9 @@
 #' @noRd
 
 .logistic4ChngptForm <- function(x, position = 1, dpar = NULL, priors) { # return f, cp, and cpInt
-  
+
   prefix <- chngptPrefix <- dpar
-  
+
   if (any(grepl(paste0("fixedChangePoint", position), names(priors)))) {
     changePointObj <- as.numeric(priors[[paste0(prefix, "fixedChangePoint", position)]])[1]
     fixed <- TRUE
@@ -399,12 +399,12 @@
   } else {
     fixed <- FALSE
   }
-  
+
   if (position == 1) {
     if (!fixed) {
       changePointObj <- "changePoint1"
     }
-    
+
     form <- paste0(
       prefix, "logistic4", position, "D + (",
       prefix, "logistic4", position, "A - ", prefix, "logistic4", position, "D)",
@@ -435,7 +435,7 @@
         priors[prevAndCurrentChangePoints[pac_fixed_index]]
       )
     }
-    
+
     form <- paste0(
       prefix, "logistic4", position, "D + (",
       prefix, "logistic4", position, "A - ", prefix, "logistic4", position, "D)",
@@ -489,9 +489,9 @@
 #' @noRd
 
 .logistic5ChngptForm <- function(x, position = 1, dpar = NULL, priors) { # return f, cp, and cpInt
-  
+
   prefix <- chngptPrefix <- dpar
-  
+
   if (any(grepl(paste0("fixedChangePoint", position), names(priors)))) {
     changePointObj <- as.numeric(priors[[paste0(prefix, "fixedChangePoint", position)]])[1]
     fixed <- TRUE
@@ -499,12 +499,12 @@
   } else {
     fixed <- FALSE
   }
-  
+
   if (position == 1) {
     if (!fixed) {
       changePointObj <- "changePoint1"
     }
-    
+
     form <- paste0(
       prefix, "logistic5", position, "D + ((",
       prefix, "logistic5", position, "A - ", prefix, "logistic5", position, "D)",
@@ -537,7 +537,7 @@
         priors[prevAndCurrentChangePoints[pac_fixed_index]]
       )
     }
-    
+
     form <- paste0(
       prefix, "logistic5", position, "D + ((",
       prefix, "logistic5", position, "A - ", prefix, "logistic5", position, "D)",

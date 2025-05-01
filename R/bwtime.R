@@ -85,9 +85,9 @@
 #' }
 #'
 pcv.time <- function(df = NULL, mode = c("DAS", "DAP", "DAE"), plantingDelay = NULL,
-                    phenotype = NULL, cutoff = 1, timeCol = "timestamp",
-                    group = "Barcodes", plot = TRUE, format = "%Y-%m-%d %H:%M:%S",
-                    traitCol = "trait", valueCol = "value", index = NULL, digits = 0) {
+                     phenotype = NULL, cutoff = 1, timeCol = "timestamp",
+                     group = "Barcodes", plot = TRUE, format = "%Y-%m-%d %H:%M:%S",
+                     traitCol = "trait", valueCol = "value", index = NULL, digits = 0) {
   wide <- .detectWideData(df, traitCol, valueCol) # see bwoutliers
 
   if (is.null(plantingDelay) && "DAP" %in% mode) {
