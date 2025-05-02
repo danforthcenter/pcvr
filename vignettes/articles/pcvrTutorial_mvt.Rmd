@@ -350,6 +350,8 @@ s2 <- sim_df[sim_df$group == "lognormal", grepl("sim", colnames(sim_df))]
 Now we can run `conjugate` on our samples. Here we use assume a lognormal distribution.
 
 ```{r}
+#| fig.alt: >
+#|   Plot of conjugate output using multi-value traits
 res <- conjugate(s1, s2,
   method = "lognormal",
   priors = list(mu = 10, sd = 5),
@@ -363,6 +365,8 @@ plot(res)
 We can also perform region of practical equivalence tests by specifying a `rope_range`.
 
 ```{r}
+#| fig.alt: >
+#|   Plot of conjugate output using multi-value traits
 res <- conjugate(s1, s2,
   method = "lognormal",
   priors = list(mu = 10, sd = 5),
