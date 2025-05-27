@@ -28,7 +28,9 @@ and \code{\link{brmPlot}} such as: outcome ~ predictor |individual/group}
 If left NULL then no prior is included.}
 
 \item{params}{a vector of parameters to include distribution plots of.
-Defaults to NULL which will use all parameters from the top level model.}
+Defaults to NULL which will use all parameters from the top level model. Note that these
+parameters have to be estimated per each group in the model, if you have interecept only terms
+(estimated once across all groups) then manually specify params to not include those.}
 
 \item{maxTime}{Optional parameter to designate a max time not observed in the models so far}
 
