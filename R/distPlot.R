@@ -9,7 +9,9 @@
 #'     \code{params}. This is only used if sample_prior=FALSE in the brmsfit object.
 #'     If left NULL then no prior is included.
 #' @param params a vector of parameters to include distribution plots of.
-#'     Defaults to NULL which will use all parameters from the top level model.
+#'     Defaults to NULL which will use all parameters from the top level model. Note that these
+#'     parameters have to be estimated per each group in the model, if you have interecept only terms
+#'     (estimated once across all groups) then manually specify params to not include those.
 #' @param maxTime Optional parameter to designate a max time not observed in the models so far
 #' @param patch Logical, should a patchwork plot be returned or should lists of ggplots be returned?
 #' @keywords Bayesian brms
@@ -128,13 +130,14 @@ distributionPlot <- function(fits, form, df, priors = NULL,
   posts <- do.call(rbind, lapply(fits, function(fit) {
     time <- max(fit$data[[x]], na.rm = TRUE)
     fitDraws <- do.call(cbind, lapply(params, function(par) {
-      draws <- as.data.frame(fit)[grepl(par, colnames(as.data.frame(fit)))]
+      draws <- as.data.frame(fit)[grepl(paste0("b_", par), colnames(as.data.frame(fit)))]
       if (nrow(brms::prior_draws(fit)) > 1) {
         draws <- draws[!grepl("^prior_", colnames(draws))]
       }
+      colnames(draws) <- gsub("^b_", "", colnames(draws))
       splits <- strsplit(colnames(draws), split = "")
       mx <- max(unlist(lapply(splits, length)))
-      ind <- which(unlist(lapply(1:mx, function(i) {
+      ind <- which(unlist(lapply(seq_len(mx), function(i) {
         l_over_1 <- length(unique(rapply(splits, function(j) {
           return(j[i])
         }))) != 1
@@ -147,7 +150,7 @@ distributionPlot <- function(fits, form, df, priors = NULL,
       }
       return(draws)
     }))
-    fitDraws$time <- time
+    fitDraws[[x]] <- time
     return(fitDraws)
   }))
 
@@ -157,15 +160,11 @@ distributionPlot <- function(fits, form, df, priors = NULL,
   USEPRIOR <- distPlotPriorExtractionRes[["UP"]]
 
   #* ***** `posterior distribution plots`
-  #* need to assign ordering of factors
-  #* if USEPRIOR then join data, don't make separate geom
 
   if (USEPRIOR) {
     posts <- rbind(prior_df, posts)
   }
   posts[[x]] <- factor(posts[[x]], levels = sort(as.numeric(unique(posts[[x]]))), ordered = TRUE)
-
-  lapply(posts, summary)
 
   xlims <- lapply(params, function(par) {
     diff <- as.numeric(as.matrix(posts[, grepl(paste0("^", par, "_"), colnames(posts))]))
