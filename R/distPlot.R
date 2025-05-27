@@ -100,16 +100,12 @@ distributionPlot <- function(fits, form, df, priors = NULL,
   if (is.null(params)) {
     fit <- fits[[1]]
     growthForm <- as.character(fit$formula[[1]])[[3]]
-
-    test <- gsub(x, "", growthForm) # ;test
-    test2 <- gsub("exp\\(", "", test) # ; test2
-    test3 <- gsub("\\(1", "", test2) # ;test3
-    test4 <- gsub("[/]|[+]|[-]|[)]|[()]", "", test3)
+    # note, simplify to proper regex
+    test <- gsub(x, "", growthForm)
+    test2 <- gsub("exp\\(", "", test)
+    test3 <- gsub("\\(1", "", test2)
+    test4 <- gsub("[/]|[+]|[-]|[)]|[()]|[*]|\\^", "", test3)
     params <- strsplit(test4, "\\s+")[[1]]
-
-
-    test3 <- gsub("[)]|[()]", "", test2)
-    test3
   }
 
   #* ***** `growth trendline plots`
