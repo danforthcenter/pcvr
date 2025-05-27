@@ -88,7 +88,7 @@ distributionPlot <- function(fits, form, df, priors = NULL,
   palettes <- lapply(
     seq_along(unique(fitData[[group]])),
     function(i) {
-      group_pal <- viridis::viridis(length(timeRange),
+      group_pal <- viridis::viridis(length(fits),
         begin = 0.1,
         end = 1, option = virOptions[i], direction = 1
       )
