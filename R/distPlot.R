@@ -9,9 +9,12 @@
 #'     \code{params}. This is only used if sample_prior=FALSE in the brmsfit object.
 #'     If left NULL then no prior is included.
 #' @param params a vector of parameters to include distribution plots of.
-#'     Defaults to NULL which will use all parameters from the top level model.
+#'     Defaults to NULL which will use all parameters from the top level model. Note that these
+#'     parameters have to be estimated per each group in the model, if you have interecept only terms
+#'     (estimated once across all groups) then manually specify params to not include those.
 #' @param maxTime Optional parameter to designate a max time not observed in the models so far
 #' @param patch Logical, should a patchwork plot be returned or should lists of ggplots be returned?
+#' @param virOptions A vector of names or letters for which viridis maps to use for each group.
 #' @keywords Bayesian brms
 #' @import ggplot2
 #' @import patchwork
@@ -60,7 +63,9 @@
 #' }
 #' ## End(Not run)
 distributionPlot <- function(fits, form, df, priors = NULL,
-                             params = NULL, maxTime = NULL, patch = TRUE) {
+                             params = NULL, maxTime = NULL, patch = TRUE,
+                             virOptions = c("plasma", "mako", "viridis", "cividis",
+                                            "magma", "turbo", "inferno", "rocket")) {
   #* ***** `Reused helper variables`
   parsed_form <- .parsePcvrForm(form, df)
   y <- parsed_form$y
@@ -74,19 +79,14 @@ distributionPlot <- function(fits, form, df, priors = NULL,
     return(min(ft$data[[x]], na.rm = TRUE))
   })))
   if (is.null(maxTime)) {
-    endTime <- max(unlist(lapply(fits, function(ft) {
+    maxTime <- max(unlist(lapply(fits, function(ft) {
       return(max(ft$data[[x]], na.rm = TRUE))
     })))
   }
-  byTime <- mean(diff(unlist(lapply(fits, function(ft) {
-    return(max(ft$data[[x]], na.rm = TRUE))
-  }))))
-  timeRange <- seq(startTime, endTime, byTime)
-  virOptions <- c("C", "G", "B", "D", "A", "H", "E", "F")
   palettes <- lapply(
     seq_along(unique(fitData[[group]])),
     function(i) {
-      group_pal <- viridis::viridis(length(timeRange),
+      group_pal <- viridis::viridis(length(fits),
         begin = 0.1,
         end = 1, option = virOptions[i], direction = 1
       )
@@ -100,16 +100,12 @@ distributionPlot <- function(fits, form, df, priors = NULL,
   if (is.null(params)) {
     fit <- fits[[1]]
     growthForm <- as.character(fit$formula[[1]])[[3]]
-
-    test <- gsub(x, "", growthForm) # ;test
-    test2 <- gsub("exp\\(", "", test) # ; test2
-    test3 <- gsub("\\(1", "", test2) # ;test3
-    test4 <- gsub("[/]|[+]|[-]|[)]|[()]", "", test3)
+    # note, simplify to proper regex
+    test <- gsub(x, "", growthForm)
+    test2 <- gsub("exp\\(", "", test)
+    test3 <- gsub("\\(1", "", test2)
+    test4 <- gsub("[/]|[+]|[-]|[)]|[()]|[*]|\\^", "", test3)
     params <- strsplit(test4, "\\s+")[[1]]
-
-
-    test3 <- gsub("[)]|[()]", "", test2)
-    test3
   }
 
   #* ***** `growth trendline plots`
@@ -122,9 +118,23 @@ distributionPlot <- function(fits, form, df, priors = NULL,
     )) +
       ggplot2::geom_line(show.legend = FALSE) +
       viridis::scale_color_viridis(begin = 0.1, end = 1, option = virOptions[i], direction = 1) +
-      ggplot2::scale_x_continuous(limits = c(startTime, endTime)) +
+      ggplot2::scale_x_continuous(limits = c(startTime, maxTime)) +
       pcv_theme()
     return(p)
+  })
+  growth_lims <- do.call(rbind, lapply(growthTrendPlots, function(p) {
+    x_lims <- ggplot2::layer_scales(p)$x$range$range
+    y_lims <- ggplot2::layer_scales(p)$y$range$range
+    return(matrix(c(x_lims, y_lims), nrow = 1))
+  }))
+  x_min <- min(growth_lims[, 1])
+  x_max <- max(growth_lims[, 2])
+  y_min <- min(growth_lims[, 3])
+  y_max <- max(growth_lims[, 4])
+  growthTrendPlots <- lapply(growthTrendPlots, function(p) {
+    p_update <- p +
+      ggplot2::coord_cartesian(xlim = c(x_min, x_max), ylim = c(y_min, y_max))
+    return(p_update)
   })
 
   #* ***** `posterior distribution extraction`
@@ -132,13 +142,14 @@ distributionPlot <- function(fits, form, df, priors = NULL,
   posts <- do.call(rbind, lapply(fits, function(fit) {
     time <- max(fit$data[[x]], na.rm = TRUE)
     fitDraws <- do.call(cbind, lapply(params, function(par) {
-      draws <- as.data.frame(fit)[grepl(par, colnames(as.data.frame(fit)))]
+      draws <- as.data.frame(fit)[grepl(paste0("b_", par), colnames(as.data.frame(fit)))]
       if (nrow(brms::prior_draws(fit)) > 1) {
         draws <- draws[!grepl("^prior_", colnames(draws))]
       }
+      colnames(draws) <- gsub("^b_", "", colnames(draws))
       splits <- strsplit(colnames(draws), split = "")
       mx <- max(unlist(lapply(splits, length)))
-      ind <- which(unlist(lapply(1:mx, function(i) {
+      ind <- which(unlist(lapply(seq_len(mx), function(i) {
         l_over_1 <- length(unique(rapply(splits, function(j) {
           return(j[i])
         }))) != 1
@@ -151,7 +162,7 @@ distributionPlot <- function(fits, form, df, priors = NULL,
       }
       return(draws)
     }))
-    fitDraws$time <- time
+    fitDraws[[x]] <- time
     return(fitDraws)
   }))
 
@@ -161,15 +172,11 @@ distributionPlot <- function(fits, form, df, priors = NULL,
   USEPRIOR <- distPlotPriorExtractionRes[["UP"]]
 
   #* ***** `posterior distribution plots`
-  #* need to assign ordering of factors
-  #* if USEPRIOR then join data, don't make separate geom
 
   if (USEPRIOR) {
     posts <- rbind(prior_df, posts)
   }
   posts[[x]] <- factor(posts[[x]], levels = sort(as.numeric(unique(posts[[x]]))), ordered = TRUE)
-
-  lapply(posts, summary)
 
   xlims <- lapply(params, function(par) {
     diff <- as.numeric(as.matrix(posts[, grepl(paste0("^", par, "_"), colnames(posts))]))
