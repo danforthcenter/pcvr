@@ -74,14 +74,14 @@ distributionPlot <- function(fits, form, df, priors = NULL,
     return(min(ft$data[[x]], na.rm = TRUE))
   })))
   if (is.null(maxTime)) {
-    endTime <- max(unlist(lapply(fits, function(ft) {
+    maxTime <- max(unlist(lapply(fits, function(ft) {
       return(max(ft$data[[x]], na.rm = TRUE))
     })))
   }
   byTime <- mean(diff(unlist(lapply(fits, function(ft) {
     return(max(ft$data[[x]], na.rm = TRUE))
   }))))
-  timeRange <- seq(startTime, endTime, byTime)
+  timeRange <- seq(startTime, maxTime, byTime)
   virOptions <- c("C", "G", "B", "D", "A", "H", "E", "F")
   palettes <- lapply(
     seq_along(unique(fitData[[group]])),
@@ -118,7 +118,7 @@ distributionPlot <- function(fits, form, df, priors = NULL,
     )) +
       ggplot2::geom_line(show.legend = FALSE) +
       viridis::scale_color_viridis(begin = 0.1, end = 1, option = virOptions[i], direction = 1) +
-      ggplot2::scale_x_continuous(limits = c(startTime, endTime)) +
+      ggplot2::scale_x_continuous(limits = c(startTime, maxTime)) +
       pcv_theme()
     return(p)
   })
