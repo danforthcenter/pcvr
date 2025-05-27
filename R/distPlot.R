@@ -82,7 +82,7 @@ distributionPlot <- function(fits, form, df, priors = NULL,
     return(max(ft$data[[x]], na.rm = TRUE))
   }))))
   timeRange <- seq(startTime, maxTime, byTime)
-  virOptions <- c("C", "G", "B", "D", "A", "H", "E", "F")
+  virOptions <- c("C", "G", "D", "E", "A", "H", "B", "F")
   palettes <- lapply(
     seq_along(unique(fitData[[group]])),
     function(i) {
