@@ -70,7 +70,9 @@
 <span>  priors <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  params <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  maxTime <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  patch <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  patch <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  virOptions <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"plasma"</span>, <span class="st">"mako"</span>, <span class="st">"viridis"</span>, <span class="st">"cividis"</span>, <span class="st">"magma"</span>, <span class="st">"turbo"</span>, <span class="st">"inferno"</span>,</span>
+<span>    <span class="st">"rocket"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -100,7 +102,9 @@ If left NULL then no prior is included.</p></dd>
 
 <dt id="arg-params">params<a class="anchor" aria-label="anchor" href="#arg-params"></a></dt>
 <dd><p>a vector of parameters to include distribution plots of.
-Defaults to NULL which will use all parameters from the top level model.</p></dd>
+Defaults to NULL which will use all parameters from the top level model. Note that these
+parameters have to be estimated per each group in the model, if you have interecept only terms
+(estimated once across all groups) then manually specify params to not include those.</p></dd>
 
 
 <dt id="arg-maxtime">maxTime<a class="anchor" aria-label="anchor" href="#arg-maxtime"></a></dt>
@@ -109,6 +113,10 @@ Defaults to NULL which will use all parameters from the top level model.</p></dd
 
 <dt id="arg-patch">patch<a class="anchor" aria-label="anchor" href="#arg-patch"></a></dt>
 <dd><p>Logical, should a patchwork plot be returned or should lists of ggplots be returned?</p></dd>
+
+
+<dt id="arg-viroptions">virOptions<a class="anchor" aria-label="anchor" href="#arg-viroptions"></a></dt>
+<dd><p>A vector of names or letters for which viridis maps to use for each group.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -210,7 +218,7 @@ Defaults to NULL which will use all parameters from the top level model.</p></dd
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer></div>
