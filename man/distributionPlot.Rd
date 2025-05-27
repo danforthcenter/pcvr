@@ -11,7 +11,9 @@ distributionPlot(
   priors = NULL,
   params = NULL,
   maxTime = NULL,
-  patch = TRUE
+  patch = TRUE,
+  virOptions = c("plasma", "mako", "viridis", "cividis", "magma", "turbo", "inferno",
+    "rocket")
 )
 }
 \arguments{
@@ -35,6 +37,8 @@ parameters have to be estimated per each group in the model, if you have interec
 \item{maxTime}{Optional parameter to designate a max time not observed in the models so far}
 
 \item{patch}{Logical, should a patchwork plot be returned or should lists of ggplots be returned?}
+
+\item{virOptions}{A vector of names or letters for which viridis maps to use for each group.}
 }
 \value{
 A ggplot or a list of ggplots (depending on patch).

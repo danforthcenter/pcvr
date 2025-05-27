@@ -14,6 +14,7 @@
 #'     (estimated once across all groups) then manually specify params to not include those.
 #' @param maxTime Optional parameter to designate a max time not observed in the models so far
 #' @param patch Logical, should a patchwork plot be returned or should lists of ggplots be returned?
+#' @param virOptions A vector of names or letters for which viridis maps to use for each group.
 #' @keywords Bayesian brms
 #' @import ggplot2
 #' @import patchwork
@@ -62,7 +63,9 @@
 #' }
 #' ## End(Not run)
 distributionPlot <- function(fits, form, df, priors = NULL,
-                             params = NULL, maxTime = NULL, patch = TRUE) {
+                             params = NULL, maxTime = NULL, patch = TRUE,
+                             virOptions = c("plasma", "mako", "viridis", "cividis",
+                                            "magma", "turbo", "inferno", "rocket")) {
   #* ***** `Reused helper variables`
   parsed_form <- .parsePcvrForm(form, df)
   y <- parsed_form$y
@@ -80,11 +83,6 @@ distributionPlot <- function(fits, form, df, priors = NULL,
       return(max(ft$data[[x]], na.rm = TRUE))
     })))
   }
-  byTime <- mean(diff(unlist(lapply(fits, function(ft) {
-    return(max(ft$data[[x]], na.rm = TRUE))
-  }))))
-  timeRange <- seq(startTime, maxTime, byTime)
-  virOptions <- c("C", "G", "D", "E", "A", "H", "B", "F")
   palettes <- lapply(
     seq_along(unique(fitData[[group]])),
     function(i) {
@@ -123,6 +121,20 @@ distributionPlot <- function(fits, form, df, priors = NULL,
       ggplot2::scale_x_continuous(limits = c(startTime, maxTime)) +
       pcv_theme()
     return(p)
+  })
+  growth_lims <- do.call(rbind, lapply(growthTrendPlots, function(p) {
+    x_lims <- ggplot2::layer_scales(p)$x$range$range
+    y_lims <- ggplot2::layer_scales(p)$y$range$range
+    return(matrix(c(x_lims, y_lims), nrow = 1))
+  }))
+  x_min <- min(growth_lims[, 1])
+  x_max <- max(growth_lims[, 2])
+  y_min <- min(growth_lims[, 3])
+  y_max <- max(growth_lims[, 4])
+  growthTrendPlots <- lapply(growthTrendPlots, function(p) {
+    p_update <- p +
+      ggplot2::coord_cartesian(xlim = c(x_min, x_max), ylim = c(y_min, y_max))
+    return(p_update)
   })
 
   #* ***** `posterior distribution extraction`
