@@ -89,6 +89,7 @@ test_that("Logistic brms model pipeline", {
       "A" = 130, "B" = 10, "C" = 3,
       "sigmaA" = 20, "sigmaB" = 10, "sigmaC" = 3
     ),
+    pars = c("A", "B"),
     df = simdf, type = "brms"
   )
   pp1 <- plotPrior(ss)
