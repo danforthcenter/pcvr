@@ -318,6 +318,7 @@
 
   out[["formula"]] <- bayesForm
   #* ***** `Make priors` *****
+  pars <- unlist(pars)
   out[["prior"]] <- .makePriors(priors, pars, df, group, USEGROUP, sigma, family, bayesForm)
   #* ***** `Make initializer function` *****
   if (as.logical(length(pars))) {
