@@ -304,7 +304,7 @@
 #'    \item{\strong{data}}: Data from s1 and s2 arguments.
 #'    \item{\strong{call}}: The function call.
 #' }
-#' @seealso [barg() for additional reporting]
+#' @seealso \link{barg} for additional reporting
 #' @keywords bayesian conjugate priors ROPE
 #' @export
 

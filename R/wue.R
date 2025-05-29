@@ -15,7 +15,7 @@
 #'
 #' @param df Dataframe containing wide single-value phenotype data.
 #'     This should already be aggregated to one row per plant per day (angles/rotations combined).
-#' @param w Watering data as returned from bw.water.
+#' @param w Watering data as returned from pcv.water.
 #' @param pheno Phenotype column name, defaults to "area_pixels"
 #' @param time Variable(s) that identify a plant on a given day.
 #'     Defaults to \code{c("barcode", "DAS")}.

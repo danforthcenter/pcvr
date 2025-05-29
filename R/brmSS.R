@@ -126,11 +126,7 @@
 .brmSS <- function(model, form, sigma = NULL, df, priors = NULL, int = FALSE, hierarchy = NULL,
                    pars = NULL) {
   out <- list()
-  models <- c(
-    "int", "logistic", "gompertz", "monomolecular", "exponential", "linear", "power law", "logarithmic",
-    "double logistic", "double gompertz", "gam", "spline", "homo", "frechet", "gumbel", "weibull",
-    "not_estimated", "bragg", "lorentz", "beta"
-  )
+  models <- c(.available_models(), "not_estimated", "int", "spline", "homo")
   varying_pars <- pars
   #* ***** `Make bayesian formula` *****
   #* `parse form argument`

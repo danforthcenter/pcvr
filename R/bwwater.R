@@ -11,7 +11,7 @@
 #' @examples
 #' tryCatch(
 #'   {
-#'     w <- bw.water("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/metadata.json")
+#'     w <- pcv.water("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/metadata.json")
 #'   },
 #'   error = function(e) {
 #'     message(e)
@@ -19,7 +19,7 @@
 #' )
 #' @export
 
-bw.water <- function(file = NULL, envKey = "environment") {
+pcv.water <- function(file = NULL, envKey = "environment") {
   meta <- jsonlite::fromJSON(txt = file)
   env <- as.data.frame(do.call(rbind, meta[[envKey]]))
   env$snapshot <- rownames(env)

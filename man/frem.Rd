@@ -57,7 +57,8 @@ Returns either a plot (if returnData=FALSE) or a list with a plot and
 data/a list of dataframes (depending on returnData and cor).
 }
 \description{
-Variance partitioning for phenotypes (over time) using fully random effects models
+Variance partitioning for phenotypes (over time) using full random effects models
+(also called Variance Components models).
 }
 \examples{
 

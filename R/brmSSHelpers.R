@@ -346,6 +346,73 @@
   }
   return(list(form = form, pars = pars))
 }
+
+#' Helper function for 4 parameter logistic brms formulas
+#'
+#' @keywords internal
+#' @noRd
+
+.brms_form_logistic4 <- function(x, y, group, dpar = FALSE,
+                                 nTimes = NULL, useGroup = TRUE, prior = NULL, int = FALSE, ...) {
+  if (dpar) {
+    if (int) {
+      form <- brms::nlf(stats::as.formula(paste0(
+        y, " ~ ", y, "I + ", y, "D + (", y, "A - D", y, ")/(1+exp((",
+        y, "B-", x, ")/", y, "C))"
+      )))
+      pars <- paste0(y, LETTERS[c(1:4, 9)])
+    } else {
+      form <- brms::nlf(stats::as.formula(paste0(
+        y, " ~ ", y, "D + (", y, "A - ", y, "D)/(1+exp((",
+        y, "B-", x, ")/", y, "C))"
+      )))
+      pars <- paste0(y, LETTERS[1:4])
+    }
+  } else {
+    if (int) {
+      form <- stats::as.formula(paste0(y, " ~ I + D + (A - D)/(1+exp((B-", x, ")/C))"))
+      pars <- LETTERS[c(1:4, 9)]
+    } else {
+      form <- stats::as.formula(paste0(y, " ~ D + (A - D)/(1+exp((B-", x, ")/C))"))
+      pars <- LETTERS[1:4]
+    }
+  }
+  return(list(form = form, pars = pars))
+}
+
+#' Helper function for 5 parameter logistic brms formulas
+#'
+#' @keywords internal
+#' @noRd
+
+.brms_form_logistic5 <- function(x, y, group, dpar = FALSE,
+                                 nTimes = NULL, useGroup = TRUE, prior = NULL, int = FALSE, ...) {
+  if (dpar) {
+    if (int) {
+      form <- brms::nlf(stats::as.formula(paste0(
+        y, " ~ ", y, "I + (", y, "D + (", y, "A - D", y, ")/(1+exp((",
+        y, "B-", x, ")/", y, "C)) ^ ", y, "E)"
+      )))
+      pars <- paste0(y, LETTERS[c(1:5, 9)])
+    } else {
+      form <- brms::nlf(stats::as.formula(paste0(
+        y, " ~ ", y, "D + ((", y, "A - ", y, "D)/(1+exp((",
+        y, "B-", x, ")/", y, "C)) ^ ", y, "E)"
+      )))
+      pars <- paste0(y, LETTERS[1:5])
+    }
+  } else {
+    if (int) {
+      form <- stats::as.formula(paste0(y, " ~ I + D + ((A - D)/(1+exp((B-", x, ")/C)) ^ E)"))
+      pars <- LETTERS[c(1:5, 9)]
+    } else {
+      form <- stats::as.formula(paste0(y, " ~ D + ((A - D)/(1+exp((B-", x, ")/C)) ^ E)"))
+      pars <- LETTERS[1:5]
+    }
+  }
+  return(list(form = form, pars = pars))
+}
+
 #' Helper function for brms formulas
 #'
 #' @keywords internal

@@ -7,7 +7,7 @@ output:
     toc: true
     number_sections: false
     code_folding: show
-date: "2023-10-27"
+date: "`r Sys.Date()`"
 vignette: >
   %\VignetteIndexEntry{Longitudinal Growth Modeling Options}
   %\VignetteEncoding{UTF-8}

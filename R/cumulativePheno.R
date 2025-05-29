@@ -42,11 +42,11 @@
 #'       ifelse(sv$fertilizer == "B", "50", "0")
 #'     )
 #'
-#'     sv <- bw.time(sv,
+#'     sv <- pcv.time(sv,
 #'       plantingDelay = 0, phenotype = "area_pixels", cutoff = 10,
 #'       timeCol = "timestamp", group = c("barcode", "rotation"), plot = TRUE
 #'     )$data
-#'     sv <- bw.outliers(sv,
+#'     sv <- pcv.outliers(sv,
 #'       phenotype = "area_pixels", group = c("DAS", "genotype", "fertilizer"),
 #'       plotgroup = c("barcode", "rotation")
 #'     )$data
@@ -79,7 +79,7 @@
 #'     sv_l$fertilizer <- ifelse(sv_l$fertilizer == "A", "100",
 #'       ifelse(sv_l$fertilizer == "B", "50", "0")
 #'     )
-#'     sv_l <- bw.time(sv_l,
+#'     sv_l <- pcv.time(sv_l,
 #'       plantingDelay = 0, phenotype = "area_pixels", cutoff = 10,
 #'       timeCol = "timestamp", group = c("barcode", "rotation")
 #'     )$data

@@ -3,7 +3,8 @@
 #' @description growthSim can be used to help pick reasonable parameters for common
 #'  growth models to use in prior distributions or to simulate data for example models/plots.
 #'
-#' @param model One of "logistic", "gompertz", "weibull", "frechet", "gumbel", "monomolecular",
+#' @param model One of "logistic", "logistic4", "logistic5", "gompertz",
+#' "weibull", "frechet", "gumbel", "monomolecular",
 #' "exponential", "linear", "power law", "logarithmic", "bragg",
 #' "double logistic", or "double gompertz".
 #' Alternatively this can be a pseudo formula to generate data from a segmented growth curve by
@@ -37,6 +38,23 @@
 #' ggplot(simdf, aes(time, y, group = interaction(group, id))) +
 #'   geom_line(aes(color = group)) +
 #'   labs(title = "Logistic")
+#'
+#' simdf <- growthSim("logistic4",
+#'   n = 20, t = 25,
+#'   params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5), "D" = c(20, 40))
+#' )
+#' ggplot(simdf, aes(time, y, group = interaction(group, id))) +
+#'   geom_line(aes(color = group)) +
+#'   labs(title = "4 Parameter Logistic")
+#'
+#' simdf <- growthSim("logistic5",
+#'   n = 20, t = 25,
+#'   params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(2, 1.5),
+#'   "D" = c(0, 20), "E" = c(3, 3))
+#' )
+#' ggplot(simdf, aes(time, y, group = interaction(group, id))) +
+#'   geom_line(aes(color = group)) +
+#'   labs(title = "5 Parameter Logistic")
 #'
 #' simdf <- growthSim("gompertz",
 #'   n = 20, t = 25,
@@ -186,8 +204,16 @@
 #'     The \code{params} argument requires some understanding of how each growth model is parameterized.
 #'     Examples of each are below should help, as will the examples.
 #'     \itemize{
-#'     \item \bold{Logistic}: `A / (1 + exp( (B-x)/C) )`
+#'     \item \bold{Logistic}: `A / (1 + exp( (B-x)/C))`
 #'     Where A is the asymptote, B is the inflection point, C is the growth rate.
+#'     \item \bold{Logistic4}: `D + (A - D) / (1 + exp((B - x) / C))`
+#'     Where A is the asymptote (maximum), B is the inflection point, C is the growth rate,
+#'     and D is the lower asymptote (minimum, if this is 0 then the model converges to 3 parameter
+#'     logistic).
+#'     \item \bold{Logistic5}: `D + ((A - D) / (1 + exp((B - x) / C)) ^ E)`
+#'     Where A is the asymptote (maximum), B is the inflection point, C is the growth rate,
+#'     and D is the lower asymptote (minimum), and E is the asymmetry factor (1 is symmetric
+#'     and converges to 4 parameter logistic).
 #'     \item \bold{Gompertz}: `A * exp(-B * exp(-C*x))`
 #'     Where A is the asymptote, B is the inflection point, C is the growth rate.
 #'     \item \bold{Weibull}: `A * (1-exp(-(x/C)^B))`
@@ -241,9 +267,9 @@
 
 growthSim <- function(
     model = c(
-      "logistic", "gompertz", "double logistic", "double gompertz",
-      "monomolecular", "exponential", "linear", "power law", "frechet",
-      "weibull", "gumbel", "logarithmic", "bragg", "lorentz", "beta"
+      "logistic", "logistic4", "logistic5", "gompertz", "double logistic", "double gompertz",
+      "monomolecular", "exponential", "linear", "power law", "frechet", "weibull", "gumbel",
+      "logarithmic", "bragg", "lorentz", "beta"
     ),
     n = 20, t = 25, params = list(), D = 0) {
   if (grepl("count:", model)) {
@@ -414,11 +440,7 @@ growthSim <- function(
 #' @noRd
 
 .singleGrowthSim <- function(model, n = 20, t = 25, params = list(), noise = NULL, D, int) {
-  models <- c(
-    "logistic", "gompertz", "double logistic", "double gompertz",
-    "monomolecular", "exponential", "linear", "power law", "frechet", "weibull", "gumbel",
-    "logarithmic", "bragg", "lorentz", "beta"
-  )
+  models <- .available_models()
 
   if (grepl("decay", model)) {
     decay <- TRUE
@@ -468,6 +490,21 @@ gsi_logistic <- function(x, pars, noise) {
   b_r <- pars[["B"]] + rnorm(1, mean = 0, sd = noise[["B"]])
   c_r <- pars[["C"]] + rnorm(1, mean = 0, sd = noise[["C"]])
   return(a_r / (1 + exp((b_r - x) / c_r)))
+}
+gsi_logistic4 <- function(x, pars, noise) {
+  a_r <- pars[["A"]] + rnorm(1, mean = 0, sd = noise[["A"]])
+  b_r <- pars[["B"]] + rnorm(1, mean = 0, sd = noise[["B"]])
+  c_r <- pars[["C"]] + rnorm(1, mean = 0, sd = noise[["C"]])
+  d_r <- pars[["D"]] + rnorm(1, mean = 0, sd = noise[["D"]])
+  return(d_r + (a_r - d_r) / (1 + exp((b_r - x) / c_r)))
+}
+gsi_logistic5 <- function(x, pars, noise) {
+  a_r <- pars[["A"]] + rnorm(1, mean = 0, sd = noise[["A"]])
+  b_r <- pars[["B"]] + rnorm(1, mean = 0, sd = noise[["B"]])
+  c_r <- pars[["C"]] + rnorm(1, mean = 0, sd = noise[["C"]])
+  d_r <- pars[["D"]] + rnorm(1, mean = 0, sd = noise[["D"]])
+  e_r <- pars[["E"]] + rnorm(1, mean = 0, sd = noise[["E"]])
+  return(d_r + ((a_r - d_r) / (1 + exp((b_r - x) / c_r)) ^ e_r))
 }
 gsi_gompertz <- function(x, pars, noise) {
   a_r <- pars[["A"]] + rnorm(1, mean = 0, sd = noise[["A"]])

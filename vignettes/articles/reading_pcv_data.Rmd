@@ -156,10 +156,10 @@ colnames(all)
 
 ### Other metadata
 
-Often we want to convert our timestamp data from the lemnatech into either days after start (DAS), days after planting (DAP), or days after emergence (DAE). By default the `bw.time` function will add columns called DAS, DAP, and DAE to your data. Days after emergence requires using a phenotype and a value to classify emergence. Here an area greater than 10 pixels is considered an emerged plant. In this example with a planting delay of 0 DAP and DAE will be the same, but both are still created for the purpose of the example.
+Often we want to convert our timestamp data from the lemnatech into either days after start (DAS), days after planting (DAP), or days after emergence (DAE). By default the `pcv.time` function will add columns called DAS, DAP, and DAE to your data. Days after emergence requires using a phenotype and a value to classify emergence. Here an area greater than 10 pixels is considered an emerged plant. In this example with a planting delay of 0 DAP and DAE will be the same, but both are still created for the purpose of the example.
 
 ```{r}
-out <- bw.time(sv,
+out <- pcv.time(sv,
   plantingDelay = 0, phenotype = "area_pixels", cutoff = 10,
   timeCol = "timestamp", group = c("barcode", "rotation"), plot = TRUE
 )
@@ -191,10 +191,10 @@ dim(sv_ag_with_outliers)
 
 ### Outlier Removal
 
-The `bw.outliers` function can be used to remove outliers relative to a phenotype using cook's distance. Here due to the experimental design having these plants germinate on the machine around 1 percent of data are removed as outliers. The plot shows removed data points in red, although here that is hard to see.
+The `pcv.outliers` function can be used to remove outliers relative to a phenotype using cook's distance. Here due to the experimental design having these plants germinate on the machine around 1 percent of data are removed as outliers. The plot shows removed data points in red, although here that is hard to see.
 
 ```{r}
-out <- bw.outliers(
+out <- pcv.outliers(
   df = sv_ag_with_outliers, phenotype = "area_pixels",
   group = c("DAS", "genotype", "fertilizer"), plotgroup = c("barcode")
 )
@@ -212,10 +212,10 @@ checkGroups(sv_ag, c("DAS", "barcode", "genotype", "fertilizer"))
 
 ### Watering Data
 
-We might also want to check the watering data, which can be read easily from json with `bw.water`.
+We might also want to check the watering data, which can be read easily from json with `pcv.water`.
 
 ```{r}
-water <- bw.water(paste0(base_url, "metadata.json"))
+water <- pcv.water(paste0(base_url, "metadata.json"))
 
 water$genotype <- substr(water$barcode, 3, 5)
 water$genotype <- ifelse(water$genotype == "002", "B73",
@@ -275,7 +275,7 @@ hue_wide$fertilizer <- substr(hue_wide$barcode, 8, 8)
 hue_wide$fertilizer <- ifelse(hue_wide$fertilizer == "A", "100",
   ifelse(hue_wide$fertilizer == "B", "50", "0")
 )
-hue_wide <- bw.time(hue_wide, timeCol = "timestamp", group = "barcode", plot = FALSE)
+hue_wide <- pcv.time(hue_wide, timeCol = "timestamp", group = "barcode", plot = FALSE)
 
 phenotypes <- colnames(hue_wide)[grepl("hue_frequencies", colnames(hue_wide))]
 phenoForm <- paste0("cbind(", paste0(phenotypes, collapse = ", "), ")")

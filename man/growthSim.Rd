@@ -5,9 +5,9 @@
 \title{Growth data simulating function}
 \usage{
 growthSim(
-  model = c("logistic", "gompertz", "double logistic", "double gompertz",
-    "monomolecular", "exponential", "linear", "power law", "frechet", "weibull",
-    "gumbel", "logarithmic", "bragg", "lorentz", "beta"),
+  model = c("logistic", "logistic4", "logistic5", "gompertz", "double logistic",
+    "double gompertz", "monomolecular", "exponential", "linear", "power law", "frechet",
+    "weibull", "gumbel", "logarithmic", "bragg", "lorentz", "beta"),
   n = 20,
   t = 25,
   params = list(),
@@ -15,7 +15,8 @@ growthSim(
 )
 }
 \arguments{
-\item{model}{One of "logistic", "gompertz", "weibull", "frechet", "gumbel", "monomolecular",
+\item{model}{One of "logistic", "logistic4", "logistic5", "gompertz",
+"weibull", "frechet", "gumbel", "monomolecular",
 "exponential", "linear", "power law", "logarithmic", "bragg",
 "double logistic", or "double gompertz".
 Alternatively this can be a pseudo formula to generate data from a segmented growth curve by
@@ -50,8 +51,16 @@ growthSim can be used to help pick reasonable parameters for common
 The \code{params} argument requires some understanding of how each growth model is parameterized.
     Examples of each are below should help, as will the examples.
     \itemize{
-    \item \bold{Logistic}: `A / (1 + exp( (B-x)/C) )`
+    \item \bold{Logistic}: `A / (1 + exp( (B-x)/C))`
     Where A is the asymptote, B is the inflection point, C is the growth rate.
+    \item \bold{Logistic4}: `D + (A - D) / (1 + exp((B - x) / C))`
+    Where A is the asymptote (maximum), B is the inflection point, C is the growth rate,
+    and D is the lower asymptote (minimum, if this is 0 then the model converges to 3 parameter
+    logistic).
+    \item \bold{Logistic5}: `D + ((A - D) / (1 + exp((B - x) / C)) ^ E)`
+    Where A is the asymptote (maximum), B is the inflection point, C is the growth rate,
+    and D is the lower asymptote (minimum), and E is the asymmetry factor (1 is symmetric
+    and converges to 4 parameter logistic).
     \item \bold{Gompertz}: `A * exp(-B * exp(-C*x))`
     Where A is the asymptote, B is the inflection point, C is the growth rate.
     \item \bold{Weibull}: `A * (1-exp(-(x/C)^B))`
@@ -109,6 +118,23 @@ simdf <- growthSim("logistic",
 ggplot(simdf, aes(time, y, group = interaction(group, id))) +
   geom_line(aes(color = group)) +
   labs(title = "Logistic")
+
+simdf <- growthSim("logistic4",
+  n = 20, t = 25,
+  params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5), "D" = c(20, 40))
+)
+ggplot(simdf, aes(time, y, group = interaction(group, id))) +
+  geom_line(aes(color = group)) +
+  labs(title = "4 Parameter Logistic")
+
+simdf <- growthSim("logistic5",
+  n = 20, t = 25,
+  params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(2, 1.5),
+  "D" = c(0, 20), "E" = c(3, 3))
+)
+ggplot(simdf, aes(time, y, group = interaction(group, id))) +
+  geom_line(aes(color = group)) +
+  labs(title = "5 Parameter Logistic")
 
 simdf <- growthSim("gompertz",
   n = 20, t = 25,

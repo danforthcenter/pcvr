@@ -20,7 +20,7 @@ pwue(
 \item{df}{Dataframe containing wide single-value phenotype data.
 This should already be aggregated to one row per plant per day (angles/rotations combined).}
 
-\item{w}{Watering data as returned from bw.water.}
+\item{w}{Watering data as returned from pcv.water.}
 
 \item{pheno}{Phenotype column name, defaults to "area_pixels"}
 
