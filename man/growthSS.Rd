@@ -126,8 +126,8 @@ If this is not provided then starting values are picked with \code{stats::selfSt
   bound explicitly. Those warnings can safely be ignored and will be addressed if
   the necessary features are added to \code{brms}. See details for guidance.}
 
-\item{pars}{Optionally specify which parameters should change by group. Not this is model
-dependent and is not implemented for brms models due to their more flexible hypothesis testing.}
+\item{pars}{Optionally specify which parameters should change by group. By default all parameters
+are modeled by group.}
 
 \item{type}{Type of model to fit, options are "brms", "nlrq", "nlme", "nls", and "mgcv".
 Note that the "mgcv" option only supports "gam" models.

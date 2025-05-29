@@ -81,6 +81,13 @@ test_that("Logistic brms model pipeline", {
     )
   )
   expect_s3_class(plot3, "ggplot")
+  pp1 <- plotPrior(ss2)
+  expect_s3_class(pp1, "ggplot")
+  ss2 <- ss
+  ss2$prior <- data.frame()
+  expect_error(
+    err <- plotPrior(ss2)
+  )
   plots4 <- distributionPlot(
     list(fit1, fit2),
     form = ss$pcvrForm, d = ss$df,
@@ -95,14 +102,8 @@ test_that("Logistic brms model pipeline", {
       "A" = 130, "B" = 10, "C" = 3,
       "sigmaA" = 20, "sigmaB" = 10, "sigmaC" = 3
     ),
+    pars = c("A", "B"),
     df = simdf, type = "brms"
-  )
-  pp1 <- plotPrior(ss)
-  expect_s3_class(pp1, "ggplot")
-  ss2 <- ss
-  ss2$prior <- data.frame()
-  expect_error(
-    err <- plotPrior(ss2)
   )
   pp2 <- plotPrior(
     priors = list("A" = c(100, 130), "B" = c(10, 8), "C" = c(0.2, 0.1)),
