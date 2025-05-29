@@ -287,7 +287,7 @@
   #* `Make parameter grouping formulae`
   if (!is.null(varying_pars)) {
     pars <- split(pars, ifelse(pars %in% varying_pars, "vary", "int"))
-  } else {
+  } else if (!is.null(pars)) {
     pars <- list("vary" = pars)
   }
   if (any(as.logical(unlist(lapply(pars, length))))) {
