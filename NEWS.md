@@ -1,3 +1,7 @@
+# pcvr 1.2.0.1
+
+Allowing `brms` models from `growthSS` to specify subset of parameters to estimate per group.
+
 # pcvr 1.2.0
 
 Added `conjugate` S3 method for outputs from conjugate class.
