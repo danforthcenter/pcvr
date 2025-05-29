@@ -35,6 +35,8 @@
 #'   this function but can still be provided as a \code{brmsprior} object.
 #'   See details for guidance.
 #' @param int Logical, should an intercept term be included?
+#' @param hierarchy any hierarchical formulas
+#' @param pars a specific group of parameters to vary by group (default is all)
 #' @keywords Bayesian, brms
 #'
 #' @importFrom stats as.formula rgamma
@@ -121,13 +123,15 @@
 #' @keywords internal
 #' @noRd
 
-.brmSS <- function(model, form, sigma = NULL, df, priors = NULL, int = FALSE, hierarchy = NULL) {
+.brmSS <- function(model, form, sigma = NULL, df, priors = NULL, int = FALSE, hierarchy = NULL,
+                   pars = NULL) {
   out <- list()
   models <- c(
     "int", "logistic", "gompertz", "monomolecular", "exponential", "linear", "power law", "logarithmic",
     "double logistic", "double gompertz", "gam", "spline", "homo", "frechet", "gumbel", "weibull",
     "not_estimated", "bragg", "lorentz", "beta"
   )
+  varying_pars <- pars
   #* ***** `Make bayesian formula` *****
   #* `parse form argument`
   parsed_form <- .parsePcvrForm(form, df)
@@ -281,23 +285,29 @@
   pars <- pars[!grepl("spline", pars)]
 
   #* `Make parameter grouping formulae`
-
-  if (as.logical(length(pars))) {
+  if (!is.null(varying_pars)) {
+    pars <- split(pars, ifelse(pars %in% varying_pars, "vary", "int"))
+  } else if (!is.null(pars)) {
+    pars <- list("vary" = pars)
+  }
+  if (any(as.logical(unlist(lapply(pars, length))))) {
     if (USEGROUP) {
-      parForm <- as.formula(paste0(paste(pars, collapse = "+"), "~0+", paste(group, collapse = "*")))
+      parForm <- lapply(names(pars), function(nm) {
+        if (nm == "int") {
+          return(as.formula(paste0(paste(pars[[nm]], collapse = "+"), "~1")))
+        }
+        return(
+          as.formula(paste0(paste(pars[[nm]], collapse = "+"), "~0+", paste(group, collapse = "*")))
+        )
+      })
     } else {
-      parForm <- as.formula(paste0(paste(pars, collapse = "+"), "~1"))
+      parForm <- as.formula(paste0(paste(unlist(pars), collapse = "+"), "~1"))
     }
   } else {
     parForm <- NULL
   }
-
   #* `Combine formulas into brms.formula object`
-  if (is.null(pars)) {
-    NL <- FALSE
-  } else {
-    NL <- TRUE
-  }
+  NL <- !is.null(pars)
   bf_args <- list(
     "formula" = growthForm, dparForm, hrcForm, parForm,
     dparSplineHelperForm, hrcSplineHelperForm, splineHelperForm,
@@ -308,6 +318,7 @@
 
   out[["formula"]] <- bayesForm
   #* ***** `Make priors` *****
+  pars <- unlist(pars)
   out[["prior"]] <- .makePriors(priors, pars, df, group, USEGROUP, sigma, family, bayesForm)
   #* ***** `Make initializer function` *****
   if (as.logical(length(pars))) {
