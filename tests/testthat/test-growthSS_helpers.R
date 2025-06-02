@@ -872,6 +872,53 @@ test_that(".logisticChngptForm assembles a formula in all conditions", {
   }
 })
 
+test_that(".logistic4ChngptForm assembles a formula in all conditions", {
+  for (i in seq_len(nrow(conditions))) {
+    prior <- list(
+      "logistic41A" = 1, "logistic41B" = 1, "logistic41C" = 1, "logistic41D" = 1,
+      "c" = 1,
+      "logistic42A" = 1, "logistic42B" = 1, "logistic42C" = 1, "logistic42D" = 1,
+      "c2" = 2,
+      "logistic43A" = 1, "logistic43B" = 1, "logistic43C" = 1, "logistic43D" = 1,
+      "c3" = 3,
+      "logistic44A" = 1, "logistic44B" = 1, "logistic44C" = 1, "logistic44D" = 1
+    )
+    names(prior)[c(4, 8, 12)] <- paste0(conditions[i, "dpar"], c(conditions[i, 3:5]))
+    for (ii in 1:3) {
+      iter <- .logistic4ChngptForm(
+        conditions[i, "x"], position = ii,
+        dpar = conditions[i, "dpar"], priors = prior
+      )
+      expect_equal(names(iter), c("form", "cp", "cpInt", "params"))
+    }
+  }
+})
+
+test_that(".logistic5ChngptForm assembles a formula in all conditions", {
+  for (i in seq_len(nrow(conditions))) {
+    prior <- list(
+      "logistic51A" = 1, "logistic51B" = 1, "logistic51C" = 1, "logistic51D" = 1,
+      "c" = 1,
+      "logistic52A" = 1, "logistic52B" = 1, "logistic52C" = 1, "logistic52D" = 1,
+      "c2" = 2,
+      "logistic53A" = 1, "logistic53B" = 1, "logistic53C" = 1, "logistic53D" = 1,
+      "c3" = 3,
+      "logistic54A" = 1, "logistic54B" = 1, "logistic54C" = 1, "logistic54D" = 1
+    )
+    names(prior)[c(4, 8, 12)] <- paste0(conditions[i, "dpar"], c(conditions[i, 3:5]))
+    for (ii in 1:3) {
+      iter <- .logistic5ChngptForm(
+        conditions[i, "x"],
+        position = ii,
+        dpar = conditions[i, "dpar"],
+        priors = prior
+      )
+      expect_equal(names(iter), c("form", "cp", "cpInt", "params"))
+    }
+  }
+})
+
+
 test_that(".weibullChngptForm assembles a formula in all conditions", {
   for (i in seq_len(nrow(conditions))) {
     prior <- list(

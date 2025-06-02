@@ -103,6 +103,60 @@ test_that("brms form logistic works", {
   expect_equal(names(out2), c("form", "pars"))
 })
 
+test_that("brms form logistic4 works", {
+  out <- .brms_form_logistic4(
+    x = "x", y = "y", group = "group",
+    dpar = FALSE, nTimes = NULL, useGroup = TRUE,
+    prior = NULL, int = FALSE
+  )
+  expect_equal(names(out), c("form", "pars"))
+  out <- .brms_form_logistic4(
+    x = "x", y = "y", group = "group",
+    dpar = FALSE, nTimes = NULL, useGroup = TRUE,
+    prior = NULL, int = TRUE
+  )
+  expect_equal(names(out), c("form", "pars"))
+  out2 <- .brms_form_logistic4(
+    x = "x", y = "sigma", group = "group",
+    dpar = TRUE, nTimes = NULL, useGroup = TRUE,
+    prior = NULL, int = FALSE
+  )
+  expect_equal(names(out2), c("form", "pars"))
+  out2 <- .brms_form_logistic4(
+    x = "x", y = "sigma", group = "group",
+    dpar = TRUE, nTimes = NULL, useGroup = TRUE,
+    prior = NULL, int = TRUE
+  )
+  expect_equal(names(out2), c("form", "pars"))
+})
+
+test_that("brms form logistic5 works", {
+  out <- .brms_form_logistic5(
+    x = "x", y = "y", group = "group",
+    dpar = FALSE, nTimes = NULL, useGroup = TRUE,
+    prior = NULL, int = FALSE
+  )
+  expect_equal(names(out), c("form", "pars"))
+  out <- .brms_form_logistic5(
+    x = "x", y = "y", group = "group",
+    dpar = FALSE, nTimes = NULL, useGroup = TRUE,
+    prior = NULL, int = TRUE
+  )
+  expect_equal(names(out), c("form", "pars"))
+  out2 <- .brms_form_logistic5(
+    x = "x", y = "sigma", group = "group",
+    dpar = TRUE, nTimes = NULL, useGroup = TRUE,
+    prior = NULL, int = FALSE
+  )
+  expect_equal(names(out2), c("form", "pars"))
+  out2 <- .brms_form_logistic5(
+    x = "x", y = "sigma", group = "group",
+    dpar = TRUE, nTimes = NULL, useGroup = TRUE,
+    prior = NULL, int = TRUE
+  )
+  expect_equal(names(out2), c("form", "pars"))
+})
+
 test_that("brms form gompertz works", {
   out <- .brms_form_gompertz(
     x = "x", y = "y", group = "group",
