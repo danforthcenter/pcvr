@@ -25,9 +25,10 @@ test_that("init logistic works", {
 })
 
 test_that("init logistic4 works", {
-  df <- growthSim("logistic",
-                  n = 20, t = 25,
-                  params = list("A" = c(180), "B" = c(10), "C" = c(3))
+  df <- growthSim(
+    "logistic",
+    n = 20, t = 25,
+    params = list("A" = c(180), "B" = c(10), "C" = c(3))
   )
   expect_equal(names(.initlogistic4(df, "time", "y", FALSE)), c("A", "B", "C", "D"))
   expect_equal(names(.initlogistic4(df, "time", "y", TRUE)), c("I", "A", "B", "C", "D"))
@@ -35,9 +36,10 @@ test_that("init logistic4 works", {
 })
 
 test_that("init logistic5 works", {
-  df <- growthSim("logistic",
-                  n = 20, t = 25,
-                  params = list("A" = c(180), "B" = c(10), "C" = c(3))
+  df <- growthSim(
+    "logistic",
+    n = 20, t = 25,
+    params = list("A" = c(180), "B" = c(10), "C" = c(3))
   )
   expect_equal(names(.initlogistic5(df, "time", "y", FALSE)), c("A", "B", "C", "D", "E"))
   expect_equal(names(.initlogistic5(df, "time", "y", TRUE)), c("I", "A", "B", "C", "D", "E"))
