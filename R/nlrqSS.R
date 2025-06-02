@@ -176,7 +176,7 @@
   if (int) {
     df[[y]] <- df[[y]] - obs_min
   }
-  start <- .initlogistic(df, x, y, int = FALSE)
+  start <- .initlogistic(df, x, y, int = int)
   start <- stats::setNames(append(start, obs_min), c(names(start), "D"))
   return(start)
 }
@@ -198,7 +198,7 @@
   if (int) {
     df[[y]] <- df[[y]] - obs_min
   }
-  start <- .initlogistic(df, x, y, int = FALSE)
+  start <- .initlogistic(df, x, y, int = int)
   start <- stats::setNames(append(start, c(obs_min, 1)), c(names(start), "D", "E"))
   return(start)
 }
