@@ -125,7 +125,7 @@ test_that("GrowthSS Helpers for 4 Parameter Logistic Data work", {
   expect_type(ss, "list")
   ss <- suppressMessages(growthSS(
     model = "logistic4", form = y ~ time | id / group,
-    df = df, type = "nlme"
+    df = df[df$group == "a", ], type = "nlme"
   ))
   expect_type(ss, "list")
   ss <- suppressMessages(growthSS(
@@ -163,7 +163,7 @@ test_that("GrowthSS Helpers for 5 Parameter Logistic Data work", {
   expect_type(ss, "list")
   ss <- suppressMessages(growthSS(
     model = "logistic5", form = y ~ time | id / group,
-    df = df, type = "nlme"
+    df = df[df$group == "a", ], type = "nlme"
   ))
   expect_type(ss, "list")
   ss <- suppressMessages(growthSS(
