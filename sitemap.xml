@@ -1,11 +1,11 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://danforthcenter.github.io/pcvr/404.html</loc></url>
-<url><loc>https://danforthcenter.github.io/pcvr/articles/bellwether.html</loc></url>
 <url><loc>https://danforthcenter.github.io/pcvr/articles/directional.html</loc></url>
 <url><loc>https://danforthcenter.github.io/pcvr/articles/field_capacity.html</loc></url>
 <url><loc>https://danforthcenter.github.io/pcvr/articles/index.html</loc></url>
 <url><loc>https://danforthcenter.github.io/pcvr/articles/installation.html</loc></url>
 <url><loc>https://danforthcenter.github.io/pcvr/articles/longitudinal.html</loc></url>
+<url><loc>https://danforthcenter.github.io/pcvr/articles/pcvr.html</loc></url>
 <url><loc>https://danforthcenter.github.io/pcvr/articles/pcvrTutorial_agm.html</loc></url>
 <url><loc>https://danforthcenter.github.io/pcvr/articles/pcvrTutorial_conjugate.html</loc></url>
 <url><loc>https://danforthcenter.github.io/pcvr/articles/pcvrTutorial_igm.html</loc></url>
@@ -20,9 +20,6 @@
 <url><loc>https://danforthcenter.github.io/pcvr/reference/brmPlot.html</loc></url>
 <url><loc>https://danforthcenter.github.io/pcvr/reference/brmSurvPlot.html</loc></url>
 <url><loc>https://danforthcenter.github.io/pcvr/reference/brmViolin.html</loc></url>
-<url><loc>https://danforthcenter.github.io/pcvr/reference/bw.outliers.html</loc></url>
-<url><loc>https://danforthcenter.github.io/pcvr/reference/bw.time.html</loc></url>
-<url><loc>https://danforthcenter.github.io/pcvr/reference/bw.water.html</loc></url>
 <url><loc>https://danforthcenter.github.io/pcvr/reference/checkGroups.html</loc></url>
 <url><loc>https://danforthcenter.github.io/pcvr/reference/combineDraws.html</loc></url>
 <url><loc>https://danforthcenter.github.io/pcvr/reference/conjugate-class.html</loc></url>
@@ -60,7 +57,10 @@
 <url><loc>https://danforthcenter.github.io/pcvr/reference/pcv.emd.html</loc></url>
 <url><loc>https://danforthcenter.github.io/pcvr/reference/pcv.joyplot.html</loc></url>
 <url><loc>https://danforthcenter.github.io/pcvr/reference/pcv.net.html</loc></url>
+<url><loc>https://danforthcenter.github.io/pcvr/reference/pcv.outliers.html</loc></url>
 <url><loc>https://danforthcenter.github.io/pcvr/reference/pcv.plsr.html</loc></url>
+<url><loc>https://danforthcenter.github.io/pcvr/reference/pcv.time.html</loc></url>
+<url><loc>https://danforthcenter.github.io/pcvr/reference/pcv.water.html</loc></url>
 <url><loc>https://danforthcenter.github.io/pcvr/reference/pcv_theme.html</loc></url>
 <url><loc>https://danforthcenter.github.io/pcvr/reference/pcvrss-class.html</loc></url>
 <url><loc>https://danforthcenter.github.io/pcvr/reference/plot.conjugate.html</loc></url>

@@ -33,7 +33,7 @@
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-vignettes" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Vignettes</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-vignettes">
-<li><a class="dropdown-item" href="../articles/bellwether.html">Bellwether</a></li>
+<li><a class="dropdown-item" href="../articles/pcvr.html">pcvr</a></li>
     <li><a class="dropdown-item" href="../articles/longitudinal.html">Longitudinal Modeling</a></li>
     <li><a class="dropdown-item" href="../articles/roots.html">Root Phenotyping</a></li>
     <li><a class="dropdown-item" href="../articles/directional.html">Directional Statistics</a></li>
@@ -127,9 +127,9 @@ places other than CRAN.</p>
 <p>With <code>devtools</code> installed we can use
 <code>install_github</code> to install a more frequently updated version
 of <code>pcvr</code> from the Danforth center github account. By default
-this will install package dependencies and will not build the bellwether
-vignette. See the and sections in this document for examples of
-different installation options.</p>
+this will install package dependencies and will not build the vignettes.
+See the section in this document for examples of different installation
+options or the <a href="https://danforthcenter.github.io/pcvr/" title="pkgdown site">pkgdown site</a> for online docs.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"danforthcenter/pcvr"</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -207,13 +207,14 @@ toy model of the mtcars dataset then a pcvr example.</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="bellwether-vignette">Bellwether Vignette<a class="anchor" aria-label="anchor" href="#bellwether-vignette"></a>
+<h2 id="pcvr-vignette">
+<code>pcvr</code> Vignette<a class="anchor" aria-label="anchor" href="#pcvr-vignette"></a>
 </h2>
-<p>The Bellwether Vignette shows an example workflow to analyze single
-and multi value traits from plantCV output. The example data comes from
-a longitudinal experiment, but most of what is shown would be applicable
-to other designs as well. The vignette is not automatically built, but
-can be built on installation:</p>
+<p>The <code>pcvr</code> Vignette shows an example workflow to analyze
+single and multi value traits from plantCV output. The example data
+comes from a longitudinal experiment, but most of what is shown would be
+applicable to other designs as well. The vignette is not automatically
+built, but can be built on installation:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"danforthcenter/pcvr"</span>, build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p>Now check the available vignettes in your browser with

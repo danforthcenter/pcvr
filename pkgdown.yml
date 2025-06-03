@@ -2,18 +2,18 @@ pandoc: 3.1.11
 pkgdown: 2.1.3
 pkgdown_sha: ~
 articles:
-  bellwether: bellwether.html
   articles/directional: directional.html
   articles/field_capacity: field_capacity.html
   articles/installation: installation.html
   longitudinal: longitudinal.html
+  pcvr: pcvr.html
   articles/pcvrTutorial_agm: pcvrTutorial_agm.html
   articles/pcvrTutorial_conjugate: pcvrTutorial_conjugate.html
   articles/pcvrTutorial_igm: pcvrTutorial_igm.html
   articles/pcvrTutorial_mvt: pcvrTutorial_mvt.html
   articles/reading_pcv_data: reading_pcv_data.html
   roots: roots.html
-last_built: 2025-05-29T16:58Z
+last_built: 2025-06-03T15:43Z
 urls:
   reference: https://danforthcenter.github.io/pcvr/reference
   article: https://danforthcenter.github.io/pcvr/articles
