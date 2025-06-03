@@ -48,10 +48,7 @@
 .brmsChangePointHelper <- function(model, x, y, group, dpar = FALSE,
                                    nTimes = 25, useGroup, priors, int = FALSE) {
   component_models <- trimws(strsplit(model, "\\+")[[1]])
-  models <- c(
-    "logistic", "gompertz", "monomolecular", "exponential", "linear", "power law", "gam",
-    "spline", "int", "homo", "weibull", "frechet", "gumbel", "logarithmic"
-  )
+  models <- c(.available_models(), "int", "spline", "homo")
 
   if (dpar) {
     prefix <- y
@@ -356,6 +353,210 @@
     )
   }
   pars <- paste0(prefix, "logistic", position, c("A", "B", "C"))
+  if (!fixed) {
+    pars <- c(pars, paste0(chngptPrefix, "changePoint", position))
+  }
+  return(list(
+    "form" = form,
+    "cp" = cp,
+    "cpInt" = cpInt,
+    "params" = pars
+  ))
+}
+
+#* ****************************************
+#* ***** `logistic4 Changepoint Phase` *****
+#* ****************************************
+
+#' logistic4 changepoint section function
+#'
+#' @param x X variable name
+#' @param position Position in growth formula ("1" + "2" + "3"... etc)
+#' @param dpar string or NULL, if string should be the name of the distributional parameter
+#' @param priors a list of prior distributions (used for fixed vs estimated changepoints)
+#'
+#' @examples
+#'
+#' .logistic4ChngptForm(x = "time", 1)
+#' .logistic4ChngptForm(x = "time", 2)
+#' .logistic4ChngptForm(x = "time", 3)
+#'
+#' @return a list with form, cp, and cpInt elements. "form" is the growth formula
+#' for this phase of the model. "cp" is the inv_logit function defining when this
+#' phase should happen. "cpInt" is the value at the end of this growth phase and is
+#' used in starting the next growth phase from the right y value.
+#'
+#' @noRd
+
+.logistic4ChngptForm <- function(x, position = 1, dpar = NULL, priors) { # return f, cp, and cpInt
+
+  prefix <- chngptPrefix <- dpar
+
+  if (any(grepl(paste0("fixedChangePoint", position), names(priors)))) {
+    changePointObj <- as.numeric(priors[[paste0(prefix, "fixedChangePoint", position)]])[1]
+    fixed <- TRUE
+    chngptPrefix <- NULL # never a prefix if the changepoint is a fixed value
+  } else {
+    fixed <- FALSE
+  }
+
+  if (position == 1) {
+    if (!fixed) {
+      changePointObj <- "changePoint1"
+    }
+
+    form <- paste0(
+      prefix, "logistic4", position, "D + (",
+      prefix, "logistic4", position, "A - ", prefix, "logistic4", position, "D)",
+      "/ (1 + exp( (", prefix, "logistic4", position,
+      "B-(", x, "))/", prefix, "logistic4", position, "C) )"
+    )
+    cp <- paste0("inv_logit((", chngptPrefix, changePointObj, " - ", x, ") * 5)")
+    cpInt <- paste0(
+      prefix, "logistic4", position, "D + (",
+      prefix, "logistic4", position, "A - ", prefix, "logistic4", position, "D)",
+      "/ (1 + exp( (", prefix, "logistic4", position,
+      "B-(", chngptPrefix, changePointObj, "))/", prefix, "logistic4", position, "C) )"
+    )
+  } else {
+    all_chngpts <- names(priors)[grepl("fixedChangePoint*|changePoint*", names(priors))]
+    prevChangePoints <- all_chngpts[which(as.numeric(sub(".*hangePoint", "", all_chngpts)) < position)]
+    prevAndCurrentChangePoints <- all_chngpts[which(
+      as.numeric(sub(".*hangePoint", "", all_chngpts)) %in% c(position, position - 1)
+    )]
+    #* per location where "fixed" is in the prior name, replace the name with that number.
+    prev_fixed_index <- which(grepl("fixed", prevChangePoints))
+    if (length(prev_fixed_index) > 0) {
+      prevChangePoints[prev_fixed_index] <- as.numeric(priors[prevChangePoints[prev_fixed_index]])
+    }
+    pac_fixed_index <- which(grepl("fixed", prevAndCurrentChangePoints))
+    if (length(pac_fixed_index) > 0) {
+      prevAndCurrentChangePoints[pac_fixed_index] <- as.numeric(
+        priors[prevAndCurrentChangePoints[pac_fixed_index]]
+      )
+    }
+
+    form <- paste0(
+      prefix, "logistic4", position, "D + (",
+      prefix, "logistic4", position, "A - ", prefix, "logistic4", position, "D)",
+      "/ (1 + exp( (", prefix, "logistic4", position,
+      "B-(", x, "-", paste0(prevChangePoints, collapse = "-"),
+      "))/", prefix, "logistic4", position, "C) )"
+    )
+    cp <- paste0("inv_logit((", x, "-", paste0(prevChangePoints, collapse = "-"), ") * 5)")
+    cpInt <- paste0(
+      prefix, "logistic4", position, "D + (",
+      prefix, "logistic4", position, "A - ", prefix, "logistic4", position, "D)",
+      "/ (1 + exp( (", prefix, "logistic4", position,
+      "B-(", paste0(rev(prevAndCurrentChangePoints), collapse = "-"), "))/", prefix, "logistic4",
+      position, "C) )"
+    )
+  }
+  pars <- paste0(prefix, "logistic4", position, c("A", "B", "C", "D"))
+  if (!fixed) {
+    pars <- c(pars, paste0(chngptPrefix, "changePoint", position))
+  }
+  return(list(
+    "form" = form,
+    "cp" = cp,
+    "cpInt" = cpInt,
+    "params" = pars
+  ))
+}
+
+#* ****************************************
+#* ***** `logistic5 Changepoint Phase` *****
+#* ****************************************
+
+#' logistic5 changepoint section function
+#'
+#' @param x X variable name
+#' @param position Position in growth formula ("1" + "2" + "3"... etc)
+#' @param dpar string or NULL, if string should be the name of the distributional parameter
+#' @param priors a list of prior distributions (used for fixed vs estimated changepoints)
+#'
+#' @examples
+#'
+#' .logistic5ChngptForm(x = "time", 1)
+#' .logistic5ChngptForm(x = "time", 2)
+#' .logistic5ChngptForm(x = "time", 3)
+#'
+#' @return a list with form, cp, and cpInt elements. "form" is the growth formula
+#' for this phase of the model. "cp" is the inv_logit function defining when this
+#' phase should happen. "cpInt" is the value at the end of this growth phase and is
+#' used in starting the next growth phase from the right y value.
+#'
+#' @noRd
+
+.logistic5ChngptForm <- function(x, position = 1, dpar = NULL, priors) { # return f, cp, and cpInt
+
+  prefix <- chngptPrefix <- dpar
+
+  if (any(grepl(paste0("fixedChangePoint", position), names(priors)))) {
+    changePointObj <- as.numeric(priors[[paste0(prefix, "fixedChangePoint", position)]])[1]
+    fixed <- TRUE
+    chngptPrefix <- NULL # never a prefix if the changepoint is a fixed value
+  } else {
+    fixed <- FALSE
+  }
+
+  if (position == 1) {
+    if (!fixed) {
+      changePointObj <- "changePoint1"
+    }
+
+    form <- paste0(
+      prefix, "logistic5", position, "D + ((",
+      prefix, "logistic5", position, "A - ", prefix, "logistic5", position, "D)",
+      "/ (1 + exp( (", prefix, "logistic5", position,
+      "B-(", x, "))/", prefix, "logistic5", position, "C)) ^ ",
+      prefix, "logistic5", position, "E)"
+    )
+    cp <- paste0("inv_logit((", chngptPrefix, changePointObj, " - ", x, ") * 5)")
+    cpInt <- paste0(
+      prefix, "logistic5", position, "D + ((",
+      prefix, "logistic5", position, "A - ", prefix, "logistic5", position, "D)",
+      "/ (1 + exp( (", prefix, "logistic5", position,
+      "B-(", chngptPrefix, changePointObj, "))/", prefix, "logistic5", position, "C)) ^ ",
+      prefix, "logistic5", position, "E)"
+    )
+  } else {
+    all_chngpts <- names(priors)[grepl("fixedChangePoint*|changePoint*", names(priors))]
+    prevChangePoints <- all_chngpts[which(as.numeric(sub(".*hangePoint", "", all_chngpts)) < position)]
+    prevAndCurrentChangePoints <- all_chngpts[which(
+      as.numeric(sub(".*hangePoint", "", all_chngpts)) %in% c(position, position - 1)
+    )]
+    #* per location where "fixed" is in the prior name, replace the name with that number.
+    prev_fixed_index <- which(grepl("fixed", prevChangePoints))
+    if (length(prev_fixed_index) > 0) {
+      prevChangePoints[prev_fixed_index] <- as.numeric(priors[prevChangePoints[prev_fixed_index]])
+    }
+    pac_fixed_index <- which(grepl("fixed", prevAndCurrentChangePoints))
+    if (length(pac_fixed_index) > 0) {
+      prevAndCurrentChangePoints[pac_fixed_index] <- as.numeric(
+        priors[prevAndCurrentChangePoints[pac_fixed_index]]
+      )
+    }
+
+    form <- paste0(
+      prefix, "logistic5", position, "D + ((",
+      prefix, "logistic5", position, "A - ", prefix, "logistic5", position, "D)",
+      "/ (1 + exp( (", prefix, "logistic5", position,
+      "B-(", x, "-", paste0(prevChangePoints, collapse = "-"),
+      "))/", prefix, "logistic5", position, "C)) ^ ",
+      prefix, "logistic5", position, "E)"
+    )
+    cp <- paste0("inv_logit((", x, "-", paste0(prevChangePoints, collapse = "-"), ") * 5)")
+    cpInt <- paste0(
+      prefix, "logistic5", position, "D + ((",
+      prefix, "logistic5", position, "A - ", prefix, "logistic5", position, "D)",
+      "/ (1 + exp( (", prefix, "logistic5", position,
+      "B-(", paste0(rev(prevAndCurrentChangePoints), collapse = "-"), "))/", prefix, "logistic5",
+      position, "C)) ^ ",
+      prefix, "logistic5", position, "E)"
+    )
+  }
+  pars <- paste0(prefix, "logistic5", position, c("A", "B", "C", "D", "E"))
   if (!fixed) {
     pars <- c(pars, paste0(chngptPrefix, "changePoint", position))
   }

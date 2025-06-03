@@ -15,3 +15,16 @@
   }
   return(list("model" = model, "int" = int))
 }
+
+#' Models available for growthSim and growthSS
+#' @keywords internal
+#' @noRd
+
+.available_models <- function() {
+  x <- c(
+    "logistic", "logistic4", "logistic5", "gompertz", "double logistic", "double gompertz",
+    "monomolecular", "exponential", "linear", "power law", "frechet", "weibull", "gumbel",
+    "logarithmic", "bragg", "lorentz", "beta", "gam"
+  )
+  return(x)
+}

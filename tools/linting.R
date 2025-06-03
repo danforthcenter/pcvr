@@ -35,10 +35,10 @@ styler::style_dir(path = "~/pcvr/tutorials", scope = "tokens")
 
 if(FALSE){
   dput(unique(names(x)))
-  c("R/barg.R", "R/conj_post_pred.R", "R/conj_prior_sensitivity.R", 
-    "R/conjugate_class.R", "R/conjugate_plot.R"
-  )
-  file = "~/pcvr/R/barg.R"
+  c("R/brms_segmentedForm.R", "R/bwoutliers.R", "R/bwtime.R", "R/nlmeSS.R", 
+    "tests/testthat/test-brmsModels.R", "tests/testthat/test-growthModels.R", 
+    "tests/testthat/test-growthSS_helpers.R")
+  file = "~/pcvr/tests/testthat/test-growthSS_helpers.R"
   styler::style_file(file, scope = "line_breaks")
   lintr::lint(file, linters = lintr::linters_with_defaults(lintr::line_length_linter(length = 105L),
                                                            lintr::object_name_linter(styles = c("snake_case", "symbols",

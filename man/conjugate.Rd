@@ -331,7 +331,7 @@ vm2_ex <- conjugate(
 
 }
 \seealso{
-[barg() for additional reporting]
+\link{barg} for additional reporting
 }
 \keyword{ROPE}
 \keyword{bayesian}

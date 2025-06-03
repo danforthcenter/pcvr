@@ -1,3 +1,9 @@
+# pcvr 1.3.0
+
+Added 4 and 5 parameter logistic curves to growthSS
+
+Changed `bw.*` functions to `pcv.*` prefixes to reduce bellwether system artefacts.
+
 # pcvr 1.2.0.1
 
 Allowing `brms` models from `growthSS` to specify subset of parameters to estimate per group.

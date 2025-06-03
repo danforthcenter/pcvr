@@ -24,8 +24,8 @@ navbar:
       aria-label: Home page
     - text: "Vignettes"
       menu:
-        - text: "Bellwether"
-          href: articles/bellwether.html
+        - text: "pcvr"
+          href: articles/pcvr.html
         - text: "Longitudinal Modeling"
           href: articles/longitudinal.html
         - text: "Root Phenotyping"
@@ -100,11 +100,11 @@ reference:
       - testGrowth
   - title: "Lemnatech System Support"
     desc: >
-      Functions for use with Lemnatech style data.
+      Functions for use with Lemnatech style longitudinal data.
     contents:
-      - bw.outliers
-      - bw.time
-      - bw.water
+      - pcv.outliers
+      - pcv.time
+      - pcv.water
       - pwue
   - title: "Single-Value Traits"
     desc: >

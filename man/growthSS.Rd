@@ -18,8 +18,8 @@ growthSS(
 }
 \arguments{
 \item{model}{The name of a model as a character string.
-Supported options are c("logistic", "gompertz", "weibull", "frechet", "gumbel", "monomolecular",
-"exponential", "linear", "power law", "bragg", "lorentz", "beta",
+Supported options are c("logistic", "logistic4", "logistic5", "gompertz", "weibull", "frechet",
+"gumbel", "monomolecular", "exponential", "linear", "power law", "bragg", "lorentz", "beta",
 "double logistic", "double gompertz", "gam", "int"), with "int" representing an intercept only model
 which is only used in brms (and is expected to only be used in threshold models or to model
 homoskedasticity). Note that the dose response curves (bragg, lorentz, and beta) may be difficult
@@ -135,7 +135,7 @@ Survival models can use the "survreg" model type
 (this will be called if any non-brms/flexsurv type is given) or the "flexsurv" model type
 which requires the flexsurv package to be installed.
 Note that for non-brms models variables in the model will be labeled by the factor level of the
-group, not necessarily by the group name.
+group, not necessarily by the group name
 This is done for ease of use with different modeling functions, the levels are alphabetically sorted
 and can be checked using:
 \code{table(ss$df$group, ss$df$group_numericLabel)}.}
@@ -209,6 +209,8 @@ rather this should be informed by an understanding of the plants you
 
 \itemize{
    \item \bold{Logistic}: \code{list('A' = 130, 'B' = 12, 'C' = 3)}
+   \item \bold{Logistic4}: \code{list('A' = 130, 'B' = 12, 'C' = 3, 'D' = 0)}
+   \item \bold{Logistic5}: \code{list('A' = 130, 'B' = 12, 'C' = 3, 'D' = 0, 'E' = 1)}
     \item \bold{Gompertz}: \code{list('A' = 130, 'B' = 12, 'C' = 1.25)}
     \item \bold{Weibull}: \code{list('A' = 130, 'B' = 2, 'C' = 2)}
     \item \bold{Frechet}: \code{list('A' = 130, 'B' = 5, 'C' = 6)}
@@ -227,6 +229,14 @@ See details below about parameterization for each model option.
 \itemize{
  \item \bold{Logistic}: `A / (1 + exp( (B-x)/C) )`
  Where A is the asymptote, B is the inflection point, C is the growth rate.
+ \item \bold{Logistic4}: `D + (A - D) / (1 + exp((B - x) / C))`
+ Where A is the asymptote (maximum), B is the inflection point, C is the growth rate,
+ and D is the lower asymptote (minimum, if this is 0 then the model converges to 3 parameter
+ logistic).
+ \item \bold{Logistic5}: `D + ((A - D) / (1 + exp((B - x) / C)) ^ E)`
+ Where A is the asymptote (maximum), B is the inflection point, C is the growth rate,
+ and D is the lower asymptote (minimum), and E is the asymmetry factor (1 is symmetric
+ and converges to 4 parameter logistic).
  \item \bold{Gompertz}: `A * exp(-B * exp(-C*x))`
  Where A is the asymptote, B is the inflection point, C is the growth rate.
  \item \bold{Weibull}: `A * (1-exp(-(x/C)^B))`

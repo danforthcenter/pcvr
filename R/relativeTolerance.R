@@ -45,7 +45,7 @@
 #'       ifelse(sv$fertilizer == "B", "50", "0")
 #'     )
 #'
-#'     sv <- bw.time(sv,
+#'     sv <- pcv.time(sv,
 #'       plantingDelay = 0, phenotype = "area_pixels",
 #'       cutoff = 10, timeCol = "timestamp", group = c("barcode", "rotation"), plot = FALSE
 #'     )
@@ -54,7 +54,7 @@
 #'     groupForm <- "DAS+DAP+barcode+genotype+fertilizer"
 #'     form <- as.formula(paste0(phenoForm, "~", groupForm))
 #'     sv <- aggregate(form, data = sv, mean, na.rm = TRUE)
-#'     sv <- bw.outliers(sv,
+#'     sv <- pcv.outliers(sv,
 #'       phenotype = "area_pixels",
 #'       group = c("DAS", "genotype", "fertilizer"),
 #'       plotgroup = c("barcode")

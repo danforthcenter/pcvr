@@ -24,6 +24,28 @@ test_that("init logistic works", {
   expect_error(.initlogistic(df[1:3, ], "time", "y", FALSE))
 })
 
+test_that("init logistic4 works", {
+  df <- growthSim(
+    "logistic",
+    n = 20, t = 25,
+    params = list("A" = c(180), "B" = c(10), "C" = c(3))
+  )
+  expect_equal(names(.initlogistic4(df, "time", "y", FALSE)), c("A", "B", "C", "D"))
+  expect_equal(names(.initlogistic4(df, "time", "y", TRUE)), c("I", "A", "B", "C", "D"))
+  expect_error(.initlogistic(df[1:3, ], "time", "y", FALSE))
+})
+
+test_that("init logistic5 works", {
+  df <- growthSim(
+    "logistic",
+    n = 20, t = 25,
+    params = list("A" = c(180), "B" = c(10), "C" = c(3))
+  )
+  expect_equal(names(.initlogistic5(df, "time", "y", FALSE)), c("A", "B", "C", "D", "E"))
+  expect_equal(names(.initlogistic5(df, "time", "y", TRUE)), c("I", "A", "B", "C", "D", "E"))
+  expect_error(.initlogistic5(df[1:3, ], "time", "y", FALSE))
+})
+
 test_that("init gompertz works", {
   df <- growthSim("gompertz",
     n = 20, t = 25,

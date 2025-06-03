@@ -67,6 +67,51 @@ test_that("nlme logistic formula", {
   expect_equal(names(out), c("model", "random", "fixed", "groups", "weights", "cor_form", "pars"))
 })
 
+test_that("nlme logistic4 formula", {
+  # x, y, group, individual, matched_sigma, pars, int
+  out <- .nlme_form_logistic4(
+    x = "x", y = "y", group = "group",
+    individual = "id", matched_sigma = "power",
+    pars = NULL, int = FALSE
+  )
+  expect_equal(names(out), c("model", "random", "fixed", "groups", "weights", "cor_form", "pars"))
+  out <- .nlme_form_logistic4(
+    x = "x", y = "y", group = "group",
+    individual = "id", matched_sigma = "power",
+    pars = "A", int = TRUE
+  )
+  expect_equal(names(out), c("model", "random", "fixed", "groups", "weights", "cor_form", "pars"))
+  out <- .nlme_form_logistic4(
+    x = "x", y = "y", group = "dummyGroup",
+    individual = "id", matched_sigma = "power",
+    pars = NULL, int = FALSE
+  )
+  expect_equal(names(out), c("model", "random", "fixed", "groups", "weights", "cor_form", "pars"))
+})
+
+test_that("nlme logistic5 formula", {
+  # x, y, group, individual, matched_sigma, pars, int
+  out <- .nlme_form_logistic5(
+    x = "x", y = "y", group = "group",
+    individual = "id", matched_sigma = "power",
+    pars = NULL, int = FALSE
+  )
+  expect_equal(names(out), c("model", "random", "fixed", "groups", "weights", "cor_form", "pars"))
+  out <- .nlme_form_logistic5(
+    x = "x", y = "y", group = "group",
+    individual = "id", matched_sigma = "power",
+    pars = "A", int = TRUE
+  )
+  expect_equal(names(out), c("model", "random", "fixed", "groups", "weights", "cor_form", "pars"))
+  out <- .nlme_form_logistic5(
+    x = "x", y = "y", group = "dummyGroup",
+    individual = "id", matched_sigma = "power",
+    pars = NULL, int = FALSE
+  )
+  expect_equal(names(out), c("model", "random", "fixed", "groups", "weights", "cor_form", "pars"))
+})
+
+
 test_that("nlme gompertz formula", {
   # x, y, group, individual, matched_sigma, pars, int
   out <- .nlme_form_gompertz(

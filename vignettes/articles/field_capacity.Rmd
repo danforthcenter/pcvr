@@ -310,7 +310,7 @@ In `pcvr` the `pwue` function calculates normalized transpiration, rate based pW
 
 ## Reading in water data
 
-In this article we'll use simulated data, but the `bw.water` function may be helpful for you reading in JSON Lemnatech metadata.
+In this article we'll use simulated data, but the `pcv.water` function may be helpful for you reading in JSON Lemnatech metadata.
 
 Here for more control we'll use simulated data:
 

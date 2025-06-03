@@ -145,6 +145,41 @@ test_that("Test Logistic brms model setup", {
   expect_s3_class(ss$formula, "brmsformula")
 })
 
+
+#* ***************************************************************************
+#* *************** `4 and 5 parameter Logistic growth modeling` ***************
+#* ***************************************************************************
+
+set.seed(123)
+logistic4_df <- growthSim("logistic5",
+  n = 20, t = 25,
+  params = list(
+    "A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5),
+    "D" = c(9, 11), "E" = c(0.95, 1.05)
+  )
+)
+
+
+test_that("4 parameter logistic nls model runs", {
+  ss <- suppressMessages(growthSS(
+    model = "logistic4", form = y ~ time | id / group,
+    df = logistic4_df, type = "nls"
+  ))
+  fit <- fitGrowth(ss)
+  expect_s3_class(fit, "nls")
+})
+
+test_that("5 parameter logistic nls model runs", {
+  ss <- suppressMessages(growthSS(
+    model = "logistic5", form = y ~ time | id / group,
+    df = logistic4_df, type = "nls"
+  ))
+  fit <- fitGrowth(ss)
+  expect_s3_class(fit, "nls")
+})
+
+
+
 #* ************************************************************
 #* *************** `Testing pcvrFormula options` ***************
 #* ************************************************************
