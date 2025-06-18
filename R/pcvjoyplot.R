@@ -122,6 +122,12 @@ pcv.joyplot <- function(df = NULL, index = NULL, group = NULL, y = NULL, id = NU
     ggplot2::labs(x = index, y = gsub("dummy", "Density", c(y, group)[1])) +
     pcv_theme() +
     ggplot2::theme(legend.position = "none")
+  if (!any(is.na(suppressWarnings(as.numeric(sub$y))))) {
+    p <- p +
+      ggplot2::scale_y_discrete(
+        limits = as.character(sort(as.numeric(sub$y)))
+      )
+  }
   return(p)
 }
 

@@ -1,3 +1,7 @@
+# pcvr 1.3.0.1
+
+Added logic to joyplots to handle continuous variables on y axis (time).
+
 # pcvr 1.3.0
 
 Added 4 and 5 parameter logistic curves to growthSS
