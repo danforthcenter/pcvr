@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">pcvr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -108,11 +108,11 @@ Additional arguments are documented in <a href="fitGrowthbrms.html">fitGrowthbrm
 <span class="r-out co"><span class="r-pr">#&gt;</span>   model: y ~ A[group]/(1 + exp((B[group] - time)/C[group]))</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    data: ss[["df"]]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      A1      A2      B1      B2      C1      C2 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 208.049 146.435  13.295  10.952   2.998   3.480 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  residual sum-of-squares: 172865</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 204.760 148.662  13.295  10.748   3.000   3.482 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  residual sum-of-squares: 205524</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of iterations to convergence: 4 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Achieved convergence tolerance: 4.541e-08</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Achieved convergence tolerance: 8.288e-08</span>
 <span class="r-in"><span><span class="va">ss</span> <span class="op">&lt;-</span> <span class="fu"><a href="growthSS.html">growthSS</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  model <span class="op">=</span> <span class="st">"gam"</span>, form <span class="op">=</span> <span class="va">y</span> <span class="op">~</span> <span class="va">time</span> <span class="op">|</span> <span class="va">group</span>,</span></span>
 <span class="r-in"><span>  df <span class="op">=</span> <span class="va">simdf</span>, type <span class="op">=</span> <span class="st">"nls"</span></span></span>
@@ -124,9 +124,9 @@ Additional arguments are documented in <a href="fitGrowthbrms.html">fitGrowthbrm
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Coefficients:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      (Intercept)         bs(time)1         bs(time)2         bs(time)3  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>            9.615           -53.526           231.130           190.053  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>            9.448           -52.515           227.337           187.069  </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           groupb  bs(time)1:groupb  bs(time)2:groupb  bs(time)3:groupb  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>           -2.670            66.393           -63.155           -58.386  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>           -2.268            69.284           -56.108           -53.586  </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
