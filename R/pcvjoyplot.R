@@ -45,6 +45,9 @@
 #'   min_bin = 1, max_bin = 180, wide = TRUE
 #' )
 #' pcv.joyplot(x_wide, index = "sim", group = "group")
+#' x_wide$id <- 1
+#' pcv.joyplot(x_wide[grepl("rl?norm_", x_wide$group), ],
+#' index = "sim", y = "group", id = "id", group = "group")
 #' x_long <- mvSim(
 #'   dists = dists, n_samples = 5, counts = 1000,
 #'   min_bin = 1, max_bin = 180, wide = FALSE

@@ -78,24 +78,26 @@ out <- frem(df, des = "genotype", phenotypes = c("pheno1", "pheno2", "pheno3"), 
 lapply(out, class)
 frem(df,
   des = c("genotype", "treatment"), phenotypes = c("pheno1", "pheno2", "pheno3"),
-  cor = FALSE
+  cor = FALSE, returnData = TRUE
 )
 frem(df,
   des = "genotype", phenotypes = c("pheno1", "pheno2", "pheno3"),
-  combine = FALSE, timeCol = "time", time = "all"
+  combine = FALSE, timeCol = "time", time = "all", returnData = TRUE
 )
 frem(df,
   des = "genotype", phenotypes = c("pheno1", "pheno2", "pheno3"),
-  combine = TRUE, timeCol = "time", time = 1
+  combine = TRUE, timeCol = "time", time = 1, returnData = TRUE, markSingular = TRUE
 )
 frem(df,
   des = "genotype", phenotypes = c("pheno1", "pheno2", "pheno3"),
-  cor = FALSE, timeCol = "time", time = 3:5, markSingular = TRUE
+  cor = FALSE, timeCol = "time", time = 3:5, markSingular = TRUE,
+  returnData = TRUE
 )
 df[df$time == 3, "genotype"] <- "g1"
 frem(df,
   des = "genotype", phenotypes = c("pheno1", "pheno2", "pheno3"),
-  cor = FALSE, timeCol = "date_time", time = "all", markSingular = TRUE
+  cor = FALSE, timeCol = "date_time", time = "all", markSingular = TRUE,
+  returnData = TRUE
 )
 
 }

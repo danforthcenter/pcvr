@@ -85,7 +85,7 @@ testGrowth <- function(ss = NULL, fit, test = "A") {
         res <- .nlrqTest(ss, fit, test_pars = test)
       }
     } else if (grepl("surv", ss$type)) {
-      res <- .survTest(ss)
+      res <- .survTest(ss, fit)
     }
   }
 

@@ -2,7 +2,7 @@ library(covr)
 
 x <- covr::package_coverage(
   path = "~/pcvr",
-  type = c("examples", "tests", "vignettes"),
+  type = c("all"),
   combine_types = TRUE,
   quiet = TRUE,
   clean = TRUE,

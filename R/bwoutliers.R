@@ -124,9 +124,6 @@ pcv.outliers <- function(df = NULL,
                          plot = TRUE, x = NULL, traitCol = "trait", valueCol = "value",
                          labelCol = "label", idCol = NULL, ncp = NULL, separate = NULL) {
   wide <- .detectWideData(df, traitCol, valueCol)
-  if (is.null(phenotype)) {
-    stop("A phenotype must be provided")
-  }
 
   if ((wide && length(phenotype) > 1) ||
     (!wide && length(unique(
