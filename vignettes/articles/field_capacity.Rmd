@@ -613,6 +613,7 @@ ggplot(d[d$variable == "field_capacity", ],
   geom_point(data = d2[d2$example == "good", ],
              aes(color = treatment, y = current_field_capacity)) +
   scale_y_continuous(labels = scales::percent_format()) +
+  scale_color_discrete(limits = c("drought", "control")) +
   labs(x = "Time",
        y = "Field Capacity",
        title = "Example where drought treatment is working"
@@ -627,6 +628,7 @@ ggplot(d[d$variable == "field_capacity", ],
   geom_point(data = d2[d2$example == "bad", ],
              aes(color = treatment, y = current_field_capacity)) +
   scale_y_continuous(labels = scales::percent_format()) +
+  scale_color_discrete(limits = c("drought", "control")) +
   labs(x = "Time",
        y = "Field Capacity",
        title = "Example where drought treatment is not working"
