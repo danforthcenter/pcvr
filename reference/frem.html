@@ -171,36 +171,137 @@ data/a list of dataframes (depending on returnData and cor).</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span><span class="fu">frem</span><span class="op">(</span><span class="va">df</span>,</span></span>
 <span class="r-in"><span>  des <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"genotype"</span>, <span class="st">"treatment"</span><span class="op">)</span>, phenotypes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pheno1"</span>, <span class="st">"pheno2"</span>, <span class="st">"pheno3"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  cor <span class="op">=</span> <span class="cn">FALSE</span></span></span>
+<span class="r-in"><span>  cor <span class="op">=</span> <span class="cn">FALSE</span>, returnData <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $plot</span>
 <span class="r-plt img"><img src="frem-1.png" alt="" width="700" height="433"></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    genotype   treatment Interaction Unexplained dummy_x_axis singular</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 0.2122788 0.000000000           0   0.7877212            1        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 0.6744990 0.000000000           0   0.3255010            1        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 0.7913918 0.006306318           0   0.2023019            1        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Phenotypes</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1     pheno1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2     pheno2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3     pheno3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span><span class="fu">frem</span><span class="op">(</span><span class="va">df</span>,</span></span>
 <span class="r-in"><span>  des <span class="op">=</span> <span class="st">"genotype"</span>, phenotypes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pheno1"</span>, <span class="st">"pheno2"</span>, <span class="st">"pheno3"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  combine <span class="op">=</span> <span class="cn">FALSE</span>, timeCol <span class="op">=</span> <span class="st">"time"</span>, time <span class="op">=</span> <span class="st">"all"</span></span></span>
+<span class="r-in"><span>  combine <span class="op">=</span> <span class="cn">FALSE</span>, timeCol <span class="op">=</span> <span class="st">"time"</span>, time <span class="op">=</span> <span class="st">"all"</span>, returnData <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [[1]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $plot</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $plot[[1]]</span>
 <span class="r-plt img"><img src="frem-2.png" alt="" width="700" height="433"></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [[2]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $plot[[2]]</span>
 <span class="r-plt img"><img src="frem-3.png" alt="" width="700" height="433"></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$variance</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     genotype Unexplained time singular Phenotypes</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1  0.0000000   1.0000000    1        1     pheno1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2  0.4597990   0.5402010    1        0     pheno2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3  0.5522121   0.4477879    1        0     pheno3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4  0.8836435   0.1163565    2        0     pheno1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5  0.5651446   0.4348554    2        0     pheno2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6  0.7968399   0.2031601    2        0     pheno3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7  0.0000000   1.0000000    3        1     pheno1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8  0.5947112   0.4052888    3        0     pheno2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9  0.8520310   0.1479690    3        0     pheno3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10 0.5044749   0.4955251    4        0     pheno1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11 0.5381478   0.4618522    4        0     pheno2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12 0.8556475   0.1443525    4        0     pheno3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13 0.0000000   1.0000000    5        1     pheno1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14 0.5469094   0.4530906    5        0     pheno2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15 0.7342857   0.2657143    5        0     pheno3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$cor</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     Var2     value   Var1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 pheno3 1.0000000 pheno3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 pheno3 1.0000000 pheno2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 pheno3 0.5593985 pheno1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4 pheno2 1.0000000 pheno3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5 pheno2 1.0000000 pheno2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6 pheno2 0.5593985 pheno1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7 pheno1 0.5593985 pheno3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8 pheno1 0.5593985 pheno2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9 pheno1 1.0000000 pheno1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span><span class="fu">frem</span><span class="op">(</span><span class="va">df</span>,</span></span>
 <span class="r-in"><span>  des <span class="op">=</span> <span class="st">"genotype"</span>, phenotypes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pheno1"</span>, <span class="st">"pheno2"</span>, <span class="st">"pheno3"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  combine <span class="op">=</span> <span class="cn">TRUE</span>, timeCol <span class="op">=</span> <span class="st">"time"</span>, time <span class="op">=</span> <span class="fl">1</span></span></span>
+<span class="r-in"><span>  combine <span class="op">=</span> <span class="cn">TRUE</span>, timeCol <span class="op">=</span> <span class="st">"time"</span>, time <span class="op">=</span> <span class="fl">1</span>, returnData <span class="op">=</span> <span class="cn">TRUE</span>, markSingular <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $plot</span>
 <span class="r-plt img"><img src="frem-4.png" alt="" width="700" height="433"></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$variance</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    genotype Unexplained time singular Phenotypes</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 0.0000000   1.0000000    1        1     pheno1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 0.4597990   0.5402010    1        0     pheno2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 0.5522121   0.4477879    1        0     pheno3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$cor</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     Var2 value   Var1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 pheno3   1.0 pheno3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 pheno3   1.0 pheno2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 pheno3   0.8 pheno1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4 pheno2   1.0 pheno3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5 pheno2   1.0 pheno2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6 pheno2   0.8 pheno1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7 pheno1   0.8 pheno3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8 pheno1   0.8 pheno2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9 pheno1   1.0 pheno1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span><span class="fu">frem</span><span class="op">(</span><span class="va">df</span>,</span></span>
 <span class="r-in"><span>  des <span class="op">=</span> <span class="st">"genotype"</span>, phenotypes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pheno1"</span>, <span class="st">"pheno2"</span>, <span class="st">"pheno3"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  cor <span class="op">=</span> <span class="cn">FALSE</span>, timeCol <span class="op">=</span> <span class="st">"time"</span>, time <span class="op">=</span> <span class="fl">3</span><span class="op">:</span><span class="fl">5</span>, markSingular <span class="op">=</span> <span class="cn">TRUE</span></span></span>
+<span class="r-in"><span>  cor <span class="op">=</span> <span class="cn">FALSE</span>, timeCol <span class="op">=</span> <span class="st">"time"</span>, time <span class="op">=</span> <span class="fl">3</span><span class="op">:</span><span class="fl">5</span>, markSingular <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>  returnData <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $plot</span>
 <span class="r-plt img"><img src="frem-5.png" alt="" width="700" height="433"></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    genotype Unexplained time singular Phenotypes</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 0.0000000   1.0000000    3        1     pheno1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 0.5947112   0.4052888    3        0     pheno2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 0.8520310   0.1479690    3        0     pheno3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4 0.5044749   0.4955251    4        0     pheno1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5 0.5381478   0.4618522    4        0     pheno2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6 0.8556475   0.1443525    4        0     pheno3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7 0.0000000   1.0000000    5        1     pheno1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8 0.5469094   0.4530906    5        0     pheno2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9 0.7342857   0.2657143    5        0     pheno3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span><span class="va">df</span><span class="op">[</span><span class="va">df</span><span class="op">$</span><span class="va">time</span> <span class="op">==</span> <span class="fl">3</span>, <span class="st">"genotype"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="st">"g1"</span></span></span>
 <span class="r-in"><span><span class="fu">frem</span><span class="op">(</span><span class="va">df</span>,</span></span>
 <span class="r-in"><span>  des <span class="op">=</span> <span class="st">"genotype"</span>, phenotypes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pheno1"</span>, <span class="st">"pheno2"</span>, <span class="st">"pheno3"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  cor <span class="op">=</span> <span class="cn">FALSE</span>, timeCol <span class="op">=</span> <span class="st">"date_time"</span>, time <span class="op">=</span> <span class="st">"all"</span>, markSingular <span class="op">=</span> <span class="cn">TRUE</span></span></span>
+<span class="r-in"><span>  cor <span class="op">=</span> <span class="cn">FALSE</span>, timeCol <span class="op">=</span> <span class="st">"date_time"</span>, time <span class="op">=</span> <span class="st">"all"</span>, markSingular <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>  returnData <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Skipping DAS 2 as grouping contains a variable that is singular</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $plot</span>
 <span class="r-plt img"><img src="frem-6.png" alt="" width="700" height="433"></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     genotype Unexplained DAS singular Phenotypes</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1  0.0000000   1.0000000   0        1     pheno1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2  0.4597990   0.5402010   0        0     pheno2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3  0.5522121   0.4477879   0        0     pheno3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4  0.8836435   0.1163565   1        0     pheno1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5  0.5651446   0.4348554   1        0     pheno2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6  0.7968399   0.2031601   1        0     pheno3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7  0.5044749   0.4955251   3        0     pheno1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8  0.5381478   0.4618522   3        0     pheno2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9  0.8556475   0.1443525   3        0     pheno3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10 0.0000000   1.0000000   4        1     pheno1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11 0.5469094   0.4530906   4        0     pheno2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12 0.7342857   0.2657143   4        0     pheno3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

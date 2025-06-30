@@ -150,6 +150,11 @@ Default is T, if F then <code><a href="https://wilkelab.org/ggridges/reference/g
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">pcv.joyplot</span><span class="op">(</span><span class="va">x_wide</span>, index <span class="op">=</span> <span class="st">"sim"</span>, group <span class="op">=</span> <span class="st">"group"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="pcv.joyplot-1.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span><span class="va">x_wide</span><span class="op">$</span><span class="va">id</span> <span class="op">&lt;-</span> <span class="fl">1</span></span></span>
+<span class="r-in"><span><span class="fu">pcv.joyplot</span><span class="op">(</span><span class="va">x_wide</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"rl?norm_"</span>, <span class="va">x_wide</span><span class="op">$</span><span class="va">group</span><span class="op">)</span>, <span class="op">]</span>,</span></span>
+<span class="r-in"><span>index <span class="op">=</span> <span class="st">"sim"</span>, y <span class="op">=</span> <span class="st">"group"</span>, id <span class="op">=</span> <span class="st">"id"</span>, group <span class="op">=</span> <span class="st">"group"</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Duplicate column names found in molten data.table. Setting unique names using 'make.names'</span>
+<span class="r-plt img"><img src="pcv.joyplot-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="va">x_long</span> <span class="op">&lt;-</span> <span class="fu"><a href="mvSim.html">mvSim</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  dists <span class="op">=</span> <span class="va">dists</span>, n_samples <span class="op">=</span> <span class="fl">5</span>, counts <span class="op">=</span> <span class="fl">1000</span>,</span></span>
 <span class="r-in"><span>  min_bin <span class="op">=</span> <span class="fl">1</span>, max_bin <span class="op">=</span> <span class="fl">180</span>, wide <span class="op">=</span> <span class="cn">FALSE</span></span></span>
@@ -160,10 +165,10 @@ Default is T, if F then <code><a href="https://wilkelab.org/ggridges/reference/g
 <span class="r-in"><span><span class="va">p</span> <span class="op">+</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_gradient.html" class="external-link">scale_fill_gradientn</a></span><span class="op">(</span>colors <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/pal_hue.html" class="external-link">hue_pal</a></span><span class="op">(</span>l <span class="op">=</span> <span class="fl">65</span><span class="op">)</span><span class="op">(</span><span class="fl">360</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Scale for <span style="color: #00BB00;">fill</span> is already present.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Adding another scale for <span style="color: #00BB00;">fill</span>, which will replace the existing scale.</span>
-<span class="r-plt img"><img src="pcv.joyplot-2.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="pcv.joyplot-3.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="va">x_long</span><span class="op">$</span><span class="va">group2</span> <span class="op">&lt;-</span> <span class="st">"example"</span></span></span>
 <span class="r-in"><span><span class="fu">pcv.joyplot</span><span class="op">(</span><span class="va">x_long</span>, bin <span class="op">=</span> <span class="st">"variable"</span>, y <span class="op">=</span> <span class="st">"group"</span>, fillx <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="pcv.joyplot-3.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="pcv.joyplot-4.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
