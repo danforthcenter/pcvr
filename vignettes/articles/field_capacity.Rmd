@@ -390,6 +390,8 @@ ex <- do.call(rbind, lapply(names(phenotype_conditions), function(pc) {
   }))
   return(pc_df)
 }))
+ex$weight_before <- ex$weight_before + 500
+ex$weight_after <- ex$weight_after + 500
 
 key <- expand.grid(pc = names(phenotype_conditions), wc = names(watering_conditions))
 key$group <- as.character(seq_len(nrow(key)))
@@ -554,6 +556,86 @@ ggplot(
 ```
 
 We don't see anything that raises red flags, so we'll move on. If water added was to spike incredibly high, or the different in water added was not what was intended by the design, it would be a sign that there was an issue with the equipment. 
+
+#### Calculating Field Capacity
+
+The previous plot would show us if anything were very strange in our data but it does not tell us whether or not we had the type of watering that we expected. For example, if we had a drought treatment we can't tell from that plot whether or not the soil in each pot was in the range of drought stress that we were aiming for. To understand that we need to use field capacity and compare against our target values.
+
+Target values for field capacity should be decided as part of experimental design and will be returned by the phenotyping core in a format consistent with the simulated data below.
+
+```{r}
+d <- data.frame(
+  experiment = "SIM001",
+  variable = c("carriage_saucer", "dry_weight", "saturated_weight", rep(
+    c("target_weight", "field_capacity"), each = 40
+    )),
+    day = c(rep(NA, 3), rep(1:20, times = 4)),
+    treatment = c(rep(NA, 3), rep(c("control", "drought", "control", "drought"), each = 20)),
+    treatment_bar = c(rep(NA, 3), rep(c("AA", "AB", "AA", "AB"), each = 20)),
+    value = c(345, 433, 740,
+              rep(1060, 20), seq(1060, 680, -20),
+              rep(0.8, 20), seq(0.8, 0.42, -0.02)
+              ),
+  units = c(rep(NA, 3),
+            rep(c("mL", "none"), each = 40)
+            )
+  )
+head(d)
+```
+
+Target field capacities are in the data that the phenotyping core provides and observed field capacities can be calculated from the watering metadata.
+
+```{r}
+set.seed(123)
+d2 <- data.frame(
+  day = rep(1:20, 4),
+  treatment = rep(rep(c("control", "drought"), each = 20), 2),
+  current_weight = c(
+    rnorm(20, 1000, 50),
+    sort(rnorm(20, 950, 75), decreasing = TRUE),
+    rnorm(40, 1000, 50)
+  ),
+  example = rep(c("good", "bad"),
+                each = 40)
+)
+
+CS <- d[d$variable == "carriage_saucer", "value"]
+DW <- d[d$variable == "dry_weight", "value"]
+SW <- d[d$variable == "saturated_weight", "value"]
+saturated_water_volume <- SW - DW
+d2$current_water_content <- d2$current_weight - CS - DW # assumes negligible plant weight
+d2$current_field_capacity <- d2$current_water_content / saturated_water_volume
+
+ggplot(d[d$variable == "field_capacity", ],
+       aes(x = day, y = value)) +
+  facet_wrap(~treatment) +
+  geom_line() +
+  geom_point(data = d2[d2$example == "good", ],
+             aes(color = treatment, y = current_field_capacity)) +
+  scale_y_continuous(labels = scales::percent_format()) +
+  labs(x = "Time",
+       y = "Field Capacity",
+       title = "Example where drought treatment is working"
+       ) +
+  pcv_theme() +
+  theme(legend.position = "none")
+
+ggplot(d[d$variable == "field_capacity", ],
+       aes(x = day, y = value)) +
+  facet_wrap(~treatment) +
+  geom_line() +
+  geom_point(data = d2[d2$example == "bad", ],
+             aes(color = treatment, y = current_field_capacity)) +
+  scale_y_continuous(labels = scales::percent_format()) +
+  labs(x = "Time",
+       y = "Field Capacity",
+       title = "Example where drought treatment is not working"
+       ) +
+  pcv_theme() +
+  theme(legend.position = "none")
+```
+
+It generally makes sense to monitor field capacity of pre and post watering weights to make sure that the watering is keeping your soil in line with what your design requires.
 
 ## `pwue`
 
