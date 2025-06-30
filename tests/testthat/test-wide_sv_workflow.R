@@ -46,6 +46,11 @@ test_that("reading sv github data as wide works", {
   )
 
   #* see notes from 9/6/2023 on why this is done differently, also see test-long_sv_workflow.R
+  svNoOutliersTest <- suppressWarnings(pcv.outliers(
+    df = sv, phenotype = "area_pixels", group = c("DAS", "genotype", "fertilizer"),
+    separate = "genotype", naTo0 = TRUE,
+    cutoff = 3, plot = TRUE
+  ))
   svNoOutliers <- suppressWarnings(pcv.outliers(
     df = sv, phenotype = "area_pixels", group = c("DAS", "genotype", "fertilizer"),
     cutoff = 3, plot = TRUE

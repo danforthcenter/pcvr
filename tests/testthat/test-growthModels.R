@@ -570,7 +570,8 @@ test_that("Test survreg", {
   skip_on_cran()
   model <- "survival weibull"
   form <- y > 100 ~ time | id / group
-  df <- growthSim("logistic",
+  df <- growthSim(
+    "logistic",
     n = 20, t = 25,
     params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
   )
@@ -581,6 +582,25 @@ test_that("Test survreg", {
   expect_s3_class(p, "ggplot")
   test <- testGrowth(ss, fit)
   expect_s3_class(test, "survdiff")
+})
+
+test_that("Test flexsurv", {
+  skip_on_cran()
+  skip_if_not_installed("flexsurv")
+  model <- "survival weibull"
+  form <- y > 100 ~ time | id / group
+  df <- growthSim(
+    "logistic",
+    n = 20, t = 25,
+    params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
+  )
+  ss <- growthSS(model = model, form = form, df = df, type = "flexsurv")
+  fit <- fitGrowth(ss)
+  expect_s3_class(fit, "flexsurvreg")
+  p <- growthPlot(fit, form = ss$pcvrForm, df = ss$df)
+  expect_s3_class(p, "ggplot")
+  test <- testGrowth(ss, fit)
+  expect_s3_class(test, "data.frame")
 })
 
 

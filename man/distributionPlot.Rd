@@ -84,7 +84,7 @@ tryCatch(
   }
 )
 }
-## End(Not run)
+
 }
 \keyword{Bayesian}
 \keyword{brms}

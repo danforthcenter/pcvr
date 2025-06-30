@@ -61,7 +61,8 @@
 #'   }
 #' )
 #' }
-#' ## End(Not run)
+#'
+
 distributionPlot <- function(fits, form, df, priors = NULL,
                              params = NULL, maxTime = NULL, patch = TRUE,
                              virOptions = c("plasma", "mako", "viridis", "cividis",
@@ -239,6 +240,7 @@ distributionPlot <- function(fits, form, df, priors = NULL,
   }
   if (all(unlist(lapply(fits, function(fit) nrow(brms::prior_draws(fit)) < 1)))) {
     # if no models were fit with sample_prior
+    USEPRIOR <- FALSE
     if (!is.null(priors)) { # if prior is supplied as argument
       USEPRIOR <- TRUE
       if (!methods::is(priors[[1]], "list")) {
@@ -253,8 +255,6 @@ distributionPlot <- function(fits, form, df, priors = NULL,
         return(nm_res)
       }))
       prior_df[[x]] <- 0
-    } else {
-      USEPRIOR <- FALSE
     }
   } else { #* `need to fit some models with sample_prior and see how this works with them`
     prior_df <- brms::prior_draws(fits[[1]])
