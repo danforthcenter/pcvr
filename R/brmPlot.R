@@ -231,7 +231,7 @@ brmPlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, facet
   }
   #* `facetGroups`
   facetLayer <- NULL
-  if (facetGroups && length(unique(predictions[[group]])) > 1) {
+  if (facetGroups && length(unique(predictions[[paste(group, collapse = ".")]])) > 1) {
     facetLayer <- ggplot2::facet_wrap(as.formula(paste0("~", paste(group, collapse = "+"))))
   }
   #* `lengthen predictions`
