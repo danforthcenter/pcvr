@@ -72,6 +72,17 @@ test_that("conjugate class works", {
   sink()
 })
 
+test_that("sample checking errors on 1L samples", {
+  expect_error(
+    .check_formatted_samples(
+      list(
+        c(1, 1, 1),
+        c(3)
+      )
+    )
+  )
+})
+
 test_that("Posterior Predictive works", {
   x <- conjugate(
     s1 = rnorm(10, 10, 1), s2 = rnorm(10, 13, 1.5), method = "t",

@@ -428,10 +428,31 @@ conjugate <- function(s1 = NULL, s2 = NULL,
       })
     }
     names(samples) <- c("s1", "s2")
-    return(samples)
   } else {
-    return(list("s1" = s1, "s2" = s2))
+    samples <- list("s1" = s1, "s2" = s2)
   }
+  samples <- .check_formatted_samples(samples)
+  return(samples)
+}
+
+#' @keywords internal
+#' @noRd
+
+.check_formatted_samples <- function(samples) {
+  any_one_l <- any(
+    unlist(
+      lapply(
+        samples[!unlist(lapply(samples, is.null))],
+        function(s) {
+          return(length(t(s)) == 1)
+        }
+      )
+    )
+  )
+  if (any_one_l) {
+    stop("Conjugate samples must be >1L", call. = FALSE)
+  }
+  return(samples)
 }
 
 #' ***********************************************************************************************
