@@ -441,9 +441,12 @@ conjugate <- function(s1 = NULL, s2 = NULL,
 .check_formatted_samples <- function(samples) {
   any_one_l <- any(
     unlist(
-      lapply(samples, function(s) {
-        return(length(t(s)) == 1)
-      })
+      lapply(
+        samples[!unlist(lapply(samples, is.null))],
+        function(s) {
+          return(length(t(s)) == 1)
+        }
+      )
     )
   )
   if (any_one_l) {
