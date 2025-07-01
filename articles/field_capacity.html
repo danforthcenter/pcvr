@@ -393,6 +393,8 @@ trends.</p>
 <span>  <span class="op">}</span><span class="op">)</span><span class="op">)</span></span>
 <span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">pc_df</span><span class="op">)</span></span>
 <span><span class="op">}</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">ex</span><span class="op">$</span><span class="va">weight_before</span> <span class="op">&lt;-</span> <span class="va">ex</span><span class="op">$</span><span class="va">weight_before</span> <span class="op">+</span> <span class="fl">500</span></span>
+<span><span class="va">ex</span><span class="op">$</span><span class="va">weight_after</span> <span class="op">&lt;-</span> <span class="va">ex</span><span class="op">$</span><span class="va">weight_after</span> <span class="op">+</span> <span class="fl">500</span></span>
 <span></span>
 <span><span class="va">key</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/expand.grid.html" class="external-link">expand.grid</a></span><span class="op">(</span>pc <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">phenotype_conditions</span><span class="op">)</span>, wc <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">watering_conditions</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">key</span><span class="op">$</span><span class="va">group</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">key</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
@@ -574,6 +576,102 @@ added.</p>
 water added was to spike incredibly high, or the different in water
 added was not what was intended by the design, it would be a sign that
 there was an issue with the equipment.</p>
+<div class="section level4">
+<h4 id="calculating-field-capacity">Calculating Field Capacity<a class="anchor" aria-label="anchor" href="#calculating-field-capacity"></a>
+</h4>
+<p>The previous plot would show us if anything were very strange in our
+data but it does not tell us whether or not we had the type of watering
+that we expected. For example, if we had a drought treatment we can’t
+tell from that plot whether or not the soil in each pot was in the range
+of drought stress that we were aiming for. To understand that we need to
+use field capacity and compare against our target values.</p>
+<p>Target values for field capacity should be decided as part of
+experimental design and will be returned by the phenotyping core in a
+format consistent with the simulated data below.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  experiment <span class="op">=</span> <span class="st">"SIM001"</span>,</span>
+<span>  variable <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"carriage_saucer"</span>, <span class="st">"dry_weight"</span>, <span class="st">"saturated_weight"</span>,</span>
+<span>               <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"target_weight"</span>, <span class="st">"field_capacity"</span><span class="op">)</span>, each <span class="op">=</span> <span class="fl">40</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  day <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="fl">3</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">20</span>, times <span class="op">=</span> <span class="fl">4</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  treatment <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="fl">3</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"control"</span>, <span class="st">"drought"</span>, <span class="st">"control"</span>, <span class="st">"drought"</span><span class="op">)</span>, each <span class="op">=</span> <span class="fl">20</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  treatment_bar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="fl">3</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AA"</span>, <span class="st">"AB"</span>, <span class="st">"AA"</span>, <span class="st">"AB"</span><span class="op">)</span>, each <span class="op">=</span> <span class="fl">20</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>    <span class="fl">345</span>, <span class="fl">433</span>, <span class="fl">740</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1060</span>, <span class="fl">20</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">1060</span>, <span class="fl">680</span>, <span class="op">-</span><span class="fl">20</span><span class="op">)</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0.8</span>, <span class="fl">20</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0.8</span>, <span class="fl">0.42</span>, <span class="op">-</span><span class="fl">0.02</span><span class="op">)</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  units <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="fl">3</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"mL"</span>, <span class="st">"none"</span><span class="op">)</span>, each <span class="op">=</span> <span class="fl">40</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">##   experiment         variable day treatment treatment_bar value units</span></span>
+<span><span class="co">## 1     SIM001  carriage_saucer  NA      &lt;NA&gt;          &lt;NA&gt;   345  &lt;NA&gt;</span></span>
+<span><span class="co">## 2     SIM001       dry_weight  NA      &lt;NA&gt;          &lt;NA&gt;   433  &lt;NA&gt;</span></span>
+<span><span class="co">## 3     SIM001 saturated_weight  NA      &lt;NA&gt;          &lt;NA&gt;   740  &lt;NA&gt;</span></span>
+<span><span class="co">## 4     SIM001    target_weight   1   control            AA  1060    mL</span></span>
+<span><span class="co">## 5     SIM001    target_weight   2   control            AA  1060    mL</span></span>
+<span><span class="co">## 6     SIM001    target_weight   3   control            AA  1060    mL</span></span></code></pre>
+<p>Target field capacities are in the data that the phenotyping core
+provides and observed field capacities can be calculated from the
+watering metadata.</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
+<span><span class="va">d2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  day <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">20</span>, <span class="fl">4</span><span class="op">)</span>,</span>
+<span>  treatment <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"control"</span>, <span class="st">"drought"</span><span class="op">)</span>, each <span class="op">=</span> <span class="fl">20</span><span class="op">)</span>, <span class="fl">2</span><span class="op">)</span>,</span>
+<span>  current_weight <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">1000</span>, <span class="fl">50</span><span class="op">)</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">950</span>, <span class="fl">75</span><span class="op">)</span>, decreasing <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">40</span>, <span class="fl">1000</span>, <span class="fl">50</span><span class="op">)</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  example <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"good"</span>, <span class="st">"bad"</span><span class="op">)</span>,</span>
+<span>                each <span class="op">=</span> <span class="fl">40</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">CS</span> <span class="op">&lt;-</span> <span class="va">d</span><span class="op">[</span><span class="va">d</span><span class="op">$</span><span class="va">variable</span> <span class="op">==</span> <span class="st">"carriage_saucer"</span>, <span class="st">"value"</span><span class="op">]</span></span>
+<span><span class="va">DW</span> <span class="op">&lt;-</span> <span class="va">d</span><span class="op">[</span><span class="va">d</span><span class="op">$</span><span class="va">variable</span> <span class="op">==</span> <span class="st">"dry_weight"</span>, <span class="st">"value"</span><span class="op">]</span></span>
+<span><span class="va">SW</span> <span class="op">&lt;-</span> <span class="va">d</span><span class="op">[</span><span class="va">d</span><span class="op">$</span><span class="va">variable</span> <span class="op">==</span> <span class="st">"saturated_weight"</span>, <span class="st">"value"</span><span class="op">]</span></span>
+<span><span class="va">saturated_water_volume</span> <span class="op">&lt;-</span> <span class="va">SW</span> <span class="op">-</span> <span class="va">DW</span></span>
+<span><span class="va">d2</span><span class="op">$</span><span class="va">current_water_content</span> <span class="op">&lt;-</span> <span class="va">d2</span><span class="op">$</span><span class="va">current_weight</span> <span class="op">-</span> <span class="va">CS</span> <span class="op">-</span> <span class="va">DW</span> <span class="co"># assumes negligible plant weight</span></span>
+<span><span class="va">d2</span><span class="op">$</span><span class="va">current_field_capacity</span> <span class="op">&lt;-</span> <span class="va">d2</span><span class="op">$</span><span class="va">current_water_content</span> <span class="op">/</span> <span class="va">saturated_water_volume</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">d</span><span class="op">[</span><span class="va">d</span><span class="op">$</span><span class="va">variable</span> <span class="op">==</span> <span class="st">"field_capacity"</span>, <span class="op">]</span>,</span>
+<span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">day</span>, y <span class="op">=</span> <span class="va">value</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">treatment</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">d2</span><span class="op">[</span><span class="va">d2</span><span class="op">$</span><span class="va">example</span> <span class="op">==</span> <span class="st">"good"</span>, <span class="op">]</span>,</span>
+<span>             <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>color <span class="op">=</span> <span class="va">treatment</span>, y <span class="op">=</span> <span class="va">current_field_capacity</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous</a></span><span class="op">(</span>labels <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/percent_format.html" class="external-link">percent_format</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_colour_discrete.html" class="external-link">scale_color_discrete</a></span><span class="op">(</span>limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"drought"</span>, <span class="st">"control"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
+<span>    x <span class="op">=</span> <span class="st">"Time"</span>,</span>
+<span>    y <span class="op">=</span> <span class="st">"Field Capacity"</span>,</span>
+<span>    title <span class="op">=</span> <span class="st">"Example where drought treatment is working"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/pcv_theme.html">pcv_theme</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-13-1.png" width="700"></p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">d</span><span class="op">[</span><span class="va">d</span><span class="op">$</span><span class="va">variable</span> <span class="op">==</span> <span class="st">"field_capacity"</span>, <span class="op">]</span>,</span>
+<span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">day</span>, y <span class="op">=</span> <span class="va">value</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">treatment</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">d2</span><span class="op">[</span><span class="va">d2</span><span class="op">$</span><span class="va">example</span> <span class="op">==</span> <span class="st">"bad"</span>, <span class="op">]</span>,</span>
+<span>             <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>color <span class="op">=</span> <span class="va">treatment</span>, y <span class="op">=</span> <span class="va">current_field_capacity</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous</a></span><span class="op">(</span>labels <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/percent_format.html" class="external-link">percent_format</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_colour_discrete.html" class="external-link">scale_color_discrete</a></span><span class="op">(</span>limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"drought"</span>, <span class="st">"control"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
+<span>    x <span class="op">=</span> <span class="st">"Time"</span>,</span>
+<span>    y <span class="op">=</span> <span class="st">"Field Capacity"</span>,</span>
+<span>    title <span class="op">=</span> <span class="st">"Example where drought treatment is not working"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/pcv_theme.html">pcv_theme</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-13-2.png" width="700"></p>
+<p>It generally makes sense to monitor field capacity of pre and post
+watering weights to make sure that the watering is keeping your soil in
+line with what your design requires.</p>
+</div>
 </div>
 </div>
 <div class="section level2">
@@ -603,7 +701,7 @@ some experiments more granular time data is essential.</p>
 <div class="section level3">
 <h3 id="rate-based">Rate Based<a class="anchor" aria-label="anchor" href="#rate-based"></a>
 </h3>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">rb</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pwue.html">pwue</a></span><span class="op">(</span></span>
 <span>  df <span class="op">=</span> <span class="va">ex</span>, w <span class="op">=</span> <span class="cn">NULL</span>, pheno <span class="op">=</span> <span class="st">"area"</span>, time <span class="op">=</span> <span class="st">"time"</span>, id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"id"</span>, <span class="st">"group"</span><span class="op">)</span>,</span>
 <span>  pre_watering <span class="op">=</span> <span class="st">"weight_before"</span>,</span>
@@ -637,7 +735,7 @@ when compared to our other groups. Similarly, the <code>sigmoid</code>
 group should start to look like a bell curve, since the derivative of a
 sigmoid is bell shaped (the CDF of a normal distribution is a logistic
 curve, etc).</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">rbc</span> <span class="op">&lt;-</span> <span class="va">rb</span><span class="op">[</span><span class="va">rb</span><span class="op">$</span><span class="va">wc</span> <span class="op">==</span> <span class="st">"constant"</span>, <span class="op">]</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">rbc</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">time</span>, y <span class="op">=</span> <span class="va">pWUE</span>, group <span class="op">=</span> <span class="va">id</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">pc</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span> <span class="op">+</span></span>
@@ -646,7 +744,7 @@ curve, etc).</p>
 <span>  <span class="fu"><a href="../reference/pcv_theme.html">pcv_theme</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Warning: Removed 10 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">## (`geom_line()`).</span></span></code></pre>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-13-1.png" alt="Pseudo water use efficiency for each of 6 phenotypes under constant watering" width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-15-1.png" alt="Pseudo water use efficiency for each of 6 phenotypes under constant watering" width="700"></p>
 <p>This follow the general trends we’d expect, but some things look
 strange and it all looks very noisy.</p>
 <div class="section level5">
@@ -654,7 +752,7 @@ strange and it all looks very noisy.</p>
 </h5>
 <p>As mentioned above, we expect a roughly bell shaped plot of rate pWUE
 over time for our data with constant watering and logistic growth.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span></span>
 <span>  <span class="va">rbc</span><span class="op">[</span><span class="va">rbc</span><span class="op">$</span><span class="va">pc</span> <span class="op">==</span> <span class="st">"sigmoid"</span>, <span class="op">]</span>,</span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">time</span>, y <span class="op">=</span> <span class="va">pWUE</span>, group <span class="op">=</span> <span class="va">id</span><span class="op">)</span></span>
@@ -667,11 +765,11 @@ over time for our data with constant watering and logistic growth.</p>
 <span>  <span class="fu"><a href="../reference/pcv_theme.html">pcv_theme</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Warning: Removed 10 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">## (`geom_line()`).</span></span></code></pre>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-14-1.png" alt="Showing only the Logistic phenotype's pseudo water use efficiency trend, which approximates a gaussian distribution since the denominator is constant." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-16-1.png" alt="Showing only the Logistic phenotype's pseudo water use efficiency trend, which approximates a gaussian distribution since the denominator is constant." width="700"></p>
 <p>The overall trend makes sense, but why is the data so spikey? We can
 sometimes get an easier grasp of pWUE if we plot the component parts,
 which are both returned from <code>pwue</code>.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span></span>
 <span>  <span class="va">rbc</span><span class="op">[</span><span class="va">rbc</span><span class="op">$</span><span class="va">pc</span> <span class="op">==</span> <span class="st">"sigmoid"</span>, <span class="op">]</span>,</span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">time</span>, group <span class="op">=</span> <span class="va">id</span><span class="op">)</span></span>
@@ -690,7 +788,7 @@ which are both returned from <code>pwue</code>.</p>
 <span><span class="co">## (`geom_line()`).</span></span>
 <span><span class="co">## Removed 10 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">## (`geom_line()`).</span></span></code></pre>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-15-1.png" alt="Separating pseudo water use efficiency into the component parts of difference in phenotype and difference in water use to show how the phenotype trend drives this water use trait." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-17-1.png" alt="Separating pseudo water use efficiency into the component parts of difference in phenotype and difference in water use to show how the phenotype trend drives this water use trait." width="700"></p>
 <p>Now we can see that the “spikey-ness” is a product of the water data
 having a lot of noise, which is likely to be the case in real data but
 for our simulation is just a byproduct of how we’re making the
@@ -702,7 +800,7 @@ pre-watering weights.</p>
 <p>The typical sigmoid data was pretty simple, but what happens if we
 have a different kind of sigmoid shape? First looks at the pWUE for our
 “abrupt” logistic growth are way less friendly.</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span></span>
 <span>  <span class="va">rbc</span><span class="op">[</span><span class="va">rbc</span><span class="op">$</span><span class="va">pc</span> <span class="op">==</span> <span class="st">"abrupt"</span>, <span class="op">]</span>,</span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">time</span>, y <span class="op">=</span> <span class="va">pWUE</span>, group <span class="op">=</span> <span class="va">id</span><span class="op">)</span></span>
@@ -715,11 +813,11 @@ have a different kind of sigmoid shape? First looks at the pWUE for our
 <span>  <span class="fu"><a href="../reference/pcv_theme.html">pcv_theme</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Warning: Removed 10 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">## (`geom_line()`).</span></span></code></pre>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-16-1.png" alt="Showing only the abrupt sigmoid phenotype's pseudo water use efficiency trend,  which has one sharp spike and otherwise appears flat." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-18-1.png" alt="Showing only the abrupt sigmoid phenotype's pseudo water use efficiency trend,  which has one sharp spike and otherwise appears flat." width="700"></p>
 <p>We’re going to have to zoom in to understand the general trend, then
 we can look at each replicate to see what is going on with that large
 spike.</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span></span>
 <span>  <span class="va">rbc</span><span class="op">[</span><span class="va">rbc</span><span class="op">$</span><span class="va">pc</span> <span class="op">==</span> <span class="st">"abrupt"</span>, <span class="op">]</span>,</span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">time</span>, y <span class="op">=</span> <span class="va">pWUE</span>, group <span class="op">=</span> <span class="va">id</span><span class="op">)</span></span>
@@ -733,7 +831,7 @@ spike.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_cartesian.html" class="external-link">coord_cartesian</a></span><span class="op">(</span>ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">3</span>, <span class="fl">50</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Warning: Removed 10 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">## (`geom_line()`).</span></span></code></pre>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-17-1.png" alt="Zooming in on the abrupt sigmoid's pseudo water use efficiency to show that each rep has a sharp spike." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-19-1.png" alt="Zooming in on the abrupt sigmoid's pseudo water use efficiency to show that each rep has a sharp spike." width="700"></p>
 <p>That doesn’t clear it up much, but we do basically have the same kind
 of shape as before where the logistic phenotype yielded a bell
 curve.</p>
@@ -756,16 +854,16 @@ negative values since it might indicate an interesting stress response,
 a problem with equipment or a problem with upstream analysis. In reality
 this sort of thing shows up all the time due to all sorts noise,
 measurement error, and image analysis problems.</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">rbcp</span> <span class="op">&lt;-</span> <span class="va">rbc</span><span class="op">[</span><span class="va">rbc</span><span class="op">$</span><span class="va">pc</span> <span class="op">==</span> <span class="st">"abrupt"</span>, <span class="op">]</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">rbcp</span><span class="op">$</span><span class="va">total_water</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's </span></span>
 <span><span class="co">##  -13.07   17.33   24.30   20.83   25.00   38.68      10</span></span></code></pre>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">rbcp</span> <span class="op">&lt;-</span> <span class="va">rbcp</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">rbcp</span><span class="op">$</span><span class="va">total_water</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span>, <span class="op">]</span></span></code></pre></div>
 <p>Now that we’ve removed the negative values we can think about the
 components of rate pWUE a little more clearly.</p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span></span>
 <span>  <span class="va">rbcp</span>,</span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">time</span>, group <span class="op">=</span> <span class="va">id</span><span class="op">)</span></span>
@@ -780,7 +878,7 @@ components of rate pWUE a little more clearly.</p>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/pcv_theme.html">pcv_theme</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-19-1.png" alt="Separating pseudo water use efficiency into the component parts of difference in phenotype and difference in water use to show how the phenotype trend drives this water use trait." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-21-1.png" alt="Separating pseudo water use efficiency into the component parts of difference in phenotype and difference in water use to show how the phenotype trend drives this water use trait." width="700"></p>
 <p>Notice that we have dips in the amount of water used that coincide
 with the peaks of measurement-to-measurement phenotype change. That’s a
 combination that will make for some very high pWUE peaks and plenty of
@@ -793,7 +891,7 @@ depend on your equipment. This trend is very dramatic, it is likely that
 in your experiments the soil and pot would out weigh the plant by
 several orders of magnitude which would make for less steep pWUE
 curves.</p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span></span>
 <span>  <span class="va">rbcp</span>,</span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">time</span>, y <span class="op">=</span> <span class="va">pWUE</span>, group <span class="op">=</span> <span class="va">id</span><span class="op">)</span></span>
@@ -805,14 +903,14 @@ curves.</p>
 <span>    y <span class="op">=</span> <span class="st">"(Rate based) pWUE"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/pcv_theme.html">pcv_theme</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-20-1.png" alt="Pseudo water use efficiency per rep shows that the trend is the same just at different scales." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-22-1.png" alt="Pseudo water use efficiency per rep shows that the trend is the same just at different scales." width="700"></p>
 </div>
 <div class="section level5">
 <h5 id="exponential">Exponential<a class="anchor" aria-label="anchor" href="#exponential"></a>
 </h5>
 <p>The previous two phenotype options were asymptotic. What happens with
 non-asymptotic growth?</p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span></span>
 <span>  <span class="va">rbc</span><span class="op">[</span><span class="va">rbc</span><span class="op">$</span><span class="va">pc</span> <span class="op">==</span> <span class="st">"exponential"</span>, <span class="op">]</span>,</span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">time</span>, y <span class="op">=</span> <span class="va">pWUE</span>, group <span class="op">=</span> <span class="va">id</span><span class="op">)</span></span>
@@ -825,11 +923,11 @@ non-asymptotic growth?</p>
 <span>  <span class="fu"><a href="../reference/pcv_theme.html">pcv_theme</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Warning: Removed 10 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">## (`geom_line()`).</span></span></code></pre>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-21-1.png" alt="Showing only the exponential phenotype's pseudo water use efficiency trend,  which increases exponentially with some outliers" width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-23-1.png" alt="Showing only the exponential phenotype's pseudo water use efficiency trend,  which increases exponentially with some outliers" width="700"></p>
 <p>As before we’ll remove the negative values for
 <code>total_water</code>. Here they come from the same place since the
 phenotype is changing so quickly.</p>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">rbce</span> <span class="op">&lt;-</span> <span class="va">rbc</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">rbc</span><span class="op">$</span><span class="va">pc</span> <span class="op">==</span> <span class="st">"exponential"</span> <span class="op">&amp;</span> <span class="va">rbc</span><span class="op">$</span><span class="va">total_water</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span>, <span class="op">]</span></span>
 <span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span></span>
@@ -842,10 +940,10 @@ phenotype is changing so quickly.</p>
 <span>    y <span class="op">=</span> <span class="st">"(Rate based) pWUE"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/pcv_theme.html">pcv_theme</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-22-1.png" alt="Showing only the exponential phenotype's pseudo water use efficiency trend,  which increases exponentially with outliers removed" width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-24-1.png" alt="Showing only the exponential phenotype's pseudo water use efficiency trend,  which increases exponentially with outliers removed" width="700"></p>
 <p>With the negative values removed the trend here looks a lot like the
 raw phenotype data.</p>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span></span>
 <span>  <span class="va">ex</span><span class="op">[</span><span class="va">ex</span><span class="op">$</span><span class="va">pc</span> <span class="op">==</span> <span class="st">"exponential"</span> <span class="op">&amp;</span> <span class="va">ex</span><span class="op">$</span><span class="va">wc</span> <span class="op">==</span> <span class="st">"constant"</span>, <span class="op">]</span>,</span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">area</span>, group <span class="op">=</span> <span class="va">id</span><span class="op">)</span></span>
@@ -863,12 +961,12 @@ raw phenotype data.</p>
 <span>    strip.text.x.top <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>,</span>
 <span>    strip.text.y.right <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-23-1.png" alt="Showing only the exponential phenotype" width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-25-1.png" alt="Showing only the exponential phenotype" width="700"></p>
 <p>This is a feature of exponential growth, since the
 measurement-to-measurement difference increases exponentially when we
 have roughly constant water use the pWUE trend will look
 exponential.</p>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span></span>
 <span>  <span class="va">rbce</span>,</span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">time</span>, group <span class="op">=</span> <span class="va">id</span><span class="op">)</span></span>
@@ -883,14 +981,14 @@ exponential.</p>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/pcv_theme.html">pcv_theme</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-24-1.png" alt="Separating pseudo water use efficiency into the component parts of difference in phenotype and difference in water use to show how the phenotype trend drives this water use trait." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-26-1.png" alt="Separating pseudo water use efficiency into the component parts of difference in phenotype and difference in water use to show how the phenotype trend drives this water use trait." width="700"></p>
 </div>
 <div class="section level5">
 <h5 id="slowing">Slowing<a class="anchor" aria-label="anchor" href="#slowing"></a>
 </h5>
 <p>For non-asymptotic growth that is slowing down (exponent below 1) we
 should expect to see decreasing pWUE given constant watering.</p>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span></span>
 <span>  <span class="va">rbc</span><span class="op">[</span><span class="va">rbc</span><span class="op">$</span><span class="va">pc</span> <span class="op">==</span> <span class="st">"slowing"</span>, <span class="op">]</span>,</span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">time</span>, y <span class="op">=</span> <span class="va">pWUE</span>, group <span class="op">=</span> <span class="va">id</span><span class="op">)</span></span>
@@ -903,7 +1001,7 @@ should expect to see decreasing pWUE given constant watering.</p>
 <span>  <span class="fu"><a href="../reference/pcv_theme.html">pcv_theme</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Warning: Removed 10 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">## (`geom_line()`).</span></span></code></pre>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-25-1.png" alt="Showing only the slowing phenotype's pseudo water use efficiency trend,  which decreases towards 0 as growth slows down." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-27-1.png" alt="Showing only the slowing phenotype's pseudo water use efficiency trend,  which decreases towards 0 as growth slows down." width="700"></p>
 <p>While the growth is non-asymptotic pWUE is asymptotic since the
 numerator is monotone increasing but is slowing down while the
 denominator is roughly constant.</p>
@@ -915,7 +1013,7 @@ denominator is roughly constant.</p>
 between any two subsequent times. Since the water data is roughly
 constant (at least it has a 0 slope) we expect to see flat but noisy
 pWUE here.</p>
-<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span></span>
 <span>  <span class="va">rbc</span><span class="op">[</span><span class="va">rbc</span><span class="op">$</span><span class="va">pc</span> <span class="op">==</span> <span class="st">"linear"</span>, <span class="op">]</span>,</span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">time</span>, y <span class="op">=</span> <span class="va">pWUE</span>, group <span class="op">=</span> <span class="va">id</span><span class="op">)</span></span>
@@ -928,14 +1026,14 @@ pWUE here.</p>
 <span>  <span class="fu"><a href="../reference/pcv_theme.html">pcv_theme</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Warning: Removed 10 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">## (`geom_line()`).</span></span></code></pre>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-26-1.png" alt="Showing only the linear phenotype's pseudo water use efficiency trend,  which is roughly constant." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-28-1.png" alt="Showing only the linear phenotype's pseudo water use efficiency trend,  which is roughly constant." width="700"></p>
 </div>
 <div class="section level5">
 <h5 id="death">Death<a class="anchor" aria-label="anchor" href="#death"></a>
 </h5>
 <p>Now we can look at the <code>death</code> group, which taken
 separately looks like a totally normal growth curve.</p>
-<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span></span>
 <span>  <span class="va">rbc</span><span class="op">[</span><span class="va">rbc</span><span class="op">$</span><span class="va">pc</span> <span class="op">==</span> <span class="st">"death"</span>, <span class="op">]</span>,</span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">area</span>, group <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/interaction.html" class="external-link">interaction</a></span><span class="op">(</span><span class="va">group</span>, <span class="va">id</span><span class="op">)</span><span class="op">)</span></span>
@@ -950,13 +1048,13 @@ separately looks like a totally normal growth curve.</p>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/pcv_theme.html">pcv_theme</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-27-1.png" alt="Showing the 'dying' group of plants. On their own the trend looks normal enough, but the magnitude of changes day over day is very small which will effect water use metrics." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-29-1.png" alt="Showing the 'dying' group of plants. On their own the trend looks normal enough, but the magnitude of changes day over day is very small which will effect water use metrics." width="700"></p>
 <p>The measurement-to-measurement change for any asymptotic phenotype
 approaches 0 at the same rate as the phenotype approaches the asymptote.
 This measurement-to-measurement change is returned from
 <code>pwue</code> as the <code>pheno_diff</code> column, plotted
 below.</p>
-<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pheno_diff_ag</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/aggregate.html" class="external-link">aggregate</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">area</span>, <span class="va">pheno_diff</span><span class="op">)</span> <span class="op">~</span> <span class="va">time</span> <span class="op">+</span> <span class="va">group</span>,</span>
 <span>  <span class="va">rbc</span><span class="op">[</span><span class="va">rbc</span><span class="op">$</span><span class="va">time</span> <span class="op"><a href="https://rdrr.io/r/base/Arithmetic.html" class="external-link">%%</a></span> <span class="fl">2</span> <span class="op">==</span> <span class="fl">0</span> <span class="op">&amp;</span> <span class="va">rbc</span><span class="op">$</span><span class="va">pc</span> <span class="op">==</span> <span class="st">"death"</span>, <span class="op">]</span>,</span>
 <span>  <span class="va">mean</span>,</span>
@@ -981,7 +1079,7 @@ below.</p>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/pcv_theme.html">pcv_theme</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-28-1.png" alt="Showing the 'dying' group of plants with day to day changes labelled." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-30-1.png" alt="Showing the 'dying' group of plants with day to day changes labelled." width="700"></p>
 </div>
 </div>
 <div class="section level4">
@@ -993,7 +1091,7 @@ below.</p>
 the phenotype (area), and every day a larger amount of water is added to
 that pre-watered weight.</li>
 </ul>
-<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">rbic</span> <span class="op">&lt;-</span> <span class="va">rb</span><span class="op">[</span><span class="va">rb</span><span class="op">$</span><span class="va">wc</span> <span class="op">==</span> <span class="st">"increasing cont"</span>, <span class="op">]</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">rbic</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">time</span>, y <span class="op">=</span> <span class="va">pWUE</span>, group <span class="op">=</span> <span class="va">id</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">pc</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span> <span class="op">+</span></span>
@@ -1002,7 +1100,7 @@ that pre-watered weight.</li>
 <span>  <span class="fu"><a href="../reference/pcv_theme.html">pcv_theme</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Warning: Removed 10 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">## (`geom_line()`).</span></span></code></pre>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-29-1.png" alt="Plots of all six phenotype conditions pseudo water use efficiency under continuously increasing watering." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-31-1.png" alt="Plots of all six phenotype conditions pseudo water use efficiency under continuously increasing watering." width="700"></p>
 <p>Luckily, compared to the constant watering we can see that there
 aren’t any crazy peaks or negative values here.</p>
 <div class="section level5">
@@ -1013,7 +1111,7 @@ curve. Since the denominator now increases over time (more water being
 added to reach the target weight since the plant transpires more each
 day as it grows larger), we should see bell curves that starts high,
 have a center “lump”, then end low.</p>
-<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">rbics</span> <span class="op">&lt;-</span> <span class="va">rbic</span><span class="op">[</span><span class="va">rbic</span><span class="op">$</span><span class="va">pc</span> <span class="op">==</span> <span class="st">"sigmoid"</span>, <span class="op">]</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">rbics</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">time</span>, y <span class="op">=</span> <span class="va">pWUE</span>, group <span class="op">=</span> <span class="va">id</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
@@ -1021,10 +1119,10 @@ have a center “lump”, then end low.</p>
 <span>  <span class="fu"><a href="../reference/pcv_theme.html">pcv_theme</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Warning: Removed 10 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">## (`geom_line()`).</span></span></code></pre>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-30-1.png" alt="Showing only the abrupt sigmoid phenotype's pseudo water use efficiency trend under increasing watering, which looks like a left truncated gaussian." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-32-1.png" alt="Showing only the abrupt sigmoid phenotype's pseudo water use efficiency trend under increasing watering, which looks like a left truncated gaussian." width="700"></p>
 <p>And that’s exactly what we see. To make the reason more clear we can
 plot the numerator and the denominator separately.</p>
-<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">rbics</span>,</span>
 <span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">time</span>, group <span class="op">=</span> <span class="va">id</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">total_water</span>, color <span class="op">=</span> <span class="st">"Water (denominator)"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
@@ -1038,7 +1136,7 @@ plot the numerator and the denominator separately.</p>
 <span><span class="co">## (`geom_line()`).</span></span>
 <span><span class="co">## Removed 10 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">## (`geom_line()`).</span></span></code></pre>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-31-1.png" alt="Separating pseudo water use efficiency into the component parts of difference in phenotype and difference in water use to show how the phenotype trend drives this water use trait." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-33-1.png" alt="Separating pseudo water use efficiency into the component parts of difference in phenotype and difference in water use to show how the phenotype trend drives this water use trait." width="700"></p>
 <p>There are lots of ways to increase watering over the course of an
 experiment, it could be constant, related to plant size (target weight
 watering tends to do this), or a step function, but they will generally
@@ -1054,7 +1152,7 @@ design or the values put into the ratio (10/5 = 2/1).</p>
 <p>Sharper logistic growth should yield a sharper bell curve and since
 the phenotype is not changing at the start then reaches asymptotic size
 quickly, pWUE should be 0 on either side of the “spike”.</p>
-<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">rbica</span> <span class="op">&lt;-</span> <span class="va">rbic</span><span class="op">[</span><span class="va">rbic</span><span class="op">$</span><span class="va">pc</span> <span class="op">==</span> <span class="st">"abrupt"</span>, <span class="op">]</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">rbica</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">time</span>, y <span class="op">=</span> <span class="va">pWUE</span>, group <span class="op">=</span> <span class="va">id</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
@@ -1062,8 +1160,8 @@ quickly, pWUE should be 0 on either side of the “spike”.</p>
 <span>  <span class="fu"><a href="../reference/pcv_theme.html">pcv_theme</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Warning: Removed 10 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">## (`geom_line()`).</span></span></code></pre>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-32-1.png" alt="Showing only the abrupt sigmoid phenotype's pseudo water use efficiency trend,  which has one sharp spike and otherwise appears flat otherwise. Compared to the more normal sigmoid this makes a gaussian like shape that is not truncated." width="700"></p>
-<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-34-1.png" alt="Showing only the abrupt sigmoid phenotype's pseudo water use efficiency trend,  which has one sharp spike and otherwise appears flat otherwise. Compared to the more normal sigmoid this makes a gaussian like shape that is not truncated." width="700"></p>
+<div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">rbica</span>,</span>
 <span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">time</span>, group <span class="op">=</span> <span class="va">id</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">total_water</span>, color <span class="op">=</span> <span class="st">"Water (denominator)"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
@@ -1077,7 +1175,7 @@ quickly, pWUE should be 0 on either side of the “spike”.</p>
 <span><span class="co">## (`geom_line()`).</span></span>
 <span><span class="co">## Removed 10 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">## (`geom_line()`).</span></span></code></pre>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-33-1.png" alt="Separating pseudo water use efficiency into the component parts of difference in phenotype and difference in water use to show how the phenotype trend drives this water use trait." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-35-1.png" alt="Separating pseudo water use efficiency into the component parts of difference in phenotype and difference in water use to show how the phenotype trend drives this water use trait." width="700"></p>
 </div>
 <div class="section level5">
 <h5 id="exponential-1">Exponential<a class="anchor" aria-label="anchor" href="#exponential-1"></a>
@@ -1085,7 +1183,7 @@ quickly, pWUE should be 0 on either side of the “spike”.</p>
 <p>Here our numerator increases exponentially while our denominator
 increases asymptotically. The result we should expect is exponential
 growth.</p>
-<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb51"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">rbice</span> <span class="op">&lt;-</span> <span class="va">rbic</span><span class="op">[</span><span class="va">rbic</span><span class="op">$</span><span class="va">pc</span> <span class="op">==</span> <span class="st">"exponential"</span>, <span class="op">]</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">rbice</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">time</span>, y <span class="op">=</span> <span class="va">pWUE</span>, group <span class="op">=</span> <span class="va">id</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
@@ -1093,10 +1191,10 @@ growth.</p>
 <span>  <span class="fu"><a href="../reference/pcv_theme.html">pcv_theme</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Warning: Removed 10 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">## (`geom_line()`).</span></span></code></pre>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-34-1.png" alt="Showing only the exponential phenotype's pseudo water use efficiency trend under increasing watering, which still appears exponential." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-36-1.png" alt="Showing only the exponential phenotype's pseudo water use efficiency trend under increasing watering, which still appears exponential." width="700"></p>
 <p>And that’s what we get. The increase in measurement-to-measurement
 phenotype outpaces the increase in transpiration.</p>
-<div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb53"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">rbice</span>,</span>
 <span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">time</span>, group <span class="op">=</span> <span class="va">id</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">total_water</span>, color <span class="op">=</span> <span class="st">"Water (denominator)"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
@@ -1110,7 +1208,7 @@ phenotype outpaces the increase in transpiration.</p>
 <span><span class="co">## (`geom_line()`).</span></span>
 <span><span class="co">## Removed 10 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">## (`geom_line()`).</span></span></code></pre>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-35-1.png" alt="Separating pseudo water use efficiency into the component parts of difference in phenotype and difference in water use to show how the phenotype trend drives this water use trait." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-37-1.png" alt="Separating pseudo water use efficiency into the component parts of difference in phenotype and difference in water use to show how the phenotype trend drives this water use trait." width="700"></p>
 </div>
 <div class="section level5">
 <h5 id="slowing-1">Slowing<a class="anchor" aria-label="anchor" href="#slowing-1"></a>
@@ -1119,7 +1217,7 @@ phenotype outpaces the increase in transpiration.</p>
 phenotype is asymptotic at 0. With our numerator decreasing and the
 denominator increasing we should see pWUE start high and approach 0 very
 quickly.</p>
-<div class="sourceCode" id="cb51"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb55"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">rbics</span> <span class="op">&lt;-</span> <span class="va">rbic</span><span class="op">[</span><span class="va">rbic</span><span class="op">$</span><span class="va">pc</span> <span class="op">==</span> <span class="st">"slowing"</span>, <span class="op">]</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">rbics</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">time</span>, y <span class="op">=</span> <span class="va">pWUE</span>, group <span class="op">=</span> <span class="va">id</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
@@ -1127,10 +1225,10 @@ quickly.</p>
 <span>  <span class="fu"><a href="../reference/pcv_theme.html">pcv_theme</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Warning: Removed 10 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">## (`geom_line()`).</span></span></code></pre>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-36-1.png" alt="Showing only the slowing phenotype's pseudo water use efficiency trend, which quickly approaches an asymptote at 0." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-38-1.png" alt="Showing only the slowing phenotype's pseudo water use efficiency trend, which quickly approaches an asymptote at 0." width="700"></p>
 <p>And that’s what we get. The increase in measurement-to-measurement
 phenotype outpaces the increase in transpiration.</p>
-<div class="sourceCode" id="cb53"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb57"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">rbics</span>,</span>
 <span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">time</span>, group <span class="op">=</span> <span class="va">id</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">total_water</span>, color <span class="op">=</span> <span class="st">"Water (denominator)"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
@@ -1144,7 +1242,7 @@ phenotype outpaces the increase in transpiration.</p>
 <span><span class="co">## (`geom_line()`).</span></span>
 <span><span class="co">## Removed 10 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">## (`geom_line()`).</span></span></code></pre>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-37-1.png" alt="Separating pseudo water use efficiency into the component parts of difference in phenotype and difference in water use to show how the phenotype trend drives this water use trait." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-39-1.png" alt="Separating pseudo water use efficiency into the component parts of difference in phenotype and difference in water use to show how the phenotype trend drives this water use trait." width="700"></p>
 </div>
 <div class="section level5">
 <h5 id="linear-1">Linear<a class="anchor" aria-label="anchor" href="#linear-1"></a>
@@ -1152,7 +1250,7 @@ phenotype outpaces the increase in transpiration.</p>
 <p>Here our numerator is constant and the denominator (transpiration) is
 increasing, so we should see pWUE decrease over time, but never getting
 to 0.</p>
-<div class="sourceCode" id="cb55"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb59"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">rbicl</span> <span class="op">&lt;-</span> <span class="va">rbic</span><span class="op">[</span><span class="va">rbic</span><span class="op">$</span><span class="va">pc</span> <span class="op">==</span> <span class="st">"linear"</span>, <span class="op">]</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">rbicl</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">time</span>, y <span class="op">=</span> <span class="va">pWUE</span>, group <span class="op">=</span> <span class="va">id</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
@@ -1160,9 +1258,9 @@ to 0.</p>
 <span>  <span class="fu"><a href="../reference/pcv_theme.html">pcv_theme</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Warning: Removed 10 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">## (`geom_line()`).</span></span></code></pre>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-38-1.png" alt="Showing only the linear phenotype's pseudo water use efficiency trend, which just mirrors the decreasing water use." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-40-1.png" alt="Showing only the linear phenotype's pseudo water use efficiency trend, which just mirrors the decreasing water use." width="700"></p>
 <p>Again we look at the component pieces to check our intuition.</p>
-<div class="sourceCode" id="cb57"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb61"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">rbicl</span>,</span>
 <span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">time</span>, group <span class="op">=</span> <span class="va">id</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">total_water</span>, color <span class="op">=</span> <span class="st">"Water (denominator)"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
@@ -1176,7 +1274,7 @@ to 0.</p>
 <span><span class="co">## (`geom_line()`).</span></span>
 <span><span class="co">## Removed 10 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">## (`geom_line()`).</span></span></code></pre>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-39-1.png" alt="Separating pseudo water use efficiency into the component parts of difference in phenotype and difference in water use to show how the phenotype trend drives this water use trait." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-41-1.png" alt="Separating pseudo water use efficiency into the component parts of difference in phenotype and difference in water use to show how the phenotype trend drives this water use trait." width="700"></p>
 </div>
 <div class="section level5">
 <h5 id="death-1">Death<a class="anchor" aria-label="anchor" href="#death-1"></a>
@@ -1184,7 +1282,7 @@ to 0.</p>
 <p>Here we should see a very similar trend as we saw with non-asymptotic
 growth that is slowing down. Here our growth is asymptotic but the
 effect on the numerator should be the same.</p>
-<div class="sourceCode" id="cb59"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb63"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">rbicd</span> <span class="op">&lt;-</span> <span class="va">rbic</span><span class="op">[</span><span class="va">rbic</span><span class="op">$</span><span class="va">pc</span> <span class="op">==</span> <span class="st">"death"</span>, <span class="op">]</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">rbicd</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">time</span>, y <span class="op">=</span> <span class="va">pWUE</span>, group <span class="op">=</span> <span class="va">id</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
@@ -1192,9 +1290,9 @@ effect on the numerator should be the same.</p>
 <span>  <span class="fu"><a href="../reference/pcv_theme.html">pcv_theme</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Warning: Removed 10 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">## (`geom_line()`).</span></span></code></pre>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-40-1.png" alt="Showing only the very slow phenotype's pseudo water use efficiency trend, which just mirrors the decreasing water use." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-42-1.png" alt="Showing only the very slow phenotype's pseudo water use efficiency trend, which just mirrors the decreasing water use." width="700"></p>
 <p>Again we look at the component pieces to check our intuition.</p>
-<div class="sourceCode" id="cb61"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb65"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">rbicl</span>,</span>
 <span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">time</span>, group <span class="op">=</span> <span class="va">id</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">total_water</span>, color <span class="op">=</span> <span class="st">"Water (denominator)"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
@@ -1208,7 +1306,7 @@ effect on the numerator should be the same.</p>
 <span><span class="co">## (`geom_line()`).</span></span>
 <span><span class="co">## Removed 10 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">## (`geom_line()`).</span></span></code></pre>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-41-1.png" alt="Separating pseudo water use efficiency into the component parts of difference in phenotype and difference in water use to show how the phenotype trend drives this water use trait." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-43-1.png" alt="Separating pseudo water use efficiency into the component parts of difference in phenotype and difference in water use to show how the phenotype trend drives this water use trait." width="700"></p>
 </div>
 </div>
 <div class="section level4">
@@ -1222,7 +1320,7 @@ to that pre-watered weight.</li>
 </ul>
 <p>Now that we are inverting the trend of the denominator we should see
 some real differences.</p>
-<div class="sourceCode" id="cb63"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb67"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">rbdc</span> <span class="op">&lt;-</span> <span class="va">rb</span><span class="op">[</span><span class="va">rb</span><span class="op">$</span><span class="va">wc</span> <span class="op">==</span> <span class="st">"decreasing cont"</span>, <span class="op">]</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">rbdc</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">time</span>, y <span class="op">=</span> <span class="va">pWUE</span>, group <span class="op">=</span> <span class="va">id</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">pc</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span> <span class="op">+</span></span>
@@ -1231,7 +1329,7 @@ some real differences.</p>
 <span>  <span class="fu"><a href="../reference/pcv_theme.html">pcv_theme</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Warning: Removed 10 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">## (`geom_line()`).</span></span></code></pre>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-42-1.png" alt="Six phenotypes pseudo water use efficiency trends under decreasing watering." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-44-1.png" alt="Six phenotypes pseudo water use efficiency trends under decreasing watering." width="700"></p>
 <div class="section level5">
 <h5 id="sigmoid-2">Sigmoid<a class="anchor" aria-label="anchor" href="#sigmoid-2"></a>
 </h5>
@@ -1241,7 +1339,7 @@ starts low, goes through the “bell” shape, then ends higher since the
 denominator is at it’s smallest at the end of the experiment when
 measurement-to-measurement phenotype change is back to about the same as
 it was in the beginning.</p>
-<div class="sourceCode" id="cb65"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb69"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">rbdcs</span> <span class="op">&lt;-</span> <span class="va">rbdc</span><span class="op">[</span><span class="va">rbdc</span><span class="op">$</span><span class="va">pc</span> <span class="op">==</span> <span class="st">"sigmoid"</span>, <span class="op">]</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">rbdcs</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">time</span>, y <span class="op">=</span> <span class="va">pWUE</span>, group <span class="op">=</span> <span class="va">id</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
@@ -1249,10 +1347,10 @@ it was in the beginning.</p>
 <span>  <span class="fu"><a href="../reference/pcv_theme.html">pcv_theme</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Warning: Removed 10 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">## (`geom_line()`).</span></span></code></pre>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-43-1.png" alt="Showing only the sigmoid phenotype's pseudo water use efficiency trend, which looks like a right truncated gaussian." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-45-1.png" alt="Showing only the sigmoid phenotype's pseudo water use efficiency trend, which looks like a right truncated gaussian." width="700"></p>
 <p>We do have one strong spike at the end which we can try to understand
 better by looking at each component of pWUE.</p>
-<div class="sourceCode" id="cb67"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb71"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span></span>
 <span>  <span class="va">rbdcs</span>,</span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">time</span>, group <span class="op">=</span> <span class="va">id</span><span class="op">)</span></span>
@@ -1271,7 +1369,7 @@ better by looking at each component of pWUE.</p>
 <span><span class="co">## (`geom_line()`).</span></span>
 <span><span class="co">## Removed 10 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">## (`geom_line()`).</span></span></code></pre>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-44-1.png" alt="Separating pseudo water use efficiency into the component parts of difference in phenotype and difference in water use to show how the phenotype trend drives this water use trait." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-46-1.png" alt="Separating pseudo water use efficiency into the component parts of difference in phenotype and difference in water use to show how the phenotype trend drives this water use trait." width="700"></p>
 <p>Now we can see the cause for that spike is just that the watering
 amount on the last day for the 4th plant was almost nothing.</p>
 </div>
@@ -1289,14 +1387,14 @@ curve that gets close to its asymptote.</p>
 </h5>
 <p>Again here we remove negative values, which are caused normally by
 measurement error.</p>
-<div class="sourceCode" id="cb69"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb73"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">rbdce</span> <span class="op">&lt;-</span> <span class="va">rbdc</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">rbdc</span><span class="op">$</span><span class="va">pc</span> <span class="op">==</span> <span class="st">"exponential"</span> <span class="op">&amp;</span> <span class="va">rbdc</span><span class="op">$</span><span class="va">pWUE</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span>, <span class="op">]</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">rbdce</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">time</span>, y <span class="op">=</span> <span class="va">pWUE</span>, group <span class="op">=</span> <span class="va">id</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">id</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Exponential growth and target weight watering"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/pcv_theme.html">pcv_theme</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-45-1.png" alt="Showing only the exponential phenotype's pseudo water use efficiency trend, which is still exponential since it takes a very dramatic water intervention to overcome exponential growth." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-47-1.png" alt="Showing only the exponential phenotype's pseudo water use efficiency trend, which is still exponential since it takes a very dramatic water intervention to overcome exponential growth." width="700"></p>
 <p>Once we remove the negative values we see the same basic trend
 (stronger this time as the denominator gets smaller as the exponential
 growth progresses) as we have been for exponentially increasing
@@ -1310,7 +1408,7 @@ complete drought that would curb the trend for this phenotype.</p>
 groups all show similar trends to each other. Since the numerators here
 are constant or slightly decreasing (the change in slope) the
 denominator can push the pWUE trend dramatically.</p>
-<div class="sourceCode" id="cb70"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb74"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span></span>
 <span>  <span class="va">rbdc</span><span class="op">[</span><span class="va">rbdc</span><span class="op">$</span><span class="va">pc</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"slowing"</span>, <span class="st">"linear"</span>, <span class="st">"death"</span><span class="op">)</span>, <span class="op">]</span>,</span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">time</span>, group <span class="op">=</span> <span class="va">id</span><span class="op">)</span></span>
@@ -1329,7 +1427,7 @@ denominator can push the pWUE trend dramatically.</p>
 <span><span class="co">## (`geom_line()`).</span></span>
 <span><span class="co">## Removed 10 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">## (`geom_line()`).</span></span></code></pre>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-46-1.png" alt="Separating pseudo water use efficiency into the component parts of difference in phenotype and difference in water use to show how the phenotype trend drives this water use trait for any constant or slowing decreasing slopes to the phenotype." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-48-1.png" alt="Separating pseudo water use efficiency into the component parts of difference in phenotype and difference in water use to show how the phenotype trend drives this water use trait for any constant or slowing decreasing slopes to the phenotype." width="700"></p>
 </div>
 </div>
 </div>
@@ -1345,7 +1443,7 @@ being:</p>
 <p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mfrac><msub><mtext mathvariant="normal">Biomass</mtext><mi>t</mi></msub><msub><mtext mathvariant="normal">Water Transpired</mtext><mi>t</mi></msub></mfrac><annotation encoding="application/x-tex">\frac{\text{Biomass}_t}{\text{Water Transpired}_t}</annotation></semantics></math></p>
 <p>This type of pWUE is useful for thinking about how much biomass can
 be maintained per unit of water.</p>
-<div class="sourceCode" id="cb72"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb76"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">a</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pwue.html">pwue</a></span><span class="op">(</span></span>
 <span>  df <span class="op">=</span> <span class="va">ex</span>, w <span class="op">=</span> <span class="cn">NULL</span>, pheno <span class="op">=</span> <span class="st">"area"</span>, time <span class="op">=</span> <span class="st">"time"</span>, id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"id"</span>, <span class="st">"group"</span><span class="op">)</span>,</span>
 <span>  pre_watering <span class="op">=</span> <span class="st">"weight_before"</span>,</span>
@@ -1353,13 +1451,13 @@ be maintained per unit of water.</p>
 <span><span class="op">)</span></span></code></pre></div>
 <p>The numerator here is the same as before, so we can check for some
 problems we already know about.</p>
-<div class="sourceCode" id="cb73"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb77"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colSums</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">a</span><span class="op">$</span><span class="va">group</span>, <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">a</span><span class="op">$</span><span class="va">pWUE</span> <span class="op">&lt;</span> <span class="fl">0</span>, <span class="st">"negative"</span>, <span class="st">"positive"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## negative positive </span></span>
 <span><span class="co">##       18     4302</span></span></code></pre>
 <p>This time we’ll plot it with the scales freed on the Y-axis and with
 values below 0 already removed.</p>
-<div class="sourceCode" id="cb75"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb79"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">apos</span> <span class="op">&lt;-</span> <span class="va">a</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">a</span><span class="op">$</span><span class="va">pWUE</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span>, <span class="op">]</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span></span>
 <span>  <span class="va">apos</span><span class="op">[</span><span class="va">apos</span><span class="op">$</span><span class="va">id</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"id_"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span>, <span class="op">]</span>,</span>
@@ -1372,7 +1470,7 @@ values below 0 already removed.</p>
 <span>    strip.text.x.top <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>,</span>
 <span>    strip.text.y.right <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-49-1.png" alt="Absolute value based pseudo water use efficiency, where the numerator is the same as it was previously but trends depend more on the phenotype's magnitude than rate of change." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-51-1.png" alt="Absolute value based pseudo water use efficiency, where the numerator is the same as it was previously but trends depend more on the phenotype's magnitude than rate of change." width="700"></p>
 <p>Here our pWUE data look a lot like the original phenotype data, with
 the exception of abrupt growth which we’ll get to. That general
 similarity is because the phenotype data are used as-is in the
@@ -1385,7 +1483,7 @@ going on there?</p>
 <div class="section level4">
 <h4 id="abrupt-logistic-growth">Abrupt Logistic Growth<a class="anchor" aria-label="anchor" href="#abrupt-logistic-growth"></a>
 </h4>
-<div class="sourceCode" id="cb76"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb80"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span></span>
 <span>  <span class="va">apos</span><span class="op">[</span><span class="va">apos</span><span class="op">$</span><span class="va">pc</span> <span class="op">==</span> <span class="st">"abrupt"</span>, <span class="op">]</span>,</span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">time</span>, y <span class="op">=</span> <span class="va">pWUE</span>, group <span class="op">=</span> <span class="va">id</span><span class="op">)</span></span>
@@ -1401,8 +1499,8 @@ going on there?</p>
 <span>    strip.text.x.top <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>,</span>
 <span>    strip.text.y.right <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-50-1.png" alt="Highlighting the abrupt sigmoid phenotype's absolute value based pseudo water use efficiency, where the trend does not look like the raw phenotype." width="700"></p>
-<div class="sourceCode" id="cb77"><pre class="downlit sourceCode r">
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-52-1.png" alt="Highlighting the abrupt sigmoid phenotype's absolute value based pseudo water use efficiency, where the trend does not look like the raw phenotype." width="700"></p>
+<div class="sourceCode" id="cb81"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span></span>
 <span>  <span class="va">apos</span><span class="op">[</span><span class="va">apos</span><span class="op">$</span><span class="va">pc</span> <span class="op">==</span> <span class="st">"abrupt"</span>, <span class="op">]</span>,</span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">time</span>, group <span class="op">=</span> <span class="va">id</span><span class="op">)</span></span>
@@ -1416,13 +1514,13 @@ going on there?</p>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/pcv_theme.html">pcv_theme</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-51-1.png" alt="Separating pseudo water use efficiency into the component parts of difference in phenotype and difference in water use to show how the phenotype trend drives this water use trait." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-53-1.png" alt="Separating pseudo water use efficiency into the component parts of difference in phenotype and difference in water use to show how the phenotype trend drives this water use trait." width="700"></p>
 <p>What is happening here is that since our phenotype changes so quickly
 between measurements 10 and 14 (roughly) the “lag” where we look at the
 difference in weights becomes very important. Looking at the pre/post
 watering weights for the first 3 plants in each watering condition given
 <code>abrupt</code> logistic growth the problem is more obvious.</p>
-<div class="sourceCode" id="cb78"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb82"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">l2</span> <span class="op">&lt;-</span> <span class="fu">reshape2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/reshape2/man/melt.html" class="external-link">melt</a></span><span class="op">(</span><span class="va">ex</span><span class="op">[</span><span class="va">ex</span><span class="op">$</span><span class="va">pc</span> <span class="op">==</span> <span class="st">"abrupt"</span>, <span class="op">]</span>,</span>
 <span>  id.vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"id"</span>, <span class="st">"group"</span>, <span class="st">"time"</span>, <span class="st">"wc"</span><span class="op">)</span>,</span>
 <span>  measure.vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"weight_before"</span>, <span class="st">"weight_after"</span><span class="op">)</span></span>
@@ -1447,7 +1545,7 @@ watering weights for the first 3 plants in each watering condition given
 <span>    strip.text.x.top <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>,</span>
 <span>    strip.text.y.right <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-52-1.png" alt="Sharp phenotype changes drive small denominators which often make pseudo water use efficiency look strange." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-54-1.png" alt="Sharp phenotype changes drive small denominators which often make pseudo water use efficiency look strange." width="700"></p>
 <p>Between days 10 and 14 the line between those weights is much
 shorter. In this data the difference is smaller because it’s a
 relatively low effort simulation. In the wild we can see trends like
@@ -1465,7 +1563,7 @@ noisy in the middle of the experiment from the discrepancy between area
 and a proxy for biomass and true biomass (rapid artificial weight gain
 in excess of the watering amount) the overall trend does look like our
 phenotype.</p>
-<div class="sourceCode" id="cb79"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb83"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span></span>
 <span>  <span class="va">apos</span><span class="op">[</span><span class="va">apos</span><span class="op">$</span><span class="va">pc</span> <span class="op">==</span> <span class="st">"abrupt"</span>, <span class="op">]</span>,</span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">time</span>, y <span class="op">=</span> <span class="va">pWUE</span>, group <span class="op">=</span> <span class="va">id</span><span class="op">)</span></span>
@@ -1482,7 +1580,7 @@ phenotype.</p>
 <span>    strip.text.y.right <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_cartesian.html" class="external-link">coord_cartesian</a></span><span class="op">(</span>ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-53-1.png" alt="Highlighting the abrupt sigmoid phenotype's absolute value based pseudo water use efficiency, where the trend does not look like the raw phenotype." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-55-1.png" alt="Highlighting the abrupt sigmoid phenotype's absolute value based pseudo water use efficiency, where the trend does not look like the raw phenotype." width="700"></p>
 </div>
 </div>
 <div class="section level3">
@@ -1493,7 +1591,7 @@ normalized daily transpiration (NDT). Normalized transpiration is the
 reciprocal of the “abs” style pWUE that we just looked at, so it answers
 a related question. NDT is helpful when we want to investigate how much
 water is used (transpired) by a given amount of biomass.</p>
-<div class="sourceCode" id="cb80"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb84"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ndt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pwue.html">pwue</a></span><span class="op">(</span></span>
 <span>  df <span class="op">=</span> <span class="va">ex</span>, w <span class="op">=</span> <span class="cn">NULL</span>, pheno <span class="op">=</span> <span class="st">"area"</span>, time <span class="op">=</span> <span class="st">"time"</span>, id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"id"</span>, <span class="st">"group"</span><span class="op">)</span>,</span>
 <span>  pre_watering <span class="op">=</span> <span class="st">"weight_before"</span>,</span>
@@ -1508,7 +1606,7 @@ amount of water (see top row with constant watering) NDT is high. This
 is most obvious in the exponential phenotype. Remember that how well you
 will be able to use NDT (any any water use phenotype) will depend
 entirely on how accurately you can measure transpiration.</p>
-<div class="sourceCode" id="cb81"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb85"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span></span>
 <span>  <span class="va">ndt</span><span class="op">[</span><span class="va">ndt</span><span class="op">$</span><span class="va">id</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"id_"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span> <span class="op">&amp;</span> <span class="va">ndt</span><span class="op">$</span><span class="va">pc</span> <span class="op">!=</span> <span class="st">"abrupt"</span>, <span class="op">]</span>,</span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">time</span>, y <span class="op">=</span> <span class="va">normalized_daily_transpiration</span>, group <span class="op">=</span> <span class="va">id</span><span class="op">)</span></span>
@@ -1520,14 +1618,14 @@ entirely on how accurately you can measure transpiration.</p>
 <span>    strip.text.x.top <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>,</span>
 <span>    strip.text.y.right <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-55-1.png" alt="Normalized daily transpiration (NDT) in each watering condition and phenotype trend." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-57-1.png" alt="Normalized daily transpiration (NDT) in each watering condition and phenotype trend." width="700"></p>
 <p>The <code>abrupt</code> phenotype has much higher values for
 transpiration since we are dividing by close to 0 for a long time (in
 the beginning of the experiment these plants are barely detectable).
 This will be another caveat in real data, if there are some plants that
 fail to thrive then you can end up with dramatic outliers in water use
 phenotypes.</p>
-<div class="sourceCode" id="cb82"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb86"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span></span>
 <span>  <span class="va">ndt</span><span class="op">[</span><span class="va">ndt</span><span class="op">$</span><span class="va">id</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"id_"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span> <span class="op">&amp;</span> <span class="va">ndt</span><span class="op">$</span><span class="va">pc</span> <span class="op">==</span> <span class="st">"abrupt"</span>, <span class="op">]</span>,</span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">time</span>, y <span class="op">=</span> <span class="va">normalized_daily_transpiration</span>, group <span class="op">=</span> <span class="va">id</span><span class="op">)</span></span>
@@ -1539,7 +1637,7 @@ phenotypes.</p>
 <span>    strip.text.x.top <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>,</span>
 <span>    strip.text.y.right <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-56-1.png" alt="Highlighting the abrupt sigmoid phenotype's NDT, which starts high and quickly approaches 0. This starts extremely high compared to other options since we are almost dividing by 0 at the beginning." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-58-1.png" alt="Highlighting the abrupt sigmoid phenotype's NDT, which starts high and quickly approaches 0. This starts extremely high compared to other options since we are almost dividing by 0 at the beginning." width="700"></p>
 </div>
 </div>
 <div class="section level2">
