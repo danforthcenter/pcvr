@@ -1,3 +1,11 @@
+# pcvr 1.3.0.2
+
+Bug fixes for growthPlot with brms models that have only 1 group.
+
+Explicit error handling for conjugate samples of 1L.
+
+Update to field capacity calculations in articles.
+
 # pcvr 1.3.0.1
 
 Added logic to joyplots to handle continuous variables on y axis (time).
