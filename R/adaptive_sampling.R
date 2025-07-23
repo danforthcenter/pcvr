@@ -154,6 +154,7 @@ ggsave("~/Desktop/adaptive_design_paper/sampling_time_frequencies_30_trials.png"
 
 devtools::load_all("~/pcvr")
 library(brms)
+library(patchwork)
 library(ggplot2)
 
 derivs <- function(x, form = expression(a * exp(-b * exp(-c*x))), wrt = "x", scale = TRUE, ...) {
@@ -166,10 +167,13 @@ derivs <- function(x, form = expression(a * exp(-b * exp(-c*x))), wrt = "x", sca
   return(y)
 }
 
+iterations <- 10
 required_information_content <- 0.8 # get 80% of the information possible
-parameters_of_interest <- c("a", "b", "c")
+threshold <- 1.15
+parameters_of_interest <- c("b", "c")
+res <- list()
 
-for (i in 1) { # test N times
+for (i in seq_len(iterations)) { # test N times
   simdf <- growthSim("gompertz",
                      n = 20, t = 25,
                      params = list("A" = c(100), "B" = c(9), "C" = c(0.25))
@@ -187,13 +191,19 @@ for (i in 1) { # test N times
   )
   proposed_sampling_times <- unique(simdf$time[!simdf$time %in% ss$df$time])
   sampled_times <- unique(ss$df$time)
-  required_information_content <- c(a = 0.8, b = 0.8, c = 0.8) # get 80% of the information possible
+  required_information_content <- c(b = 0.8, c = 0.8) # get 80% of the information possible
   fit <- fitGrowth(ss, cores = 4, chains = 4, iter = 2000)
-  
-  collected_information <- c(a = 0, b = 0, c = 0)
+  collected_information_i <- c(b = 0, c = 0)
+  collected_information <- list(
+    collected_information_i
+  )
   ti <- 1
-  t <- proposed_sampling_times[ti]
-  while (any(collected_information < required_information_content) && t < max(proposed_sampling_times)) {
+  accepted_sampling_times <- sampled_times
+  t <- 0
+  
+  while (any(collected_information_i < required_information_content) &&
+         t < max(proposed_sampling_times)) {
+    t <- c(max(sampled_times), proposed_sampling_times)[ti]
     fitd <- setNames(as.data.frame(fit)[,3:5], c("a", "b", "c"))
     n_draws <- 100
     draw_index <- sample(seq_len(nrow(fitd)), n_draws)
@@ -212,18 +222,49 @@ for (i in 1) { # test N times
     primes$time <- rep(c(sampled_times, proposed_sampling_times), each = n_draws)
     primes$i <- rep(seq_len(n_draws), times = length(c(sampled_times, proposed_sampling_times)))
     # # gut check
-    ggplot(primes, aes(x = time, group = i)) +
-      geom_line(aes(y = a, color = "a")) +
-      geom_line(aes(y = b, color = "b")) +
-      geom_line(aes(y = c, color = "c")) +
-      geom_vline(xintercept = t)
-    mu_time <- aggregate(cbind(a, b, c) ~ time, primes, \(x) {mean(x)})
-    cs_time <- apply(mu_time[, 2:4], 2, cumsum)
-    info <- as.data.frame(cbind(ag$time, apply(cs_time, 2, \(x) {x / max(x)})))
-    collected_information <- info[info[[1]] == t, parameters_of_interest]
+    p <- ggplot(primes, aes(x = time, group = i)) +
+      lapply(parameters_of_interest, function(p) {
+        geom_line(aes(y = .data[[p]], color = p))
+      }) +
+      geom_vline(xintercept = t) +
+      pcv_theme()
+    print(p)
+    mu_time <- aggregate(cbind(b, c) ~ time, primes, \(x) {mean(x)})
+    cs_time <- apply(mu_time[, parameters_of_interest], 2, cumsum)
+    info <- as.data.frame(cbind(mu_time$time, apply(cs_time, 2, \(x) {x / max(x)})))
+    collected_information_i <- info[info[[1]] == t, parameters_of_interest]
+    if (ti > 1 && any(collected_information_i > collected_information[[ti - 1]] * threshold)) {
+      accepted_sampling_times <- append(accepted_sampling_times, t)
+      fit <- update(fit, newdata = simdf[simdf$time %in% accepted_sampling_times, ],
+                    cores = 4, chains = 4, iter = 2000)
+    }
+    collected_information[[ti]] <- collected_information_i
     ti <- ti + 1
   }
+  res[[i]] <- list(
+    collected_information = collected_information,
+    accepted_sampling_times = accepted_sampling_times,
+    fit = fit,
+    df = simdf
+  )
 }
+
+Reduce(`+`, lapply(seq_len(10), function(i) {
+  l <- res[[i]]
+  growthPlot(l$fit, form = ss$pcvrForm, timeRange = 1:25, df = l$df) +
+    geom_point(data = l$df[l$df$time %in% l$accepted_sampling_times &
+                             l$df$time > 6, ],
+               aes(x = time, y = y), size = 0.5)
+})) + plot_layout(ncol = 4, guides = "collect", axes = "collect")
+
+resdf <- do.call(rbind, lapply(seq_along(res), function(i) {
+  data.frame(i = i, values = res[[i]]$accepted_sampling_times)
+}))
+
+ggplot(resdf, aes(x = values)) +
+  geom_histogram(color = "white", binwidth = 1) +
+  scale_x_continuous(breaks = 1:25, limits = c(1, 25)) +
+  theme_bw()
 
 #* derivative based version
 #*
