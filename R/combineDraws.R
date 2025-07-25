@@ -6,13 +6,23 @@
 #'
 #' @param ... Some number of brmsfit objects and/or dataframes of draws
 #' (should generally be the same type of model fit to different data)
+#' @param names Optional vector of names for the models/data.frames. The default (NULL) will use
+#' the object names of arguments to \code{...} as a vector of names to uniquely identify columns in
+#' the output data frame. See details for using this with \code{do.call} on a list of models.
 #' @param message Logical, should messages about possible problems be printed? Default is TRUE.
 #' This will warn if models may not have converged, if there are different numbers of draws in
 #' the objects, or if models have different formulations.
 #' @keywords brms
 #' @importFrom methods is
+#' @returns A data.frame of posterior draws, labeled to show which object they come from.
+#' @details
+#' If you fit models as part of a loop/apply function and end up with a list of models it may be
+#' helpful to call this function on the list. In that case object names are not parsed well from
+#' the list by default so passing the \code{names} argument is helpful and can be done as
+#' \code{do.call(combineDraws, c(fits, list(names = names(fits))))}.
+#'
 #' @examples
-#' # note that this example will fit several bayesian models and may run for several minutes.
+#' # note that this example will fit several models using Stan and may run slowly.
 #' \donttest{
 #' simdf <- growthSim("logistic",
 #'   n = 20, t = 25,
@@ -74,28 +84,26 @@
 #' @return Returns a dataframe of posterior draws.
 #' @export
 
-
-
-
-combineDraws <- function(..., message = TRUE) {
+combineDraws <- function(..., names = NULL, message = TRUE) {
   objects <- list(...)
   if (!all(unlist(lapply(objects, function(m) {
     return(methods::is(m, "brmsfit") | methods::is(m, "data.frame"))
   })))) {
     stop("Only brmsfit objects and data frames are accepted")
   }
-
-  obj_names <- sapply(substitute(list(...)), deparse)[-1]
+  if (is.null(names)) {
+    names <- sapply(substitute(list(...)), deparse)[-1]
+  }
   models <- objects[unlist(lapply(objects, function(m) {
     return(methods::is(m, "brmsfit"))
   }))]
-  model_names <- obj_names[unlist(lapply(objects, function(m) {
+  model_names <- names[unlist(lapply(objects, function(m) {
     return(methods::is(m, "brmsfit"))
   }))]
   supplied_draw_dfs <- objects[unlist(lapply(objects, function(m) {
     return(methods::is(m, "data.frame"))
   }))]
-  df_names <- obj_names[unlist(lapply(objects, function(m) {
+  df_names <- names[unlist(lapply(objects, function(m) {
     return(methods::is(m, "data.frame"))
   }))]
 
