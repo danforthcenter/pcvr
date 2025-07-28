@@ -475,10 +475,10 @@ growthSim <- function(
         iter_data <- iter_data[, -which(colnames(iter_data) == "x")]
       }
       if (int) {
-        I_iter <- rnorm(1, mean = pars[["I"]], sd = noise[["I"]])
-        iter_data$y <- iter_data$y + I_iter
+        int_iter <- rnorm(1, mean = pars[["I"]], sd = noise[["I"]])
+        iter_data$y <- iter_data$y + int_iter
         if (returnParams) {
-          iter_data$I <- I_iter
+          iter_data$I <- int_iter
         }
       }
       return(iter_data)
