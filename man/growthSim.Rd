@@ -11,7 +11,8 @@ growthSim(
   n = 20,
   t = 25,
   params = list(),
-  D = 0
+  D = 0,
+  returnParams = FALSE
 )
 }
 \arguments{
@@ -39,6 +40,9 @@ Changepoints should be specified as "changePointX" or "fixedChangePointX" as in
 \code{\link{growthSS}}.}
 
 \item{D}{If decay is being simulated then this is the starting point for decay. This defaults to 0.}
+
+\item{returnParams}{Logical, should exact parameter values making each line be returned as part of
+the data? This may be useful for model evaluation on test data. Defaults to FALSE.}
 }
 \value{
 Returns a dataframe of example growth data following the input parameters.

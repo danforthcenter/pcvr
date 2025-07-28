@@ -23,6 +23,8 @@
 #' Changepoints should be specified as "changePointX" or "fixedChangePointX" as in
 #' \code{\link{growthSS}}.
 #' @param D If decay is being simulated then this is the starting point for decay. This defaults to 0.
+#' @param returnParams Logical, should exact parameter values making each line be returned as part of
+#' the data? This may be useful for model evaluation on test data. Defaults to FALSE.
 #'
 #' @return Returns a dataframe of example growth data following the input parameters.
 #'
@@ -271,7 +273,8 @@ growthSim <- function(
       "monomolecular", "exponential", "linear", "power law", "frechet", "weibull", "gumbel",
       "logarithmic", "bragg", "lorentz", "beta"
     ),
-    n = 20, t = 25, params = list(), D = 0) {
+    n = 20, t = 25, params = list(), D = 0,
+    returnParams = FALSE) {
   if (grepl("count:", model)) {
     COUNT <- TRUE
     model <- trimws(gsub("count:", "", model))
@@ -316,9 +319,9 @@ growthSim <- function(
   }
   #* decide which internal funciton to use
   if (!grepl("\\+", model)) {
-    out <- .singleGrowthSim(model, n, t, params, noise, D, int)
+    out <- .singleGrowthSim(model, n, t, params, noise, D, int, returnParams)
   } else {
-    out <- .multiGrowthSim(model, n, t, params, noise, D, int)
+    out <- .multiGrowthSim(model, n, t, params, noise, D, int, returnParams)
   }
   if (COUNT) {
     out <- do.call(rbind, lapply(split(out, interaction(out$group, out$id)), function(sub) {
@@ -334,7 +337,8 @@ growthSim <- function(
 #' @keywords internal
 #' @noRd
 
-.multiGrowthSim <- function(model, n = 20, t = 25, params = list(), noise = NULL, D = 0, int) {
+.multiGrowthSim <- function(model, n = 20, t = 25, params = list(), noise = NULL, D = 0, int,
+                            returnParams = FALSE) {
   component_models <- trimws(strsplit(model, "\\+")[[1]])
 
   firstModel <- component_models[1]
@@ -439,7 +443,8 @@ growthSim <- function(
 #' @keywords internal
 #' @noRd
 
-.singleGrowthSim <- function(model, n = 20, t = 25, params = list(), noise = NULL, D, int) {
+.singleGrowthSim <- function(model, n = 20, t = 25, params = list(), noise = NULL, D, int,
+                             returnParams = FALSE) {
   models <- .available_models()
 
   if (grepl("decay", model)) {
@@ -450,7 +455,7 @@ growthSim <- function(
   }
 
   matched_model <- match.arg(model, models)
-  gsi <- match.fun(paste0("gsi_", gsub(" ", "", matched_model)))
+  gsi <- match.fun(paste0(".gsi_", gsub(" ", "", matched_model)))
 
   if (decay) {
     gsid <- function(D = 0, ...) {
@@ -465,18 +470,25 @@ growthSim <- function(
   out <- do.call(rbind, lapply(seq_along(params[[1]]), function(i) {
     pars <- lapply(params, function(p) p[i])
     e_df <- as.data.frame(rbind(do.call(rbind, lapply(1:n, function(e) {
+      gs_res <- gsid(D = D, 1:t, pars, noise)
       iter_data <- data.frame(
         "id" = paste0("id_", e), "group" = letters[i], "time" = 1:t,
-        "y" = gsid(D = D, 1:t, pars, noise), stringsAsFactors = FALSE
+        "y" = gs_res$y, stringsAsFactors = FALSE
       )
+      if (returnParams) {
+        iter_data <- cbind(iter_data, gs_res$pars[rep(1, nrow(iter_data)), ])
+      }
       if (int) {
-        iter_data$y <- iter_data$y + rnorm(1, mean = pars[["I"]], sd = noise[["I"]])
+        I_iter <- rnorm(1, mean = pars[["I"]], sd = noise[["I"]])
+        iter_data$y <- iter_data$y + I_iter
+        if (returnParams) {
+          iter_data$I <- I_iter
+        }
       }
       return(iter_data)
     }))))
     return(e_df)
   }))
-
   return(out)
 }
 
@@ -485,33 +497,51 @@ growthSim <- function(
 #* ***** `gsi functions to simulate individual plants` *****
 #* ************************************************************
 
+#' @keywords internal
+#' @noRd
 gsi_logistic <- function(x, pars, noise) {
   a_r <- pars[["A"]] + rnorm(1, mean = 0, sd = noise[["A"]])
   b_r <- pars[["B"]] + rnorm(1, mean = 0, sd = noise[["B"]])
   c_r <- pars[["C"]] + rnorm(1, mean = 0, sd = noise[["C"]])
-  return(a_r / (1 + exp((b_r - x) / c_r)))
+  y <- a_r / (1 + exp((b_r - x) / c_r))
+  return(list("y" = y, "pars" = data.frame("A" = a_r, "B" = b_r, "C" = c_r)))
 }
+
+#' @keywords internal
+#' @noRd
 gsi_logistic4 <- function(x, pars, noise) {
   a_r <- pars[["A"]] + rnorm(1, mean = 0, sd = noise[["A"]])
   b_r <- pars[["B"]] + rnorm(1, mean = 0, sd = noise[["B"]])
   c_r <- pars[["C"]] + rnorm(1, mean = 0, sd = noise[["C"]])
   d_r <- pars[["D"]] + rnorm(1, mean = 0, sd = noise[["D"]])
-  return(d_r + (a_r - d_r) / (1 + exp((b_r - x) / c_r)))
+  y <- d_r + (a_r - d_r) / (1 + exp((b_r - x) / c_r))
+  return(list("y" = y, "pars" = data.frame("A" = a_r, "B" = b_r, "C" = c_r, "D" = d_r)))
 }
+
+#' @keywords internal
+#' @noRd
 gsi_logistic5 <- function(x, pars, noise) {
   a_r <- pars[["A"]] + rnorm(1, mean = 0, sd = noise[["A"]])
   b_r <- pars[["B"]] + rnorm(1, mean = 0, sd = noise[["B"]])
   c_r <- pars[["C"]] + rnorm(1, mean = 0, sd = noise[["C"]])
   d_r <- pars[["D"]] + rnorm(1, mean = 0, sd = noise[["D"]])
   e_r <- pars[["E"]] + rnorm(1, mean = 0, sd = noise[["E"]])
-  return(d_r + ((a_r - d_r) / (1 + exp((b_r - x) / c_r)) ^ e_r))
+  y <- d_r + ((a_r - d_r) / (1 + exp((b_r - x) / c_r)) ^ e_r)
+  return(list("y" = y, "pars" = data.frame("A" = a_r, "B" = b_r, "C" = c_r, "D" = d_r, "E" = e_r)))
 }
+
+#' @keywords internal
+#' @noRd
 gsi_gompertz <- function(x, pars, noise) {
   a_r <- pars[["A"]] + rnorm(1, mean = 0, sd = noise[["A"]])
   b_r <- pars[["B"]] + rnorm(1, mean = 0, sd = noise[["B"]])
   c_r <- pars[["C"]] + rnorm(1, mean = 0, sd = noise[["C"]])
-  return(a_r * exp(-b_r * exp(-c_r * x)))
+  y <- a_r * exp(-b_r * exp(-c_r * x))
+  return(list("y" = y, "pars" = data.frame("A" = a_r, "B" = b_r, "C" = c_r)))
 }
+
+#' @keywords internal
+#' @noRd
 gsi_doublelogistic <- function(x, pars, noise) {
   a_r <- pars[["A"]] + rnorm(1, mean = 0, sd = noise[["A"]])
   b_r <- pars[["B"]] + rnorm(1, mean = 0, sd = noise[["B"]])
@@ -519,8 +549,13 @@ gsi_doublelogistic <- function(x, pars, noise) {
   a2_r <- pars[["A2"]] + rnorm(1, mean = 0, sd = noise[["A2"]])
   b2_r <- pars[["B2"]] + rnorm(1, mean = 0, sd = noise[["B2"]])
   c2_r <- pars[["C2"]] + rnorm(1, mean = 0, sd = noise[["C2"]])
-  return(a_r / (1 + exp((b_r - x) / c_r)) + ((a2_r - a_r) / (1 + exp((b2_r - x) / c2_r))))
+  y <- a_r / (1 + exp((b_r - x) / c_r)) + ((a2_r - a_r) / (1 + exp((b2_r - x) / c2_r)))
+  return(list("y" = y, "pars" = data.frame("A" = a_r, "B" = b_r, "C" = c_r,
+                                           "A2" = a2_r, "B2" = b2_r, "C2" = c2_r)))
 }
+
+#' @keywords internal
+#' @noRd
 gsi_doublegompertz <- function(x, pars, noise) {
   a_r <- pars[["A"]] + rnorm(1, mean = 0, sd = noise[["A"]])
   b_r <- pars[["B"]] + rnorm(1, mean = 0, sd = noise[["B"]])
@@ -528,66 +563,111 @@ gsi_doublegompertz <- function(x, pars, noise) {
   a2_r <- pars[["A2"]] + rnorm(1, mean = 0, sd = noise[["A2"]])
   b2_r <- pars[["B2"]] + rnorm(1, mean = 0, sd = noise[["B2"]])
   c2_r <- pars[["C2"]] + rnorm(1, mean = 0, sd = noise[["C2"]])
-  return((a_r * exp(-b_r * exp(-c_r * x))) + ((a2_r - a_r) * exp(-b2_r * exp(-c2_r * (x - b_r)))))
+  y <- (a_r * exp(-b_r * exp(-c_r * x))) + ((a2_r - a_r) * exp(-b2_r * exp(-c2_r * (x - b_r))))
+  return(list("y" = y, "pars" = data.frame("A" = a_r, "B" = b_r, "C" = c_r,
+                                           "A2" = a2_r, "B2" = b2_r, "C2" = c2_r)))
 }
+
+#' @keywords internal
+#' @noRd
 gsi_monomolecular <- function(x, pars, noise) {
   a_r <- pars[["A"]] + rnorm(1, mean = 0, sd = noise[["A"]])
   b_r <- pars[["B"]] + rnorm(1, mean = 0, sd = noise[["B"]])
-  return(a_r - a_r * exp(-b_r * x))
+  y <- a_r - a_r * exp(-b_r * x)
+  return(list("y" = y, "pars" = data.frame("A" = a_r, "B" = b_r)))
 }
+
+#' @keywords internal
+#' @noRd
 gsi_exponential <- function(x, pars, noise) {
   a_r <- pars[["A"]] + rnorm(1, mean = 0, sd = noise[["A"]])
   b_r <- pars[["B"]] + rnorm(1, mean = 0, sd = noise[["B"]])
-  return(a_r * exp(b_r * x))
+  y <- a_r * exp(b_r * x)
+  return(list("y" = y, "pars" = data.frame("A" = a_r, "B" = b_r)))
 }
+
+#' @keywords internal
+#' @noRd
 gsi_linear <- function(x, pars, noise) {
   a_r <- pars[["A"]] + rnorm(1, mean = 0, sd = noise[["A"]])
-  return(a_r * x)
+  y <- a_r * x
+  return(list("y" = y, "pars" = data.frame("A" = a_r)))
 }
+
+#' @keywords internal
+#' @noRd
 gsi_powerlaw <- function(x, pars, noise) {
   a_r <- pars[["A"]] + rnorm(1, mean = 0, sd = noise[["A"]])
   b_r <- pars[["B"]] + rnorm(1, mean = 0, sd = noise[["B"]])
-  return(a_r * x^(b_r))
+  y <- a_r * x^(b_r)
+  return(list("y" = y, "pars" = data.frame("A" = a_r, "B" = b_r)))
 }
+
+#' @keywords internal
+#' @noRd
 gsi_logarithmic <- function(x, pars, noise) {
   a_r <- pars[["A"]] + rnorm(1, mean = 0, sd = noise[["A"]])
-  return(a_r * log(x))
+  y <- a_r * log(x)
+  return(list("y" = y, "pars" = data.frame("A" = a_r)))
 }
+
+#' @keywords internal
+#' @noRd
 gsi_frechet <- function(x, pars, noise) {
   a_r <- pars[["A"]] + rnorm(1, mean = 0, sd = noise[["A"]])
   b_r <- max(c(0, pars[["B"]] + rnorm(1, mean = 0, sd = noise[["B"]])))
   c_r <- max(c(0, pars[["C"]] + rnorm(1, mean = 0, sd = noise[["C"]])))
   # holding location to 0, b is shape parameter, c is scale (growth rate)
-  return(a_r * exp(-((x - 0) / c_r)^(-b_r)))
+  y <- a_r * exp(-((x - 0) / c_r)^(-b_r))
+  return(list("y" = y, "pars" = data.frame("A" = a_r, "B" = b_r, "C" = c_r)))
 }
+
+#' @keywords internal
+#' @noRd
 gsi_gumbel <- function(x, pars, noise) {
   a_r <- pars[["A"]] + rnorm(1, mean = 0, sd = noise[["A"]])
   b_r <- pars[["B"]] + rnorm(1, mean = 0, sd = noise[["B"]])
   c_r <- pars[["C"]] + rnorm(1, mean = 0, sd = noise[["C"]])
   # b is location, c is scale (rate)
-  return(a_r * exp(-exp(-(x - b_r) / c_r)))
+  y <- a_r * exp(-exp(-(x - b_r) / c_r))
+  return(list("y" = y, "pars" = data.frame("A" = a_r, "B" = b_r, "C" = c_r)))
 }
+
+#' @keywords internal
+#' @noRd
 gsi_weibull <- function(x, pars, noise) {
   a_r <- pars[["A"]] + rnorm(1, mean = 0, sd = noise[["A"]])
   b_r <- pars[["B"]] + rnorm(1, mean = 0, sd = noise[["B"]])
   c_r <- pars[["C"]] + rnorm(1, mean = 0, sd = noise[["C"]])
   # c is scale, b is shape
-  return(a_r * (1 - exp(-(x / c_r)^b_r)))
+  y <- a_r * (1 - exp(-(x / c_r)^b_r))
+  return(list("y" = y, "pars" = data.frame("A" = a_r, "B" = b_r, "C" = c_r)))
 }
+
+#' @keywords internal
+#' @noRd
 gsi_bragg <- function(x, pars, noise) {
   a_r <- pars[["A"]] + rnorm(1, mean = 0, sd = noise[["A"]])
   b_r <- pars[["B"]] + rnorm(1, mean = 0, sd = noise[["B"]])
   c_r <- pars[["C"]] + rnorm(1, mean = 0, sd = noise[["C"]])
   # a is max response, b is precision, c is x position of max response
-  return(a_r * exp(-b_r * (x - c_r)^2))
+  y <- a_r * exp(-b_r * (x - c_r)^2)
+  return(list("y" = y, "pars" = data.frame("A" = a_r, "B" = b_r, "C" = c_r)))
 }
+
+#' @keywords internal
+#' @noRd
 gsi_lorentz <- function(x, pars, noise) {
   a_r <- pars[["A"]] + rnorm(1, mean = 0, sd = noise[["A"]])
   b_r <- pars[["B"]] + rnorm(1, mean = 0, sd = noise[["B"]])
   c_r <- pars[["C"]] + rnorm(1, mean = 0, sd = noise[["C"]])
   # a is max response, b is precision, c is x position of max response
-  return(a_r / (1 + b_r * (x - c_r)^2))
+  y <- a_r / (1 + b_r * (x - c_r)^2)
+  return(list("y" = y, "pars" = data.frame("A" = a_r, "B" = b_r, "C" = c_r)))
 }
+
+#' @keywords internal
+#' @noRd
 gsi_beta <- function(x, pars, noise) {
   a_r <- pars[["A"]] + rnorm(1, mean = 0, sd = noise[["A"]])
   b_r <- pars[["B"]] + rnorm(1, mean = 0, sd = noise[["B"]])
@@ -595,5 +675,5 @@ gsi_beta <- function(x, pars, noise) {
   d_r <- pars[["D"]] + rnorm(1, mean = 0, sd = noise[["D"]])
   e_r <- pars[["E"]] + rnorm(1, mean = 0, sd = noise[["E"]])
   y <- a_r * (((x - d_r) / (c_r - d_r)) * ((e_r - x) / (e_r - c_r))^((e_r - c_r) / (c_r - d_r)))^b_r
-  return(y)
+  return(list("y" = y, "pars" = data.frame("A" = a_r, "B" = b_r, "C" = c_r, "D" = d_r, "E" = e_r)))
 }
