@@ -12,7 +12,7 @@ tdf <- do.call(rbind,
                  })
                  data.frame(time = x[["elapsed"]], Test = gsub(".*/", "", file))
                }))
-tdf
+write.csv(tdf, file = "~/pcvr/tools/tests_timing.csv", row.names = FALSE)
 if (!interactive()) {pdf(NULL)}
 ggplot(tdf, aes(x = 1, y = time, fill = Test)) +
   geom_col(position = "stack") +

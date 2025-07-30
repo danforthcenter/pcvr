@@ -321,9 +321,9 @@ test_that("binomial survival", {
 
 test_that(".brmSurvSS options all work", {
   set.seed(123)
-  df <- growthSim("logistic",
-                  n = 20, t = 25,
-                  params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
+  df <- growthSim(
+    "logistic", n = 20, t = 25,
+    params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
   )
   surv <- .survModelParser("survival weibull")
   ss <- suppressMessages(
@@ -367,7 +367,7 @@ test_that(".brmSurvSS options all work", {
     )
   )
   expect_equal(names(ss4), c("df", "family", "formula", "prior", "initfun", "pcvrForm"))
-  
+
   surv <- .survModelParser("survival binomial")
   ss <- suppressMessages(
     .brmsSurvSS(
@@ -1303,6 +1303,8 @@ test_that("fixed and estimated changepoints can be mixed in growth formula", {
 })
 
 test_that("logistic decay as a segment", {
+  skip_on_ci()
+  skip_on_cran()
   simdf <- growthSim(
     model = "logistic + logistic decay", n = 20, t = 45,
     params = list(
