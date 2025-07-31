@@ -441,3 +441,7 @@ test_that("bivariate conjugate lognormal works", {
   p <- plot(out2)
   expect_s3_class(p, "ggplot")
 })
+
+if (!interactive()) {
+  dev.off()
+}
