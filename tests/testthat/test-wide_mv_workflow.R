@@ -87,3 +87,7 @@ test_that("reading mv github data as long works", {
   expect_equal(dim(net$nodes), c(10, 12))
   expect_equal(dim(net$edges), c(30, 11))
 })
+
+if (!interactive()) {
+  dev.off()
+}

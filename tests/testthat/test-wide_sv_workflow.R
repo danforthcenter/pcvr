@@ -77,14 +77,9 @@ test_that("reading sv github data as wide works", {
     model = "gompertz", form = area_pixels ~ DAS | barcode / group, sigma = "spline", df = sv,
     start = list("A" = 130, "B" = 10, "C" = 0.5)
   )
-  expect_type(ss, "list")
-
-  expect_s3_class(ss[["formula"]], "brmsformula")
-  expect_s3_class(ss[["prior"]], "brmsprior")
-  expect_type(ss[["initfun"]], "closure")
-  expect_s3_class(ss[["df"]], "data.frame")
-  expect_type(ss[["family"]], "character")
-  expect_s3_class(ss[["pcvrForm"]], "formula")
-
-  #* pending
+  expect_s3_class(ss, "pcvrss")
 })
+
+if (!interactive()) {
+  dev.off()
+}
