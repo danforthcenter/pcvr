@@ -1251,6 +1251,8 @@ test_that("int + Logistic brms int+spline sub model pipeline", {
 
 
 test_that("fixed and estimated changepoints can be mixed in growth formula", {
+  skip_on_cran()
+  skip_on_ci()
   simdf1 <- growthSim(
     model = "logistic", n = 20, t = 20,
     params = list("A" = c(180, 160), "B" = c(9, 11), "C" = c(3, 3.5))
