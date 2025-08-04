@@ -15,4 +15,5 @@ p1 <- ggplot(tdf, aes(x = 1, y = time, fill = fun)) +
   geom_col(position = "stack") +
   scale_fill_viridis_d()+
   theme_light()
-ggsave("examples_timing.png", plot = p1, width = 7, height = 6, dpi = 300, bg = "#ffffff")
+p1
+ggsave("examples_timing.png", plot = p1, width = 12, height = 6, dpi = 300, bg = "#ffffff")
