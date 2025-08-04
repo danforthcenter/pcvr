@@ -314,13 +314,15 @@
 
   out[["formula"]] <- bayesForm
   #* ***** `Make priors` *****
-  pars <- unlist(pars)
-  out[["prior"]] <- .makePriors(priors, pars, df, group, USEGROUP, sigma, family, bayesForm)
+  out[["prior"]] <- .makePriors(priors, unlist(pars), df, group, USEGROUP, sigma, family, bayesForm)
   #* ***** `Make initializer function` *****
-  if (as.logical(length(pars))) {
+  if (any(as.logical(unlist(lapply(pars, length))))) {
     initFun <- function(pars = "?", nPerChain = 1) {
-      init <- lapply(pars, function(i) array(rgamma(nPerChain, 1)))
-      names(init) <- paste0("b_", pars)
+      init_ints <- lapply(pars$int, function(i) array(rgamma(1, 1)))
+      init_vary <- lapply(pars$vary, function(i) array(rgamma(nPerChain, 1)))
+      names(init_ints) <- paste0("b_", pars$int)
+      names(init_vary) <- paste0("b_", pars$vary)
+      init <- c(init_ints, init_vary)
       return(init)
     }
     formals(initFun)$pars <- pars
@@ -334,7 +336,7 @@
 
   #* ***** `Raise Message for complex models` *****
 
-  if (length(pars) * length(unique(interaction(df[, group]))) > 50) {
+  if (length(unlist(pars)) * length(unique(interaction(df[, group]))) > 50) {
     message(paste0(
       "This model will estimate >50 parameters (excluding any smooth terms). \n\n",
       "If the MCMC is very slow then consider fitting separate models and using `combineDraws()` ",
