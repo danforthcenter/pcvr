@@ -320,8 +320,8 @@
     initFun <- function(pars = "?", nPerChain = 1) {
       init_ints <- lapply(pars$int, function(i) array(rgamma(1, 1)))
       init_vary <- lapply(pars$vary, function(i) array(rgamma(nPerChain, 1)))
-      names(init_ints) <- paste0("b_", pars$int)
-      names(init_vary) <- paste0("b_", pars$vary)
+      names(init_ints) <- paste0("b_", pars$int, recycle0 = TRUE)
+      names(init_vary) <- paste0("b_", pars$vary, recycle0 = TRUE)
       init <- c(init_ints, init_vary)
       return(init)
     }
