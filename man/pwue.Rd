@@ -24,10 +24,11 @@ This should already be aggregated to one row per plant per day (angles/rotations
 
 \item{pheno}{Phenotype column name, defaults to "area_pixels"}
 
-\item{time}{Variable(s) that identify a plant on a given day.
-Defaults to \code{c("barcode", "DAS")}.}
+\item{time}{Variable(s) that identify a plant on a given day. If variable names are different
+between df and w then this can be a vector of two names.}
 
-\item{id}{Variable(s) that identify a plant over time. Defaults to \code{"barcode"}.}
+\item{id}{Variable(s) that identify a plant over time. Defaults to \code{"barcode"}.
+If variable names are different between df and w then this can be a vector of two names.}
 
 \item{offset}{Optionally you can specify how long before imaging a watering should not be taken into
 account. This defaults to 0, meaning that if a plant were watered directly before being imaged then
