@@ -90,7 +90,11 @@ frem <- function(df, des, phenotypes, timeCol = NULL, cor = TRUE, returnData = F
   df <- formatted$data
   timeCol <- formatted$timeCol
   #* `Make formulas`
-  ind_fmla <- paste(paste0("(1|", c(des, paste(des, collapse = ":")), ")"), collapse = "+")
+  int <- paste(des, collapse = ":")
+  if (!grepl(":", int)) {
+    int <- NULL
+  } # no interaction for 1L des
+  ind_fmla <- paste(paste0("(1|", c(des, int), ")"), collapse = "+")
   #* `Find time and subset data`
   if (is.null(time)) {
     dat <- na.omit(df[df[[timeCol]] == max(df[[timeCol]]), c(des, phenotypes, timeCol)])
@@ -107,7 +111,6 @@ frem <- function(df, des, phenotypes, timeCol = NULL, cor = TRUE, returnData = F
   }
   #* `Partition Variance`
   H2 <- .partitionVarianceFrem(dat, timeCol, phenotypes, ind_fmla, des, ...)
-  colnames(H2) <- c(des, "Interaction", "Unexplained", timeCol, "singular", "Phenotypes")
 
   ordering <- H2[H2[[timeCol]] == max(H2[[timeCol]]), ]
   H2$Phenotypes <- ordered(H2$Phenotypes, levels = ordering$Phenotypes[order(ordering$Unexplained)])
@@ -277,8 +280,6 @@ frem <- function(df, des, phenotypes, timeCol = NULL, cor = TRUE, returnData = F
       }
       re <- lme4::VarCorr(model)
       res <- attr(lme4::VarCorr(model), "sc")^2
-
-      interaction.var <- as.numeric(attr(re[[which(grepl(":", names(re)))]], "stddev"))^2
       des.var <- unlist(
         lapply(
           des,
@@ -287,12 +288,15 @@ frem <- function(df, des, phenotypes, timeCol = NULL, cor = TRUE, returnData = F
           }
         )
       )
+      if (length(des) > 1) {
+        interaction.var <- as.numeric(attr(re[[which(grepl(":", names(re)))]], "stddev"))^2
+        des.var <- c(des.var, interaction.var)
+      }
       tot.var <- sum(as.numeric(re), res)
-      unexp <- 1 - sum(as.numeric(re)) / sum(as.numeric(re), res)
+      unexp <- 1 - (sum(as.numeric(re)) / sum(as.numeric(re), res))
 
       h2 <- c(
         (des.var / tot.var),
-        (interaction.var / tot.var),
         unexp,
         tm,
         singular
@@ -302,5 +306,10 @@ frem <- function(df, des, phenotypes, timeCol = NULL, cor = TRUE, returnData = F
     return(pheno_df)
   })))
   H2$Phenotypes <- rep(phenotypes, length.out = nrow(H2))
+  des_colnames <- des
+  if (length(des) > 1) {
+    des_colnames <- c(des, "Interaction")
+  }
+  colnames(H2) <- c(des_colnames, "Unexplained", timeCol, "singular", "Phenotypes")
   return(H2)
 }
