@@ -359,7 +359,6 @@ test_that(".brmSurvSS options all work", {
     )
   )
   expect_equal(names(ss4), c("df", "family", "formula", "prior", "initfun", "pcvrForm"))
-  
   surv <- .survModelParser("survival binomial")
   ss <- suppressMessages(
     .brmsSurvSS(
