@@ -77,6 +77,12 @@ test_that("Test nls mv trait non-longitudinal model", {
 
 test_that("Test nlrq mv trait non-longitudinal model", {
   skip_on_cran()
+  set.seed(123)
+  mv_df <- mvSim(dists = list(rnorm = list(mean = 100, sd = 30)), wide = FALSE,
+                 n_samples = 10, counts = 1000) # this test needs larger data
+  mv_df$group <- rep(c("a", "b"), times = 900)
+  mv_df <- mv_df[mv_df$value > 0, ]
+  mv_df$label <- as.numeric(gsub("sim_", "", mv_df$variable))
   ss1 <- mvSS(
     model = "linear", form = label | value ~ group, df = mv_df, tau = 0.5,
     start = list("A" = 5), type = "nlrq", spectral_index = "none"
