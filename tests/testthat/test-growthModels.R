@@ -38,6 +38,17 @@ test_that("Fixed Changepoint data can be made by growthSim", {
   expect_equal(any(is.na(as.integer(df$y))), FALSE)
 })
 
+test_that("Fixed Changepoint data can be made by growthSim", {
+  df <- growthSim(
+    model = "int gompertz", n = 5, t = 5,
+    params = list(
+      "I" = 10, "A" = 100, "B" = 10, "C" = 0.25
+    ),
+    returnParams = TRUE
+  )
+  expect_equal(colnames(df), c("id", "group", "time", "y", "A", "B", "C", "I"))
+})
+
 #* ************************************************************
 #* *************** `Logistic growth modeling` ***************
 #* ************************************************************
