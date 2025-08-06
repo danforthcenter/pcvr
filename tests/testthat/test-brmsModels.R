@@ -129,16 +129,11 @@ test_that("Logistic brms model pipeline", {
   x <- suppressWarnings(barg(fit_list, list(ss, ss)))
 })
 
-#* ***********************************
-#* ***** `Not Run on the remote` *****
-#* ***********************************
-
 test_that("distPlot works with many models", {
   skip_if_not_installed("brms")
   skip_if_not_installed("cmdstanr")
   skip_on_cran()
   skip_if_offline(host = "r-project.org")
-  skip_on_ci()
   options(cmdstanr_warn_inits = FALSE)
   load(url("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/brmsFits.rdata"))
   fits <- list(fit_3, fit_15)
@@ -163,7 +158,6 @@ test_that("brms model warns about priors", {
   skip_if_not_installed("brms")
   skip_if_not_installed("cmdstanr")
   skip_on_cran()
-  skip_on_ci()
   options(cmdstanr_warn_inits = FALSE)
   set.seed(123)
   simdf <- growthSim(
@@ -192,7 +186,6 @@ test_that("Hierarchical Model Works", {
   skip_if_not_installed("brms")
   skip_if_not_installed("cmdstanr")
   skip_on_cran()
-  skip_on_ci()
   options(cmdstanr_warn_inits = FALSE)
   set.seed(123)
   simdf <- growthSim(
@@ -210,7 +203,7 @@ test_that("Hierarchical Model Works", {
     df = simdf, type = "brms",
     hierarchy = list("A" = "int_linear")
   )
-  fit <- fitGrowth(ss, iter = 600, cores = 1, chains = 1, backend = "cmdstanr")
+  fit <- fitGrowth(ss, iter = 200, cores = 1, chains = 1, backend = "cmdstanr")
   expect_s3_class(fit, "brmsfit")
   p <- growthPlot(fit, ss$pcvrForm, df = ss$df)
   expect_s3_class(p, "ggplot")
@@ -221,6 +214,7 @@ test_that("Hierarchical Model Works", {
 test_that("Changepoint model can be specified", {
   skip_if_not_installed("brms")
   skip_if_not_installed("cmdstanr")
+  skip_on_cran()
   set.seed(123)
   noise <- do.call(rbind, lapply(1:30, function(i) {
     chngpt <- c(20, 21)
@@ -276,7 +270,6 @@ test_that("weibull survival", {
   skip_if_not_installed("brms")
   skip_if_not_installed("cmdstanr")
   skip_on_cran()
-  skip_on_ci()
   options(cmdstanr_warn_inits = FALSE)
   set.seed(123)
   model <- "survival"
@@ -289,7 +282,7 @@ test_that("weibull survival", {
   prior <- c(0, 5)
   ss <- growthSS(model = model, form = form, df = df, start = prior)
   expect_equal(ss$prior$coef, c("groupa", "groupb"))
-  fit <- fitGrowth(ss, iter = 600, cores = 1, chains = 1, backend = "cmdstanr")
+  fit <- fitGrowth(ss, iter = 200, cores = 1, chains = 1, backend = "cmdstanr")
   expect_s3_class(fit, "brmsfit")
   plot <- growthPlot(fit, form = ss$pcvrForm, df = ss$df)
   expect_s3_class(plot, "ggplot")
@@ -301,7 +294,6 @@ test_that("binomial survival", {
   skip_if_not_installed("brms")
   skip_if_not_installed("cmdstanr")
   skip_on_cran()
-  skip_on_ci()
   options(cmdstanr_warn_inits = FALSE)
   set.seed(123)
   model <- "survival binomial"
@@ -313,7 +305,7 @@ test_that("binomial survival", {
   )
   prior <- c(0, 5)
   ss <- growthSS(model = model, form = form, df = df, start = prior)
-  fit <- fitGrowth(ss, iter = 600, cores = 1, chains = 1, backend = "cmdstanr")
+  fit <- fitGrowth(ss, iter = 200, cores = 1, chains = 1, backend = "cmdstanr")
   expect_s3_class(fit, "brmsfit")
   plot <- growthPlot(fit, form = ss$pcvrForm, df = ss$df)
   expect_s3_class(plot, "ggplot")
@@ -367,7 +359,7 @@ test_that(".brmSurvSS options all work", {
     )
   )
   expect_equal(names(ss4), c("df", "family", "formula", "prior", "initfun", "pcvrForm"))
-
+  
   surv <- .survModelParser("survival binomial")
   ss <- suppressMessages(
     .brmsSurvSS(
@@ -406,6 +398,10 @@ test_that(".brmSurvSS options all work", {
   )
   expect_equal(names(ss4), c("df", "family", "formula", "prior", "initfun", "pcvrForm"))
 })
+
+#* ***********************************
+#* ***** `Not Run on the remote` *****
+#* ***********************************
 
 test_that("Gompertz brms model pipeline", {
   skip_on_ci()
