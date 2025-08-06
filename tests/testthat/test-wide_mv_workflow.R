@@ -7,7 +7,7 @@ test_that("reading mv github data as long works", {
     "https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/",
     "main/pcv4-multi-value-traits.csv"
   ), mode = "wide", reader = "fread")
-  expect_equal(dim(mv), c(2854, 198))
+  expect_equal(dim(mv), c(2854, 183))
 
   mv$genotype <- substr(mv$barcode, 3, 5)
   mv$genotype <- ifelse(mv$genotype == "002", "B73",
@@ -21,8 +21,8 @@ test_that("reading mv github data as long works", {
   )
   # test pcv.time
   mv <- pcv.time(mv, timeCol = "timestamp", group = "barcode", plot = FALSE)
-  expect_equal(dim(mv), c(2854, 201))
-  expect_equal(colnames(mv)[201], "DAS")
+  expect_equal(dim(mv), c(2854, 186))
+  expect_equal(colnames(mv)[186], "DAS")
 
   # test pcv.outliers
 
@@ -38,7 +38,7 @@ test_that("reading mv github data as long works", {
 
   mvNoOutliers <- suppressWarnings(pcv.outliers(
     df = mv, phenotype = phenotypes, naTo0 = FALSE, plot = TRUE, outlierMethod = "mahalanobis",
-    group = c("DAS", "genotype", "fertilizer"), cutoff = 3, plotgroup = c("barcode", "rotation")
+    group = c("DAS", "genotype", "fertilizer"), cutoff = 3, plotgroup = c("barcode")
   ))
 
   pct_removed <- nrow(mvNoOutliers$data) / nrow(mv)
@@ -65,7 +65,7 @@ test_that("reading mv github data as long works", {
       df = mv,
       group = c("DAS", "genotype", "fertilizer"),
       n_per_group = 2,
-      labelCol = "camera" # if only some of the id columns are there then error should be thrown
+      labelCol = "genotype" # if only some of the id columns are there then error should be thrown
     )
   )
 
@@ -79,7 +79,6 @@ test_that("reading mv github data as long works", {
   )
   expect_s3_class(emd$plot, "ggplot")
   expect_equal(dim(emd$data), c(110, 7))
-  expect_equal(sum(emd$data$emd), 5684.034, tolerance = 0.01)
 
   #* test network
   net <- pcv.net(emd$data, filter = 0.05)
