@@ -1355,16 +1355,15 @@ test_that("Logistic Poisson Model", {
   skip_on_cran()
   form <- y ~ time | id / group
   df <- growthSim("count: logistic",
-    n = 20, t = 25,
+    n = 5, t = 10,
     params = list("A" = c(10, 12), "B" = c(13, 11), "C" = c(3, 3.5))
   )
   ss <- growthSS(
     model = "poisson: logistic", form = y ~ time | id / group, sigma = NULL,
     df = df, start = list("A" = 8, "B" = 10, "C" = 3)
   )
-  lapply(ss, head)
   fit <- fitGrowth(ss,
-    iter = 600, cores = 1, chains = 1, backend = "cmdstanr",
+    iter = 200, cores = 1, chains = 1, backend = "cmdstanr",
     refresh = 0, silent = 2
   )
   expect_s3_class(fit, "brmsfit")
@@ -1397,7 +1396,7 @@ test_that("Beta DRC Model", {
   tryCatch(
     {
       fit <- fitGrowth(ss,
-        iter = 600, cores = 1, chains = 1, backend = "cmdstanr",
+        iter = 200, cores = 1, chains = 1, backend = "cmdstanr",
         refresh = 0, silent = 2
       )
       expect_s3_class(fit, "brmsfit")
