@@ -61,8 +61,8 @@ jobs:
           cmdstanr::check_cmdstan_toolchain(fix = TRUE)
           cmdstanr::install_cmdstan(cores = parallel::detectCores())
         shell: Rscript {0}
-        
+
       - uses: r-lib/actions/check-r-package@v2
         with:
-          build_args: 'c("--no-manual","--no-build-vignettes")'
-	  args: 'c("--no-manual", "--as-cran", "--ignore-vignettes")'
+          build_args: 'c("--no-manual", "--no-build-vignettes")'
+          args: 'c("--no-manual", "--as-cran", "--ignore-vignettes")'
