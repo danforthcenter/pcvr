@@ -203,7 +203,8 @@ test_that("Hierarchical Model Works", {
     df = simdf, type = "brms",
     hierarchy = list("A" = "int_linear")
   )
-  fit <- fitGrowth(ss, iter = 200, cores = 1, chains = 1, backend = "cmdstanr")
+  fit <- fitGrowth(ss, iter = 200, cores = 1, chains = 1, backend = "cmdstanr",
+                   refresh = 0, silent = 2)
   expect_s3_class(fit, "brmsfit")
   p <- growthPlot(fit, ss$pcvrForm, df = ss$df)
   expect_s3_class(p, "ggplot")
@@ -282,7 +283,8 @@ test_that("weibull survival", {
   prior <- c(0, 5)
   ss <- growthSS(model = model, form = form, df = df, start = prior)
   expect_equal(ss$prior$coef, c("groupa", "groupb"))
-  fit <- fitGrowth(ss, iter = 200, cores = 1, chains = 1, backend = "cmdstanr")
+  fit <- fitGrowth(ss, iter = 200, cores = 1, chains = 1, backend = "cmdstanr",
+                   refresh = 0, silent = 2)
   expect_s3_class(fit, "brmsfit")
   plot <- growthPlot(fit, form = ss$pcvrForm, df = ss$df)
   expect_s3_class(plot, "ggplot")
@@ -305,7 +307,8 @@ test_that("binomial survival", {
   )
   prior <- c(0, 5)
   ss <- growthSS(model = model, form = form, df = df, start = prior)
-  fit <- fitGrowth(ss, iter = 200, cores = 1, chains = 1, backend = "cmdstanr")
+  fit <- fitGrowth(ss, iter = 200, cores = 1, chains = 1, backend = "cmdstanr",
+                   refresh = 0, silent = 2)
   expect_s3_class(fit, "brmsfit")
   plot <- growthPlot(fit, form = ss$pcvrForm, df = ss$df)
   expect_s3_class(plot, "ggplot")
