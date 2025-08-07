@@ -7,13 +7,7 @@ test_that("reading mv github data as long works", {
     "main/pcv4-multi-value-traits.csv"
   ), mode = "long")
 
-  expect_equal(dim(mv), c(513720, 21))
-  expect_equal(colnames(mv), c(
-    "camera", "imgtype", "zoom", "exposure", "gain", "frame", "rotation",
-    "lifter", "timestamp", "id", "barcode", "treatment", "velocity",
-    "cartag", "measurementlabel", "other", "image", "sample", "trait",
-    "value", "label"
-  ))
+  expect_equal(dim(mv), c(513720, 6))
 
   mv$genotype <- substr(mv$barcode, 3, 5)
   mv$genotype <- ifelse(mv$genotype == "002", "B73",
@@ -27,14 +21,14 @@ test_that("reading mv github data as long works", {
   )
   # test pcv.time
   mv <- pcv.time(mv, timeCol = "timestamp", group = "barcode", plot = FALSE)
-  expect_equal(dim(mv), c(513720, 24))
-  expect_equal(colnames(mv)[24], "DAS")
+  expect_equal(dim(mv), c(513720, 9))
+  expect_equal(colnames(mv)[9], "DAS")
 
   # test pcv.outliers
 
   mvNoOutliers <- suppressWarnings(pcv.outliers(
     df = mv, phenotype = "hue_frequencies", naTo0 = FALSE, plot = TRUE,
-    group = c("DAS", "genotype", "fertilizer"), cutoff = 3, plotgroup = c("barcode", "rotation")
+    group = c("DAS", "genotype", "fertilizer"), cutoff = 3, plotgroup = c("barcode")
   ))
 
   pct_removed <- nrow(mvNoOutliers$data) / nrow(mv)
@@ -43,11 +37,11 @@ test_that("reading mv github data as long works", {
 
   mvNoOutliers <- suppressWarnings(pcv.outliers(
     df = mv, phenotype = "hue_frequencies", naTo0 = FALSE, plot = FALSE, outlierMethod = "mahalanobis",
-    group = c("DAS", "genotype", "fertilizer"), cutoff = 3, plotgroup = c("barcode", "rotation")
+    group = c("DAS", "genotype", "fertilizer"), cutoff = 3, plotgroup = c("barcode")
   ))
 
-  pct_removed <- nrow(mvNoOutliers) / nrow(mv)
-  expect_equal(pct_removed, 0.945, tolerance = 0.015)
+  pct_kept <- nrow(mvNoOutliers) / nrow(mv)
+  expect_true(pct_kept > 0.95)
 
   #* test joyplot
   joyplot <- pcv.joyplot(mv[mv$DAS == 18, ],

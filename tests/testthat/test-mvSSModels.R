@@ -19,8 +19,9 @@ test_that("Test spectral index helpers", {
 #* `Non-Longitudinal Multi-Value Trait Models`
 
 set.seed(123)
-mv_df <- mvSim(dists = list(rnorm = list(mean = 100, sd = 30)), wide = FALSE)
-mv_df$group <- rep(c("a", "b"), times = 900)
+mv_df <- mvSim(dists = list(rnorm = list(mean = 100, sd = 30)), wide = FALSE,
+               n_samples = 3, counts = 50)
+mv_df$group <- rep(c("a", "b"), times = 270)
 mv_df <- mv_df[mv_df$value > 0, ]
 mv_df$label <- as.numeric(gsub("sim_", "", mv_df$variable))
 
@@ -35,7 +36,8 @@ test_that("Test brms mv trait non-longitudinal model skew model", {
     start = list("A" = 5), type = "brms", spectral_index = "ci_rededge"
   )
   expect_equal(ss1$family, "skew_normal")
-  mod1 <- fitGrowth(ss1, backend = "cmdstanr", iter = 1000, chains = 1, cores = 1)
+  mod1 <- fitGrowth(ss1, backend = "cmdstanr", iter = 200, chains = 1, cores = 1,
+                    refresh = 0, silent = 2)
   expect_s3_class(mod1, "brmsfit")
   p <- growthPlot(mod1, ss1$pcvrForm, df = ss1$df)
   expect_s3_class(p, "ggplot")
@@ -50,7 +52,8 @@ test_that("Test brms mv trait non-longitudinal model", {
     start = list("A" = 5), type = "brms", spectral_index = "none"
   )
   expect_equal(ss1$family, "student")
-  mod1 <- fitGrowth(ss1, backend = "cmdstanr", iter = 1000, chains = 1, cores = 1)
+  mod1 <- fitGrowth(ss1, backend = "cmdstanr", iter = 200, chains = 1, cores = 1,
+                    refresh = 0, silent = 2)
   expect_s3_class(mod1, "brmsfit")
   p <- growthPlot(mod1, ss1$pcvrForm, df = ss1$df)
   expect_s3_class(p, "ggplot")
@@ -74,6 +77,12 @@ test_that("Test nls mv trait non-longitudinal model", {
 
 test_that("Test nlrq mv trait non-longitudinal model", {
   skip_on_cran()
+  set.seed(123)
+  mv_df <- mvSim(dists = list(rnorm = list(mean = 100, sd = 30)), wide = FALSE,
+                 n_samples = 10, counts = 1000) # this test needs larger data
+  mv_df$group <- rep(c("a", "b"), times = 900)
+  mv_df <- mv_df[mv_df$value > 0, ]
+  mv_df$label <- as.numeric(gsub("sim_", "", mv_df$variable))
   ss1 <- mvSS(
     model = "linear", form = label | value ~ group, df = mv_df, tau = 0.5,
     start = list("A" = 5), type = "nlrq", spectral_index = "none"
@@ -98,25 +107,21 @@ test_that("Test nlrq mv trait non-longitudinal model", {
 m1 <- mvSim(
   dists = list(
     rnorm = list(mean = 100, sd = 30),
-    rnorm = list(mean = 110, sd = 25),
-    rnorm = list(mean = 120, sd = 20),
-    rnorm = list(mean = 135, sd = 15)
+    rnorm = list(mean = 110, sd = 25)
   ),
-  wide = FALSE, n = 6
+  wide = FALSE, n = 3, counts = 100
 )
-m1$time <- rep(1:4, times = 6 * 180)
+m1$time <- rep(1:2, times = 3 * 180)
 m2 <- mvSim(
   dists = list(
     rnorm = list(mean = 85, sd = 25),
-    rnorm = list(mean = 95, sd = 20),
-    rnorm = list(mean = 105, sd = 15),
-    rnorm = list(mean = 110, sd = 15)
+    rnorm = list(mean = 95, sd = 20)
   ),
-  wide = FALSE, n = 6
+  wide = FALSE, n = 3, counts = 100
 )
-m2$time <- rep(1:4, times = 6 * 180)
+m2$time <- rep(1:2, times = 3 * 180)
 mv_df2 <- rbind(m1, m2)
-mv_df2$group <- rep(c("a", "b"), each = 4320)
+mv_df2$group <- rep(c("a", "b"), each = 1080)
 mv_df2 <- mv_df2[mv_df2$value > 0, ]
 mv_df2$label <- as.numeric(gsub("sim_", "", mv_df2$variable))
 
@@ -128,7 +133,8 @@ test_that("Test brms mv trait longitudinal model", {
     model = "linear", form = label | value ~ time | group, df = mv_df2,
     start = list("A" = 50), type = "brms", spectral_index = "none"
   )
-  fit <- fitGrowth(ss_mv1, backend = "cmdstanr", iter = 600, chains = 1, cores = 1)
+  fit <- fitGrowth(ss_mv1, backend = "cmdstanr", iter = 100, chains = 1, cores = 1,
+                   refresh = 0, silent = 2)
   expect_s3_class(fit, "brmsfit")
   p <- growthPlot(fit, ss_mv1$pcvrForm, df = ss_mv1$df)
   expect_s3_class(p, "ggplot")

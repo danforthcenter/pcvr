@@ -60,3 +60,6 @@ test_that(".flexSurvSS returns errors and is covered", {
   expect_equal(names(ss2$formula), c("f1", "f2"))
   expect_true(identical(ss2$df, df2))
 })
+if (!interactive()) {
+  dev.off()
+}

@@ -1,4 +1,3 @@
-wd <- getwd()
 library(ggplot2)
 setwd("~/pcvr/R")
 devtools::load_all("~/pcvr")
@@ -9,10 +8,12 @@ tdf <- do.call(rbind, lapply(dir("~/pcvr/man", pattern = ".[Rr]d$", full.names =
   })
   data.frame(time = x[["elapsed"]], fun = gsub(".*/", "", doc))
 }))
-setwd(wd)
-tdf
-if (!interactive) {pdf(NULL)}
-ggplot(tdf, aes(x = 1, y = time, fill = fun)) +
+setwd("~/pcvr/tools/")
+write.csv(tdf, file = "examples_timing.csv", row.names = FALSE)
+
+p1 <- ggplot(tdf, aes(x = 1, y = time, fill = fun)) +
   geom_col(position = "stack") +
   scale_fill_viridis_d()+
   theme_light()
+p1
+ggsave("examples_timing.png", plot = p1, width = 12, height = 6, dpi = 300, bg = "#ffffff")

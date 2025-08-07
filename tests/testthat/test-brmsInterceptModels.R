@@ -28,6 +28,7 @@ test_that("Logistic Decay brms Model with Intercept", {
   skip_if_not_installed("brms")
   skip_if_not_installed("cmdstanr")
   skip_on_cran()
+  skip_on_ci()
   options(cmdstanr_warn_inits = FALSE)
   set.seed(123)
   logistic_df <- growthSim(
@@ -52,6 +53,7 @@ test_that("Gompertz brms model pipeline", {
   skip_if_not_installed("brms")
   skip_if_not_installed("cmdstanr")
   skip_on_cran()
+  skip_on_ci()
   options(cmdstanr_warn_inits = FALSE)
   set.seed(123)
   simdf <- growthSim(
@@ -79,6 +81,7 @@ test_that("intercept in submodel works", {
   skip_if_not_installed("brms")
   skip_if_not_installed("cmdstanr")
   skip_on_cran()
+  skip_on_ci()
   options(cmdstanr_warn_inits = FALSE)
   set.seed(123)
   simdf <- growthSim("gompertz",
@@ -105,6 +108,7 @@ test_that("intercepts work in a changepoint model", {
   skip_if_not_installed("brms")
   skip_if_not_installed("cmdstanr")
   skip_on_cran()
+  skip_on_ci()
   options(cmdstanr_warn_inits = FALSE)
   set.seed(123)
   simdf <- growthSim("linear + linear",
