@@ -1,3 +1,7 @@
+# pcvr 1.3.1
+
+Cran release
+
 # pcvr 1.3.0.4
 
 Simplified logic in `frem` to always use an interaction term between design variables.
