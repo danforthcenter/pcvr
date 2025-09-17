@@ -473,17 +473,17 @@ for the multi-value trait equivalent.</p></div>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration:   1 / 500 [  0%]  (Warmup) </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/Rtmphyu3MS/model-22a121228bf2.stan', line 130, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/Rtmpi60zE1/model-22ae35cd9c48.stan', line 131, column 4 to column 48)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/Rtmphyu3MS/model-22a121228bf2.stan', line 130, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/Rtmpi60zE1/model-22ae35cd9c48.stan', line 131, column 4 to column 48)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Location parameter[1] is -nan, but must be finite! (in '/tmp/Rtmphyu3MS/model-22a121228bf2.stan', line 130, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Location parameter[1] is -nan, but must be finite! (in '/tmp/Rtmpi60zE1/model-22ae35cd9c48.stan', line 131, column 4 to column 48)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
@@ -493,7 +493,7 @@ for the multi-value trait equivalent.</p></div>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 350 / 500 [ 70%]  (Sampling) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 450 / 500 [ 90%]  (Sampling) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 500 / 500 [100%]  (Sampling) </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 finished in 88.9 seconds.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 finished in 88.8 seconds.</span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
@@ -506,10 +506,14 @@ for the multi-value trait equivalent.</p></div>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">ex_ss</span><span class="op">$</span><span class="va">prior</span> <span class="co"># no coef level grouping for priors</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                    prior     class coef group resp  dpar nlpar lb   ub  source</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     student_t(3, 0, 2.5) Intercept                 sigma               default</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         normal(2.7, 0.8) Intercept                    nu               default</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  lognormal(log(1), 0.25)         b                           A  0 &lt;NA&gt;    user</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                    prior     class coef group resp  dpar nlpar lb   ub tag</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     student_t(3, 0, 2.5) Intercept                 sigma                  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         normal(2.7, 0.8) Intercept                    nu                  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  lognormal(log(1), 0.25)         b                           A  0 &lt;NA&gt;    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   source</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  default</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  default</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     user</span>
 <span class="r-in"><span><span class="va">ex_ss</span><span class="op">$</span><span class="va">formula</span> <span class="co"># intercept only model for A</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> y ~ A * time </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> autocor ~ tructure(list(), class = "formula", .Environment = &lt;environment&gt;)</span>
@@ -523,10 +527,14 @@ for the multi-value trait equivalent.</p></div>
 <span class="r-in"><span>  df <span class="op">=</span> <span class="va">ex2</span>, start <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"A"</span> <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>, type <span class="op">=</span> <span class="st">"brms"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">ex2_ss</span><span class="op">$</span><span class="va">prior</span> <span class="co"># has coef level grouping for priors</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                    prior     class coef group resp  dpar nlpar lb   ub  source</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     student_t(3, 0, 2.5) Intercept                 sigma               default</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         normal(2.7, 0.8) Intercept                    nu               default</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  lognormal(log(1), 0.25)         b                           A  0 &lt;NA&gt;    user</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                    prior     class coef group resp  dpar nlpar lb   ub tag</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     student_t(3, 0, 2.5) Intercept                 sigma                  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         normal(2.7, 0.8) Intercept                    nu                  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  lognormal(log(1), 0.25)         b                           A  0 &lt;NA&gt;    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   source</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  default</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  default</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     user</span>
 <span class="r-in"><span><span class="va">ex2_ss</span><span class="op">$</span><span class="va">formula</span> <span class="co"># specifies an A intercept for each group and splines by group for sigma</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> y ~ A * time </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> autocor ~ tructure(list(), class = "formula", .Environment = &lt;environment&gt;)</span>

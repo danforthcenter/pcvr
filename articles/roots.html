@@ -82,7 +82,7 @@
                         <h4 data-toc-skip class="author">Josh Sumner,
 DDPSC Data Science Core Facility</h4>
             
-            <h4 data-toc-skip class="date">2025-08-21</h4>
+            <h4 data-toc-skip class="date">2025-09-17</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/danforthcenter/pcvr/blob/main/vignettes/roots.Rmd" class="external-link"><code>vignettes/roots.Rmd</code></a></small>
       <div class="d-none name"><code>roots.Rmd</code></div>
@@ -665,22 +665,26 @@ parameterization. Instead, we can use EMD.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html" class="external-link">geom_col</a></span><span class="op">(</span>position <span class="op">=</span> <span class="st">"identity"</span>, show.legend <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/pcv_theme.html">pcv_theme</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">group</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Warning in fortify(data, ...): Arguments in `...` must be used.</span></span>
+<span><span class="co">## <span style="color: #BB0000;">✖</span> Problematic argument:</span></span>
+<span><span class="co">## <span style="color: #00BBBB;">•</span> alpha = 0.25</span></span>
+<span><span class="co">## <span style="color: #00BBBB;">ℹ</span> Did you misspell an argument name?</span></span></code></pre>
 <p><img src="roots_files/figure-html/unnamed-chunk-30-1.png" alt="Simulated Earth Mover's Distance based on several probability distributions." width="700"></p>
 <p>Our plots show very different distributions, so we get EMD between
 our images and see that we do have some trends shown in the resulting
 heatmap.</p>
-<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sim_emd</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pcv.emd.html">pcv.emd</a></span><span class="op">(</span></span>
 <span>  df <span class="op">=</span> <span class="va">sim_df</span>, cols <span class="op">=</span> <span class="st">"sim_"</span>, reorder <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"group"</span><span class="op">)</span>,</span>
 <span>  mat <span class="op">=</span> <span class="cn">FALSE</span>, plot <span class="op">=</span> <span class="cn">TRUE</span>, parallel <span class="op">=</span> <span class="fl">1</span>, raiseError <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Estimated time of calculation is roughly 3.1 seconds using 1 cores in parallel.</span></span></code></pre>
-<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sim_emd</span><span class="op">$</span><span class="va">plot</span></span></code></pre></div>
 <p><img src="roots_files/figure-html/unnamed-chunk-31-1.png" alt="Heatmap of Earth Mover's Distance between several probability distributions." width="700"></p>
 <p>Arranging these distances into a network of dissimilarities shows the
 different distributions clustering well.</p>
-<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">n</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pcv.net.html">pcv.net</a></span><span class="op">(</span><span class="va">sim_emd</span><span class="op">$</span><span class="va">data</span>, filter <span class="op">=</span> <span class="st">"0.5"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/net.plot.html">net.plot</a></span><span class="op">(</span><span class="va">n</span>, fill <span class="op">=</span> <span class="st">"group"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="roots_files/figure-html/unnamed-chunk-32-1.png" alt="Simulated Earth Mover's Distance show as a network" width="700"></p>
@@ -688,12 +692,12 @@ different distributions clustering well.</p>
 steps. Here we will show this with both simulated datasets (roots
 leaving the image and roots being stuck in the image once observed).</p>
 <p>First we check our distributions via joyplot.</p>
-<div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/pcv.joyplot.html">pcv.joyplot</a></span><span class="op">(</span><span class="va">df</span>, <span class="st">"x_frequencies"</span>, group <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"rep"</span>, <span class="st">"time"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="roots_files/figure-html/unnamed-chunk-33-1.png" alt="Using a joyplot to check our simulated mini rhyzotron data before using Earth Mover's Distance." width="700"></p>
 <p>We calculate EMD between our observations. Note here we have long
 input data as opposed to wide in the previous example.</p>
-<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">df1_emd</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pcv.emd.html">pcv.emd</a></span><span class="op">(</span></span>
 <span>  df <span class="op">=</span> <span class="va">df</span>, cols <span class="op">=</span> <span class="st">"x_frequencies"</span>, reorder <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"rep"</span>, <span class="st">"time"</span><span class="op">)</span>,</span>
 <span>  id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"rep"</span>, <span class="st">"time"</span><span class="op">)</span>,</span>
@@ -702,16 +706,16 @@ input data as opposed to wide in the previous example.</p>
 <p>And we arrange the distances as a network of dissimilarities. Here we
 are filtering for only those edges that are above the 75th percentile in
 strength and we see a pretty clear temporal clustering.</p>
-<div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">n</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pcv.net.html">pcv.net</a></span><span class="op">(</span><span class="va">df1_emd</span><span class="op">$</span><span class="va">data</span>, filter <span class="op">=</span> <span class="st">"0.75"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/net.plot.html">net.plot</a></span><span class="op">(</span><span class="va">n</span>, fill <span class="op">=</span> <span class="st">"time"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="roots_files/figure-html/unnamed-chunk-35-1.png" alt="Plotting a network of our simulated mini rhyzotron data's Earth Mover's Distances. We can see some evidence of a change over time." width="700"></p>
 <p>With our dataset that assumes roots cannot leave the image once
 observed we get similar results.</p>
-<div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb50"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/pcv.joyplot.html">pcv.joyplot</a></span><span class="op">(</span><span class="va">df2</span>, <span class="st">"x_frequencies"</span>, group <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"rep"</span>, <span class="st">"time"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="roots_files/figure-html/unnamed-chunk-36-1.png" alt="Using a joyplot to check our simulated mini rhyzotron data before using Earth Mover's Distance with the assumption that roots cannot leave the image." width="700"></p>
-<div class="sourceCode" id="cb50"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb51"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">df2_emd</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pcv.emd.html">pcv.emd</a></span><span class="op">(</span></span>
 <span>  df <span class="op">=</span> <span class="va">df2</span>, cols <span class="op">=</span> <span class="st">"x_frequencies"</span>, reorder <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"rep"</span>, <span class="st">"time"</span><span class="op">)</span>,</span>
 <span>  id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"rep"</span>, <span class="st">"time"</span><span class="op">)</span>,</span>

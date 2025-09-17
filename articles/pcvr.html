@@ -81,7 +81,7 @@
                         <h4 data-toc-skip class="author">Josh Sumner,
 DDPSC Data Science Core Facility</h4>
             
-            <h4 data-toc-skip class="date">2025-08-21</h4>
+            <h4 data-toc-skip class="date">2025-09-17</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/danforthcenter/pcvr/blob/main/vignettes/pcvr.Rmd" class="external-link"><code>vignettes/pcvr.Rmd</code></a></small>
       <div class="d-none name"><code>pcvr.Rmd</code></div>
@@ -870,22 +870,26 @@ use EMD.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html" class="external-link">geom_col</a></span><span class="op">(</span>position <span class="op">=</span> <span class="st">"identity"</span>, show.legend <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/pcv_theme.html">pcv_theme</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">group</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Warning in fortify(data, ...): Arguments in `...` must be used.</span></span>
+<span><span class="co">## <span style="color: #BB0000;">✖</span> Problematic argument:</span></span>
+<span><span class="co">## <span style="color: #00BBBB;">•</span> alpha = 0.25</span></span>
+<span><span class="co">## <span style="color: #00BBBB;">ℹ</span> Did you misspell an argument name?</span></span></code></pre>
 <p><img src="pcvr_files/figure-html/unnamed-chunk-32-1.png" alt="Example of simulated Earth Mover's Distance" width="700"></p>
 <p>Our plots show very different distributions, so we get EMD between
 our images and see that we do have some trends shown in the resulting
 heatmap.</p>
-<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sim_emd</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pcv.emd.html">pcv.emd</a></span><span class="op">(</span></span>
 <span>  df <span class="op">=</span> <span class="va">sim_df</span>, cols <span class="op">=</span> <span class="st">"sim_"</span>, reorder <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"group"</span><span class="op">)</span>,</span>
 <span>  mat <span class="op">=</span> <span class="cn">FALSE</span>, plot <span class="op">=</span> <span class="cn">TRUE</span>, parallel <span class="op">=</span> <span class="fl">1</span>, raiseError <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Estimated time of calculation is roughly 3.1 seconds using 1 cores in parallel.</span></span></code></pre>
-<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sim_emd</span><span class="op">$</span><span class="va">plot</span></span></code></pre></div>
 <p><img src="pcvr_files/figure-html/unnamed-chunk-33-1.png" alt="Heatmap of Earth Mover's Distance in simulated data, showing one group much more distinct than others." width="700"></p>
 <p>Now we can filter edge strength during our network building step for
 EMD &gt; 0.5, and plot our network.</p>
-<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">n</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pcv.net.html">pcv.net</a></span><span class="op">(</span><span class="va">sim_emd</span><span class="op">$</span><span class="va">data</span>, filter <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/net.plot.html">net.plot</a></span><span class="op">(</span><span class="va">n</span>, fill <span class="op">=</span> <span class="st">"group"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="pcvr_files/figure-html/unnamed-chunk-34-1.png" alt="Earth Mover's Distances represented as a network, showing how distributions cluster together with the Uniform distribution missing due to it being filtered out by the edge strength requirement." width="700"></p>
@@ -896,7 +900,7 @@ similar to the other distributions. If we change our filtering then we
 can even see which generating distributions are most similar to each
 other. Here we pass 0.5 as a string, which tells <code>pcv.net</code> to
 use the top 50 percent of EMD values instead of EMD values &gt; 0.5.</p>
-<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">n</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pcv.net.html">pcv.net</a></span><span class="op">(</span><span class="va">sim_emd</span><span class="op">$</span><span class="va">data</span>, filter <span class="op">=</span> <span class="st">"0.5"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/net.plot.html">net.plot</a></span><span class="op">(</span><span class="va">n</span>, fill <span class="op">=</span> <span class="st">"group"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="pcvr_files/figure-html/unnamed-chunk-35-1.png" alt="Changing the network's edge strength requirement to show the Uniform distribution and how much closer connected all the gaussian mixture like distributions are comparatively." width="700"></p>
@@ -905,7 +909,7 @@ most different. Now changing the edgeFilter in the <code>net.plot</code>
 function would let us fine tune this plot more to show finer
 distinctions between our other four generating distributions.</p>
 <p>Here is an example of how we might use hue data.</p>
-<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">EMD</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pcv.emd.html">pcv.emd</a></span><span class="op">(</span></span>
 <span>  df <span class="op">=</span> <span class="va">hue_wide</span><span class="op">[</span><span class="va">hue_wide</span><span class="op">$</span><span class="va">DAS</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">12</span>, <span class="fl">19</span><span class="op">)</span>, <span class="op">]</span>, cols <span class="op">=</span> <span class="st">"hue_frequencies"</span>,</span>
 <span>  reorder <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"fertilizer"</span>, <span class="st">"genotype"</span>, <span class="st">"DAS"</span><span class="op">)</span>,</span>
@@ -926,11 +930,11 @@ return one example with 2 histograms kept per group and one example
 where groups are summarized into 1 histogram. If there are equal or
 fewer images as the <code>n_per_group</code> argument then no
 aggregation is done for that group but data are rescaled.</p>
-<div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">hue_ag1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mv_ag.html">mv_ag</a></span><span class="op">(</span>df <span class="op">=</span> <span class="va">hue_wide</span>, group <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"DAS"</span>, <span class="st">"genotype"</span>, <span class="st">"fertilizer"</span><span class="op">)</span>, n_per_group <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">hue_ag1</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] 600 183</span></span></code></pre>
-<div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">hue_ag2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mv_ag.html">mv_ag</a></span><span class="op">(</span><span class="va">hue_wide</span>, group <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"DAS"</span>, <span class="st">"genotype"</span>, <span class="st">"fertilizer"</span><span class="op">)</span>, n_per_group <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">hue_ag2</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] 300 183</span></span></code></pre>
@@ -941,10 +945,10 @@ aggregation is done for that group but data are rescaled.</p>
 <p>As it stands our EMD data is potentially difficult to use for those
 unfamiliar with distance matrix based analysis. Here we represent our
 distances as a network to help use the results.</p>
-<div class="sourceCode" id="cb50"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb51"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">456</span><span class="op">)</span></span>
 <span><span class="va">net</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pcv.net.html">pcv.net</a></span><span class="op">(</span><span class="va">EMD</span><span class="op">$</span><span class="va">data</span>, meta <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"fertilizer"</span>, <span class="st">"genotype"</span>, <span class="st">"DAS"</span><span class="op">)</span>, filter <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb51"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb52"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/net.plot.html">net.plot</a></span><span class="op">(</span><span class="va">net</span>, fill <span class="op">=</span> <span class="st">"DAS"</span>, shape <span class="op">=</span> <span class="st">"fertilizer"</span>, size <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 <p>Our example network shows some clustering but real data’s patterns
 are likely to be more complex:</p>

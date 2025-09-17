@@ -823,7 +823,9 @@ defined on
 to radians for the updating before rescaling back to the parameter
 space. See <code><a href="../reference/conjugate.html">?conjugate</a></code> for more examples of the
 <code>boundary</code>.</p>
-<pre><code><span><span class="co">## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</span></span></code></pre>
+<pre><code><span><span class="co">## `stat_bin()` using `bins = 30`. Pick better value `binwidth`.</span></span></code></pre>
+<pre><code><span><span class="co">## Warning: Removed 4 rows containing missing values or values outside the scale range</span></span>
+<span><span class="co">## (`geom_bar()`).</span></span></code></pre>
 <p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-30-1.png" alt="Example circular data between two treatment groups" width="700"></p>
 <p>Note this is a very exaggerated example for the plant phenotyping
 setting since green happens to be in the middle of the hue circle, which
@@ -831,7 +833,7 @@ wraps in the red colors.</p>
 <p>If you do have wrapped circular data then looking at it in a
 non-circular space like this would be a problem. For values we normally
 get from plants other continuous methods can generally be useful.</p>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">df</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">geno</span>, y <span class="op">=</span> <span class="va">y</span>, fill <span class="op">=</span> <span class="va">geno</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_boxplot.html" class="external-link">geom_boxplot</a></span><span class="op">(</span>outlier.shape <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_jitter.html" class="external-link">geom_jitter</a></span><span class="op">(</span>height <span class="op">=</span> <span class="fl">0</span>, width <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span> <span class="op">+</span></span>
@@ -840,7 +842,7 @@ get from plants other continuous methods can generally be useful.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous</a></span><span class="op">(</span>limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="va">pi</span>, <span class="va">pi</span><span class="op">)</span>, breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="va">pi</span>, <span class="op">-</span><span class="va">pi</span> <span class="op">/</span> <span class="fl">2</span>, <span class="fl">0</span>, <span class="va">pi</span> <span class="op">/</span> <span class="fl">2</span>, <span class="va">pi</span><span class="op">)</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-31-1.png" alt="Example circular data between two treatment groups treated as though it were not circular looks bimodal." width="700"></p>
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/conjugate.html">conjugate</a></span><span class="op">(</span></span>
 <span>  s1 <span class="op">=</span> <span class="va">y</span> <span class="op">~</span> <span class="va">geno</span>, s2 <span class="op">=</span> <span class="va">df</span>,</span>
 <span>  method <span class="op">=</span> <span class="st">"vonmises2"</span>,</span>
@@ -858,7 +860,7 @@ get from plants other continuous methods can generally be useful.</p>
 <span><span class="co">## </span></span>
 <span><span class="co">##      HDE_1 HDI_1_low HDI_1_high    HDE_2 HDI_2_low HDI_2_high   hyp post.prob</span></span>
 <span><span class="co">## 1 3.093691  1.668768  -1.717893 2.727366  1.497517   -2.43441 equal 0.7904981</span></span></code></pre>
-<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span></span></code></pre></div>
 <p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-33-1.png" alt="Conjugate comparison of the direction of Von Mises distributed circular data." width="700"></p>
 <p>Here our distributions are very similar and there is about a 79%
