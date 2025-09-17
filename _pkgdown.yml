@@ -174,3 +174,4 @@ reference:
       - summary.conjugate
       - plot.conjugate
       - conjugate-class
+      - pcvr-package
