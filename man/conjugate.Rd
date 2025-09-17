@@ -130,7 +130,7 @@ Prior distributions default to be weakly informative and in some cases you may w
     where shape and scale are the respective parameters of the gamma distributed rate
     (inverse of scale) parameter of gamma distributed data.}
    \item{\strong{"poisson" and "exponential": } \code{priors = list(a = 0.5,b = 0.5)},
-    where a and b are shape parameters of the gamma distribution.}
+    where a and b are shape and rate parameters of the gamma distribution.}
    \item{\strong{"negbin": } \code{priors = list(r = 10, a = 0.5, b = 0.5)},
     where r is the r parameter of the negative binomial distribution
     (representing the number of successes required)
