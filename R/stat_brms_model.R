@@ -23,7 +23,7 @@
 #' @details
 #' @examples
 #'
-#'
+#' @rdname stat_growthSS
 #' @seealso \link{growthPlot} for a self-contained plotting function
 #' @keywords ggplot
 #' @export
@@ -34,7 +34,7 @@ stat_brms_model <- function(mapping = NULL, data = NULL,
   # These would normally be arguments to a stat layer but they should not be changed
   geom = "ribbon"
   position = "identity"
-  na.rm = FALSE,
+  na.rm = FALSE
   show.legend = c("fill" = TRUE, "alpha" = FALSE) 
   # get elements to replace NULL defaults in case they are missing
   if (is.null(data) || is.null(mapping)) {
@@ -56,13 +56,12 @@ stat_brms_model <- function(mapping = NULL, data = NULL,
   })
 }
 
+
 "%||%" <- function(a, b) {
   if (!is.null(a)) {a} else {b}
 }
 
-#' @rdname stat_brms_model
-#' @export
-
+#' ~I don't know the export convention but it seems like this is "soft hidden"~
 statBrmsMod <- ggplot2::ggproto("StatBrm", Stat,
   # `specify that there will be extra params`
   extra_params = c("na.rm", "fit", "parsed_form", "probs"),
@@ -71,6 +70,7 @@ statBrmsMod <- ggplot2::ggproto("StatBrm", Stat,
     #' possible that ss is not a pcvrss object for compatibility with other brms models
     #' if "df" is part of it then work with that otherwise use general data.
     if ("data" %in% names(params$parsed_form)) {
+      parsed_form <- params$parsed_form
       mod_data <- parsed_form$data
       mod_data <- mod_data[, unlist(parsed_form[c("x", "group")])]
       colnames(mod_data) <- c("x", "MOD_GROUP")
@@ -82,7 +82,7 @@ statBrmsMod <- ggplot2::ggproto("StatBrm", Stat,
     }
     return(data)
   },
-  #' NOTE ggplot2:::Stat$compute_layer can use the default ggproto.
+  #' NOTE ggplot2:::Stat$compute_layer can use the default from ggproto
   #' `make plot within a given panel of the ggplot (a facet)`
   #' this is mostly the same as the default ggproto compute_panel function,
   #' but it takes more named args and passes them to compute_group and
