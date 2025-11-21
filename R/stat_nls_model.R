@@ -35,13 +35,12 @@ stat_nls_model <- function(mapping = NULL, data = NULL,
   position = "identity"
   na.rm = FALSE
   show.legend = c("color" = TRUE)
+  parsed_form <- .parsePcvrForm(ss$pcvrForm, ss$df)
   # get elements to replace NULL defaults in case they are missing
   if (is.null(data) || is.null(mapping)) {
-    parsed_form <- .parsePcvrForm(ss$pcvrForm, ss$df)
     data <- data %||% parsed_form$data
     mapping <- mapping %||% ggplot2::aes(x = .data[[parsed_form$x]])
   }
-  # make layer for each of the intervals
   ggplot2::layer(
     stat = statNlsMod, data = data, mapping = mapping, geom = geom,
     position = position, show.legend = show.legend, inherit.aes = inherit.aes,
@@ -62,8 +61,7 @@ statNlsMod <- ggplot2::ggproto("StatNls", Stat,
       colnames(mod_data) <- c("x", "MOD_GROUP")
       mod_data <- mod_data[!duplicated(mod_data), ]
       data <- plyr::join(mod_data, data, type = "left", match = "all", by = "x")
-      # stop(paste(paste(colnames(data), collapse = ", "),"\n", nrow(data), "\n\n", paste(data, collapse = ", ")))
-      if (length(unique(data$PANEL)) > 1) {
+      if (length(unique(data$PANEL)) > 1 && parsed_form$USEG) {
         data <- data[data$PANEL == as.numeric(as.factor(data$MOD_GROUP)), ]
       }
       if (!parsed_form$USEG){
@@ -75,10 +73,10 @@ statNlsMod <- ggplot2::ggproto("StatNls", Stat,
   #' NOTE I think this can stay the same from brms version
   compute_panel = function(self, data, scales, fit, parsed_form, probs, ...){
     if (ggplot2:::empty(data)) return(ggplot2:::data_frame0())
-    groups <- split(data, data[["MOD_GROUP"]])
-    stats <- lapply(groups, function(groupdf) {
+    groups <- split(data, data[["MOD_GROUP"]], drop = TRUE)
+    stats <- lapply(seq_along(groups), function(i) {
       self$compute_group(
-        data = groupdf, scales = scales, fit = fit, parsed_form = parsed_form, ...
+        data = groups[[i]], scales = scales, fit = fit, parsed_form = parsed_form, ...
       )
     })
     non_constant_columns <- character(0)
@@ -115,10 +113,6 @@ statNlsMod <- ggplot2::ggproto("StatNls", Stat,
     yvar <- parsed_form$y
     xvar <- parsed_form$x
     group <- parsed_form$group
-    individual <- parsed_form$individual
-    if (individual == "dummyIndividual") {
-      individual <- NULL
-    }
     # make data to use drawing posterior predictions
     nd <- data[, c("x", "MOD_GROUP", "PANEL")]
     nd <- nd[!duplicated(nd), ]
