@@ -35,10 +35,10 @@ stat_brms_model <- function(mapping = NULL, data = NULL,
   geom = "ribbon"
   position = "identity"
   na.rm = FALSE
-  show.legend = c("fill" = TRUE, "alpha" = FALSE) 
+  show.legend = c("fill" = TRUE, "alpha" = FALSE)
+  parsed_form <- .parsePcvrForm(ss$pcvrForm, ss$df)
   # get elements to replace NULL defaults in case they are missing
   if (is.null(data) || is.null(mapping)) {
-    parsed_form <- .parsePcvrForm(ss$pcvrForm, ss$df)
     data <- data %||% parsed_form$data
     mapping <- mapping %||% ggplot2::aes(x = .data[[parsed_form$x]])
   }
