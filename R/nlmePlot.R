@@ -142,7 +142,8 @@ nlmePlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, face
 #' @noRd
 .add_sigma_bounds <- function(preds, fit, x, group) {
   res <- do.call(rbind, lapply(unique(preds[[group]]), function(grp) {
-    varCoef <- as.numeric(fit$modelStruct$varStruct[grp])
+    i <- which(unique(preds[[group]]) == grp)
+    varCoef <- as.numeric(fit$modelStruct$varStruct[i])
 
     sub <- preds[preds[[group]] == grp, ]
     exes <- sub[[x]]
@@ -156,7 +157,7 @@ nlmePlot <- function(fit, form, df = NULL, groups = NULL, timeRange = NULL, face
       varSummary <- summary(fit$modelStruct$varStruct)
       coefs <- data.frame(
         x = 1 / unique(attr(varSummary, "weight")),
-        g = unique(attr(varSummary, "groups"))
+        g = unique(attr(varSummary, "groups")) %||% grp
       )
       out <- baseSigma * coefs[coefs$g == grp, "x"]
     }

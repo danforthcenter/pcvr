@@ -79,6 +79,9 @@ test_that("Test Logistic nls modeling", {
     ggplot2::labs(title = "nls")
   expect_s3_class(nls_p, "ggplot")
 
+  p <- ggplot() + stat_growthss(fit  = fit, ss = ss)
+  expect_s3_class(p$layers[[1]]$stat, "StatNls")
+
   test_res <- testGrowth(ss, fit, test = "A")$anova
   expect_s3_class(test_res, "anova")
 
@@ -105,6 +108,9 @@ test_that("Test Logistic nlrq modeling", {
   nlrq_p <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df, groupFill = "plasma") +
     ggplot2::labs(title = "nlrq")
   expect_s3_class(nlrq_p, "ggplot")
+
+  p <- ggplot() + stat_growthss(fit = fit, ss = ss)
+  expect_s3_class(p$layers[[1]]$stat, "StatNls")
 
   test_res <- suppressWarnings(testGrowth(ss, fit, test = "A")$`0.5`)
   expect_s3_class(test_res, "anova")
@@ -133,6 +139,9 @@ test_that("Test Logistic nlme modeling", {
   nlme_p <- nlme_p +
     ggplot2::labs(title = "nlme")
   expect_s3_class(nlme_p, "ggplot")
+
+  p <- ggplot() + stat_growthss(fit  = fit, ss = ss)
+  expect_s3_class(p$layers[[1]]$stat, "StatNlme")
 
   test_res <- suppressWarnings(testGrowth(ss, fit, test = "A")$anova)
   expect_s3_class(test_res, "anova.lme")
@@ -591,6 +600,7 @@ test_that("Test survreg", {
   expect_s3_class(fit, "survreg")
   p <- growthPlot(fit, form = ss$pcvrForm, df = ss$df)
   expect_s3_class(p, "ggplot")
+  expect_error(ggplot() + stat_growthss(fit  = fit, ss = ss))
   test <- testGrowth(ss, fit)
   expect_s3_class(test, "survdiff")
 })
@@ -610,6 +620,7 @@ test_that("Test flexsurv", {
   expect_s3_class(fit, "flexsurvreg")
   p <- growthPlot(fit, form = ss$pcvrForm, df = ss$df)
   expect_s3_class(p, "ggplot")
+  expect_error(ggplot() + stat_growthss(fit  = fit, ss = ss))
   test <- testGrowth(ss, fit)
   expect_s3_class(test, "data.frame")
 })

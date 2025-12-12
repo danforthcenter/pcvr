@@ -70,6 +70,8 @@ ss1 <- mvSS(
 \donttest{
 mod1 <- fitGrowth(ss1, backend = "cmdstanr", iter = 1000, chains = 1, cores = 1)
 growthPlot(mod1, ss1$pcvrForm, df = ss1$df)
+library(ggplot2)
+ggplot() + stat_brms_model(fit = fit, ss = ss)
 }
 
 # when the model is longitudinal the same model is possible with growthSS

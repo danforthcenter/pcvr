@@ -1,13 +1,15 @@
 #' Show nls/lm model in ggplot layer
 #'
 #' @description
-#' Add predicted mean trendline from a model fit with \link{growthSS} and \{fitGrowth}
+#' Add predicted mean trendline from a model fit with \link{growthSS} and \link{fitGrowth}
 #' to a ggplot object.
 #'
 #' @param mapping Set of aesthetic mappings created by \code{ggplot2::aes()}. If specified
-#' and ‘inherit.aes = TRUE’ (the default), it is combined with the default mapping at the top level of the plot.
+#' and ‘inherit.aes = TRUE’ (the default),
+#' it is combined with the default mapping at the top level of the plot.
 #' If there is no mapping then it is filled in by default using the \code{ss} object.
-#' @param data The data to be displayed in this layer. This behaves per normal ggplot2 expectations except
+#' @param data The data to be displayed in this layer.
+#' This behaves per normal ggplot2 expectations except
 #' that if data is missing (ie, not inherited or specified) then the data from \code{ss} is used.
 #' @param fit A brmsfit object, typically returned from \code{fitGrowth}.
 #' @param ss A \code{pcvrss} object. Only the "pcvrForm" and "df" elements are used.
@@ -15,26 +17,18 @@
 #' @param ... Additional arguments passed to ggplot2::layer.
 #'
 #' @import ggplot2
-#' @import vctrs
-#' @importFrom plyr join
-#' @importFrom cli cli_warn
-#' @importFrom rlang try_fetch, inject
-#' @details
-#' @examples
-#'
-#' @rdname stat_growthSS
-#' @seealso \link{growthPlot} for a self-contained plotting function
+#' @rdname stat_growthss
 #' @keywords ggplot
 #' @export
 
 stat_nlrq_model <- function(mapping = NULL, data = NULL,
-                          fit = NULL, ss = NULL,
-                          inherit.aes = TRUE, ...) {
-   # These would normally be arguments to a stat layer but they should not be changed
-  geom = "line"
-  position = "identity"
-  na.rm = FALSE
-  show.legend = c("color" = TRUE)
+                            fit = NULL, ss = NULL,
+                            inherit.aes = TRUE, ...) {
+  # These would normally be arguments to a stat layer but they should not be changed
+  geom <- "line"
+  position <- "identity"
+  na.rm <- FALSE
+  show.legend <- c("color" = TRUE)
   parsed_form <- .parsePcvrForm(ss$pcvrForm, ss$df)
   # Multiple quantiles make fit a list of nlrq fits, standardize format
   if (methods::is(fit, "nlrq")) {
@@ -43,7 +37,7 @@ stat_nlrq_model <- function(mapping = NULL, data = NULL,
   } # after here `fit` will always be a list of nlrq models.
   # make layer for each of the taus
   # those layers can just use statNlsMod.
-  lapply(fit, function(one_fit) {
+  lyrs <- lapply(fit, function(one_fit) {
     tau <- one_fit$m$tau()
     # get elements to replace NULL defaults in case they are missing
     # if color is not otherwise specified then use tau from the fit
@@ -51,11 +45,12 @@ stat_nlrq_model <- function(mapping = NULL, data = NULL,
       data <- data %||% parsed_form$data
       mapping <- mapping %||% ggplot2::aes(x = .data[[parsed_form$x]], color = tau)
     }
-    ggplot2::layer(
+    lyr <- ggplot2::layer(
       stat = statNlsMod, data = data, mapping = mapping, geom = geom,
       position = position, show.legend = show.legend, inherit.aes = inherit.aes,
       params = list(na.rm = na.rm, fit = one_fit, parsed_form = parsed_form, ...)
     )
-  }
-  )
+    return(lyr)
+  })
+  return(lyrs)
 }
