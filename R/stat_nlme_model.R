@@ -46,7 +46,7 @@ stat_nlme_model <- function(mapping = NULL, data = NULL,
 }
 
 #' @export
-#' @rdname stat_growthss 
+#' @rdname stat_growthss
 stat_lme_model <- function(mapping = NULL, data = NULL,
                            fit = NULL, ss = NULL,
                            inherit.aes = TRUE, ...) {
