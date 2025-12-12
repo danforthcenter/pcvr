@@ -108,6 +108,6 @@ print.pcvrsssummary <- function(x, ...) {
   cat("\nData:\n")
   print(x$df[1:3, !grepl("dummyIndividual|dummyGroup", colnames(x$df))])
   cat(paste0("...\n"))
-  cat(paste0("(", nrow(x$df), " rows)"))
+  cat(paste0("(", nrow(x$df), " rows)\n"))
   return(invisible(x))
 }
