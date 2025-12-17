@@ -5,6 +5,7 @@
 \alias{stat_brms_model}
 \alias{stat_growthss}
 \alias{stat_nlme_model}
+\alias{stat_lme_model}
 \alias{stat_nlrq_model}
 \alias{stat_nls_model}
 \title{Show brms model in ggplot layer}
@@ -29,6 +30,15 @@ stat_growthss(
 )
 
 stat_nlme_model(
+  mapping = NULL,
+  data = NULL,
+  fit = NULL,
+  ss = NULL,
+  inherit.aes = TRUE,
+  ...
+)
+
+stat_lme_model(
   mapping = NULL,
   data = NULL,
   fit = NULL,

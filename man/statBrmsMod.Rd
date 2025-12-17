@@ -3,8 +3,7 @@
 \docType{data}
 \name{statBrmsMod}
 \alias{statBrmsMod}
-\title{~I don't know the export convention but it seems like this is "soft hidden"~
-possible that ss is not a pcvrss object for compatibility with other brms models
+\title{possible that ss is not a pcvrss object for compatibility with other brms models
 if "df" is part of it then work with that otherwise use general data.
 NOTE ggplot2:::Stat$compute_layer can use the default from ggproto
 `make plot within a given panel of the ggplot (a facet)`
@@ -21,7 +20,6 @@ An object of class \code{StatBrm} (inherits from \code{Stat}, \code{ggproto}, \c
 statBrmsMod
 }
 \description{
-~I don't know the export convention but it seems like this is "soft hidden"~
 possible that ss is not a pcvrss object for compatibility with other brms models
 if "df" is part of it then work with that otherwise use general data.
 NOTE ggplot2:::Stat$compute_layer can use the default from ggproto
