@@ -290,6 +290,7 @@ test_that("weibull survival", {
   expect_s3_class(fit, "brmsfit")
   plot <- growthPlot(fit, form = ss$pcvrForm, df = ss$df)
   expect_s3_class(plot, "ggplot")
+  expect_error(ggplot() + stat_growthss(fit = fit, ss = ss))
   test <- testGrowth(ss, fit, "groupa > groupb")
   expect_s3_class(test, "brmshypothesis")
 })

@@ -430,6 +430,8 @@ test_that("Test logarithmic nlrq modeling", {
   expect_s3_class(fit, "nlrq")
   p <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
   expect_s3_class(p, "ggplot")
+  p <- ggplot() + stat_growthss(fit = fit, ss = ss)
+  expect_s3_class(p$layers[[1]]$stat, "StatNls")
 })
 
 test_that("Test logarithmic nlme modeling", {
@@ -513,6 +515,9 @@ test_that("Test nlme gam", {
   expect_s3_class(fit, "lme")
 
   p <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
+  expect_s3_class(p, "ggplot")
+  p <- ggplot() + stat_growthss(fit = fit, ss = ss)
+  expect_s3_class(p$layers[[1]]$stat, "StatNlme")
   expect_s3_class(p, "ggplot")
   av <- testGrowth(ss = ss, fit)$anova
   expect_s3_class(av, "anova.lme")
