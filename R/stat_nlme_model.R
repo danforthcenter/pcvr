@@ -1,21 +1,3 @@
-#' Show nlme/lme model in ggplot layer
-#'
-#' @description
-#' Add predicted mean trendline from a nlme/lme model fit with \link{growthSS} and \link{fitGrowth}
-#' to a ggplot object.
-#'
-#' @param mapping Set of aesthetic mappings created by \code{ggplot2::aes()}.
-#' If specified and ‘inherit.aes = TRUE’ (the default),
-#' it is combined with the default mapping at the top level of the plot.
-#' If there is no mapping then it is filled in by default using the \code{ss} object.
-#' @param data The data to be displayed in this layer.
-#' This behaves per normal ggplot2 expectations except
-#' that if data is missing (ie, not inherited or specified) then the data from \code{ss} is used.
-#' @param fit A nlme/lme object, typically returned from \code{fitGrowth}.
-#' @param ss A \code{pcvrss} object. Only the "pcvrForm" and "df" elements are used.
-#' @param inherit.aes Logical, should aesthetics be inherited from top level? Defaults to TRUE.
-#' @param ... Additional arguments passed to ggplot2::layer.
-#'
 #' @import ggplot2
 #' @rdname stat_growthss
 #' @keywords ggplot

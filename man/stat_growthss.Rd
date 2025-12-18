@@ -8,7 +8,7 @@
 \alias{stat_lme_model}
 \alias{stat_nlrq_model}
 \alias{stat_nls_model}
-\title{Show brms model in ggplot layer}
+\title{Show a model fit with pcvr in a ggplot layer}
 \usage{
 stat_brms_model(
   mapping = NULL,
@@ -69,12 +69,13 @@ stat_nls_model(
 \item{mapping}{Set of aesthetic mappings created by \code{ggplot2::aes()}.
 If specified and ‘inherit.aes = TRUE’ (the default),
 it is combined with the default mapping at the top level of the plot.
-If there is no mapping then it is filled in by default using the \code{ss} object.}
+If there is no mapping then it is filled in by default using the \code{pcvrss} object.}
 
-\item{data}{The data to be displayed in this layer. This behaves per normal ggplot2 expectations
-except that if data is missing (ie, not inherited or specified) then the data from \code{ss} is used.}
+\item{data}{The data to be displayed in this layer.
+This behaves per normal ggplot2 expectations except
+that if data is missing (ie, not inherited or specified) then the data from \code{ss} is used.}
 
-\item{fit}{A brmsfit object, typically returned from \code{fitGrowth}.}
+\item{fit}{A model object returned from \code{fitGrowth}.}
 
 \item{ss}{A \code{pcvrss} object. Only the "pcvrForm" and "df" elements are used.}
 
@@ -82,23 +83,11 @@ except that if data is missing (ie, not inherited or specified) then the data fr
 
 \item{inherit.aes}{Logical, should aesthetics be inherited from top level? Defaults to TRUE.}
 
-\item{...}{Additional arguments passed to ggplot2::layer.}
+\item{...}{Additional arguments passed to the ggplot layer.}
 }
 \description{
-Add posterior predictive distribution from a brms model fit with \link{growthSS} and \link{fitGrowth}
-to a ggplot object.
-
 Add a model fit with \link{growthSS} and \link{fitGrowth} to a ggplot object.
 The exact geom used depends on the model class (see details).
-
-Add predicted mean trendline from a nlme/lme model fit with \link{growthSS} and \link{fitGrowth}
-to a ggplot object.
-
-Add predicted mean trendline from a model fit with \link{growthSS} and \link{fitGrowth}
-to a ggplot object.
-
-Add predicted mean trendline from a model fit with \link{growthSS} and \link{fitGrowth}
-to a ggplot object.
 }
 \details{
 These layers will behave largely like output from \code{\link{growthPlot}}, although \code{growthPlot}
