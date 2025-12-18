@@ -168,6 +168,8 @@ reference:
       - fitGrowthrq
       - survregPlot
       - summary.pcvrss
+      - statBrmsMod
+      - statNlsMod
       - print.pcvrss
       - pcvrss-class
       - print.pcvrsssummary
