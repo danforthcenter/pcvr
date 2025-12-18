@@ -1,3 +1,7 @@
+# pcvr 1.4.0
+
+Added `stat_growthss` to make ggplot layers of models from `growthSS`.
+
 # pcvr 1.3.1
 
 Cran release

@@ -11,6 +11,7 @@ x <- lintr::lint_package(path = "~/pcvr",
                                                     return_linter(return_style = "explicit"),
                                                     brace_linter(allow_single_line = TRUE)
                     ))
+table(names(x))
 x
 length(x)
 #* run styling
@@ -38,7 +39,7 @@ if(FALSE){
   c("R/brms_segmentedForm.R", "R/bwoutliers.R", "R/bwtime.R", "R/nlmeSS.R", 
     "tests/testthat/test-brmsModels.R", "tests/testthat/test-growthModels.R", 
     "tests/testthat/test-growthSS_helpers.R")
-  file = "~/pcvr/tests/testthat/test-growthSS_helpers.R"
+  file = "~/pcvr/tests/testthat/test-brmsModels.R"
   styler::style_file(file, scope = "line_breaks")
   lintr::lint(file, linters = lintr::linters_with_defaults(lintr::line_length_linter(length = 105L),
                                                            lintr::object_name_linter(styles = c("snake_case", "symbols",
