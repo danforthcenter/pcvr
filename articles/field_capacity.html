@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">pcvr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -252,7 +252,7 @@ used to determine how much water to add. The difference in weight
 between the “after watering” weight and the following day’s “before
 watering” weight are what we will use to calculate transpiration and
 <em>water use efficiency</em> (WUE).</p>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-2-1.png" alt="Simulated watering data where water use is measured by weighing plants before and after watering. Water lost during the day and water added at night are marked." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-2-1.png" class="r-plt" alt="Simulated watering data where water use is measured by weighing plants before and after watering. Water lost during the day and water added at night are marked." width="700"></p>
 </div>
 <div class="section level2">
 <h2 id="calculating-transpiration">Calculating Transpiration<a class="anchor" aria-label="anchor" href="#calculating-transpiration"></a>
@@ -265,7 +265,7 @@ water transpired (g) in that time period (here, 1 day).</p>
 framing the question as “the amount of water transpired”, so despite the
 slope of the line (showing mass in the pot) going down we have positive
 numbers.</p>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-3-1.png" alt="Labelling the previous plot with the amount of water transpired each day." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-3-1.png" class="r-plt" alt="Labelling the previous plot with the amount of water transpired each day." width="700"></p>
 <p>The absolute amount of water transpired is interesting, but it is
 important to normalize this value to plant biomass. We generally expect
 larger plants to transpire more water; we may get excited that a
@@ -280,7 +280,7 @@ plant biomass that day to get <em>Normalized Transpiration</em>.</p>
 <pre><code><span><span class="co">## Ignoring unknown labels:</span></span>
 <span><span class="co">## <span style="color: #00BBBB;">•</span> <span style="color: #00BB00;">fill</span> : <span style="color: #0000BB;">"Light"</span></span></span>
 <span><span class="co">## <span style="color: #00BBBB;">•</span> <span style="color: #00BB00;">colour</span> : <span style="color: #0000BB;">"Weight"</span></span></span></code></pre>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-4-1.png" alt="Showing plant biomass along with water transpired each day." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-4-1.png" class="r-plt" alt="Showing plant biomass along with water transpired each day." width="700"></p>
 </div>
 <div class="section level2">
 <h2 id="wue">WUE<a class="anchor" aria-label="anchor" href="#wue"></a>
@@ -455,7 +455,7 @@ asymptote.</li>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/pcv_theme.html">pcv_theme</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-6-1.png" alt="Six simulated growth trends that will be talked about for water use phenotypes." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-6-1.png" class="r-plt" alt="Six simulated growth trends that will be talked about for water use phenotypes." width="700"></p>
 <p>There are also 6 watering data options in the simulated data.</p>
 <ul>
 <li>
@@ -512,7 +512,7 @@ considered and target weight is not used.</li>
 <span>    title <span class="op">=</span> <span class="st">"Different watering schemes with sigmoid growth"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/pcv_theme.html">pcv_theme</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-7-1.png" alt="Six different watering schemes and how they appear if using weight before and weight after watering to represent transpiration." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-7-1.png" class="r-plt" alt="Six different watering schemes and how they appear if using weight before and weight after watering to represent transpiration." width="700"></p>
 <p>Here we’ve taken a roundabout way to simulate the amount of water
 used by simulated pre-watering weight and post-watering weight since
 that is how you’ll get plant weight data most of the time. For water use
@@ -532,7 +532,7 @@ lines.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"none"</span>,</span>
 <span>        strip.text.x.top <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>,</span>
 <span>        strip.text.y.right <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-8-1.png" alt="Looking at the previous watering trends as weight change instead of pre/post weights." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-8-1.png" class="r-plt" alt="Looking at the previous watering trends as weight change instead of pre/post weights." width="700"></p>
 <p>Looking at the data this way helps drive home the point that water
 use can increase, decrease, or remain constant. There are different ways
 to increase or decrease, but the we’ll focus on the overall trend now
@@ -561,7 +561,7 @@ weight after watering shown in blue.</p>
 <span>    strip.text.x.top <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>,</span>
 <span>    strip.text.y.right <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-10-1.png" alt="Showing combinations of conditions that will be used in talking about water use phenotypes." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-10-1.png" class="r-plt" alt="Showing combinations of conditions that will be used in talking about water use phenotypes." width="700"></p>
 </div>
 <div class="section level3">
 <h3 id="water-data-quality-control-plots">Water data quality control plots<a class="anchor" aria-label="anchor" href="#water-data-quality-control-plots"></a>
@@ -574,7 +574,7 @@ watering pattern - that the weight before watering is lower than the
 previous post-watering weight (indicating that transpiration happened).
 The length of the black lines between weights here shows the water
 added.</p>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-11-1.png" alt="Example of a sanity check plot when working with water use data to make sure that the data matches your experimental design and that you understand the structure." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-11-1.png" class="r-plt" alt="Example of a sanity check plot when working with water use data to make sure that the data matches your experimental design and that you understand the structure." width="700"></p>
 <p>We don’t see anything that raises red flags, so we’ll move on. If
 water added was to spike incredibly high, or the different in water
 added was not what was intended by the design, it would be a sign that
@@ -653,7 +653,7 @@ watering metadata.</p>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/pcv_theme.html">pcv_theme</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-13-1.png" width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-13-1.png" class="r-plt" width="700"></p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">d</span><span class="op">[</span><span class="va">d</span><span class="op">$</span><span class="va">variable</span> <span class="op">==</span> <span class="st">"field_capacity"</span>, <span class="op">]</span>,</span>
 <span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">day</span>, y <span class="op">=</span> <span class="va">value</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
@@ -670,7 +670,7 @@ watering metadata.</p>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/pcv_theme.html">pcv_theme</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-13-2.png" width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-13-2.png" class="r-plt" width="700"></p>
 <p>It generally makes sense to monitor field capacity of pre and post
 watering weights to make sure that the watering is keeping your soil in
 line with what your design requires.</p>
@@ -745,9 +745,9 @@ curve, etc).</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Zooming in on the constant watering condition"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/pcv_theme.html">pcv_theme</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Warning: Removed 10 rows containing missing values or values outside the scale range</span></span>
+<pre><code><span><span class="co">## Warning: Removed 60 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">## (`geom_line()`).</span></span></code></pre>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-15-1.png" alt="Pseudo water use efficiency for each of 6 phenotypes under constant watering" width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-15-1.png" class="r-plt" alt="Pseudo water use efficiency for each of 6 phenotypes under constant watering" width="700"></p>
 <p>This follow the general trends we’d expect, but some things look
 strange and it all looks very noisy.</p>
 <div class="section level5">
@@ -768,7 +768,7 @@ over time for our data with constant watering and logistic growth.</p>
 <span>  <span class="fu"><a href="../reference/pcv_theme.html">pcv_theme</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Warning: Removed 10 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">## (`geom_line()`).</span></span></code></pre>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-16-1.png" alt="Showing only the Logistic phenotype's pseudo water use efficiency trend, which approximates a gaussian distribution since the denominator is constant." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-16-1.png" class="r-plt" alt="Showing only the Logistic phenotype's pseudo water use efficiency trend, which approximates a gaussian distribution since the denominator is constant." width="700"></p>
 <p>The overall trend makes sense, but why is the data so spikey? We can
 sometimes get an easier grasp of pWUE if we plot the component parts,
 which are both returned from <code>pwue</code>.</p>
@@ -791,7 +791,7 @@ which are both returned from <code>pwue</code>.</p>
 <span><span class="co">## (`geom_line()`).</span></span>
 <span><span class="co">## Removed 10 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">## (`geom_line()`).</span></span></code></pre>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-17-1.png" alt="Separating pseudo water use efficiency into the component parts of difference in phenotype and difference in water use to show how the phenotype trend drives this water use trait." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-17-1.png" class="r-plt" alt="Separating pseudo water use efficiency into the component parts of difference in phenotype and difference in water use to show how the phenotype trend drives this water use trait." width="700"></p>
 <p>Now we can see that the “spikey-ness” is a product of the water data
 having a lot of noise, which is likely to be the case in real data but
 for our simulation is just a byproduct of how we’re making the
@@ -816,7 +816,7 @@ have a different kind of sigmoid shape? First looks at the pWUE for our
 <span>  <span class="fu"><a href="../reference/pcv_theme.html">pcv_theme</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Warning: Removed 10 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">## (`geom_line()`).</span></span></code></pre>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-18-1.png" alt="Showing only the abrupt sigmoid phenotype's pseudo water use efficiency trend,  which has one sharp spike and otherwise appears flat." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-18-1.png" class="r-plt" alt="Showing only the abrupt sigmoid phenotype's pseudo water use efficiency trend,  which has one sharp spike and otherwise appears flat." width="700"></p>
 <p>We’re going to have to zoom in to understand the general trend, then
 we can look at each replicate to see what is going on with that large
 spike.</p>
@@ -834,7 +834,7 @@ spike.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_cartesian.html" class="external-link">coord_cartesian</a></span><span class="op">(</span>ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">3</span>, <span class="fl">50</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Warning: Removed 10 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">## (`geom_line()`).</span></span></code></pre>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-19-1.png" alt="Zooming in on the abrupt sigmoid's pseudo water use efficiency to show that each rep has a sharp spike." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-19-1.png" class="r-plt" alt="Zooming in on the abrupt sigmoid's pseudo water use efficiency to show that each rep has a sharp spike." width="700"></p>
 <p>That doesn’t clear it up much, but we do basically have the same kind
 of shape as before where the logistic phenotype yielded a bell
 curve.</p>
@@ -881,7 +881,7 @@ components of rate pWUE a little more clearly.</p>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/pcv_theme.html">pcv_theme</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-21-1.png" alt="Separating pseudo water use efficiency into the component parts of difference in phenotype and difference in water use to show how the phenotype trend drives this water use trait." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-21-1.png" class="r-plt" alt="Separating pseudo water use efficiency into the component parts of difference in phenotype and difference in water use to show how the phenotype trend drives this water use trait." width="700"></p>
 <p>Notice that we have dips in the amount of water used that coincide
 with the peaks of measurement-to-measurement phenotype change. That’s a
 combination that will make for some very high pWUE peaks and plenty of
@@ -906,7 +906,7 @@ curves.</p>
 <span>    y <span class="op">=</span> <span class="st">"(Rate based) pWUE"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/pcv_theme.html">pcv_theme</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-22-1.png" alt="Pseudo water use efficiency per rep shows that the trend is the same just at different scales." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-22-1.png" class="r-plt" alt="Pseudo water use efficiency per rep shows that the trend is the same just at different scales." width="700"></p>
 </div>
 <div class="section level5">
 <h5 id="exponential">Exponential<a class="anchor" aria-label="anchor" href="#exponential"></a>
@@ -926,7 +926,7 @@ non-asymptotic growth?</p>
 <span>  <span class="fu"><a href="../reference/pcv_theme.html">pcv_theme</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Warning: Removed 10 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">## (`geom_line()`).</span></span></code></pre>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-23-1.png" alt="Showing only the exponential phenotype's pseudo water use efficiency trend,  which increases exponentially with some outliers" width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-23-1.png" class="r-plt" alt="Showing only the exponential phenotype's pseudo water use efficiency trend,  which increases exponentially with some outliers" width="700"></p>
 <p>As before we’ll remove the negative values for
 <code>total_water</code>. Here they come from the same place since the
 phenotype is changing so quickly.</p>
@@ -943,7 +943,7 @@ phenotype is changing so quickly.</p>
 <span>    y <span class="op">=</span> <span class="st">"(Rate based) pWUE"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/pcv_theme.html">pcv_theme</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-24-1.png" alt="Showing only the exponential phenotype's pseudo water use efficiency trend,  which increases exponentially with outliers removed" width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-24-1.png" class="r-plt" alt="Showing only the exponential phenotype's pseudo water use efficiency trend,  which increases exponentially with outliers removed" width="700"></p>
 <p>With the negative values removed the trend here looks a lot like the
 raw phenotype data.</p>
 <div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
@@ -964,7 +964,7 @@ raw phenotype data.</p>
 <span>    strip.text.x.top <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>,</span>
 <span>    strip.text.y.right <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-25-1.png" alt="Showing only the exponential phenotype" width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-25-1.png" class="r-plt" alt="Showing only the exponential phenotype" width="700"></p>
 <p>This is a feature of exponential growth, since the
 measurement-to-measurement difference increases exponentially when we
 have roughly constant water use the pWUE trend will look
@@ -984,7 +984,7 @@ exponential.</p>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/pcv_theme.html">pcv_theme</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-26-1.png" alt="Separating pseudo water use efficiency into the component parts of difference in phenotype and difference in water use to show how the phenotype trend drives this water use trait." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-26-1.png" class="r-plt" alt="Separating pseudo water use efficiency into the component parts of difference in phenotype and difference in water use to show how the phenotype trend drives this water use trait." width="700"></p>
 </div>
 <div class="section level5">
 <h5 id="slowing">Slowing<a class="anchor" aria-label="anchor" href="#slowing"></a>
@@ -1004,7 +1004,7 @@ should expect to see decreasing pWUE given constant watering.</p>
 <span>  <span class="fu"><a href="../reference/pcv_theme.html">pcv_theme</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Warning: Removed 10 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">## (`geom_line()`).</span></span></code></pre>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-27-1.png" alt="Showing only the slowing phenotype's pseudo water use efficiency trend,  which decreases towards 0 as growth slows down." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-27-1.png" class="r-plt" alt="Showing only the slowing phenotype's pseudo water use efficiency trend,  which decreases towards 0 as growth slows down." width="700"></p>
 <p>While the growth is non-asymptotic pWUE is asymptotic since the
 numerator is monotone increasing but is slowing down while the
 denominator is roughly constant.</p>
@@ -1029,7 +1029,7 @@ pWUE here.</p>
 <span>  <span class="fu"><a href="../reference/pcv_theme.html">pcv_theme</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Warning: Removed 10 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">## (`geom_line()`).</span></span></code></pre>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-28-1.png" alt="Showing only the linear phenotype's pseudo water use efficiency trend,  which is roughly constant." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-28-1.png" class="r-plt" alt="Showing only the linear phenotype's pseudo water use efficiency trend,  which is roughly constant." width="700"></p>
 </div>
 <div class="section level5">
 <h5 id="death">Death<a class="anchor" aria-label="anchor" href="#death"></a>
@@ -1051,7 +1051,7 @@ separately looks like a totally normal growth curve.</p>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/pcv_theme.html">pcv_theme</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-29-1.png" alt="Showing the 'dying' group of plants. On their own the trend looks normal enough, but the magnitude of changes day over day is very small which will effect water use metrics." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-29-1.png" class="r-plt" alt="Showing the 'dying' group of plants. On their own the trend looks normal enough, but the magnitude of changes day over day is very small which will effect water use metrics." width="700"></p>
 <p>The measurement-to-measurement change for any asymptotic phenotype
 approaches 0 at the same rate as the phenotype approaches the asymptote.
 This measurement-to-measurement change is returned from
@@ -1082,7 +1082,7 @@ below.</p>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/pcv_theme.html">pcv_theme</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-30-1.png" alt="Showing the 'dying' group of plants with day to day changes labelled." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-30-1.png" class="r-plt" alt="Showing the 'dying' group of plants with day to day changes labelled." width="700"></p>
 </div>
 </div>
 <div class="section level4">
@@ -1101,9 +1101,9 @@ that pre-watered weight.</li>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Continuously Increasing Watering"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/pcv_theme.html">pcv_theme</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Warning: Removed 10 rows containing missing values or values outside the scale range</span></span>
+<pre><code><span><span class="co">## Warning: Removed 60 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">## (`geom_line()`).</span></span></code></pre>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-31-1.png" alt="Plots of all six phenotype conditions pseudo water use efficiency under continuously increasing watering." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-31-1.png" class="r-plt" alt="Plots of all six phenotype conditions pseudo water use efficiency under continuously increasing watering." width="700"></p>
 <p>Luckily, compared to the constant watering we can see that there
 aren’t any crazy peaks or negative values here.</p>
 <div class="section level5">
@@ -1122,7 +1122,7 @@ have a center “lump”, then end low.</p>
 <span>  <span class="fu"><a href="../reference/pcv_theme.html">pcv_theme</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Warning: Removed 10 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">## (`geom_line()`).</span></span></code></pre>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-32-1.png" alt="Showing only the abrupt sigmoid phenotype's pseudo water use efficiency trend under increasing watering, which looks like a left truncated gaussian." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-32-1.png" class="r-plt" alt="Showing only the abrupt sigmoid phenotype's pseudo water use efficiency trend under increasing watering, which looks like a left truncated gaussian." width="700"></p>
 <p>And that’s exactly what we see. To make the reason more clear we can
 plot the numerator and the denominator separately.</p>
 <div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
@@ -1139,7 +1139,7 @@ plot the numerator and the denominator separately.</p>
 <span><span class="co">## (`geom_line()`).</span></span>
 <span><span class="co">## Removed 10 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">## (`geom_line()`).</span></span></code></pre>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-33-1.png" alt="Separating pseudo water use efficiency into the component parts of difference in phenotype and difference in water use to show how the phenotype trend drives this water use trait." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-33-1.png" class="r-plt" alt="Separating pseudo water use efficiency into the component parts of difference in phenotype and difference in water use to show how the phenotype trend drives this water use trait." width="700"></p>
 <p>There are lots of ways to increase watering over the course of an
 experiment, it could be constant, related to plant size (target weight
 watering tends to do this), or a step function, but they will generally
@@ -1163,7 +1163,7 @@ quickly, pWUE should be 0 on either side of the “spike”.</p>
 <span>  <span class="fu"><a href="../reference/pcv_theme.html">pcv_theme</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Warning: Removed 10 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">## (`geom_line()`).</span></span></code></pre>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-34-1.png" alt="Showing only the abrupt sigmoid phenotype's pseudo water use efficiency trend,  which has one sharp spike and otherwise appears flat otherwise. Compared to the more normal sigmoid this makes a gaussian like shape that is not truncated." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-34-1.png" class="r-plt" alt="Showing only the abrupt sigmoid phenotype's pseudo water use efficiency trend,  which has one sharp spike and otherwise appears flat otherwise. Compared to the more normal sigmoid this makes a gaussian like shape that is not truncated." width="700"></p>
 <div class="sourceCode" id="cb50"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">rbica</span>,</span>
 <span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">time</span>, group <span class="op">=</span> <span class="va">id</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
@@ -1178,7 +1178,7 @@ quickly, pWUE should be 0 on either side of the “spike”.</p>
 <span><span class="co">## (`geom_line()`).</span></span>
 <span><span class="co">## Removed 10 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">## (`geom_line()`).</span></span></code></pre>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-35-1.png" alt="Separating pseudo water use efficiency into the component parts of difference in phenotype and difference in water use to show how the phenotype trend drives this water use trait." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-35-1.png" class="r-plt" alt="Separating pseudo water use efficiency into the component parts of difference in phenotype and difference in water use to show how the phenotype trend drives this water use trait." width="700"></p>
 </div>
 <div class="section level5">
 <h5 id="exponential-1">Exponential<a class="anchor" aria-label="anchor" href="#exponential-1"></a>
@@ -1194,7 +1194,7 @@ growth.</p>
 <span>  <span class="fu"><a href="../reference/pcv_theme.html">pcv_theme</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Warning: Removed 10 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">## (`geom_line()`).</span></span></code></pre>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-36-1.png" alt="Showing only the exponential phenotype's pseudo water use efficiency trend under increasing watering, which still appears exponential." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-36-1.png" class="r-plt" alt="Showing only the exponential phenotype's pseudo water use efficiency trend under increasing watering, which still appears exponential." width="700"></p>
 <p>And that’s what we get. The increase in measurement-to-measurement
 phenotype outpaces the increase in transpiration.</p>
 <div class="sourceCode" id="cb54"><pre class="downlit sourceCode r">
@@ -1211,7 +1211,7 @@ phenotype outpaces the increase in transpiration.</p>
 <span><span class="co">## (`geom_line()`).</span></span>
 <span><span class="co">## Removed 10 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">## (`geom_line()`).</span></span></code></pre>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-37-1.png" alt="Separating pseudo water use efficiency into the component parts of difference in phenotype and difference in water use to show how the phenotype trend drives this water use trait." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-37-1.png" class="r-plt" alt="Separating pseudo water use efficiency into the component parts of difference in phenotype and difference in water use to show how the phenotype trend drives this water use trait." width="700"></p>
 </div>
 <div class="section level5">
 <h5 id="slowing-1">Slowing<a class="anchor" aria-label="anchor" href="#slowing-1"></a>
@@ -1228,7 +1228,7 @@ quickly.</p>
 <span>  <span class="fu"><a href="../reference/pcv_theme.html">pcv_theme</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Warning: Removed 10 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">## (`geom_line()`).</span></span></code></pre>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-38-1.png" alt="Showing only the slowing phenotype's pseudo water use efficiency trend, which quickly approaches an asymptote at 0." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-38-1.png" class="r-plt" alt="Showing only the slowing phenotype's pseudo water use efficiency trend, which quickly approaches an asymptote at 0." width="700"></p>
 <p>And that’s what we get. The increase in measurement-to-measurement
 phenotype outpaces the increase in transpiration.</p>
 <div class="sourceCode" id="cb58"><pre class="downlit sourceCode r">
@@ -1245,7 +1245,7 @@ phenotype outpaces the increase in transpiration.</p>
 <span><span class="co">## (`geom_line()`).</span></span>
 <span><span class="co">## Removed 10 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">## (`geom_line()`).</span></span></code></pre>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-39-1.png" alt="Separating pseudo water use efficiency into the component parts of difference in phenotype and difference in water use to show how the phenotype trend drives this water use trait." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-39-1.png" class="r-plt" alt="Separating pseudo water use efficiency into the component parts of difference in phenotype and difference in water use to show how the phenotype trend drives this water use trait." width="700"></p>
 </div>
 <div class="section level5">
 <h5 id="linear-1">Linear<a class="anchor" aria-label="anchor" href="#linear-1"></a>
@@ -1261,7 +1261,7 @@ to 0.</p>
 <span>  <span class="fu"><a href="../reference/pcv_theme.html">pcv_theme</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Warning: Removed 10 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">## (`geom_line()`).</span></span></code></pre>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-40-1.png" alt="Showing only the linear phenotype's pseudo water use efficiency trend, which just mirrors the decreasing water use." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-40-1.png" class="r-plt" alt="Showing only the linear phenotype's pseudo water use efficiency trend, which just mirrors the decreasing water use." width="700"></p>
 <p>Again we look at the component pieces to check our intuition.</p>
 <div class="sourceCode" id="cb62"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">rbicl</span>,</span>
@@ -1277,7 +1277,7 @@ to 0.</p>
 <span><span class="co">## (`geom_line()`).</span></span>
 <span><span class="co">## Removed 10 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">## (`geom_line()`).</span></span></code></pre>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-41-1.png" alt="Separating pseudo water use efficiency into the component parts of difference in phenotype and difference in water use to show how the phenotype trend drives this water use trait." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-41-1.png" class="r-plt" alt="Separating pseudo water use efficiency into the component parts of difference in phenotype and difference in water use to show how the phenotype trend drives this water use trait." width="700"></p>
 </div>
 <div class="section level5">
 <h5 id="death-1">Death<a class="anchor" aria-label="anchor" href="#death-1"></a>
@@ -1293,7 +1293,7 @@ effect on the numerator should be the same.</p>
 <span>  <span class="fu"><a href="../reference/pcv_theme.html">pcv_theme</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Warning: Removed 10 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">## (`geom_line()`).</span></span></code></pre>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-42-1.png" alt="Showing only the very slow phenotype's pseudo water use efficiency trend, which just mirrors the decreasing water use." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-42-1.png" class="r-plt" alt="Showing only the very slow phenotype's pseudo water use efficiency trend, which just mirrors the decreasing water use." width="700"></p>
 <p>Again we look at the component pieces to check our intuition.</p>
 <div class="sourceCode" id="cb66"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">rbicl</span>,</span>
@@ -1309,7 +1309,7 @@ effect on the numerator should be the same.</p>
 <span><span class="co">## (`geom_line()`).</span></span>
 <span><span class="co">## Removed 10 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">## (`geom_line()`).</span></span></code></pre>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-43-1.png" alt="Separating pseudo water use efficiency into the component parts of difference in phenotype and difference in water use to show how the phenotype trend drives this water use trait." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-43-1.png" class="r-plt" alt="Separating pseudo water use efficiency into the component parts of difference in phenotype and difference in water use to show how the phenotype trend drives this water use trait." width="700"></p>
 </div>
 </div>
 <div class="section level4">
@@ -1330,9 +1330,9 @@ some real differences.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Continuously Decreasing Watering"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/pcv_theme.html">pcv_theme</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Warning: Removed 10 rows containing missing values or values outside the scale range</span></span>
+<pre><code><span><span class="co">## Warning: Removed 60 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">## (`geom_line()`).</span></span></code></pre>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-44-1.png" alt="Six phenotypes pseudo water use efficiency trends under decreasing watering." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-44-1.png" class="r-plt" alt="Six phenotypes pseudo water use efficiency trends under decreasing watering." width="700"></p>
 <div class="section level5">
 <h5 id="sigmoid-2">Sigmoid<a class="anchor" aria-label="anchor" href="#sigmoid-2"></a>
 </h5>
@@ -1350,7 +1350,7 @@ it was in the beginning.</p>
 <span>  <span class="fu"><a href="../reference/pcv_theme.html">pcv_theme</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Warning: Removed 10 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">## (`geom_line()`).</span></span></code></pre>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-45-1.png" alt="Showing only the sigmoid phenotype's pseudo water use efficiency trend, which looks like a right truncated gaussian." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-45-1.png" class="r-plt" alt="Showing only the sigmoid phenotype's pseudo water use efficiency trend, which looks like a right truncated gaussian." width="700"></p>
 <p>We do have one strong spike at the end which we can try to understand
 better by looking at each component of pWUE.</p>
 <div class="sourceCode" id="cb72"><pre class="downlit sourceCode r">
@@ -1372,7 +1372,7 @@ better by looking at each component of pWUE.</p>
 <span><span class="co">## (`geom_line()`).</span></span>
 <span><span class="co">## Removed 10 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">## (`geom_line()`).</span></span></code></pre>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-46-1.png" alt="Separating pseudo water use efficiency into the component parts of difference in phenotype and difference in water use to show how the phenotype trend drives this water use trait." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-46-1.png" class="r-plt" alt="Separating pseudo water use efficiency into the component parts of difference in phenotype and difference in water use to show how the phenotype trend drives this water use trait." width="700"></p>
 <p>Now we can see the cause for that spike is just that the watering
 amount on the last day for the 4th plant was almost nothing.</p>
 </div>
@@ -1397,7 +1397,7 @@ measurement error.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">id</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Exponential growth and target weight watering"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/pcv_theme.html">pcv_theme</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-47-1.png" alt="Showing only the exponential phenotype's pseudo water use efficiency trend, which is still exponential since it takes a very dramatic water intervention to overcome exponential growth." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-47-1.png" class="r-plt" alt="Showing only the exponential phenotype's pseudo water use efficiency trend, which is still exponential since it takes a very dramatic water intervention to overcome exponential growth." width="700"></p>
 <p>Once we remove the negative values we see the same basic trend
 (stronger this time as the denominator gets smaller as the exponential
 growth progresses) as we have been for exponentially increasing
@@ -1426,11 +1426,11 @@ denominator can push the pWUE trend dramatically.</p>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/pcv_theme.html">pcv_theme</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Warning: Removed 10 rows containing missing values or values outside the scale range</span></span>
+<pre><code><span><span class="co">## Warning: Removed 30 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">## (`geom_line()`).</span></span>
-<span><span class="co">## Removed 10 rows containing missing values or values outside the scale range</span></span>
+<span><span class="co">## Removed 30 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">## (`geom_line()`).</span></span></code></pre>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-48-1.png" alt="Separating pseudo water use efficiency into the component parts of difference in phenotype and difference in water use to show how the phenotype trend drives this water use trait for any constant or slowing decreasing slopes to the phenotype." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-48-1.png" class="r-plt" alt="Separating pseudo water use efficiency into the component parts of difference in phenotype and difference in water use to show how the phenotype trend drives this water use trait for any constant or slowing decreasing slopes to the phenotype." width="700"></p>
 </div>
 </div>
 </div>
@@ -1473,7 +1473,7 @@ values below 0 already removed.</p>
 <span>    strip.text.x.top <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>,</span>
 <span>    strip.text.y.right <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-51-1.png" alt="Absolute value based pseudo water use efficiency, where the numerator is the same as it was previously but trends depend more on the phenotype's magnitude than rate of change." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-51-1.png" class="r-plt" alt="Absolute value based pseudo water use efficiency, where the numerator is the same as it was previously but trends depend more on the phenotype's magnitude than rate of change." width="700"></p>
 <p>Here our pWUE data look a lot like the original phenotype data, with
 the exception of abrupt growth which we’ll get to. That general
 similarity is because the phenotype data are used as-is in the
@@ -1502,7 +1502,7 @@ going on there?</p>
 <span>    strip.text.x.top <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>,</span>
 <span>    strip.text.y.right <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-52-1.png" alt="Highlighting the abrupt sigmoid phenotype's absolute value based pseudo water use efficiency, where the trend does not look like the raw phenotype." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-52-1.png" class="r-plt" alt="Highlighting the abrupt sigmoid phenotype's absolute value based pseudo water use efficiency, where the trend does not look like the raw phenotype." width="700"></p>
 <div class="sourceCode" id="cb82"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span></span>
 <span>  <span class="va">apos</span><span class="op">[</span><span class="va">apos</span><span class="op">$</span><span class="va">pc</span> <span class="op">==</span> <span class="st">"abrupt"</span>, <span class="op">]</span>,</span>
@@ -1517,7 +1517,7 @@ going on there?</p>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/pcv_theme.html">pcv_theme</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-53-1.png" alt="Separating pseudo water use efficiency into the component parts of difference in phenotype and difference in water use to show how the phenotype trend drives this water use trait." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-53-1.png" class="r-plt" alt="Separating pseudo water use efficiency into the component parts of difference in phenotype and difference in water use to show how the phenotype trend drives this water use trait." width="700"></p>
 <p>What is happening here is that since our phenotype changes so quickly
 between measurements 10 and 14 (roughly) the “lag” where we look at the
 difference in weights becomes very important. Looking at the pre/post
@@ -1548,7 +1548,7 @@ watering weights for the first 3 plants in each watering condition given
 <span>    strip.text.x.top <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>,</span>
 <span>    strip.text.y.right <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-54-1.png" alt="Sharp phenotype changes drive small denominators which often make pseudo water use efficiency look strange." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-54-1.png" class="r-plt" alt="Sharp phenotype changes drive small denominators which often make pseudo water use efficiency look strange." width="700"></p>
 <p>Between days 10 and 14 the line between those weights is much
 shorter. In this data the difference is smaller because it’s a
 relatively low effort simulation. In the wild we can see trends like
@@ -1583,7 +1583,7 @@ phenotype.</p>
 <span>    strip.text.y.right <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_cartesian.html" class="external-link">coord_cartesian</a></span><span class="op">(</span>ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-55-1.png" alt="Highlighting the abrupt sigmoid phenotype's absolute value based pseudo water use efficiency, where the trend does not look like the raw phenotype." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-55-1.png" class="r-plt" alt="Highlighting the abrupt sigmoid phenotype's absolute value based pseudo water use efficiency, where the trend does not look like the raw phenotype." width="700"></p>
 </div>
 </div>
 <div class="section level3">
@@ -1621,7 +1621,7 @@ entirely on how accurately you can measure transpiration.</p>
 <span>    strip.text.x.top <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>,</span>
 <span>    strip.text.y.right <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-57-1.png" alt="Normalized daily transpiration (NDT) in each watering condition and phenotype trend." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-57-1.png" class="r-plt" alt="Normalized daily transpiration (NDT) in each watering condition and phenotype trend." width="700"></p>
 <p>The <code>abrupt</code> phenotype has much higher values for
 transpiration since we are dividing by close to 0 for a long time (in
 the beginning of the experiment these plants are barely detectable).
@@ -1640,7 +1640,7 @@ phenotypes.</p>
 <span>    strip.text.x.top <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>,</span>
 <span>    strip.text.y.right <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
-<p><img src="field_capacity_files/figure-html/unnamed-chunk-58-1.png" alt="Highlighting the abrupt sigmoid phenotype's NDT, which starts high and quickly approaches 0. This starts extremely high compared to other options since we are almost dividing by 0 at the beginning." width="700"></p>
+<p><img src="field_capacity_files/figure-html/unnamed-chunk-58-1.png" class="r-plt" alt="Highlighting the abrupt sigmoid phenotype's NDT, which starts high and quickly approaches 0. This starts extremely high compared to other options since we are almost dividing by 0 at the beginning." width="700"></p>
 </div>
 </div>
 <div class="section level2">
@@ -1669,7 +1669,7 @@ use metrics before interpreting them.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>

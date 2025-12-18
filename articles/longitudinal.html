@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">pcvr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -82,7 +82,7 @@
                         <h4 data-toc-skip class="author">Josh Sumner,
 DDPSC Data Science Core Facility</h4>
             
-            <h4 data-toc-skip class="date">2025-09-17</h4>
+            <h4 data-toc-skip class="date">2025-12-18</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/danforthcenter/pcvr/blob/main/vignettes/longitudinal.Rmd" class="external-link"><code>vignettes/longitudinal.Rmd</code></a></small>
       <div class="d-none name"><code>longitudinal.Rmd</code></div>
@@ -358,7 +358,7 @@ in this way to show modeling options.</p>
 <span></span>
 <span><span class="va">patch</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="va">l</span> <span class="op">+</span> <span class="va">g</span> <span class="op">+</span> <span class="va">m</span><span class="op">)</span> <span class="op">/</span> <span class="op">(</span><span class="va">e</span> <span class="op">+</span> <span class="va">ln</span> <span class="op">+</span> <span class="va">pl</span><span class="op">)</span></span>
 <span><span class="va">patch</span></span></code></pre></div>
-<p><img src="longitudinal_files/figure-html/unnamed-chunk-3-1.png" alt="Showing 3 examples of asymptotic and 3 examples of non-asymptotic growth curves that are supported by pcvr." width="700"></p>
+<p><img src="longitudinal_files/figure-html/unnamed-chunk-3-1.png" class="r-plt" alt="Showing 3 examples of asymptotic and 3 examples of non-asymptotic growth curves that are supported by pcvr." width="700"></p>
 </div>
 </div>
 <div class="section level2">
@@ -542,7 +542,7 @@ curve to these lines.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"gray60"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/pcv_theme.html">pcv_theme</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>y <span class="op">=</span> <span class="st">"SD of y"</span>, title <span class="op">=</span> <span class="st">"Gompertz Sigma"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="longitudinal_files/figure-html/unnamed-chunk-4-1.png" alt="Example of how much variance may change over an experiment" width="700"></p>
+<p><img src="longitudinal_files/figure-html/unnamed-chunk-4-1.png" class="r-plt" alt="Example of how much variance may change over an experiment" width="700"></p>
 <p>Several options are shown here, ignoring grouping here since the data
 is already aggregated.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
@@ -569,7 +569,7 @@ is already aggregated.</p>
 <span>  <span class="fu"><a href="../reference/pcv_theme.html">pcv_theme</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>y <span class="op">=</span> <span class="st">"SD of y"</span>, title <span class="op">=</span> <span class="st">"Gompertz Sigma"</span>, color <span class="op">=</span> <span class="st">""</span><span class="op">)</span></span></code></pre></div>
-<p><img src="longitudinal_files/figure-html/unnamed-chunk-5-1.png" alt="Example of the homoskedastic assumption of constant variance over time being unrealistic and of several other sub models that may be more useful" width="700"></p>
+<p><img src="longitudinal_files/figure-html/unnamed-chunk-5-1.png" class="r-plt" alt="Example of the homoskedastic assumption of constant variance over time being unrealistic and of several other sub models that may be more useful" width="700"></p>
 <p>“int” will specify a homoskedastic model, that is one with constant
 variance over time per each group. While this is the default for almost
 every kind of statistical modeling it is an unrealistic assumption in
@@ -810,7 +810,7 @@ many ways to model variance as there are to model growth using the
 <span>  <span class="fu"><a href="../reference/pcv_theme.html">pcv_theme</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>y <span class="op">=</span> <span class="st">"SD of y"</span>, title <span class="op">=</span> <span class="st">"Gompertz Sigma"</span>, color <span class="op">=</span> <span class="st">""</span><span class="op">)</span></span></code></pre></div>
-<p><img src="longitudinal_files/figure-html/unnamed-chunk-14-1.png" alt="Various possible sub models compared to the trend we get from our data. There are near infinite combinations but simplicity is beneficial." width="700"></p>
+<p><img src="longitudinal_files/figure-html/unnamed-chunk-14-1.png" class="r-plt" alt="Various possible sub models compared to the trend we get from our data. There are near infinite combinations but simplicity is beneficial." width="700"></p>
 <p>When considering several sub models (or growth models) we can compare
 <code>brms</code> models using Leave-One-Out Information Criterion (LOO
 IC). For frequentist models a more familiar metric like BIC or AIC might
@@ -963,7 +963,7 @@ picked by trying to get a great fit by eye to your collected data.</p>
 <code class="sourceCode R"><span><span class="va">priors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"A"</span> <span class="op">=</span> <span class="fl">130</span>, <span class="st">"B"</span> <span class="op">=</span> <span class="fl">10</span>, <span class="st">"C"</span> <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span></span>
 <span><span class="va">priorPlots</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plotPrior.html">plotPrior</a></span><span class="op">(</span><span class="va">priors</span><span class="op">)</span></span>
 <span><span class="va">priorPlots</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span> <span class="op">/</span> <span class="va">priorPlots</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span> <span class="op">/</span> <span class="va">priorPlots</span><span class="op">[[</span><span class="fl">3</span><span class="op">]</span><span class="op">]</span></span></code></pre></div>
-<p><img src="longitudinal_files/figure-html/unnamed-chunk-18-1.png" alt="Example of the default prior distributions as PDFs." width="700"></p>
+<p><img src="longitudinal_files/figure-html/unnamed-chunk-18-1.png" class="r-plt" alt="Example of the default prior distributions as PDFs." width="700"></p>
 <p>Looking at the prior distributions this way is useful, but the
 parameter values can be a degree removed from what we are really wanting
 to check. To help with picking reasonable priors based on the growth
@@ -980,7 +980,7 @@ growth model.</p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">twoPriors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"A"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fl">130</span><span class="op">)</span>, <span class="st">"B"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">6</span>, <span class="fl">12</span><span class="op">)</span>, <span class="st">"C"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">0.25</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/plotPrior.html">plotPrior</a></span><span class="op">(</span><span class="va">twoPriors</span>, <span class="st">"gompertz"</span>, n <span class="op">=</span> <span class="fl">100</span><span class="op">)</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span></code></pre></div>
-<p><img src="longitudinal_files/figure-html/unnamed-chunk-19-1.png" alt="Example of the default prior distributions as PDFs with the growth data they imply shown." width="700"></p>
+<p><img src="longitudinal_files/figure-html/unnamed-chunk-19-1.png" class="r-plt" alt="Example of the default prior distributions as PDFs with the growth data they imply shown." width="700"></p>
 </div>
 </div>
 <div class="section level4">
@@ -1130,7 +1130,7 @@ correctly.</p>
 <div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">simdf</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">y</span>, group <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/interaction.html" class="external-link">interaction</a></span><span class="op">(</span><span class="va">group</span>, <span class="va">id</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>color <span class="op">=</span> <span class="va">group</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="longitudinal_files/figure-html/unnamed-chunk-27-1.png" alt="Checking the grouping of our model formulas with a line plot. Looking to make sure that each line is only identifying a single plant, which it is here." width="700"></p>
+<p><img src="longitudinal_files/figure-html/unnamed-chunk-27-1.png" class="r-plt" alt="Checking the grouping of our model formulas with a line plot. Looking to make sure that each line is only identifying a single plant, which it is here." width="700"></p>
 <p>This looks okay, there are no strange jumps in the data or glaring
 problems, the group and id variables seem to uniquely identify lines so
 the models should fit well.</p>
@@ -1156,16 +1156,16 @@ or more should be used and with more than 1 chain.</p>
 <p>We can check the model fits using <code>growthPlot</code>.</p>
 <div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/growthPlot.html">growthPlot</a></span><span class="op">(</span><span class="va">nls_fit</span>, form <span class="op">=</span> <span class="va">nls_ss</span><span class="op">$</span><span class="va">pcvrForm</span>, df <span class="op">=</span> <span class="va">nls_ss</span><span class="op">$</span><span class="va">df</span><span class="op">)</span></span></code></pre></div>
-<p><img src="longitudinal_files/figure-html/unnamed-chunk-30-1.png" alt="Examples of growth plots generated from growthPlot for each model backend besides brms." width="700"></p>
+<p><img src="longitudinal_files/figure-html/unnamed-chunk-30-1.png" class="r-plt" alt="Examples of growth plots generated from growthPlot for each model backend besides brms." width="700"></p>
 <div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/growthPlot.html">growthPlot</a></span><span class="op">(</span><span class="va">nlrq_fit</span>, form <span class="op">=</span> <span class="va">nlrq_ss</span><span class="op">$</span><span class="va">pcvrForm</span>, df <span class="op">=</span> <span class="va">nlrq_ss</span><span class="op">$</span><span class="va">df</span><span class="op">)</span></span></code></pre></div>
-<p><img src="longitudinal_files/figure-html/unnamed-chunk-30-2.png" alt="Examples of growth plots generated from growthPlot for each model backend besides brms." width="700"></p>
+<p><img src="longitudinal_files/figure-html/unnamed-chunk-30-2.png" class="r-plt" alt="Examples of growth plots generated from growthPlot for each model backend besides brms." width="700"></p>
 <div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/growthPlot.html">growthPlot</a></span><span class="op">(</span><span class="va">nlme_fit</span>, form <span class="op">=</span> <span class="va">nlme_ss</span><span class="op">$</span><span class="va">pcvrForm</span>, df <span class="op">=</span> <span class="va">nlme_ss</span><span class="op">$</span><span class="va">df</span><span class="op">)</span></span></code></pre></div>
-<p><img src="longitudinal_files/figure-html/unnamed-chunk-30-3.png" alt="Examples of growth plots generated from growthPlot for each model backend besides brms." width="700"></p>
+<p><img src="longitudinal_files/figure-html/unnamed-chunk-30-3.png" class="r-plt" alt="Examples of growth plots generated from growthPlot for each model backend besides brms." width="700"></p>
 <div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/growthPlot.html">growthPlot</a></span><span class="op">(</span><span class="va">mgcv_fit</span>, form <span class="op">=</span> <span class="va">mgcv_ss</span><span class="op">$</span><span class="va">pcvrForm</span>, df <span class="op">=</span> <span class="va">mgcv_ss</span><span class="op">$</span><span class="va">df</span><span class="op">)</span></span></code></pre></div>
-<p><img src="longitudinal_files/figure-html/unnamed-chunk-30-4.png" alt="Examples of growth plots generated from growthPlot for each model backend besides brms." width="700"></p>
+<p><img src="longitudinal_files/figure-html/unnamed-chunk-30-4.png" class="r-plt" alt="Examples of growth plots generated from growthPlot for each model backend besides brms." width="700"></p>
 <div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/growthPlot.html">growthPlot</a></span><span class="op">(</span><span class="va">brms_fit</span>, form <span class="op">=</span> <span class="va">brms_ss</span><span class="op">$</span><span class="va">pcvrForm</span>, df <span class="op">=</span> <span class="va">brms_ss</span><span class="op">$</span><span class="va">df</span><span class="op">)</span></span></code></pre></div>
 <div class="float">
@@ -1508,7 +1508,7 @@ existing options fall short for your needs.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>

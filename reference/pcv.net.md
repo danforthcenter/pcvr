@@ -1,0 +1,81 @@
+# Network analysis of a distance matrix
+
+Easy igraph use with pcv.emd output
+
+## Usage
+
+``` r
+pcv.net(
+  emd = NULL,
+  meta = NULL,
+  dissim = TRUE,
+  distCol = "emd",
+  filter = 0.5,
+  direction = "greater"
+)
+```
+
+## Arguments
+
+- emd:
+
+  A long dataframe as returned by pcv.emd. Currently this function is
+  only made to work with dataframe output, not distance matrix output.
+
+- meta:
+
+  Metadata to be carried from pcv.emd output into the network, defaults
+  to NULL which will use all metadata. Type conversion will be attempted
+  for these columns.
+
+- dissim:
+
+  Logical, should the distCol be inverted to make a dissimilarity value?
+
+- distCol:
+
+  The name of the column containing distances/dissimilarities. Defaults
+  to "emd" for compatability with pcv.emd
+
+- filter:
+
+  This can be either a numeric (0.5) in which case it is taken as a
+  filter where only edges with values greater than or equal to that
+  number are kept or a character string ("0.5") in which case the
+  strongest X percentage of edges are kept. This defaults to 0.5 which
+  does some filtering, although that should not be considered the best
+  behavior for every setting. If this is NULL then your network will be
+  almost always be a single blob, if set too high there will be very few
+  nodes. Note that this filtering happens after converting to
+  dissimilarity if dissim=TRUE.
+
+- direction:
+
+  Direction of filtering, can be either "greater" or "lesser".
+
+## Value
+
+Returns a list containing three elements: `nodes`: A dataframe of node
+data. `edges`: A dataframe of edges between nodes. `graph`: The network
+as an igraph object
+
+## Examples
+
+``` r
+library(extraDistr)
+dists <- list(
+  rmixnorm = list(mean = c(70, 150), sd = c(15, 5), alpha = c(0.3, 0.7)),
+  rnorm = list(mean = 90, sd = 3)
+)
+x <- mvSim(
+  dists = dists, n_samples = 5, counts = 1000,
+  min_bin = 1, max_bin = 180, wide = TRUE
+)
+emd_df <- pcv.emd(x,
+  cols = "sim", reorder = c("group"), mat = FALSE,
+  plot = FALSE, parallel = 1
+)
+#> Estimated time of calculation is roughly 0.1 seconds using 1 cores in parallel.
+net <- pcv.net(emd_df, meta = "group")
+net2 <- pcv.net(emd_df, meta = "group", filter = "0.9", direction = "lesser")
+```

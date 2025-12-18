@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">pcvr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -276,7 +276,7 @@ functionality may be helpful, but any versions after
 <p>Here we simulate wide data, then lengthen it for plotting.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sim_plot</span></span></code></pre></div>
-<p><img src="pcvrTutorial_mvt_files/figure-html/unnamed-chunk-6-1.png" alt="Simulated Earth Mover's Distance based on several probability distributions." width="700"></p>
+<p><img src="pcvrTutorial_mvt_files/figure-html/unnamed-chunk-6-1.png" class="r-plt" alt="Simulated Earth Mover's Distance based on several probability distributions." width="700"></p>
 </div>
 <div class="section level2">
 <h2 id="pcv-joyplot">
@@ -285,7 +285,7 @@ functionality may be helpful, but any versions after
 <p>We can make joyplots and using <code>pcv.joyplot</code></p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="op">(</span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pcv.joyplot.html">pcv.joyplot</a></span><span class="op">(</span><span class="va">sim_df</span>, index <span class="op">=</span> <span class="st">"sim"</span>, group <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"group"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="pcvrTutorial_mvt_files/figure-html/unnamed-chunk-7-1.png" alt="Joyplot of simulated Earth Mover's Distance based on several probability distributions." width="700"></p>
+<p><img src="pcvrTutorial_mvt_files/figure-html/unnamed-chunk-7-1.png" class="r-plt" alt="Joyplot of simulated Earth Mover's Distance based on several probability distributions." width="700"></p>
 <p>The plot output is a <code>ggplot</code> object so we can change it
 to match our needs. Here we show these distributions as if they are
 hues.</p>
@@ -293,7 +293,7 @@ hues.</p>
 <code class="sourceCode R"><span><span class="va">p</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_gradient.html" class="external-link">scale_fill_gradientn</a></span><span class="op">(</span>colors <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/pal_hue.html" class="external-link">hue_pal</a></span><span class="op">(</span>l <span class="op">=</span> <span class="fl">55</span><span class="op">)</span><span class="op">(</span><span class="fl">360</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Scale for <span style="color: #00BB00;">fill</span> is already present.</span></span>
 <span><span class="co">## Adding another scale for <span style="color: #00BB00;">fill</span>, which will replace the existing scale.</span></span></code></pre>
-<p><img src="pcvrTutorial_mvt_files/figure-html/unnamed-chunk-8-1.png" alt="Joyplot of simulated Earth Mover's Distance based on several probability distributions colored by Hue." width="700"></p>
+<p><img src="pcvrTutorial_mvt_files/figure-html/unnamed-chunk-8-1.png" class="r-plt" alt="Joyplot of simulated Earth Mover's Distance based on several probability distributions colored by Hue." width="700"></p>
 </div>
 <div class="section level2">
 <h2 id="pcv-emd">
@@ -346,7 +346,7 @@ of 100 total observations:</p>
 <span>  <span class="op">)</span></span>
 <span></span>
 <span><span class="va">p1</span> <span class="op">+</span> <span class="va">p2</span></span></code></pre></div>
-<p><img src="pcvrTutorial_mvt_files/figure-html/unnamed-chunk-9-1.png" alt="Example of how Earth Mover's Distance calculates differences in histograms." width="700"></p>
+<p><img src="pcvrTutorial_mvt_files/figure-html/unnamed-chunk-9-1.png" class="r-plt" alt="Example of how Earth Mover's Distance calculates differences in histograms." width="700"></p>
 <p>Here we use the wide data (although long can also be used).</p>
 <p>The “reorder” argument specifies groups to arrange together in the
 resulting plot if <code>plot=TRUE</code>.</p>
@@ -367,7 +367,7 @@ otherwise a long dataframe is returned.</p>
 between groups in our data.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sim_emd</span><span class="op">$</span><span class="va">plot</span></span></code></pre></div>
-<p><img src="pcvrTutorial_mvt_files/figure-html/unnamed-chunk-11-1.png" alt="Heatmap of simulated Earth Mover's Distance based on several probability distributions." width="700"></p>
+<p><img src="pcvrTutorial_mvt_files/figure-html/unnamed-chunk-11-1.png" class="r-plt" alt="Heatmap of simulated Earth Mover's Distance based on several probability distributions." width="700"></p>
 </div>
 <div class="section level2">
 <h2 id="pcv-net">
@@ -409,7 +409,7 @@ distribution is most dissimilar to the others since it is excluded
 entirely. We can make another network to include it.</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">net1</span></span></code></pre></div>
-<p><img src="pcvrTutorial_mvt_files/figure-html/unnamed-chunk-14-1.png" alt="Network of simulated Earth Mover's Distance based on several probability distributions." width="700"></p>
+<p><img src="pcvrTutorial_mvt_files/figure-html/unnamed-chunk-14-1.png" class="r-plt" alt="Network of simulated Earth Mover's Distance based on several probability distributions." width="700"></p>
 <p>Here we specify our filter as a character, which is interpreted as a
 quantile here keeping only edges that are above median strength.</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
@@ -424,7 +424,7 @@ quantile here keeping only edges that are above median strength.</p>
 <p>Now we can see the full layout of our five distributions.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">net2</span></span></code></pre></div>
-<p><img src="pcvrTutorial_mvt_files/figure-html/unnamed-chunk-16-1.png" alt="Network of simulated Earth Mover's Distance based on several probability distributions with more edges kept." width="700"></p>
+<p><img src="pcvrTutorial_mvt_files/figure-html/unnamed-chunk-16-1.png" class="r-plt" alt="Network of simulated Earth Mover's Distance based on several probability distributions with more edges kept." width="700"></p>
 </div>
 <div class="section level2">
 <h2 id="conjugate">
@@ -473,7 +473,7 @@ assume a lognormal distribution.</p>
 <span><span class="co">## 1 4.140941  3.021195   5.260687 3.16762  1.924214   4.411025 equal 0.5090941</span></span></code></pre>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span></span></code></pre></div>
-<p><img src="pcvrTutorial_mvt_files/figure-html/unnamed-chunk-18-1.png" alt="Plot of conjugate output using multi-value traits" width="700"></p>
+<p><img src="pcvrTutorial_mvt_files/figure-html/unnamed-chunk-18-1.png" class="r-plt" alt="Plot of conjugate output using multi-value traits" width="700"></p>
 <p>We can also perform region of practical equivalence tests by
 specifying a <code>rope_range</code>.</p>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
@@ -502,7 +502,7 @@ specifying a <code>rope_range</code>.</p>
 <span><span class="co">## 1 0.9738328   -0.6765613      2.694569         1</span></span></code></pre>
 <div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span></span></code></pre></div>
-<p><img src="pcvrTutorial_mvt_files/figure-html/unnamed-chunk-19-1.png" alt="Plot of conjugate output using multi-value traits" width="700"></p>
+<p><img src="pcvrTutorial_mvt_files/figure-html/unnamed-chunk-19-1.png" class="r-plt" alt="Plot of conjugate output using multi-value traits" width="700"></p>
 </div>
 <div class="section level2">
 <h2 id="conjugate-3">
@@ -533,7 +533,7 @@ repository</a>.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>

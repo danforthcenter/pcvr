@@ -1,0 +1,153 @@
+# Installation
+
+## Installing R
+
+If you do not already have R installed on your local computer then
+please install R from the [comprehensive R archive network
+(CRAN)](https://cran.r-project.org/).
+
+## Installing Rstudio
+
+If you do not have Rstudio or some IDE that you like to work with
+installed then please install Rstudio using the instructions
+[here](https://posit.co/download/rstudio-desktop/).
+
+## Installing `pcvr`
+
+### Stable Release
+
+A stable version of `pcvr` can be installed from CRAN using:
+
+``` r
+install.packages("pcvr")
+```
+
+### Development version
+
+Alternatively the development version can be installed from github using
+`devtools` or `remotes` through R. First install either `devtools` or
+`remotes` from CRAN:
+
+``` r
+install.packages("devtools")
+library(devtools)
+```
+
+The `devtools` package makes developing your own R packages more
+straightforward and lets you easily install packages from places other
+than CRAN.
+
+With `devtools` installed we can use `install_github` to install a more
+frequently updated version of `pcvr` from the Danforth center github
+account. By default this will install package dependencies and will not
+build the vignettes. See the section in this document for examples of
+different installation options or the [pkgdown
+site](https://danforthcenter.github.io/pcvr/ "pkgdown site") for online
+docs.
+
+``` r
+devtools::install_github("danforthcenter/pcvr")
+```
+
+### Test installation
+
+Just to check that `pcvr` is installed and that your R session knows
+where to find it try running these 3 lines to load the package and
+generate a plot of some simulated data.
+
+``` r
+library(pcvr)
+priors <- list("A" = c(100, 130), "B" = c(10, 8), "C" = c(0.2, 0.1))
+plotPrior(priors, "gompertz")[[1]]
+```
+
+![Example plot of default prior distributions to test that the package
+is working.](installation_files/figure-html/unnamed-chunk-4-1.png)
+
+## Optional Extras
+
+By default `install_github` will install the dependencies for `pcvr`,
+but there are a handful of packages that are not true dependencies but
+which are very helpful for certain tasks. Currently the `brms`,
+`cmdstanr` and `caret` packages fall into this category, with `brms`
+(Bayesian Regression and Modeling using Stan) and `cmdstanr` being used
+for Bayesian growth modeling and `caret` begin used in partial least
+squares regression (PLSR). You can install all “Suggested” packages as
+well by using:
+
+``` r
+devtools::install_github("danforthcenter/pcvr", dependencies = TRUE)
+```
+
+Alternatively you can just install `brms` and `cmdstanr` using
+instructions below.
+
+``` r
+install.packages("brms")
+```
+
+`brms` specifies models in Stan which are then “transpiled” and executed
+using C++, so you need an interface to make R communicate with Stan/C++,
+`rstan` and `cmdstanr` are good options with `cmdstanr` generally having
+better features at this time.
+
+``` r
+install.packages("cmdstanr", repos = c("https://mc-stan.org/r-packages/", getOption("repos")))
+cmdstanr::install_cmdstan()
+```
+
+### Test `cmdstanr`
+
+A simple model can be used to test the `cmdstanr` installation:
+
+``` r
+?cmdstanr::cmdstanr_example
+```
+
+``` r
+cmdstanr::cmdstanr_example()
+```
+
+### Test `brms`
+
+And now we can test the `brms` installation. Here we use a toy model of
+the mtcars dataset then a pcvr example.
+
+``` r
+library(brms)
+data(mtcars)
+m <- brm(mpg ~ gear + hp, iter = 500, data = mtcars, backend = "cmdstanr")
+```
+
+``` r
+simdf <- growthSim("linear",
+  n = 20, t = 25,
+  params = list("A" = c(1.1, 0.95))
+)
+ss <- growthSS(
+  model = "linear", form = y ~ time | id / group,
+  sigma = "linear", df = simdf, priors = list("A" = 1)
+)
+fit_test <- fitGrowth(ss,
+  iter = 1000, cores = 2, chains = 2,
+  backend = "cmdstanr"
+)
+```
+
+## `pcvr` Vignette
+
+The `pcvr` Vignette shows an example workflow to analyze single and
+multi value traits from plantCV output. The example data comes from a
+longitudinal experiment, but most of what is shown would be applicable
+to other designs as well. The vignette is not automatically built, but
+can be built on installation:
+
+``` r
+devtools::install_github("danforthcenter/pcvr", build_vignettes = TRUE)
+```
+
+Now check the available vignettes in your browser with `browseVignettes`
+
+``` r
+browseVignettes("pcvr")
+```

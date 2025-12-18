@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">pcvr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -81,7 +81,7 @@
                         <h4 data-toc-skip class="author">Josh Sumner,
 DDPSC Data Science Core Facility</h4>
             
-            <h4 data-toc-skip class="date">2025-09-17</h4>
+            <h4 data-toc-skip class="date">2025-12-18</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/danforthcenter/pcvr/blob/main/vignettes/pcvr.Rmd" class="external-link"><code>vignettes/pcvr.Rmd</code></a></small>
       <div class="d-none name"><code>pcvr.Rmd</code></div>
@@ -160,7 +160,7 @@ locally if following along. Those are identified by style:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">support</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">0.0001</span><span class="op">)</span> <span class="co"># this style is simulated data</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">support</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Beta.html" class="external-link">dbeta</a></span><span class="op">(</span><span class="va">support</span>, <span class="fl">5</span>, <span class="fl">5</span><span class="op">)</span>, type <span class="op">=</span> <span class="st">"l"</span>, main <span class="op">=</span> <span class="st">"simulated example"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="pcvr_files/figure-html/unnamed-chunk-6-1.png" alt="Example of simulated data styling in the vignette" width="700"></p>
+<p><img src="pcvr_files/figure-html/unnamed-chunk-6-1.png" class="r-plt" alt="Example of simulated data styling in the vignette" width="700"></p>
 <div class="section level3">
 <h3 id="load-data">Load Data<a class="anchor" aria-label="anchor" href="#load-data"></a>
 </h3>
@@ -244,10 +244,10 @@ through additional arguments if desired.</p>
 <span>  timeCol <span class="op">=</span> <span class="st">"DAS"</span>, cor <span class="op">=</span> <span class="cn">TRUE</span>, returnData <span class="op">=</span> <span class="cn">FALSE</span>, combine <span class="op">=</span> <span class="cn">FALSE</span>, markSingular <span class="op">=</span> <span class="cn">TRUE</span>, time <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [[1]]</span></span></code></pre>
-<p><img src="pcvr_files/figure-html/unnamed-chunk-8-1.png" alt="Variance partitioning using the frem function looking at genotype and fertilizer along with their interaction for 4 image based phenotypes" width="700"></p>
+<p><img src="pcvr_files/figure-html/unnamed-chunk-8-1.png" class="r-plt" alt="Variance partitioning using the frem function looking at genotype and fertilizer along with their interaction for 4 image based phenotypes" width="700"></p>
 <pre><code><span><span class="co">## </span></span>
 <span><span class="co">## [[2]]</span></span></code></pre>
-<p><img src="pcvr_files/figure-html/unnamed-chunk-8-2.png" alt="Variance partitioning using the frem function looking at genotype and fertilizer along with their interaction for 4 image based phenotypes" width="700"></p>
+<p><img src="pcvr_files/figure-html/unnamed-chunk-8-2.png" class="r-plt" alt="Variance partitioning using the frem function looking at genotype and fertilizer along with their interaction for 4 image based phenotypes" width="700"></p>
 <p>Here we look at how much variance in each phenotype was explained
 over the course of the experiment. We could also specify a set of times
 (<code>time = c(10:14)</code> for example) if we are most interested in
@@ -258,7 +258,7 @@ a particular timeframe.</p>
 <span>  phenotypes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"area_cm2"</span>, <span class="st">"height_cm"</span>, <span class="st">"width_cm"</span><span class="op">)</span>,</span>
 <span>  timeCol <span class="op">=</span> <span class="st">"DAS"</span>, cor <span class="op">=</span> <span class="cn">FALSE</span>, returnData <span class="op">=</span> <span class="cn">FALSE</span>, combine <span class="op">=</span> <span class="cn">FALSE</span>, markSingular <span class="op">=</span> <span class="cn">FALSE</span>, time <span class="op">=</span> <span class="st">"all"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="pcvr_files/figure-html/unnamed-chunk-9-1.png" alt="Example of longitudinal variance partitioning using frem" width="700"></p>
+<p><img src="pcvr_files/figure-html/unnamed-chunk-9-1.png" class="r-plt" alt="Example of longitudinal variance partitioning using frem" width="700"></p>
 <p>This informs our next steps. Hue and size based phenotypes are well
 explained by our design variables so we might decide to focus more
 complex analyses on those. In this experiment mini maize is one of the
@@ -297,7 +297,7 @@ plants.</p>
 <span>  <span class="fu"><a href="../reference/pcv_theme.html">pcv_theme</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>axis.text.x.bottom <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>angle <span class="op">=</span> <span class="fl">0</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## `geom_smooth()` using formula = 'y ~ x'</span></span></code></pre>
-<p><img src="pcvr_files/figure-html/unnamed-chunk-10-1.png" alt="Non-parametric Loess lines for plant area over time" width="700"></p>
+<p><img src="pcvr_files/figure-html/unnamed-chunk-10-1.png" class="r-plt" alt="Non-parametric Loess lines for plant area over time" width="700"></p>
 </div>
 <div class="section level4">
 <h4 id="single-day-comparisons">Single day comparisons<a class="anchor" aria-label="anchor" href="#single-day-comparisons"></a>
@@ -335,7 +335,7 @@ tutorial</a> for details on usage and available options.</p>
 <span><span class="co">## 1 1.440218    -1.437485      4.270525         1</span></span></code></pre>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">area_res_t</span><span class="op">)</span></span></code></pre></div>
-<p><img src="pcvr_files/figure-html/unnamed-chunk-12-1.png" alt="Posterior distributions of the Normally distributed mean of area in two genotypes at a given single timepoint showing strong evidence that any difference is within [-5, 5]" width="700"></p>
+<p><img src="pcvr_files/figure-html/unnamed-chunk-12-1.png" class="r-plt" alt="Posterior distributions of the Normally distributed mean of area in two genotypes at a given single timepoint showing strong evidence that any difference is within [-5, 5]" width="700"></p>
 <p>Here we can see a dramatic difference in our posterior distributions
 between genotypes and the distribution of differences between these
 samples is entirely outside of our ROPE range.</p>
@@ -368,7 +368,7 @@ different unit.</p>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/pcv_theme.html">pcv_theme</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>y <span class="op">=</span> <span class="st">"Relative Tolerance"</span>, fill <span class="op">=</span> <span class="st">"Fertilizer\nand Genotype"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="pcvr_files/figure-html/unnamed-chunk-13-1.png" alt="Bar plot of relative tolerance in the area phenotype with error propogated" width="700"></p>
+<p><img src="pcvr_files/figure-html/unnamed-chunk-13-1.png" class="r-plt" alt="Bar plot of relative tolerance in the area phenotype with error propogated" width="700"></p>
 <p>Looking at the entire data for the area phenotype is very busy so we
 might subset to look at something more specific, where we see some odd
 products of the plants germinating on the bellwether system.</p>
@@ -385,7 +385,7 @@ products of the plants germinating on the bellwether system.</p>
 <span>  <span class="op">)</span>, position <span class="op">=</span> <span class="st">"dodge"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/pcv_theme.html">pcv_theme</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>y <span class="op">=</span> <span class="st">"Relative Tolerance"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="pcvr_files/figure-html/unnamed-chunk-14-1.png" alt="Bar plot of relative tolerance in the area phenotype with error propogated showing only the unfertilized data, where there is a more distinct genotype effect." width="700"></p>
+<p><img src="pcvr_files/figure-html/unnamed-chunk-14-1.png" class="r-plt" alt="Bar plot of relative tolerance in the area phenotype with error propogated showing only the unfertilized data, where there is a more distinct genotype effect." width="700"></p>
 </div>
 <div class="section level4">
 <h4 id="cumulative-phenotypes">Cumulative Phenotypes<a class="anchor" aria-label="anchor" href="#cumulative-phenotypes"></a>
@@ -406,7 +406,7 @@ time.</p>
 <span>    y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="st">"Cumulative Sum of Area"</span> <span class="op">~</span> <span class="st">"(cm"</span><span class="op">^</span><span class="fl">2</span> <span class="op">~</span> <span class="st">")"</span><span class="op">)</span>,</span>
 <span>    color <span class="op">=</span> <span class="st">"Genotype"</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
-<p><img src="pcvr_files/figure-html/unnamed-chunk-16-1.png" alt="Cumulative sum of area over time showing genotype differences." width="700"></p>
+<p><img src="pcvr_files/figure-html/unnamed-chunk-16-1.png" class="r-plt" alt="Cumulative sum of area over time showing genotype differences." width="700"></p>
 <p>Note that for wide data this is just a wrapper around
 <code>cumsum</code>, it is only a useful function if you are using
 PlantCV datasets in wide and long but want to keep your R code
@@ -489,7 +489,7 @@ could be visualized in the same way.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="op">(</span><span class="va">l</span> <span class="op">+</span> <span class="va">g</span> <span class="op">+</span> <span class="va">m</span><span class="op">)</span> <span class="op">/</span> <span class="op">(</span><span class="va">e</span> <span class="op">+</span> <span class="va">ln</span> <span class="op">+</span> <span class="va">pl</span><span class="op">)</span></span></code></pre></div>
-<p><img src="pcvr_files/figure-html/unnamed-chunk-17-1.png" alt="Showing 6 parameterized growth models supported in pcvr." width="700"></p>
+<p><img src="pcvr_files/figure-html/unnamed-chunk-17-1.png" class="r-plt" alt="Showing 6 parameterized growth models supported in pcvr." width="700"></p>
 <p>Typically at least one of these models will be a good fit to your
 bellwether data, with gompertz models being the most broadly useful so
 far. In this experiment the plants were not germinated before being
@@ -561,7 +561,7 @@ to your collected data.</p>
 <code class="sourceCode R"><span><span class="va">priors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"A"</span> <span class="op">=</span> <span class="fl">130</span>, <span class="st">"B"</span> <span class="op">=</span> <span class="fl">10</span>, <span class="st">"C"</span> <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span></span>
 <span><span class="va">priorPlots</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plotPrior.html">plotPrior</a></span><span class="op">(</span><span class="va">priors</span><span class="op">)</span></span>
 <span><span class="va">priorPlots</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span> <span class="op">/</span> <span class="va">priorPlots</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span> <span class="op">/</span> <span class="va">priorPlots</span><span class="op">[[</span><span class="fl">3</span><span class="op">]</span><span class="op">]</span></span></code></pre></div>
-<p><img src="pcvr_files/figure-html/unnamed-chunk-18-1.png" alt="Default pcvr lognormal prior distributions on growth model parameters." width="700"></p>
+<p><img src="pcvr_files/figure-html/unnamed-chunk-18-1.png" class="r-plt" alt="Default pcvr lognormal prior distributions on growth model parameters." width="700"></p>
 <p>Looking at the prior distributions this way is useful, but for those
 still familiarizing with a given growth model the parameter values may
 not be very intuitive. To help with picking reasonable priors while
@@ -578,7 +578,7 @@ recommended if you are learning about your growth model.</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">twoPriors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"A"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fl">130</span><span class="op">)</span>, <span class="st">"B"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">6</span>, <span class="fl">12</span><span class="op">)</span>, <span class="st">"C"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">0.25</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/plotPrior.html">plotPrior</a></span><span class="op">(</span><span class="va">twoPriors</span>, <span class="st">"gompertz"</span>, n <span class="op">=</span> <span class="fl">100</span><span class="op">)</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span></code></pre></div>
-<p><img src="pcvr_files/figure-html/unnamed-chunk-19-1.png" alt="Default pcvr lognormal prior distributions on growth model parameters and random plants simulated from the prior distributions." width="700"></p>
+<p><img src="pcvr_files/figure-html/unnamed-chunk-19-1.png" class="r-plt" alt="Default pcvr lognormal prior distributions on growth model parameters and random plants simulated from the prior distributions." width="700"></p>
 </div>
 <div class="section level6">
 <h6 id="using-growthss">Using <code>growthSS</code><a class="anchor" aria-label="anchor" href="#using-growthss"></a>
@@ -625,7 +625,7 @@ correctly.</p>
 <span>    y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="st">"Area"</span> <span class="op">~</span> <span class="st">"(cm"</span><span class="op">^</span><span class="fl">2</span> <span class="op">~</span> <span class="st">")"</span><span class="op">)</span>,</span>
 <span>    color <span class="op">=</span> <span class="st">"Genotype\nand Soil"</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
-<p><img src="pcvr_files/figure-html/unnamed-chunk-23-1.png" alt="Growth trendlines, drawn to check grouping in pcvr formula." width="700"></p>
+<p><img src="pcvr_files/figure-html/unnamed-chunk-23-1.png" class="r-plt" alt="Growth trendlines, drawn to check grouping in pcvr formula." width="700"></p>
 <p>This looks okay, there are no strange jumps in the data or glaring
 problems.</p>
 </div>
@@ -715,7 +715,7 @@ will show our treatment effect in this data.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">genotype</span>, scales <span class="op">=</span> <span class="st">"free_x"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_discrete.html" class="external-link">scale_x_discrete</a></span><span class="op">(</span>limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"0"</span>, <span class="st">"50"</span>, <span class="st">"100"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>y <span class="op">=</span> <span class="st">"Hue Circular Mean (degrees)"</span>, x <span class="op">=</span> <span class="st">"Soil and Genotype"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="pcvr_files/figure-html/unnamed-chunk-27-1.png" alt="Boxplot of Hue circular mean as a single value trait for comparison with multi value traits later on." width="700"></p>
+<p><img src="pcvr_files/figure-html/unnamed-chunk-27-1.png" class="r-plt" alt="Boxplot of Hue circular mean as a single value trait for comparison with multi value traits later on." width="700"></p>
 <div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
 <span><span class="va">dists</span> <span class="op">&lt;-</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">12</span>, <span class="fl">50</span>, <span class="fl">60</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="op">{</span></span>
@@ -754,7 +754,7 @@ multi-value traits.</p>
 <span><span class="op">)</span></span>
 <span><span class="va">p</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_gradient.html" class="external-link">scale_fill_gradientn</a></span><span class="op">(</span>colors <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/pal_hue.html" class="external-link">hue_pal</a></span><span class="op">(</span>l <span class="op">=</span> <span class="fl">65</span><span class="op">)</span><span class="op">(</span><span class="fl">360</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_discrete.html" class="external-link">scale_y_discrete</a></span><span class="op">(</span>limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"5"</span>, <span class="st">"10"</span>, <span class="st">"15"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="pcvr_files/figure-html/unnamed-chunk-29-1.png" alt="Joyplot of Hue as a multi value trait colored by Hue along x axis." width="700"></p>
+<p><img src="pcvr_files/figure-html/unnamed-chunk-29-1.png" class="r-plt" alt="Joyplot of Hue as a multi value trait colored by Hue along x axis." width="700"></p>
 <p>As mentioned previously the <code>conjugate</code> function can be
 used with wide multi-value data. To use multi value data the samples
 should be data frames or matrices representing color histograms. Here we
@@ -793,7 +793,7 @@ that they are very similar in this parameterization.</p>
 <span><span class="co">## 1 0.627561   -0.4515416      1.688398         1</span></span></code></pre>
 <div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">hue_res_ln</span><span class="op">)</span></span></code></pre></div>
-<p><img src="pcvr_files/figure-html/unnamed-chunk-30-1.png" alt="Example of conjugate with multi value traits which generates the same style of plot showing posterior distributions and ROPE tests as with single value traits." width="700"></p>
+<p><img src="pcvr_files/figure-html/unnamed-chunk-30-1.png" class="r-plt" alt="Example of conjugate with multi value traits which generates the same style of plot showing posterior distributions and ROPE tests as with single value traits." width="700"></p>
 </div>
 <div class="section level4">
 <h4 id="ordination">Ordination<a class="anchor" aria-label="anchor" href="#ordination"></a>
@@ -805,7 +805,7 @@ pattern due.</p>
 <div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/pcadf.html">pcadf</a></span><span class="op">(</span><span class="va">hue_wide</span>, cols <span class="op">=</span> <span class="st">"hue_frequencies"</span>, color <span class="op">=</span> <span class="st">"genotype"</span>, returnData <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">fertilizer</span>, levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"0"</span>, <span class="st">"50"</span>, <span class="st">"100"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="pcvr_files/figure-html/unnamed-chunk-31-1.png" alt="Plot of PC 1 and 2 from Hue as a multi value trait." width="700"></p>
+<p><img src="pcvr_files/figure-html/unnamed-chunk-31-1.png" class="r-plt" alt="Plot of PC 1 and 2 from Hue as a multi value trait." width="700"></p>
 </div>
 <div class="section level4">
 <h4 id="earth-movers-distance">Earth Mover’s Distance<a class="anchor" aria-label="anchor" href="#earth-movers-distance"></a>
@@ -874,7 +874,7 @@ use EMD.</p>
 <span><span class="co">## <span style="color: #BB0000;">✖</span> Problematic argument:</span></span>
 <span><span class="co">## <span style="color: #00BBBB;">•</span> alpha = 0.25</span></span>
 <span><span class="co">## <span style="color: #00BBBB;">ℹ</span> Did you misspell an argument name?</span></span></code></pre>
-<p><img src="pcvr_files/figure-html/unnamed-chunk-32-1.png" alt="Example of simulated Earth Mover's Distance" width="700"></p>
+<p><img src="pcvr_files/figure-html/unnamed-chunk-32-1.png" class="r-plt" alt="Example of simulated Earth Mover's Distance" width="700"></p>
 <p>Our plots show very different distributions, so we get EMD between
 our images and see that we do have some trends shown in the resulting
 heatmap.</p>
@@ -886,13 +886,13 @@ heatmap.</p>
 <pre><code><span><span class="co">## Estimated time of calculation is roughly 3.1 seconds using 1 cores in parallel.</span></span></code></pre>
 <div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sim_emd</span><span class="op">$</span><span class="va">plot</span></span></code></pre></div>
-<p><img src="pcvr_files/figure-html/unnamed-chunk-33-1.png" alt="Heatmap of Earth Mover's Distance in simulated data, showing one group much more distinct than others." width="700"></p>
+<p><img src="pcvr_files/figure-html/unnamed-chunk-33-1.png" class="r-plt" alt="Heatmap of Earth Mover's Distance in simulated data, showing one group much more distinct than others." width="700"></p>
 <p>Now we can filter edge strength during our network building step for
 EMD &gt; 0.5, and plot our network.</p>
 <div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">n</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pcv.net.html">pcv.net</a></span><span class="op">(</span><span class="va">sim_emd</span><span class="op">$</span><span class="va">data</span>, filter <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/net.plot.html">net.plot</a></span><span class="op">(</span><span class="va">n</span>, fill <span class="op">=</span> <span class="st">"group"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="pcvr_files/figure-html/unnamed-chunk-34-1.png" alt="Earth Mover's Distances represented as a network, showing how distributions cluster together with the Uniform distribution missing due to it being filtered out by the edge strength requirement." width="700"></p>
+<p><img src="pcvr_files/figure-html/unnamed-chunk-34-1.png" class="r-plt" alt="Earth Mover's Distances represented as a network, showing how distributions cluster together with the Uniform distribution missing due to it being filtered out by the edge strength requirement." width="700"></p>
 <p>The distributions separate very well from each other, but we don’t
 actually see our uniform distribution here. That is because the uniform
 distribution does not have self-similar replicates and is also not very
@@ -903,7 +903,7 @@ use the top 50 percent of EMD values instead of EMD values &gt; 0.5.</p>
 <div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">n</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pcv.net.html">pcv.net</a></span><span class="op">(</span><span class="va">sim_emd</span><span class="op">$</span><span class="va">data</span>, filter <span class="op">=</span> <span class="st">"0.5"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/net.plot.html">net.plot</a></span><span class="op">(</span><span class="va">n</span>, fill <span class="op">=</span> <span class="st">"group"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="pcvr_files/figure-html/unnamed-chunk-35-1.png" alt="Changing the network's edge strength requirement to show the Uniform distribution and how much closer connected all the gaussian mixture like distributions are comparatively." width="700"></p>
+<p><img src="pcvr_files/figure-html/unnamed-chunk-35-1.png" class="r-plt" alt="Changing the network's edge strength requirement to show the Uniform distribution and how much closer connected all the gaussian mixture like distributions are comparatively." width="700"></p>
 <p>Just as we’d expect, our uniform distribution shows up now and is the
 most different. Now changing the edgeFilter in the <code>net.plot</code>
 function would let us fine tune this plot more to show finer
@@ -988,7 +988,7 @@ will help the plantCV community.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>
