@@ -276,8 +276,8 @@ statBrmsStaticMod <- ggplot2::ggproto("StatStaticBrm", Stat,
     longPreds$xmax <- longPreds$numericGroup + c(0.45 * (1 - longPreds$q))
 
     # select columns and rename
-    grpdf <- longPreds[, c(xvar, group, "Estimate", "PANEL", "q", "ymin", "ymax", "xmin", "xmax")]
-    colnames(grpdf) <- c("x", "MOD_GROUP", "y", "PANEL", "Cred.Int", "ymin", "ymax", "xmin", "xmax")
+    grpdf <- longPreds[, c(group, "Estimate", "PANEL", "q", "ymin", "ymax", "xmin", "xmax")]
+    colnames(grpdf) <- c("MOD_GROUP", "y", "PANEL", "Cred.Int", "ymin", "ymax", "xmin", "xmax")
     return(grpdf)
   },
   # set defaults for several aesthetics, all have to be after stat is calculated
