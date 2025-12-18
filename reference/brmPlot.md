@@ -100,18 +100,18 @@ fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1)
 #> 
 #> Chain 1 Iteration:   1 / 500 [  0%]  (Warmup) 
 #> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: student_t_lpdf: Location parameter[1] is -nan, but must be finite! (in '/tmp/RtmpVMOOl9/model-2eda60374dfb.stan', line 131, column 4 to column 48)
+#> Chain 1 Exception: student_t_lpdf: Location parameter[1] is -nan, but must be finite! (in '/tmp/RtmpfB9aQg/model-1eff443ddd08.stan', line 131, column 4 to column 48)
 #> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 1 
 #> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is 0, but must be positive finite! (in '/tmp/RtmpVMOOl9/model-2eda60374dfb.stan', line 131, column 4 to column 48)
+#> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is 0, but must be positive finite! (in '/tmp/RtmpfB9aQg/model-1eff443ddd08.stan', line 131, column 4 to column 48)
 #> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 1 
 #> Chain 1 Iteration: 100 / 500 [ 20%]  (Warmup) 
 #> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: student_t_lpdf: Scale parameter[501] is inf, but must be positive finite! (in '/tmp/RtmpVMOOl9/model-2eda60374dfb.stan', line 131, column 4 to column 48)
+#> Chain 1 Exception: student_t_lpdf: Scale parameter[501] is inf, but must be positive finite! (in '/tmp/RtmpfB9aQg/model-1eff443ddd08.stan', line 131, column 4 to column 48)
 #> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 1 
@@ -120,7 +120,7 @@ fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1)
 #> Chain 1 Iteration: 350 / 500 [ 70%]  (Sampling) 
 #> Chain 1 Iteration: 450 / 500 [ 90%]  (Sampling) 
 #> Chain 1 Iteration: 500 / 500 [100%]  (Sampling) 
-#> Chain 1 finished in 25.4 seconds.
+#> Chain 1 finished in 25.6 seconds.
 #> Warning: 1 of 250 (0.0%) transitions ended with a divergence.
 #> See https://mc-stan.org/misc/warnings for details.
 growthPlot(fit = fit, form = y ~ time | group, groups = "a", df = ss$df)

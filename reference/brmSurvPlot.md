@@ -87,47 +87,47 @@ fit1 <- fitGrowth(ss1, iter = 600, cores = 2, chains = 2, backend = "cmdstanr")
 #> Chain 1 Iteration: 500 / 600 [ 83%]  (Sampling) 
 #> Chain 1 Iteration: 600 / 600 [100%]  (Sampling) 
 #> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: gamma_lpdf: Random variable is 0, but must be positive finite! (in '/tmp/RtmpVMOOl9/model-2eda2879f52a.stan', line 44, column 2 to column 43)
+#> Chain 1 Exception: gamma_lpdf: Random variable is 0, but must be positive finite! (in '/tmp/RtmpfB9aQg/model-1eff741079de.stan', line 44, column 2 to column 43)
 #> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 1 
 #> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: gamma_lpdf: Random variable is 0, but must be positive finite! (in '/tmp/RtmpVMOOl9/model-2eda2879f52a.stan', line 44, column 2 to column 43)
+#> Chain 1 Exception: gamma_lpdf: Random variable is 0, but must be positive finite! (in '/tmp/RtmpfB9aQg/model-1eff741079de.stan', line 44, column 2 to column 43)
 #> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 1 
 #> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: weibull_lpdf: Scale parameter[1] is 0, but must be positive finite! (in '/tmp/RtmpVMOOl9/model-2eda2879f52a.stan', line 54, column 4 to column 104)
+#> Chain 1 Exception: weibull_lpdf: Scale parameter[1] is 0, but must be positive finite! (in '/tmp/RtmpfB9aQg/model-1eff741079de.stan', line 54, column 4 to column 104)
 #> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 1 
 #> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: weibull_lpdf: Scale parameter[1] is 0, but must be positive finite! (in '/tmp/RtmpVMOOl9/model-2eda2879f52a.stan', line 54, column 4 to column 104)
+#> Chain 1 Exception: weibull_lpdf: Scale parameter[1] is 0, but must be positive finite! (in '/tmp/RtmpfB9aQg/model-1eff741079de.stan', line 54, column 4 to column 104)
 #> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 1 
 #> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: weibull_lpdf: Scale parameter[1] is 0, but must be positive finite! (in '/tmp/RtmpVMOOl9/model-2eda2879f52a.stan', line 54, column 4 to column 104)
+#> Chain 1 Exception: weibull_lpdf: Scale parameter[1] is 0, but must be positive finite! (in '/tmp/RtmpfB9aQg/model-1eff741079de.stan', line 54, column 4 to column 104)
 #> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 1 
 #> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: weibull_lpdf: Scale parameter[1] is 0, but must be positive finite! (in '/tmp/RtmpVMOOl9/model-2eda2879f52a.stan', line 54, column 4 to column 104)
+#> Chain 1 Exception: weibull_lpdf: Scale parameter[1] is 0, but must be positive finite! (in '/tmp/RtmpfB9aQg/model-1eff741079de.stan', line 54, column 4 to column 104)
 #> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 1 
 #> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: gamma_lpdf: Random variable is 0, but must be positive finite! (in '/tmp/RtmpVMOOl9/model-2eda2879f52a.stan', line 44, column 2 to column 43)
+#> Chain 1 Exception: gamma_lpdf: Random variable is 0, but must be positive finite! (in '/tmp/RtmpfB9aQg/model-1eff741079de.stan', line 44, column 2 to column 43)
 #> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 1 
 #> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: gamma_lpdf: Random variable is 0, but must be positive finite! (in '/tmp/RtmpVMOOl9/model-2eda2879f52a.stan', line 44, column 2 to column 43)
+#> Chain 1 Exception: gamma_lpdf: Random variable is 0, but must be positive finite! (in '/tmp/RtmpfB9aQg/model-1eff741079de.stan', line 44, column 2 to column 43)
 #> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 1 
 #> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: weibull_lpdf: Scale parameter[1] is 0, but must be positive finite! (in '/tmp/RtmpVMOOl9/model-2eda2879f52a.stan', line 54, column 4 to column 104)
+#> Chain 1 Exception: weibull_lpdf: Scale parameter[1] is 0, but must be positive finite! (in '/tmp/RtmpfB9aQg/model-1eff741079de.stan', line 54, column 4 to column 104)
 #> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 1 
@@ -140,47 +140,47 @@ fit1 <- fitGrowth(ss1, iter = 600, cores = 2, chains = 2, backend = "cmdstanr")
 #> Chain 2 Iteration: 500 / 600 [ 83%]  (Sampling) 
 #> Chain 2 Iteration: 600 / 600 [100%]  (Sampling) 
 #> Chain 2 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 2 Exception: gamma_lpdf: Random variable is 0, but must be positive finite! (in '/tmp/RtmpVMOOl9/model-2eda2879f52a.stan', line 44, column 2 to column 43)
+#> Chain 2 Exception: gamma_lpdf: Random variable is 0, but must be positive finite! (in '/tmp/RtmpfB9aQg/model-1eff741079de.stan', line 44, column 2 to column 43)
 #> Chain 2 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 2 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 2 
 #> Chain 2 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 2 Exception: gamma_lpdf: Random variable is 0, but must be positive finite! (in '/tmp/RtmpVMOOl9/model-2eda2879f52a.stan', line 44, column 2 to column 43)
+#> Chain 2 Exception: gamma_lpdf: Random variable is 0, but must be positive finite! (in '/tmp/RtmpfB9aQg/model-1eff741079de.stan', line 44, column 2 to column 43)
 #> Chain 2 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 2 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 2 
 #> Chain 2 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 2 Exception: weibull_lpdf: Scale parameter[1] is 0, but must be positive finite! (in '/tmp/RtmpVMOOl9/model-2eda2879f52a.stan', line 54, column 4 to column 104)
+#> Chain 2 Exception: weibull_lpdf: Scale parameter[1] is 0, but must be positive finite! (in '/tmp/RtmpfB9aQg/model-1eff741079de.stan', line 54, column 4 to column 104)
 #> Chain 2 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 2 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 2 
 #> Chain 2 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 2 Exception: weibull_lpdf: Scale parameter[1] is 0, but must be positive finite! (in '/tmp/RtmpVMOOl9/model-2eda2879f52a.stan', line 54, column 4 to column 104)
+#> Chain 2 Exception: weibull_lpdf: Scale parameter[1] is 0, but must be positive finite! (in '/tmp/RtmpfB9aQg/model-1eff741079de.stan', line 54, column 4 to column 104)
 #> Chain 2 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 2 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 2 
 #> Chain 2 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 2 Exception: weibull_lpdf: Scale parameter[1] is 0, but must be positive finite! (in '/tmp/RtmpVMOOl9/model-2eda2879f52a.stan', line 54, column 4 to column 104)
+#> Chain 2 Exception: weibull_lpdf: Scale parameter[1] is 0, but must be positive finite! (in '/tmp/RtmpfB9aQg/model-1eff741079de.stan', line 54, column 4 to column 104)
 #> Chain 2 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 2 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 2 
 #> Chain 2 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 2 Exception: weibull_lpdf: Scale parameter[1] is 0, but must be positive finite! (in '/tmp/RtmpVMOOl9/model-2eda2879f52a.stan', line 54, column 4 to column 104)
+#> Chain 2 Exception: weibull_lpdf: Scale parameter[1] is 0, but must be positive finite! (in '/tmp/RtmpfB9aQg/model-1eff741079de.stan', line 54, column 4 to column 104)
 #> Chain 2 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 2 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 2 
 #> Chain 2 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 2 Exception: gamma_lpdf: Random variable is 0, but must be positive finite! (in '/tmp/RtmpVMOOl9/model-2eda2879f52a.stan', line 44, column 2 to column 43)
+#> Chain 2 Exception: gamma_lpdf: Random variable is 0, but must be positive finite! (in '/tmp/RtmpfB9aQg/model-1eff741079de.stan', line 44, column 2 to column 43)
 #> Chain 2 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 2 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 2 
 #> Chain 2 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 2 Exception: gamma_lpdf: Random variable is 0, but must be positive finite! (in '/tmp/RtmpVMOOl9/model-2eda2879f52a.stan', line 44, column 2 to column 43)
+#> Chain 2 Exception: gamma_lpdf: Random variable is 0, but must be positive finite! (in '/tmp/RtmpfB9aQg/model-1eff741079de.stan', line 44, column 2 to column 43)
 #> Chain 2 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 2 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 2 
 #> Chain 2 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 2 Exception: weibull_lpdf: Scale parameter[1] is 0, but must be positive finite! (in '/tmp/RtmpVMOOl9/model-2eda2879f52a.stan', line 54, column 4 to column 104)
+#> Chain 2 Exception: weibull_lpdf: Scale parameter[1] is 0, but must be positive finite! (in '/tmp/RtmpfB9aQg/model-1eff741079de.stan', line 54, column 4 to column 104)
 #> Chain 2 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 2 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 2 
@@ -214,10 +214,10 @@ fit2 <- fitGrowth(ss2, iter = 600, cores = 2, chains = 2, backend = "cmdstanr")
 #> Chain 2 Iteration:   1 / 600 [  0%]  (Warmup) 
 #> Chain 2 Iteration: 100 / 600 [ 16%]  (Warmup) 
 #> Chain 2 Iteration: 200 / 600 [ 33%]  (Warmup) 
-#> Chain 2 Iteration: 300 / 600 [ 50%]  (Warmup) 
 #> Chain 1 Iteration: 400 / 600 [ 66%]  (Sampling) 
 #> Chain 1 Iteration: 500 / 600 [ 83%]  (Sampling) 
 #> Chain 1 Iteration: 600 / 600 [100%]  (Sampling) 
+#> Chain 2 Iteration: 300 / 600 [ 50%]  (Warmup) 
 #> Chain 2 Iteration: 301 / 600 [ 50%]  (Sampling) 
 #> Chain 2 Iteration: 400 / 600 [ 66%]  (Sampling) 
 #> Chain 2 Iteration: 500 / 600 [ 83%]  (Sampling) 

@@ -20,7 +20,7 @@ Functions for Bayesian statistics.
   [`stat_lme_model()`](https://danforthcenter.github.io/pcvr/reference/stat_growthss.md)
   [`stat_nlrq_model()`](https://danforthcenter.github.io/pcvr/reference/stat_growthss.md)
   [`stat_nls_model()`](https://danforthcenter.github.io/pcvr/reference/stat_growthss.md)
-  : Show brms model in ggplot layer
+  : Show a model fit with pcvr in a ggplot layer
 - [`testGrowth()`](https://danforthcenter.github.io/pcvr/reference/testGrowth.md)
   : Hypothesis testing for fitGrowth models.
 - [`barg()`](https://danforthcenter.github.io/pcvr/reference/barg.md) :
@@ -55,7 +55,7 @@ Functions for Bayesian or Frequentist Longitudinal (and other) Modeling
   [`stat_lme_model()`](https://danforthcenter.github.io/pcvr/reference/stat_growthss.md)
   [`stat_nlrq_model()`](https://danforthcenter.github.io/pcvr/reference/stat_growthss.md)
   [`stat_nls_model()`](https://danforthcenter.github.io/pcvr/reference/stat_growthss.md)
-  : Show brms model in ggplot layer
+  : Show a model fit with pcvr in a ggplot layer
 - [`testGrowth()`](https://danforthcenter.github.io/pcvr/reference/testGrowth.md)
   : Hypothesis testing for fitGrowth models.
 

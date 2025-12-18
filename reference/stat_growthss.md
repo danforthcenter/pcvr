@@ -1,10 +1,4 @@
-# Show brms model in ggplot layer
-
-Add posterior predictive distribution from a brms model fit with
-[growthSS](https://danforthcenter.github.io/pcvr/reference/growthSS.md)
-and
-[fitGrowth](https://danforthcenter.github.io/pcvr/reference/fitGrowth.md)
-to a ggplot object.
+# Show a model fit with pcvr in a ggplot layer
 
 Add a model fit with
 [growthSS](https://danforthcenter.github.io/pcvr/reference/growthSS.md)
@@ -12,24 +6,6 @@ and
 [fitGrowth](https://danforthcenter.github.io/pcvr/reference/fitGrowth.md)
 to a ggplot object. The exact geom used depends on the model class (see
 details).
-
-Add predicted mean trendline from a nlme/lme model fit with
-[growthSS](https://danforthcenter.github.io/pcvr/reference/growthSS.md)
-and
-[fitGrowth](https://danforthcenter.github.io/pcvr/reference/fitGrowth.md)
-to a ggplot object.
-
-Add predicted mean trendline from a model fit with
-[growthSS](https://danforthcenter.github.io/pcvr/reference/growthSS.md)
-and
-[fitGrowth](https://danforthcenter.github.io/pcvr/reference/fitGrowth.md)
-to a ggplot object.
-
-Add predicted mean trendline from a model fit with
-[growthSS](https://danforthcenter.github.io/pcvr/reference/growthSS.md)
-and
-[fitGrowth](https://danforthcenter.github.io/pcvr/reference/fitGrowth.md)
-to a ggplot object.
 
 ## Usage
 
@@ -98,7 +74,7 @@ stat_nls_model(
   [`ggplot2::aes()`](https://ggplot2.tidyverse.org/reference/aes.html).
   If specified and ‘inherit.aes = TRUE’ (the default), it is combined
   with the default mapping at the top level of the plot. If there is no
-  mapping then it is filled in by default using the `ss` object.
+  mapping then it is filled in by default using the `pcvrss` object.
 
 - data:
 
@@ -108,7 +84,7 @@ stat_nls_model(
 
 - fit:
 
-  A brmsfit object, typically returned from `fitGrowth`.
+  A model object returned from `fitGrowth`.
 
 - ss:
 
@@ -125,7 +101,7 @@ stat_nls_model(
 
 - ...:
 
-  Additional arguments passed to ggplot2::layer.
+  Additional arguments passed to the ggplot layer.
 
 ## Details
 
