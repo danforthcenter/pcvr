@@ -14,12 +14,9 @@
 #' @param fit A model object returned from \code{fitGrowth}.
 #' @param ss A \code{\link{pcvrss-class}} object. Only the "pcvrForm" and "df" elements are used.
 #' @param inherit.aes Logical, should aesthetics be inherited from top level? Defaults to TRUE.
-#' @param CI A vector of credible intervals to plot, defaults to 0.95.
-#' @param hierarchy_value Value(s) for the hierarchical variable(s), if applicable. Only used
-#' for hierarchical brms models. If left NULL (the default) the mean value is used. If this is >1L
-#' then the x axis will use the hierarchical variable from the model instead of the "time" variable
-#' and plot data across the values of the hierarchical variable at the mean of the timeRange
-#' (mean of x values in the model if timeRange is not specified).
+#' @param CI A vector of credible intervals to plot, defaults to 0.95. Only used with brms models.
+#' @param hierarchy_value Value for the hierarchical variable, if applicable. Only used
+#' for hierarchical brms models. If left NULL (the default) the mean value is used.
 #' @param ... Additional arguments passed to the ggplot layer.
 #'
 #' @details
