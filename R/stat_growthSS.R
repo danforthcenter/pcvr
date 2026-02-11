@@ -12,9 +12,11 @@
 #' This behaves per normal ggplot2 expectations except
 #' that if data is missing (ie, not inherited or specified) then the data from \code{ss} is used.
 #' @param fit A model object returned from \code{fitGrowth}.
-#' @param ss A \code{pcvrss} object. Only the "pcvrForm" and "df" elements are used.
+#' @param ss A \code{\link{pcvrss-class}} object. Only the "pcvrForm" and "df" elements are used.
 #' @param inherit.aes Logical, should aesthetics be inherited from top level? Defaults to TRUE.
-#' @param CI A vector of credible intervals to plot, defaults to 0.95.
+#' @param CI A vector of credible intervals to plot, defaults to 0.95. Only used with brms models.
+#' @param hierarchy_value Value for the hierarchical variable, if applicable. Only used
+#' for hierarchical brms models. If left NULL (the default) the mean value is used.
 #' @param ... Additional arguments passed to the ggplot layer.
 #'
 #' @details
@@ -25,8 +27,8 @@
 #'   \item{\strong{brms}: \code{geom_ribbon} for longitudinal plots, \code{geom_rect} for others.}
 #'   \item{\strong{nlrq}: \code{geom_line}, replicated per each quantile.}
 #'   \item{\strong{nlme}: \code{geom_smooth}, with ribbon based on the heteroskedastic term.}
-#'   \item{\strong{nls}: \code{geom_line}, replicated per each quantile.}
-#'   \item{\strong{nlrq}: \code{geom_line}, replicated per each quantile.}
+#'   \item{\strong{nls}: \code{geom_line}.}
+#'   \item{\strong{nlrq}: \code{geom_smooth}.}
 #' }
 #'
 #' @examples

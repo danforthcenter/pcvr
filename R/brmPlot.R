@@ -14,9 +14,10 @@
 #' future data if the available data has not reached some point (such as asymptotic size),
 #' although prediction using splines outside of the observed range is not necessarily reliable.
 #' @param facetGroups logical, should groups be separated in facets? Defaults to TRUE.
-#' @param hierarchy_value If a hierarchical model is being plotted, what value should the
-#' hierarchical predictor be? If left NULL (the default) the mean value is used. If this is >1L
-#' then the x axis will use the hierarchical variable from the model at the mean of the timeRange
+#' @param hierarchy_value Value(s) for the hierarchical variable(s), if applicable. Only used
+#' for hierarchical brms models. If left NULL (the default) the mean value is used. If this is >1L
+#' then the x axis will use the hierarchical variable from the model instead of the "time" variable
+#' and plot data across the values of the hierarchical variable at the mean of the timeRange
 #' (mean of x values in the model if timeRange is not specified).
 #' @param vir_option Viridis color scale to use for plotting credible intervals. Defaults to "plasma".
 #' @keywords growth-curve brms

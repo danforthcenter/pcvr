@@ -25,5 +25,11 @@ pcv.sub.read <- function(inputFile, filters, reader = "read.csv", awk = NULL, ..
     x <- suppressMessages(as.data.frame(readingFunction(pipe(awkCommand), ...)))
     colnames(x) <- COLS
   }
+  if (nrow(x) < 1) {
+    stop(paste0(
+      "0 Rows returned using awk statement:\n", awkCommand,
+      "\nMost common issues are misspellings or not including a column name and affector."
+    ))
+  }
   return(x)
 }

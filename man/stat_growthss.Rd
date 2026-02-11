@@ -16,6 +16,7 @@ stat_brms_model(
   fit = NULL,
   ss = NULL,
   CI = 0.95,
+  hierarchy_value = NULL,
   inherit.aes = TRUE,
   ...
 )
@@ -77,9 +78,12 @@ that if data is missing (ie, not inherited or specified) then the data from \cod
 
 \item{fit}{A model object returned from \code{fitGrowth}.}
 
-\item{ss}{A \code{pcvrss} object. Only the "pcvrForm" and "df" elements are used.}
+\item{ss}{A \code{\link{pcvrss-class}} object. Only the "pcvrForm" and "df" elements are used.}
 
-\item{CI}{A vector of credible intervals to plot, defaults to 0.95.}
+\item{CI}{A vector of credible intervals to plot, defaults to 0.95. Only used with brms models.}
+
+\item{hierarchy_value}{Value for the hierarchical variable, if applicable. Only used
+for hierarchical brms models. If left NULL (the default) the mean value is used.}
 
 \item{inherit.aes}{Logical, should aesthetics be inherited from top level? Defaults to TRUE.}
 
@@ -97,8 +101,8 @@ The geometries used for each type of model are:
   \item{\strong{brms}: \code{geom_ribbon} for longitudinal plots, \code{geom_rect} for others.}
   \item{\strong{nlrq}: \code{geom_line}, replicated per each quantile.}
   \item{\strong{nlme}: \code{geom_smooth}, with ribbon based on the heteroskedastic term.}
-  \item{\strong{nls}: \code{geom_line}, replicated per each quantile.}
-  \item{\strong{nlrq}: \code{geom_line}, replicated per each quantile.}
+  \item{\strong{nls}: \code{geom_line}.}
+  \item{\strong{nlrq}: \code{geom_smooth}.}
 }
 }
 \examples{
