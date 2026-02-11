@@ -77,7 +77,7 @@ that if data is missing (ie, not inherited or specified) then the data from \cod
 
 \item{fit}{A model object returned from \code{fitGrowth}.}
 
-\item{ss}{A \code{pcvrss} object. Only the "pcvrForm" and "df" elements are used.}
+\item{ss}{A \code{\link{pcvrss-class}} object. Only the "pcvrForm" and "df" elements are used.}
 
 \item{CI}{A vector of credible intervals to plot, defaults to 0.95.}
 
@@ -97,8 +97,8 @@ The geometries used for each type of model are:
   \item{\strong{brms}: \code{geom_ribbon} for longitudinal plots, \code{geom_rect} for others.}
   \item{\strong{nlrq}: \code{geom_line}, replicated per each quantile.}
   \item{\strong{nlme}: \code{geom_smooth}, with ribbon based on the heteroskedastic term.}
-  \item{\strong{nls}: \code{geom_line}, replicated per each quantile.}
-  \item{\strong{nlrq}: \code{geom_line}, replicated per each quantile.}
+  \item{\strong{nls}: \code{geom_line}.}
+  \item{\strong{nlrq}: \code{geom_smooth}.}
 }
 }
 \examples{
