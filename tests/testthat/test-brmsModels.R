@@ -214,6 +214,8 @@ test_that("Hierarchical Model Works", {
   expect_s3_class(p, "ggplot")
   p <- ggplot() + stat_growthss(fit  = fit, ss = ss, hierarchy_value = 5)
   expect_s3_class(p, "ggplot")
+  p <- ggplot() + stat_growthss(fit  = fit, ss = ss)
+  expect_s3_class(p, "ggplot")
 })
 
 test_that("Changepoint model can be specified", {
