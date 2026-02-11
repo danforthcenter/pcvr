@@ -30,12 +30,19 @@ stat_brms_model <- function(mapping = NULL, data = NULL,
       c(((1 - i) / 2), (i + (1 - i) / 2))
     )
   })
+  # get hierarchy value if NULL
+  if (is.null(hierarchy_value) && !is.null(parsed_form$hierarchical_predictor)) {
+    hierarchy_value <- mean(fit$data[[parsed_form$hierarchical_predictor]])
+  }
   # make layer for each of the intervals
   layers <- lapply(formatted_prob_list, function(prob_pair) {
     lyr <- ggplot2::layer(
       stat = stat, data = data, mapping = mapping, geom = geom,
       position = position, show.legend = show.legend, inherit.aes = inherit.aes,
-      params = list(na.rm = na.rm, fit = fit, parsed_form = parsed_form, probs = prob_pair, ...)
+      params = list(
+        na.rm = na.rm, fit = fit, parsed_form = parsed_form,
+        probs = prob_pair, hierarchy_value = hierarchy_value, ...
+      )
     )
     return(lyr)
   })
@@ -53,7 +60,7 @@ stat_brms_model <- function(mapping = NULL, data = NULL,
 
 statBrmsMod <- ggplot2::ggproto("StatBrm", Stat,
   # `specify that there will be extra params`
-  extra_params = c("na.rm", "fit", "parsed_form", "probs"),
+  extra_params = c("na.rm", "fit", "parsed_form", "probs", "hierarchy_value"),
   # `data setup function`
   setup_data = function(data, params) {
     #' possible that ss is not a pcvrss object for compatibility with other brms models
@@ -123,14 +130,17 @@ statBrmsMod <- ggplot2::ggproto("StatBrm", Stat,
   #' the model and ss objects.
   compute_group = function(data, scales,
                            fit = NULL, parsed_form = NULL, probs = NULL,
+                           hierarchy_value = NULL,
                            ...) {
     yvar <- parsed_form$y
     xvar <- parsed_form$x
     group <- parsed_form$group
+    hierarchy <- parsed_form$hierarchical_predictor
     # make data to use drawing posterior predictions
     nd <- data[, c("x", "MOD_GROUP", "PANEL")]
     nd <- nd[!duplicated(nd), ]
     colnames(nd) <- c(xvar, group, "PANEL")
+    nd[[hierarchy %||% "none"]] <- hierarchy_value
     # make predictions
     mod_data <- cbind(nd, predict(fit, newdata = nd, probs = probs))
     # lengthen predictions as in brmPlot
