@@ -72,6 +72,7 @@ The exact geom used depends on the model class (see details).</p>
 <span>  fit <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  ss <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  CI <span class="op">=</span> <span class="fl">0.95</span>,</span>
+<span>  hierarchy_value <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  inherit.aes <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span>
@@ -144,11 +145,16 @@ that if data is missing (ie, not inherited or specified) then the data from <cod
 
 
 <dt id="arg-ss">ss<a class="anchor" aria-label="anchor" href="#arg-ss"></a></dt>
-<dd><p>A <code>pcvrss</code> object. Only the "pcvrForm" and "df" elements are used.</p></dd>
+<dd><p>A <code><a href="pcvrss-class.html">pcvrss-class</a></code> object. Only the "pcvrForm" and "df" elements are used.</p></dd>
 
 
 <dt id="arg-ci">CI<a class="anchor" aria-label="anchor" href="#arg-ci"></a></dt>
-<dd><p>A vector of credible intervals to plot, defaults to 0.95.</p></dd>
+<dd><p>A vector of credible intervals to plot, defaults to 0.95. Only used with brms models.</p></dd>
+
+
+<dt id="arg-hierarchy-value">hierarchy_value<a class="anchor" aria-label="anchor" href="#arg-hierarchy-value"></a></dt>
+<dd><p>Value for the hierarchical variable, if applicable. Only used
+for hierarchical brms models. If left NULL (the default) the mean value is used.</p></dd>
 
 
 <dt id="arg-inherit-aes">inherit.aes<a class="anchor" aria-label="anchor" href="#arg-inherit-aes"></a></dt>
@@ -166,8 +172,8 @@ has more arguments that directly control the plot since this stat only makes one
 The geometries used for each type of model are:</p><ul><li><p><strong>brms</strong>: <code>geom_ribbon</code> for longitudinal plots, <code>geom_rect</code> for others.</p></li>
 <li><p><strong>nlrq</strong>: <code>geom_line</code>, replicated per each quantile.</p></li>
 <li><p><strong>nlme</strong>: <code>geom_smooth</code>, with ribbon based on the heteroskedastic term.</p></li>
-<li><p><strong>nls</strong>: <code>geom_line</code>, replicated per each quantile.</p></li>
-<li><p><strong>nlrq</strong>: <code>geom_line</code>, replicated per each quantile.</p></li>
+<li><p><strong>nls</strong>: <code>geom_line</code>.</p></li>
+<li><p><strong>nlrq</strong>: <code>geom_smooth</code>.</p></li>
 </ul></div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>

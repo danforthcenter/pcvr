@@ -114,9 +114,10 @@ although prediction using splines outside of the observed range is not necessari
 
 
 <dt id="arg-hierarchy-value">hierarchy_value<a class="anchor" aria-label="anchor" href="#arg-hierarchy-value"></a></dt>
-<dd><p>If a hierarchical model is being plotted, what value should the
-hierarchical predictor be? If left NULL (the default) the mean value is used. If this is &gt;1L
-then the x axis will use the hierarchical variable from the model at the mean of the timeRange
+<dd><p>Value(s) for the hierarchical variable(s), if applicable. Only used
+for hierarchical brms models. If left NULL (the default) the mean value is used. If this is &gt;1L
+then the x axis will use the hierarchical variable from the model instead of the "time" variable
+and plot data across the values of the hierarchical variable at the mean of the timeRange
 (mean of x values in the model if timeRange is not specified).</p></dd>
 
 
@@ -154,18 +155,18 @@ intervals and optionally the individual growth lines.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration:   1 / 500 [  0%]  (Warmup) </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Location parameter[1] is -nan, but must be finite! (in '/tmp/RtmpfB9aQg/model-1eff443ddd08.stan', line 131, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Location parameter[1] is -nan, but must be finite! (in '/tmp/RtmpiO28qU/model-1ffcd712857.stan', line 131, column 4 to column 48)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is 0, but must be positive finite! (in '/tmp/RtmpfB9aQg/model-1eff443ddd08.stan', line 131, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is 0, but must be positive finite! (in '/tmp/RtmpiO28qU/model-1ffcd712857.stan', line 131, column 4 to column 48)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 100 / 500 [ 20%]  (Warmup) </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[501] is inf, but must be positive finite! (in '/tmp/RtmpfB9aQg/model-1eff443ddd08.stan', line 131, column 4 to column 48)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 Exception: student_t_lpdf: Scale parameter[501] is inf, but must be positive finite! (in '/tmp/RtmpiO28qU/model-1ffcd712857.stan', line 131, column 4 to column 48)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Chain 1 </span>
@@ -174,7 +175,7 @@ intervals and optionally the individual growth lines.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 350 / 500 [ 70%]  (Sampling) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 450 / 500 [ 90%]  (Sampling) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 Iteration: 500 / 500 [100%]  (Sampling) </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 finished in 25.6 seconds.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Chain 1 finished in 25.9 seconds.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Warning: 1 of 250 (0.0%) transitions ended with a divergence.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> See https://mc-stan.org/misc/warnings for details.</span>
 <span class="r-in"><span><span class="fu"><a href="growthPlot.html">growthPlot</a></span><span class="op">(</span>fit <span class="op">=</span> <span class="va">fit</span>, form <span class="op">=</span> <span class="va">y</span> <span class="op">~</span> <span class="va">time</span> <span class="op">|</span> <span class="va">group</span>, groups <span class="op">=</span> <span class="st">"a"</span>, df <span class="op">=</span> <span class="va">ss</span><span class="op">$</span><span class="va">df</span><span class="op">)</span></span></span>

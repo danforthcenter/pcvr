@@ -16,6 +16,7 @@ stat_brms_model(
   fit = NULL,
   ss = NULL,
   CI = 0.95,
+  hierarchy_value = NULL,
   inherit.aes = TRUE,
   ...
 )
@@ -88,11 +89,20 @@ stat_nls_model(
 
 - ss:
 
-  A `pcvrss` object. Only the "pcvrForm" and "df" elements are used.
+  A
+  [`pcvrss-class`](https://danforthcenter.github.io/pcvr/reference/pcvrss-class.md)
+  object. Only the "pcvrForm" and "df" elements are used.
 
 - CI:
 
-  A vector of credible intervals to plot, defaults to 0.95.
+  A vector of credible intervals to plot, defaults to 0.95. Only used
+  with brms models.
+
+- hierarchy_value:
+
+  Value for the hierarchical variable, if applicable. Only used for
+  hierarchical brms models. If left NULL (the default) the mean value is
+  used.
 
 - inherit.aes:
 
@@ -119,9 +129,9 @@ of model are:
 - **nlme**: `geom_smooth`, with ribbon based on the heteroskedastic
   term.
 
-- **nls**: `geom_line`, replicated per each quantile.
+- **nls**: `geom_line`.
 
-- **nlrq**: `geom_line`, replicated per each quantile.
+- **nlrq**: `geom_smooth`.
 
 ## See also
 

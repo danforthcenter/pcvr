@@ -47,8 +47,8 @@ filter data outside of R or if you want to use your data in a different
 format than it is stored in (wide going to long and vice versa).
 
 The single value traits can be read in with `read.pcv`, here using
-[`data.table::fread`](https://rdatatable.gitlab.io/data.table/reference/fread.html)
-for speed.
+[`data.table::fread`](https://rdrr.io/pkg/data.table/man/fread.html) for
+speed.
 
 ``` r
 base_url <- "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/"
@@ -190,8 +190,8 @@ this has only been considered with a few datasets. With the older
 plantCV output the data is already in a wider format so here the default
 mode is “long”. Note that while `read.pcv` works fine with this older
 data and still has some added benefits the reasons to use it in place of
-[`data.table::fread`](https://rdatatable.gitlab.io/data.table/reference/fread.html)
-or `base::read.csv` are less compelling.
+[`data.table::fread`](https://rdrr.io/pkg/data.table/man/fread.html) or
+`base::read.csv` are less compelling.
 
 Here we have examples of reading in various amounts of plantCV 3
 bellwether data. In the final example we also list a conversion to take

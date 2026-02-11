@@ -54,7 +54,7 @@ read.pcv(
 - reader:
 
   The function to use to read in data, defaults to NULL in which case
-  [`data.table::fread`](https://rdatatable.gitlab.io/data.table/reference/fread.html)
+  [`data.table::fread`](https://rdrr.io/pkg/data.table/man/fread.html)
   is used if filters are in place and `read.csv` is used otherwise. Note
   that if you use `read.csv` with filters in place then you will need to
   specify `header=FALSE` so that the piped output from awk is read

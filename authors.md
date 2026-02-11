@@ -16,14 +16,14 @@
 Source:
 [`DESCRIPTION`](https://github.com/danforthcenter/pcvr/blob/main/DESCRIPTION)
 
-Sumner J, Berry J (2025). *pcvr: Plant Phenotyping and Bayesian
+Sumner J, Berry J (2026). *pcvr: Plant Phenotyping and Bayesian
 Statistics*. R package version 1.4.0,
 <https://github.com/danforthcenter/pcvr>.
 
     @Manual{,
       title = {pcvr: Plant Phenotyping and Bayesian Statistics},
       author = {Josh Sumner and Jeffrey Berry},
-      year = {2025},
+      year = {2026},
       note = {R package version 1.4.0},
       url = {https://github.com/danforthcenter/pcvr},
     }

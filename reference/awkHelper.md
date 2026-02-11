@@ -29,7 +29,7 @@ awkHelper(inputFile, filters, awk = NULL)
 
 Returns a character string representing a unix style awk statement which
 is typically passed to `pipe` or used as a connection in
-[`data.table::fread`](https://rdatatable.gitlab.io/data.table/reference/fread.html).
+[`data.table::fread`](https://rdrr.io/pkg/data.table/man/fread.html).
 
 ## Details
 
