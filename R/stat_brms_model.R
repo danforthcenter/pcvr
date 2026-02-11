@@ -5,6 +5,7 @@
 
 stat_brms_model <- function(mapping = NULL, data = NULL,
                             fit = NULL, ss = NULL, CI = 0.95,
+                            hierarchy_value = NULL,
                             inherit.aes = TRUE, ...) {
   # These would normally be arguments to a stat layer but they should not be changed
   geom <- "ribbon"

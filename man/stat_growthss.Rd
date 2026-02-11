@@ -16,6 +16,7 @@ stat_brms_model(
   fit = NULL,
   ss = NULL,
   CI = 0.95,
+  hierarchy_value = NULL,
   inherit.aes = TRUE,
   ...
 )
@@ -80,6 +81,12 @@ that if data is missing (ie, not inherited or specified) then the data from \cod
 \item{ss}{A \code{\link{pcvrss-class}} object. Only the "pcvrForm" and "df" elements are used.}
 
 \item{CI}{A vector of credible intervals to plot, defaults to 0.95.}
+
+\item{hierarchy_value}{Value(s) for the hierarchical variable(s), if applicable. Only used
+for hierarchical brms models. If left NULL (the default) the mean value is used. If this is >1L
+then the x axis will use the hierarchical variable from the model instead of the "time" variable
+and plot data across the values of the hierarchical variable at the mean of the timeRange
+(mean of x values in the model if timeRange is not specified).}
 
 \item{inherit.aes}{Logical, should aesthetics be inherited from top level? Defaults to TRUE.}
 
