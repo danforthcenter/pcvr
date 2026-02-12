@@ -97,26 +97,29 @@ frem <- function(df, des, phenotypes, timeCol = NULL, cor = TRUE, returnData = F
   } # no interaction for 1L des
   ind_fmla <- paste(paste0("(1|", c(des, int), ")"), collapse = "+")
   #* `Find time and subset data`
+  keep_cols <- c(des, phenotypes, unique(c(timeCol, originalTimeCol)))
   if (is.null(time)) {
-    dat <- na.omit(df[df[[timeCol]] == max(df[[timeCol]]), c(des, phenotypes, timeCol, originalTimeCol)])
+    dat <- na.omit(df[df[[timeCol]] == max(df[[timeCol]]), keep_cols])
     LONGITUDINAL <- FALSE
   } else if (is.numeric(time) && length(time) == 1) {
-    dat <- na.omit(df[df[[timeCol]] == time, c(des, phenotypes, timeCol, originalTimeCol)])
+    dat <- na.omit(df[df[[timeCol]] == time, keep_cols])
     LONGITUDINAL <- FALSE
   } else if (is.numeric(time) && length(time) > 1) {
     LONGITUDINAL <- TRUE
-    dat <- na.omit(df[df[[timeCol]] %in% time, c(des, phenotypes, timeCol, originalTimeCol)])
+    dat <- na.omit(df[df[[timeCol]] %in% time, keep_cols])
   } else if (time == "all") {
     LONGITUDINAL <- TRUE
-    dat <- na.omit(df[, c(des, phenotypes, timeCol, originalTimeCol)])
+    dat <- na.omit(df[, keep_cols])
   }
   #* `Partition Variance`
   H2 <- .partitionVarianceFrem(dat, timeCol, originalTimeCol, phenotypes, ind_fmla, des, ...)
-
+  H2
   ordering <- H2[H2[[timeCol]] == max(H2[[timeCol]]), ]
   H2$Phenotypes <- ordered(H2$Phenotypes, levels = ordering$Phenotypes[order(ordering$Unexplained)])
   h2_melt <- data.frame(
-    data.table::melt(as.data.table(H2), id = c("Phenotypes", "singular", timeCol, originalTimeCol))
+    data.table::melt(
+      as.data.table(H2), id = c("Phenotypes", "singular", unique(c(timeCol, originalTimeCol)))
+    )
   )
   h2_melt$variable <- ordered(h2_melt$variable,
     levels = c("Unexplained", des, "Interaction")
@@ -124,8 +127,9 @@ frem <- function(df, des, phenotypes, timeCol = NULL, cor = TRUE, returnData = F
   anova_dat <- h2_melt
   #* `Plot Variance`
   plotHelperOutputs <- .fremPlotHelper(
-    LONGITUDINAL, anova_dat, markSingular, dummyX, timeCol, dat, phenotypes,
-    cor, combine, timeTranslation
+    LONGITUDINAL, anova_dat, markSingular,
+    dummyX, timeCol, originalTimeCol, dat, phenotypes,
+    cor, combine
   )
   plot <- plotHelperOutputs[["plot"]]
   x <- plotHelperOutputs[["x"]]
@@ -157,8 +161,9 @@ frem <- function(df, des, phenotypes, timeCol = NULL, cor = TRUE, returnData = F
 #' @keywords internal
 #' @noRd
 
-.fremPlotHelper <- function(LONGITUDINAL, anova_dat, markSingular, dummyX, timeCol, dat, phenotypes,
-                            cor, combine, timeTranslation) {
+.fremPlotHelper <- function(LONGITUDINAL, anova_dat, markSingular,
+                            dummyX, timeCol, originalTimeCol,
+                            dat, phenotypes, cor, combine) {
   x <- NULL
   if (!LONGITUDINAL) {
     p <- ggplot2::ggplot(data = anova_dat) +
@@ -184,7 +189,10 @@ frem <- function(df, des, phenotypes, timeCol = NULL, cor = TRUE, returnData = F
       p <- p + ggplot2::theme(axis.title.x.bottom = ggplot2::element_blank())
     }
   } else {
-    p <- ggplot(data = anova_dat, aes(x = .data[[originalTimeCol]], y = .data$value, fill = .data$variable)) +
+    p <- ggplot(
+      data = anova_dat,
+      aes(x = .data[[originalTimeCol]], y = .data$value, fill = .data$variable)
+    ) +
       ggplot2::geom_area() +
       ggplot2::facet_wrap(~ .data$Phenotypes) +
       ggplot2::ylab("Variance Explained") +
@@ -265,7 +273,6 @@ frem <- function(df, des, phenotypes, timeCol = NULL, cor = TRUE, returnData = F
 .partitionVarianceFrem <- function(dat, timeCol, originalTimeCol, phenotypes, ind_fmla, des, ...) {
   H2 <- data.frame(do.call(rbind, lapply(sort(unique(dat[[timeCol]])), function(tm) {
     sub <- dat[dat[[timeCol]] == tm, ]
-    otm <- sub[1, originalTimeCol]
     des_bools <- unlist(lapply(des, function(var) {
       des_numbers <- as.numeric(table(sub[[var]]))
       return(sum(des_numbers != 0) > 1)
@@ -299,11 +306,10 @@ frem <- function(df, des, phenotypes, timeCol = NULL, cor = TRUE, returnData = F
       tot.var <- sum(as.numeric(re), res)
       unexp <- 1 - (sum(as.numeric(re)) / sum(as.numeric(re), res))
 
-      h2 <- data.frame(
+      h2 <- c(
         (des.var / tot.var),
         unexp,
         tm,
-        otm,
         singular
       )
       return(h2)
@@ -315,6 +321,10 @@ frem <- function(df, des, phenotypes, timeCol = NULL, cor = TRUE, returnData = F
   if (length(des) > 1) {
     des_colnames <- c(des, "Interaction")
   }
-  colnames(H2) <- c(des_colnames, "Unexplained", timeCol, originalTimeCol, "singular", "Phenotypes")
+  colnames(H2) <- c(des_colnames, "Unexplained", timeCol, "singular", "Phenotypes")
+  if (timeCol != originalTimeCol) {
+    td <- dat[!duplicated(dat[[timeCol]]), c(timeCol, originalTimeCol)]
+    H2 <- plyr::join(H2, td, by = timeCol)
+  }
   return(H2)
 }
