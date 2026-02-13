@@ -527,17 +527,17 @@ fit_test <- fitGrowth(ss,
 #> 
 #> Chain 1 Iteration:   1 / 500 [  0%]  (Warmup) 
 #> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/RtmpiO28qU/model-1ffc6acc8947.stan', line 131, column 4 to column 48)
+#> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/RtmpvbZ26s/model-1d4e3c1264e5.stan', line 131, column 4 to column 48)
 #> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 1 
 #> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/RtmpiO28qU/model-1ffc6acc8947.stan', line 131, column 4 to column 48)
+#> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/RtmpvbZ26s/model-1d4e3c1264e5.stan', line 131, column 4 to column 48)
 #> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 1 
 #> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: student_t_lpdf: Location parameter[1] is -nan, but must be finite! (in '/tmp/RtmpiO28qU/model-1ffc6acc8947.stan', line 131, column 4 to column 48)
+#> Chain 1 Exception: student_t_lpdf: Location parameter[1] is -nan, but must be finite! (in '/tmp/RtmpvbZ26s/model-1d4e3c1264e5.stan', line 131, column 4 to column 48)
 #> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 1 
@@ -547,7 +547,7 @@ fit_test <- fitGrowth(ss,
 #> Chain 1 Iteration: 350 / 500 [ 70%]  (Sampling) 
 #> Chain 1 Iteration: 450 / 500 [ 90%]  (Sampling) 
 #> Chain 1 Iteration: 500 / 500 [100%]  (Sampling) 
-#> Chain 1 finished in 90.5 seconds.
+#> Chain 1 finished in 90.3 seconds.
 # }
 
 

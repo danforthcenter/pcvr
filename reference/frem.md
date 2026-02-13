@@ -227,21 +227,23 @@ frem(df,
 )
 #> Skipping DAS 2 as grouping contains a variable that is singular
 #> $plot
+#> Warning: A <numeric> value was passed to a Datetime scale.
+#> ℹ The value was converted to a <POSIXct> object.
 
 #> 
 #> $data
-#>     genotype Unexplained DAS singular Phenotypes
-#> 1  0.0000000   1.0000000   0        1     pheno1
-#> 2  0.4597990   0.5402010   0        0     pheno2
-#> 3  0.5522121   0.4477879   0        0     pheno3
-#> 4  0.8836435   0.1163565   1        0     pheno1
-#> 5  0.5651446   0.4348554   1        0     pheno2
-#> 6  0.7968399   0.2031601   1        0     pheno3
-#> 7  0.5044749   0.4955251   3        0     pheno1
-#> 8  0.5381478   0.4618522   3        0     pheno2
-#> 9  0.8556475   0.1443525   3        0     pheno3
-#> 10 0.0000000   1.0000000   4        1     pheno1
-#> 11 0.5469094   0.4530906   4        0     pheno2
-#> 12 0.7342857   0.2657143   4        0     pheno3
+#>     genotype Unexplained DAS singular Phenotypes  date_time
+#> 1  0.0000000   1.0000000   0        1     pheno1 2024-08-21
+#> 2  0.4597990   0.5402010   0        0     pheno2 2024-08-21
+#> 3  0.5522121   0.4477879   0        0     pheno3 2024-08-21
+#> 4  0.8836435   0.1163565   1        0     pheno1 2024-08-22
+#> 5  0.5651446   0.4348554   1        0     pheno2 2024-08-22
+#> 6  0.7968399   0.2031601   1        0     pheno3 2024-08-22
+#> 7  0.5044749   0.4955251   3        0     pheno1 2024-08-24
+#> 8  0.5381478   0.4618522   3        0     pheno2 2024-08-24
+#> 9  0.8556475   0.1443525   3        0     pheno3 2024-08-24
+#> 10 0.0000000   1.0000000   4        1     pheno1 2024-08-25
+#> 11 0.5469094   0.4530906   4        0     pheno2 2024-08-25
+#> 12 0.7342857   0.2657143   4        0     pheno3 2024-08-25
 #> 
 ```
