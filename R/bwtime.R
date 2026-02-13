@@ -126,6 +126,7 @@ pcv.time <- function(df = NULL, mode = c("DAS", "DAP", "DAE"), plantingDelay = N
 #' @noRd
 
 .formatNonIntegerTime <- function(df, timeCol, format, index, digits) {
+  originalTimeCol <- timeCol
   if (!is.numeric(df[[timeCol]])) {
     df[[timeCol]] <- as.POSIXct(strptime(df[[timeCol]], format = format))
     beg <- as.POSIXct(index, tz = "UTC")
@@ -135,7 +136,7 @@ pcv.time <- function(df = NULL, mode = c("DAS", "DAP", "DAE"), plantingDelay = N
     df$DAS <- round(as.numeric((df[[timeCol]] - beg) / 60 / 60 / 24), digits = digits)
     timeCol <- "DAS"
   }
-  return(list("data" = df, "timeCol" = timeCol))
+  return(list("data" = df, "timeCol" = timeCol, "originalTimeCol" = originalTimeCol))
 }
 
 

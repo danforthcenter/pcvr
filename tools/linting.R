@@ -12,6 +12,7 @@ x <- lintr::lint_package(path = "~/pcvr",
                                                     brace_linter(allow_single_line = TRUE)
                     ))
 table(names(x))
+
 x
 length(x)
 #* run styling
@@ -20,7 +21,7 @@ if (FALSE) {
 }
 
 
-x <- lintr::lint(filename = "~/pcvr/vignettes/articles/field_capacity.Rmd",
+x <- lintr::lint(filename = "~/pcvr/R/frem.R",
                          linters = linters_with_defaults(line_length_linter(length = 105L),
                                                          object_name_linter(styles = c("snake_case", "symbols",
                                                                                        "camelCase", "dotted.case",
@@ -29,6 +30,7 @@ x <- lintr::lint(filename = "~/pcvr/vignettes/articles/field_capacity.Rmd",
                                                          brace_linter(allow_single_line = TRUE)
                          ))
 x
+
 styler::style_dir(path = "~/pcvr/tutorials", scope = "tokens")
 
 
