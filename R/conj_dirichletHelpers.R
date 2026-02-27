@@ -9,9 +9,12 @@
 #'   plot = TRUE
 #' )
 #' lapply(out, head)
+#' @details
+#' See Examples 1.4, 1.6, and 1.7 for thoughts on default dirichlet prior here
+#' https://arxiv.org/pdf/1504.02689
 #' @keywords internal
 #' @noRd
-.conj_dirichlet_sv <- function(s1 = NULL, priors = NULL,
+.conj_multinomial_sv <- function(s1 = NULL, priors = NULL,
                                support = NULL, cred.int.level = NULL,
                                calculatingSupport = FALSE) {
   #' `make default prior if none provided`
