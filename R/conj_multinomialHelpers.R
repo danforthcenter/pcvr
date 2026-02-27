@@ -50,6 +50,10 @@
   #' Posterior draws used for ROPE comparisons mainly.
   #' need to consider if it's better to draw from rdirichlet or rbeta
 
+  #' `Calculate density over support`
+  #' marginal beta densities, probably don't need all of them, just the ones
+  #' specified in the hypothesis
+
   #' `calculate HDI`
   #' note that this might change some since we'd have HDE/HDI for every
   #' marginal beta
@@ -69,3 +73,23 @@
   #' because we want to test/plot the marginal betas to keep the dimensions
   #' low enough to understand (and make the math tractable?)
 }
+
+#' Might define the plot helper functions here as well, I don't think I have anything else
+#' that is quite in this situation for how it's using marginals, that's why I have the
+#' bivariate options for some distributions but a shared bivariate plotting function.
+#' Overall example would be drawn from `conjugate_plot::.conj_general_plot` and might just
+#' be pre-processing.
+#' Still need to decide how those things are done, thinking that it would be specified in
+#' the hypothesis, so instead of `(s1) ">" (s2)` I'd have the input be `(s1)K_1 > (s2)K_3`?
+#' I think that if there are 2 samples then it would assume your hypothesis has to be between
+#' the samples (previous example) but if there is only 1 sample that you're comparing categories
+#' in that sample.
+#' 
+#' This will take some real review of how hypotheses are handled to implement.
+#' Currently the hypothesis is passed to `.post.prob.from.pdfs` and is just used for logic in picking
+#' which comparison to make between PDFs, so I could have the dirichlet helper parse the hypothesis
+#' string and only return PDFs of the marginal betas that are requested? I think then I could return
+#' two for each sample based on the hypothesis, then just always take the first from s1 and the
+#' second from s2? That would mean I'd need a helper higher upstream to parse that hypothesis since
+#' by the time the `.conj_distHelper` function sees data it only has 1 sample.
+#' Not 100% sure that works right now but that feels reasonable.
