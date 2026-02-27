@@ -11,7 +11,9 @@
 #' lapply(out, head)
 #' @details
 #' See Examples 1.4, 1.6, and 1.7 for thoughts on default dirichlet prior here
-#' https://arxiv.org/pdf/1504.02689
+#' https://arxiv.org/pdf/1504.02689 , updating rule defined in
+#' The Compendium of Conjugate Priors (https://www.johndcook.com/CompendiumOfConjugatePriors.pdf)
+#' Section 5.1
 #' @keywords internal
 #' @noRd
 .conj_multinomial_sv <- function(s1 = NULL, priors = NULL,
