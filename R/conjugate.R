@@ -315,9 +315,9 @@ conjugate <- function(s1 = NULL, s2 = NULL,
                         "uniform", "pareto", "gamma", "bernoulli", "exponential", "bivariate_uniform",
                         "bivariate_gaussian", "bivariate_lognormal"
                       ),
-                      priors = NULL, plot = NULL, rope_range = NULL,
+                      priors = NULL, rope_range = NULL,
                       rope_ci = 0.89, cred.int.level = 0.89, hypothesis = "equal",
-                      bayes_factor = NULL, support = NULL) {
+                      bayes_factor = NULL) {
   #* `Handle formula option in s1`
   samples <- .formatSamples(s1, s2)
   s1 <- samples$s1
@@ -332,13 +332,6 @@ conjugate <- function(s1 = NULL, s2 = NULL,
   samplesList <- list(s1)
   if (!is.null(s2)) {
     samplesList[[2]] <- s2
-  }
-
-  if (!missing("support")) {
-    warning("support argument is deprecated.")
-  }
-  if (!missing("plot")) {
-    warning("plot argument is deprecated, use plot.conjugate instead.")
   }
   support <- .getSupport(samplesList, method, priors) # calculate shared support
 
