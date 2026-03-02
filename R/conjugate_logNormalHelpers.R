@@ -25,7 +25,7 @@
 
 .conj_lognormal_mv <- function(s1 = NULL, priors = NULL,
                                support = NULL, cred.int.level = NULL,
-                               calculatingSupport = FALSE) {
+                               calculatingSupport = FALSE, ...) {
   out <- list()
   #* `make default prior if none provided`
   priors <- .convert_gaussian_priors(priors)
@@ -36,9 +36,7 @@
   histColsBin <- as.numeric(sub("[a-zA-Z_.]+", "", colnames(s1)))
   bins_order <- sort(histColsBin, index.return = TRUE)$ix
   s1 <- s1[, bins_order]
-
   #* `Loop over reps, get moments for each histogram`
-
   rep_distributions <- lapply(seq_len(nrow(s1)), function(i) {
     X1 <- rep(histColsBin[bins_order], as.numeric(s1[i, ]))
     #* `Get mean of X1`
@@ -71,7 +69,6 @@
   obs_sd <- mean(unlist(lapply(rep_distributions, function(i) {
     return(1 / ((i$obs_prec) ^ 2))
   })))
-
   #* `Define support if it is missing`
   if (is.null(support) && calculatingSupport) {
     quantiles <- stats::qnorm(c(0.0001, 0.9999), mu_ls_prime, sigma_ls_prime)
@@ -129,7 +126,7 @@
 
 .conj_lognormal_sv <- function(s1 = NULL, priors = NULL,
                                support = NULL, cred.int.level = NULL,
-                               calculatingSupport = FALSE) {
+                               calculatingSupport = FALSE, ...) {
   out <- list()
   #* `make default prior if none provided`
   priors <- .convert_gaussian_priors(priors)

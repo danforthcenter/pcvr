@@ -13,7 +13,12 @@
 #' @noRd
 
 .conj_binomial_sv <- function(s1 = NULL, priors = NULL, support = NULL, cred.int.level = NULL,
-                              calculatingSupport = FALSE) {
+                              calculatingSupport = FALSE, ...) {
+  #* `Define dense Support`
+  #* `p parameter is beta distributed`
+  if (is.null(support) && calculatingSupport) {
+    return(c(0.0001, 0.9999))
+  }
   #* `check stopping conditions`
   s1 <- .conj_binomial_formatter(s1)
   #* `separate data into counts and trials`
@@ -28,11 +33,6 @@
   #* `p parameter is beta distributed`
   if (is.null(priors)) {
     priors <- list(a = 0.5, b = 0.5)
-  }
-  #* `Define dense Support`
-  #* `p parameter is beta distributed`
-  if (is.null(support) && calculatingSupport) {
-    return(c(0.0001, 0.9999))
   }
   out <- list()
   #* `Update priors with observed counts`

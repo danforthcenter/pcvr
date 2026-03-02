@@ -1,3 +1,4 @@
+
 #' @description
 #' Internal function for calculating the gamma distribution of the rate parameter in gamma distributed
 #' data represented by single value traits.
@@ -12,7 +13,7 @@
 #' @noRd
 .conj_gamma_sv <- function(s1 = NULL, priors = NULL,
                            support = NULL, cred.int.level = NULL,
-                           calculatingSupport = FALSE) {
+                           calculatingSupport = FALSE, ...) {
   out <- list()
   #* `make default prior if none provided`
   if (is.null(priors)) {

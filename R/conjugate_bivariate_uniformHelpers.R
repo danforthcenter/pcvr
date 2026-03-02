@@ -15,7 +15,7 @@
 
 .conj_bivariate_uniform_sv <- function(s1 = NULL, priors = NULL,
                                        support = NULL, cred.int.level = NULL,
-                                       calculatingSupport = FALSE) {
+                                       calculatingSupport = FALSE, ...) {
   out <- list()
   #* `make default prior if none provided`
   #* conjugate prior needs r1, r2, and alpha
@@ -177,7 +177,7 @@
 
 .conj_bivariate_uniform_mv <- function(s1 = NULL, priors = NULL,
                                        support = NULL, cred.int.level = NULL,
-                                       calculatingSupport = FALSE) {
+                                       calculatingSupport = FALSE, ...) {
   out <- list()
   #* `make default prior if none provided`
   #* conjugate prior needs r1, r2, and alpha

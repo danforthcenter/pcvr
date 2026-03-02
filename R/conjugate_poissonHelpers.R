@@ -23,7 +23,7 @@
 
 .conj_poisson_sv <- function(s1 = NULL, priors = NULL,
                              support = NULL, cred.int.level = NULL,
-                             calculatingSupport = FALSE) {
+                             calculatingSupport = FALSE, ...) {
   #* `Check samples`
   if (any(abs(s1 - round(s1)) > .Machine$double.eps^0.5) || any(s1 < 0)) {
     stop("Only positive integers can be used in the Poisson distribution")
@@ -32,9 +32,7 @@
   if (is.null(priors)) {
     priors <- list(a = 0.5, b = 0.5) # gamma prior on lambda
   }
-
   out <- list()
-
   #* `Use conjugate gamma prior on lambda`
   a1_prime <- priors$a[1] + sum(s1)
   b1_prime <- priors$b[1] + length(s1)
@@ -46,13 +44,10 @@
   #* `calculate density over support``
   dens1 <- dgamma(support, a1_prime, b1_prime)
   pdf1 <- dens1 / sum(dens1)
-
   #* `calculate highest density interval`
   hdi1 <- qgamma(c((1 - cred.int.level) / 2, (1 - ((1 - cred.int.level) / 2))), a1_prime, b1_prime)
-
   #* `calculate highest density estimate``
   hde1 <- .gammaHDE(shape = a1_prime, scale = 1 / b1_prime)
-
   #* `save summary and parameters`
   out$summary <- data.frame(HDE_1 = hde1, HDI_1_low = hdi1[1], HDI_1_high = hdi1[2])
   out$posterior$a <- a1_prime

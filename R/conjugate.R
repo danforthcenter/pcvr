@@ -360,7 +360,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
       "bivariate_uniform", "bivariate_gaussian", "bivariate_lognormal"
     ))
     matched_fun <- get(paste0(".conj_", matched_arg, "_", vec_suffix))
-    res <- matched_fun(sample, prior, support, cred.int.level)
+    res <- matched_fun(sample, prior, support, cred.int.level, hypothesis)
     return(res)
   })
   #* `combine results into an object to return`

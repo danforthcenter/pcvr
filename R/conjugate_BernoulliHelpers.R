@@ -13,7 +13,11 @@
 #' @noRd
 .conj_bernoulli_sv <- function(s1 = NULL, priors = NULL,
                                support = NULL, cred.int.level = NULL,
-                               calculatingSupport = FALSE) {
+                               calculatingSupport = FALSE, ...) {
+  #* `Define support if it is missing`
+  if (is.null(support) && calculatingSupport) {
+    return(c(0.0001, 0.9999))
+  }
   #* `make default prior if none provided`
   if (is.null(priors)) {
     priors <- list(a = 0.5, b = 0.5)
@@ -24,10 +28,6 @@
   #* `Update beta prior with sufficient statistics`
   a1_prime <- priors$a[1] + sum(s1)
   b1_prime <- priors$b[1] + sum(!s1)
-  #* `Define support if it is missing`
-  if (is.null(support) && calculatingSupport) {
-    return(c(0.0001, 0.9999))
-  }
   out <- list()
   #* `Make Posterior Draws`
   out$posteriorDraws <- rbeta(10000, a1_prime, b1_prime)
@@ -37,7 +37,7 @@
   out$pdf <- pdf1
   #* `calculate highest density interval`
   hdi1 <- qbeta(c((1 - cred.int.level) / 2, (1 - ((1 - cred.int.level) / 2))), a1_prime, b1_prime)
-  #* `calculate highest density estimate``
+  #* `calculate highest density estimate`
   hde1 <- .betaHDE(a1_prime, b1_prime)
   #* `Store summary`
   out$summary <- data.frame(HDE_1 = hde1, HDI_1_low = hdi1[1], HDI_1_high = hdi1[2])
