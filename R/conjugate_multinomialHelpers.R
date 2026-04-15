@@ -184,13 +184,24 @@
 
 #' @keywords internal
 #' @noRd
-.multinomial.pdf.handling <- function(sample_results, hypothesis) {
+.multinomial.parse.hypothesis <- function(hypothesis) {
   g1 <- trimws(gsub("(.*?)([>|<|=|!]{1,2})(.*)", "\\1", hypothesis))
   g2 <- trimws(gsub("(.*?)([>|<|=|!]{1,2})(.*)", "\\3", hypothesis))
   hyp <- trimws(gsub("(.*?)([>|<|=|!]{1,2})(.*)", "\\2", hypothesis))
   hyp <- switch({hyp},
     ">" = "greater", "<" = "lesser", "==" = "equal", "=" = "equal", "unequal"
   )
+  return(list(g1, g2, hyp))
+}
+
+
+#' @keywords internal
+#' @noRd
+.multinomial.pdf.handling <- function(sample_results, hypothesis) {
+  parsed <- .multinomial.parse.hypothesis(hypothesis)
+  g1 <- parsed[[1]]
+  g2 <- parsed[[2]]
+  hyp <- parsed[[3]]
   if (length(sample_results) == 2) {
     pdf.handling.output <- .post.prob.from.pdfs(
       sample_results[[1]]$pdf[, g1],
