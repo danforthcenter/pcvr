@@ -52,7 +52,11 @@
 #' in computing HDI for samples, defaults to 0.89.
 #' @param hypothesis Direction of a hypothesis if two samples are provided.
 #'  Options are "unequal", "equal", "greater", and "lesser",
-#'   read as "sample1 greater than sample2".
+#'   read as "sample1 greater than sample2". For the "multinomial" method the hypothesis
+#' should be specified as "Group1 >|<|==|!= Group2" and comparisons will be made using the marginal
+#' Beta distributions. If s2 is supplied then the hypothesis is read as
+#' "Group1 (from s1) >|<|==|!= Group2 (from s2)", if s2 is not supplied then both groups are taken
+#' from s1.
 #' @param bayes_factor Optional point or interval to evaluate bayes factors on. Note that this
 #' generally only makes sense to use if you have informative priors where the change in odds between
 #' prior and posterior is meaningful about the data. If this is non-NULL then columns of bayes factors
@@ -313,7 +317,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
                         "t", "gaussian", "beta", "binomial",
                         "lognormal", "lognormal2", "poisson", "negbin", "vonmises", "vonmises2",
                         "uniform", "pareto", "gamma", "bernoulli", "exponential", "bivariate_uniform",
-                        "bivariate_gaussian", "bivariate_lognormal"
+                        "bivariate_gaussian", "bivariate_lognormal", "multinomial"
                       ),
                       priors = NULL, rope_range = NULL,
                       rope_ci = 0.89, cred.int.level = 0.89, hypothesis = "equal",
@@ -350,10 +354,11 @@ conjugate <- function(s1 = NULL, s2 = NULL,
       "lognormal", "lognormal2", "poisson", "negbin",
       "vonmises", "vonmises2",
       "uniform", "pareto", "gamma", "bernoulli", "exponential",
-      "bivariate_uniform", "bivariate_gaussian", "bivariate_lognormal"
+      "bivariate_uniform", "bivariate_gaussian", "bivariate_lognormal",
+      "multinomial"
     ))
     matched_fun <- get(paste0(".conj_", matched_arg, "_", vec_suffix))
-    res <- matched_fun(sample, prior, support, cred.int.level, hypothesis)
+    res <- matched_fun(sample, prior, support, cred.int.level)
     return(res)
   })
   #* `combine results into an object to return`
@@ -370,7 +375,15 @@ conjugate <- function(s1 = NULL, s2 = NULL,
     }
     return(s)
   }))
-  if (!is.null(s2)) {
+  if (method[1] == "multinomial") {
+    # multinomial has special hypothesis handling, see conjugate_multinomialHelpers
+    mult_prob <- .multinomial.pdf.handling(sample_results, hypothesis)
+    out$summary <- cbind(
+      out$summary,
+      data.frame("hyp" = mult_prob$hyp,
+        "post.prob" = as.numeric(mult_prob$pdf.handling.output$$post.prob))
+    )
+  } else if (!is.null(s2)) {
     postProbRes <- .pdf.handling(sample_results[[1]]$pdf, sample_results[[2]]$pdf, hypothesis)
     out$summary <- cbind(
       out$summary,
@@ -620,7 +633,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
 #' @keywords internal
 #' @noRd
 
-.pdf.handling <- function(pdf1, pdf2, hypothesis) {
+.pdf.handling <- function(method, pdf1, pdf2, hypothesis) {
   if (is.list(pdf1) && is.list(pdf2)) {
     pdf.handling.output <- as.data.frame(do.call(rbind, lapply(seq_along(pdf1), function(i) {
       pdf <- .post.prob.from.pdfs(pdf1[[i]], pdf2[[i]], hypothesis)
