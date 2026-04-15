@@ -193,14 +193,14 @@
   )
   if (length(sample_results) == 2) {
     pdf.handling.output <- .post.prob.from.pdfs(
-      sample_results[[1]]$pdf[[g1]],
-      sample_results[[2]]$pdf[[g2]],
+      sample_results[[1]]$pdf[, g1],
+      sample_results[[2]]$pdf[, g2],
       hyp
     )
   } else {
     pdf.handling.output <- .post.prob.from.pdfs(
-      sample_results[[1]]$pdf[[g1]],
-      sample_results[[1]]$pdf[[g2]],
+      sample_results[[1]]$pdf[, g1],
+      sample_results[[1]]$pdf[, g2],
       hyp
     )
   }
