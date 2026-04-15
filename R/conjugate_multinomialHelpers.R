@@ -146,6 +146,22 @@
   return(out)
 }
 
+#' Multinomial "multi-value data", aka a dataframe of counts
+#' @param s1 A data frame of counts, columns should represent categories
+#' @keywords internal
+#' @noRd
+
+.conj_multinomial_mv <- function(s1 = NULL, priors = NULL,
+                               support = NULL, cred.int.level = NULL,
+                               calculatingSupport = FALSE, ...) {
+  nms <- colnames(s1)
+  s1 <- colSums(s1)
+  names(s1) <- nms
+  out <- .conj_multinomial_sv(s1, priors, support, cred.int.level, calculatingSupport)
+  return(out)
+}
+
+
 #' Might define the plot helper functions here as well, I don't think I have anything else
 #' that is quite in this situation for how it's using marginals, that's why I have the
 #' bivariate options for some distributions but a shared bivariate plotting function.
@@ -195,4 +211,3 @@
     )
   )
 }
-
