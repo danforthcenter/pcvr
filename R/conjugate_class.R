@@ -112,7 +112,10 @@ print.conjugatesummary <- function(x, ...) {
       prior_statement <- paste0(
         "Sample ", i, " Prior ", method_list[[1]], "(",
         paste(
-          paste(names(prior), round(unlist(prior), 3), sep = " = "),
+          paste(names(prior),    
+            unlist(lapply(names(prior), function(nm) {
+              paste(round(prior[[nm]], 3), collapse = ", ")
+            })), sep = " = "),
           collapse = ", "
         ),
         ")\n"
@@ -120,7 +123,10 @@ print.conjugatesummary <- function(x, ...) {
       posterior_statement <- paste0(
         "\tPosterior ", method_list[[1]], "(",
         paste(
-          paste(names(post), round(unlist(post), 3), sep = " = "),
+          paste(names(post),    
+            unlist(lapply(names(post), function(nm) {
+              paste(round(post[[nm]], 3), collapse = ", ")
+            })), sep = " = "),
           collapse = ", "
         ),
         ")\n"
