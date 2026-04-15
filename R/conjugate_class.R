@@ -92,7 +92,8 @@ print.conjugatesummary <- function(x, ...) {
       exponential = list("Gamma", "Rate", "Exponential"),
       bivariate_uniform = list("Bivariate Pareto", "Boundaries", "Uniform"),
       bivariate_gaussian = list("Normal/Gamma", "Mu/Sd", "Normal"),
-      bivariate_lognormal = list("Normal/Gamma", "Mu/Sd", "Lognormal")
+      bivariate_lognormal = list("Normal/Gamma", "Mu/Sd", "Lognormal"),
+      multinomial = list("Dirichlet", "P (alpha)", "Multinomial")
     )
     method_statement <- paste0(
       method_list[[1]], # conjugate distribution
