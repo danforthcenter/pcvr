@@ -392,7 +392,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
   }
   #* `parse output and do ROPE`
   if (!is.null(rope_range)) {
-    rope_res <- .conj_rope(sample_results, rope_range, rope_ci, method)
+    rope_res <- .conj_rope(sample_results, rope_range, rope_ci, method, hypothesis)
     out$summary <- cbind(out$summary, rope_res$summary)
     out$rope_df <- rope_res$rope_df
   }
@@ -543,7 +543,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
 #' @keywords internal
 #' @noRd
 .conj_rope <- function(sample_results, rope_range = c(-0.1, 0.1),
-                       rope_ci = 0.89, method) {
+                       rope_ci = 0.89, method, hypothesis) {
   #* `if bivariate then call the bivariate option`
   #* note this will return to .conj_rope but with a non-bivariate method
   if (any(grepl("bivariate", method))) {
@@ -552,6 +552,10 @@ conjugate <- function(s1 = NULL, s2 = NULL,
       rope_ci, method
     )
     return(rope_res)
+  }
+  #' `Format PDF from multinomial`
+  if (any(method == "multinomial")) {
+    sample_results <- .multinomial.rope.format(sample_results, hypothesis)
   }
   #* `ROPE Comparison`
   rope_res <- list()

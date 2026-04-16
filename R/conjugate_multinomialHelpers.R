@@ -48,6 +48,7 @@
   if (is.null(priors)) {
     priors <- list("alpha" = rep(1 / length(s1), length(s1)))
   }
+  names(priors$alpha) <- nms
   #' I think the default prior should be a flat dirichlet
   #' lowest entropy would mean very low precision
   #' interesting comments on jeffrey's prior here: https://arxiv.org/pdf/1504.02689
@@ -132,14 +133,14 @@
     "range" = range(support),
     "ddist_fun" = "stats::dbeta",
     "priors" = list("shape1" = priors$alpha,
-      "shape2" = unlist(lapply(seq_along(priors$alpha), function(i) {
+      "shape2" = setNames(unlist(lapply(seq_along(priors$alpha), function(i) {
         return(sum(priors$alpha[-i]))
-      }))
+      })), nms)
     ),
     "parameters" = list("shape1" = alpha_prime,
-      "shape2" = unlist(lapply(seq_along(alpha_prime), function(i) {
+      "shape2" = setNames(unlist(lapply(seq_along(alpha_prime), function(i) {
         return(sum(alpha_prime[-i]))
-      }))
+      })), nms)
     ),
     "given" = NULL
   )
@@ -221,4 +222,90 @@
       "hyp" = hyp
     )
   )
+}
+
+
+#' @keywords internal
+#' @noRd
+.multinomial.conj.plot.format <- function(res) {
+#' not immediately sure how this should work yet with the hypothesis being shuttled around
+  #' basically what I want to have happen is that this selects only the PDF/posteriors from the
+  #' groups that are in the hypothesis and plots those as betas. How to pass the hypothesis
+  #' information is tricky. Could label it earlier on? Could have an extra attribute in `res`
+  #' to store the formatted hypothesis?
+  hypl <- .multinomial.parse.hypothesis(res$call$hypothesis)
+  g1 <- hypl[[1]]
+  g2 <- hypl[[2]]
+  hyp <- hypl[[3]]
+  new_res <- res
+  if (length(res$plot_parameters) == 2) {
+    # keep only relevant marginal beta parameters
+    new_res$plot_parameters[[1]]$parameters$shape1 <- res$plot_parameters[[1]]$parameters$shape1[g1]
+    new_res$plot_parameters[[2]]$parameters$shape1 <- res$plot_parameters[[2]]$parameters$shape1[g2]
+    new_res$plot_parameters[[1]]$parameters$shape2 <- res$plot_parameters[[1]]$parameters$shape2[g1]
+    new_res$plot_parameters[[2]]$parameters$shape2 <- res$plot_parameters[[2]]$parameters$shape2[g2]
+    # keep only relevant marginal priors
+    new_res$plot_parameters[[1]]$priors$shape1 <- res$plot_parameters[[1]]$priors$shape1[g1]
+    new_res$plot_parameters[[2]]$priors$shape1 <- res$plot_parameters[[2]]$priors$shape1[g2]
+    new_res$plot_parameters[[1]]$priors$shape2 <- res$plot_parameters[[1]]$priors$shape2[g1]
+    new_res$plot_parameters[[2]]$priors$shape2 <- res$plot_parameters[[2]]$priors$shape2[g1]
+    # subset summary to draw HDE/HDI correctly
+    new_res$summary <- cbind(
+      res$summary[g1, grepl("_1", colnames(res$summary))],
+      res$summary[g2, grepl("_2", colnames(res$summary))],
+      res$summary[1, !grepl("[1|2]", colnames(res$summary))]
+    )
+  } else {
+    # keep only relevant marginal beta parameters
+    new_res$plot_parameters[[1]]$parameters$shape1 <- res$plot_parameters[[1]]$parameters$shape1[g1]
+    new_res$plot_parameters[[1]]$parameters$shape1 <- res$plot_parameters[[1]]$parameters$shape2[g2]
+    # keep only relevant marginal priors
+    new_res$plot_parameters[[1]]$priors$shape1 <- res$plot_parameters[[1]]$priors$shape1[g1]
+    new_res$plot_parameters[[1]]$priors$shape1 <- res$plot_parameters[[1]]$priors$shape2[g2]
+    # subset summary to draw HDE/HDI correctly
+    ls()
+    g1_cols <- res$summary[g1, grepl("_1", colnames(res$summary))]
+    g2_cols <- res$summary[g2, grepl("_1", colnames(res$summary))]
+    colnames(g2_cols) <- gsub("_1", "_2", colnames(g2_cols))
+    new_res$summary <- cbind(
+      g1_cols,
+      g2_cols,
+      res$summary[1, !grepl("[1|2]", colnames(res$summary))]
+    )
+  }
+  return(new_res)
+}
+
+
+#' @keywords internal
+#' @noRd
+
+.multinomial.rope.format <- function(sample_results, hypothesis) {
+  hypl <- .multinomial.parse.hypothesis(hypothesis)
+  g1 <- hypl[[1]]
+  g2 <- hypl[[2]]
+  post1 <- sample_results[[1]]$posteriorDraws[, g1]
+  #' for ROPE comparison everything expects 2L results, so force that.
+  if (length(sample_results) == 1) {
+    post2 <- sample_results[[1]]$posteriorDraws[, g2]
+    new_sample_results <- list(sample_results, sample_results)
+  } else {
+    post2 <- sample_results[[2]]$posteriorDraws[, g2]
+    new_sample_results <- sample_results
+  }
+  new_sample_results[[1]]$posteriorDraws <- post1
+  new_sample_results[[2]]$posteriorDraws <- post2
+  return(new_sample_results)
+}
+
+#' @param s_res results from conjugate function thus far, currently the plot_list
+#' (for the distribution function name and values) element is all that is used.
+#' Internally this object is called `sample_results` in conjugate and only has
+#' one sample at a time passed to this function. Here it just needs to be
+#' formatted to only have the relevant pieces.
+#' @keywords internal
+#' @noRd
+
+.multinomial.bayes.factor.format <- function(s_res) {
+
 }
