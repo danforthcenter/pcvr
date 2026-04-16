@@ -54,6 +54,9 @@ plot.conjugate <- function(x, ...) {
   if (any(grepl("bivariate", method))) {
     p <- .conj_bivariate_plot(res, rope_df, rope_range, rope_ci, dirSymbol)
   } else {
+    if (any(grepl("multinomial", method))) {
+      res <- .multinomial.conj.plot.format(res)
+    }
     p <- .conj_general_plot(res, rope_df, rope_range, rope_ci, dirSymbol, support, bayes_factor)
   }
   return(p)
