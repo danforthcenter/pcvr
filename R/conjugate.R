@@ -15,9 +15,9 @@
 #' @param s2 An optional second sample, or if s1 is a formula then this should be a dataframe.
 #' This sample is shown in blue if plotted.
 #' @param method The distribution/method to use.
-#' Currently "t", "gaussian", "beta", "binomial", "lognormal", "lognormal2", "poisson",
-#' "negbin" (negative binomial), "uniform", "pareto", "gamma", "bernoulli", "exponential",
-#' "vonmises", and "vonmises2" are supported.
+#' Currently "bernoulli", "beta", "binomial", "exponential", "gamma", "gaussian",
+#' "lognormal", "lognormal2", "multinomial", "negbin" (negative binomial), "pareto",
+#' "poisson", "t", "uniform", "vonmises", and "vonmises2" are supported.
 #' The count (binomial, poisson and negative binomial), bernoulli, exponential,
 #' and pareto distributions are only implemented for single value traits due to their updating
 #' and/or the nature of the input data.
@@ -56,7 +56,9 @@
 #' should be specified as "Group1 >|<|==|!= Group2" and comparisons will be made using the marginal
 #' Beta distributions. If s2 is supplied then the hypothesis is read as
 #' "Group1 (from s1) >|<|==|!= Group2 (from s2)", if s2 is not supplied then both groups are taken
-#' from s1.
+#' from s1. For the multinomial method groups should be specified, so the hypothesis is written as
+#' "group1 > group2", where "group1" and "group2" would be informed by s1 unless s2 is provided in
+#' which case "group1" would be from s1 and "group2" would be from s2.
 #' @param bayes_factor Optional point or interval to evaluate bayes factors on. Note that this
 #' generally only makes sense to use if you have informative priors where the change in odds between
 #' prior and posterior is meaningful about the data. If this is non-NULL then columns of bayes factors
@@ -130,6 +132,12 @@
 #'     This Von-Mises implementation does not assume constant variance and instead uses MLE to estimate
 #'     kappa from the data and updates the kappa prior as a weighted average of the data and the prior.
 #'     The mu parameter is then updated per Von-Mises conjugacy.
+#'     }
+#'     \item{\strong{"multinomial": }
+#'     \code{list(alpha = list("alpha" = rep(1/N_groups, N_groups))}, where alpha is the concentration
+#'     vector of the conjugate dirichlet distribution. For the multinomial method hypotheses are
+#'     specified with group names, so instead of "equal" the hypothesis could be
+#'     "genotypeX == genotypeY".
 #'     }
 #'     \item{\strong{"bivariate_uniform": }
 #'     \code{list(location_l = 1, location_u = 2, scale = 1)}, where scale is the
@@ -260,6 +268,26 @@
 #'   cred.int.level = 0.89, hypothesis = "equal"
 #' )
 #'
+#' # dirichlet-multinomial sv example
+#'
+#' dm_sv_ex <- conjugate(
+#'   s1 = list("A" = 10, "B" = 10, "C" = 5),
+#'   s2 = list("A" = 4, "B" = 12, "C" = 9),
+#'   method = "multinomial",
+#'   hypothesis = "A > A",
+#'   rope_range = c(-0.1, 0.1)
+#' )
+#'
+#' # dirichlet-multinomial mv example
+#'
+#' dm_mv_ex <- conjugate(
+#'   s1 = data.frame("A" = c(5,5), "B" = c(5, 5), "C" = c(2,3)),
+#'   s2 = data.frame("A" = c(2,2), "B" = c(7, 5), "C" = c(8,1)),
+#'   method = "multinomial",
+#'   hypothesis = "A > A",
+#'   rope_range = c(-0.1, 0.1)
+#' )
+#'
 #' # von mises mv example
 #'
 #' mv_gauss <- mvSim(
@@ -366,7 +394,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
   out$summary <- do.call(cbind, lapply(seq_along(sample_results), function(i) {
     s <- sample_results[[i]]$summary
     if (!is.null(bayes_factor)) { #* `Calculate Bayes Factors`
-      bf <- .conj_bayes_factor(bayes_factor, sample_results[[i]])
+      bf <- .conj_bayes_factor(bayes_factor, sample_results, i)
       s$bf_1 <- bf
     }
     if (i == 2) {
@@ -375,7 +403,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
     }
     return(s)
   }))
-  if (method[1] == "multinomial" && hypothesis != "equal") {
+  if (method[1] == "multinomial" && hypothesis != "equal") { # if hypothesis is the default then skip
     # multinomial has special hypothesis handling, see conjugate_multinomialHelpers
     mult_prob <- .multinomial.pdf.handling(sample_results, hypothesis)
     out$summary <- cbind(
@@ -542,6 +570,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
 #' this should take outputs from conjHelpers and compare the $posteriorDraws.
 #' @keywords internal
 #' @noRd
+
 .conj_rope <- function(sample_results, rope_range = c(-0.1, 0.1),
                        rope_ci = 0.89, method, hypothesis) {
   #* `if bivariate then call the bivariate option`
@@ -553,7 +582,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
     )
     return(rope_res)
   }
-  #' `Format PDF from multinomial`
+  #* `Format PDF from multinomial`
   if (any(method == "multinomial")) {
     sample_results <- .multinomial.rope.format(sample_results, hypothesis)
   }
