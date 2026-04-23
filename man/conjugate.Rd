@@ -86,10 +86,6 @@ which case "group1" would be from s1 and "group2" would be from s2.}
 generally only makes sense to use if you have informative priors where the change in odds between
 prior and posterior is meaningful about the data. If this is non-NULL then columns of bayes factors
 are added to the summary output. Note these are only implemented for univariate distributions.}
-
-\item{plot}{deprecated, use \code{plot} method instead.}
-
-\item{support}{Deprecated}
 }
 \value{
 A \link{conjugate-class} object with slots including:
@@ -214,7 +210,7 @@ ln_mv_ex <- conjugate(
   s1 = mv_ln[1:30, -1], s2 = mv_ln[31:60, -1], method = "lognormal",
   priors = list(mu = 5, sd = 2),
   rope_range = c(-40, 40), rope_ci = 0.89,
-  cred.int.level = 0.89, hypothesis = "equal", support = NULL
+  cred.int.level = 0.89, hypothesis = "equal"
 )
 
 # lognormal sv
@@ -223,7 +219,7 @@ ln_sv_ex <- conjugate(
   method = "lognormal",
   priors = list(mu = 5, sd = 2),
   rope_range = NULL, rope_ci = 0.89,
-  cred.int.level = 0.89, hypothesis = "equal", support = NULL
+  cred.int.level = 0.89, hypothesis = "equal"
 )
 
 # Z test mv example
@@ -240,7 +236,7 @@ gauss_mv_ex <- conjugate(
   s1 = mv_gauss[1:30, -1], s2 = mv_gauss[31:60, -1], method = "gaussian",
   priors = list(mu = 30, sd = 10),
   rope_range = c(-25, 25), rope_ci = 0.89,
-  cred.int.level = 0.89, hypothesis = "equal", support = NULL
+  cred.int.level = 0.89, hypothesis = "equal"
 )
 
 # T test sv example with two different priors
@@ -249,7 +245,7 @@ gaussianMeans_sv_ex <- conjugate(
   s1 = rnorm(10, 50, 10), s2 = rnorm(10, 60, 12), method = "t",
   priors = list(list(mu = 40, sd = 10), list(mu = 45, sd = 8)),
   rope_range = c(-5, 8), rope_ci = 0.89,
-  cred.int.level = 0.89, hypothesis = "equal", support = NULL
+  cred.int.level = 0.89, hypothesis = "equal"
 )
 
 # beta mv example

@@ -98,7 +98,7 @@ test_that("conjugate single value lognormal works", {
   expect_warning(
     out <- conjugate(
       s1 = s1, s2 = s2,
-      method = "lognormal", priors = NULL, plot = TRUE,
+      method = "lognormal", priors = NULL,
       rope_range = c(-1, 1), rope_ci = 0.89, cred.int.level = 0.89,
       hypothesis = "equal", bayes_factor = 5
     )

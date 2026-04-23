@@ -37,7 +37,6 @@
 #'  By default this is NULL and weak priors (generally jeffrey's priors) are used.
 #'  The \code{posterior} part of output can also be recycled as a new prior if Bayesian
 #'  updating is appropriate for your use.
-#' @param plot deprecated, use \code{plot} method instead.
 #' @param rope_range Optional vector specifying a region of practical equivalence.
 #' This interval is considered practically equivalent to no effect.
 #' Kruschke (2018) suggests c(-0.1, 0.1) as a broadly reasonable ROPE for standardized parameters.
@@ -63,7 +62,6 @@
 #' generally only makes sense to use if you have informative priors where the change in odds between
 #' prior and posterior is meaningful about the data. If this is non-NULL then columns of bayes factors
 #' are added to the summary output. Note these are only implemented for univariate distributions.
-#' @param support Deprecated
 #'
 #' @import bayestestR
 #' @import extraDistr
@@ -169,7 +167,7 @@
 #'   s1 = mv_ln[1:30, -1], s2 = mv_ln[31:60, -1], method = "lognormal",
 #'   priors = list(mu = 5, sd = 2),
 #'   rope_range = c(-40, 40), rope_ci = 0.89,
-#'   cred.int.level = 0.89, hypothesis = "equal", support = NULL
+#'   cred.int.level = 0.89, hypothesis = "equal"
 #' )
 #'
 #' # lognormal sv
@@ -178,7 +176,7 @@
 #'   method = "lognormal",
 #'   priors = list(mu = 5, sd = 2),
 #'   rope_range = NULL, rope_ci = 0.89,
-#'   cred.int.level = 0.89, hypothesis = "equal", support = NULL
+#'   cred.int.level = 0.89, hypothesis = "equal"
 #' )
 #'
 #' # Z test mv example
@@ -195,7 +193,7 @@
 #'   s1 = mv_gauss[1:30, -1], s2 = mv_gauss[31:60, -1], method = "gaussian",
 #'   priors = list(mu = 30, sd = 10),
 #'   rope_range = c(-25, 25), rope_ci = 0.89,
-#'   cred.int.level = 0.89, hypothesis = "equal", support = NULL
+#'   cred.int.level = 0.89, hypothesis = "equal"
 #' )
 #'
 #' # T test sv example with two different priors
@@ -204,7 +202,7 @@
 #'   s1 = rnorm(10, 50, 10), s2 = rnorm(10, 60, 12), method = "t",
 #'   priors = list(list(mu = 40, sd = 10), list(mu = 45, sd = 8)),
 #'   rope_range = c(-5, 8), rope_ci = 0.89,
-#'   cred.int.level = 0.89, hypothesis = "equal", support = NULL
+#'   cred.int.level = 0.89, hypothesis = "equal"
 #' )
 #'
 #' # beta mv example
@@ -668,7 +666,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
 #' @keywords internal
 #' @noRd
 
-.pdf.handling <- function(method, pdf1, pdf2, hypothesis) {
+.pdf.handling <- function(pdf1, pdf2, hypothesis) {
   if (is.list(pdf1) && is.list(pdf2)) {
     pdf.handling.output <- as.data.frame(do.call(rbind, lapply(seq_along(pdf1), function(i) {
       pdf <- .post.prob.from.pdfs(pdf1[[i]], pdf2[[i]], hypothesis)
