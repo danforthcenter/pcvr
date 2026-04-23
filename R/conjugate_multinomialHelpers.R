@@ -5,7 +5,9 @@
 #' Note that this function returns posterior draws and densities from the marginal beta
 #' distributions, NOT from the dirichlet distribution.
 #'
-#' @param s1 A named vector/list of numerics drawn from a multinomial distribution. A data.frame will trigger the mv option, which will take column sums of the data then pass to the sv method.
+#' @param s1 A named vector/list of numerics drawn from a multinomial distribution.
+#' A data.frame will trigger the mv option,
+#' which will take column sums of the data then pass to the sv method.
 #' @examples
 #' out <- .conj_dirichlet_sv(
 #'   s1 = list("A" = 10, "B" = 10, "C" = 5),
@@ -22,7 +24,7 @@
 #' hypothesis = "A > B"
 #' sample_number = 1
 #'
-#' 
+#'
 #' @details
 #' See Examples 1.4, 1.6, and 1.7 for thoughts on default dirichlet prior here
 #' https://arxiv.org/pdf/1504.02689 , updating rule defined in
@@ -32,8 +34,8 @@
 #' @noRd
 
 .conj_multinomial_sv <- function(s1 = NULL, priors = NULL,
-                               support = NULL, cred.int.level = NULL,
-                               calculatingSupport = FALSE, ...) {
+                                 support = NULL, cred.int.level = NULL,
+                                 calculatingSupport = FALSE, ...) {
   nms <- names(s1)
   s1 <- unlist(s1)
 
@@ -42,8 +44,6 @@
   if (is.null(support) && calculatingSupport) {
     return(c(0.0001, 0.9999))
   }
-  #* `Check stopping conditions (similar to binomial)`
-  
   #* `make default prior if none provided`
   if (is.null(priors)) {
     priors <- list("alpha" = rep(1 / length(s1), length(s1)))
@@ -72,8 +72,10 @@
   #* note that this might change some since we could have HDE/HDI for every
   #* marginal beta
   hdis <- do.call(cbind, lapply(seq_along(alpha_prime), function(i) {
-    hdi <- qbeta(c((1 - cred.int.level) / 2, (1 - ((1 - cred.int.level) / 2))),
-      alpha_prime[i], sum(alpha_prime[-i]))
+    hdi <- qbeta(
+      c((1 - cred.int.level) / 2, (1 - ((1 - cred.int.level) / 2))),
+      alpha_prime[i], sum(alpha_prime[-i])
+    )
     return(hdi)
   }))
 
@@ -127,8 +129,8 @@
 #' @noRd
 
 .conj_multinomial_mv <- function(s1 = NULL, priors = NULL,
-                               support = NULL, cred.int.level = NULL,
-                               calculatingSupport = FALSE, ...) {
+                                 support = NULL, cred.int.level = NULL,
+                                 calculatingSupport = FALSE, ...) {
   nms <- colnames(s1)
   s1 <- colSums(s1)
   names(s1) <- nms
@@ -187,7 +189,6 @@
   hypl <- .multinomial.parse.hypothesis(res$call$hypothesis)
   g1 <- hypl[[1]]
   g2 <- hypl[[2]]
-  hyp <- hypl[[3]]
   new_res <- res
   if (length(res$plot_parameters) == 2) {
     # keep only relevant marginal beta parameters

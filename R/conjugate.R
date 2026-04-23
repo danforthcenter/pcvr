@@ -408,8 +408,10 @@ conjugate <- function(s1 = NULL, s2 = NULL,
     mult_prob <- .multinomial.pdf.handling(sample_results, hypothesis)
     out$summary <- cbind(
       out$summary,
-      data.frame("hyp" = mult_prob$hyp,
-        "post.prob" = as.numeric(mult_prob$pdf.handling.output$post.prob))
+      data.frame(
+        "hyp" = mult_prob$hyp,
+        "post.prob" = as.numeric(mult_prob$pdf.handling.output$post.prob)
+      )
     )
   } else if (!is.null(s2) && method[1] != "multinomial") {
     postProbRes <- .pdf.handling(sample_results[[1]]$pdf, sample_results[[2]]$pdf, hypothesis)
