@@ -129,7 +129,7 @@
 #'     list(mu = 10, sd = 2),
 #'     list(mu = 10, sd = 2)
 #'   ),
-#'   plot = FALSE, rope_range = c(-8, 8), rope_ci = 0.89,
+#'   rope_range = c(-8, 8), rope_ci = 0.89,
 #'   cred.int.level = 0.89, hypothesis = "unequal",
 #'   bayes_factor = c(50, 55)
 #' )
