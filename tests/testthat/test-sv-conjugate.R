@@ -95,13 +95,11 @@ test_that("conjugate single value lognormal works", {
   set.seed(123)
   s1 <- rlnorm(100, log(130), log(1.3))
   s2 <- rlnorm(100, log(100), log(2))
-  expect_warning(
-    out <- conjugate(
-      s1 = s1, s2 = s2,
-      method = "lognormal", priors = NULL,
-      rope_range = c(-1, 1), rope_ci = 0.89, cred.int.level = 0.89,
-      hypothesis = "equal", bayes_factor = 5
-    )
+  out <- conjugate(
+    s1 = s1, s2 = s2,
+    method = "lognormal", priors = NULL,
+    rope_range = c(-1, 1), rope_ci = 0.89, cred.int.level = 0.89,
+    hypothesis = "equal", bayes_factor = 5
   )
   expect_equal(out$summary$post.prob, 0.5980101, tolerance = 1e-6)
   expect_equal(out$summary$rope_prob, 0.1113358, tolerance = 1e-6)

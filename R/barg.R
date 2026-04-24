@@ -118,7 +118,7 @@
 #'   iter = 600, cores = 1, chains = 1, backend = "cmdstanr",
 #'   sample_prior = "only" # only sampling from prior for speed
 #' )
-#' barg(fit_test, ss)
+#' b <- barg(fit_test, ss)
 #' fit_2 <- fit_test
 #' fit_list <- list(fit_test, fit_2)
 #' x <- barg(fit_list, list(ss, ss))

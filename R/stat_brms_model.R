@@ -178,7 +178,7 @@ statBrmsMod <- ggplot2::ggproto("StatBrm", Stat,
 
 statBrmsStaticMod <- ggplot2::ggproto("StatStaticBrm", Stat,
   # `specify that there will be extra params`
-  extra_params = c("na.rm", "fit", "parsed_form", "probs"),
+  extra_params = c("na.rm", "fit", "parsed_form", "probs", "hierarchy_value"),
   # `data setup function`
   setup_data = function(data, params) {
     if ("data" %in% names(params$parsed_form)) {
@@ -190,6 +190,8 @@ statBrmsStaticMod <- ggplot2::ggproto("StatStaticBrm", Stat,
       data <- plyr::join(mod_data, data, type = "left", match = "all", by = "x")
       if (length(unique(data$PANEL)) > 1) {
         data <- data[data$PANEL == as.numeric(as.factor(data$MOD_GROUP)), ]
+      } else {
+        data$PANEL <- 1
       }
     }
     return(data)
@@ -268,8 +270,9 @@ statBrmsStaticMod <- ggplot2::ggproto("StatStaticBrm", Stat,
     longPreds$xmax <- longPreds$numericGroup + c(0.45 * (1 - longPreds$q))
 
     # select columns and rename
-    grpdf <- longPreds[, c(group, "Estimate", "PANEL", "q", "ymin", "ymax", "xmin", "xmax")]
-    colnames(grpdf) <- c("MOD_GROUP", "y", "PANEL", "Cred.Int", "ymin", "ymax", "xmin", "xmax")
+    grpdf <- longPreds[, c(group,
+      "Estimate", "PANEL", "q", "ymin", "ymax", "xmin", "xmax", "numericGroup")]
+    colnames(grpdf) <- c("MOD_GROUP", "y", "PANEL", "Cred.Int", "ymin", "ymax", "xmin", "xmax", "grp")
     return(grpdf)
   },
   # set defaults for several aesthetics, all have to be after stat is calculated
@@ -280,6 +283,7 @@ statBrmsStaticMod <- ggplot2::ggproto("StatStaticBrm", Stat,
     xmax = after_stat(xmax),
     fill = after_stat(Cred.Int),
     alpha = after_stat(0.5),
-    group = after_stat(x)
+    group = after_stat(grp),
+    x = after_stat(MOD_GROUP)
   )
 )

@@ -51,7 +51,7 @@ statNlmeMod <- ggplot2::ggproto("StatNlme", Stat,
         nrow(mod_data), "\n\n", paste(
           do.call(
             cbind,
-            lapply(mod_data, \(x) paste(unique(x), collapse = ", "))
+            lapply(mod_data, function(x) paste(unique(x), collapse = ", "))
           ),
           collapse = " -- "
         )

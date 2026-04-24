@@ -21,13 +21,11 @@ test_that("Logistic brms model pipeline", {
     df = simdf, type = "brms"
   )
   expect_equal(ss$prior$nlpar, c("", "", "A", "B", "C"))
-
   fit <- fitGrowth(ss,
     backend = "cmdstanr", iter = 500, chains = 1, cores = 1,
     refresh = 0, silent = 2
   )
   expect_s3_class(fit, "brmsfit")
-
   plot <- growthPlot(fit = fit, form = ss$pcvrForm, df = ss$df)
   expect_s3_class(plot, "ggplot")
   p <- ggplot() + stat_growthss(fit  = fit, ss = ss)
