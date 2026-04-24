@@ -200,7 +200,7 @@
     new_res$plot_parameters[[1]]$priors$shape1 <- res$plot_parameters[[1]]$priors$shape1[g1]
     new_res$plot_parameters[[2]]$priors$shape1 <- res$plot_parameters[[2]]$priors$shape1[g2]
     new_res$plot_parameters[[1]]$priors$shape2 <- res$plot_parameters[[1]]$priors$shape2[g1]
-    new_res$plot_parameters[[2]]$priors$shape2 <- res$plot_parameters[[2]]$priors$shape2[g1]
+    new_res$plot_parameters[[2]]$priors$shape2 <- res$plot_parameters[[2]]$priors$shape2[g2]
     # subset summary to draw HDE/HDI correctly
     new_res$summary <- cbind(
       res$summary[g1, grepl("_1", colnames(res$summary))],
@@ -208,14 +208,20 @@
       res$summary[1, !grepl("[1|2]", colnames(res$summary))]
     )
   } else {
+    # duplicate plot parameters to 2L
+    new_res$plot_parameters <- list(new_res$plot_parameters[[1]], new_res$plot_parameters[[1]])
+    new_res$data <- list(new_res$data[[1]], new_res$data[[1]])
     # keep only relevant marginal beta parameters
-    new_res$plot_parameters[[1]]$parameters$shape1 <- res$plot_parameters[[1]]$parameters$shape1[g1]
-    new_res$plot_parameters[[1]]$parameters$shape1 <- res$plot_parameters[[1]]$parameters$shape2[g2]
+    new_res$plot_parameters[[1]]$parameters$shape1 <- new_res$plot_parameters[[1]]$parameters$shape1[g1]
+    new_res$plot_parameters[[2]]$parameters$shape1 <- new_res$plot_parameters[[2]]$parameters$shape1[g2]
+    new_res$plot_parameters[[1]]$parameters$shape2 <- new_res$plot_parameters[[1]]$parameters$shape2[g1]
+    new_res$plot_parameters[[2]]$parameters$shape2 <- new_res$plot_parameters[[2]]$parameters$shape2[g2]
     # keep only relevant marginal priors
-    new_res$plot_parameters[[1]]$priors$shape1 <- res$plot_parameters[[1]]$priors$shape1[g1]
-    new_res$plot_parameters[[1]]$priors$shape1 <- res$plot_parameters[[1]]$priors$shape2[g2]
+    new_res$plot_parameters[[1]]$priors$shape1 <- new_res$plot_parameters[[1]]$priors$shape1[g1]
+    new_res$plot_parameters[[2]]$priors$shape1 <- new_res$plot_parameters[[2]]$priors$shape1[g2]
+    new_res$plot_parameters[[1]]$priors$shape2 <- new_res$plot_parameters[[1]]$priors$shape2[g1]
+    new_res$plot_parameters[[2]]$priors$shape2 <- new_res$plot_parameters[[2]]$priors$shape2[g2]
     # subset summary to draw HDE/HDI correctly
-    ls()
     g1_cols <- res$summary[g1, grepl("_1", colnames(res$summary))]
     g2_cols <- res$summary[g2, grepl("_1", colnames(res$summary))]
     colnames(g2_cols) <- gsub("_1", "_2", colnames(g2_cols))

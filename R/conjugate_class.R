@@ -171,7 +171,7 @@ print.conjugatesummary <- function(x, ...) {
       100 * rope_ci, "% Credible Interval is ",
       100 * round(x$summary$rope_prob[1], 5),
       "% with an average difference of ",
-      round(x$summary$HDE_rope, 3)
+      round(x$summary$HDE_rope[1], 3)
     )
     cat(rope_message)
     cat("\n\n")

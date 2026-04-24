@@ -336,6 +336,42 @@ test_that("conjugate single value exponential works", {
   expect_s3_class(out, "conjugate")
 })
 
+test_that("conjugate single value Dirichlet-Multinomial works", {
+  set.seed(123)
+  s1 <- list(A = 10, B = 20, C = 30)
+  s2 <- list(A = 10, B = 20, C = 30)
+  out <- conjugate(
+    s1 = s1, s2 = s2, method = "multinomial",
+    priors = NULL,
+    rope_range = c(-0.15, 0.15), rope_ci = 0.89,
+    cred.int.level = 0.89, hypothesis = "A > B",
+    bayes_factor = 0.5
+  )
+  expect_equal(out$summary$post.prob[1], 0.9306264, tolerance = 1e-6)
+  expect_equal(out$summary$rope_prob[1], 0.411077407032918, tolerance = 1e-6)
+  expect_s3_class(out, "conjugate")
+  p <- plot(out)
+  expect_s3_class(p, "ggplot")
+})
+
+
+test_that("conjugate one sample single value Dirichlet-Multinomial works", {
+  set.seed(123)
+  s1 <- list(A = 10, B = 20, C = 30)
+  out <- conjugate(
+    s1 = s1, method = "multinomial",
+    priors = NULL,
+    rope_range = c(-0.15, 0.15), rope_ci = 0.89,
+    cred.int.level = 0.89, hypothesis = "A > B",
+    bayes_factor = 0.5
+  )
+  expect_equal(out$summary$post.prob[1], 0.9306264, tolerance = 1e-6)
+  expect_equal(out$summary$rope_prob[1], 0.4209639, tolerance = 1e-6)
+  expect_s3_class(out, "conjugate")
+  p <- plot(out)
+  expect_s3_class(p, "ggplot")
+})
+
 test_that("conjugate single value lognormal vs gaussian", {
   set.seed(123)
   s1 <- rlnorm(100, log(70), log(2))
