@@ -15,7 +15,7 @@
 
 .conj_gaussian_sv <- function(s1 = NULL, priors = NULL,
                               support = NULL, cred.int.level = NULL,
-                              calculatingSupport = FALSE) {
+                              calculatingSupport = FALSE, ...) {
   out <- list()
   #* `make default prior if none provided`
   priors <- .convert_gaussian_priors(priors)
@@ -76,7 +76,7 @@
 
 .conj_gaussian_mv <- function(s1 = NULL, priors = NULL,
                               support = NULL, cred.int.level = NULL,
-                              calculatingSupport = FALSE) {
+                              calculatingSupport = FALSE, ...) {
   out <- list()
   #* `make default prior if none provided`
   priors <- .convert_gaussian_priors(priors)

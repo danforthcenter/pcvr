@@ -15,9 +15,9 @@
 #' @param s2 An optional second sample, or if s1 is a formula then this should be a dataframe.
 #' This sample is shown in blue if plotted.
 #' @param method The distribution/method to use.
-#' Currently "t", "gaussian", "beta", "binomial", "lognormal", "lognormal2", "poisson",
-#' "negbin" (negative binomial), "uniform", "pareto", "gamma", "bernoulli", "exponential",
-#' "vonmises", and "vonmises2" are supported.
+#' Currently "bernoulli", "beta", "binomial", "exponential", "gamma", "gaussian",
+#' "lognormal", "lognormal2", "multinomial", "negbin" (negative binomial), "pareto",
+#' "poisson", "t", "uniform", "vonmises", and "vonmises2" are supported.
 #' The count (binomial, poisson and negative binomial), bernoulli, exponential,
 #' and pareto distributions are only implemented for single value traits due to their updating
 #' and/or the nature of the input data.
@@ -37,7 +37,6 @@
 #'  By default this is NULL and weak priors (generally jeffrey's priors) are used.
 #'  The \code{posterior} part of output can also be recycled as a new prior if Bayesian
 #'  updating is appropriate for your use.
-#' @param plot deprecated, use \code{plot} method instead.
 #' @param rope_range Optional vector specifying a region of practical equivalence.
 #' This interval is considered practically equivalent to no effect.
 #' Kruschke (2018) suggests c(-0.1, 0.1) as a broadly reasonable ROPE for standardized parameters.
@@ -52,12 +51,17 @@
 #' in computing HDI for samples, defaults to 0.89.
 #' @param hypothesis Direction of a hypothesis if two samples are provided.
 #'  Options are "unequal", "equal", "greater", and "lesser",
-#'   read as "sample1 greater than sample2".
+#'   read as "sample1 greater than sample2". For the "multinomial" method the hypothesis
+#' should be specified as "Group1 >|<|==|!= Group2" and comparisons will be made using the marginal
+#' Beta distributions. If s2 is supplied then the hypothesis is read as
+#' "Group1 (from s1) >|<|==|!= Group2 (from s2)", if s2 is not supplied then both groups are taken
+#' from s1. For the multinomial method groups should be specified, so the hypothesis is written as
+#' "group1 > group2", where "group1" and "group2" would be informed by s1 unless s2 is provided in
+#' which case "group1" would be from s1 and "group2" would be from s2.
 #' @param bayes_factor Optional point or interval to evaluate bayes factors on. Note that this
 #' generally only makes sense to use if you have informative priors where the change in odds between
 #' prior and posterior is meaningful about the data. If this is non-NULL then columns of bayes factors
 #' are added to the summary output. Note these are only implemented for univariate distributions.
-#' @param support Deprecated
 #'
 #' @import bayestestR
 #' @import extraDistr
@@ -127,6 +131,12 @@
 #'     kappa from the data and updates the kappa prior as a weighted average of the data and the prior.
 #'     The mu parameter is then updated per Von-Mises conjugacy.
 #'     }
+#'     \item{\strong{"multinomial": }
+#'     \code{list(alpha = list("alpha" = rep(1/N_groups, N_groups))}, where alpha is the concentration
+#'     vector of the conjugate dirichlet distribution. For the multinomial method hypotheses are
+#'     specified with group names, so instead of "equal" the hypothesis could be
+#'     "genotypeX == genotypeY".
+#'     }
 #'     \item{\strong{"bivariate_uniform": }
 #'     \code{list(location_l = 1, location_u = 2, scale = 1)}, where scale is the
 #'     shared scale parameter of the pareto distributed upper and lower boundaries and location l and u
@@ -157,7 +167,7 @@
 #'   s1 = mv_ln[1:30, -1], s2 = mv_ln[31:60, -1], method = "lognormal",
 #'   priors = list(mu = 5, sd = 2),
 #'   rope_range = c(-40, 40), rope_ci = 0.89,
-#'   cred.int.level = 0.89, hypothesis = "equal", support = NULL
+#'   cred.int.level = 0.89, hypothesis = "equal"
 #' )
 #'
 #' # lognormal sv
@@ -166,7 +176,7 @@
 #'   method = "lognormal",
 #'   priors = list(mu = 5, sd = 2),
 #'   rope_range = NULL, rope_ci = 0.89,
-#'   cred.int.level = 0.89, hypothesis = "equal", support = NULL
+#'   cred.int.level = 0.89, hypothesis = "equal"
 #' )
 #'
 #' # Z test mv example
@@ -183,7 +193,7 @@
 #'   s1 = mv_gauss[1:30, -1], s2 = mv_gauss[31:60, -1], method = "gaussian",
 #'   priors = list(mu = 30, sd = 10),
 #'   rope_range = c(-25, 25), rope_ci = 0.89,
-#'   cred.int.level = 0.89, hypothesis = "equal", support = NULL
+#'   cred.int.level = 0.89, hypothesis = "equal"
 #' )
 #'
 #' # T test sv example with two different priors
@@ -192,7 +202,7 @@
 #'   s1 = rnorm(10, 50, 10), s2 = rnorm(10, 60, 12), method = "t",
 #'   priors = list(list(mu = 40, sd = 10), list(mu = 45, sd = 8)),
 #'   rope_range = c(-5, 8), rope_ci = 0.89,
-#'   cred.int.level = 0.89, hypothesis = "equal", support = NULL
+#'   cred.int.level = 0.89, hypothesis = "equal"
 #' )
 #'
 #' # beta mv example
@@ -256,6 +266,26 @@
 #'   cred.int.level = 0.89, hypothesis = "equal"
 #' )
 #'
+#' # dirichlet-multinomial sv example
+#'
+#' dm_sv_ex <- conjugate(
+#'   s1 = list("A" = 10, "B" = 10, "C" = 5),
+#'   s2 = list("A" = 4, "B" = 12, "C" = 9),
+#'   method = "multinomial",
+#'   hypothesis = "A > A",
+#'   rope_range = c(-0.1, 0.1)
+#' )
+#'
+#' # dirichlet-multinomial mv example
+#'
+#' dm_mv_ex <- conjugate(
+#'   s1 = data.frame("A" = c(5,5), "B" = c(5, 5), "C" = c(2,3)),
+#'   s2 = data.frame("A" = c(2,2), "B" = c(7, 5), "C" = c(8,1)),
+#'   method = "multinomial",
+#'   hypothesis = "A > A",
+#'   rope_range = c(-0.1, 0.1)
+#' )
+#'
 #' # von mises mv example
 #'
 #' mv_gauss <- mvSim(
@@ -313,11 +343,11 @@ conjugate <- function(s1 = NULL, s2 = NULL,
                         "t", "gaussian", "beta", "binomial",
                         "lognormal", "lognormal2", "poisson", "negbin", "vonmises", "vonmises2",
                         "uniform", "pareto", "gamma", "bernoulli", "exponential", "bivariate_uniform",
-                        "bivariate_gaussian", "bivariate_lognormal"
+                        "bivariate_gaussian", "bivariate_lognormal", "multinomial"
                       ),
-                      priors = NULL, plot = NULL, rope_range = NULL,
+                      priors = NULL, rope_range = NULL,
                       rope_ci = 0.89, cred.int.level = 0.89, hypothesis = "equal",
-                      bayes_factor = NULL, support = NULL) {
+                      bayes_factor = NULL) {
   #* `Handle formula option in s1`
   samples <- .formatSamples(s1, s2)
   s1 <- samples$s1
@@ -332,13 +362,6 @@ conjugate <- function(s1 = NULL, s2 = NULL,
   samplesList <- list(s1)
   if (!is.null(s2)) {
     samplesList[[2]] <- s2
-  }
-
-  if (!missing("support")) {
-    warning("support argument is deprecated.")
-  }
-  if (!missing("plot")) {
-    warning("plot argument is deprecated, use plot.conjugate instead.")
   }
   support <- .getSupport(samplesList, method, priors) # calculate shared support
 
@@ -357,7 +380,8 @@ conjugate <- function(s1 = NULL, s2 = NULL,
       "lognormal", "lognormal2", "poisson", "negbin",
       "vonmises", "vonmises2",
       "uniform", "pareto", "gamma", "bernoulli", "exponential",
-      "bivariate_uniform", "bivariate_gaussian", "bivariate_lognormal"
+      "bivariate_uniform", "bivariate_gaussian", "bivariate_lognormal",
+      "multinomial"
     ))
     matched_fun <- get(paste0(".conj_", matched_arg, "_", vec_suffix))
     res <- matched_fun(sample, prior, support, cred.int.level)
@@ -368,7 +392,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
   out$summary <- do.call(cbind, lapply(seq_along(sample_results), function(i) {
     s <- sample_results[[i]]$summary
     if (!is.null(bayes_factor)) { #* `Calculate Bayes Factors`
-      bf <- .conj_bayes_factor(bayes_factor, sample_results[[i]])
+      bf <- .conj_bayes_factor(bayes_factor, sample_results, i)
       s$bf_1 <- bf
     }
     if (i == 2) {
@@ -377,7 +401,17 @@ conjugate <- function(s1 = NULL, s2 = NULL,
     }
     return(s)
   }))
-  if (!is.null(s2)) {
+  if (method[1] == "multinomial" && hypothesis != "equal") { # if hypothesis is the default then skip
+    # multinomial has special hypothesis handling, see conjugate_multinomialHelpers
+    mult_prob <- .multinomial.pdf.handling(sample_results, hypothesis)
+    out$summary <- cbind(
+      out$summary,
+      data.frame(
+        "hyp" = mult_prob$hyp,
+        "post.prob" = as.numeric(mult_prob$pdf.handling.output$post.prob)
+      )
+    )
+  } else if (!is.null(s2) && method[1] != "multinomial") {
     postProbRes <- .pdf.handling(sample_results[[1]]$pdf, sample_results[[2]]$pdf, hypothesis)
     out$summary <- cbind(
       out$summary,
@@ -386,7 +420,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
   }
   #* `parse output and do ROPE`
   if (!is.null(rope_range)) {
-    rope_res <- .conj_rope(sample_results, rope_range, rope_ci, method)
+    rope_res <- .conj_rope(sample_results, rope_range, rope_ci, method, hypothesis)
     out$summary <- cbind(out$summary, rope_res$summary)
     out$rope_df <- rope_res$rope_df
   }
@@ -536,8 +570,9 @@ conjugate <- function(s1 = NULL, s2 = NULL,
 #' this should take outputs from conjHelpers and compare the $posteriorDraws.
 #' @keywords internal
 #' @noRd
+
 .conj_rope <- function(sample_results, rope_range = c(-0.1, 0.1),
-                       rope_ci = 0.89, method) {
+                       rope_ci = 0.89, method, hypothesis) {
   #* `if bivariate then call the bivariate option`
   #* note this will return to .conj_rope but with a non-bivariate method
   if (any(grepl("bivariate", method))) {
@@ -546,6 +581,10 @@ conjugate <- function(s1 = NULL, s2 = NULL,
       rope_ci, method
     )
     return(rope_res)
+  }
+  #* `Format PDF from multinomial`
+  if (any(method == "multinomial")) {
+    sample_results <- .multinomial.rope.format(sample_results, hypothesis)
   }
   #* `ROPE Comparison`
   rope_res <- list()

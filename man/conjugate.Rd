@@ -9,15 +9,14 @@ conjugate(
   s2 = NULL,
   method = c("t", "gaussian", "beta", "binomial", "lognormal", "lognormal2", "poisson",
     "negbin", "vonmises", "vonmises2", "uniform", "pareto", "gamma", "bernoulli",
-    "exponential", "bivariate_uniform", "bivariate_gaussian", "bivariate_lognormal"),
+    "exponential", "bivariate_uniform", "bivariate_gaussian", "bivariate_lognormal",
+    "multinomial"),
   priors = NULL,
-  plot = NULL,
   rope_range = NULL,
   rope_ci = 0.89,
   cred.int.level = 0.89,
   hypothesis = "equal",
-  bayes_factor = NULL,
-  support = NULL
+  bayes_factor = NULL
 )
 }
 \arguments{
@@ -34,9 +33,9 @@ This sample is shown in red if plotted.}
 This sample is shown in blue if plotted.}
 
 \item{method}{The distribution/method to use.
-Currently "t", "gaussian", "beta", "binomial", "lognormal", "lognormal2", "poisson",
-"negbin" (negative binomial), "uniform", "pareto", "gamma", "bernoulli", "exponential",
-"vonmises", and "vonmises2" are supported.
+Currently "bernoulli", "beta", "binomial", "exponential", "gamma", "gaussian",
+"lognormal", "lognormal2", "multinomial", "negbin" (negative binomial), "pareto",
+"poisson", "t", "uniform", "vonmises", and "vonmises2" are supported.
 The count (binomial, poisson and negative binomial), bernoulli, exponential,
 and pareto distributions are only implemented for single value traits due to their updating
 and/or the nature of the input data.
@@ -58,8 +57,6 @@ These names vary by method (see details).
  The \code{posterior} part of output can also be recycled as a new prior if Bayesian
  updating is appropriate for your use.}
 
-\item{plot}{deprecated, use \code{plot} method instead.}
-
 \item{rope_range}{Optional vector specifying a region of practical equivalence.
 This interval is considered practically equivalent to no effect.
 Kruschke (2018) suggests c(-0.1, 0.1) as a broadly reasonable ROPE for standardized parameters.
@@ -76,15 +73,19 @@ and \doi{10.1037/a0029146}.}
 in computing HDI for samples, defaults to 0.89.}
 
 \item{hypothesis}{Direction of a hypothesis if two samples are provided.
-Options are "unequal", "equal", "greater", and "lesser",
- read as "sample1 greater than sample2".}
+ Options are "unequal", "equal", "greater", and "lesser",
+  read as "sample1 greater than sample2". For the "multinomial" method the hypothesis
+should be specified as "Group1 >|<|==|!= Group2" and comparisons will be made using the marginal
+Beta distributions. If s2 is supplied then the hypothesis is read as
+"Group1 (from s1) >|<|==|!= Group2 (from s2)", if s2 is not supplied then both groups are taken
+from s1. For the multinomial method groups should be specified, so the hypothesis is written as
+"group1 > group2", where "group1" and "group2" would be informed by s1 unless s2 is provided in
+which case "group1" would be from s1 and "group2" would be from s2.}
 
 \item{bayes_factor}{Optional point or interval to evaluate bayes factors on. Note that this
 generally only makes sense to use if you have informative priors where the change in odds between
 prior and posterior is meaningful about the data. If this is non-NULL then columns of bayes factors
 are added to the summary output. Note these are only implemented for univariate distributions.}
-
-\item{support}{Deprecated}
 }
 \value{
 A \link{conjugate-class} object with slots including:
@@ -173,6 +174,12 @@ Prior distributions default to be weakly informative and in some cases you may w
     kappa from the data and updates the kappa prior as a weighted average of the data and the prior.
     The mu parameter is then updated per Von-Mises conjugacy.
     }
+    \item{\strong{"multinomial": }
+    \code{list(alpha = list("alpha" = rep(1/N_groups, N_groups))}, where alpha is the concentration
+    vector of the conjugate dirichlet distribution. For the multinomial method hypotheses are
+    specified with group names, so instead of "equal" the hypothesis could be
+    "genotypeX == genotypeY".
+    }
     \item{\strong{"bivariate_uniform": }
     \code{list(location_l = 1, location_u = 2, scale = 1)}, where scale is the
     shared scale parameter of the pareto distributed upper and lower boundaries and location l and u
@@ -203,7 +210,7 @@ ln_mv_ex <- conjugate(
   s1 = mv_ln[1:30, -1], s2 = mv_ln[31:60, -1], method = "lognormal",
   priors = list(mu = 5, sd = 2),
   rope_range = c(-40, 40), rope_ci = 0.89,
-  cred.int.level = 0.89, hypothesis = "equal", support = NULL
+  cred.int.level = 0.89, hypothesis = "equal"
 )
 
 # lognormal sv
@@ -212,7 +219,7 @@ ln_sv_ex <- conjugate(
   method = "lognormal",
   priors = list(mu = 5, sd = 2),
   rope_range = NULL, rope_ci = 0.89,
-  cred.int.level = 0.89, hypothesis = "equal", support = NULL
+  cred.int.level = 0.89, hypothesis = "equal"
 )
 
 # Z test mv example
@@ -229,7 +236,7 @@ gauss_mv_ex <- conjugate(
   s1 = mv_gauss[1:30, -1], s2 = mv_gauss[31:60, -1], method = "gaussian",
   priors = list(mu = 30, sd = 10),
   rope_range = c(-25, 25), rope_ci = 0.89,
-  cred.int.level = 0.89, hypothesis = "equal", support = NULL
+  cred.int.level = 0.89, hypothesis = "equal"
 )
 
 # T test sv example with two different priors
@@ -238,7 +245,7 @@ gaussianMeans_sv_ex <- conjugate(
   s1 = rnorm(10, 50, 10), s2 = rnorm(10, 60, 12), method = "t",
   priors = list(list(mu = 40, sd = 10), list(mu = 45, sd = 8)),
   rope_range = c(-5, 8), rope_ci = 0.89,
-  cred.int.level = 0.89, hypothesis = "equal", support = NULL
+  cred.int.level = 0.89, hypothesis = "equal"
 )
 
 # beta mv example
@@ -300,6 +307,26 @@ negbin_sv_ex <- conjugate(
   priors = list(r = 10, a = 0.5, b = 0.5),
   rope_range = c(-1, 1), rope_ci = 0.89,
   cred.int.level = 0.89, hypothesis = "equal"
+)
+
+# dirichlet-multinomial sv example
+
+dm_sv_ex <- conjugate(
+  s1 = list("A" = 10, "B" = 10, "C" = 5),
+  s2 = list("A" = 4, "B" = 12, "C" = 9),
+  method = "multinomial",
+  hypothesis = "A > A",
+  rope_range = c(-0.1, 0.1)
+)
+
+# dirichlet-multinomial mv example
+
+dm_mv_ex <- conjugate(
+  s1 = data.frame("A" = c(5,5), "B" = c(5, 5), "C" = c(2,3)),
+  s2 = data.frame("A" = c(2,2), "B" = c(7, 5), "C" = c(8,1)),
+  method = "multinomial",
+  hypothesis = "A > A",
+  rope_range = c(-0.1, 0.1)
 )
 
 # von mises mv example

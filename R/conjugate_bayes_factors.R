@@ -4,10 +4,12 @@
 #' Function to calcualte Bayes Factors using single or multi value traits with
 #' several distributions in the conjugate function.
 #' @param bayes_factor bayes factor range/point hypothesis passed from conjugate
-#' @param s_res results from conjugate function thus far, currently the plot_list
-#' (for the distribution function name and values) element is all that is used.
-#' Internally this object is called `sample_results` in conjugate and only has
-#' one sample at a time passed to this function.
+#' @param sample_results results from conjugate function thus far,
+#' currently the `plot_list` (for the distribution function name and values)
+#' element is all that is used. Internally this object is called
+#' `sample_results` in conjugate and only has
+#' one sample at a time used in this function.
+#' @param i numeric, which element of sample_results to use.
 #' @examples
 #' sample_results <- list(
 #' # other things that we don't need to use for this function... ,
@@ -27,7 +29,8 @@
 #' @keywords internal
 #' @noRd
 
-.conj_bayes_factor <- function(bayes_factor, s_res) {
+.conj_bayes_factor <- function(bayes_factor, sample_results, i) {
+  s_res <- sample_results[[i]]
   if (length(bayes_factor) == 1) {
     # point hypothesis
     post_args <- append(bayes_factor, s_res$plot_list$parameters)

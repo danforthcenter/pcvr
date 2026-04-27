@@ -19,7 +19,7 @@
 #' @noRd
 .conj_uniform_mv <- function(s1 = NULL, priors = NULL,
                              support = NULL, cred.int.level = NULL,
-                             calculatingSupport = FALSE) {
+                             calculatingSupport = FALSE, ...) {
   out <- list()
   #* `make default prior if none provided`
   if (is.null(priors)) {
@@ -90,7 +90,7 @@
 #' @noRd
 .conj_uniform_sv <- function(s1 = NULL, priors = NULL,
                              support = NULL, cred.int.level = NULL,
-                             calculatingSupport = FALSE) {
+                             calculatingSupport = FALSE, ...) {
   out <- list()
   #* `make default prior if none provided`
   if (is.null(priors)) {

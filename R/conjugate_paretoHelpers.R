@@ -19,7 +19,7 @@
 #' @noRd
 .conj_pareto_mv <- function(s1 = NULL, priors = NULL,
                             support = NULL, cred.int.level = NULL,
-                            calculatingSupport = FALSE) {
+                            calculatingSupport = FALSE, ...) {
   out <- list()
   #* `N observations`
   n_obs <- nrow(s1)
@@ -109,7 +109,7 @@
 #' @noRd
 .conj_pareto_sv <- function(s1 = NULL, priors = NULL,
                             support = NULL, cred.int.level = NULL,
-                            calculatingSupport = FALSE) {
+                            calculatingSupport = FALSE, ...) {
   out <- list()
   #* `make default prior if none provided`
   if (is.null(priors)) {

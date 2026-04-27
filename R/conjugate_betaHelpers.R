@@ -21,14 +21,14 @@
 #' @noRd
 .conj_beta_mv <- function(s1 = NULL, priors = NULL,
                           support = NULL, cred.int.level = NULL,
-                          calculatingSupport = FALSE) {
-  #* `make default prior if none provided`
-  if (is.null(priors)) {
-    priors <- list(a = 0.5, b = 0.5)
-  }
+                          calculatingSupport = FALSE, ...) {
   #* `Define dense Support`
   if (is.null(support) && calculatingSupport) {
     return(c(0.0001, 0.9999))
+  }
+  #* `make default prior if none provided`
+  if (is.null(priors)) {
+    priors <- list(a = 0.5, b = 0.5)
   }
   out <- list()
   #* `Reorder columns if they are not in the numeric order`
@@ -102,17 +102,17 @@
 #' @noRd
 .conj_beta_sv <- function(s1 = NULL, priors = NULL,
                           support = NULL, cred.int.level = NULL,
-                          calculatingSupport = FALSE) {
+                          calculatingSupport = FALSE, ...) {
   if (any(c(s1) > 1) || any(c(s1) < 0)) {
     stop("Beta Distribution is only defined on [0,1]")
-  }
-  #* `make default prior if none provided`
-  if (is.null(priors)) {
-    priors <- list(a = 0.5, b = 0.5)
   }
   #* `Define dense Support`
   if (is.null(support) && calculatingSupport) {
     return(c(0.0001, 0.9999))
+  }
+  #* `make default prior if none provided`
+  if (is.null(priors)) {
+    priors <- list(a = 0.5, b = 0.5)
   }
   out <- list()
 

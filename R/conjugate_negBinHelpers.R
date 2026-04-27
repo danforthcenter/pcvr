@@ -31,7 +31,11 @@
 
 .conj_negbin_sv <- function(s1 = NULL, priors = NULL,
                             support = NULL, cred.int.level = NULL,
-                            calculatingSupport = FALSE) {
+                            calculatingSupport = FALSE, ...) {
+  #* `Define support if it is missing`
+  if (is.null(support) && calculatingSupport) {
+    return(c(0.0001, 0.9999))
+  }
   #* `Check samples`
   if (any(abs(s1 - round(s1)) > .Machine$double.eps^0.5) || any(s1 < 0)) {
     stop("Only positive whole numbers can be used in the Negative Binomial distribution")
@@ -44,27 +48,18 @@
       " you should add a prior including r parameter."
     ))
   }
-
   out <- list()
-
   #* `Use conjugate beta prior on probability`
   #* Note that this is very sensitive to the R value being appropriate
   a1_prime <- priors$a[1] + priors$r[1] * length(s1)
   b1_prime <- priors$b[1] + sum(s1)
-  #* `Define support if it is missing`
-  if (is.null(support) && calculatingSupport) {
-    return(c(0.0001, 0.9999))
-  }
   #* `calculate density over support``
   dens1 <- dbeta(support, a1_prime, b1_prime)
   pdf1 <- dens1 / sum(dens1)
-
   #* `calculate highest density interval`
   hdi1 <- qbeta(c((1 - cred.int.level) / 2, (1 - ((1 - cred.int.level) / 2))), a1_prime, b1_prime)
-
   #* `calculate highest density estimate``
   hde1 <- .betaHDE(a1_prime, b1_prime)
-
   #* `save summary and parameters`
   out$summary <- data.frame(HDE_1 = hde1, HDI_1_low = hdi1[1], HDI_1_high = hdi1[2])
   out$posterior$r <- priors$r[1]

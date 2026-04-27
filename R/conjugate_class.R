@@ -92,7 +92,8 @@ print.conjugatesummary <- function(x, ...) {
       exponential = list("Gamma", "Rate", "Exponential"),
       bivariate_uniform = list("Bivariate Pareto", "Boundaries", "Uniform"),
       bivariate_gaussian = list("Normal/Gamma", "Mu/Sd", "Normal"),
-      bivariate_lognormal = list("Normal/Gamma", "Mu/Sd", "Lognormal")
+      bivariate_lognormal = list("Normal/Gamma", "Mu/Sd", "Lognormal"),
+      multinomial = list("Dirichlet", "P (alpha)", "Multinomial")
     )
     method_statement <- paste0(
       method_list[[1]], # conjugate distribution
@@ -111,7 +112,12 @@ print.conjugatesummary <- function(x, ...) {
       prior_statement <- paste0(
         "Sample ", i, " Prior ", method_list[[1]], "(",
         paste(
-          paste(names(prior), round(unlist(prior), 3), sep = " = "),
+          paste(
+            names(prior),
+            unlist(lapply(names(prior), function(nm) {
+              return(paste(round(prior[[nm]], 3), collapse = ", "))
+            })), sep = " = "
+          ),
           collapse = ", "
         ),
         ")\n"
@@ -119,7 +125,12 @@ print.conjugatesummary <- function(x, ...) {
       posterior_statement <- paste0(
         "\tPosterior ", method_list[[1]], "(",
         paste(
-          paste(names(post), round(unlist(post), 3), sep = " = "),
+          paste(
+            names(post),
+            unlist(lapply(names(post), function(nm) {
+              return(paste(round(post[[nm]], 3), collapse = ", "))
+            })), sep = " = "
+          ),
           collapse = ", "
         ),
         ")\n"
@@ -160,7 +171,7 @@ print.conjugatesummary <- function(x, ...) {
       100 * rope_ci, "% Credible Interval is ",
       100 * round(x$summary$rope_prob[1], 5),
       "% with an average difference of ",
-      round(x$summary$HDE_rope, 3)
+      round(x$summary$HDE_rope[1], 3)
     )
     cat(rope_message)
     cat("\n\n")

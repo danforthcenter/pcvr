@@ -20,7 +20,7 @@
 
 .conj_vonmises_mv <- function(s1 = NULL, priors = NULL,
                               support = NULL, cred.int.level = NULL,
-                              calculatingSupport = FALSE) {
+                              calculatingSupport = FALSE, ...) {
   #* `Turn off support for consistent rescaling between boundaries and to avoid default length of 10000`
   support <- NULL
   #* `Reorder columns if they are not in the numeric order`
@@ -46,6 +46,15 @@
       return(default_prior[[nm]])
     }
   }), names(default_prior))
+  #* `Define dense Support`
+  if (is.null(support)) {
+    if (calculatingSupport) {
+      return(priors$boundary) #* this would be [-pi, pi] if using radians, but plotting will be on
+      #* the original scale so we can just return the boundary and use [-pi, pi] as support here
+    }
+    support_boundary <- seq(min(priors$boundary), max(priors$boundary), by = 0.0005)
+    support <- seq(-pi, pi, length.out = length(support_boundary))
+  }
   #* `rescale data to [-pi, pi] according to boundary`
   X1 <- .boundary.to.radians(x = X1, boundary = priors$boundary)
   #* `rescale prior on mu to [-pi, pi] according to boundary`
@@ -56,15 +65,6 @@
       "Values must be on [-pi, pi] after rescaling. ",
       "Does the boundary element in your prior include all your data?"
     ))
-  }
-  #* `Define dense Support`
-  if (is.null(support)) {
-    if (calculatingSupport) {
-      return(priors$boundary) #* this would be [-pi, pi] if using radians, but plotting will be on
-      #* the original scale so we can just return the boundary and use [-pi, pi] as support here
-    }
-    support_boundary <- seq(min(priors$boundary), max(priors$boundary), by = 0.0005)
-    support <- seq(-pi, pi, length.out = length(support_boundary))
   }
   out <- list()
   #* `Get weighted mean of data and prior for half tangent adjustment`
@@ -154,7 +154,7 @@
 
 .conj_vonmises_sv <- function(s1 = NULL, priors = NULL,
                               support = NULL, cred.int.level = NULL,
-                              calculatingSupport = FALSE) {
+                              calculatingSupport = FALSE, ...) {
   #* `to avoid default support length of 10000 which may not span boundary well`
   support <- NULL
   #* `make default prior if none provided`
