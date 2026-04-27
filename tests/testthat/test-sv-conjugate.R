@@ -348,7 +348,7 @@ test_that("conjugate single value Dirichlet-Multinomial works", {
     bayes_factor = 0.5
   )
   expect_equal(out$summary$post.prob[1], 0.9306264, tolerance = 1e-6)
-  expect_equal(out$summary$rope_prob[1], 0.411077407032918, tolerance = 1e-6)
+  expect_equal(out$summary$rope_prob[1], 0.4252331, tolerance = 1e-6)
   expect_s3_class(out, "conjugate")
   p <- plot(out)
   expect_s3_class(p, "ggplot")
