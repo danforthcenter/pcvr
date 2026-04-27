@@ -13,7 +13,24 @@
 
 ``` r
 library(pcvr)
+```
+
+    ## Registered S3 method overwritten by 'car':
+    ##   method           from
+    ##   na.action.merMod lme4
+
+``` r
 library(data.table) # for fread
+```
+
+    ## 
+    ## Attaching package: 'data.table'
+
+    ## The following object is masked from 'package:base':
+    ## 
+    ##     %notin%
+
+``` r
 library(ggplot2)
 library(patchwork) # for easy ggplot manipulation/combination
 ```

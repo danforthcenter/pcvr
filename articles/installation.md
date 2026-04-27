@@ -57,6 +57,13 @@ generate a plot of some simulated data.
 
 ``` r
 library(pcvr)
+```
+
+    ## Registered S3 method overwritten by 'car':
+    ##   method           from
+    ##   na.action.merMod lme4
+
+``` r
 priors <- list("A" = c(100, 130), "B" = c(10, 8), "C" = c(0.2, 0.1))
 plotPrior(priors, "gompertz")[[1]]
 ```

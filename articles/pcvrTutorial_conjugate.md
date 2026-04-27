@@ -27,6 +27,13 @@ needs.
 
 ``` r
 library(pcvr)
+```
+
+    ## Registered S3 method overwritten by 'car':
+    ##   method           from
+    ##   na.action.merMod lme4
+
+``` r
 library(ggplot2)
 library(patchwork)
 library(extraDistr)
@@ -730,10 +737,10 @@ res
 
     ## Von Mises distributed Direction parameter of Von Mises distributed data.
     ## 
-    ## Sample 1 Prior Von Mises(mu = 0, kappa = 0.5, boundary = -3.142, n = 3.142, mu = 1)
-    ##  Posterior Von Mises(mu = 3.094, kappa = 1.817, n = 11, boundary = -3.142, mu = 3.142)
-    ## Sample 2 Prior Von Mises(mu = 0, kappa = 0.5, boundary = -3.142, n = 3.142, mu = 1)
-    ##  Posterior Von Mises(mu = 2.727, kappa = 2.509, n = 11, boundary = -3.142, mu = 3.142)
+    ## Sample 1 Prior Von Mises(mu = 0, kappa = 0.5, boundary = -3.142, 3.142, n = 1)
+    ##  Posterior Von Mises(mu = 3.094, kappa = 1.817, n = 11, boundary = -3.142, 3.142)
+    ## Sample 2 Prior Von Mises(mu = 0, kappa = 0.5, boundary = -3.142, 3.142, n = 1)
+    ##  Posterior Von Mises(mu = 2.727, kappa = 2.509, n = 11, boundary = -3.142, 3.142)
     ## 
     ## Posterior probability that S1 is equal to S2 = 79.05%
     ## 

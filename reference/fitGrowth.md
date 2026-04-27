@@ -60,11 +60,11 @@ fitGrowth(ss)
 #>   model: y ~ A[group]/(1 + exp((B[group] - time)/C[group]))
 #>    data: ss[["df"]]
 #>      A1      A2      B1      B2      C1      C2 
-#> 204.760 148.662  13.295  10.748   3.000   3.482 
-#>  residual sum-of-squares: 205524
+#> 200.867 158.675  13.152  10.508   2.957   3.657 
+#>  residual sum-of-squares: 308487
 #> 
-#> Number of iterations to convergence: 4 
-#> Achieved convergence tolerance: 8.288e-08
+#> Number of iterations to convergence: 3 
+#> Achieved convergence tolerance: 7.032e-06
 ss <- growthSS(
   model = "gam", form = y ~ time | group,
   df = simdf, type = "nls"
@@ -76,8 +76,8 @@ fitGrowth(ss)
 #> 
 #> Coefficients:
 #>      (Intercept)         bs(time)1         bs(time)2         bs(time)3  
-#>            9.448           -52.515           227.337           187.069  
+#>           9.1722          -51.3695          228.1606          183.3481  
 #>           groupb  bs(time)1:groupb  bs(time)2:groupb  bs(time)3:groupb  
-#>           -2.268            69.284           -56.108           -53.586  
+#>          -0.4303           77.2199          -52.0667          -41.4705  
 #> 
 ```

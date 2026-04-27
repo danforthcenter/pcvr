@@ -29,6 +29,13 @@ Pre-work was to install R, Rstudio, and `pcvr` with dependencies.
 
 ``` r
 library(pcvr) # or devtools::load_all() if you are editing
+```
+
+    ## Registered S3 method overwritten by 'car':
+    ##   method           from
+    ##   na.action.merMod lme4
+
+``` r
 library(ggplot2)
 library(patchwork)
 ```

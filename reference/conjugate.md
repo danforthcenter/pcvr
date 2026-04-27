@@ -11,15 +11,14 @@ conjugate(
   s2 = NULL,
   method = c("t", "gaussian", "beta", "binomial", "lognormal", "lognormal2", "poisson",
     "negbin", "vonmises", "vonmises2", "uniform", "pareto", "gamma", "bernoulli",
-    "exponential", "bivariate_uniform", "bivariate_gaussian", "bivariate_lognormal"),
+    "exponential", "bivariate_uniform", "bivariate_gaussian", "bivariate_lognormal",
+    "multinomial"),
   priors = NULL,
-  plot = NULL,
   rope_range = NULL,
   rope_ci = 0.89,
   cred.int.level = 0.89,
   hypothesis = "equal",
-  bayes_factor = NULL,
-  support = NULL
+  bayes_factor = NULL
 )
 ```
 
@@ -44,23 +43,23 @@ conjugate(
 
 - method:
 
-  The distribution/method to use. Currently "t", "gaussian", "beta",
-  "binomial", "lognormal", "lognormal2", "poisson", "negbin" (negative
-  binomial), "uniform", "pareto", "gamma", "bernoulli", "exponential",
-  "vonmises", and "vonmises2" are supported. The count (binomial,
-  poisson and negative binomial), bernoulli, exponential, and pareto
-  distributions are only implemented for single value traits due to
-  their updating and/or the nature of the input data. The "t" and
-  "gaussian" methods both use a T distribution with "t" testing for a
-  difference of means and "gaussian" testing for a difference in the
-  distributions (similar to a Z test). Both Von Mises options are for
-  use with circular data (for instance hue values when the circular
-  quality of the data is relevant). Note that non-circular distributions
-  can be compared to each other. This should only be done with caution
-  and may not be supported in all downstream functions. There are also 3
-  bivariate conjugate priors that are supported for use with single
-  value data. Those are "bivariate_uniform", "bivariate_gaussian" and
-  "bivariate_lognormal".
+  The distribution/method to use. Currently "bernoulli", "beta",
+  "binomial", "exponential", "gamma", "gaussian", "lognormal",
+  "lognormal2", "multinomial", "negbin" (negative binomial), "pareto",
+  "poisson", "t", "uniform", "vonmises", and "vonmises2" are supported.
+  The count (binomial, poisson and negative binomial), bernoulli,
+  exponential, and pareto distributions are only implemented for single
+  value traits due to their updating and/or the nature of the input
+  data. The "t" and "gaussian" methods both use a T distribution with
+  "t" testing for a difference of means and "gaussian" testing for a
+  difference in the distributions (similar to a Z test). Both Von Mises
+  options are for use with circular data (for instance hue values when
+  the circular quality of the data is relevant). Note that non-circular
+  distributions can be compared to each other. This should only be done
+  with caution and may not be supported in all downstream functions.
+  There are also 3 bivariate conjugate priors that are supported for use
+  with single value data. Those are "bivariate_uniform",
+  "bivariate_gaussian" and "bivariate_lognormal".
 
 - priors:
 
@@ -73,10 +72,6 @@ conjugate(
   jeffrey's priors) are used. The `posterior` part of output can also be
   recycled as a new prior if Bayesian updating is appropriate for your
   use.
-
-- plot:
-
-  deprecated, use `plot` method instead.
 
 - rope_range:
 
@@ -104,7 +99,15 @@ conjugate(
 
   Direction of a hypothesis if two samples are provided. Options are
   "unequal", "equal", "greater", and "lesser", read as "sample1 greater
-  than sample2".
+  than sample2". For the "multinomial" method the hypothesis should be
+  specified as "Group1 \>\|\<\|==\|!= Group2" and comparisons will be
+  made using the marginal Beta distributions. If s2 is supplied then the
+  hypothesis is read as "Group1 (from s1) \>\|\<\|==\|!= Group2 (from
+  s2)", if s2 is not supplied then both groups are taken from s1. For
+  the multinomial method groups should be specified, so the hypothesis
+  is written as "group1 \> group2", where "group1" and "group2" would be
+  informed by s1 unless s2 is provided in which case "group1" would be
+  from s1 and "group2" would be from s2.
 
 - bayes_factor:
 
@@ -114,10 +117,6 @@ conjugate(
   about the data. If this is non-NULL then columns of bayes factors are
   added to the summary output. Note these are only implemented for
   univariate distributions.
-
-- support:
-
-  Deprecated
 
 ## Value
 
@@ -235,6 +234,13 @@ you may wish to change them.
   and the prior. The mu parameter is then updated per Von-Mises
   conjugacy.
 
+- **"multinomial":**
+  `list(alpha = list("alpha" = rep(1/N_groups, N_groups))`, where alpha
+  is the concentration vector of the conjugate dirichlet distribution.
+  For the multinomial method hypotheses are specified with group names,
+  so instead of "equal" the hypothesis could be "genotypeX ==
+  genotypeY".
+
 - **"bivariate_uniform":**
   `list(location_l = 1, location_u = 2, scale = 1)`, where scale is the
   shared scale parameter of the pareto distributed upper and lower
@@ -273,9 +279,8 @@ ln_mv_ex <- conjugate(
   s1 = mv_ln[1:30, -1], s2 = mv_ln[31:60, -1], method = "lognormal",
   priors = list(mu = 5, sd = 2),
   rope_range = c(-40, 40), rope_ci = 0.89,
-  cred.int.level = 0.89, hypothesis = "equal", support = NULL
+  cred.int.level = 0.89, hypothesis = "equal"
 )
-#> Warning: support argument is deprecated.
 
 # lognormal sv
 ln_sv_ex <- conjugate(
@@ -283,9 +288,8 @@ ln_sv_ex <- conjugate(
   method = "lognormal",
   priors = list(mu = 5, sd = 2),
   rope_range = NULL, rope_ci = 0.89,
-  cred.int.level = 0.89, hypothesis = "equal", support = NULL
+  cred.int.level = 0.89, hypothesis = "equal"
 )
-#> Warning: support argument is deprecated.
 
 # Z test mv example
 
@@ -301,9 +305,8 @@ gauss_mv_ex <- conjugate(
   s1 = mv_gauss[1:30, -1], s2 = mv_gauss[31:60, -1], method = "gaussian",
   priors = list(mu = 30, sd = 10),
   rope_range = c(-25, 25), rope_ci = 0.89,
-  cred.int.level = 0.89, hypothesis = "equal", support = NULL
+  cred.int.level = 0.89, hypothesis = "equal"
 )
-#> Warning: support argument is deprecated.
 
 # T test sv example with two different priors
 
@@ -311,9 +314,8 @@ gaussianMeans_sv_ex <- conjugate(
   s1 = rnorm(10, 50, 10), s2 = rnorm(10, 60, 12), method = "t",
   priors = list(list(mu = 40, sd = 10), list(mu = 45, sd = 8)),
   rope_range = c(-5, 8), rope_ci = 0.89,
-  cred.int.level = 0.89, hypothesis = "equal", support = NULL
+  cred.int.level = 0.89, hypothesis = "equal"
 )
-#> Warning: support argument is deprecated.
 
 # beta mv example
 
@@ -374,6 +376,26 @@ negbin_sv_ex <- conjugate(
   priors = list(r = 10, a = 0.5, b = 0.5),
   rope_range = c(-1, 1), rope_ci = 0.89,
   cred.int.level = 0.89, hypothesis = "equal"
+)
+
+# dirichlet-multinomial sv example
+
+dm_sv_ex <- conjugate(
+  s1 = list("A" = 10, "B" = 10, "C" = 5),
+  s2 = list("A" = 4, "B" = 12, "C" = 9),
+  method = "multinomial",
+  hypothesis = "A > A",
+  rope_range = c(-0.1, 0.1)
+)
+
+# dirichlet-multinomial mv example
+
+dm_mv_ex <- conjugate(
+  s1 = data.frame("A" = c(5,5), "B" = c(5, 5), "C" = c(2,3)),
+  s2 = data.frame("A" = c(2,2), "B" = c(7, 5), "C" = c(8,1)),
+  method = "multinomial",
+  hypothesis = "A > A",
+  rope_range = c(-0.1, 0.1)
 )
 
 # von mises mv example

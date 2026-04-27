@@ -92,6 +92,11 @@ data/a list of dataframes (depending on returnData and cor).
 ``` r
 
 library(data.table)
+#> 
+#> Attaching package: ‘data.table’
+#> The following object is masked from ‘package:base’:
+#> 
+#>     %notin%
 set.seed(456)
 df <- data.frame(
   genotype = rep(c("g1", "g2"), each = 10),

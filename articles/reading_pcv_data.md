@@ -4,9 +4,23 @@
 
 ``` r
 library(pcvr)
+```
+
+    ## Registered S3 method overwritten by 'car':
+    ##   method           from
+    ##   na.action.merMod lme4
+
+``` r
 library(ggplot2)
 library(data.table)
 ```
+
+    ## 
+    ## Attaching package: 'data.table'
+
+    ## The following object is masked from 'package:base':
+    ## 
+    ##     %notin%
 
 The Bellwether phenotyping facility at the Donald Danforth Plant Science
 Center allows for high throughput image based phenotyping of up to 1140

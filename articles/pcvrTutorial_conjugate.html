@@ -122,8 +122,12 @@ needs.</p>
 <h2 id="load-package">Load package<a class="anchor" aria-label="anchor" href="#load-package"></a>
 </h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/danforthcenter/pcvr" class="external-link">pcvr</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/danforthcenter/pcvr" class="external-link">pcvr</a></span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Registered S3 method overwritten by 'car':</span></span>
+<span><span class="co">##   method           from</span></span>
+<span><span class="co">##   na.action.merMod lme4</span></span></code></pre>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://patchwork.data-imaginist.com" class="external-link">patchwork</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/sigbertklinke/extraDistr" class="external-link">extraDistr</a></span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -412,7 +416,7 @@ sample’s parameter against an existing expectation.</p>
 difference in the posteriors.</p>
 <p>Here we use two sets of random exponential data and check if the
 difference is within 0.5 of 0.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
 <span><span class="va">s1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Exponential.html" class="external-link">rexp</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">1.2</span><span class="op">)</span></span>
 <span><span class="va">s2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Exponential.html" class="external-link">rexp</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">1</span><span class="op">)</span></span>
@@ -429,7 +433,7 @@ difference falls in the interval [-0.5, 0.5], with a median difference
 of 0.75.</p>
 <p>For the second case we might want to compare the mean of some data
 against an accepted interval for the mean:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
 <span><span class="va">s1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">10</span>, <span class="fl">2</span><span class="op">)</span></span>
 <span><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/conjugate.html">conjugate</a></span><span class="op">(</span></span>
@@ -463,7 +467,7 @@ are either a point or a range in the support for the given
 parameter.</p>
 <p>We can work a simple example then compare to output from
 <code>conjugate</code>.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">null</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.4</span>, <span class="fl">0.6</span><span class="op">)</span></span>
 <span><span class="va">x_vals</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span>, length.out <span class="op">=</span> <span class="fl">500</span><span class="op">)</span></span>
 <span><span class="va">d_vals</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Beta.html" class="external-link">dbeta</a></span><span class="op">(</span><span class="va">x_vals</span>, shape1 <span class="op">=</span> <span class="fl">2</span>, shape2 <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="co"># density from the prior Beta(2, 2)</span></span>
@@ -496,7 +500,7 @@ parameter.</p>
 <span><span class="va">p1</span></span></code></pre></div>
 <p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-9-1.png" class="r-plt" alt="Prior odds of a range hypothesis shown on a Beta 2, 2 prior" width="700"></p>
 <p>Now we update our prior with some data:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">successes</span> <span class="op">&lt;-</span> <span class="fl">8</span></span>
 <span><span class="va">failures</span> <span class="op">&lt;-</span> <span class="fl">2</span></span>
 <span></span>
@@ -530,7 +534,7 @@ parameter.</p>
 <p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-10-1.png" class="r-plt" alt="Posterior odds of a range hypothesis shown on a Beta 10, 4 posterior" width="700"></p>
 <p>Our Bayes Factor is the ratio between the posterior and prior
 odds:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="op">(</span><span class="va">b_factor</span> <span class="op">&lt;-</span> <span class="va">post_odds</span> <span class="op">/</span> <span class="va">prior_odds</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] 2.194529</span></span></code></pre>
 <p>Here the Bayes factor shows that the interval [0.4, 0.6] is 2.2 times
@@ -539,7 +543,7 @@ less likely after updating our prior with this new data.</p>
 as a range and check the <code>bf_1</code> column of the summary for the
 results from sample 1. If we were interested in a point hypothesis then
 we would only enter one value, say 0.5.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">conj</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/conjugate.html">conjugate</a></span><span class="op">(</span>s1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"successes"</span> <span class="op">=</span> <span class="fl">8</span>, <span class="st">"trials"</span> <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>,</span>
 <span>                  method <span class="op">=</span> <span class="st">"binomial"</span>,</span>
 <span>                  priors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>a <span class="op">=</span> <span class="fl">2</span>, b <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>,</span>
@@ -565,7 +569,7 @@ information in the prior odds.</p>
 <p>Using a point hypothesis we do the same thing, but now the “odds” are
 the density at a single point of the PDF instead of the sum of a
 region.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">null</span> <span class="op">&lt;-</span> <span class="fl">0.5</span></span>
 <span><span class="va">xrange</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="va">x_vals</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span>, length.out <span class="op">=</span> <span class="fl">500</span><span class="op">)</span></span>
@@ -586,7 +590,7 @@ region.</p>
 <span>        legend.position <span class="op">=</span> <span class="st">"inside"</span><span class="op">)</span></span>
 <span><span class="va">p1</span></span></code></pre></div>
 <p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-13-1.png" class="r-plt" alt="Prior odds of a point hypothesis shown on a Beta 2, 2 prior" width="700"></p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># prior density at null</span></span>
 <span><span class="va">prior_null_analytic</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Beta.html" class="external-link">dbeta</a></span><span class="op">(</span><span class="fl">0.5</span>, shape1 <span class="op">=</span> <span class="fl">2</span>, shape2 <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span></span>
@@ -617,11 +621,11 @@ region.</p>
 <span>           label <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"BF = "</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">post_null_analytic</span> <span class="op">/</span> <span class="va">prior_null_analytic</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">p2</span></span></code></pre></div>
 <p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-14-1.png" class="r-plt" alt="Posterior odds of a point hypothesis shown on a Beta 10, 4 posterior" width="700"></p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="op">(</span><span class="va">b_factor_point</span> <span class="op">&lt;-</span> <span class="va">post_null_analytic</span> <span class="op">/</span> <span class="va">prior_null_analytic</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] 0.4654948</span></span></code></pre>
 <p>Identically in <code>conjugate</code>:</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">conj</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/conjugate.html">conjugate</a></span><span class="op">(</span>s1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"successes"</span> <span class="op">=</span> <span class="fl">8</span>, <span class="st">"trials"</span> <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>,</span>
 <span>                  method <span class="op">=</span> <span class="st">"binomial"</span>,</span>
 <span>                  priors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>a <span class="op">=</span> <span class="fl">2</span>, b <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>,</span>
@@ -662,7 +666,7 @@ and show the posterior predictive distribution.</p>
 <p>Germination Rates (or other binary outcomes like flowering or death)
 can make good sense as Beta-Binomial data.</p>
 <p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-17-1.png" class="r-plt" alt="Example germination count data between two treatment groups" width="700"></p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/conjugate.html">conjugate</a></span><span class="op">(</span></span>
 <span>  s1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>successes <span class="op">=</span> <span class="va">df</span><span class="op">[</span><span class="va">df</span><span class="op">$</span><span class="va">geno</span> <span class="op">==</span> <span class="st">"A"</span>, <span class="st">"y"</span><span class="op">]</span>, trials <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>,</span>
 <span>  s2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>successes <span class="op">=</span> <span class="va">df</span><span class="op">[</span><span class="va">df</span><span class="op">$</span><span class="va">geno</span> <span class="op">==</span> <span class="st">"B"</span>, <span class="st">"y"</span><span class="op">]</span>, trials <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>,</span>
@@ -676,7 +680,7 @@ example.</p>
 <p>We can also look at the printed output which shows human-readable
 interpretations of hypothesis tests, ROPE tests, and Bayes Factors when
 applicable.</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">res</span></span></code></pre></div>
 <pre><code><span><span class="co">## Beta distributed Rate parameter of Binomial distributed data.</span></span>
 <span><span class="co">## </span></span>
@@ -703,7 +707,7 @@ difference in Area of
 is biologically insignificant. We also show the formula syntax and use
 non-default priors here (since default priors include negative values
 which can’t happen with area).</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/conjugate.html">conjugate</a></span><span class="op">(</span></span>
 <span>  s1 <span class="op">=</span> <span class="va">y</span> <span class="op">~</span> <span class="va">geno</span>, s2 <span class="op">=</span> <span class="va">df</span>,</span>
 <span>  method <span class="op">=</span> <span class="st">"t"</span>,</span>
@@ -717,7 +721,7 @@ unequal and a 24% chance that the difference in means is within
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>±</mo><mn>2</mn><mi>c</mi><msup><mi>m</mi><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">\pm2 cm^2</annotation></semantics></math>.</p>
 <p>The other aspects of the output are a summary and the prior/posterior
 parameters as well as several things only used internally.</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">res</span>, <span class="va">class</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## $summary</span></span>
 <span><span class="co">## [1] "data.frame"</span></span>
@@ -741,7 +745,7 @@ parameters as well as several things only used internally.</p>
 <span><span class="co">## [1] "call"</span></span></code></pre>
 <p>The summary is a data.frame with a summary of the information in the
 plot. It is printed at the end of the object.</p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">res</span></span></code></pre></div>
 <pre><code><span><span class="co">## Normal distributed Mu parameter of T distributed data.</span></span>
 <span><span class="co">## </span></span>
@@ -762,7 +766,7 @@ plot. It is printed at the end of the object.</p>
 <p>The posterior is the prior list updated with the given data, this
 allows for Bayesian updating should you have a situation where supplying
 data piecemeal makes sense. The prior is in the same format.</p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="va">res</span><span class="op">$</span><span class="va">posterior</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##      mu       sd       </span></span>
 <span><span class="co">## [1,] 14.68175 0.7744957</span></span>
@@ -778,7 +782,7 @@ two genotypes.</p>
 <p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-27-1.png" class="r-plt" alt="Example leaf count data between two treatment groups" width="700"></p>
 <p>Here we model <span class="math inline">$X \sim Poisson(\lambda)\\
 \lambda \sim \Gamma(A, B)$</span></p>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/conjugate.html">conjugate</a></span><span class="op">(</span></span>
 <span>  s1 <span class="op">=</span> <span class="va">y</span> <span class="op">~</span> <span class="va">geno</span>, s2 <span class="op">=</span> <span class="va">df</span>,</span>
 <span>  method <span class="op">=</span> <span class="st">"poisson"</span>,</span>
@@ -833,7 +837,7 @@ wraps in the red colors.</p>
 <p>If you do have wrapped circular data then looking at it in a
 non-circular space like this would be a problem. For values we normally
 get from plants other continuous methods can generally be useful.</p>
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">df</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">geno</span>, y <span class="op">=</span> <span class="va">y</span>, fill <span class="op">=</span> <span class="va">geno</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_boxplot.html" class="external-link">geom_boxplot</a></span><span class="op">(</span>outlier.shape <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_jitter.html" class="external-link">geom_jitter</a></span><span class="op">(</span>height <span class="op">=</span> <span class="fl">0</span>, width <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span> <span class="op">+</span></span>
@@ -842,7 +846,7 @@ get from plants other continuous methods can generally be useful.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous</a></span><span class="op">(</span>limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="va">pi</span>, <span class="va">pi</span><span class="op">)</span>, breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="va">pi</span>, <span class="op">-</span><span class="va">pi</span> <span class="op">/</span> <span class="fl">2</span>, <span class="fl">0</span>, <span class="va">pi</span> <span class="op">/</span> <span class="fl">2</span>, <span class="va">pi</span><span class="op">)</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-31-1.png" class="r-plt" alt="Example circular data between two treatment groups treated as though it were not circular looks bimodal." width="700"></p>
-<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/conjugate.html">conjugate</a></span><span class="op">(</span></span>
 <span>  s1 <span class="op">=</span> <span class="va">y</span> <span class="op">~</span> <span class="va">geno</span>, s2 <span class="op">=</span> <span class="va">df</span>,</span>
 <span>  method <span class="op">=</span> <span class="st">"vonmises2"</span>,</span>
@@ -851,16 +855,16 @@ get from plants other continuous methods can generally be useful.</p>
 <span><span class="va">res</span></span></code></pre></div>
 <pre><code><span><span class="co">## Von Mises distributed Direction parameter of Von Mises distributed data.</span></span>
 <span><span class="co">## </span></span>
-<span><span class="co">## Sample 1 Prior Von Mises(mu = 0, kappa = 0.5, boundary = -3.142, n = 3.142, mu = 1)</span></span>
-<span><span class="co">##  Posterior Von Mises(mu = 3.094, kappa = 1.817, n = 11, boundary = -3.142, mu = 3.142)</span></span>
-<span><span class="co">## Sample 2 Prior Von Mises(mu = 0, kappa = 0.5, boundary = -3.142, n = 3.142, mu = 1)</span></span>
-<span><span class="co">##  Posterior Von Mises(mu = 2.727, kappa = 2.509, n = 11, boundary = -3.142, mu = 3.142)</span></span>
+<span><span class="co">## Sample 1 Prior Von Mises(mu = 0, kappa = 0.5, boundary = -3.142, 3.142, n = 1)</span></span>
+<span><span class="co">##  Posterior Von Mises(mu = 3.094, kappa = 1.817, n = 11, boundary = -3.142, 3.142)</span></span>
+<span><span class="co">## Sample 2 Prior Von Mises(mu = 0, kappa = 0.5, boundary = -3.142, 3.142, n = 1)</span></span>
+<span><span class="co">##  Posterior Von Mises(mu = 2.727, kappa = 2.509, n = 11, boundary = -3.142, 3.142)</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## Posterior probability that S1 is equal to S2 = 79.05%</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">##      HDE_1 HDI_1_low HDI_1_high    HDE_2 HDI_2_low HDI_2_high   hyp post.prob</span></span>
 <span><span class="co">## 1 3.093691  1.668768  -1.717893 2.727366  1.497517   -2.43441 equal 0.7904981</span></span></code></pre>
-<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span></span></code></pre></div>
 <p><img src="pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-33-1.png" class="r-plt" alt="Conjugate comparison of the direction of Von Mises distributed circular data." width="700"></p>
 <p>Here our distributions are very similar and there is about a 79%

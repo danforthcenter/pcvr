@@ -186,180 +186,13 @@ fit_test <- fitGrowth(ss,
 #> Chain 1 Iteration: 600 / 600 [100%]  (Sampling) 
 #> Chain 1 finished in 0.0 seconds.
 #> Loading required namespace: rstan
-barg(fit_test, ss)
+b <- barg(fit_test, ss)
 #> Warning: The ESS has been capped to avoid unstable estimates.
 #> Warning: The ESS has been capped to avoid unstable estimates.
 #> Warning: The ESS has been capped to avoid unstable estimates.
-#> Warning: The ESS has been capped to avoid unstable estimates.
-#> Warning: The ESS has been capped to avoid unstable estimates.
-#> Warning: The ESS has been capped to avoid unstable estimates.
-#> $General
-#>   chains iter num.divergent model
-#> 1      1  600             0     1
-#> 
-#> $Rhat
-#> $Rhat$summary
-#>         b_nu_Intercept b_A_groupa b_A_groupb b_B_groupa b_B_groupb b_C_groupa
-#> Min.         0.9976693   1.003955   1.005916   1.003478   1.003199  0.9975438
-#> 1st Qu.      0.9976693   1.003955   1.005916   1.003478   1.003199  0.9975438
-#> Median       0.9976693   1.003955   1.005916   1.003478   1.003199  0.9975438
-#> Mean         0.9976693   1.003955   1.005916   1.003478   1.003199  0.9975438
-#> 3rd Qu.      0.9976693   1.003955   1.005916   1.003478   1.003199  0.9975438
-#> Max.         0.9976693   1.003955   1.005916   1.003478   1.003199  0.9975438
-#>         b_C_groupb b_sigmaA_groupa b_sigmaA_groupb b_sigmaB_groupa
-#> Min.     0.9981541       0.9992711        0.997593        1.023202
-#> 1st Qu.  0.9981541       0.9992711        0.997593        1.023202
-#> Median   0.9981541       0.9992711        0.997593        1.023202
-#> Mean     0.9981541       0.9992711        0.997593        1.023202
-#> 3rd Qu.  0.9981541       0.9992711        0.997593        1.023202
-#> Max.     0.9981541       0.9992711        0.997593        1.023202
-#>         b_sigmaB_groupb b_sigmaC_groupa b_sigmaC_groupb Intercept_nu   lprior
-#> Min.           1.022139        1.001492        1.004784    0.9976693 0.998171
-#> 1st Qu.        1.022139        1.001492        1.004784    0.9976693 0.998171
-#> Median         1.022139        1.001492        1.004784    0.9976693 0.998171
-#> Mean           1.022139        1.001492        1.004784    0.9976693 0.998171
-#> 3rd Qu.        1.022139        1.001492        1.004784    0.9976693 0.998171
-#> Max.           1.022139        1.001492        1.004784    0.9976693 0.998171
-#>           lp__
-#> Min.    1.0014
-#> 1st Qu. 1.0014
-#> Median  1.0014
-#> Mean    1.0014
-#> 3rd Qu. 1.0014
-#> Max.    1.0014
-#> 
-#> $Rhat$complete
-#>   b_nu_Intercept b_A_groupa b_A_groupb b_B_groupa b_B_groupb b_C_groupa
-#> 1      0.9976693   1.003955   1.005916   1.003478   1.003199  0.9975438
-#>   b_C_groupb b_sigmaA_groupa b_sigmaA_groupb b_sigmaB_groupa b_sigmaB_groupb
-#> 1  0.9981541       0.9992711        0.997593        1.023202        1.022139
-#>   b_sigmaC_groupa b_sigmaC_groupb Intercept_nu   lprior   lp__ model
-#> 1        1.001492        1.004784    0.9976693 0.998171 1.0014     1
-#> 
-#> 
-#> $NEFF
-#> $NEFF$summary
-#>         b_nu_Intercept b_A_groupa b_A_groupb b_B_groupa b_B_groupb b_C_groupa
-#> Min.         0.9066991  0.8493483  0.5698948  0.4155772  0.7343797  0.5551452
-#> 1st Qu.      0.9066991  0.8493483  0.5698948  0.4155772  0.7343797  0.5551452
-#> Median       0.9066991  0.8493483  0.5698948  0.4155772  0.7343797  0.5551452
-#> Mean         0.9066991  0.8493483  0.5698948  0.4155772  0.7343797  0.5551452
-#> 3rd Qu.      0.9066991  0.8493483  0.5698948  0.4155772  0.7343797  0.5551452
-#> Max.         0.9066991  0.8493483  0.5698948  0.4155772  0.7343797  0.5551452
-#>         b_C_groupb b_sigmaA_groupa b_sigmaA_groupb b_sigmaB_groupa
-#> Min.     0.3889349       0.7298754       0.9691926       0.7570529
-#> 1st Qu.  0.3889349       0.7298754       0.9691926       0.7570529
-#> Median   0.3889349       0.7298754       0.9691926       0.7570529
-#> Mean     0.3889349       0.7298754       0.9691926       0.7570529
-#> 3rd Qu.  0.3889349       0.7298754       0.9691926       0.7570529
-#> Max.     0.3889349       0.7298754       0.9691926       0.7570529
-#>         b_sigmaB_groupb b_sigmaC_groupa b_sigmaC_groupb Intercept_nu    lprior
-#> Min.          0.6675187       0.6486787       0.3101548    0.9066991 0.3243999
-#> 1st Qu.       0.6675187       0.6486787       0.3101548    0.9066991 0.3243999
-#> Median        0.6675187       0.6486787       0.3101548    0.9066991 0.3243999
-#> Mean          0.6675187       0.6486787       0.3101548    0.9066991 0.3243999
-#> 3rd Qu.       0.6675187       0.6486787       0.3101548    0.9066991 0.3243999
-#> Max.          0.6675187       0.6486787       0.3101548    0.9066991 0.3243999
-#>              lp__
-#> Min.    0.2808089
-#> 1st Qu. 0.2808089
-#> Median  0.2808089
-#> Mean    0.2808089
-#> 3rd Qu. 0.2808089
-#> Max.    0.2808089
-#> 
-#> $NEFF$complete
-#>   b_nu_Intercept b_A_groupa b_A_groupb b_B_groupa b_B_groupb b_C_groupa
-#> 1      0.9066991  0.8493483  0.5698948  0.4155772  0.7343797  0.5551452
-#>   b_C_groupb b_sigmaA_groupa b_sigmaA_groupb b_sigmaB_groupa b_sigmaB_groupb
-#> 1  0.3889349       0.7298754       0.9691926       0.7570529       0.6675187
-#>   b_sigmaC_groupa b_sigmaC_groupb Intercept_nu    lprior      lp__ model
-#> 1       0.6486787       0.3101548    0.9066991 0.3243999 0.2808089     1
-#> 
-#> 
-#> $ESS
-#> $ESS$summary
-#>                  A_groupa A_groupb B_groupa B_groupb C_groupa C_groupb
-#> Bulk_ESS.Min.    407.2834 511.4818 623.7964 743.1364 743.1364 591.3028
-#> Bulk_ESS.1st Qu. 407.2834 511.4818 623.7964 743.1364 743.1364 591.3028
-#> Bulk_ESS.Median  407.2834 511.4818 623.7964 743.1364 743.1364 591.3028
-#> Bulk_ESS.Mean    407.2834 511.4818 623.7964 743.1364 743.1364 591.3028
-#> Bulk_ESS.3rd Qu. 407.2834 511.4818 623.7964 743.1364 743.1364 591.3028
-#> Bulk_ESS.Max.    407.2834 511.4818 623.7964 743.1364 743.1364 591.3028
-#> Tail_ESS.Min.    254.8045 170.9684 124.6731 220.3139 166.5436 116.6805
-#> Tail_ESS.1st Qu. 254.8045 170.9684 124.6731 220.3139 166.5436 116.6805
-#> Tail_ESS.Median  254.8045 170.9684 124.6731 220.3139 166.5436 116.6805
-#> Tail_ESS.Mean    254.8045 170.9684 124.6731 220.3139 166.5436 116.6805
-#> Tail_ESS.3rd Qu. 254.8045 170.9684 124.6731 220.3139 166.5436 116.6805
-#> Tail_ESS.Max.    254.8045 170.9684 124.6731 220.3139 166.5436 116.6805
-#>                  nu_Intercept sigmaA_groupa sigmaA_groupb sigmaB_groupa
-#> Bulk_ESS.Min.        694.1820      699.3189      555.1537      494.7611
-#> Bulk_ESS.1st Qu.     694.1820      699.3189      555.1537      494.7611
-#> Bulk_ESS.Median      694.1820      699.3189      555.1537      494.7611
-#> Bulk_ESS.Mean        694.1820      699.3189      555.1537      494.7611
-#> Bulk_ESS.3rd Qu.     694.1820      699.3189      555.1537      494.7611
-#> Bulk_ESS.Max.        694.1820      699.3189      555.1537      494.7611
-#> Tail_ESS.Min.        272.0097      218.9626      290.7578      227.1159
-#> Tail_ESS.1st Qu.     272.0097      218.9626      290.7578      227.1159
-#> Tail_ESS.Median      272.0097      218.9626      290.7578      227.1159
-#> Tail_ESS.Mean        272.0097      218.9626      290.7578      227.1159
-#> Tail_ESS.3rd Qu.     272.0097      218.9626      290.7578      227.1159
-#> Tail_ESS.Max.        272.0097      218.9626      290.7578      227.1159
-#>                  sigmaB_groupb sigmaC_groupa sigmaC_groupb
-#> Bulk_ESS.Min.         333.6468      715.1650     558.58015
-#> Bulk_ESS.1st Qu.      333.6468      715.1650     558.58015
-#> Bulk_ESS.Median       333.6468      715.1650     558.58015
-#> Bulk_ESS.Mean         333.6468      715.1650     558.58015
-#> Bulk_ESS.3rd Qu.      333.6468      715.1650     558.58015
-#> Bulk_ESS.Max.         333.6468      715.1650     558.58015
-#> Tail_ESS.Min.         200.2556      194.6036      93.04644
-#> Tail_ESS.1st Qu.      200.2556      194.6036      93.04644
-#> Tail_ESS.Median       200.2556      194.6036      93.04644
-#> Tail_ESS.Mean         200.2556      194.6036      93.04644
-#> Tail_ESS.3rd Qu.      200.2556      194.6036      93.04644
-#> Tail_ESS.Max.         200.2556      194.6036      93.04644
-#> 
-#> $ESS$complete
-#>              par Bulk_ESS  Tail_ESS model
-#> 1   nu_Intercept 694.1820 272.00973     1
-#> 2       A_groupa 407.2834 254.80448     1
-#> 3       A_groupb 511.4818 170.96844     1
-#> 4       B_groupa 623.7964 124.67315     1
-#> 5       B_groupb 743.1364 220.31390     1
-#> 6       C_groupa 743.1364 166.54355     1
-#> 7       C_groupb 591.3028 116.68047     1
-#> 8  sigmaA_groupa 699.3189 218.96263     1
-#> 9  sigmaA_groupb 555.1537 290.75779     1
-#> 10 sigmaB_groupa 494.7611 227.11588     1
-#> 11 sigmaB_groupb 333.6468 200.25562     1
-#> 12 sigmaC_groupa 715.1650 194.60362     1
-#> 13 sigmaC_groupb 558.5802  93.04644     1
-#> 
-#> 
-#> $mcmcTrace
-#> $mcmcTrace[[1]]
-
-#> 
-#> 
-#> $priorPredictive
-#> $priorPredictive[[1]]
-
-#> 
-#> 
-#> $posteriorPredictive
-#> $posteriorPredictive[[1]]
-
-#> 
-#> 
 fit_2 <- fit_test
 fit_list <- list(fit_test, fit_2)
 x <- barg(fit_list, list(ss, ss))
-#> Warning: The ESS has been capped to avoid unstable estimates.
-#> Warning: The ESS has been capped to avoid unstable estimates.
-#> Warning: The ESS has been capped to avoid unstable estimates.
-#> Warning: The ESS has been capped to avoid unstable estimates.
-#> Warning: The ESS has been capped to avoid unstable estimates.
-#> Warning: The ESS has been capped to avoid unstable estimates.
 #> Warning: The ESS has been capped to avoid unstable estimates.
 #> Warning: The ESS has been capped to avoid unstable estimates.
 #> Warning: The ESS has been capped to avoid unstable estimates.
@@ -373,11 +206,10 @@ x <- conjugate(
     list(mu = 10, sd = 2),
     list(mu = 10, sd = 2)
   ),
-  plot = FALSE, rope_range = c(-8, 8), rope_ci = 0.89,
+  rope_range = c(-8, 8), rope_ci = 0.89,
   cred.int.level = 0.89, hypothesis = "unequal",
   bayes_factor = c(50, 55)
 )
-#> Warning: plot argument is deprecated, use plot.conjugate instead.
 b <- barg(x, priors = list("rnorm" = list("n" = 10, "mean" = c(5, 20), "sd" = c(5, 10))))
 # }
 ```

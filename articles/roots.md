@@ -591,9 +591,9 @@ conj_ex2
 
     ## Gamma distributed Lambda parameter of Poisson distributed data.
     ## 
-    ## Sample 1 Prior Gamma(a = 0.5, b = 0.5, a = 0.5, b = 0.5)
+    ## Sample 1 Prior Gamma(a = 0.5, 0.5, b = 0.5, 0.5)
     ##  Posterior Gamma(a = 16.5, b = 10.5)
-    ## Sample 2 Prior Gamma(a = 0.5, b = 0.5, a = 0.5, b = 0.5)
+    ## Sample 2 Prior Gamma(a = 0.5, 0.5, b = 0.5, 0.5)
     ##  Posterior Gamma(a = 31.5, b = 10.5)
     ## 
     ## Posterior probability that S1 is equal to S2 = 11.874%

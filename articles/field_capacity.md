@@ -2,6 +2,13 @@
 
 ``` r
 library(pcvr)
+```
+
+    ## Registered S3 method overwritten by 'car':
+    ##   method           from
+    ##   na.action.merMod lme4
+
+``` r
 library(ggplot2)
 library(patchwork)
 ```
@@ -829,7 +836,7 @@ rbcp <- rbc[rbc$pc == "abrupt", ]
 summary(rbcp$total_water)
 ```
 
-    ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
+    ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.     NAs 
     ##  -13.07   17.33   24.30   20.83   25.00   38.68      10
 
 ``` r
