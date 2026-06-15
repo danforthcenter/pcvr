@@ -1,41 +1,33 @@
-# pcvr 1.3.1
+# pcvr 1.4.1
 
 ## R CMD check results
 
-0 errors ✔ | 0 warnings ✔ | 2 notes ✖
+0 errors ✔ | 0 warnings ✔ | 1 notes ✖
 
-❯ checking CRAN incoming feasibility ... [4s/6s] NOTE
-  Maintainer: ‘Josh Sumner <jsumner@danforthcenter.org>’
-  
-  Possibly misspelled words in DESCRIPTION:
-    Kruschke (16:2, 17:2, 17:46)
-    Phenotyping (3:14)
-    phenotyping (12:44)
+❯ checking for future file timestamps ... NOTE
+  unable to verify current time
 
+## Notes
+
+Resubmitting due to cran testing error running without Suggested packages
+and for development features (ggplot2 geom support, more distributions, etc).
+Previously a NOTE related to the failure specified:
+
+```
+❯ checking package dependencies ... NOTE
+Package suggested but not available for checking: ‘cmdstanr’
 Suggests or Enhances not in mainstream repositories:
   cmdstanr
 Availability using Additional_repositories specification:
   cmdstanr   yes   https://mc-stan.org/r-packages/
-❯ checking package namespace information ... OK
-❯ checking package dependencies ... NOTE
-Package suggested but not available for checking: ‘cmdstanr’
+```
 
-## Notes
-
-Resubmitting due to large changes in the development version.
+But the `cmdstanr` suggestion is available from the additional repository specified in DESCRIPTION.
 
 No notes seem critical.
-Names (PlantCV, Kruschke) and words (phenotyping) in DESCRIPTION are not misspelled.
-The `cmdstanr` suggestion is available from the additional repository specified in DESCRIPTION.
-The R CMD check on MacOs via github actions yields a NOTE about installed package size as well.
 
-```
-* checking installed package size ... NOTE
-  installed size is  6.4Mb
-  sub-directories of 1Mb or more:
-    doc   4.1Mb
-    R     2.0Mb
-```
+Names (PlantCV, Kruschke) and words (phenotyping) in DESCRIPTION are not misspelled.
+The R CMD check on MacOs via github actions yields a NOTE about installed package size as well.
 
 Additionally there are some examples wrapped in `\donttest` that may take several minutes to run.
 
