@@ -21,7 +21,7 @@ License: GPL-2
 Encoding: UTF-8
 LazyData: true
 LazyDataCompression: xz
-Additional_repositories: https://mc-stan.org/r-packages/
+Additional_repositories: https://stan-dev.r-universe.dev
 RoxygenNote: 7.3.2
 Imports: 
     FactoMineR,

@@ -9,8 +9,10 @@
 
 ## Notes
 
-Resubmitting due to cran testing error running without Suggested packages
-and for development features (ggplot2 geom support, more distributions, etc).
+Resubmitting due to cran testing error probably related to either not installing
+suggested packages or the change from `mc-stan.org` to `stan-dev.r--universe.dev`
+for some additional packages and for development features
+(ggplot2 geom support, more distributions, etc).
 Previously a NOTE related to the failure specified:
 
 ```
@@ -19,10 +21,10 @@ Package suggested but not available for checking: ‘cmdstanr’
 Suggests or Enhances not in mainstream repositories:
   cmdstanr
 Availability using Additional_repositories specification:
-  cmdstanr   yes   https://mc-stan.org/r-packages/
+  cmdstanr   yes   https://stan-dev.r-universe.dev
 ```
 
-But the `cmdstanr` suggestion is available from the additional repository specified in DESCRIPTION.
+But the `cmdstanr` suggestion is available from the new additional repository specified in DESCRIPTION.
 
 No notes seem critical.
 
