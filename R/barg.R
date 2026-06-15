@@ -115,7 +115,7 @@
 #'   ), type = "brms"
 #' )
 #' fit_test <- fitGrowth(ss,
-#'   iter = 600, cores = 1, chains = 1, backend = "cmdstanr",
+#'   iter = 600, cores = 1, chains = 1,
 #'   sample_prior = "only" # only sampling from prior for speed
 #' )
 #' b <- barg(fit_test, ss)
