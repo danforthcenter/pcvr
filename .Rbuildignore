@@ -14,4 +14,5 @@
 ^pkgdown$
 ^vignettes/articles$
 ^DO_NOT_COMMIT*
-^\.#.*$
+^demon*
+^#.*#$
