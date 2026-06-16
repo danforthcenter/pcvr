@@ -103,25 +103,6 @@
 #' @seealso \link{plotPrior} for visual prior predictive checks.
 #' @examples
 #' \donttest{
-#' simdf <- growthSim("logistic",
-#'   n = 20, t = 25,
-#'   params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
-#' )
-#' ss <- growthSS(
-#'   model = "logistic", form = y ~ time | id / group, sigma = "logistic",
-#'   df = simdf, start = list(
-#'     "A" = 130, "B" = 12, "C" = 3,
-#'     "sigmaA" = 20, "sigmaB" = 10, "sigmaC" = 2
-#'   ), type = "brms"
-#' )
-#' fit_test <- fitGrowth(ss,
-#'   iter = 600, cores = 1, chains = 1,
-#'   sample_prior = "only" # only sampling from prior for speed
-#' )
-#' b <- barg(fit_test, ss)
-#' fit_2 <- fit_test
-#' fit_list <- list(fit_test, fit_2)
-#' x <- barg(fit_list, list(ss, ss))
 #'
 #' x <- conjugate(
 #'   s1 = rnorm(10, 10, 1), s2 = rnorm(10, 13, 1.5), method = "t",
