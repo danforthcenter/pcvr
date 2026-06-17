@@ -34,12 +34,6 @@
 #'   model = "linear", form = label | value ~ group, df = mv_df,
 #'   start = list("A" = 5), type = "brms", spectral_index = "none"
 #' )
-#' \donttest{
-#' mod1 <- fitGrowth(ss1, backend = "cmdstanr", iter = 1000, chains = 1, cores = 1)
-#' growthPlot(mod1, ss1$pcvrForm, df = ss1$df)
-#' library(ggplot2)
-#' ggplot() + stat_brms_model(fit = mod1, ss = ss1)
-#' }
 #'
 #' # when the model is longitudinal the same model is possible with growthSS
 #'
@@ -96,13 +90,6 @@
 #'     }
 #'   }
 #' }))
-#'
-#' \donttest{
-#' if (rlang::is_installed("mnormt")) {
-#'   m2 <- fitGrowth(ss_mv1, backend = "cmdstanr", iter = 1000, chains = 1, cores = 1)
-#'   growthPlot(m2, ss_mv1$pcvrForm, df = ss_mv1$df)
-#' }
-#' }
 #'
 #' @export
 

@@ -33,15 +33,7 @@
 #'
 #' @examples
 #' library(ggplot2)
-#' simdf <- growthSim("logistic",
-#'   n = 20, t = 25,
-#'   params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
-#' )
-#' ss <- growthSS(
-#'   model = "logistic", form = y ~ time | id / group,
-#'   df = simdf, start = NULL, type = "nls"
-#' )
-#' fit <- fitGrowth(ss)
+#' data(fit)
 #' ggplot() +
 #'   stat_growthss(fit = fit, ss = ss)
 #'

@@ -24,61 +24,12 @@
 #' @examples
 #' # note that this example will fit several models using Stan and may run slowly.
 #' \donttest{
-#' simdf <- growthSim("logistic",
-#'   n = 20, t = 25,
-#'   params = list(
-#'     "A" = c(200, 160, 220, 200, 140, 300),
-#'     "B" = c(13, 11, 10, 9, 16, 12),
-#'     "C" = c(3, 3.5, 3.2, 2.8, 3.3, 2.5)
-#'   )
-#' )
-#' ss_ab <- growthSS(
-#'   model = "logistic", form = y ~ time | id / group,
-#'   sigma = "logistic", df = simdf[simdf$group %in% c("a", "b"), ],
-#'   start = list(
-#'     "A" = 130, "B" = 12, "C" = 3,
-#'     "sigmaA" = 15, "sigmaB" = 10, "sigmaC" = 3
-#'   ), type = "brms"
-#' )
-#'
-#' ss_cd <- growthSS(
-#'   model = "logistic", form = y ~ time | id / group,
-#'   sigma = "logistic", df = simdf[simdf$group %in% c("c", "d"), ],
-#'   start = list(
-#'     "A" = 130, "B" = 12, "C" = 3,
-#'     "sigmaA" = 15, "sigmaB" = 10, "sigmaC" = 3
-#'   ), type = "brms"
-#' )
-#'
-#' ss_ef <- growthSS(
-#'   model = "logistic", form = y ~ time | id / group,
-#'   sigma = "logistic", df = simdf[simdf$group %in% c("e", "f"), ],
-#'   start = list(
-#'     "A" = 130, "B" = 12, "C" = 3,
-#'     "sigmaA" = 15, "sigmaB" = 10, "sigmaC" = 3
-#'   ), type = "brms"
-#' )
-#' ss_ef2 <- growthSS(
-#'   model = "gompertz", form = y ~ time | id / group,
-#'   sigma = "logistic", df = simdf[simdf$group %in% c("e", "f"), ],
-#'   start = list(
-#'     "A" = 130, "B" = 12, "C" = 3,
-#'     "sigmaA" = 15, "sigmaB" = 10, "sigmaC" = 3
-#'   ), type = "brms"
-#' )
-#'
-#'
-#' fit_ab <- fitGrowth(ss_ab, chains = 1, cores = 1, iter = 1000)
-#' fit_ab2 <- fitGrowth(ss_ab, chains = 1, cores = 1, iter = 1200)
-#' fit_cd <- fitGrowth(ss_cd, chains = 1, cores = 1, iter = 1000)
-#' fit_ef <- fitGrowth(ss_ef, chains = 1, cores = 1, iter = 1000)
-#' fit_ef2 <- fitGrowth(ss_ef2, chains = 1, cores = 1, iter = 1000)
-#'
-#' x <- combineDraws(fit_ab, fit_cd, fit_ef)
-#' draws_ef <- as.data.frame(fit_ef)
-#' draws_ef <- draws_ef[, grepl("^b_", colnames(draws_ef))]
-#' x2 <- combineDraws(fit_ab2, fit_cd, draws_ef)
-#' x3 <- combineDraws(fit_ab, fit_cd, fit_ef2)
+#' data(fit)
+#' fit_1 <- fit_2 <- fit
+#' x <- combineDraws(fit_1, fit_2, fit)
+#' draws_1 <- as.data.frame(fit_1)
+#' draws_1 <- draws_1[, grepl("^b_", colnames(draws_ef))]
+#' x2 <- combineDraws(fit_2, draws_1)
 #' }
 #'
 #' @return Returns a dataframe of posterior draws.

@@ -1,7 +1,7 @@
 Package: pcvr
 Type: Package
 Title: Plant Phenotyping and Bayesian Statistics
-Version: 1.4.0
+Version: 1.4.1
 Authors@R:
     c(person("Josh", "Sumner", email = "jsumner@danforthcenter.org",
              role = c("aut", "cre"), comment = c(ORCID = "0000-0002-3399-9063")),
@@ -21,8 +21,7 @@ License: GPL-2
 Encoding: UTF-8
 LazyData: true
 LazyDataCompression: xz
-Additional_repositories: https://mc-stan.org/r-packages/
-RoxygenNote: 7.3.2
+Additional_repositories: https://stan-dev.r-universe.dev
 Imports: 
     FactoMineR,
     rlang,
@@ -64,3 +63,5 @@ VignetteBuilder: knitr
 Config/testthat/edition: 3
 URL: https://github.com/danforthcenter/pcvr, https://plantcv.org/, https://danforthcenter.github.io/pcvr/
 BugReports: https://github.com/danforthcenter/pcvr/issues
+Config/roxygen2/version: 8.0.0
+RoxygenNote: 7.3.2

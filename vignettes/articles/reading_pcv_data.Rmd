@@ -163,7 +163,6 @@ out <- pcv.time(sv,
   plantingDelay = 0, phenotype = "area_pixels", cutoff = 10,
   timeCol = "timestamp", group = c("barcode", "rotation"), plot = TRUE
 )
-out$plot
 sv <- out$data
 dim(sv)
 ```
@@ -173,6 +172,8 @@ Note that in these plots, and particularly clearly in the DAE plot, there are lo
 Before moving on we'll also check the grouping in our data. Here we see that we have lots of plants with more than one image per day.
 
 ```{r}
+#| fig.alt: >
+#|   Checking grouping of data
 checkGroups(sv, c("DAS", "barcode", "rotation", "genotype", "fertilizer"))
 ```
 
@@ -194,6 +195,8 @@ dim(sv_ag_with_outliers)
 The `pcv.outliers` function can be used to remove outliers relative to a phenotype using cook's distance. Here due to the experimental design having these plants germinate on the machine around 1 percent of data are removed as outliers. The plot shows removed data points in red, although here that is hard to see.
 
 ```{r}
+#| fig.alt: >
+#|   Plotting outliers
 out <- pcv.outliers(
   df = sv_ag_with_outliers, phenotype = "area_pixels",
   group = c("DAS", "genotype", "fertilizer"), plotgroup = c("barcode")
@@ -206,6 +209,8 @@ dim(sv_ag)
 It is also useful to check our grouping assumptions again, here we see that there are some plants with multiple images from a single day.
 
 ```{r}
+#| fig.alt: >
+#|   Checking Groups again after aggregation/outlier removal
 checkGroups(sv_ag, c("DAS", "barcode", "genotype", "fertilizer"))
 ```
 
@@ -215,6 +220,8 @@ checkGroups(sv_ag, c("DAS", "barcode", "genotype", "fertilizer"))
 We might also want to check the watering data, which can be read easily from json with `pcv.water`.
 
 ```{r}
+#| fig.alt: >
+#|   Plotting watering data
 water <- pcv.water(paste0(base_url, "metadata.json"))
 
 water$genotype <- substr(water$barcode, 3, 5)
@@ -244,6 +251,8 @@ A common use for watering data is to look at water use efficiency (WUE). Here we
 
 
 ```{r}
+#| fig.alt: >
+#|   Plotting Pseudo water use efficiency
 test <- pwue(df = sv_ag, w = water, pheno = "area_pixels", time = "timestamp", id = "barcode")
 
 ggplot(test, aes(x = DAS, y = pWUE, color = genotype, group = barcode)) +
