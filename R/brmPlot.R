@@ -27,7 +27,7 @@
 #' @examples
 #' \donttest{
 #' data(fit)
-#' growthPlot(fit = fit, form = y ~ time | group, groups = "a", df = ss$df)
+#' growthPlot(fit = fit, form = ss$pcvrForm, groups = "a", df = ss$df)
 #' }
 #'
 #' @return Returns a ggplot showing a brms model's credible

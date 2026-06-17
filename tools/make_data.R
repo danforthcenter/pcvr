@@ -15,10 +15,10 @@ df <- growthSim("exponential",
   n = 10, t = 30,
   params = list("A" = c(1, 1), "B" = c(0.15, 0.2))
 )
-ss <- growthSS(
+survss <- growthSS(
   model = "survival weibull", form = y > 25 ~ time | id / group,
   df = df, start = c(0, 5)
 )
-surv <- fitGrowth(ss, iter = 4100, warmup = 4000, cores = 2, chains = 2, backend = "cmdstanr")
-brmSurvPlot(surv, form = ss$pcvrForm, df = ss$df)
-save(surv, ss, file = "surv.rda")
+surv <- fitGrowth(survss, iter = 4100, warmup = 4000, cores = 2, chains = 2, backend = "cmdstanr")
+brmSurvPlot(surv, form = survss$pcvrForm, df = survss$df)
+save(surv, survss, file = "surv.rda")

@@ -46,12 +46,12 @@ df <- growthSim("exponential",
   n = 20, t = 50,
   params = list("A" = c(1, 1), "B" = c(0.15, 0.1))
 )
-ss <- growthSS(
+survss <- growthSS(
   model = "survival weibull", form = y > 100 ~ time | id / group,
   df = df, start = c(0, 5)
 )
 data(surv)
-brmSurvPlot(surv, form = ss$pcvrForm, df = ss$df)
+brmSurvPlot(surv, form = survss$pcvrForm, df = survss$df)
 }
 
 }
