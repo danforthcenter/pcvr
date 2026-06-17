@@ -31,18 +31,7 @@ Function to visualize hypotheses tested on brms models similar to those made usi
 \examples{
 \donttest{
 set.seed(123)
-simdf <- growthSim(
-  "logistic",
-  n = 20, t = 25,
-  params = list("A" = c(200, 180, 190, 160), "B" = c(13, 11, 10, 10), "C" = c(3, 3, 3.25, 3.5))
-)
-ss <- growthSS(
-  model = "logistic", form = y ~ time | id / group, sigma = "int",
-  list("A" = 130, "B" = 10, "C" = 3),
-  df = simdf, type = "brms"
-)
-
-fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1)
+data(fit)
 brmViolin(fit, ss, ".../A_groupd > 1.05") # all groups used
 brmViolin(fit, ss, "abs(1 - ((...)/(C_groupd - B_groupd))) > 0.05") # rather arbitrary
 brmViolin(fit, ss, "abs(1 - ((...)/(C_groupa - B_groupd))) > 0.05") # totally arbitrary

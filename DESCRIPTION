@@ -64,3 +64,4 @@ Config/testthat/edition: 3
 URL: https://github.com/danforthcenter/pcvr, https://plantcv.org/, https://danforthcenter.github.io/pcvr/
 BugReports: https://github.com/danforthcenter/pcvr/issues
 Config/roxygen2/version: 8.0.0
+RoxygenNote: 7.3.2

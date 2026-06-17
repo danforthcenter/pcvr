@@ -29,7 +29,7 @@
 #'   df = df, start = c(0, 5)
 #' )
 #' data(surv)
-#' brmSurvPlot(fit1, form = ss1$pcvrForm, df = ss1$df)
+#' brmSurvPlot(surv, form = ss$pcvrForm, df = ss$df)
 #' }
 #'
 #' @return Returns a ggplot showing a brms model's credible
