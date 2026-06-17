@@ -138,6 +138,14 @@ reference:
     contents:
       - read.pcv.3
       - read.pcv
+  - title: "datasets"
+    desc: >
+      Data used in function examples
+    contents:
+      - fit
+      - ss
+      - surv
+      - survss
   - title: "internal"
     contents:
       - awkHelper
