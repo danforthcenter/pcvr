@@ -11,6 +11,18 @@
 #'
 "fit"
 
+#' Example growthSS object used to make example models
+#'
+#' @description A growthSS class object describing either a growth model or survival model.
+#'
+#' @examples
+#' \donttest{
+#' data(fit, package = "pcvr")
+#' summary(ss)
+#' }
+#'
+"ss"
+
 
 #' Example survival model
 #'

@@ -19,6 +19,6 @@ ss <- growthSS(
   model = "survival weibull", form = y > 25 ~ time | id / group,
   df = df, start = c(0, 5)
 )
-fit <- fitGrowth(ss, iter = 4100, warmup = 4000, cores = 2, chains = 2, backend = "cmdstanr")
-brmSurvPlot(fit, form = ss$pcvrForm, df = ss$df)
-save(fit, ss, file = "surv.rda")
+surv <- fitGrowth(ss, iter = 4100, warmup = 4000, cores = 2, chains = 2, backend = "cmdstanr")
+brmSurvPlot(surv, form = ss$pcvrForm, df = ss$df)
+save(surv, ss, file = "surv.rda")
