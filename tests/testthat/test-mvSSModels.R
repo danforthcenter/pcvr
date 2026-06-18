@@ -144,6 +144,22 @@ test_that("Test brms mv trait longitudinal model", {
   expect_s3_class(p, "ggplot")
 })
 
+test_that("Test brms mv trait longitudinal model from growthSS", {
+  skip_if_not_installed("brms")
+  skip_if_not_installed("cmdstanr")
+  skip_on_cran()
+  ss_mv1 <- growthSS(
+    model = "linear",
+    form = label | resp_weights(value) + trunc(lb = -1, ub = Inf) ~ time | group,
+    df = mv_df2, start = list("A" = 50)
+  )
+  fit <- fitGrowth(ss_mv1, backend = "cmdstanr", iter = 100, chains = 1, cores = 1,
+                   refresh = 0, silent = 2)
+  expect_s3_class(fit, "brmsfit")
+  p <- growthPlot(fit, ss_mv1$pcvrForm, df = ss_mv1$df)
+  expect_s3_class(p, "ggplot")
+})
+
 test_that("Test nls mv trait longitudinal model", {
   skip_on_cran()
   ss_mv1 <- mvSS(
