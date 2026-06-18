@@ -121,7 +121,7 @@ ss <- growthSS(
     "sigmaA" = 20, "sigmaB" = 10, "sigmaC" = 2
   ), type = "brms"
 )
-if (rlang::is_installed("cmdstanr") {
+if (rlang::is_installed("cmdstanr")) {
   fit_test <- fitGrowth(ss,
     iter = 600, cores = 1, chains = 1, backend = "cmdstanr",
     sample_prior = "only" # only sampling from prior for speed

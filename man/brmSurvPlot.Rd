@@ -50,7 +50,7 @@ ss1 <- growthSS(
   model = "survival weibull", form = y > 100 ~ time | id / group,
   df = df, start = c(0, 5)
 )
-if (rlang::is_installed("cmdstanr") {
+if (rlang::is_installed("cmdstanr")) {
   fit1 <- fitGrowth(ss1, iter = 600, cores = 2, chains = 2, backend = "cmdstanr")
   brmSurvPlot(fit1, form = ss1$pcvrForm, df = ss1$df)
 }
@@ -60,7 +60,7 @@ ss2 <- growthSS(
   model = "survival binomial", form = y > 100 ~ time | id / group,
   df = df, start = c(-4, 3)
 )
-if (rlang::is_installed("cmdstanr") {
+if (rlang::is_installed("cmdstanr")) {
   fit2 <- fitGrowth(ss2, iter = 600, cores = 2, chains = 2, backend = "cmdstanr")
   brmSurvPlot(fit2, form = ss2$pcvrForm, df = ss2$df)
 }

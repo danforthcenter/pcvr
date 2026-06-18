@@ -37,7 +37,7 @@
 #'   list("A" = 130, "B" = 10, "C" = 3),
 #'   df = simdf, type = "brms"
 #' )
-#' if (rlang::is_installed("cmdstanr") {
+#' if (rlang::is_installed("cmdstanr")) {
 #'   fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1)
 #'   growthPlot(fit = fit, form = y ~ time | group, groups = "a", df = ss$df)
 #' }
