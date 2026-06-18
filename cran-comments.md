@@ -1,8 +1,8 @@
-# pcvr 1.3.1
+# pcvr 1.4.1
 
 ## R CMD check results
 
-0 errors ✔ | 0 warnings ✔ | 2 notes ✖
+0 errors ✔ | 0 warnings ✔ | 1 notes ✖
 
 ❯ checking CRAN incoming feasibility ... [4s/6s] NOTE
   Maintainer: ‘Josh Sumner <jsumner@danforthcenter.org>’
@@ -15,14 +15,14 @@
 Suggests or Enhances not in mainstream repositories:
   cmdstanr
 Availability using Additional_repositories specification:
-  cmdstanr   yes   https://mc-stan.org/r-packages/
+  cmdstanr   yes   https://stan-dev.r-universe.dev
 ❯ checking package namespace information ... OK
 ❯ checking package dependencies ... NOTE
 Package suggested but not available for checking: ‘cmdstanr’
 
 ## Notes
 
-Resubmitting due to large changes in the development version.
+Resubmitting due to an error on cran when cmdstanr failed to install in testing.
 
 No notes seem critical.
 Names (PlantCV, Kruschke) and words (phenotyping) in DESCRIPTION are not misspelled.
