@@ -24,6 +24,7 @@
 #' optionally with a plot of simulated growth curves using draws from those priors.
 #' @seealso \link{fitGrowth} for fitting the model specified by this list.
 #' @examples
+#' \donttest{
 #' set.seed(123)
 #' mv_df <- mvSim(dists = list(rnorm = list(mean = 100, sd = 30)), wide = FALSE)
 #' mv_df$group <- rep(c("a", "b"), times = 900)
@@ -97,7 +98,6 @@
 #'   }
 #' }))
 #'
-#' \donttest{
 #' if (rlang::is_installed(c("cmdstanr", "mnormt"))) {
 #'   m2 <- fitGrowth(ss_mv1, backend = "cmdstanr", iter = 1000, chains = 1, cores = 1)
 #'   growthPlot(m2, ss_mv1$pcvrForm, df = ss_mv1$df)
