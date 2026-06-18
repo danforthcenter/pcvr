@@ -337,14 +337,6 @@
 #' lapply(ss, class)
 #' ss$initfun()
 #' # the next step would typically be compiling/fitting the model
-#' # here we use very few chains and very few iterations for speed, but more of both is better.
-#' \donttest{
-#' fit_test <- fitGrowth(ss,
-#'   iter = 500, cores = 1, chains = 1, backend = "cmdstanr",
-#'   control = list(adapt_delta = 0.999, max_treedepth = 20)
-#' )
-#' }
-#'
 #'
 #' # formulas and priors will look different if there is only one group in the data
 #'
