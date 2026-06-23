@@ -80,18 +80,19 @@ ss_ef2 <- growthSS(
   ), type = "brms"
 )
 
+if (rlang::is_installed("cmdstanr")) {
+  fit_ab <- fitGrowth(ss_ab, chains = 1, cores = 1, iter = 1000)
+  fit_ab2 <- fitGrowth(ss_ab, chains = 1, cores = 1, iter = 1200)
+  fit_cd <- fitGrowth(ss_cd, chains = 1, cores = 1, iter = 1000)
+  fit_ef <- fitGrowth(ss_ef, chains = 1, cores = 1, iter = 1000)
+  fit_ef2 <- fitGrowth(ss_ef2, chains = 1, cores = 1, iter = 1000)
 
-fit_ab <- fitGrowth(ss_ab, chains = 1, cores = 1, iter = 1000)
-fit_ab2 <- fitGrowth(ss_ab, chains = 1, cores = 1, iter = 1200)
-fit_cd <- fitGrowth(ss_cd, chains = 1, cores = 1, iter = 1000)
-fit_ef <- fitGrowth(ss_ef, chains = 1, cores = 1, iter = 1000)
-fit_ef2 <- fitGrowth(ss_ef2, chains = 1, cores = 1, iter = 1000)
-
-x <- combineDraws(fit_ab, fit_cd, fit_ef)
-draws_ef <- as.data.frame(fit_ef)
-draws_ef <- draws_ef[, grepl("^b_", colnames(draws_ef))]
-x2 <- combineDraws(fit_ab2, fit_cd, draws_ef)
-x3 <- combineDraws(fit_ab, fit_cd, fit_ef2)
+  x <- combineDraws(fit_ab, fit_cd, fit_ef)
+  draws_ef <- as.data.frame(fit_ef)
+  draws_ef <- draws_ef[, grepl("^b_", colnames(draws_ef))]
+  x2 <- combineDraws(fit_ab2, fit_cd, draws_ef)
+  x3 <- combineDraws(fit_ab, fit_cd, fit_ef2)
+}
 }
 
 }
