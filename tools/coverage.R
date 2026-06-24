@@ -10,5 +10,5 @@ x <- covr::package_coverage(
   line_exclusions = list("R/plsr.R", "R/vipPlot.R", "R/pcvsubread.R", "R/readpcv3.R")
 )
 x
-
+save(x, file = "~/pcvr/tools/pcvrCoverage.rdata")
 report(x, file = "~/pcvr/tools/pcvrCoverage-report.html")

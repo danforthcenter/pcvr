@@ -57,6 +57,7 @@ This function provides a simplified interface to modeling multi-value traits usi
 Output from this should be passed to \link{fitGrowth} to fit the specified model.
 }
 \examples{
+\donttest{
 set.seed(123)
 mv_df <- mvSim(dists = list(rnorm = list(mean = 100, sd = 30)), wide = FALSE)
 mv_df$group <- rep(c("a", "b"), times = 900)
@@ -67,11 +68,11 @@ ss1 <- mvSS(
   model = "linear", form = label | value ~ group, df = mv_df,
   start = list("A" = 5), type = "brms", spectral_index = "none"
 )
-\donttest{
-mod1 <- fitGrowth(ss1, backend = "cmdstanr", iter = 1000, chains = 1, cores = 1)
-growthPlot(mod1, ss1$pcvrForm, df = ss1$df)
-library(ggplot2)
-ggplot() + stat_brms_model(fit = mod1, ss = ss1)
+if (rlang::is_installed("cmdstanr")) {
+  mod1 <- fitGrowth(ss1, backend = "cmdstanr", iter = 1000, chains = 1, cores = 1)
+  growthPlot(mod1, ss1$pcvrForm, df = ss1$df)
+  library(ggplot2)
+  ggplot() + stat_brms_model(fit = mod1, ss = ss1)
 }
 
 # when the model is longitudinal the same model is possible with growthSS
@@ -130,8 +131,7 @@ unlist(lapply(names(ss_mv1), function(nm) {
   }
 }))
 
-\donttest{
-if (rlang::is_installed("mnormt")) {
+if (rlang::is_installed(c("cmdstanr", "mnormt"))) {
   m2 <- fitGrowth(ss_mv1, backend = "cmdstanr", iter = 1000, chains = 1, cores = 1)
   growthPlot(m2, ss_mv1$pcvrForm, df = ss_mv1$df)
 }

@@ -584,6 +584,8 @@ head(d)
 Target field capacities are in the data that the phenotyping core provides and observed field capacities can be calculated from the watering metadata.
 
 ```{r}
+#| fig.alt: >
+#|   Example of field capacity in a drought treatment that is working well
 set.seed(123)
 d2 <- data.frame(
   day = rep(1:20, 4),
@@ -619,7 +621,11 @@ ggplot(d[d$variable == "field_capacity", ],
   ) +
   pcv_theme() +
   theme(legend.position = "none")
+```
 
+```{r}
+#| fig.alt: >
+#|   Example of field capacity in a drought treatment that is not working well
 ggplot(d[d$variable == "field_capacity", ],
        aes(x = day, y = value)) +
   facet_wrap(~treatment) +

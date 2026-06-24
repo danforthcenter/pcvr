@@ -50,17 +50,20 @@ ss1 <- growthSS(
   model = "survival weibull", form = y > 100 ~ time | id / group,
   df = df, start = c(0, 5)
 )
-fit1 <- fitGrowth(ss1, iter = 600, cores = 2, chains = 2, backend = "cmdstanr")
-brmSurvPlot(fit1, form = ss1$pcvrForm, df = ss1$df)
-
+if (rlang::is_installed("cmdstanr")) {
+  fit1 <- fitGrowth(ss1, iter = 600, cores = 2, chains = 2, backend = "cmdstanr")
+  brmSurvPlot(fit1, form = ss1$pcvrForm, df = ss1$df)
+}
 # note that using the cumulative hazard to calculate survival is likely to underestimate
 # survival in these plots if events do not start immediately.
 ss2 <- growthSS(
   model = "survival binomial", form = y > 100 ~ time | id / group,
   df = df, start = c(-4, 3)
 )
-fit2 <- fitGrowth(ss2, iter = 600, cores = 2, chains = 2, backend = "cmdstanr")
-brmSurvPlot(fit2, form = ss2$pcvrForm, df = ss2$df)
+if (rlang::is_installed("cmdstanr")) {
+  fit2 <- fitGrowth(ss2, iter = 600, cores = 2, chains = 2, backend = "cmdstanr")
+  brmSurvPlot(fit2, form = ss2$pcvrForm, df = ss2$df)
+}
 }
 
 }

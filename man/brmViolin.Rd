@@ -41,12 +41,13 @@ ss <- growthSS(
   list("A" = 130, "B" = 10, "C" = 3),
   df = simdf, type = "brms"
 )
-
-fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1)
-brmViolin(fit, ss, ".../A_groupd > 1.05") # all groups used
-brmViolin(fit, ss, "abs(1 - ((...)/(C_groupd - B_groupd))) > 0.05") # rather arbitrary
-brmViolin(fit, ss, "abs(1 - ((...)/(C_groupa - B_groupd))) > 0.05") # totally arbitrary
-brmViolin(fit, ss, "A_groupa/A_groupd > 1.05") # only these two groups
+if (rlang::is_installed("cmdstanr")) {
+  fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1)
+  brmViolin(fit, ss, ".../A_groupd > 1.05") # all groups used
+  brmViolin(fit, ss, "abs(1 - ((...)/(C_groupd - B_groupd))) > 0.05") # rather arbitrary
+  brmViolin(fit, ss, "abs(1 - ((...)/(C_groupa - B_groupd))) > 0.05") # totally arbitrary
+  brmViolin(fit, ss, "A_groupa/A_groupd > 1.05") # only these two groups
+}
 }
 
 }
