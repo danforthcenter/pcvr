@@ -30,6 +30,7 @@ needs.
 Pre-work was to install R, Rstudio, and `pcvr` with dependencies.
 
 ``` r
+
 library(pcvr) # or devtools::load_all() if you are editing
 ```
 
@@ -38,6 +39,7 @@ library(pcvr) # or devtools::load_all() if you are editing
     ##   na.action.merMod lme4
 
 ``` r
+
 library(brms) # for bayesian models
 ```
 
@@ -55,6 +57,7 @@ library(brms) # for bayesian models
     ##     ar
 
 ``` r
+
 library(data.table) # for fread
 ```
 
@@ -66,6 +69,7 @@ library(data.table) # for fread
     ##     %notin%
 
 ``` r
+
 library(ggplot2) # for plotting
 library(patchwork) # to arrange ggplots
 ```
@@ -91,6 +95,7 @@ data](pcvrTutorial_agm_files/figure-html/unnamed-chunk-3-1.png)
 data](pcvrTutorial_agm_files/figure-html/unnamed-chunk-4-1.png)
 
 ``` r
+
 r1 <- range(simdf[simdf$time == 1, "y"])
 r2 <- range(simdf[simdf$time == 5, "y"])
 r3 <- range(simdf[simdf$time == 10, "y"])
@@ -137,10 +142,10 @@ hypothesis testing.
 
 In a Bayesian context we flip “random” and “fixed” elements.
 
-|             | Fixed       | Random      | Interpretation                                                                                                        |
-|-------------|-------------|-------------|-----------------------------------------------------------------------------------------------------------------------|
-| Frequentist | True Effect | Data        | If the True Effect is 0 then there is an $\alpha \cdot 100$% chance of estimating an effect of this size or more.     |
-| Bayesian    | Data        | True Effect | Given the estimated effect from our data there is a P probability of the True Effect being a difference of at least X |
+|  | Fixed | Random | Interpretation |
+|----|----|----|----|
+| Frequentist | True Effect | Data | If the True Effect is 0 then there is an $`\alpha\cdot100`$% chance of estimating an effect of this size or more. |
+| Bayesian | Data | True Effect | Given the estimated effect from our data there is a P probability of the True Effect being a difference of at least X |
 
 Before moving on we should note that each group in your data will have
 parameters fit to it. If you have many groups then fitting models to
@@ -192,6 +197,7 @@ Intercept only models are supported, although they are only intended for
 use in segmented models or to represent homoskedasticity as a sub-model.
 
 ``` r
+
 set.seed(123)
 ggplot(
   data.frame(
@@ -263,6 +269,7 @@ The layout of that formula is:
 Here we would use `y~time|id/group`
 
 ``` r
+
 simdf <- growthSim("gompertz",
   n = 20, t = 25,
   params = list(
@@ -291,6 +298,7 @@ Note that it is fine for id to be duplicated between groups, but not
 within groups
 
 ``` r
+
 ggplot(simdf, aes(time, y,
   group = paste(group, id)
 )) + # group on id
@@ -320,6 +328,7 @@ There are lots of ways to model a trend like that we see for sigma.
 to model variance.
 
 ``` r
+
 draw_gomp_sigma <- function(x) {
   return(23 * exp(-21 * exp(-0.22 * x)))
 }
@@ -357,6 +366,7 @@ growthSS](pcvrTutorial_agm_files/figure-html/unnamed-chunk-15-1.png)
 | Faster model fitting | Very inaccurate intervals at early timepoints |
 
 ``` r
+
 ggplot(sigma_df, aes(x = time, y = y, group = group)) +
   geom_hline(aes(yintercept = 13.8, color = "Homoskedastic"), linetype = 5, key_glyph = draw_key_path) +
   geom_line(aes(color = group)) +
@@ -378,6 +388,7 @@ fit.](pcvrTutorial_agm_files/figure-html/unnamed-chunk-16-1.png)
 | Easy testing on variance model |                                         |
 
 ``` r
+
 p <- ggplot(sigma_df, aes(x = time, y = y, group = group)) +
   geom_smooth(aes(group = "linear", color = "Linear"),
     linetype = 5,
@@ -393,6 +404,7 @@ p <- ggplot(sigma_df, aes(x = time, y = y, group = group)) +
 ### `growthSS` - Linear sigma
 
 ``` r
+
 p
 ```
 
@@ -402,16 +414,17 @@ fit.](pcvrTutorial_agm_files/figure-html/unnamed-chunk-18-1.png)
 
 ### `growthSS` - Gompertz sigma
 
-| Pros                                | Cons                                   |
-|-------------------------------------|----------------------------------------|
+| Pros | Cons |
+|----|----|
 | Models fit much faster than splines | Slightly slower than linear sub-models |
-| Variance is often asymptotic        | Requires priors on sigma model         |
-| Easy testing on variance model      |                                        |
+| Variance is often asymptotic | Requires priors on sigma model |
+| Easy testing on variance model |  |
 
 Note that these traits are broadly true of logistic and monomolecular
 sub models as well.
 
 ``` r
+
 draw_gomp_sigma <- function(x) {
   return(22 * exp(-9 * exp(-0.27 * x)))
 } # guesses at parameters
@@ -428,6 +441,7 @@ p <- ggplot(sigma_df, aes(x = time, y = y, group = group)) +
 ### `growthSS` - Gompertz sigma
 
 ``` r
+
 p
 ```
 
@@ -437,12 +451,13 @@ fit.](pcvrTutorial_agm_files/figure-html/unnamed-chunk-20-1.png)
 
 ### `growthSS` - Spline sigma
 
-| Pros                                           | Cons                                        |
-|------------------------------------------------|---------------------------------------------|
+| Pros | Cons |
+|----|----|
 | **Very** flexible and accurate model for sigma | **Significantly** slower than other options |
-| Fewer priors                                   | Splines can be a black-box                  |
+| Fewer priors | Splines can be a black-box |
 
 ``` r
+
 p <- ggplot(sigma_df, aes(x = time, y = y, group = group)) +
   geom_smooth(
     method = "gam", aes(group = "Spline", color = "Spline"),
@@ -458,6 +473,7 @@ p <- ggplot(sigma_df, aes(x = time, y = y, group = group)) +
 ### `growthSS` - Spline sigma
 
 ``` r
+
 p
 ```
 
@@ -532,10 +548,10 @@ positive and the camera only can measure some finite space.
 
 Default priors in `growthSS` are log-normal
 
-$\text{log}\ N(\mu,0.25)$
+$`\text{log}~N(\mu, 0.25)`$
 
 This has the benefit of giving a long right tail and strictly positive
-values while only requiring us to provide $\mu$.
+values while only requiring us to provide $`\mu`$.
 
 ### `growthSS` - priors 3
 
@@ -543,6 +559,7 @@ We can see what those log-normal distributions look like with
 `plotPrior`.
 
 ``` r
+
 priors <- list("A" = 130, "B" = 10, "C" = 0.2)
 priorPlots <- plotPrior(priors)
 priorPlots[[1]] / priorPlots[[2]] / priorPlots[[3]]
@@ -558,6 +575,7 @@ draws from the priors and see what those values yield in our growth
 model.
 
 ``` r
+
 twoPriors <- list("A" = c(100, 130), "B" = c(6, 12), "C" = c(0.5, 0.25))
 plotPrior(twoPriors, "gompertz", n = 100)[[1]]
 ```
@@ -571,6 +589,7 @@ priors](pcvrTutorial_agm_files/figure-html/unnamed-chunk-25-1.png)
 Our final call to `growthSS` will look like this for our sample data.
 
 ``` r
+
 ss <- growthSS(
   model = "gompertz", form = y ~ time | id / group,
   sigma = "gompertz", df = simdf,
@@ -596,6 +615,7 @@ tell the model to use 4 cores so that the chains run entirely in
 parallel, but the rest of this model is using defaults.
 
 ``` r
+
 fit <- fitGrowth(
   ss = ss, cores = 4,
   iter = 2000, chains = 4, backend = "cmdstanr"
@@ -614,6 +634,7 @@ argument, where we can control the sampler’s behavior.
 departure from the True path and which can compromise the results.
 
 ``` r
+
 fit <- fitGrowth(ss,
   cores = 4,
   iter = 2000, chains = 4, backend = "cmdstanr",
@@ -632,6 +653,7 @@ Within `pcvr` there are several functions for visualizing these objects.
 `growthPlot` can be used to plot credible intervals of your model.
 
 ``` r
+
 growthPlot(fit, form = ss$pcvrForm, df = ss$df)
 ```
 
@@ -641,6 +663,7 @@ well.
 Here we check our model predictions to 35 days.
 
 ``` r
+
 growthPlot(fit, form = ss$pcvrForm, df = ss$df, timeRange = 1:35)
 ```
 
@@ -648,6 +671,7 @@ And now we check those predictions from a spline model, where the basis
 functions are not suited for data past day 25.
 
 ``` r
+
 growthPlot(fit_spline, form = ss_spline$pcvrForm, df = ss_spline$df, timeRange = 1:35)
 ```
 
@@ -658,6 +682,7 @@ Here hypotheses are tested with
 [`brms::hypothesis`](https://paulbuerkner.com/brms/reference/hypothesis.brmsfit.html).
 
 ``` r
+
 brmViolin(fit, ss, hypothesis = ".../A_groupa > 1.05")
 ```
 
@@ -675,6 +700,7 @@ Here we test for an asymptote for group A at least 20% larger than that
 of group B.
 
 ``` r
+
 brms::hypothesis(fit, "A_groupa > 1.2 * A_groupb")$hyp
 ```
 
@@ -697,6 +723,7 @@ distributional parameters.
 ### linear + linear
 
 ``` r
+
 simdf <- growthSim(
   model = "linear + linear",
   n = 20, t = 25,
@@ -720,6 +747,7 @@ Example changepoint model
 ### linear + logistic
 
 ``` r
+
 simdf <- growthSim("linear + logistic",
   n = 20, t = 25,
   params = list(
@@ -749,6 +777,7 @@ Example changepoint model
 ### linear + gam
 
 ``` r
+
 ss <- growthSS(
   model = "linear + gam", form = y ~ time | id / group, sigma = "int",
   list("linear1A" = 10, "changePoint1" = 5),
@@ -766,6 +795,7 @@ Example changepoint model
 ### linear + linear + linear
 
 ``` r
+
 simdf <- growthSim("linear + linear + linear",
   n = 25, t = 50,
   params = list(
@@ -795,6 +825,7 @@ Example changepoint model
 ### int + int with segmented sigma
 
 ``` r
+
 ss <- growthSS(
   model = "int + int", form = y ~ time | id / group, sigma = "int + int",
   list(
@@ -816,6 +847,7 @@ Example changepoint model
 ### int + linear model and submodel
 
 ``` r
+
 ss <- growthSS(
   model = "int + linear", form = y ~ time | id / group, sigma = "int + linear",
   list(
@@ -836,6 +868,7 @@ Example changepoint model
 ### int+logistic with int+gam sub model
 
 ``` r
+
 ss <- growthSS(
   model = "int+logistic", form = y ~ time | id / group, sigma = "int + spline",
   list(
@@ -856,6 +889,7 @@ Example changepoint model
 ## Example survival model
 
 ``` r
+
 df <- growthSim("logistic",
   n = 20, t = 25,
   params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
@@ -880,6 +914,7 @@ Example survival model
 ## Example count model
 
 ``` r
+
 df <- growthSim("count: logistic",
   n = 20, t = 25,
   params = list("A" = c(10, 12), "B" = c(13, 11), "C" = c(3, 3.5))
@@ -901,6 +936,7 @@ Example count model
 ## Example hierarchical model
 
 ``` r
+
 simdf <- growthSim(
   "logistic",
   n = 20, t = 25,
@@ -965,6 +1001,7 @@ The choices in `pcvr` are a small subset of what is possible with
 Our gompertz sigma model looks like this in `brms`:
 
 ``` r
+
 prior1 <- prior(gamma(2, 0.1), class = "nu", lb = 0.001) +
   prior(lognormal(log(130), .25), nlpar = "A", lb = 0) +
   prior(lognormal(log(12), .25), nlpar = "B", lb = 0) +

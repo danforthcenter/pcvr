@@ -97,6 +97,7 @@ pseudo water use efficiency (`pWUE`).
 ## Examples
 
 ``` r
+
 set.seed(123)
 weight_before <- sort(round(rnorm(20, 100, 10), 0))
 weight_after <- sort(round(rnorm(20, 120, 10), 0))

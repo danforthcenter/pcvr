@@ -75,6 +75,7 @@ for hypothesis testing on compatible models.
 ## Examples
 
 ``` r
+
 set.seed(123)
 simdf <- growthSim("logistic",
   n = 20, t = 25,

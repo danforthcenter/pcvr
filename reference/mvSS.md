@@ -100,6 +100,7 @@ for fitting the model specified by this list.
 ## Examples
 
 ``` r
+# \donttest{
 set.seed(123)
 mv_df <- mvSim(dists = list(rnorm = list(mean = 100, sd = 30)), wide = FALSE)
 mv_df$group <- rep(c("a", "b"), times = 900)
@@ -110,34 +111,38 @@ ss1 <- mvSS(
   model = "linear", form = label | value ~ group, df = mv_df,
   start = list("A" = 5), type = "brms", spectral_index = "none"
 )
-# \donttest{
-mod1 <- fitGrowth(ss1, backend = "cmdstanr", iter = 1000, chains = 1, cores = 1)
+if (rlang::is_installed("cmdstanr")) {
+  mod1 <- fitGrowth(ss1, backend = "cmdstanr", iter = 1000, chains = 1, cores = 1)
+  growthPlot(mod1, ss1$pcvrForm, df = ss1$df)
+  library(ggplot2)
+  ggplot() + stat_brms_model(fit = mod1, ss = ss1)
+}
 #> Start sampling
 #> Running MCMC with 1 chain...
 #> 
 #> Chain 1 Iteration:   1 / 1000 [  0%]  (Warmup) 
 #> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: student_t_lpdf: Scale parameter is inf, but must be positive finite! (in '/tmp/RtmpARnZuJ/model-206e3cb7353e.stan', line 77, column 6 to column 71)
+#> Chain 1 Exception: student_t_lpdf: Scale parameter is inf, but must be positive finite! (in '/tmp/RtmpMOmte7/model-1fc77bf0bf89.stan', line 77, column 6 to column 71)
 #> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 1 
 #> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: student_t_lpdf: Scale parameter is inf, but must be positive finite! (in '/tmp/RtmpARnZuJ/model-206e3cb7353e.stan', line 77, column 6 to column 71)
+#> Chain 1 Exception: student_t_lpdf: Scale parameter is inf, but must be positive finite! (in '/tmp/RtmpMOmte7/model-1fc77bf0bf89.stan', line 77, column 6 to column 71)
 #> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 1 
 #> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: student_t_lpdf: Scale parameter is inf, but must be positive finite! (in '/tmp/RtmpARnZuJ/model-206e3cb7353e.stan', line 77, column 6 to column 71)
+#> Chain 1 Exception: student_t_lpdf: Scale parameter is inf, but must be positive finite! (in '/tmp/RtmpMOmte7/model-1fc77bf0bf89.stan', line 77, column 6 to column 71)
 #> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 1 
 #> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: gamma_lpdf: Random variable is inf, but must be positive finite! (in '/tmp/RtmpARnZuJ/model-206e3cb7353e.stan', line 61, column 2 to line 62, column 34)
+#> Chain 1 Exception: gamma_lpdf: Random variable is inf, but must be positive finite! (in '/tmp/RtmpMOmte7/model-1fc77bf0bf89.stan', line 61, column 2 to line 62, column 34)
 #> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 1 
 #> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: student_t_lpdf: Scale parameter is inf, but must be positive finite! (in '/tmp/RtmpARnZuJ/model-206e3cb7353e.stan', line 77, column 6 to column 71)
+#> Chain 1 Exception: student_t_lpdf: Scale parameter is inf, but must be positive finite! (in '/tmp/RtmpMOmte7/model-1fc77bf0bf89.stan', line 77, column 6 to column 71)
 #> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 1 
@@ -152,15 +157,10 @@ mod1 <- fitGrowth(ss1, backend = "cmdstanr", iter = 1000, chains = 1, cores = 1)
 #> Chain 1 Iteration: 800 / 1000 [ 80%]  (Sampling) 
 #> Chain 1 Iteration: 900 / 1000 [ 90%]  (Sampling) 
 #> Chain 1 Iteration: 1000 / 1000 [100%]  (Sampling) 
-#> Chain 1 finished in 1.6 seconds.
-growthPlot(mod1, ss1$pcvrForm, df = ss1$df)
-
-library(ggplot2)
-ggplot() + stat_brms_model(fit = mod1, ss = ss1)
+#> Chain 1 finished in 1.5 seconds.
 #> Warning: The x aesthetics were dropped,
 #>  did you forget to specify a group aesthetic or convert a numerical variable into a factor?
 
-# }
 
 # when the model is longitudinal the same model is possible with growthSS
 
@@ -276,8 +276,7 @@ unlist(lapply(names(ss_mv1), function(nm) {
 }))
 #> [1] "call"
 
-# \donttest{
-if (rlang::is_installed("mnormt")) {
+if (rlang::is_installed(c("cmdstanr", "mnormt"))) {
   m2 <- fitGrowth(ss_mv1, backend = "cmdstanr", iter = 1000, chains = 1, cores = 1)
   growthPlot(m2, ss_mv1$pcvrForm, df = ss_mv1$df)
 }

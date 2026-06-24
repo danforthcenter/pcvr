@@ -60,8 +60,13 @@ ss <- growthSS(
   list("A" = 130, "B" = 10, "C" = 3),
   df = simdf, type = "brms"
 )
-
-fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1)
+if (rlang::is_installed("cmdstanr")) {
+  fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1)
+  brmViolin(fit, ss, ".../A_groupd > 1.05") # all groups used
+  brmViolin(fit, ss, "abs(1 - ((...)/(C_groupd - B_groupd))) > 0.05") # rather arbitrary
+  brmViolin(fit, ss, "abs(1 - ((...)/(C_groupa - B_groupd))) > 0.05") # totally arbitrary
+  brmViolin(fit, ss, "A_groupa/A_groupd > 1.05") # only these two groups
+}
 #> Start sampling
 #> Init values were only set for a subset of parameters. 
 #> Missing init values for the following parameters:
@@ -72,7 +77,7 @@ fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1)
 #> 
 #> Chain 1 Iteration:   1 / 500 [  0%]  (Warmup) 
 #> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: student_t_lpdf: Location parameter[1] is -nan, but must be finite! (in '/tmp/RtmpARnZuJ/model-206e36794738.stan', line 98, column 4 to column 48)
+#> Chain 1 Exception: student_t_lpdf: Location parameter[1] is -nan, but must be finite! (in '/tmp/RtmpMOmte7/model-1fc73c4fc588.stan', line 98, column 4 to column 48)
 #> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 1 
@@ -82,14 +87,7 @@ fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1)
 #> Chain 1 Iteration: 350 / 500 [ 70%]  (Sampling) 
 #> Chain 1 Iteration: 450 / 500 [ 90%]  (Sampling) 
 #> Chain 1 Iteration: 500 / 500 [100%]  (Sampling) 
-#> Chain 1 finished in 6.7 seconds.
-brmViolin(fit, ss, ".../A_groupd > 1.05") # all groups used
-
-brmViolin(fit, ss, "abs(1 - ((...)/(C_groupd - B_groupd))) > 0.05") # rather arbitrary
-
-brmViolin(fit, ss, "abs(1 - ((...)/(C_groupa - B_groupd))) > 0.05") # totally arbitrary
-
-brmViolin(fit, ss, "A_groupa/A_groupd > 1.05") # only these two groups
+#> Chain 1 finished in 6.8 seconds.
 
 # }
 ```

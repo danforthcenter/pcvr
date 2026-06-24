@@ -86,6 +86,7 @@ specified distributions.
 ## Examples
 
 ``` r
+
 library(extraDistr) # for rmixnorm
 #> 
 #> Attaching package: ‘extraDistr’

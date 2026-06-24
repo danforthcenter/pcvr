@@ -36,6 +36,7 @@ A ggplot showing variable influence on projection
 ## Examples
 
 ``` r
+
 if (rlang::is_installed("pls")) {
   dists <- list(
     rlnorm = list(meanlog = log(40), sdlog = 0.5),

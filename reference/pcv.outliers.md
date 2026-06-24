@@ -118,6 +118,7 @@ plot is returned then output is a list).
 
 ``` r
 
+
 sv <- growthSim("logistic",
   n = 5, t = 20,
   params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))

@@ -158,6 +158,7 @@ what parameters to use.
 ## Examples
 
 ``` r
+
 library(ggplot2)
 simdf <- growthSim("logistic",
   n = 20, t = 25,

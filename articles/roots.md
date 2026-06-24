@@ -24,6 +24,7 @@ See the `rRhyzoDist` function below. We also define functions that will
 generate single value traits from the MV frequencies.
 
 ``` r
+
 rRhyzoDist <- function(n, theta = 0.3, u1_max = 20, u2_max = 5500, sd = 200, abs_max = 5500) {
   #* split n_pixels based on theta into background and gaussians
   n_unif_pixels <- ceiling(n * theta)
@@ -94,6 +95,7 @@ The simulated data looks realistic based on limited test data available
 at time of writing.
 
 ``` r
+
 set.seed(123)
 ex <- do.call(rbind, lapply(1:20, function(rep) {
   n_total_pixels <- runif(1, 100, 3000)
@@ -120,6 +122,7 @@ minirhyzotron images over time. The second simulated data assumes that
 once a root is seen along the minirhyzotron that it will stay visible.
 
 ``` r
+
 n_times <- 5
 parameters <- data.frame(
   time = c(1:n_times),
@@ -160,6 +163,7 @@ sv <- sv_from_mv(df)
 ```
 
 ``` r
+
 n_times <- 5
 parameters <- data.frame(
   time = c(1:n_times),
@@ -213,6 +217,7 @@ If we assume that roots can only enter the minirhyzotron images then we
 would expect a positive trend over time for total root area.
 
 ``` r
+
 ggplot(sv, aes(x = time, y = area, group = rep)) +
   geom_point() +
   geom_line() +
@@ -224,6 +229,7 @@ collection under the assumption that roots can enter and exit the
 image.](roots_files/figure-html/unnamed-chunk-5-1.png)
 
 ``` r
+
 ggplot(sv2, aes(x = time, y = area, group = rep)) +
   geom_point() +
   geom_line() +
@@ -239,6 +245,7 @@ deeper over time as roots have time to grow. This is likely to be true
 regardless of whether roots can leave the image.
 
 ``` r
+
 ggplot(sv, aes(x = time, y = mean_x_frequencies, group = rep)) +
   geom_point() +
   geom_line() +
@@ -250,6 +257,7 @@ and can enter and exit the
 image.](roots_files/figure-html/unnamed-chunk-7-1.png)
 
 ``` r
+
 ggplot(sv2, aes(x = time, y = mean_x_frequencies, group = rep)) +
   geom_point() +
   geom_line() +
@@ -264,6 +272,7 @@ The same should be true for the median, although being more robust to
 outliers it may move more slowly.
 
 ``` r
+
 ggplot(sv, aes(x = time, y = median_x_frequencies, group = rep)) +
   geom_point() +
   geom_line() +
@@ -275,6 +284,7 @@ and can enter and exit the
 image.](roots_files/figure-html/unnamed-chunk-9-1.png)
 
 ``` r
+
 ggplot(sv2, aes(x = time, y = median_x_frequencies, group = rep)) +
   geom_point() +
   geom_line() +
@@ -290,6 +300,7 @@ datasets over time but should be strictly monotone if roots can only
 enter the images.
 
 ``` r
+
 ggplot(sv, aes(x = time, y = height, group = rep)) +
   geom_point() +
   geom_line() +
@@ -301,6 +312,7 @@ can enter and exit the
 image.](roots_files/figure-html/unnamed-chunk-11-1.png)
 
 ``` r
+
 ggplot(sv2, aes(x = time, y = height, group = rep)) +
   geom_point() +
   geom_line() +
@@ -327,6 +339,7 @@ being able to leave the image vs not being able to leave the image and
 model the root area over time.
 
 ``` r
+
 sv$geno <- "a"
 sv2$geno <- "b"
 ex <- rbind(sv, sv2)
@@ -340,18 +353,21 @@ General Additive modeling (`type = "mgcv"`), and Bayesian hierarchical
 modeling (`type = "brms"`).
 
 ``` r
+
 ss <- growthSS("int_linear", area ~ time | rep / geno, df = ex, type = "nls")
 ```
 
     ## Individual is not used with type = 'nls'.
 
 ``` r
+
 m1 <- fitGrowth(ss)
 ```
 
 Any models fit by `fitGrowth` can be visualized using `growthPlot`.
 
 ``` r
+
 growthPlot(m1, form = ss$pcvrForm, df = ss$df)
 ```
 
@@ -366,6 +382,7 @@ We might test that the intercept (amount of roots visible at the first
 timepoint) is different:
 
 ``` r
+
 testGrowth(ss, m1, test = "I")$anova
 ```
 
@@ -382,6 +399,7 @@ testGrowth(ss, m1, test = "I")$anova
 That the effect of time is different:
 
 ``` r
+
 testGrowth(ss, m1, test = "A")$anova
 ```
 
@@ -400,6 +418,7 @@ the first group being 10% higher than that of the second group (to
 clarify groups you can always check the data returned by `growthSS`):
 
 ``` r
+
 table(ss$df$geno, ss$df$geno_numericLabel)
 ```
 
@@ -409,6 +428,7 @@ table(ss$df$geno, ss$df$geno_numericLabel)
     ##   b  0 50
 
 ``` r
+
 testGrowth(ss, m1, test = "A1*1.1 - A2")
 ```
 
@@ -438,6 +458,7 @@ between our two “genotypes”. In this example we’ll use the “T”
 distribution to run a Bayesian analog to a T-test.
 
 ``` r
+
 s1 <- ex[ex$geno == "a" & ex$time == max(ex$time), "area"]
 s2 <- ex[ex$geno == "b" & ex$time == max(ex$time), "area"]
 
@@ -463,6 +484,7 @@ specified), and the probability of the mean difference being within the
 rope_range.
 
 ``` r
+
 conj_ex
 ```
 
@@ -487,6 +509,7 @@ The posterior is returned as a list with the same elements as the prior.
 This allows for Bayesian updating if you wish to do so.
 
 ``` r
+
 do.call(rbind, conj_ex$posterior)
 ```
 
@@ -499,6 +522,7 @@ patchwork of 2 ggplots if rope_range was specified or is a single ggplot
 otherwise.
 
 ``` r
+
 plot(conj_ex)
 ```
 
@@ -520,6 +544,7 @@ very rare that a minirhyzotron image’s distribution will follow an
 easily parameterized pdf.
 
 ``` r
+
 pcv.joyplot(df, "x_frequencies", group = c("rep", "time"))
 ```
 
@@ -547,6 +572,7 @@ do this with a quick function that finds intervals of counts above some
 cutoff for at least some duration.
 
 ``` r
+
 getPeaks <- function(d = NULL, intensity = 20, duration = 3) {
   binwidth <- as.numeric(unique(diff(d$label)))
   if (length(binwidth) > 1) {
@@ -560,6 +586,7 @@ getPeaks <- function(d = NULL, intensity = 20, duration = 3) {
 ```
 
 ``` r
+
 d <- split(df, interaction(df[, c("rep", "time")]))
 peak_df <- data.frame(peaks = unlist(lapply(d, getPeaks)))
 rownames(peak_df) <- NULL
@@ -572,6 +599,7 @@ peak_df$time <- unlist(lapply(names(d), function(nm) {
 ```
 
 ``` r
+
 s1 <- peak_df[peak_df$time == min(peak_df$time), "peaks"]
 s2 <- peak_df[peak_df$time == max(peak_df$time), "peaks"]
 
@@ -586,6 +614,7 @@ conj_ex2 <- conjugate(
 ```
 
 ``` r
+
 conj_ex2
 ```
 
@@ -607,6 +636,7 @@ conj_ex2
     ## 1 -1.409191    -2.492106    -0.3709298 0.2389619
 
 ``` r
+
 do.call(rbind, conj_ex2$posterior)
 ```
 
@@ -615,6 +645,7 @@ do.call(rbind, conj_ex2$posterior)
     ## [2,] 31.5 10.5
 
 ``` r
+
 plot(conj_ex2)
 ```
 
@@ -646,6 +677,7 @@ work here since these distributions do not share a common
 parameterization. Instead, we can use EMD.
 
 ``` r
+
 set.seed(123)
 
 simFreqs <- function(vec, group) {
@@ -701,6 +733,7 @@ images and see that we do have some trends shown in the resulting
 heatmap.
 
 ``` r
+
 sim_emd <- pcv.emd(
   df = sim_df, cols = "sim_", reorder = c("group"),
   mat = FALSE, plot = TRUE, parallel = 1, raiseError = TRUE
@@ -710,6 +743,7 @@ sim_emd <- pcv.emd(
     ## Estimated time of calculation is roughly 3.1 seconds using 1 cores in parallel.
 
 ``` r
+
 sim_emd$plot
 ```
 
@@ -720,6 +754,7 @@ Arranging these distances into a network of dissimilarities shows the
 different distributions clustering well.
 
 ``` r
+
 n <- pcv.net(sim_emd$data, filter = "0.5")
 net.plot(n, fill = "group")
 ```
@@ -734,6 +769,7 @@ leaving the image and roots being stuck in the image once observed).
 First we check our distributions via joyplot.
 
 ``` r
+
 pcv.joyplot(df, "x_frequencies", group = c("rep", "time"))
 ```
 
@@ -745,6 +781,7 @@ We calculate EMD between our observations. Note here we have long input
 data as opposed to wide in the previous example.
 
 ``` r
+
 df1_emd <- pcv.emd(
   df = df, cols = "x_frequencies", reorder = c("rep", "time"),
   id = c("rep", "time"),
@@ -757,6 +794,7 @@ are filtering for only those edges that are above the 75th percentile in
 strength and we see a pretty clear temporal clustering.
 
 ``` r
+
 n <- pcv.net(df1_emd$data, filter = "0.75")
 net.plot(n, fill = "time")
 ```
@@ -769,6 +807,7 @@ With our dataset that assumes roots cannot leave the image once observed
 we get similar results.
 
 ``` r
+
 pcv.joyplot(df2, "x_frequencies", group = c("rep", "time"))
 ```
 
@@ -777,6 +816,7 @@ using Earth Mover's Distance with the assumption that roots cannot leave
 the image.](roots_files/figure-html/unnamed-chunk-36-1.png)
 
 ``` r
+
 df2_emd <- pcv.emd(
   df = df2, cols = "x_frequencies", reorder = c("rep", "time"),
   id = c("rep", "time"),

@@ -9,6 +9,7 @@ Bayesian statistics and non-linear modeling.
 The release version of `pcvr` can be installed from `CRAN`
 
 ``` r
+
 install.packages("pcvr")
 library(pcvr)
 ```
@@ -22,6 +23,7 @@ suggested packages (see DESCRIPTION file) add `dependencies=T` to the
 `install_github` function call.
 
 ``` r
+
 devtools::install_github("danforthcenter/pcvr")
 library(pcvr)
 ```
@@ -49,6 +51,7 @@ phenotyping facility at the Donald Danforth Plant Science Center) for a
 general introduction to `pcvr`.
 
 ``` r
+
 vignette("bellwether", package="pcvr")
 # or 
 browseVignettes("pcvr")

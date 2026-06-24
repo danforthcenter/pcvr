@@ -12,6 +12,7 @@
 ```
 
 ``` r
+
 library(pcvr)
 library(brms) # for rvon_mises
 library(ggplot2)
@@ -38,16 +39,16 @@ handle circular data.
 
 The Von-Mises distribution is a mathematically tractable circular
 distribution that can range from the circular uniform to roughly the
-circular normal depending on the precision parameter $\kappa$, with the
-uniform corresponding to $\kappa = 0$.
+circular normal depending on the precision parameter $`\kappa`$, with
+the uniform corresponding to $`\kappa = 0`$.
 
 ## Why are they in `pcvr`?
 
 This is relevant to pcvr mainly for the color use case. `PlantCV`
 returns some single and multi value traits that are circular,
 hue_circular_mean/median and hue_frequencies. Luckily for simplified
-plant phenotyping, the Hue circle has red at 0/360 degrees (0/$2\pi$ in
-radians) and much of the time we will not have to worry about the
+plant phenotyping, the Hue circle has red at 0/360 degrees (0/$`2\pi`$
+in radians) and much of the time we will not have to worry about the
 circular nature of the data since values are confined to the more green
 part of the hue circle. Still, for cases where color does wrap around
 the circle it may be important to your research to take that into
@@ -67,9 +68,9 @@ wrapped functions then this may be revisited.
 ### “vonmises” method
 
 The “vonmises” method uses the fact that the conjugate prior for the
-direction parameter ($\mu$) is itself a Von-Mises distribution.
-Utilizing this conjugacy requires that we assume a known $\kappa$ for
-the complete distribution so that updating the $\mu$ parameter is
+direction parameter ($`\mu`$) is itself a Von-Mises distribution.
+Utilizing this conjugacy requires that we assume a known $`\kappa`$ for
+the complete distribution so that updating the $`\mu`$ parameter is
 straightforward. Conceptually it may be helpful to consider this
 similarly to the “T” method for comparing the means of gaussians.
 
@@ -89,6 +90,7 @@ the output is of the same form as the prior.
 First we’ll simulate some multi value data
 
 ``` r
+
 mv_gauss <- mvSim(
   dists = list(
     rnorm = list(mean = 50, sd = 10),
@@ -100,9 +102,10 @@ mv_gauss <- mvSim(
 
 Next we’ll run `conjugate` specifying that our data is on a circle
 defined over \[0, 180\] with an expected direction around 45 (90 degrees
-on the full \[0,360\] or $\pi/2$ radians) and low precision.
+on the full \[0,360\] or $`\pi/2`$ radians) and low precision.
 
 ``` r
+
 vm_ex1 <- conjugate(
   s1 = mv_gauss[1:30, -1],
   s2 = mv_gauss[31:70, -1],
@@ -118,6 +121,7 @@ probability of ~91% that our samples have equal means (remember the
 difference in our simulated data is now on a circle).
 
 ``` r
+
 vm_ex1$summary
 ```
 
@@ -128,8 +132,8 @@ vm_ex1$summary
 
 Displaying plots of these data can be slower than for other conjugate
 methods due to the density of the support. To explain, the Von-Mises
-distribution is defined in on the unit circle \[$- \pi$, $\pi$\] so in
-order to have support that works to project that data into whatever
+distribution is defined in on the unit circle \[$`-\pi`$, $`\pi`$\] so
+in order to have support that works to project that data into whatever
 space the boundary in the prior specifies the support has to be very
 dense.
 
@@ -137,12 +141,14 @@ Note also that our rope_range is specified in the boundary units space,
 which is not necessarily the unit circle.
 
 ``` r
+
 plot(vm_ex1)
 ```
 
 We get very similar results using roughly analogous single value traits.
 
 ``` r
+
 vm_ex1_1 <- conjugate(
   s1 = rnorm(30, 50, 10),
   s2 = rnorm(40, 60, 12),
@@ -162,6 +168,7 @@ Single value traits work in the same way. Note that if we omit parts of
 the prior then they will be filled in with the default prior values.
 
 ``` r
+
 set.seed(42)
 vm_ex2 <- conjugate(
   s1 = brms::rvon_mises(100, -3.1, 2),
@@ -176,6 +183,7 @@ vm_ex2 <- conjugate(
 We check our summary and see around 75% chance that these are equal
 
 ``` r
+
 vm_ex2$summary
 ```
 
@@ -185,6 +193,7 @@ vm_ex2$summary
     ## 1 0.07243397    -1.081833      1.232842 0.1241434
 
 ``` r
+
 do.call(rbind, vm_ex2$posterior)
 ```
 
@@ -196,6 +205,7 @@ Here our plot is much faster to make since the support is a roughly a
 thirtieth the size of the previous example.
 
 ``` r
+
 plot(vm_ex2) # not printed due to being a very dense ggplot
 ```
 
@@ -204,6 +214,7 @@ data, although there are limitations in plotting area style geometries
 in polar coordinates.
 
 ``` r
+
 p <- plot(vm_ex2)
 p[[1]] <- p[[1]] +
   ggplot2::coord_polar() +
@@ -212,10 +223,10 @@ p[[1]] <- p[[1]] +
 
 ### “vonmises2” method
 
-The “vonmises2” method updates $\mu$ and $\kappa$ of the complete
+The “vonmises2” method updates $`\mu`$ and $`\kappa`$ of the complete
 Von-Mises distribution. This is done by first taking a weighted average
-of the prior $\kappa$ and the MLE of $\kappa$ based on the sample data
-then updating $\mu$ as above.
+of the prior $`\kappa`$ and the MLE of $`\kappa`$ based on the sample
+data then updating $`\mu`$ as above.
 
 Priors for this method should specify “mu”, “kappa”, “boundary”, and
 “n”. Where “mu” is still mean direction, “kappa” is the precision, and
@@ -226,6 +237,7 @@ boundary/n are as above.
 Using the same test data as above we can run the “vonmises2” method.
 
 ``` r
+
 vm2_ex1 <- conjugate(
   s1 = mv_gauss[1:30, -1],
   s2 = mv_gauss[31:70, -1],
@@ -237,6 +249,7 @@ vm2_ex1 <- conjugate(
 ```
 
 ``` r
+
 do.call(rbind, vm2_ex1$posterior)
 ```
 
@@ -245,6 +258,7 @@ do.call(rbind, vm2_ex1$posterior)
     ## [2,] 59.49722 6.128526 41 numeric,2
 
 ``` r
+
 set.seed(42)
 vm2_ex2 <- conjugate(
   s1 = brms::rvon_mises(100, -3.1, 2),
@@ -257,6 +271,7 @@ vm2_ex2 <- conjugate(
 ```
 
 ``` r
+
 plot(vm2_ex2)
 ```
 
@@ -264,6 +279,7 @@ plot(vm2_ex2)
 method](directional_files/figure-html/plot%20from%20conjugate%205-1.png)
 
 ``` r
+
 do.call(rbind, vm2_ex2$posterior)
 ```
 
@@ -290,6 +306,7 @@ at least hypothetically very useful.
 Here we set up a model with `growthSS` only for example purposes
 
 ``` r
+
 nReps <- 25
 time <- 1:20
 muTrend1 <- -2 + (0.25 * time)
@@ -325,6 +342,7 @@ ss$prior # default priors
     ##  (flat)     b groupb            kappa                 (vectorized)
 
 ``` r
+
 ss$formula # formula specifies kappa based on sigma argument
 ```
 
@@ -339,6 +357,7 @@ ss$formula # formula specifies kappa based on sigma argument
 #### Single Timepoint Model
 
 ``` r
+
 set.seed(123)
 n <- 1000
 vm1 <- data.frame(
@@ -402,6 +421,7 @@ predPlot +
 #### Longitudinal Model
 
 ``` r
+
 nReps <- 25
 time <- 1:20
 muTrend1 <- -2 + (0.25 * time)

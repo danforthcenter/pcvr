@@ -58,6 +58,7 @@ and will not contain the columns that were reduced.
 ## Examples
 
 ``` r
+
 dists <- list(
   rlnorm = list(meanlog = log(40), sdlog = 0.5),
   rnorm = list(mean = 60, sd = 10)

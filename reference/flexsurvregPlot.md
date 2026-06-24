@@ -72,6 +72,7 @@ Returns a ggplot showing an survival model's survival function.
 ## Examples
 
 ``` r
+
 df <- growthSim("logistic",
   n = 20, t = 25,
   params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))

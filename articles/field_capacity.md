@@ -1,6 +1,7 @@
 # Water data
 
 ``` r
+
 library(pcvr)
 ```
 
@@ -9,6 +10,7 @@ library(pcvr)
     ##   na.action.merMod lme4
 
 ``` r
+
 library(ggplot2)
 library(patchwork)
 ```
@@ -209,12 +211,12 @@ miles per gallon of fuel that a car may get; WUE is dependent on
 genotype and environment, just like a car’s MPG is dependent on the type
 of car and the road it is driving on (freeway vs. city roads).
 
-$\frac{\Delta\left( \text{Biomass} \right)_{t}}{\text{Water Transpired}_{t}}$
+$`\frac{\Delta(\text{Biomass})_t}{\text{Water Transpired}_t}`$
 
 WUE might also be considered as the amount of water used to sustain a
 given biomass, which here is referred to as “absolute WUE”.
 
-$\frac{\text{Biomass}_{t}}{\text{Water Transpired}_{t}}$
+$`\frac{\text{Biomass}_t}{\text{Water Transpired}_t}`$
 
 Other calculations of WUE include replacements for biomass, such as
 grain yield, net carbon dioxide uptake, and more, that are not covered
@@ -244,6 +246,7 @@ Here for more control we’ll use simulated data:
 We’ll simulate groups of data with distinct watering and growth trends.
 
 ``` r
+
 set.seed(123)
 days <- 25
 n_plants <- 10
@@ -326,6 +329,7 @@ ex <- plyr::join(ex, key)
     ## Joining by: pc, wc
 
 ``` r
+
 ex$pc <- factor(ex$pc,
   levels = c(
     "sigmoid", "abrupt", "exponential",
@@ -358,6 +362,7 @@ plant biomass, or another measurement.
 - `death`: Slow asymptotic growth with a low asymptote.
 
 ``` r
+
 ggplot(ex[ex$wc == "constant", ], aes(time, area, group = id)) +
   facet_wrap(~pc) +
   geom_line() +
@@ -406,6 +411,7 @@ There are also 6 watering data options in the simulated data.
   target weight is not used.
 
 ``` r
+
 l <- reshape2::melt(ex[ex$pc == "sigmoid", ],
   id.vars = c("id", "group", "time", "wc"),
   measure.vars = c("weight_before", "weight_after")
@@ -438,6 +444,7 @@ represents the amount of water used. With that in mind we’ll look at
 this plot a different way, focusing on the length of the black lines.
 
 ``` r
+
 ggplot(ex[ex$id == "id_1", ], aes(x = time, y = weight_after - weight_before, group = id)) +
   facet_wrap(~wc) +
   geom_line() +
@@ -461,6 +468,7 @@ limit our simulated data to the `constant`, `increasing continuous`, and
 `decreasing continuous` watering categories.
 
 ``` r
+
 ex <- ex[ex$wc %in% c("constant", "increasing cont", "decreasing cont"), ]
 ```
 
@@ -470,6 +478,7 @@ leaf area, but plant biomass could be used) shown in light gray, pot
 weight after watering shown in blue.
 
 ``` r
+
 ggplot(ex, aes(time, area, group = id)) +
   facet_grid(wc ~ pc) +
   geom_line(color = "gray70", linewidth = 0.1) +
@@ -526,6 +535,7 @@ experimental design and will be returned by the phenotyping core in a
 format consistent with the simulated data below.
 
 ``` r
+
 d <- data.frame(
   experiment = "SIM001",
   variable = c("carriage_saucer", "dry_weight", "saturated_weight",
@@ -556,6 +566,7 @@ provides and observed field capacities can be calculated from the
 watering metadata.
 
 ``` r
+
 set.seed(123)
 d2 <- data.frame(
   day = rep(1:20, 4),
@@ -593,9 +604,11 @@ ggplot(d[d$variable == "field_capacity", ],
   theme(legend.position = "none")
 ```
 
-![](field_capacity_files/figure-html/unnamed-chunk-13-1.png)
+![Example of field capacity in a drought treatment that is working
+well](field_capacity_files/figure-html/unnamed-chunk-13-1.png)
 
 ``` r
+
 ggplot(d[d$variable == "field_capacity", ],
        aes(x = day, y = value)) +
   facet_wrap(~treatment) +
@@ -613,7 +626,8 @@ ggplot(d[d$variable == "field_capacity", ],
   theme(legend.position = "none")
 ```
 
-![](field_capacity_files/figure-html/unnamed-chunk-13-2.png)
+![Example of field capacity in a drought treatment that is not working
+well](field_capacity_files/figure-html/unnamed-chunk-14-1.png)
 
 It generally makes sense to monitor field capacity of pre and post
 watering weights to make sure that the watering is keeping your soil in
@@ -644,6 +658,7 @@ some experiments more granular time data is essential.
 ### Rate Based
 
 ``` r
+
 rb <- pwue(
   df = ex, w = NULL, pheno = "area", time = "time", id = c("id", "group"),
   pre_watering = "weight_before",
@@ -662,10 +677,10 @@ watering condition in turn.
   weight. Field capacity is not considered.
 
 Remember that the rate-based pWUE formula we are using is
-$\frac{\Delta\left( \text{Biomass} \right)_{t}}{\text{Water Transpired}_{t}}$.
-In this watering condition the denominator is a constant. Since the
-numerator is the measurement-to-measurement change it is essentially the
-derivative (slope) of the original phenotype.
+$`\frac{\Delta(\text{Biomass})_t}{\text{Water Transpired}_t}`$. In this
+watering condition the denominator is a constant. Since the numerator is
+the measurement-to-measurement change it is essentially the derivative
+(slope) of the original phenotype.
 
 With that in mind we can start thinking about what we’d expect to see.
 As an example, the `death` group is always going to have small values
@@ -679,6 +694,7 @@ curve, since the derivative of a sigmoid is bell shaped (the CDF of a
 normal distribution is a logistic curve, etc).
 
 ``` r
+
 rbc <- rb[rb$wc == "constant", ]
 ggplot(rbc, aes(x = time, y = pWUE, group = id)) +
   facet_wrap(~pc, scales = "free_y") +
@@ -691,7 +707,7 @@ ggplot(rbc, aes(x = time, y = pWUE, group = id)) +
     ## (`geom_line()`).
 
 ![Pseudo water use efficiency for each of 6 phenotypes under constant
-watering](field_capacity_files/figure-html/unnamed-chunk-15-1.png)
+watering](field_capacity_files/figure-html/unnamed-chunk-16-1.png)
 
 This follow the general trends we’d expect, but some things look strange
 and it all looks very noisy.
@@ -702,6 +718,7 @@ As mentioned above, we expect a roughly bell shaped plot of rate pWUE
 over time for our data with constant watering and logistic growth.
 
 ``` r
+
 ggplot(
   rbc[rbc$pc == "sigmoid", ],
   aes(x = time, y = pWUE, group = id)
@@ -719,13 +736,14 @@ ggplot(
 
 ![Showing only the Logistic phenotype's pseudo water use efficiency
 trend, which approximates a gaussian distribution since the denominator
-is constant.](field_capacity_files/figure-html/unnamed-chunk-16-1.png)
+is constant.](field_capacity_files/figure-html/unnamed-chunk-17-1.png)
 
 The overall trend makes sense, but why is the data so spikey? We can
 sometimes get an easier grasp of pWUE if we plot the component parts,
 which are both returned from `pwue`.
 
 ``` r
+
 ggplot(
   rbc[rbc$pc == "sigmoid", ],
   aes(x = time, group = id)
@@ -750,7 +768,7 @@ ggplot(
 ![Separating pseudo water use efficiency into the component parts of
 difference in phenotype and difference in water use to show how the
 phenotype trend drives this water use
-trait.](field_capacity_files/figure-html/unnamed-chunk-17-1.png)
+trait.](field_capacity_files/figure-html/unnamed-chunk-18-1.png)
 
 Now we can see that the “spikey-ness” is a product of the water data
 having a lot of noise, which is likely to be the case in real data but
@@ -764,6 +782,7 @@ a different kind of sigmoid shape? First looks at the pWUE for our
 “abrupt” logistic growth are way less friendly.
 
 ``` r
+
 ggplot(
   rbc[rbc$pc == "abrupt", ],
   aes(x = time, y = pWUE, group = id)
@@ -781,13 +800,14 @@ ggplot(
 
 ![Showing only the abrupt sigmoid phenotype's pseudo water use
 efficiency trend, which has one sharp spike and otherwise appears
-flat.](field_capacity_files/figure-html/unnamed-chunk-18-1.png)
+flat.](field_capacity_files/figure-html/unnamed-chunk-19-1.png)
 
 We’re going to have to zoom in to understand the general trend, then we
 can look at each replicate to see what is going on with that large
 spike.
 
 ``` r
+
 ggplot(
   rbc[rbc$pc == "abrupt", ],
   aes(x = time, y = pWUE, group = id)
@@ -806,7 +826,7 @@ ggplot(
 
 ![Zooming in on the abrupt sigmoid's pseudo water use efficiency to show
 that each rep has a sharp
-spike.](field_capacity_files/figure-html/unnamed-chunk-19-1.png)
+spike.](field_capacity_files/figure-html/unnamed-chunk-20-1.png)
 
 That doesn’t clear it up much, but we do basically have the same kind of
 shape as before where the logistic phenotype yielded a bell curve.
@@ -832,6 +852,7 @@ of thing shows up all the time due to all sorts noise, measurement
 error, and image analysis problems.
 
 ``` r
+
 rbcp <- rbc[rbc$pc == "abrupt", ]
 summary(rbcp$total_water)
 ```
@@ -840,6 +861,7 @@ summary(rbcp$total_water)
     ##  -13.07   17.33   24.30   20.83   25.00   38.68      10
 
 ``` r
+
 rbcp <- rbcp[which(rbcp$total_water > 0), ]
 ```
 
@@ -847,6 +869,7 @@ Now that we’ve removed the negative values we can think about the
 components of rate pWUE a little more clearly.
 
 ``` r
+
 ggplot(
   rbcp,
   aes(x = time, group = id)
@@ -866,7 +889,7 @@ ggplot(
 ![Separating pseudo water use efficiency into the component parts of
 difference in phenotype and difference in water use to show how the
 phenotype trend drives this water use
-trait.](field_capacity_files/figure-html/unnamed-chunk-21-1.png)
+trait.](field_capacity_files/figure-html/unnamed-chunk-22-1.png)
 
 Notice that we have dips in the amount of water used that coincide with
 the peaks of measurement-to-measurement phenotype change. That’s a
@@ -881,6 +904,7 @@ in your experiments the soil and pot would out weigh the plant by
 several orders of magnitude which would make for less steep pWUE curves.
 
 ``` r
+
 ggplot(
   rbcp,
   aes(x = time, y = pWUE, group = id)
@@ -896,7 +920,7 @@ ggplot(
 
 ![Pseudo water use efficiency per rep shows that the trend is the same
 just at different
-scales.](field_capacity_files/figure-html/unnamed-chunk-22-1.png)
+scales.](field_capacity_files/figure-html/unnamed-chunk-23-1.png)
 
 ##### Exponential
 
@@ -904,6 +928,7 @@ The previous two phenotype options were asymptotic. What happens with
 non-asymptotic growth?
 
 ``` r
+
 ggplot(
   rbc[rbc$pc == "exponential", ],
   aes(x = time, y = pWUE, group = id)
@@ -921,12 +946,13 @@ ggplot(
 
 ![Showing only the exponential phenotype's pseudo water use efficiency
 trend, which increases exponentially with some
-outliers](field_capacity_files/figure-html/unnamed-chunk-23-1.png)
+outliers](field_capacity_files/figure-html/unnamed-chunk-24-1.png)
 
 As before we’ll remove the negative values for `total_water`. Here they
 come from the same place since the phenotype is changing so quickly.
 
 ``` r
+
 rbce <- rbc[which(rbc$pc == "exponential" & rbc$total_water > 0), ]
 
 ggplot(
@@ -943,12 +969,13 @@ ggplot(
 
 ![Showing only the exponential phenotype's pseudo water use efficiency
 trend, which increases exponentially with outliers
-removed](field_capacity_files/figure-html/unnamed-chunk-24-1.png)
+removed](field_capacity_files/figure-html/unnamed-chunk-25-1.png)
 
 With the negative values removed the trend here looks a lot like the raw
 phenotype data.
 
 ``` r
+
 ggplot(
   ex[ex$pc == "exponential" & ex$wc == "constant", ],
   aes(time, area, group = id)
@@ -969,13 +996,14 @@ ggplot(
 ```
 
 ![Showing only the exponential
-phenotype](field_capacity_files/figure-html/unnamed-chunk-25-1.png)
+phenotype](field_capacity_files/figure-html/unnamed-chunk-26-1.png)
 
 This is a feature of exponential growth, since the
 measurement-to-measurement difference increases exponentially when we
 have roughly constant water use the pWUE trend will look exponential.
 
 ``` r
+
 ggplot(
   rbce,
   aes(x = time, group = id)
@@ -995,7 +1023,7 @@ ggplot(
 ![Separating pseudo water use efficiency into the component parts of
 difference in phenotype and difference in water use to show how the
 phenotype trend drives this water use
-trait.](field_capacity_files/figure-html/unnamed-chunk-26-1.png)
+trait.](field_capacity_files/figure-html/unnamed-chunk-27-1.png)
 
 ##### Slowing
 
@@ -1003,6 +1031,7 @@ For non-asymptotic growth that is slowing down (exponent below 1) we
 should expect to see decreasing pWUE given constant watering.
 
 ``` r
+
 ggplot(
   rbc[rbc$pc == "slowing", ],
   aes(x = time, y = pWUE, group = id)
@@ -1020,7 +1049,7 @@ ggplot(
 
 ![Showing only the slowing phenotype's pseudo water use efficiency
 trend, which decreases towards 0 as growth slows
-down.](field_capacity_files/figure-html/unnamed-chunk-27-1.png)
+down.](field_capacity_files/figure-html/unnamed-chunk-28-1.png)
 
 While the growth is non-asymptotic pWUE is asymptotic since the
 numerator is monotone increasing but is slowing down while the
@@ -1033,6 +1062,7 @@ any two subsequent times. Since the water data is roughly constant (at
 least it has a 0 slope) we expect to see flat but noisy pWUE here.
 
 ``` r
+
 ggplot(
   rbc[rbc$pc == "linear", ],
   aes(x = time, y = pWUE, group = id)
@@ -1050,7 +1080,7 @@ ggplot(
 
 ![Showing only the linear phenotype's pseudo water use efficiency trend,
 which is roughly
-constant.](field_capacity_files/figure-html/unnamed-chunk-28-1.png)
+constant.](field_capacity_files/figure-html/unnamed-chunk-29-1.png)
 
 ##### Death
 
@@ -1058,6 +1088,7 @@ Now we can look at the `death` group, which taken separately looks like
 a totally normal growth curve.
 
 ``` r
+
 ggplot(
   rbc[rbc$pc == "death", ],
   aes(time, area, group = interaction(group, id))
@@ -1077,7 +1108,7 @@ ggplot(
 ![Showing the 'dying' group of plants. On their own the trend looks
 normal enough, but the magnitude of changes day over day is very small
 which will effect water use
-metrics.](field_capacity_files/figure-html/unnamed-chunk-29-1.png)
+metrics.](field_capacity_files/figure-html/unnamed-chunk-30-1.png)
 
 The measurement-to-measurement change for any asymptotic phenotype
 approaches 0 at the same rate as the phenotype approaches the asymptote.
@@ -1085,6 +1116,7 @@ This measurement-to-measurement change is returned from `pwue` as the
 `pheno_diff` column, plotted below.
 
 ``` r
+
 pheno_diff_ag <- aggregate(cbind(area, pheno_diff) ~ time + group,
   rbc[rbc$time %% 2 == 0 & rbc$pc == "death", ],
   mean,
@@ -1112,7 +1144,7 @@ ggplot(
 ```
 
 ![Showing the 'dying' group of plants with day to day changes
-labelled.](field_capacity_files/figure-html/unnamed-chunk-30-1.png)
+labelled.](field_capacity_files/figure-html/unnamed-chunk-31-1.png)
 
 #### Increasing Continuous
 
@@ -1121,6 +1153,7 @@ labelled.](field_capacity_files/figure-html/unnamed-chunk-30-1.png)
   pre-watered weight.
 
 ``` r
+
 rbic <- rb[rb$wc == "increasing cont", ]
 ggplot(rbic, aes(x = time, y = pWUE, group = id)) +
   facet_wrap(~pc, scales = "free_y") +
@@ -1134,7 +1167,7 @@ ggplot(rbic, aes(x = time, y = pWUE, group = id)) +
 
 ![Plots of all six phenotype conditions pseudo water use efficiency
 under continuously increasing
-watering.](field_capacity_files/figure-html/unnamed-chunk-31-1.png)
+watering.](field_capacity_files/figure-html/unnamed-chunk-32-1.png)
 
 Luckily, compared to the constant watering we can see that there aren’t
 any crazy peaks or negative values here.
@@ -1148,6 +1181,7 @@ grows larger), we should see bell curves that starts high, have a center
 “lump”, then end low.
 
 ``` r
+
 rbics <- rbic[rbic$pc == "sigmoid", ]
 ggplot(rbics, aes(x = time, y = pWUE, group = id)) +
   geom_line() +
@@ -1161,12 +1195,13 @@ ggplot(rbics, aes(x = time, y = pWUE, group = id)) +
 ![Showing only the abrupt sigmoid phenotype's pseudo water use
 efficiency trend under increasing watering, which looks like a left
 truncated
-gaussian.](field_capacity_files/figure-html/unnamed-chunk-32-1.png)
+gaussian.](field_capacity_files/figure-html/unnamed-chunk-33-1.png)
 
 And that’s exactly what we see. To make the reason more clear we can
 plot the numerator and the denominator separately.
 
 ``` r
+
 ggplot(rbics,
        aes(x = time, group = id)) +
   geom_line(aes(y = total_water, color = "Water (denominator)")) +
@@ -1186,7 +1221,7 @@ ggplot(rbics,
 ![Separating pseudo water use efficiency into the component parts of
 difference in phenotype and difference in water use to show how the
 phenotype trend drives this water use
-trait.](field_capacity_files/figure-html/unnamed-chunk-33-1.png)
+trait.](field_capacity_files/figure-html/unnamed-chunk-34-1.png)
 
 There are lots of ways to increase watering over the course of an
 experiment, it could be constant, related to plant size (target weight
@@ -1204,6 +1239,7 @@ phenotype is not changing at the start then reaches asymptotic size
 quickly, pWUE should be 0 on either side of the “spike”.
 
 ``` r
+
 rbica <- rbic[rbic$pc == "abrupt", ]
 ggplot(rbica, aes(x = time, y = pWUE, group = id)) +
   geom_line() +
@@ -1218,9 +1254,10 @@ ggplot(rbica, aes(x = time, y = pWUE, group = id)) +
 efficiency trend, which has one sharp spike and otherwise appears flat
 otherwise. Compared to the more normal sigmoid this makes a gaussian
 like shape that is not
-truncated.](field_capacity_files/figure-html/unnamed-chunk-34-1.png)
+truncated.](field_capacity_files/figure-html/unnamed-chunk-35-1.png)
 
 ``` r
+
 ggplot(rbica,
        aes(x = time, group = id)) +
   geom_line(aes(y = total_water, color = "Water (denominator)")) +
@@ -1240,7 +1277,7 @@ ggplot(rbica,
 ![Separating pseudo water use efficiency into the component parts of
 difference in phenotype and difference in water use to show how the
 phenotype trend drives this water use
-trait.](field_capacity_files/figure-html/unnamed-chunk-35-1.png)
+trait.](field_capacity_files/figure-html/unnamed-chunk-36-1.png)
 
 ##### Exponential
 
@@ -1249,6 +1286,7 @@ increases asymptotically. The result we should expect is exponential
 growth.
 
 ``` r
+
 rbice <- rbic[rbic$pc == "exponential", ]
 ggplot(rbice, aes(x = time, y = pWUE, group = id)) +
   geom_line() +
@@ -1261,12 +1299,13 @@ ggplot(rbice, aes(x = time, y = pWUE, group = id)) +
 
 ![Showing only the exponential phenotype's pseudo water use efficiency
 trend under increasing watering, which still appears
-exponential.](field_capacity_files/figure-html/unnamed-chunk-36-1.png)
+exponential.](field_capacity_files/figure-html/unnamed-chunk-37-1.png)
 
 And that’s what we get. The increase in measurement-to-measurement
 phenotype outpaces the increase in transpiration.
 
 ``` r
+
 ggplot(rbice,
        aes(x = time, group = id)) +
   geom_line(aes(y = total_water, color = "Water (denominator)")) +
@@ -1286,7 +1325,7 @@ ggplot(rbice,
 ![Separating pseudo water use efficiency into the component parts of
 difference in phenotype and difference in water use to show how the
 phenotype trend drives this water use
-trait.](field_capacity_files/figure-html/unnamed-chunk-37-1.png)
+trait.](field_capacity_files/figure-html/unnamed-chunk-38-1.png)
 
 ##### Slowing
 
@@ -1296,6 +1335,7 @@ denominator increasing we should see pWUE start high and approach 0 very
 quickly.
 
 ``` r
+
 rbics <- rbic[rbic$pc == "slowing", ]
 ggplot(rbics, aes(x = time, y = pWUE, group = id)) +
   geom_line() +
@@ -1308,12 +1348,13 @@ ggplot(rbics, aes(x = time, y = pWUE, group = id)) +
 
 ![Showing only the slowing phenotype's pseudo water use efficiency
 trend, which quickly approaches an asymptote at
-0.](field_capacity_files/figure-html/unnamed-chunk-38-1.png)
+0.](field_capacity_files/figure-html/unnamed-chunk-39-1.png)
 
 And that’s what we get. The increase in measurement-to-measurement
 phenotype outpaces the increase in transpiration.
 
 ``` r
+
 ggplot(rbics,
        aes(x = time, group = id)) +
   geom_line(aes(y = total_water, color = "Water (denominator)")) +
@@ -1333,7 +1374,7 @@ ggplot(rbics,
 ![Separating pseudo water use efficiency into the component parts of
 difference in phenotype and difference in water use to show how the
 phenotype trend drives this water use
-trait.](field_capacity_files/figure-html/unnamed-chunk-39-1.png)
+trait.](field_capacity_files/figure-html/unnamed-chunk-40-1.png)
 
 ##### Linear
 
@@ -1342,6 +1383,7 @@ increasing, so we should see pWUE decrease over time, but never getting
 to 0.
 
 ``` r
+
 rbicl <- rbic[rbic$pc == "linear", ]
 ggplot(rbicl, aes(x = time, y = pWUE, group = id)) +
   geom_line() +
@@ -1354,11 +1396,12 @@ ggplot(rbicl, aes(x = time, y = pWUE, group = id)) +
 
 ![Showing only the linear phenotype's pseudo water use efficiency trend,
 which just mirrors the decreasing water
-use.](field_capacity_files/figure-html/unnamed-chunk-40-1.png)
+use.](field_capacity_files/figure-html/unnamed-chunk-41-1.png)
 
 Again we look at the component pieces to check our intuition.
 
 ``` r
+
 ggplot(rbicl,
        aes(x = time, group = id)) +
   geom_line(aes(y = total_water, color = "Water (denominator)")) +
@@ -1378,7 +1421,7 @@ ggplot(rbicl,
 ![Separating pseudo water use efficiency into the component parts of
 difference in phenotype and difference in water use to show how the
 phenotype trend drives this water use
-trait.](field_capacity_files/figure-html/unnamed-chunk-41-1.png)
+trait.](field_capacity_files/figure-html/unnamed-chunk-42-1.png)
 
 ##### Death
 
@@ -1387,6 +1430,7 @@ growth that is slowing down. Here our growth is asymptotic but the
 effect on the numerator should be the same.
 
 ``` r
+
 rbicd <- rbic[rbic$pc == "death", ]
 ggplot(rbicd, aes(x = time, y = pWUE, group = id)) +
   geom_line() +
@@ -1399,11 +1443,12 @@ ggplot(rbicd, aes(x = time, y = pWUE, group = id)) +
 
 ![Showing only the very slow phenotype's pseudo water use efficiency
 trend, which just mirrors the decreasing water
-use.](field_capacity_files/figure-html/unnamed-chunk-42-1.png)
+use.](field_capacity_files/figure-html/unnamed-chunk-43-1.png)
 
 Again we look at the component pieces to check our intuition.
 
 ``` r
+
 ggplot(rbicl,
        aes(x = time, group = id)) +
   geom_line(aes(y = total_water, color = "Water (denominator)")) +
@@ -1423,7 +1468,7 @@ ggplot(rbicl,
 ![Separating pseudo water use efficiency into the component parts of
 difference in phenotype and difference in water use to show how the
 phenotype trend drives this water use
-trait.](field_capacity_files/figure-html/unnamed-chunk-43-1.png)
+trait.](field_capacity_files/figure-html/unnamed-chunk-44-1.png)
 
 #### Decreasing Continuous
 
@@ -1435,6 +1480,7 @@ Now that we are inverting the trend of the denominator we should see
 some real differences.
 
 ``` r
+
 rbdc <- rb[rb$wc == "decreasing cont", ]
 ggplot(rbdc, aes(x = time, y = pWUE, group = id)) +
   facet_wrap(~pc, scales = "free_y") +
@@ -1447,7 +1493,7 @@ ggplot(rbdc, aes(x = time, y = pWUE, group = id)) +
     ## (`geom_line()`).
 
 ![Six phenotypes pseudo water use efficiency trends under decreasing
-watering.](field_capacity_files/figure-html/unnamed-chunk-44-1.png)
+watering.](field_capacity_files/figure-html/unnamed-chunk-45-1.png)
 
 ##### Sigmoid
 
@@ -1459,6 +1505,7 @@ measurement-to-measurement phenotype change is back to about the same as
 it was in the beginning.
 
 ``` r
+
 rbdcs <- rbdc[rbdc$pc == "sigmoid", ]
 ggplot(rbdcs, aes(x = time, y = pWUE, group = id)) +
   geom_line() +
@@ -1471,12 +1518,13 @@ ggplot(rbdcs, aes(x = time, y = pWUE, group = id)) +
 
 ![Showing only the sigmoid phenotype's pseudo water use efficiency
 trend, which looks like a right truncated
-gaussian.](field_capacity_files/figure-html/unnamed-chunk-45-1.png)
+gaussian.](field_capacity_files/figure-html/unnamed-chunk-46-1.png)
 
 We do have one strong spike at the end which we can try to understand
 better by looking at each component of pWUE.
 
 ``` r
+
 ggplot(
   rbdcs,
   aes(x = time, group = id)
@@ -1501,7 +1549,7 @@ ggplot(
 ![Separating pseudo water use efficiency into the component parts of
 difference in phenotype and difference in water use to show how the
 phenotype trend drives this water use
-trait.](field_capacity_files/figure-html/unnamed-chunk-46-1.png)
+trait.](field_capacity_files/figure-html/unnamed-chunk-47-1.png)
 
 Now we can see the cause for that spike is just that the watering amount
 on the last day for the 4th plant was almost nothing.
@@ -1520,6 +1568,7 @@ Again here we remove negative values, which are caused normally by
 measurement error.
 
 ``` r
+
 rbdce <- rbdc[which(rbdc$pc == "exponential" & rbdc$pWUE > 0), ]
 ggplot(rbdce, aes(x = time, y = pWUE, group = id)) +
   geom_line() +
@@ -1531,7 +1580,7 @@ ggplot(rbdce, aes(x = time, y = pWUE, group = id)) +
 ![Showing only the exponential phenotype's pseudo water use efficiency
 trend, which is still exponential since it takes a very dramatic water
 intervention to overcome exponential
-growth.](field_capacity_files/figure-html/unnamed-chunk-47-1.png)
+growth.](field_capacity_files/figure-html/unnamed-chunk-48-1.png)
 
 Once we remove the negative values we see the same basic trend (stronger
 this time as the denominator gets smaller as the exponential growth
@@ -1547,6 +1596,7 @@ decreasing (the change in slope) the denominator can push the pWUE trend
 dramatically.
 
 ``` r
+
 ggplot(
   rbdc[rbdc$pc %in% c("slowing", "linear", "death"), ],
   aes(x = time, group = id)
@@ -1572,7 +1622,7 @@ ggplot(
 difference in phenotype and difference in water use to show how the
 phenotype trend drives this water use trait for any constant or slowing
 decreasing slopes to the
-phenotype.](field_capacity_files/figure-html/unnamed-chunk-48-1.png)
+phenotype.](field_capacity_files/figure-html/unnamed-chunk-49-1.png)
 
 ### Absolute Value Based
 
@@ -1583,12 +1633,13 @@ pWUE once we establish the difference in the pWUE formula.
 As a reminder, this definition of pWUE means we are considering the
 absolute size of the plant at each timepoint with the formula now being:
 
-$\frac{\text{Biomass}_{t}}{\text{Water Transpired}_{t}}$
+$`\frac{\text{Biomass}_t}{\text{Water Transpired}_t}`$
 
 This type of pWUE is useful for thinking about how much biomass can be
 maintained per unit of water.
 
 ``` r
+
 a <- pwue(
   df = ex, w = NULL, pheno = "area", time = "time", id = c("id", "group"),
   pre_watering = "weight_before",
@@ -1600,6 +1651,7 @@ The numerator here is the same as before, so we can check for some
 problems we already know about.
 
 ``` r
+
 colSums(table(a$group, ifelse(a$pWUE < 0, "negative", "positive")))
 ```
 
@@ -1610,6 +1662,7 @@ This time we’ll plot it with the scales freed on the Y-axis and with
 values below 0 already removed.
 
 ``` r
+
 apos <- a[which(a$pWUE > 0), ]
 ggplot(
   apos[apos$id %in% paste0("id_", 1:3), ],
@@ -1627,7 +1680,7 @@ ggplot(
 ![Absolute value based pseudo water use efficiency, where the numerator
 is the same as it was previously but trends depend more on the
 phenotype's magnitude than rate of
-change.](field_capacity_files/figure-html/unnamed-chunk-51-1.png)
+change.](field_capacity_files/figure-html/unnamed-chunk-52-1.png)
 
 Here our pWUE data look a lot like the original phenotype data, with the
 exception of abrupt growth which we’ll get to. That general similarity
@@ -1643,6 +1696,7 @@ The `abrupt` group looks strange here though, what is going on there?
 #### Abrupt Logistic Growth
 
 ``` r
+
 ggplot(
   apos[apos$pc == "abrupt", ],
   aes(x = time, y = pWUE, group = id)
@@ -1662,9 +1716,10 @@ ggplot(
 
 ![Highlighting the abrupt sigmoid phenotype's absolute value based
 pseudo water use efficiency, where the trend does not look like the raw
-phenotype.](field_capacity_files/figure-html/unnamed-chunk-52-1.png)
+phenotype.](field_capacity_files/figure-html/unnamed-chunk-53-1.png)
 
 ``` r
+
 ggplot(
   apos[apos$pc == "abrupt", ],
   aes(x = time, group = id)
@@ -1683,7 +1738,7 @@ ggplot(
 ![Separating pseudo water use efficiency into the component parts of
 difference in phenotype and difference in water use to show how the
 phenotype trend drives this water use
-trait.](field_capacity_files/figure-html/unnamed-chunk-53-1.png)
+trait.](field_capacity_files/figure-html/unnamed-chunk-54-1.png)
 
 What is happening here is that since our phenotype changes so quickly
 between measurements 10 and 14 (roughly) the “lag” where we look at the
@@ -1692,6 +1747,7 @@ watering weights for the first 3 plants in each watering condition given
 `abrupt` logistic growth the problem is more obvious.
 
 ``` r
+
 l2 <- reshape2::melt(ex[ex$pc == "abrupt", ],
   id.vars = c("id", "group", "time", "wc"),
   measure.vars = c("weight_before", "weight_after")
@@ -1720,7 +1776,7 @@ ggplot(
 
 ![Sharp phenotype changes drive small denominators which often make
 pseudo water use efficiency look
-strange.](field_capacity_files/figure-html/unnamed-chunk-54-1.png)
+strange.](field_capacity_files/figure-html/unnamed-chunk-55-1.png)
 
 Between days 10 and 14 the line between those weights is much shorter.
 In this data the difference is smaller because it’s a relatively low
@@ -1742,6 +1798,7 @@ in excess of the watering amount) the overall trend does look like our
 phenotype.
 
 ``` r
+
 ggplot(
   apos[apos$pc == "abrupt", ],
   aes(x = time, y = pWUE, group = id)
@@ -1762,7 +1819,7 @@ ggplot(
 
 ![Highlighting the abrupt sigmoid phenotype's absolute value based
 pseudo water use efficiency, where the trend does not look like the raw
-phenotype.](field_capacity_files/figure-html/unnamed-chunk-55-1.png)
+phenotype.](field_capacity_files/figure-html/unnamed-chunk-56-1.png)
 
 ### Normalized Daily Transpiration
 
@@ -1773,6 +1830,7 @@ question. NDT is helpful when we want to investigate how much water is
 used (transpired) by a given amount of biomass.
 
 ``` r
+
 ndt <- pwue(
   df = ex, w = NULL, pheno = "area", time = "time", id = c("id", "group"),
   pre_watering = "weight_before",
@@ -1791,6 +1849,7 @@ use NDT (any any water use phenotype) will depend entirely on how
 accurately you can measure transpiration.
 
 ``` r
+
 ggplot(
   ndt[ndt$id %in% paste0("id_", 1:3) & ndt$pc != "abrupt", ],
   aes(x = time, y = normalized_daily_transpiration, group = id)
@@ -1806,7 +1865,7 @@ ggplot(
 
 ![Normalized daily transpiration (NDT) in each watering condition and
 phenotype
-trend.](field_capacity_files/figure-html/unnamed-chunk-57-1.png)
+trend.](field_capacity_files/figure-html/unnamed-chunk-58-1.png)
 
 The `abrupt` phenotype has much higher values for transpiration since we
 are dividing by close to 0 for a long time (in the beginning of the
@@ -1815,6 +1874,7 @@ caveat in real data, if there are some plants that fail to thrive then
 you can end up with dramatic outliers in water use phenotypes.
 
 ``` r
+
 ggplot(
   ndt[ndt$id %in% paste0("id_", 1:3) & ndt$pc == "abrupt", ],
   aes(x = time, y = normalized_daily_transpiration, group = id)
@@ -1831,7 +1891,7 @@ ggplot(
 ![Highlighting the abrupt sigmoid phenotype's NDT, which starts high and
 quickly approaches 0. This starts extremely high compared to other
 options since we are almost dividing by 0 at the
-beginning.](field_capacity_files/figure-html/unnamed-chunk-58-1.png)
+beginning.](field_capacity_files/figure-html/unnamed-chunk-59-1.png)
 
 ## Next Steps
 

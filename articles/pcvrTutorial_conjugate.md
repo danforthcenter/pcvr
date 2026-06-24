@@ -26,6 +26,7 @@ needs.
 ## Load package
 
 ``` r
+
 library(pcvr)
 ```
 
@@ -34,6 +35,7 @@ library(pcvr)
     ##   na.action.merMod lme4
 
 ``` r
+
 library(ggplot2)
 library(patchwork)
 library(extraDistr)
@@ -49,20 +51,23 @@ library(extraDistr)
 
 ## Bayesian Conjugacy Theory
 
-$$P\left( \theta|\left( x_{1},\ldots,x_{i} \right) \right) = \frac{\pi(\theta) \cdot L\left( \theta|\left( x_{1},\ldots,x_{i} \right) \right)}{\int\pi(\theta) \cdot L\left( \theta|\left( x_{1},\ldots,x_{i} \right) \right)\ d\theta}$$
+``` math
+\begin{equation}
+P(\theta|(x_1, \ldots, x_i)) = \frac{\pi(\theta) \cdot L(\theta|(x_1, \ldots, x_i))}{\int \pi(\theta) \cdot L(\theta|(x_1, \ldots, x_i))~d\theta}
+\end{equation}
+```
 
-$P\left( \theta|\left( x_{1},\ldots,x_{i} \right) \right)$ = Posterior
-Distribution (Conclusion as a PDf)
+$`P(\theta|(x_1, \ldots, x_i))`$ = Posterior Distribution (Conclusion as
+a PDf)
 
-$\pi(\theta)$ = Prior Distribution (Knowledge as a PDF)
+$`\pi(\theta)`$ = Prior Distribution (Knowledge as a PDF)
 
-$L\left( \theta|\left( x_{1},\ldots,x_{i} \right) \right)$ = Likelihood
-(Data that we collected)
+$`L(\theta|(x_1, \ldots, x_i))`$ = Likelihood (Data that we collected)
 
-$\int\pi(\theta) \cdot L\left( \theta|\left( x_{1},\ldots,x_{i} \right) \right)\ d\theta$
-= Marginal Distribution (this is the problem area)
+$`\int \pi(\theta) \cdot L(\theta|(x_1, \ldots, x_i))~d\theta`$ =
+Marginal Distribution (this is the problem area)
 
-## $\int\pi(\theta) \cdot L\left( \theta|\left( x_{1},\ldots,x_{i} \right) \right)\ d\theta$
+## $`\int \pi(\theta) \cdot L(\theta|(x_1, \ldots, x_i))~d\theta`$
 
 Solving this integral is potentially a very difficult problem.
 
@@ -133,25 +138,25 @@ We’ll go over those distributions, what they tend to represent, how they
 are updated, and what the common alternative tests would be for that
 kind of data.
 
-| Distribution        | Data                   | Updating                                                        | Common Option              |
-|---------------------|------------------------|-----------------------------------------------------------------|----------------------------|
-| Gaussian            | Normal                 | $\mu\prime,\sigma\prime \sim N(\mu,\sigma)$                     | Z-test                     |
-| T                   | Normal Means           | $\mu\prime,\sigma_{\mu},\nu_{\mu}\prime \sim T(\mu,\sigma,\nu)$ | T-test                     |
-| Lognormal           | Positive Right Skewed  | $\mu\prime \sim N(\mu,\sigma)$                                  | Wilcox                     |
-| Lognormal2          | Positive Right Skewed  | $\rho\prime \sim \Gamma(A,B)$                                   | Wilcox                     |
-| Beta                | Percentages            | $\alpha\prime,\beta\prime \sim \alpha,\beta + Counts$           | Wilcox                     |
-| Binomial            | Success/Failure Counts | $P \sim Beta(\alpha,\beta)$                                     | Wilcox/logistic regression |
-| Poisson             | Counts                 | $\lambda \sim Gamma(A,B)$                                       | Wilcox/glm                 |
-| Neg-Binom.          | Overdispersed Counts   | $P \sim Beta(\alpha,\beta)|r$)                                  | Wilcox/glm                 |
-| Von Mises (2)       | Circular               | $\mu\prime,\kappa\prime^{*} \sim VMf(\mu,\kappa)$               | Watsons                    |
-| Uniform             | Positive Flat          | $Upper \sim Pareto(A,B)$                                        | Wilcox                     |
-| Pareto              | Heavy Tail             | $Shape \sim \Gamma(A,B)|Loc.$                                   | Wilcox                     |
-| Gamma               | Right Skew             | $Rate \sim \Gamma(A,B)|Shape$                                   | Wilcox                     |
-| Bernoulli           | Logical                | $Rate \sim Beta(\alpha,\beta)$                                  | Logistic Regression        |
-| Exponential         | Right Skew             | $Rate \sim \Gamma(A,B)$                                         | Wilcox/glm                 |
-| Bivariate Uniform   | Flat                   | See Details                                                     | Distributional Model       |
-| Bivariate Gaussian  | Normal                 | See Details                                                     | Distributional Model       |
-| Bivariate Lognormal | Positive Right Skew    | See Details                                                     | Distributional Model       |
+| Distribution | Data | Updating | Common Option |
+|----|----|----|----|
+| Gaussian | Normal | $`\mu', \sigma' \sim N(\mu, \sigma)`$ | Z-test |
+| T | Normal Means | $`\mu', \sigma_\mu, \nu_\mu' \sim T(\mu, \sigma, \nu)`$ | T-test |
+| Lognormal | Positive Right Skewed | $`\mu' \sim N(\mu, \sigma)`$ | Wilcox |
+| Lognormal2 | Positive Right Skewed | $`\rho' \sim \Gamma(A, B)`$ | Wilcox |
+| Beta | Percentages | $`\alpha', \beta' \sim \alpha, \beta + Counts`$ | Wilcox |
+| Binomial | Success/Failure Counts | $`P \sim Beta(\alpha, \beta)`$ | Wilcox/logistic regression |
+| Poisson | Counts | $`\lambda \sim Gamma(A, B)`$ | Wilcox/glm |
+| Neg-Binom. | Overdispersed Counts | $`P \sim Beta(\alpha, \beta)|r`$) | Wilcox/glm |
+| Von Mises (2) | Circular | $`\mu', \kappa'^* \sim VMf(\mu, \kappa)`$ | Watsons |
+| Uniform | Positive Flat | $`Upper \sim Pareto(A, B)`$ | Wilcox |
+| Pareto | Heavy Tail | $`Shape \sim \Gamma(A, B)| Loc.`$ | Wilcox |
+| Gamma | Right Skew | $`Rate \sim \Gamma(A, B)| Shape`$ | Wilcox |
+| Bernoulli | Logical | $`Rate \sim Beta(\alpha, \beta)`$ | Logistic Regression |
+| Exponential | Right Skew | $`Rate \sim \Gamma(A, B)`$ | Wilcox/glm |
+| Bivariate Uniform | Flat | See Details | Distributional Model |
+| Bivariate Gaussian | Normal | See Details | Distributional Model |
+| Bivariate Lognormal | Positive Right Skew | See Details | Distributional Model |
 
     ## Warning: Removed 2 rows containing missing values or values outside the scale range
     ## (`geom_bar()`).
@@ -213,6 +218,7 @@ Here we use two sets of random exponential data and check if the
 difference is within 0.5 of 0.
 
 ``` r
+
 set.seed(123)
 s1 <- rexp(10, 1.2)
 s2 <- rexp(10, 1)
@@ -236,6 +242,7 @@ For the second case we might want to compare the mean of some data
 against an accepted interval for the mean:
 
 ``` r
+
 set.seed(123)
 s1 <- rnorm(20, 10, 2)
 out <- conjugate(
@@ -262,18 +269,19 @@ selection and in parameter estimation. In `conjugate` Bayes factors
 compare prior vs posterior distributions either at points or over
 ranges.
 
-$\frac{P\left\lbrack H_{1}|\text{Data} \right\rbrack}{P\left\lbrack H_{0}|\text{Data} \right\rbrack} = \frac{P\left\lbrack H_{1} \right\rbrack}{P\left\lbrack H_{0} \right\rbrack} \cdot \frac{P\left\lbrack \text{Data}|H_{1} \right\rbrack}{P\left\lbrack \text{Data}|H_{0} \right\rbrack}$
+$`\frac{P[H_1|\text{Data}]}{P[H_0|\text{Data}]} = \frac{P[H_1]}{P[H_0]} \cdot \frac{P[\text{Data}|H_1]}{P[\text{Data}|H_0]}`$
 
 In this equation we relate the posterior odds to the prior odds
 multiplied by a “Bayes Factor”, that is
-$\frac{P\left\lbrack \text{Data}|H_{1} \right\rbrack}{P\left\lbrack \text{Data}|H_{0} \right\rbrack}$.
+$`\frac{P[\text{Data}|H_1]}{P[\text{Data}|H_0]}`$.
 
-Within `conjugate` $H_{1}$ and $H_{2}$ are either a point or a range in
+Within `conjugate` $`H_1`$ and $`H_2`$ are either a point or a range in
 the support for the given parameter.
 
 We can work a simple example then compare to output from `conjugate`.
 
 ``` r
+
 null <- c(0.4, 0.6)
 x_vals <- seq(0, 1, length.out = 500)
 d_vals <- dbeta(x_vals, shape1 = 2, shape2 = 2) # density from the prior Beta(2, 2)
@@ -312,6 +320,7 @@ prior](pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-9-1.png)
 Now we update our prior with some data:
 
 ``` r
+
 successes <- 8
 failures <- 2
 
@@ -350,6 +359,7 @@ posterior](pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-10-1.png)
 Our Bayes Factor is the ratio between the posterior and prior odds:
 
 ``` r
+
 (b_factor <- post_odds / prior_odds)
 ```
 
@@ -364,6 +374,7 @@ sample 1. If we were interested in a point hypothesis then we would only
 enter one value, say 0.5.
 
 ``` r
+
 conj <- conjugate(s1 = list("successes" = 8, "trials" = 10),
                   method = "binomial",
                   priors = list(a = 2, b = 2),
@@ -393,6 +404,7 @@ Using a point hypothesis we do the same thing, but now the “odds” are
 the density at a single point of the PDF instead of the sum of a region.
 
 ``` r
+
 null <- 0.5
 xrange <- c(0, 1)
 x_vals <- seq(0, 1, length.out = 500)
@@ -418,6 +430,7 @@ p1
 prior](pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-13-1.png)
 
 ``` r
+
 # prior density at null
 prior_null_analytic <- dbeta(0.5, shape1 = 2, shape2 = 2)
 
@@ -453,6 +466,7 @@ p2
 posterior](pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-14-1.png)
 
 ``` r
+
 (b_factor_point <- post_null_analytic / prior_null_analytic)
 ```
 
@@ -461,6 +475,7 @@ posterior](pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-14-1.png)
 Identically in `conjugate`:
 
 ``` r
+
 conj <- conjugate(s1 = list("successes" = 8, "trials" = 10),
                   method = "binomial",
                   priors = list(a = 2, b = 2),
@@ -504,6 +519,7 @@ make good sense as Beta-Binomial data.
 groups](pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-17-1.png)
 
 ``` r
+
 res <- conjugate(
   s1 = list(successes = df[df$geno == "A", "y"], trials = 10),
   s2 = list(successes = df[df$geno == "B", "y"], trials = 10),
@@ -525,6 +541,7 @@ interpretations of hypothesis tests, ROPE tests, and Bayes Factors when
 applicable.
 
 ``` r
+
 res
 ```
 
@@ -550,11 +567,12 @@ example.
 groups](pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-21-1.png)
 
 Here we include a ROPE test corresponding to our belief that any
-difference in Area of $\pm 2cm^{2}$ is biologically insignificant. We
+difference in Area of $`\pm2 cm^2`$ is biologically insignificant. We
 also show the formula syntax and use non-default priors here (since
 default priors include negative values which can’t happen with area).
 
 ``` r
+
 res <- conjugate(
   s1 = y ~ geno, s2 = df,
   method = "t",
@@ -568,12 +586,13 @@ res <- conjugate(
 sizes.](pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-23-1.png)
 
 Our plot shows about a 83% chance that these distributions are unequal
-and a 24% chance that the difference in means is within $\pm 2cm^{2}$.
+and a 24% chance that the difference in means is within $`\pm2 cm^2`$.
 
 The other aspects of the output are a summary and the prior/posterior
 parameters as well as several things only used internally.
 
 ``` r
+
 lapply(res, class)
 ```
 
@@ -602,6 +621,7 @@ The summary is a data.frame with a summary of the information in the
 plot. It is printed at the end of the object.
 
 ``` r
+
 res
 ```
 
@@ -627,6 +647,7 @@ for Bayesian updating should you have a situation where supplying data
 piecemeal makes sense. The prior is in the same format.
 
 ``` r
+
 do.call(rbind, res$posterior)
 ```
 
@@ -647,6 +668,7 @@ groups](pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-27-1.png)
 Here we model \$X \sim Poisson(\lambda)\\ \lambda \sim \Gamma(A, B)\$
 
 ``` r
+
 res <- conjugate(
   s1 = y ~ geno, s2 = df,
   method = "poisson",
@@ -680,7 +702,7 @@ counts.](pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-29-1.png)
 
 We can comfortably say that the difference in the posteriors is not in
 \[-1, 1\] and there is a 91% chance that the Gamma distributions for
-$\lambda$ are different.
+$`\lambda`$ are different.
 
 ## Hue
 
@@ -688,7 +710,7 @@ Finally, we’ll show an example using what is likely the least-familiar
 distribution in `conjugate`, the Von-Mises distribution.
 
 The Von-Mises distribution is a symmetric circular distribution defined
-on $\lbrack - \pi,\pi\rbrack$.
+on $`[-\pi, \pi]`$.
 
 To use Von-Mises with data on other intervals there is a `boundary`
 element in the prior that is used to rescale data to radians for the
@@ -713,6 +735,7 @@ non-circular space like this would be a problem. For values we normally
 get from plants other continuous methods can generally be useful.
 
 ``` r
+
 ggplot(df, aes(x = geno, y = y, fill = geno)) +
   geom_boxplot(outlier.shape = NA) +
   geom_jitter(height = 0, width = 0.05) +
@@ -727,6 +750,7 @@ it were not circular looks
 bimodal.](pcvrTutorial_conjugate_files/figure-html/unnamed-chunk-31-1.png)
 
 ``` r
+
 res <- conjugate(
   s1 = y ~ geno, s2 = df,
   method = "vonmises2",
@@ -748,6 +772,7 @@ res
     ## 1 3.093691  1.668768  -1.717893 2.727366  1.497517   -2.43441 equal 0.7904981
 
 ``` r
+
 plot(res)
 ```
 

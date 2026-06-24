@@ -82,6 +82,7 @@ Returns a ggplot.
 ## Examples
 
 ``` r
+
 library(extraDistr)
 dists <- list(
   rmixnorm = list(mean = c(70, 150), sd = c(15, 5), alpha = c(0.3, 0.7)),

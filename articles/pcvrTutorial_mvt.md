@@ -28,6 +28,7 @@ needs.
 Pre-work was to install R, Rstudio, and `pcvr` with dependencies.
 
 ``` r
+
 library(pcvr)
 ```
 
@@ -36,6 +37,7 @@ library(pcvr)
     ##   na.action.merMod lme4
 
 ``` r
+
 library(ggplot2)
 library(patchwork)
 ```
@@ -68,6 +70,7 @@ Wikipedia HSV Color Space Graphic
 PlantCV returns multi-value traits as histograms in long format
 
 ``` r
+
 structure(list(sample = c(
   "default", "default", "default", "default",
   "default", "default", "default", "default", "default", "default",
@@ -113,6 +116,7 @@ In `pcvr` you can choose to read multi value traits in wide format with
 after `PlantCV` 4 should make this obsolescent.
 
 ``` r
+
 structure(list(hue_frequencies.45 = c(
   0.0154487872701993, 0,
   0, 0, 0
@@ -147,6 +151,7 @@ Either option will work for most `pcvr` functions.
 ## Simulated data
 
 ``` r
+
 set.seed(123)
 simFreqs <- function(vec, group) {
   s1 <- hist(vec, breaks = seq(1, 181, 1), plot = FALSE)$counts
@@ -196,6 +201,7 @@ sim_plot <- ggplot(sim_df_long, aes(x = bin, y = value, fill = group), alpha = 0
 Here we simulate wide data, then lengthen it for plotting.
 
 ``` r
+
 sim_plot
 ```
 
@@ -207,6 +213,7 @@ distributions.](pcvrTutorial_mvt_files/figure-html/unnamed-chunk-6-1.png)
 We can make joyplots and using `pcv.joyplot`
 
 ``` r
+
 (p <- pcv.joyplot(sim_df, index = "sim", group = c("group")))
 ```
 
@@ -218,6 +225,7 @@ The plot output is a `ggplot` object so we can change it to match our
 needs. Here we show these distributions as if they are hues.
 
 ``` r
+
 p + scale_fill_gradientn(colors = scales::hue_pal(l = 55)(360))
 ```
 
@@ -247,6 +255,7 @@ Here the EMD would be 0.01 since only 1 count has to move 1 space out of
 100 total observations:
 
 ``` r
+
 set.seed(123)
 df <- data.frame(x = round(runif(101, 1, 10)), y = c(rep("original", 99), "old", "new"))
 df[100:101, "x"] <- c(5, 6)
@@ -296,6 +305,7 @@ For details see
 [`?pcv.emd`](https://danforthcenter.github.io/pcvr/reference/pcv.emd.md)
 
 ``` r
+
 sim_emd <- pcv.emd(
   df = sim_df, cols = "sim_", reorder = c("group"),
   mat = FALSE, plot = TRUE, parallel = 1, raiseError = FALSE
@@ -308,6 +318,7 @@ Looking at the plot we can see that there are obvious differences
 between groups in our data.
 
 ``` r
+
 sim_emd$plot
 ```
 
@@ -325,6 +336,7 @@ Note that the default behavior changes EMD from a distance to a
 dissimilarity.
 
 ``` r
+
 set.seed(123)
 n <- pcv.net(sim_emd$data, filter = 0.5)
 lapply(n, class)
@@ -344,6 +356,7 @@ lapply(n, class)
 Now we can visualize our network using `net.plot`.
 
 ``` r
+
 net1 <- net.plot(n, fill = "group") +
   labs(color = "", title = "Network 1") +
   theme(plot.title = element_text(hjust = 0.5)) +
@@ -358,6 +371,7 @@ distribution is most dissimilar to the others since it is excluded
 entirely. We can make another network to include it.
 
 ``` r
+
 net1
 ```
 
@@ -369,6 +383,7 @@ Here we specify our filter as a character, which is interpreted as a
 quantile here keeping only edges that are above median strength.
 
 ``` r
+
 set.seed(123)
 n <- pcv.net(sim_emd$data, filter = "0.5")
 net2 <- net.plot(n, fill = "group") +
@@ -382,6 +397,7 @@ net2 <- net.plot(n, fill = "group") +
 Now we can see the full layout of our five distributions.
 
 ``` r
+
 net2
 ```
 
@@ -404,6 +420,7 @@ Multi-value traits can be provided to `conjugate` as matrices. Here we
 subset our data to two samples.
 
 ``` r
+
 s1 <- sim_df[sim_df$group == "normal", grepl("sim", colnames(sim_df))]
 s2 <- sim_df[sim_df$group == "lognormal", grepl("sim", colnames(sim_df))]
 ```
@@ -414,6 +431,7 @@ Now we can run `conjugate` on our samples. Here we use assume a
 lognormal distribution.
 
 ``` r
+
 res <- conjugate(s1, s2,
   method = "lognormal",
   priors = list(mu = 10, sd = 5),
@@ -436,6 +454,7 @@ res
     ## 1 4.140941  3.021195   5.260687 3.16762  1.924214   4.411025 equal 0.5090941
 
 ``` r
+
 plot(res)
 ```
 
@@ -446,6 +465,7 @@ We can also perform region of practical equivalence tests by specifying
 a `rope_range`.
 
 ``` r
+
 res <- conjugate(s1, s2,
   method = "lognormal",
   priors = list(mu = 10, sd = 5),
@@ -473,6 +493,7 @@ res
     ## 1 0.9738328   -0.6765613      2.694569         1
 
 ``` r
+
 plot(res)
 ```
 
@@ -484,6 +505,7 @@ traits](pcvrTutorial_mvt_files/figure-html/unnamed-chunk-19-1.png)
 The results are also returned as a summary data.frame.
 
 ``` r
+
 res$summary[, -c(1:6)]
 ```
 

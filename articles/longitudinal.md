@@ -1,6 +1,7 @@
 # Longitudinal Growth Modeling Options
 
 ``` r
+
 library(pcvr)
 library(data.table) # for fread
 library(ggplot2)
@@ -36,6 +37,7 @@ link cmdstan to R, which is all done easily by `cmdstanr`. For example,
 packages can be installed and prepped using this code.
 
 ``` r
+
 if (!"cmdstanr" %in% installed.packages()) {
   install.packages("cmdstanr", repos = c("https://mc-stan.org/r-packages/", getOption("repos")))
 }
@@ -62,7 +64,7 @@ parameterizations of these models are explained below.
 ### Logistic
 
 The logistic function here is implemented as a 3 parameter sigmoidal
-growth curve: $A/\left( 1 + e^{{(B - x)}/C} \right)$
+growth curve: $`A / (1 + e^{(B-x)/C} )`$
 
 In this model A is the asymptote, B is the inflection point, and C is
 the growth rate.
@@ -70,7 +72,7 @@ the growth rate.
 ### Gompertz
 
 The gompertz function here is also a 3 parameter sigmoidal growth curve:
-$A*e^{( - B*e^{( - C*x)})}$
+$`A * e^{(-B * e^{(-C*x)})}`$
 
 In this model A is the asymptote, B is the inflection point, and C is
 the growth rate.
@@ -87,7 +89,7 @@ function may be compelling.
 ### Monomolecular
 
 The monomolecular function here is a 2 parameter asymptotic growth
-curve: $A - A*e^{( - B*x)}$
+curve: $`A-A * e^{(-B * x)}`$
 
 Once again, A is the asymptote but now B is the growth rate.
 
@@ -98,7 +100,7 @@ should make model choices based on your data/expectations.
 
 The exponential function here is a 2 parameter non-asymptotic growth
 curve bearing strong similarity to the monomolecular formula:
-$A*e^{(B*x)}$
+$`A * e^{(B * x)}`$
 
 Here A is a scale parameter and B is the growth rate.
 
@@ -112,7 +114,7 @@ eventually be achieved to use a sigmoidal model.
 ### Power Law
 
 The power law function here is a 2 parameter non-asymptotic growth
-curve: $A*x^{B}$
+curve: $`A * x^B`$
 
 Here A is a scale parameter and B is the growth rate. The formula
 becomes linear when B is 1, shows slowing growth over time when 0 \< B
@@ -124,15 +126,14 @@ expectation that growth ever truly stops.
 
 ### Linear
 
-The linear function here is simply: $A*x$
+The linear function here is simply: $`A * x`$
 
 Here A is the growth rate and the intercept is assumed to be 0.
 
 ### Double Logistic
 
 The double logistic function here is just two combined logistic
-functions:
-$A/\left( 1 + e^{({(B - x)}/C)} \right) + \left( (A2 - A)/\left( 1 + e^{({(B2 - x)}/C2)} \right) \right)$
+functions: $`A / (1+e^{((B-x)/C)}) + ((A2-A) /(1+e^{((B2-x)/C2)}))`$
 
 Here the parameters have the same interpretation as those in the
 logistic curve, but for the first and second component separately.
@@ -147,7 +148,7 @@ and B are not relative.
 
 The double logistic function here is just two combined gompertz
 functions:
-$A*e^{( - B*e^{( - C*x)})} + \left( (A2 - A)*e^{( - B2*e^{( - C2*{(x - B)})})} \right)$
+$`A * e^{(-B * e^{(-C*x)})} + ((A2-A) * e^{(-B2 * e^{(-C2*(x-B))})})`$
 
 Here the parameters have the same interpretation as those in the
 gompertz curve, but for the first and second component separately.
@@ -209,6 +210,7 @@ Through this vignette we will use data created in this way to show
 modeling options.
 
 ``` r
+
 simdf <- growthSim("logistic", n = 20, t = 25, params = list(
   "A" = c(200, 160),
   "B" = c(13, 11),
@@ -274,8 +276,8 @@ Here we will go over those backends in more detail. These backends are
 selected using one of nls, nlrq, nlme, mgcv, or brms which correspond to
 the functions shown in this table.
 
-| “nls”                                            | “nlrq”                                                         | “nlme”                                                 | “mgcv”                                               | “brms”                                                                    |
-|--------------------------------------------------|----------------------------------------------------------------|--------------------------------------------------------|------------------------------------------------------|---------------------------------------------------------------------------|
+| “nls” | “nlrq” | “nlme” | “mgcv” | “brms” |
+|----|----|----|----|----|
 | [`stats::nls`](https://rdrr.io/r/stats/nls.html) | [`quantreg::nlrq`](https://rdrr.io/pkg/quantreg/man/nlrq.html) | [`nlme::nlme`](https://rdrr.io/pkg/nlme/man/nlme.html) | [`mgcv::gam`](https://rdrr.io/pkg/mgcv/man/gam.html) | [`brms::brms`](https://paulbuerkner.com/brms/reference/brms-package.html) |
 
 ### `nls`
@@ -407,6 +409,7 @@ At a high level we can think about any of these models as fitting a
 curve to these lines.
 
 ``` r
+
 set.seed(345)
 gomp <- growthSim("gompertz", n = 20, t = 35, params = list(
   "A" = c(200, 180, 160),
@@ -430,6 +433,7 @@ Several options are shown here, ignoring grouping here since the data is
 already aggregated.
 
 ``` r
+
 draw_gomp_sigma <- function(x) {
   return(23 * exp(-21 * exp(-0.22 * x)))
 }
@@ -471,6 +475,7 @@ wide at the beginning of the experiment and even include some negative
 values for plant area.
 
 ``` r
+
 ss <- growthSS(
   model = "gompertz", form = y ~ time | id / group, sigma = "int",
   df = gomp, start = list("A" = 130, "B" = 15, "C" = 0.25)
@@ -505,6 +510,7 @@ ss
     ## (2100 rows)
 
 ``` r
+
 fit_h <- fitGrowth(ss, iter = 1000, cores = 4, chains = 4, silent = 0)
 
 brmPlot(fit_h, form = ss$pcvrForm, df = ss$df)
@@ -517,6 +523,7 @@ add some extra controls to the model fitting algorithm to help the model
 fit well with the added complexity at the cost of being slower.
 
 ``` r
+
 ss <- growthSS(
   model = "gompertz", form = y ~ time | id / group, sigma = "linear",
   df = gomp, start = list("A" = 130, "B" = 15, "C" = 0.25)
@@ -551,6 +558,7 @@ ss
     ## (2100 rows)
 
 ``` r
+
 fit_l <- fitGrowth(ss,
   iter = 1000, cores = 4, chains = 4, silent = 0,
   control = list(adapt_delta = 0.999, max_treedepth = 20)
@@ -574,6 +582,7 @@ for the model to fit. Here we can specify “gam” or “spline” for
 backwards compatibility.
 
 ``` r
+
 ss <- growthSS(
   model = "gompertz", form = y ~ time | id / group, sigma = "spline",
   df = gomp, start = list("A" = 130, "B" = 15, "C" = 0.25)
@@ -608,6 +617,7 @@ ss
     ## (2100 rows)
 
 ``` r
+
 fit_s <- fitGrowth(ss,
   iter = 2000, cores = 4, chains = 4, silent = 0,
   control = list(adapt_delta = 0.999, max_treedepth = 20)
@@ -637,6 +647,7 @@ reasonable to expect a similar growth rate and inflection point as in
 the main model (assuming the main model is gompertz as well).
 
 ``` r
+
 ss <- growthSS(
   model = "gompertz", form = y ~ time | id / group, sigma = "gompertz",
   df = gomp, start = list(
@@ -678,6 +689,7 @@ ss
     ## (2100 rows)
 
 ``` r
+
 fit_g <- fitGrowth(ss,
   iter = 2000, cores = 4, chains = 4, silent = 0,
   control = list(adapt_delta = 0.999, max_treedepth = 20)
@@ -691,6 +703,7 @@ many ways to model variance as there are to model growth using the
 `brms` backend, but other options are more limited.
 
 ``` r
+
 draw_gomp_sigma <- function(x) {
   return(23 * exp(-21 * exp(-0.22 * x)))
 }
@@ -735,6 +748,7 @@ When considering several sub models (or growth models) we can compare
 frequentist models a more familiar metric like BIC or AIC might be used.
 
 ``` r
+
 loo_spline <- add_criterion(fit_s, "loo")
 loo_homo <- add_criterion(fit_h, "loo")
 loo_linear <- add_criterion(fit_l, "loo")
@@ -791,6 +805,7 @@ is an example of a strong prior hurting a model. This example is clearly
 dramatic, but less absurd strong priors will still impact your results.
 
 ``` r
+
 set.seed(345)
 ln <- growthSim("linear", n = 5, t = 10, params = list("A" = c(2, 3, 10)))
 
@@ -841,6 +856,7 @@ with these is to constrict our sampler to possible values so that it
 moves faster and to introduce evidence driven domain expertise.
 
 ``` r
+
 weakPrior <- prior(student_t(3, 0, 5), dpar = "sigma", class = "b") +
   prior(gamma(2, 0.1), class = "nu", lb = 0.001) +
   prior(lognormal(log(10), 0.25), nlpar = "A", lb = 0)
@@ -885,6 +901,7 @@ We can check the priors made by `growthSS` with the `plotPrior`
 function.
 
 ``` r
+
 priors <- list("A" = 130, "B" = 10, "C" = 0.2)
 priorPlots <- plotPrior(priors)
 priorPlots[[1]] / priorPlots[[2]] / priorPlots[[3]]
@@ -907,6 +924,7 @@ three can be cluttered so an iterative process is recommended if you are
 learning about your growth model.
 
 ``` r
+
 twoPriors <- list("A" = c(100, 130), "B" = c(6, 12), "C" = c(0.5, 0.25))
 plotPrior(twoPriors, "gompertz", n = 100)[[1]]
 ```
@@ -966,6 +984,7 @@ in the example below, where the formula specifies `bins` given `value`
 per bin predicted by `group`.
 
 ``` r
+
 set.seed(123)
 mv_df <- mvSim(dists = list(rnorm = list(mean = 100, sd = 30)), wide = FALSE)
 mv_df$group <- rep(c("a", "b"), times = 900)
@@ -1006,6 +1025,7 @@ growth model using the specified backend.
 Here we fit a model using each backend to simulated data.
 
 ``` r
+
 set.seed(123)
 simdf <- growthSim("logistic", n = 20, t = 25, params = list(
   "A" = c(200, 160),
@@ -1015,6 +1035,7 @@ simdf <- growthSim("logistic", n = 20, t = 25, params = list(
 ```
 
 ``` r
+
 nls_ss <- growthSS(
   model = "logistic", form = y ~ time | id / group,
   df = simdf, type = "nls"
@@ -1024,6 +1045,7 @@ nls_ss <- growthSS(
     ## Individual is not used with type = 'nls'.
 
 ``` r
+
 nlrq_ss <- growthSS(
   model = "logistic", form = y ~ time | id / group,
   df = simdf, type = "nlrq",
@@ -1034,6 +1056,7 @@ nlrq_ss <- growthSS(
     ## Individual is not used with type = 'nlrq'.
 
 ``` r
+
 nlme_ss <- growthSS(
   model = "logistic", form = y ~ time | id / group,
   df = simdf, sigma = "power", type = "nlme"
@@ -1041,6 +1064,7 @@ nlme_ss <- growthSS(
 ```
 
 ``` r
+
 mgcv_ss <- growthSS(
   model = "gam", form = y ~ time | id / group,
   df = simdf, type = "mgcv"
@@ -1050,6 +1074,7 @@ mgcv_ss <- growthSS(
     ## Individual is not used with type = 'gam'.
 
 ``` r
+
 brms_ss <- growthSS(
   model = "logistic", form = y ~ time | id / group,
   sigma = "spline", df = simdf,
@@ -1070,6 +1095,7 @@ last plot of the data and make sure you have everything defined
 correctly.
 
 ``` r
+
 ggplot(simdf, aes(time, y, group = interaction(group, id))) +
   geom_line(aes(color = group))
 ```
@@ -1091,6 +1117,7 @@ run a quick example, generally 2000 or more should be used and with more
 than 1 chain.
 
 ``` r
+
 nls_fit <- fitGrowth(nls_ss)
 nlrq_fit <- fitGrowth(nlrq_ss)
 nlme_fit <- fitGrowth(nlme_ss)
@@ -1098,6 +1125,7 @@ mgcv_fit <- fitGrowth(mgcv_ss)
 ```
 
 ``` r
+
 brms_fit <- fitGrowth(brms_ss,
   iter = 500, cores = 1, chains = 1,
   control = list(adapt_delta = 0.999, max_treedepth = 20)
@@ -1109,6 +1137,7 @@ brms_fit <- fitGrowth(brms_ss,
 We can check the model fits using `growthPlot`.
 
 ``` r
+
 growthPlot(nls_fit, form = nls_ss$pcvrForm, df = nls_ss$df)
 ```
 
@@ -1117,6 +1146,7 @@ backend besides
 brms.](longitudinal_files/figure-html/unnamed-chunk-30-1.png)
 
 ``` r
+
 growthPlot(nlrq_fit, form = nlrq_ss$pcvrForm, df = nlrq_ss$df)
 ```
 
@@ -1125,6 +1155,7 @@ backend besides
 brms.](longitudinal_files/figure-html/unnamed-chunk-30-2.png)
 
 ``` r
+
 growthPlot(nlme_fit, form = nlme_ss$pcvrForm, df = nlme_ss$df)
 ```
 
@@ -1133,6 +1164,7 @@ backend besides
 brms.](longitudinal_files/figure-html/unnamed-chunk-30-3.png)
 
 ``` r
+
 growthPlot(mgcv_fit, form = mgcv_ss$pcvrForm, df = mgcv_ss$df)
 ```
 
@@ -1141,6 +1173,7 @@ backend besides
 brms.](longitudinal_files/figure-html/unnamed-chunk-30-4.png)
 
 ``` r
+
 growthPlot(brms_fit, form = brms_ss$pcvrForm, df = brms_ss$df)
 ```
 
@@ -1151,7 +1184,7 @@ Example of growth plots generated from growthPlot for brms models.
 
 ### Hypothesis testing
 
-In linear regression the default null hypothesis ($\beta = 0$) can be
+In linear regression the default null hypothesis ($`\beta = 0`$) can be
 useful as each beta past the intercept directly measures the effect of
 one variable. In non-linear regression we generally have more
 complicated model parameters and meaningful testing can be a little more
@@ -1176,6 +1209,7 @@ Here we see that for our `nls` model is statistically significantly
 improved by varying asymptote by group.
 
 ``` r
+
 testGrowth(nls_ss, nls_fit, test = "A")$anova
 ```
 
@@ -1192,6 +1226,7 @@ testGrowth(nls_ss, nls_fit, test = "A")$anova
 Likewise for the 49th percentile in our `nlrq` model
 
 ``` r
+
 testGrowth(nlrq_ss, nlrq_fit, test = "A")[["0.49"]]
 ```
 
@@ -1206,6 +1241,7 @@ testGrowth(nlrq_ss, nlrq_fit, test = "A")[["0.49"]]
 And the same is shown in our `nlme` model.
 
 ``` r
+
 testGrowth(nlme_ss, nlme_fit, test = "A")$anova
 ```
 
@@ -1217,6 +1253,7 @@ We cannot test parameters in the GAM of course but we still see that the
 grouping improves the model fit.
 
 ``` r
+
 testGrowth(mgcv_ss, mgcv_fit)$anova
 ```
 
@@ -1249,6 +1286,7 @@ hypotheses and should be giving some thought to how to express your
 stated hypothesis in terms of the model parameters.
 
 ``` r
+
 testGrowth(fit = nls_fit, test = list(
   "A1 - A2 *1.1",
   "(B1+1) - B2",
@@ -1264,6 +1302,7 @@ testGrowth(fit = nls_fit, test = list(
     ## 4 A1/B1 - (1.1 * A2/B2) -1.2329672 0.1538017  8.016603 3.036364e-15
 
 ``` r
+
 testGrowth(fit = nlme_fit, test = list(
   "(A.groupa / A.groupb) - 0.9",
   "1 + (B.groupa - B.groupb)",
@@ -1297,6 +1336,7 @@ function is generally a compelling reason to use the `brms` backend if
 you have questions beyond “are these groups different?”
 
 ``` r
+
 (hyp <- brms::hypothesis(brms_fit, "(A_groupa) > 1.1 * (A_groupb)"))
 ```
 
@@ -1329,6 +1369,7 @@ variance will have the name of the distributional parameter they are
 modeling appended to each parameter name.
 
 ``` r
+
 simdf <- growthSim(
   model = "linear + linear",
   n = 20, t = 25,
@@ -1347,6 +1388,7 @@ fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1)
 Here we look at a “linear + logistic” model using a gam submodel.
 
 ``` r
+
 simdf <- growthSim("linear + logistic",
   n = 20, t = 25,
   params = list(
@@ -1371,6 +1413,7 @@ fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1)
 Here we fit a “linear + gam” model with a homoskedastic sub model.
 
 ``` r
+
 ss <- growthSS(
   model = "linear + gam", form = y ~ time | id / group, sigma = "int",
   list("linear1A" = 10, "changePoint1" = 5),
@@ -1385,6 +1428,7 @@ this case we only used 500 iterations on one chain but the model still
 fits reasonably well.
 
 ``` r
+
 simdf <- growthSim("linear + linear + linear",
   n = 25, t = 50,
   params = list(
@@ -1410,6 +1454,7 @@ intercept only models to both the data and the variance. This is not a
 growth model exactly, but shows some of the available options well.
 
 ``` r
+
 ss <- growthSS(
   model = "int + int", form = y ~ time | id / group, sigma = "int + int",
   list(
@@ -1425,6 +1470,7 @@ fit <- fitGrowth(ss, backend = "cmdstanr", iter = 500, chains = 1, cores = 1)
 Here we fit int + linear models to the overall trend and the variance
 
 ``` r
+
 ss <- growthSS(
   model = "int + linear", form = y ~ time | id / group, sigma = "int + linear",
   list(
@@ -1442,6 +1488,7 @@ of variance is that we can test the intercept and changepoint parameters
 of the variance now.
 
 ``` r
+
 ss <- growthSS(
   model = "int+logistic", form = y ~ time | id / group, sigma = "int + spline",
   list(
@@ -1482,6 +1529,7 @@ trend plots are also a legend for the time of each posterior
 distribution.
 
 ``` r
+
 print(load(url("https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/brmsFits.rdata")))
 from3to25 <- list(
   fit_3, fit_5, fit_7, fit_9, fit_11, fit_13,

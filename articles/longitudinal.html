@@ -7,8 +7,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Longitudinal Growth Modeling Options • pcvr</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Longitudinal Growth Modeling Options">
 </head>
@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">pcvr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.4.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.4.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -82,7 +82,7 @@
                         <h4 data-toc-skip class="author">Josh Sumner,
 DDPSC Data Science Core Facility</h4>
             
-            <h4 data-toc-skip class="date">2026-04-27</h4>
+            <h4 data-toc-skip class="date">2026-06-24</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/danforthcenter/pcvr/blob/main/vignettes/longitudinal.Rmd" class="external-link"><code>vignettes/longitudinal.Rmd</code></a></small>
       <div class="d-none name"><code>longitudinal.Rmd</code></div>
@@ -154,7 +154,7 @@ below.</p>
 </h3>
 <p>The logistic function here is implemented as a 3 parameter sigmoidal
 growth curve:
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi><mi>/</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>+</mo><msup><mi>e</mi><mrow><mrow><mo stretchy="true" form="prefix">(</mo><mi>B</mi><mo>−</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mi>/</mi><mi>C</mi></mrow></msup><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">A / (1 + e^{(B-x)/C} )</annotation></semantics></math></p>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi><mi>/</mi><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>+</mo><msup><mi>e</mi><mrow><mo stretchy="false" form="prefix">(</mo><mi>B</mi><mo>−</mo><mi>x</mi><mo stretchy="false" form="postfix">)</mo><mi>/</mi><mi>C</mi></mrow></msup><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">A / (1 + e^{(B-x)/C} )</annotation></semantics></math></p>
 <p>In this model A is the asymptote, B is the inflection point, and C is
 the growth rate.</p>
 </div>
@@ -163,7 +163,7 @@ the growth rate.</p>
 </h3>
 <p>The gompertz function here is also a 3 parameter sigmoidal growth
 curve:
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi><mo>*</mo><msup><mi>e</mi><mrow><mo stretchy="true" form="prefix">(</mo><mo>−</mo><mi>B</mi><mo>*</mo><msup><mi>e</mi><mrow><mo stretchy="true" form="prefix">(</mo><mo>−</mo><mi>C</mi><mo>*</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow></msup><mo stretchy="true" form="postfix">)</mo></mrow></msup></mrow><annotation encoding="application/x-tex">A * e^{(-B * e^{(-C*x)})}</annotation></semantics></math></p>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi><mo>*</mo><msup><mi>e</mi><mrow><mo stretchy="false" form="prefix">(</mo><mi>−</mi><mi>B</mi><mo>*</mo><msup><mi>e</mi><mrow><mo stretchy="false" form="prefix">(</mo><mi>−</mi><mi>C</mi><mo>*</mo><mi>x</mi><mo stretchy="false" form="postfix">)</mo></mrow></msup><mo stretchy="false" form="postfix">)</mo></mrow></msup></mrow><annotation encoding="application/x-tex">A * e^{(-B * e^{(-C*x)})}</annotation></semantics></math></p>
 <p>In this model A is the asymptote, B is the inflection point, and C is
 the growth rate.</p>
 <p>The gompertz formula is more complex than the logistic formula, which
@@ -180,7 +180,7 @@ function may be compelling.</p>
 </h3>
 <p>The monomolecular function here is a 2 parameter asymptotic growth
 curve:
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi><mo>−</mo><mi>A</mi><mo>*</mo><msup><mi>e</mi><mrow><mo stretchy="true" form="prefix">(</mo><mo>−</mo><mi>B</mi><mo>*</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow></msup></mrow><annotation encoding="application/x-tex">A-A * e^{(-B * x)}</annotation></semantics></math></p>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi><mo>−</mo><mi>A</mi><mo>*</mo><msup><mi>e</mi><mrow><mo stretchy="false" form="prefix">(</mo><mi>−</mi><mi>B</mi><mo>*</mo><mi>x</mi><mo stretchy="false" form="postfix">)</mo></mrow></msup></mrow><annotation encoding="application/x-tex">A-A * e^{(-B * x)}</annotation></semantics></math></p>
 <p>Once again, A is the asymptote but now B is the growth rate.</p>
 <p>This model has often fit well for height or width phenotypes, but you
 should make model choices based on your data/expectations.</p>
@@ -190,7 +190,7 @@ should make model choices based on your data/expectations.</p>
 </h3>
 <p>The exponential function here is a 2 parameter non-asymptotic growth
 curve bearing strong similarity to the monomolecular formula:
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi><mo>*</mo><msup><mi>e</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>B</mi><mo>*</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow></msup></mrow><annotation encoding="application/x-tex">A * e^{(B * x)}</annotation></semantics></math></p>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi><mo>*</mo><msup><mi>e</mi><mrow><mo stretchy="false" form="prefix">(</mo><mi>B</mi><mo>*</mo><mi>x</mi><mo stretchy="false" form="postfix">)</mo></mrow></msup></mrow><annotation encoding="application/x-tex">A * e^{(B * x)}</annotation></semantics></math></p>
 <p>Here A is a scale parameter and B is the growth rate.</p>
 <p>Most plants do not grow indefinitely, although many may grow
 exponentially through the course of an experiment (think of the first
@@ -225,7 +225,7 @@ expectation that growth ever truly stops.</p>
 </h3>
 <p>The double logistic function here is just two combined logistic
 functions:
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi><mi>/</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>+</mo><msup><mi>e</mi><mrow><mo stretchy="true" form="prefix">(</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>B</mi><mo>−</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mi>/</mi><mi>C</mi><mo stretchy="true" form="postfix">)</mo></mrow></msup><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><mrow><mo stretchy="true" form="prefix">(</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>A</mi><mn>2</mn><mo>−</mo><mi>A</mi><mo stretchy="true" form="postfix">)</mo></mrow><mi>/</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>+</mo><msup><mi>e</mi><mrow><mo stretchy="true" form="prefix">(</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>B</mi><mn>2</mn><mo>−</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mi>/</mi><mi>C</mi><mn>2</mn><mo stretchy="true" form="postfix">)</mo></mrow></msup><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">A / (1+e^{((B-x)/C)}) + ((A2-A) /(1+e^{((B2-x)/C2)}))</annotation></semantics></math></p>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi><mi>/</mi><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>+</mo><msup><mi>e</mi><mrow><mo stretchy="false" form="prefix">(</mo><mo stretchy="false" form="prefix">(</mo><mi>B</mi><mo>−</mo><mi>x</mi><mo stretchy="false" form="postfix">)</mo><mi>/</mi><mi>C</mi><mo stretchy="false" form="postfix">)</mo></mrow></msup><mo stretchy="false" form="postfix">)</mo><mo>+</mo><mo stretchy="false" form="prefix">(</mo><mo stretchy="false" form="prefix">(</mo><mi>A</mi><mn>2</mn><mo>−</mo><mi>A</mi><mo stretchy="false" form="postfix">)</mo><mi>/</mi><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>+</mo><msup><mi>e</mi><mrow><mo stretchy="false" form="prefix">(</mo><mo stretchy="false" form="prefix">(</mo><mi>B</mi><mn>2</mn><mo>−</mo><mi>x</mi><mo stretchy="false" form="postfix">)</mo><mi>/</mi><mi>C</mi><mn>2</mn><mo stretchy="false" form="postfix">)</mo></mrow></msup><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">A / (1+e^{((B-x)/C)}) + ((A2-A) /(1+e^{((B2-x)/C2)}))</annotation></semantics></math></p>
 <p>Here the parameters have the same interpretation as those in the
 logistic curve, but for the first and second component separately.</p>
 <p>This is intended for use with recover experiments, not for any data
@@ -239,7 +239,7 @@ implementation the values for A and B are not relative.</p>
 </h3>
 <p>The double logistic function here is just two combined gompertz
 functions:
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi><mo>*</mo><msup><mi>e</mi><mrow><mo stretchy="true" form="prefix">(</mo><mo>−</mo><mi>B</mi><mo>*</mo><msup><mi>e</mi><mrow><mo stretchy="true" form="prefix">(</mo><mo>−</mo><mi>C</mi><mo>*</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow></msup><mo stretchy="true" form="postfix">)</mo></mrow></msup><mo>+</mo><mrow><mo stretchy="true" form="prefix">(</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>A</mi><mn>2</mn><mo>−</mo><mi>A</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>*</mo><msup><mi>e</mi><mrow><mo stretchy="true" form="prefix">(</mo><mo>−</mo><mi>B</mi><mn>2</mn><mo>*</mo><msup><mi>e</mi><mrow><mo stretchy="true" form="prefix">(</mo><mo>−</mo><mi>C</mi><mn>2</mn><mo>*</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>−</mo><mi>B</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow></msup><mo stretchy="true" form="postfix">)</mo></mrow></msup><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">A * e^{(-B * e^{(-C*x)})} + ((A2-A) * e^{(-B2 * e^{(-C2*(x-B))})})</annotation></semantics></math></p>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi><mo>*</mo><msup><mi>e</mi><mrow><mo stretchy="false" form="prefix">(</mo><mi>−</mi><mi>B</mi><mo>*</mo><msup><mi>e</mi><mrow><mo stretchy="false" form="prefix">(</mo><mi>−</mi><mi>C</mi><mo>*</mo><mi>x</mi><mo stretchy="false" form="postfix">)</mo></mrow></msup><mo stretchy="false" form="postfix">)</mo></mrow></msup><mo>+</mo><mo stretchy="false" form="prefix">(</mo><mo stretchy="false" form="prefix">(</mo><mi>A</mi><mn>2</mn><mo>−</mo><mi>A</mi><mo stretchy="false" form="postfix">)</mo><mo>*</mo><msup><mi>e</mi><mrow><mo stretchy="false" form="prefix">(</mo><mi>−</mi><mi>B</mi><mn>2</mn><mo>*</mo><msup><mi>e</mi><mrow><mo stretchy="false" form="prefix">(</mo><mi>−</mi><mi>C</mi><mn>2</mn><mo>*</mo><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo>−</mo><mi>B</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">)</mo></mrow></msup><mo stretchy="false" form="postfix">)</mo></mrow></msup><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">A * e^{(-B * e^{(-C*x)})} + ((A2-A) * e^{(-B2 * e^{(-C2*(x-B))})})</annotation></semantics></math></p>
 <p>Here the parameters have the same interpretation as those in the
 gompertz curve, but for the first and second component separately.</p>
 <p>All the same points as with the double logistic curve apply here as

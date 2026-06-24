@@ -28,6 +28,7 @@ needs.
 Pre-work was to install R, Rstudio, and `pcvr` with dependencies.
 
 ``` r
+
 library(pcvr) # or devtools::load_all() if you are editing
 ```
 
@@ -36,6 +37,7 @@ library(pcvr) # or devtools::load_all() if you are editing
     ##   na.action.merMod lme4
 
 ``` r
+
 library(ggplot2)
 library(patchwork)
 ```
@@ -61,6 +63,7 @@ data](pcvrTutorial_igm_files/figure-html/unnamed-chunk-3-1.png)
 data](pcvrTutorial_igm_files/figure-html/unnamed-chunk-4-1.png)
 
 ``` r
+
 r1 <- range(simdf[simdf$time == 1, "y"])
 r2 <- range(simdf[simdf$time == 5, "y"])
 r3 <- range(simdf[simdf$time == 10, "y"])
@@ -108,8 +111,8 @@ Other than `mgcv` all model builders can fit 9 types of growth models.
 
 ## Supported Model Builders 2
 
-| “nls”                                            | “nlrq”                                                         | “nlme”                                                 | “mgcv”                                               | “brms”                                                                    |
-|--------------------------------------------------|----------------------------------------------------------------|--------------------------------------------------------|------------------------------------------------------|---------------------------------------------------------------------------|
+| “nls” | “nlrq” | “nlme” | “mgcv” | “brms” |
+|----|----|----|----|----|
 | [`stats::nls`](https://rdrr.io/r/stats/nls.html) | [`quantreg::nlrq`](https://rdrr.io/pkg/quantreg/man/nlrq.html) | [`nlme::nlme`](https://rdrr.io/pkg/nlme/man/nlme.html) | [`mgcv::gam`](https://rdrr.io/pkg/mgcv/man/gam.html) | [`brms::brms`](https://paulbuerkner.com/brms/reference/brms-package.html) |
 
 ## type = “nls”
@@ -232,6 +235,7 @@ For details please see the `growthSS` documentation.
 ## GAMs
 
 ``` r
+
 m <- mgcv::gam(y ~ group + s(time, by = factor(group)), data = simdf)
 start <- min(simdf$time)
 end <- max(simdf$time)
@@ -249,6 +253,7 @@ out <- gam_diff(
 ## `gam_diff` predictions
 
 ``` r
+
 out$plot[[1]] +
   geom_line(
     data = simdf,
@@ -266,6 +271,7 @@ groups.](pcvrTutorial_igm_files/figure-html/unnamed-chunk-13-1.png)
 ## `gam_diff` differences
 
 ``` r
+
 gam_diff(
   model = m, newdata = support, g1 = "a", g2 = "b",
   byVar = "group", smoothVar = "time", plot = TRUE
@@ -293,6 +299,7 @@ The layout of that formula is:
 Here we would use `y~time|id/group`
 
 ``` r
+
 head(simdf)
 ```
 
@@ -309,6 +316,7 @@ head(simdf)
 We can check that the grouping in our formula is correct with a plot.
 
 ``` r
+
 ggplot(simdf, aes(
   x = time, y = y,
   group = paste(group, id)
@@ -348,6 +356,7 @@ There are lots of ways to model a trend like that we see for sigma.
 `pcvr` offers three options through `growthSS` for nlme models.
 
 ``` r
+
 draw_power_sigma <- function(x) {
   return(12 + (x * 0.75)^(2 * 0.26))
 } # difficult to recapitulate from nlme
@@ -379,6 +388,7 @@ growthSS](pcvrTutorial_igm_files/figure-html/unnamed-chunk-18-1.png)
 Variance can be modeled as homoskedastic by group.
 
 ``` r
+
 ggplot(sigma_df, aes(x = time, y = y, group = group)) +
   geom_hline(aes(yintercept = 13.8, color = "Homoskedastic"), linetype = 5, key_glyph = draw_key_path) +
   geom_line(aes(color = group)) +
@@ -396,6 +406,7 @@ fit.](pcvrTutorial_igm_files/figure-html/unnamed-chunk-19-1.png)
 Variance can be modeled using a power of the x term.
 
 ``` r
+
 ggplot(sigma_df, aes(x = time, y = y, group = group)) +
   geom_function(fun = draw_power_sigma, aes(color = "Power"), linetype = 5) +
   geom_line(aes(color = group)) +
@@ -417,6 +428,7 @@ class=“r-plt” alt=“Showing the”power” option for sigma.” width=“70
 Variance can be modeled using a exponent of the x term.
 
 ``` r
+
 ggplot(sigma_df, aes(x = time, y = y, group = group)) +
   geom_function(fun = draw_exp_sigma, aes(color = "Exp"), linetype = 5) +
   geom_line(aes(color = group)) +
@@ -455,6 +467,7 @@ to fit a model for. By default this is 0.5, corresponding to the median.
 ## `growthSS` - nls
 
 ``` r
+
 nls_ss <- growthSS(
   model = "logistic", form = y ~ time | id / group,
   df = simdf, type = "nls"
@@ -464,6 +477,7 @@ nls_ss <- growthSS(
     ## Individual is not used with type = 'nls'.
 
 ``` r
+
 lapply(nls_ss, class)
 ```
 
@@ -491,6 +505,7 @@ lapply(nls_ss, class)
 ## `growthSS` - nlrq
 
 ``` r
+
 nlrq_ss <- growthSS(
   model = "logistic", form = y ~ time | id / group,
   df = simdf, type = "nlrq",
@@ -501,6 +516,7 @@ nlrq_ss <- growthSS(
     ## Individual is not used with type = 'nlrq'.
 
 ``` r
+
 lapply(nls_ss, class)
 ```
 
@@ -528,6 +544,7 @@ lapply(nls_ss, class)
 ## `growthSS` - nlme
 
 ``` r
+
 nlme_ss <- growthSS(
   model = "logistic", form = y ~ time | id / group,
   df = simdf, sigma = "power", type = "nlme"
@@ -538,6 +555,7 @@ names(nlme_ss)
     ## [1] "formula"  "start"    "df"       "pcvrForm" "type"     "model"    "call"
 
 ``` r
+
 names(nlme_ss$formula)
 ```
 
@@ -546,6 +564,7 @@ names(nlme_ss$formula)
 ## `growthSS` - mgcv
 
 ``` r
+
 mgcv_ss <- growthSS(
   model = "gam", form = y ~ time | id / group,
   df = simdf, type = "mgcv"
@@ -555,6 +574,7 @@ mgcv_ss <- growthSS(
     ## Individual is not used with type = 'gam'.
 
 ``` r
+
 lapply(mgcv_ss, class)
 ```
 
@@ -579,6 +599,7 @@ lapply(mgcv_ss, class)
 ## `growthSS` - survival models
 
 ``` r
+
 surv_ss <- growthSS(
   model = "survival weibull",
   form = y > 100 ~ time | id / group,
@@ -611,6 +632,7 @@ lapply(surv_ss, class)
 ## `growthSS` - survival models
 
 ``` r
+
 surv_ss <- growthSS(
   model = "survival weibull",
   form = y > 100 ~ time | id / group,
@@ -656,6 +678,7 @@ With non-brms models the steps to fit a model specified by `growthSS`
 are very simple and can be left to `fitGrowth`.
 
 ``` r
+
 nls_fit <- fitGrowth(nls_ss)
 nlrq_fit <- fitGrowth(nlrq_ss, cores = 4)
 nlme_fit <- fitGrowth(nlme_ss)
@@ -668,18 +691,19 @@ surv_fit <- fitGrowth(surv_ss)
 Additional arguments can be passed to `fitGrowth` and are used as
 follows:
 
-| type | …                                                                                                  |
-|------|----------------------------------------------------------------------------------------------------|
-| nls  | passed to [`stats::nls`](https://rdrr.io/r/stats/nls.html)                                         |
+| type | … |
+|----|----|
+| nls | passed to [`stats::nls`](https://rdrr.io/r/stats/nls.html) |
 | nlrq | cores to run in parallel, passed to [`quantreg::nlrq`](https://rdrr.io/pkg/quantreg/man/nlrq.html) |
-| nlme | passed to [`nlme::nlmeControl`](https://rdrr.io/pkg/nlme/man/nlmeControl.html)                     |
-| mgcv | passed to [`mgcv::gam`](https://rdrr.io/pkg/mgcv/man/gam.html)                                     |
+| nlme | passed to [`nlme::nlmeControl`](https://rdrr.io/pkg/nlme/man/nlmeControl.html) |
+| mgcv | passed to [`mgcv::gam`](https://rdrr.io/pkg/mgcv/man/gam.html) |
 
 ## `growthPlot`
 
 Models fit by `fitGrowth` can be visualized using `growthPlot`.
 
 ``` r
+
 p_nls <- growthPlot(nls_fit, form = nls_ss$pcvrForm, df = nls_ss$df)
 p_nlrq <- growthPlot(nlrq_fit, form = nlrq_ss$pcvrForm, df = nlrq_ss$df)
 p_nlme <- growthPlot(nlme_fit, form = nlme_ss$pcvrForm, df = nlme_ss$df)
@@ -690,6 +714,7 @@ p_surv <- growthPlot(surv_fit, form = surv_ss$pcvrForm, df = surv_ss$df)
 ## `growthPlot` - nls
 
 ``` r
+
 p_nls
 ```
 
@@ -699,6 +724,7 @@ function.](pcvrTutorial_igm_files/figure-html/unnamed-chunk-30-1.png)
 ## `growthPlot` - nlrq
 
 ``` r
+
 p_nlrq
 ```
 
@@ -708,6 +734,7 @@ function.](pcvrTutorial_igm_files/figure-html/unnamed-chunk-31-1.png)
 ## `growthPlot` - nlme
 
 ``` r
+
 p_nlme
 ```
 
@@ -717,6 +744,7 @@ function.](pcvrTutorial_igm_files/figure-html/unnamed-chunk-32-1.png)
 ## `growthPlot` - mgcv
 
 ``` r
+
 p_mgcv
 ```
 
@@ -726,6 +754,7 @@ function.](pcvrTutorial_igm_files/figure-html/unnamed-chunk-33-1.png)
 ## `growthPlot` - surv
 
 ``` r
+
 p_surv
 ```
 
@@ -744,6 +773,7 @@ available using `testGrowth`.
 ## `testGrowth` - nls
 
 ``` r
+
 testGrowth(nls_ss, nls_fit, test = "A")$anova
 ```
 
@@ -760,6 +790,7 @@ testGrowth(nls_ss, nls_fit, test = "A")$anova
 ## `testGrowth` - nls 2
 
 ``` r
+
 testGrowth(nls_ss, nls_fit, test = list(
   "A1 - A2",
   "B1 - (B2*1.25)",
@@ -778,6 +809,7 @@ Here we only print out the comparison for the model of the 49th
 percentile, but all taus are returned.
 
 ``` r
+
 testGrowth(nlrq_ss, nlrq_fit, test = "A")[[13]]
 ```
 
@@ -792,6 +824,7 @@ testGrowth(nlrq_ss, nlrq_fit, test = "A")[[13]]
 ## `testGrowth` - nlme
 
 ``` r
+
 testGrowth(nlme_ss, nlme_fit, test = "A")$anova
 ```
 
@@ -802,6 +835,7 @@ testGrowth(nlme_ss, nlme_fit, test = "A")$anova
 ## `testGrowth` - nlme 2
 
 ``` r
+
 testGrowth(nls_ss, nlme_fit, test = list(
   "A.groupa - A.groupb",
   "B.groupa - (B.groupb*1.25)",
@@ -819,6 +853,7 @@ testGrowth(nls_ss, nlme_fit, test = list(
 Due to GAMs nature we cannot test parameters individually.
 
 ``` r
+
 testGrowth(mgcv_ss, mgcv_fit)$anova
 ```
 
@@ -839,6 +874,7 @@ models are tested using
 [`survival::survdiff`](https://rdrr.io/pkg/survival/man/survdiff.html)
 
 ``` r
+
 testGrowth(surv_ss, surv_fit)
 ```
 

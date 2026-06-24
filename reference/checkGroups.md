@@ -28,6 +28,7 @@ with code to start checking the duplicates in your data.
 ## Examples
 
 ``` r
+
 df <- growthSim("linear",
   n = 10, t = 10,
   params = list("A" = c(2, 1.5))

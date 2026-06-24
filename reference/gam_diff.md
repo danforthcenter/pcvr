@@ -77,6 +77,7 @@ A dataframe or a list containing a ggplot and a dataframe
 ## Examples
 
 ``` r
+
 ex <- pcvr::growthSim("logistic",
   n = 20, t = 25,
   params = list(

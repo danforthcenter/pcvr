@@ -463,6 +463,7 @@ multi-value trait equivalent.
 
 ``` r
 
+
 simdf <- growthSim("logistic",
   n = 20, t = 25,
   params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
@@ -511,35 +512,6 @@ ss$initfun()
 #> [1] 2.9719342 0.2303612
 #> 
 # the next step would typically be compiling/fitting the model
-# here we use very few chains and very few iterations for speed, but more of both is better.
-# \donttest{
-fit_test <- fitGrowth(ss,
-  iter = 500, cores = 1, chains = 1, backend = "cmdstanr",
-  control = list(adapt_delta = 0.999, max_treedepth = 20)
-)
-#> Start sampling
-#> Init values were only set for a subset of parameters. 
-#> Missing init values for the following parameters:
-#> Intercept_sigma, bs_sigma, zs_sigma_1_1, sds_sigma_1, zs_sigma_2_1, sds_sigma_2, Intercept_nu
-#> 
-#> To disable this message use options(cmdstanr_warn_inits = FALSE).
-#> Running MCMC with 1 chain...
-#> 
-#> Chain 1 Iteration:   1 / 500 [  0%]  (Warmup) 
-#> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: student_t_lpdf: Location parameter[1] is inf, but must be finite! (in '/tmp/RtmpARnZuJ/model-206e80ae87b.stan', line 131, column 4 to column 48)
-#> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
-#> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
-#> Chain 1 
-#> Chain 1 Iteration: 100 / 500 [ 20%]  (Warmup) 
-#> Chain 1 Iteration: 200 / 500 [ 40%]  (Warmup) 
-#> Chain 1 Iteration: 251 / 500 [ 50%]  (Sampling) 
-#> Chain 1 Iteration: 350 / 500 [ 70%]  (Sampling) 
-#> Chain 1 Iteration: 450 / 500 [ 90%]  (Sampling) 
-#> Chain 1 Iteration: 500 / 500 [100%]  (Sampling) 
-#> Chain 1 finished in 96.4 seconds.
-# }
-
 
 # formulas and priors will look different if there is only one group in the data
 

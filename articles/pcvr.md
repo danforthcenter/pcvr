@@ -12,6 +12,7 @@
 ```
 
 ``` r
+
 library(pcvr)
 ```
 
@@ -20,6 +21,7 @@ library(pcvr)
     ##   na.action.merMod lme4
 
 ``` r
+
 library(data.table) # for fread
 ```
 
@@ -31,6 +33,7 @@ library(data.table) # for fread
     ##     %notin%
 
 ``` r
+
 library(ggplot2)
 library(patchwork) # for easy ggplot manipulation/combination
 ```
@@ -61,6 +64,7 @@ Installation of `pcvr` from github is possible with the `remotes` or
 reinstalling packages.
 
 ``` r
+
 devtools::install_github("joshqsumner/pcvr", build_vignettes = TRUE)
 library(pcvr)
 ```
@@ -83,16 +87,19 @@ to demonstrate syntax and that you are not meant to run locally if
 following along. Those are identified by style:
 
 ``` r
+
 complicatedFunction("syntax") # do not run this style
 ```
 
 ``` r
+
 1 + 1 # run this style
 ```
 
     ## [1] 2
 
 ``` r
+
 support <- seq(0, 1, 0.0001) # this style is simulated data
 plot(support, dbeta(support, 5, 5), type = "l", main = "simulated example")
 ```
@@ -109,6 +116,7 @@ simulated data picks up roughly where the `Reading pcv data` article
 ends.
 
 ``` r
+
 set.seed(123)
 d <- growthSim("logistic",
   n = 30, t = 25,
@@ -178,6 +186,7 @@ arguments to [`lme4::lmer`](https://rdrr.io/pkg/lme4/man/lmer.html)
 through additional arguments if desired.
 
 ``` r
+
 frem(sv_ag,
   des = c("genotype", "fertilizer"),
   phenotypes = c("area_cm2", "height_cm", "width_cm", "hue_circular_mean_degrees"),
@@ -204,6 +213,7 @@ the course of the experiment. We could also specify a set of times
 particular timeframe.
 
 ``` r
+
 frem(sv_ag,
   des = c("genotype", "fertilizer"),
   phenotypes = c("area_cm2", "height_cm", "width_cm"),
@@ -236,6 +246,7 @@ Trendlines help us decide what next steps make the most sense and give a
 general impression of which conditions yielded healthier plants.
 
 ``` r
+
 ggplot(sv_ag, aes(
   x = DAS, y = area_cm2, group = interaction(genotype, fertilizer, lex.order = TRUE),
   color = genotype
@@ -272,6 +283,7 @@ tutorial](https://github.com/danforthcenter/pcvr/tree/main/tutorials/pcvrTutoria
 for details on usage and available options.
 
 ``` r
+
 mo17_area <- sv_ag[sv_ag$genotype == "Mo17" & sv_ag$DAS > 18 & sv_ag$fertilizer == 100, "area_cm2"]
 b73_area <- sv_ag[sv_ag$genotype == "B73" & sv_ag$DAS > 18 & sv_ag$fertilizer == 100, "area_cm2"]
 
@@ -297,6 +309,7 @@ area_res_t
     ## 1 1.440218    -1.437485      4.270525         1
 
 ``` r
+
 plot(area_res_t)
 ```
 
@@ -322,6 +335,7 @@ it makes more sense to use the model to assess relative tolerance rather
 than transforming data into a different unit.
 
 ``` r
+
 rt <- relativeTolerance(sv_ag,
   phenotypes = c("area_cm2", "height_cm"),
   grouping = c("fertilizer", "genotype", "DAS"), control = "fertilizer", controlGroup = "100"
@@ -347,6 +361,7 @@ might subset to look at something more specific, where we see some odd
 products of the plants germinating on the bellwether system.
 
 ``` r
+
 pd <- rt[rt$phenotype == "area_cm2" & rt$DAS %in% c(5:19) & rt$fertilizer == "0", ]
 pd$upper_2se <- pd$mu_rel + 2 * pd$se_rel
 pd$lower_2se <- pd$mu_rel - 2 * pd$se_rel
@@ -371,6 +386,7 @@ effect.](pcvr_files/figure-html/unnamed-chunk-14-1.png)
 Sometimes we might want to use the cumulative difference over time.
 
 ``` r
+
 cp <- cumulativePheno(sv_ag, phenotypes = c("area_cm2", "height_cm"),
                       group = c("genotype", "fertilizer", "barcode"), timeCol = "DAS")
 ```
@@ -378,6 +394,7 @@ cp <- cumulativePheno(sv_ag, phenotypes = c("area_cm2", "height_cm"),
 We can check that this worked correctly with trend lines:
 
 ``` r
+
 ggplot(cp, aes(x = DAS, y = area_cm2_csum, color = genotype,
                group = interaction(genotype, barcode))) +
   facet_wrap(~ factor(fertilizer, levels = c("0", "50", "100"))) +
@@ -418,6 +435,7 @@ Based on literature and observed trends there are 13 growth models that
 the same way.
 
 ``` r
+
 simdf <- growthSim("logistic",
   n = 20, t = 25,
   params = list("A" = c(200, 160), "B" = c(13, 11), "C" = c(3, 3.5))
@@ -546,6 +564,7 @@ We can check the priors made by `growthSS` with the `plotPrior`
 function, which can take a list of priors or the `growthSS` output.
 
 ``` r
+
 priors <- list("A" = 130, "B" = 10, "C" = 0.2)
 priorPlots <- plotPrior(priors)
 priorPlots[[1]] / priorPlots[[2]] / priorPlots[[3]]
@@ -569,6 +588,7 @@ an iterative process is recommended if you are learning about your
 growth model.
 
 ``` r
+
 twoPriors <- list("A" = c(100, 130), "B" = c(6, 12), "C" = c(0.5, 0.25))
 plotPrior(twoPriors, "gompertz", n = 100)[[1]]
 ```
@@ -583,6 +603,7 @@ Now we’re ready to define the necessary variables in our data and use
 the `growthSS` function.
 
 ``` r
+
 sv_ag$group <- interaction(sv_ag$fertilizer, sv_ag$genotype)
 ```
 
@@ -597,6 +618,7 @@ install `pcvr` from github with `dependencies=T` then `cmdstanr` and
 `brms` will be installed and ready to use.
 
 ``` r
+
 library(brms)
 library(cmdstanr)
 cmdstanr::install_cmdstan()
@@ -607,6 +629,7 @@ expect to see for a plant on the bellwether system. In general the
 example priors
 
 ``` r
+
 ss <- growthSS(
   model = "gompertz", form = area_cm2 ~ DAS | barcode / group, sigma = "spline", df = sv_ag,
   start = list("A" = 130, "B" = 10, "C" = 0.5), type = "brms"
@@ -625,6 +648,7 @@ last plot of the data and make sure you have everything defined
 correctly.
 
 ``` r
+
 ggplot(sv_ag, aes(x = DAS, y = area_cm2, group = interaction(group, barcode),
                   color = group)) +
   geom_line() +
@@ -650,6 +674,7 @@ to [`brms::brm`](https://paulbuerkner.com/brms/reference/brm.html) can
 still be specified, a few examples of which are shown here.
 
 ``` r
+
 fit <- fitGrowth(ss,
   iter = 1000, cores = 2, chains = 2, backend = "cmdstanr",
   control = list(adapt_delta = 0.999, max_treedepth = 20)
@@ -665,6 +690,7 @@ are only a picture of the output from `growthPlot`. The code is present
 to run this locally if you have brms installed and choose to.
 
 ``` r
+
 growthPlot(fit, form = area_cm2 ~ DAS | barcode / group, df = ss$df) +
   labs(y = expression("Area" ~ "(cm"^2 ~ ")"))
 ```
@@ -688,6 +714,7 @@ function called `brmViolin` to visualize posterior distributions and the
 posterior probability of some hypotheses associated with them.
 
 ``` r
+
 brmViolin(fit, ss, ".../A_group0.B73 > 1.05") +
   ggplot2::theme(axis.text.x.bottom = ggplot2::element_text(angle = 90))
 ```
@@ -721,6 +748,7 @@ As an example, a very simple comparison of the circular mean of Hue here
 will show our treatment effect in this data.
 
 ``` r
+
 ggplot(sv_ag[sv_ag$DAS == 18, ], aes(
   x = fertilizer, y = hue_circular_mean_degrees,
   fill = as.character(fertilizer)
@@ -740,6 +768,7 @@ with multi value traits later
 on.](pcvr_files/figure-html/unnamed-chunk-27-1.png)
 
 ``` r
+
 set.seed(123)
 dists <- stats::setNames(lapply(runif(12, 50, 60), function(i) {
   return(list(mean = i, sd = 15))
@@ -773,6 +802,7 @@ for the hue colorspace. Joyplots can be made with long or wide
 multi-value traits.
 
 ``` r
+
 p <- pcv.joyplot(hue_wide[hue_wide$DAS %in% c(5, 10, 15), ],
   index = "hue_frequencies", group = c("fertilizer", "genotype"),
   y = "DAS", id = NULL
@@ -791,6 +821,7 @@ color histograms assuming a lognormal distribution and find that they
 are very similar in this parameterization.
 
 ``` r
+
 mo17_sample <- hue_wide[
   hue_wide$genotype == "Mo17" & hue_wide$DAS > 18 & hue_wide$fertilizer == 100,
   grepl("hue_freq", colnames(hue_wide))
@@ -825,6 +856,7 @@ hue_res_ln
     ## 1 0.627561   -0.4515416      1.688398         1
 
 ``` r
+
 plot(hue_res_ln)
 ```
 
@@ -840,6 +872,7 @@ metadata. Here our simulated data does has a very deterministic pattern
 due.
 
 ``` r
+
 pcadf(hue_wide, cols = "hue_frequencies", color = "genotype", returnData = FALSE) +
   facet_wrap(~ factor(fertilizer, levels = c("0", "50", "100")))
 ```
@@ -870,6 +903,7 @@ clunky for comparing to the unimodal or uniform distributions. The
 not share a common parameterization. Instead, we can use EMD.
 
 ``` r
+
 set.seed(123)
 
 simFreqs <- function(vec, group) {
@@ -925,6 +959,7 @@ images and see that we do have some trends shown in the resulting
 heatmap.
 
 ``` r
+
 sim_emd <- pcv.emd(
   df = sim_df, cols = "sim_", reorder = c("group"),
   mat = FALSE, plot = TRUE, parallel = 1, raiseError = TRUE
@@ -934,6 +969,7 @@ sim_emd <- pcv.emd(
     ## Estimated time of calculation is roughly 3.1 seconds using 1 cores in parallel.
 
 ``` r
+
 sim_emd$plot
 ```
 
@@ -945,6 +981,7 @@ Now we can filter edge strength during our network building step for EMD
 \> 0.5, and plot our network.
 
 ``` r
+
 n <- pcv.net(sim_emd$data, filter = 0.5)
 net.plot(n, fill = "group")
 ```
@@ -963,6 +1000,7 @@ other. Here we pass 0.5 as a string, which tells `pcv.net` to use the
 top 50 percent of EMD values instead of EMD values \> 0.5.
 
 ``` r
+
 n <- pcv.net(sim_emd$data, filter = "0.5")
 net.plot(n, fill = "group")
 ```
@@ -980,6 +1018,7 @@ our other four generating distributions.
 Here is an example of how we might use hue data.
 
 ``` r
+
 EMD <- pcv.emd(
   df = hue_wide[hue_wide$DAS %in% c(5, 12, 19), ], cols = "hue_frequencies",
   reorder = c("fertilizer", "genotype", "DAS"),
@@ -988,7 +1027,7 @@ EMD <- pcv.emd(
 ```
 
 EMD can get very heavy with large datasets. For a recent lemnatech
-dataset using only the images from every 5th day there were $6332^{2}$ =
+dataset using only the images from every 5th day there were $`6332^2`$ =
 40,094,224 pairwise EMD values. In long format that’s a 40 million row
 dataframe, which is unwieldy. To get around this problem we might decide
 to use the hue circular mean as a single value trait or to aggregate
@@ -1004,6 +1043,7 @@ summarized into 1 histogram. If there are equal or fewer images as the
 data are rescaled.
 
 ``` r
+
 hue_ag1 <- mv_ag(df = hue_wide, group = c("DAS", "genotype", "fertilizer"), n_per_group = 2)
 dim(hue_ag1)
 ```
@@ -1011,6 +1051,7 @@ dim(hue_ag1)
     ## [1] 600 183
 
 ``` r
+
 hue_ag2 <- mv_ag(hue_wide, group = c("DAS", "genotype", "fertilizer"), n_per_group = 1)
 dim(hue_ag2)
 ```
@@ -1024,11 +1065,13 @@ unfamiliar with distance matrix based analysis. Here we represent our
 distances as a network to help use the results.
 
 ``` r
+
 set.seed(456)
 net <- pcv.net(EMD$data, meta = c("fertilizer", "genotype", "DAS"), filter = 0.5)
 ```
 
 ``` r
+
 net.plot(net, fill = "DAS", shape = "fertilizer", size = 2)
 ```
 

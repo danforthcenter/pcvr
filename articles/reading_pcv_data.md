@@ -3,6 +3,7 @@
 ## Example Bellwether (Lemnatech) Workflow
 
 ``` r
+
 library(pcvr)
 ```
 
@@ -11,6 +12,7 @@ library(pcvr)
     ##   na.action.merMod lme4
 
 ``` r
+
 library(ggplot2)
 library(data.table)
 ```
@@ -65,6 +67,7 @@ The single value traits can be read in with `read.pcv`, here using
 speed.
 
 ``` r
+
 base_url <- "https://raw.githubusercontent.com/joshqsumner/pcvrTestData/main/"
 base_url2 <- "https://media.githubusercontent.com/media/joshqsumner/pcvrTestData/main/"
 sv <- read.pcv(
@@ -78,6 +81,7 @@ parse metadata from your barcodes. Metadata key files will generally
 look and be used like this:
 
 ``` r
+
 key <- read.csv(paste0(base_url, "smallPhenotyperRun_key.csv"))
 head(key)
 ```
@@ -91,6 +95,7 @@ head(key)
     ## 6 Em005ZDC130864     Mo17          0
 
 ``` r
+
 sv <- merge(sv, key, by = "barcode")
 table(sv$genotype, sv$fertilizer)
 ```
@@ -106,6 +111,7 @@ If we did not have a key file then we would parse our barcodes doing
 something like this:
 
 ``` r
+
 genotype <- substr(sv$barcode, 3, 5)
 genotype <- ifelse(genotype == "002", "B73",
   ifelse(genotype == "003", "W605S",
@@ -134,6 +140,7 @@ know the size of the color card chips in some real unit and color
 correct in plantCV so that the color chip measurements are returned.
 
 ``` r
+
 chip_size_px <- mean(c(sv$median_color_chip_height_median, sv$median_color_chip_width_median)) # ~52
 
 px_per_cm <- chip_size_px / 1.2 # ~ 43.5
@@ -153,6 +160,7 @@ take a few minutes but allows the entirely workflow to be documented in
 one R file.
 
 ``` r
+
 example <- read.pcv("prohibitivelyLargeFile.csv",
   filters = list(
     "trait in area_pixels, area_above_reference_pixels, area_below_reference_pixels",
@@ -171,6 +179,7 @@ function has been somewhat simplified but it can still be used for these
 “PlantCV 4.x” legacy style data.
 
 ``` r
+
 sv <- read.pcv(paste0(base_url2, "smallPhenotyperRun.csv"),
   mode = "wide",
   reader = "fread"
@@ -209,12 +218,13 @@ data and still has some added benefits the reasons to use it in place of
 
 Here we have examples of reading in various amounts of plantCV 3
 bellwether data. In the final example we also list a conversion to take
-area from pixels to $\text{cm}^{2}$ for the 5MP camera that was used
+area from pixels to $`\text{cm}^2`$ for the 5MP camera that was used
 prior to 2023. Note that the conversion would change for a different
 camera such as the current 18MP camera. It is a good idea to check your
 color chip sizes if you are not sure about the appropriate conversion.
 
 ``` r
+
 onlyPhenos <- read.pcv.3(file = paste0(base_url, "pcv3Phenos.csv"), metaCol = NULL)
 colnames(onlyPhenos)
 
@@ -247,28 +257,11 @@ with a planting delay of 0 DAP and DAE will be the same, but both are
 still created for the purpose of the example.
 
 ``` r
+
 out <- pcv.time(sv,
   plantingDelay = 0, phenotype = "area_pixels", cutoff = 10,
   timeCol = "timestamp", group = c("barcode", "rotation"), plot = TRUE
 )
-out$plot
-```
-
-    ## [[1]]
-
-![](reading_pcv_data_files/figure-html/unnamed-chunk-9-1.png)
-
-    ## 
-    ## [[2]]
-
-![](reading_pcv_data_files/figure-html/unnamed-chunk-9-2.png)
-
-    ## 
-    ## [[3]]
-
-![](reading_pcv_data_files/figure-html/unnamed-chunk-9-3.png)
-
-``` r
 sv <- out$data
 dim(sv)
 ```
@@ -285,6 +278,7 @@ Before moving on we’ll also check the grouping in our data. Here we see
 that we have lots of plants with more than one image per day.
 
 ``` r
+
 checkGroups(sv, c("DAS", "barcode", "rotation", "genotype", "fertilizer"))
 ```
 
@@ -297,6 +291,7 @@ people prefer a sum. Either way is fine. Here we also remove the DAE and
 DAP columns since we will not be using them.
 
 ``` r
+
 phenotypes <- colnames(sv)[c(19:35, 43:45, 48:49)]
 phenoForm <- paste0("cbind(", paste0(phenotypes, collapse = ", "), ")")
 groupForm <- "DAS+timestamp+barcode+genotype+fertilizer"
@@ -316,6 +311,7 @@ are removed as outliers. The plot shows removed data points in red,
 although here that is hard to see.
 
 ``` r
+
 out <- pcv.outliers(
   df = sv_ag_with_outliers, phenotype = "area_pixels",
   group = c("DAS", "genotype", "fertilizer"), plotgroup = c("barcode")
@@ -326,13 +322,16 @@ out <- pcv.outliers(
     ## 16 groupings had all observations removed
 
 ``` r
+
 sv_ag <- out$data
 out$plot
 ```
 
-![](reading_pcv_data_files/figure-html/unnamed-chunk-12-1.png)
+![Plotting
+outliers](reading_pcv_data_files/figure-html/unnamed-chunk-12-1.png)
 
 ``` r
+
 dim(sv_ag)
 ```
 
@@ -342,6 +341,7 @@ It is also useful to check our grouping assumptions again, here we see
 that there are some plants with multiple images from a single day.
 
 ``` r
+
 checkGroups(sv_ag, c("DAS", "barcode", "genotype", "fertilizer"))
 ```
 
@@ -353,12 +353,14 @@ We might also want to check the watering data, which can be read easily
 from json with `pcv.water`.
 
 ``` r
+
 water <- pcv.water(paste0(base_url, "metadata.json"))
 ```
 
     ## Using the first watering time, 2023-04-13 23:28:17.58, as beginning of experiment to assign DAS
 
 ``` r
+
 water$genotype <- substr(water$barcode, 3, 5)
 water$genotype <- ifelse(water$genotype == "002", "B73",
   ifelse(water$genotype == "003", "W605S",
@@ -382,7 +384,8 @@ ggplot(water[water$weight_after != -1, ], aes(
   theme(legend.position = "bottom")
 ```
 
-![](reading_pcv_data_files/figure-html/unnamed-chunk-14-1.png)
+![Plotting watering
+data](reading_pcv_data_files/figure-html/unnamed-chunk-14-1.png)
 
 A common use for watering data is to look at water use efficiency (WUE).
 Here we can calculate an approximation of WUE based on the change in
@@ -391,6 +394,7 @@ that the plants in this example are very young and as such the data in
 this example is dominated by noise.
 
 ``` r
+
 test <- pwue(df = sv_ag, w = water, pheno = "area_pixels", time = "timestamp", id = "barcode")
 
 ggplot(test, aes(x = DAS, y = pWUE, color = genotype, group = barcode)) +
@@ -406,13 +410,15 @@ ggplot(test, aes(x = DAS, y = pWUE, color = genotype, group = barcode)) +
     ## Warning: Removed 86 rows containing missing values or values outside the scale range
     ## (`geom_line()`).
 
-![](reading_pcv_data_files/figure-html/unnamed-chunk-15-1.png)
+![Plotting Pseudo water use
+efficiency](reading_pcv_data_files/figure-html/unnamed-chunk-15-1.png)
 
 ### Multi Value Traits
 
 We take similar steps in working with multi-value trait data.
 
 ``` r
+
 hue_wide <- read.pcv(paste0(base_url2, "pcv4-multi-value-traits.csv"),
   mode = "wide", reader = "fread"
 )

@@ -90,6 +90,7 @@ multi-value traits.
 ## Examples
 
 ``` r
+
 s1 <- mvSim(
   dists = list(runif = list(min = 15, max = 150)),
   n_samples = 10,

@@ -19,6 +19,7 @@ installed then please install Rstudio using the instructions
 A stable version of `pcvr` can be installed from CRAN using:
 
 ``` r
+
 install.packages("pcvr")
 ```
 
@@ -29,6 +30,7 @@ Alternatively the development version can be installed from github using
 `remotes` from CRAN:
 
 ``` r
+
 install.packages("devtools")
 library(devtools)
 ```
@@ -46,6 +48,7 @@ site](https://danforthcenter.github.io/pcvr/ "pkgdown site") for online
 docs.
 
 ``` r
+
 devtools::install_github("danforthcenter/pcvr")
 ```
 
@@ -56,6 +59,7 @@ where to find it try running these 3 lines to load the package and
 generate a plot of some simulated data.
 
 ``` r
+
 library(pcvr)
 ```
 
@@ -64,6 +68,7 @@ library(pcvr)
     ##   na.action.merMod lme4
 
 ``` r
+
 priors <- list("A" = c(100, 130), "B" = c(10, 8), "C" = c(0.2, 0.1))
 plotPrior(priors, "gompertz")[[1]]
 ```
@@ -83,6 +88,7 @@ squares regression (PLSR). You can install all “Suggested” packages as
 well by using:
 
 ``` r
+
 devtools::install_github("danforthcenter/pcvr", dependencies = TRUE)
 ```
 
@@ -90,6 +96,7 @@ Alternatively you can just install `brms` and `cmdstanr` using
 instructions below.
 
 ``` r
+
 install.packages("brms")
 ```
 
@@ -99,6 +106,7 @@ using C++, so you need an interface to make R communicate with Stan/C++,
 better features at this time.
 
 ``` r
+
 install.packages("cmdstanr", repos = c("https://mc-stan.org/r-packages/", getOption("repos")))
 cmdstanr::install_cmdstan()
 ```
@@ -108,10 +116,12 @@ cmdstanr::install_cmdstan()
 A simple model can be used to test the `cmdstanr` installation:
 
 ``` r
+
 ?cmdstanr::cmdstanr_example
 ```
 
 ``` r
+
 cmdstanr::cmdstanr_example()
 ```
 
@@ -121,12 +131,14 @@ And now we can test the `brms` installation. Here we use a toy model of
 the mtcars dataset then a pcvr example.
 
 ``` r
+
 library(brms)
 data(mtcars)
 m <- brm(mpg ~ gear + hp, iter = 500, data = mtcars, backend = "cmdstanr")
 ```
 
 ``` r
+
 simdf <- growthSim("linear",
   n = 20, t = 25,
   params = list("A" = c(1.1, 0.95))
@@ -150,11 +162,13 @@ to other designs as well. The vignette is not automatically built, but
 can be built on installation:
 
 ``` r
+
 devtools::install_github("danforthcenter/pcvr", build_vignettes = TRUE)
 ```
 
 Now check the available vignettes in your browser with `browseVignettes`
 
 ``` r
+
 browseVignettes("pcvr")
 ```
