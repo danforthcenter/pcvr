@@ -268,13 +268,13 @@
 #'
 
 growthSim <- function(
-    model = c(
-      "logistic", "logistic4", "logistic5", "gompertz", "double logistic", "double gompertz",
-      "monomolecular", "exponential", "linear", "power law", "frechet", "weibull", "gumbel",
-      "logarithmic", "bragg", "lorentz", "beta"
-    ),
-    n = 20, t = 25, params = list(), D = 0,
-    returnParams = FALSE) {
+  model = c(
+    "logistic", "logistic4", "logistic5", "gompertz", "double logistic", "double gompertz",
+    "monomolecular", "exponential", "linear", "power law", "frechet", "weibull", "gumbel",
+    "logarithmic", "bragg", "lorentz", "beta"
+  ),
+  n = 20, t = 25, params = list(), D = 0,
+  returnParams = FALSE) {
   if (grepl("count:", model)) {
     COUNT <- TRUE
     model <- trimws(gsub("count:", "", model))
@@ -388,7 +388,7 @@ growthSim <- function(
     names(iterNoise) <- sub(paste0(iterModelFindParams, u, "|Point."), "", names(iterNoise))
 
     iter_data <- do.call(rbind, lapply(1:n, function(i) {
-      if (is.null(nextChangepoints) | u == length(component_models)) {
+      if (is.null(nextChangepoints) || u == length(component_models)) {
         iterChangepointsRand <- rep(t, length(iterParams[[1]]))
       } else {
         iterChangepointsRand <- lapply(nextChangepoints, function(fc) {

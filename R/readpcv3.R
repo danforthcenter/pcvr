@@ -72,15 +72,12 @@
 #' @export
 
 read.pcv.3 <- function(
-    file = NULL,
-    snapshotFile = NULL,
-    designFile = NULL,
-    metaCol = "meta",
-    metaForm = "vis_view_angle_zoom_horizontal_gain_exposure_v_new_n_rep",
-    joinSnapshot = "id",
-    conversions = NULL,
-    mode = "long",
-    ...) {
+  file = NULL, snapshotFile = NULL, designFile = NULL,
+  metaCol = "meta",
+  metaForm = "vis_view_angle_zoom_horizontal_gain_exposure_v_new_n_rep",
+  joinSnapshot = "id", conversions = NULL,
+  mode = "long", ...) {
+
   phenos <- read.pcv(filepath = file, mode = mode, ...)
 
   #* `parse metadata`

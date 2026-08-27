@@ -16,3 +16,4 @@ tools/lib
 tools/*.html
 \#\*R:scripts\*\#
 demon.org
+tools/coverage-test-failures.zip

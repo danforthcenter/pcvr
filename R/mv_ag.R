@@ -142,7 +142,7 @@ mv_ag <- function(df, group, mvCols = "frequencies", n_per_group = 1, outRows = 
     }
     rownames(mv) <- seq_len(nrow(mv))
     nms <- sample(rownames(mv), nrow(mv), replace = FALSE)
-    if (nrow(mv) > 1 & iter_n > 1) {
+    if (nrow(mv) > 1 && iter_n > 1) {
       index <- cut(seq_len(nrow(mv)), iter_n)
       nms_split <- split(nms, index)
     } else {
@@ -199,7 +199,7 @@ mv_ag <- function(df, group, mvCols = "frequencies", n_per_group = 1, outRows = 
       return(id_d)
     }))
     #* separate IDS into groups
-    if (length(IDS) > 1 & iter_n > 1) {
+    if (length(IDS) > 1 && iter_n > 1) {
       index <- cut(seq_along(IDS), iter_n)
       ids_split <- split(IDS, index)
     } else {

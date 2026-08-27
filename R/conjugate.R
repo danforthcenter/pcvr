@@ -369,7 +369,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
     sample <- samplesList[[i]]
     prior <- priors[[i]]
     #* `Check sample class`
-    if (is.matrix(sample) | is.data.frame(sample)) {
+    if (is.matrix(sample) || is.data.frame(sample)) {
       vec_suffix <- "mv"
       sample <- .mvSampleFormatting(sample)
     } else if (is.vector(sample)) {
@@ -531,7 +531,7 @@ conjugate <- function(s1 = NULL, s2 = NULL,
     sample <- samplesList[[i]]
     prior <- priors[[i]]
     #* `Check sample class`
-    if (is.matrix(sample) | is.data.frame(sample)) {
+    if (is.matrix(sample) || is.data.frame(sample)) {
       vec <- FALSE
     } else if (is.vector(sample)) {
       vec <- TRUE
