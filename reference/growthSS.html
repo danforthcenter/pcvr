@@ -182,6 +182,8 @@ Note that rows with NA or infinite values in x, y, or hierarchical predictors ar
 If this is not provided then starting values are picked with <code><a href="https://rdrr.io/r/stats/selfStart.html" class="external-link">stats::selfStart</a></code>.
  When type = "brms" these should be provided and are treated as the means of
   lognormal priors for all growth model parameters and T_5(mu, 3) priors for changepoint parameters.
+  Constant priors can be specified by providing the value as a string
+  (ie, "3" for a constant 3 value for that variable).
   This is done because the values are strictly positive and the lognormal distribution
   is easily interpreted. The changepoint priors are T distributions for symmetry, 5 DF
   having been chosen for heavy but not unmanageable tails.
@@ -514,7 +516,7 @@ for the multi-value trait equivalent.</p></div>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>

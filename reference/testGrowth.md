@@ -120,6 +120,6 @@ coef(fit2) # check options for contrast testing
 #>        A1        A2        B1        B2        C1        C2 
 #> 201.68366 165.22719  12.94484  10.80995   3.10079   3.44904 
 testGrowth(ss2, fit2, "A1 - A2*1.1")
-#>          Form Estimate       SE  t-value      p-value
-#> 1 A1 - A2*1.1 19.93375 2.523292 7.899899 7.368006e-15
+#>          Form Estimate       SE  t-value   p-value
+#> 1 A1 - A2*1.1 19.93375 2.523292 7.899899 7.368e-15
 ```

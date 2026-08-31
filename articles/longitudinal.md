@@ -1246,8 +1246,8 @@ testGrowth(nlme_ss, nlme_fit, test = "A")$anova
 ```
 
     ##         Model df      AIC      BIC    logLik   Test  L.Ratio p-value
-    ## nullMod     1 13 4923.097 4986.898 -2448.549                        
-    ## fit         2 16 4913.518 4992.042 -2440.759 1 vs 2 15.57969  0.0014
+    ## nullMod     1 13 4923.097 4986.897 -2448.548                        
+    ## fit         2 16 4913.518 4992.042 -2440.759 1 vs 2 15.57892  0.0014
 
 We cannot test parameters in the GAM of course but we still see that the
 grouping improves the model fit.
@@ -1296,8 +1296,8 @@ testGrowth(fit = nls_fit, test = list(
 ```
 
     ##                    Form   Estimate        SE   t-value      p-value
-    ## 1          A1 - A2 *1.1 19.9337491 2.5232917  7.899899 7.368006e-15
-    ## 2           (B1+1) - B2  3.1348883 0.1624348 19.299359 9.834927e-71
+    ## 1          A1 - A2 *1.1 19.9337491 2.5232917  7.899899 7.368000e-15
+    ## 2           (B1+1) - B2  3.1348883 0.1624348 19.299359 9.834887e-71
     ## 3         C1 - (C2-0.5)  0.1517508 0.1292836  1.173782 2.407636e-01
     ## 4 A1/B1 - (1.1 * A2/B2) -1.2329672 0.1538017  8.016603 3.036364e-15
 
@@ -1311,9 +1311,9 @@ testGrowth(fit = nlme_fit, test = list(
 ```
 
     ##                          Form   Estimate         SE   Z-value      p-value
-    ## 1 (A.groupa / A.groupb) - 0.9  0.3122201 0.03541827  8.815227 1.194428e-18
-    ## 2   1 + (B.groupa - B.groupb)  3.1217631 0.16951043 18.416348 9.714055e-76
-    ## 3       C.groupa/C.groupb - 1 -0.1002474 0.03665858  2.734623 6.245172e-03
+    ## 1 (A.groupa / A.groupb) - 0.9  0.3122201 0.03541827  8.815227 1.194423e-18
+    ## 2   1 + (B.groupa - B.groupb)  3.1217631 0.16951043 18.416348 9.713996e-76
+    ## 3       C.groupa/C.groupb - 1 -0.1002474 0.03665857  2.734623 6.245169e-03
 
 #### `brms::hypothesis`
 

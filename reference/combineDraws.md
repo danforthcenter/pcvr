@@ -119,37 +119,37 @@ if (rlang::is_installed("cmdstanr")) {
 #> 
 #> Chain 1 Iteration:   1 / 1000 [  0%]  (Warmup) 
 #> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is -nan, but must be positive finite! (in '/tmp/RtmpMOmte7/model-1fc71f8e02bf.stan', line 120, column 4 to column 48)
+#> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is -nan, but must be positive finite! (in '/tmp/RtmpWYrJip/model-201c3d97185d.stan', line 120, column 4 to column 48)
 #> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 1 
 #> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is -nan, but must be positive finite! (in '/tmp/RtmpMOmte7/model-1fc71f8e02bf.stan', line 120, column 4 to column 48)
+#> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is -nan, but must be positive finite! (in '/tmp/RtmpWYrJip/model-201c3d97185d.stan', line 120, column 4 to column 48)
 #> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 1 
 #> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: student_t_lpdf: Scale parameter[10] is inf, but must be positive finite! (in '/tmp/RtmpMOmte7/model-1fc71f8e02bf.stan', line 120, column 4 to column 48)
+#> Chain 1 Exception: student_t_lpdf: Scale parameter[10] is inf, but must be positive finite! (in '/tmp/RtmpWYrJip/model-201c3d97185d.stan', line 120, column 4 to column 48)
 #> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 1 
 #> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/RtmpMOmte7/model-1fc71f8e02bf.stan', line 120, column 4 to column 48)
+#> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/RtmpWYrJip/model-201c3d97185d.stan', line 120, column 4 to column 48)
 #> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 1 
 #> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/RtmpMOmte7/model-1fc71f8e02bf.stan', line 120, column 4 to column 48)
+#> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/RtmpWYrJip/model-201c3d97185d.stan', line 120, column 4 to column 48)
 #> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 1 
 #> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: student_t_lpdf: Location parameter[1] is -nan, but must be finite! (in '/tmp/RtmpMOmte7/model-1fc71f8e02bf.stan', line 120, column 4 to column 48)
+#> Chain 1 Exception: student_t_lpdf: Location parameter[1] is -nan, but must be finite! (in '/tmp/RtmpWYrJip/model-201c3d97185d.stan', line 120, column 4 to column 48)
 #> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 1 
 #> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: student_t_lpdf: Scale parameter[501] is inf, but must be positive finite! (in '/tmp/RtmpMOmte7/model-1fc71f8e02bf.stan', line 120, column 4 to column 48)
+#> Chain 1 Exception: student_t_lpdf: Scale parameter[501] is inf, but must be positive finite! (in '/tmp/RtmpWYrJip/model-201c3d97185d.stan', line 120, column 4 to column 48)
 #> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 1 
@@ -164,7 +164,7 @@ if (rlang::is_installed("cmdstanr")) {
 #> Chain 1 Iteration: 800 / 1000 [ 80%]  (Sampling) 
 #> Chain 1 Iteration: 900 / 1000 [ 90%]  (Sampling) 
 #> Chain 1 Iteration: 1000 / 1000 [100%]  (Sampling) 
-#> Chain 1 finished in 8.2 seconds.
+#> Chain 1 finished in 7.2 seconds.
 #> Start sampling
 #> Init values were only set for a subset of parameters. 
 #> Missing init values for the following parameters:
@@ -175,47 +175,47 @@ if (rlang::is_installed("cmdstanr")) {
 #> 
 #> Chain 1 Iteration:    1 / 1200 [  0%]  (Warmup) 
 #> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is -nan, but must be positive finite! (in '/tmp/RtmpMOmte7/model-1fc71f8e02bf.stan', line 120, column 4 to column 48)
+#> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is -nan, but must be positive finite! (in '/tmp/RtmpWYrJip/model-201c3d97185d.stan', line 120, column 4 to column 48)
 #> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 1 
 #> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is -nan, but must be positive finite! (in '/tmp/RtmpMOmte7/model-1fc71f8e02bf.stan', line 120, column 4 to column 48)
+#> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is -nan, but must be positive finite! (in '/tmp/RtmpWYrJip/model-201c3d97185d.stan', line 120, column 4 to column 48)
 #> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 1 
 #> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: student_t_lpdf: Scale parameter[3] is inf, but must be positive finite! (in '/tmp/RtmpMOmte7/model-1fc71f8e02bf.stan', line 120, column 4 to column 48)
+#> Chain 1 Exception: student_t_lpdf: Scale parameter[3] is inf, but must be positive finite! (in '/tmp/RtmpWYrJip/model-201c3d97185d.stan', line 120, column 4 to column 48)
 #> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 1 
 #> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/RtmpMOmte7/model-1fc71f8e02bf.stan', line 120, column 4 to column 48)
+#> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/RtmpWYrJip/model-201c3d97185d.stan', line 120, column 4 to column 48)
 #> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 1 
 #> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/RtmpMOmte7/model-1fc71f8e02bf.stan', line 120, column 4 to column 48)
+#> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/RtmpWYrJip/model-201c3d97185d.stan', line 120, column 4 to column 48)
 #> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 1 
 #> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/RtmpMOmte7/model-1fc71f8e02bf.stan', line 120, column 4 to column 48)
+#> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/RtmpWYrJip/model-201c3d97185d.stan', line 120, column 4 to column 48)
 #> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 1 
 #> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: student_t_lpdf: Degrees of freedom parameter[1] is inf, but must be positive finite! (in '/tmp/RtmpMOmte7/model-1fc71f8e02bf.stan', line 120, column 4 to column 48)
+#> Chain 1 Exception: student_t_lpdf: Degrees of freedom parameter[1] is inf, but must be positive finite! (in '/tmp/RtmpWYrJip/model-201c3d97185d.stan', line 120, column 4 to column 48)
 #> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 1 
 #> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is -nan, but must be positive finite! (in '/tmp/RtmpMOmte7/model-1fc71f8e02bf.stan', line 120, column 4 to column 48)
+#> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is -nan, but must be positive finite! (in '/tmp/RtmpWYrJip/model-201c3d97185d.stan', line 120, column 4 to column 48)
 #> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 1 
 #> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: student_t_lpdf: Scale parameter[501] is inf, but must be positive finite! (in '/tmp/RtmpMOmte7/model-1fc71f8e02bf.stan', line 120, column 4 to column 48)
+#> Chain 1 Exception: student_t_lpdf: Scale parameter[501] is inf, but must be positive finite! (in '/tmp/RtmpWYrJip/model-201c3d97185d.stan', line 120, column 4 to column 48)
 #> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 1 
@@ -232,7 +232,7 @@ if (rlang::is_installed("cmdstanr")) {
 #> Chain 1 Iteration: 1000 / 1200 [ 83%]  (Sampling) 
 #> Chain 1 Iteration: 1100 / 1200 [ 91%]  (Sampling) 
 #> Chain 1 Iteration: 1200 / 1200 [100%]  (Sampling) 
-#> Chain 1 finished in 9.5 seconds.
+#> Chain 1 finished in 8.1 seconds.
 #> Start sampling
 #> Init values were only set for a subset of parameters. 
 #> Missing init values for the following parameters:
@@ -243,42 +243,42 @@ if (rlang::is_installed("cmdstanr")) {
 #> 
 #> Chain 1 Iteration:   1 / 1000 [  0%]  (Warmup) 
 #> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is -nan, but must be positive finite! (in '/tmp/RtmpMOmte7/model-1fc71f8e02bf.stan', line 120, column 4 to column 48)
+#> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is -nan, but must be positive finite! (in '/tmp/RtmpWYrJip/model-201c3d97185d.stan', line 120, column 4 to column 48)
 #> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 1 
 #> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is -nan, but must be positive finite! (in '/tmp/RtmpMOmte7/model-1fc71f8e02bf.stan', line 120, column 4 to column 48)
+#> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is -nan, but must be positive finite! (in '/tmp/RtmpWYrJip/model-201c3d97185d.stan', line 120, column 4 to column 48)
 #> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 1 
 #> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: student_t_lpdf: Scale parameter[501] is inf, but must be positive finite! (in '/tmp/RtmpMOmte7/model-1fc71f8e02bf.stan', line 120, column 4 to column 48)
+#> Chain 1 Exception: student_t_lpdf: Scale parameter[501] is inf, but must be positive finite! (in '/tmp/RtmpWYrJip/model-201c3d97185d.stan', line 120, column 4 to column 48)
 #> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 1 
 #> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/RtmpMOmte7/model-1fc71f8e02bf.stan', line 120, column 4 to column 48)
+#> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/RtmpWYrJip/model-201c3d97185d.stan', line 120, column 4 to column 48)
 #> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 1 
 #> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: student_t_lpdf: Scale parameter[501] is inf, but must be positive finite! (in '/tmp/RtmpMOmte7/model-1fc71f8e02bf.stan', line 120, column 4 to column 48)
+#> Chain 1 Exception: student_t_lpdf: Scale parameter[501] is inf, but must be positive finite! (in '/tmp/RtmpWYrJip/model-201c3d97185d.stan', line 120, column 4 to column 48)
 #> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 1 
 #> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: student_t_lpdf: Degrees of freedom parameter[1] is inf, but must be positive finite! (in '/tmp/RtmpMOmte7/model-1fc71f8e02bf.stan', line 120, column 4 to column 48)
+#> Chain 1 Exception: student_t_lpdf: Degrees of freedom parameter[1] is inf, but must be positive finite! (in '/tmp/RtmpWYrJip/model-201c3d97185d.stan', line 120, column 4 to column 48)
 #> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 1 
 #> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is -nan, but must be positive finite! (in '/tmp/RtmpMOmte7/model-1fc71f8e02bf.stan', line 120, column 4 to column 48)
+#> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is -nan, but must be positive finite! (in '/tmp/RtmpWYrJip/model-201c3d97185d.stan', line 120, column 4 to column 48)
 #> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 1 
 #> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: student_t_lpdf: Scale parameter[501] is inf, but must be positive finite! (in '/tmp/RtmpMOmte7/model-1fc71f8e02bf.stan', line 120, column 4 to column 48)
+#> Chain 1 Exception: student_t_lpdf: Scale parameter[501] is inf, but must be positive finite! (in '/tmp/RtmpWYrJip/model-201c3d97185d.stan', line 120, column 4 to column 48)
 #> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 1 
@@ -293,7 +293,7 @@ if (rlang::is_installed("cmdstanr")) {
 #> Chain 1 Iteration: 800 / 1000 [ 80%]  (Sampling) 
 #> Chain 1 Iteration: 900 / 1000 [ 90%]  (Sampling) 
 #> Chain 1 Iteration: 1000 / 1000 [100%]  (Sampling) 
-#> Chain 1 finished in 7.7 seconds.
+#> Chain 1 finished in 6.7 seconds.
 #> Start sampling
 #> Init values were only set for a subset of parameters. 
 #> Missing init values for the following parameters:
@@ -304,47 +304,47 @@ if (rlang::is_installed("cmdstanr")) {
 #> 
 #> Chain 1 Iteration:   1 / 1000 [  0%]  (Warmup) 
 #> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is -nan, but must be positive finite! (in '/tmp/RtmpMOmte7/model-1fc71f8e02bf.stan', line 120, column 4 to column 48)
+#> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is -nan, but must be positive finite! (in '/tmp/RtmpWYrJip/model-201c3d97185d.stan', line 120, column 4 to column 48)
 #> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 1 
 #> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is -nan, but must be positive finite! (in '/tmp/RtmpMOmte7/model-1fc71f8e02bf.stan', line 120, column 4 to column 48)
+#> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is -nan, but must be positive finite! (in '/tmp/RtmpWYrJip/model-201c3d97185d.stan', line 120, column 4 to column 48)
 #> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 1 
 #> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is -nan, but must be positive finite! (in '/tmp/RtmpMOmte7/model-1fc71f8e02bf.stan', line 120, column 4 to column 48)
+#> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is -nan, but must be positive finite! (in '/tmp/RtmpWYrJip/model-201c3d97185d.stan', line 120, column 4 to column 48)
 #> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 1 
 #> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/RtmpMOmte7/model-1fc71f8e02bf.stan', line 120, column 4 to column 48)
+#> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/RtmpWYrJip/model-201c3d97185d.stan', line 120, column 4 to column 48)
 #> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 1 
 #> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/RtmpMOmte7/model-1fc71f8e02bf.stan', line 120, column 4 to column 48)
+#> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/RtmpWYrJip/model-201c3d97185d.stan', line 120, column 4 to column 48)
 #> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 1 
 #> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: student_t_lpdf: Scale parameter[501] is inf, but must be positive finite! (in '/tmp/RtmpMOmte7/model-1fc71f8e02bf.stan', line 120, column 4 to column 48)
+#> Chain 1 Exception: student_t_lpdf: Scale parameter[501] is inf, but must be positive finite! (in '/tmp/RtmpWYrJip/model-201c3d97185d.stan', line 120, column 4 to column 48)
 #> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 1 
 #> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: student_t_lpdf: Location parameter[1] is -nan, but must be finite! (in '/tmp/RtmpMOmte7/model-1fc71f8e02bf.stan', line 120, column 4 to column 48)
+#> Chain 1 Exception: student_t_lpdf: Location parameter[1] is -nan, but must be finite! (in '/tmp/RtmpWYrJip/model-201c3d97185d.stan', line 120, column 4 to column 48)
 #> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 1 
 #> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is -nan, but must be positive finite! (in '/tmp/RtmpMOmte7/model-1fc71f8e02bf.stan', line 120, column 4 to column 48)
+#> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is -nan, but must be positive finite! (in '/tmp/RtmpWYrJip/model-201c3d97185d.stan', line 120, column 4 to column 48)
 #> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 1 
 #> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: student_t_lpdf: Scale parameter[501] is inf, but must be positive finite! (in '/tmp/RtmpMOmte7/model-1fc71f8e02bf.stan', line 120, column 4 to column 48)
+#> Chain 1 Exception: student_t_lpdf: Scale parameter[501] is inf, but must be positive finite! (in '/tmp/RtmpWYrJip/model-201c3d97185d.stan', line 120, column 4 to column 48)
 #> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 1 
@@ -359,7 +359,7 @@ if (rlang::is_installed("cmdstanr")) {
 #> Chain 1 Iteration: 800 / 1000 [ 80%]  (Sampling) 
 #> Chain 1 Iteration: 900 / 1000 [ 90%]  (Sampling) 
 #> Chain 1 Iteration: 1000 / 1000 [100%]  (Sampling) 
-#> Chain 1 finished in 10.3 seconds.
+#> Chain 1 finished in 8.8 seconds.
 #> Start sampling
 #> Init values were only set for a subset of parameters. 
 #> Missing init values for the following parameters:
@@ -370,27 +370,27 @@ if (rlang::is_installed("cmdstanr")) {
 #> 
 #> Chain 1 Iteration:   1 / 1000 [  0%]  (Warmup) 
 #> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/RtmpMOmte7/model-1fc73eaa5495.stan', line 120, column 4 to column 48)
+#> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/RtmpWYrJip/model-201c1528a6a7.stan', line 120, column 4 to column 48)
 #> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 1 
 #> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/RtmpMOmte7/model-1fc73eaa5495.stan', line 120, column 4 to column 48)
+#> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/RtmpWYrJip/model-201c1528a6a7.stan', line 120, column 4 to column 48)
 #> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 1 
 #> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/RtmpMOmte7/model-1fc73eaa5495.stan', line 120, column 4 to column 48)
+#> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/RtmpWYrJip/model-201c1528a6a7.stan', line 120, column 4 to column 48)
 #> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 1 
 #> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/RtmpMOmte7/model-1fc73eaa5495.stan', line 120, column 4 to column 48)
+#> Chain 1 Exception: student_t_lpdf: Scale parameter[1] is inf, but must be positive finite! (in '/tmp/RtmpWYrJip/model-201c1528a6a7.stan', line 120, column 4 to column 48)
 #> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 1 
 #> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: student_t_lpdf: Location parameter[1] is -nan, but must be finite! (in '/tmp/RtmpMOmte7/model-1fc73eaa5495.stan', line 120, column 4 to column 48)
+#> Chain 1 Exception: student_t_lpdf: Location parameter[1] is -nan, but must be finite! (in '/tmp/RtmpWYrJip/model-201c1528a6a7.stan', line 120, column 4 to column 48)
 #> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 1 
@@ -405,7 +405,7 @@ if (rlang::is_installed("cmdstanr")) {
 #> Chain 1 Iteration: 800 / 1000 [ 80%]  (Sampling) 
 #> Chain 1 Iteration: 900 / 1000 [ 90%]  (Sampling) 
 #> Chain 1 Iteration: 1000 / 1000 [100%]  (Sampling) 
-#> Chain 1 finished in 20.4 seconds.
+#> Chain 1 finished in 16.7 seconds.
 #> fit_cd has fewer than 600 draws and will be padded with 100 NAs
 #> draws_ef has fewer than 600 draws and will be padded with 100 NAs
 #> Some of these models have different growth formulas, consider if this is what you want.

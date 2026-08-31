@@ -77,7 +77,7 @@ if (rlang::is_installed("cmdstanr")) {
 #> 
 #> Chain 1 Iteration:   1 / 500 [  0%]  (Warmup) 
 #> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: student_t_lpdf: Location parameter[1] is -nan, but must be finite! (in '/tmp/RtmpMOmte7/model-1fc73c4fc588.stan', line 98, column 4 to column 48)
+#> Chain 1 Exception: student_t_lpdf: Location parameter[1] is -nan, but must be finite! (in '/tmp/RtmpWYrJip/model-201c339d1197.stan', line 98, column 4 to column 48)
 #> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 1 
@@ -87,7 +87,7 @@ if (rlang::is_installed("cmdstanr")) {
 #> Chain 1 Iteration: 350 / 500 [ 70%]  (Sampling) 
 #> Chain 1 Iteration: 450 / 500 [ 90%]  (Sampling) 
 #> Chain 1 Iteration: 500 / 500 [100%]  (Sampling) 
-#> Chain 1 finished in 6.8 seconds.
+#> Chain 1 finished in 6.3 seconds.
 
 # }
 ```

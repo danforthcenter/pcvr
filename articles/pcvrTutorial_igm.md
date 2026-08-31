@@ -799,8 +799,8 @@ testGrowth(nls_ss, nls_fit, test = list(
 ```
 
     ##             Form   Estimate        SE   t-value      p-value
-    ## 1        A1 - A2 30.9620463 2.8416998 10.895608 3.418664e-26
-    ## 2 B1 - (B2*1.25) -1.1834444 0.2181014  5.426121 7.235593e-08
+    ## 1        A1 - A2 30.9620463 2.8416998 10.895608 3.418661e-26
+    ## 2 B1 - (B2*1.25) -1.1834444 0.2181014  5.426121 7.235594e-08
     ## 3    (C1+1) - C2  0.5657608 0.1487875  3.802476 1.519847e-04
 
 ## `testGrowth` - nlrq
@@ -829,8 +829,8 @@ testGrowth(nlme_ss, nlme_fit, test = "A")$anova
 ```
 
     ##         Model df      AIC      BIC    logLik   Test  L.Ratio p-value
-    ## nullMod     1 13 5345.185 5408.986 -2659.593                        
-    ## fit         2 16 5336.665 5415.189 -2652.333 1 vs 2 14.52005  0.0023
+    ## nullMod     1 13 5345.185 5408.986 -2659.592                        
+    ## fit         2 16 5336.665 5415.189 -2652.333 1 vs 2 14.51948  0.0023
 
 ## `testGrowth` - nlme 2
 
@@ -844,8 +844,8 @@ testGrowth(nls_ss, nlme_fit, test = list(
 ```
 
     ##                         Form  Estimate        SE  Z-value      p-value
-    ## 1        A.groupa - A.groupb 31.406942 4.3866581 7.159651 8.088266e-13
-    ## 2 B.groupa - (B.groupb*1.25) -1.143088 0.2559811 4.465516 7.987592e-06
+    ## 1        A.groupa - A.groupb 31.406942 4.3866582 7.159651 8.088269e-13
+    ## 2 B.groupa - (B.groupb*1.25) -1.143088 0.2559811 4.465516 7.987591e-06
     ## 3    (C.groupa+1) - C.groupa  1.000000 0.0000000      Inf 0.000000e+00
 
 ## `testGrowth` - mgcv

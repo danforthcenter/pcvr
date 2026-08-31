@@ -151,13 +151,15 @@ growthSS(
   with [`stats::selfStart`](https://rdrr.io/r/stats/selfStart.html).
   When type = "brms" these should be provided and are treated as the
   means of lognormal priors for all growth model parameters and
-  T_5(mu, 3) priors for changepoint parameters. This is done because the
-  values are strictly positive and the lognormal distribution is easily
-  interpreted. The changepoint priors are T distributions for symmetry,
-  5 DF having been chosen for heavy but not unmanageable tails. If this
-  argument is not provided then priors are made using brms::get_prior.
-  Those priors are unlikely to be suitable and a different set of priors
-  will need to be made for the model using
+  T_5(mu, 3) priors for changepoint parameters. Constant priors can be
+  specified by providing the value as a string (ie, "3" for a constant 3
+  value for that variable). This is done because the values are strictly
+  positive and the lognormal distribution is easily interpreted. The
+  changepoint priors are T distributions for symmetry, 5 DF having been
+  chosen for heavy but not unmanageable tails. If this argument is not
+  provided then priors are made using brms::get_prior. Those priors are
+  unlikely to be suitable and a different set of priors will need to be
+  made for the model using
   [`brms::set_prior`](https://paulbuerkner.com/brms/reference/set_prior.html)
   for good convergence. When specifying starting values/prior means
   think of this as being similar to the `params` argument in

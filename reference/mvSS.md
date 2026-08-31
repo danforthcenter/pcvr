@@ -122,27 +122,27 @@ if (rlang::is_installed("cmdstanr")) {
 #> 
 #> Chain 1 Iteration:   1 / 1000 [  0%]  (Warmup) 
 #> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: student_t_lpdf: Scale parameter is inf, but must be positive finite! (in '/tmp/RtmpMOmte7/model-1fc77bf0bf89.stan', line 77, column 6 to column 71)
+#> Chain 1 Exception: student_t_lpdf: Scale parameter is inf, but must be positive finite! (in '/tmp/RtmpWYrJip/model-201c37ac27e0.stan', line 77, column 6 to column 71)
 #> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 1 
 #> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: student_t_lpdf: Scale parameter is inf, but must be positive finite! (in '/tmp/RtmpMOmte7/model-1fc77bf0bf89.stan', line 77, column 6 to column 71)
+#> Chain 1 Exception: student_t_lpdf: Scale parameter is inf, but must be positive finite! (in '/tmp/RtmpWYrJip/model-201c37ac27e0.stan', line 77, column 6 to column 71)
 #> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 1 
 #> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: student_t_lpdf: Scale parameter is inf, but must be positive finite! (in '/tmp/RtmpMOmte7/model-1fc77bf0bf89.stan', line 77, column 6 to column 71)
+#> Chain 1 Exception: student_t_lpdf: Scale parameter is inf, but must be positive finite! (in '/tmp/RtmpWYrJip/model-201c37ac27e0.stan', line 77, column 6 to column 71)
 #> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 1 
 #> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: gamma_lpdf: Random variable is inf, but must be positive finite! (in '/tmp/RtmpMOmte7/model-1fc77bf0bf89.stan', line 61, column 2 to line 62, column 34)
+#> Chain 1 Exception: gamma_lpdf: Random variable is inf, but must be positive finite! (in '/tmp/RtmpWYrJip/model-201c37ac27e0.stan', line 61, column 2 to line 62, column 34)
 #> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 1 
 #> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: student_t_lpdf: Scale parameter is inf, but must be positive finite! (in '/tmp/RtmpMOmte7/model-1fc77bf0bf89.stan', line 77, column 6 to column 71)
+#> Chain 1 Exception: student_t_lpdf: Scale parameter is inf, but must be positive finite! (in '/tmp/RtmpWYrJip/model-201c37ac27e0.stan', line 77, column 6 to column 71)
 #> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
 #> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
 #> Chain 1 
@@ -158,8 +158,6 @@ if (rlang::is_installed("cmdstanr")) {
 #> Chain 1 Iteration: 900 / 1000 [ 90%]  (Sampling) 
 #> Chain 1 Iteration: 1000 / 1000 [100%]  (Sampling) 
 #> Chain 1 finished in 1.5 seconds.
-#> Warning: The x aesthetics were dropped,
-#>  did you forget to specify a group aesthetic or convert a numerical variable into a factor?
 
 
 # when the model is longitudinal the same model is possible with growthSS
