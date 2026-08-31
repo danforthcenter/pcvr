@@ -20,7 +20,8 @@
 #'  and T_5(mu, 3) priors for changepoint parameters.
 #'   This is done because the values are strictly positive and the lognormal distribution
 #'   is easily interpreted. The changepoint priors are T distributions for symmetry, 5 DF
-#'   having been chosen for heavy but not unmanageable tails.
+#'   having been chosen for heavy but not unmanageable tails. Constant priors can be specified
+#'   by providing the value as a string (ie, "3" for a constant 3 value for that variable).
 #'   If this argument is not provided then priors are not
 #'   returned and a different set of priors will need to be made for the model using
 #'   \code{brms::set_prior}. This works similarly to the \code{params} argument

@@ -82,7 +82,7 @@
     default_prior <- .explicitDefaultPrior(formula, df, family)
     default_interaction_prior <- default_prior[grepl(":", default_prior$coef), ]
     tenth_of_priors <- lapply(priors, function(x) {
-      return(mean(x) / 10)
+      return(mean(as.numeric(x)) / 10)
     })
     for (nlp in unique(default_interaction_prior$nlpar)) {
       sd <- ifelse(nlp %in% names(tenth_of_priors), tenth_of_priors[[nlp]], 3)
@@ -191,6 +191,10 @@
 .stanStringHelper <- function(priors, pars, USEGROUP) {
   if (!is.null(pars)) {
     priorStanStrings <- lapply(pars, function(par) {
+      if (methods::is(priors[[par]][1], "character")) {
+        par_string <- paste0("constant(", priors[[par]], ")") # constant prior
+        return(par_string)
+      }
       if (!grepl("changePoint|I$", par)) {
         par_string <- paste0("lognormal(log(", priors[[par]], "), 0.25)") # growth parameters are LN
       } else {

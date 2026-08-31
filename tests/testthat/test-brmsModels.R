@@ -17,6 +17,11 @@ test_that("Logistic brms model pipeline", {
   )
   ss <- growthSS(
     model = "logistic", form = y ~ time | id / group, sigma = "gam",
+    list("A" = 130, "B" = 10, "C" = "3"), # "3" as a string for a constant prior
+    df = simdf, type = "brms"
+  )
+  ss <- growthSS(
+    model = "logistic", form = y ~ time | id / group, sigma = "gam",
     list("A" = 130, "B" = 10, "C" = 3),
     df = simdf, type = "brms"
   )

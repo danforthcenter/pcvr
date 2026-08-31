@@ -101,7 +101,11 @@ statBrmsMod <- ggplot2::ggproto("StatBrm", Stat,
       }
       old <- old[, !(names(old) %in% names(new)), drop = FALSE]
       non_constant <- vapply(old, vctrs::vec_unique_count, integer(1)) > 1L
-      non_constant_columns <<- c(non_constant_columns, names(old)[non_constant])
+      assign(
+        "non_constant_columns",
+        c(non_constant_columns, names(old)[non_constant]),
+        parent.frame()
+      )
       vc <- vctrs:::vec_cbind(
         new,
         old[rep(1, nrow(new)), , drop = FALSE]
@@ -214,7 +218,11 @@ statBrmsStaticMod <- ggplot2::ggproto("StatStaticBrm", Stat,
       }
       old <- old[, !(names(old) %in% names(new)), drop = FALSE]
       non_constant <- vapply(old, vctrs::vec_unique_count, integer(1)) > 1L
-      non_constant_columns <<- c(non_constant_columns, names(old)[non_constant])
+      assign(
+        "non_constant_columns",
+        c(non_constant_columns, names(old)[non_constant]),
+        parent.frame()
+      )
       vc <- vctrs:::vec_cbind(
         new,
         old[rep(1, nrow(new)), , drop = FALSE]
