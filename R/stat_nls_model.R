@@ -68,7 +68,7 @@ statNlsMod <- ggplot2::ggproto("StatNls", Stat,
         "non_constant_columns",
         c(non_constant_columns, names(old)[non_constant]),
         parent.frame()
-      ) 
+      )
       vc <- vctrs:::vec_cbind(
         new,
         old[rep(1, nrow(new)), , drop = FALSE]
